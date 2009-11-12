@@ -22,11 +22,10 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.16 2009.09.07
+ * ver 2.0.17 2009.10.29
  *
  ******************************************************************************/
 %>
-
 <%@ page import="java.util.*" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.text.DecimalFormat" %>
@@ -35,13 +34,13 @@
 <%@ page import="massbank.ResultList" %>
 <%@ page import="massbank.ResultRecord" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
-
+<%@ page import="java.io.UnsupportedEncodingException" %>
 <%!
 	// 画面内テーブルタグ幅
-	private static final String tableWidth = "900";
+	private static final String tableWidth = "950";
 	
 	// 検索結果テーブル列幅
-	private static final String[] width = { "28", "28", "422", "142", "52", "122", "100" };
+	private static final String[] width = { "28", "28", "422", "142", "102", "122", "100" };
 	
 	// イメージファイルURL
 	private final String minuspng = "../image/minus.png";
@@ -52,6 +51,68 @@
 	private final String strucOffGif = "../image/strucOff.gif";
 	private final String strucOverGif = "../image/strucOver.gif";
 	private final String strucOnGif = "../image/strucOn.gif";
+
+	/**
+	 * Molfile情報を一括取得する
+	 */
+	private Map<String,String> getMolFile(ResultList list, int startIndex, int endIndex, String serverUrl) {
+
+		String prevName = "";
+		String param = "";
+		for ( int i = startIndex; i <= endIndex; i++ ) {
+			ResultRecord rec = list.getRecord(i);
+			String name = rec.getName();
+			if ( !name.equals(prevName) ) {
+				String ename = "";
+				try {
+					ename = URLEncoder.encode( name, "utf-8" );
+				}
+				catch ( UnsupportedEncodingException e ) {
+ 					System.out.println( "msg:" + e.getMessage() );
+				}
+				param += ename + "@";
+			}
+			prevName = name;
+		}
+		if ( !param.equals("") ) {
+			param = param.substring(0, param.length()-1);
+			param = "&names=" + param;
+		}
+		MassBankCommon mbcommon = new MassBankCommon();
+		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETMOL];
+		ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+
+		Map<String, String> map = new HashMap();
+		boolean isStart = false;
+		int cnt = 0;
+		String key = "";
+		String moldata = "";
+		for ( int i = 0; i < result.size(); i++ ) {
+			String temp = (String)result.get(i);
+			String[] item = temp.split("\t");
+			String line = item[0];
+			if ( line.indexOf("---NAME:") >= 0 ) {
+				if ( !key.equals("") && !map.containsKey(key) && !moldata.trim().equals("") ) {
+					// Molfileデータ格納
+					map.put(key, moldata);
+				}
+				// 次のデータのキー名
+				key = line.substring(8).toLowerCase();
+				moldata = "";
+			}
+			else {
+				// JME Editor 
+				if ( line.indexOf("M  CHG") >= 0 ) {
+					continue;
+				}
+				moldata += line + "|\n";
+			}
+		}
+		if ( !map.containsKey(key) && !moldata.trim().equals("") ) {
+			map.put(key, moldata);
+		}
+		return map;
+	}
 %>
 <%
 	MassBankCommon mbcommon = new MassBankCommon();
@@ -267,6 +328,8 @@
 	GetConfig conf = new GetConfig(baseUrl);
 	String serverUrl = conf.getServerUrl();				// サーバURL取得
 	String [] siteLongName = conf.getSiteLongName();	// サイト名取得
+	String[] dbNameList = conf.getDbName();
+	String[] urlList = conf.getSiteUrl();
 %>
 
 <html>
@@ -505,6 +568,7 @@
 						existMoldata = false;
 						break;
 					}
+
 					
 					out.println( "<td>" );
 					out.println( "<b>Query" + String.valueOf(n+1) + "</b><br>" );
@@ -521,8 +585,8 @@
 			out.println( "<div style=\"width:182px; height:182px; border:1px solid #000000; margin-top:10px; margin-left:10px;\">&nbsp;</div>" );
 			out.println( "</td>" );
 		}
-		
-		String[] mz = new String[3];
+
+		String[] mz = new String[5];
 		int cntPeak = 0;
 		for ( int n = 0; n < mz.length; n++ ) {
 			String key = "mz" + String.valueOf(n);
@@ -561,7 +625,7 @@
 		}
 		
 		out.println( "</tr>" );
-		out.println( "</tr>");
+		out.println( "<tr>");
 		out.println( "<td>&nbsp;&nbsp;<a href=\"../StructureSearch.html\" class=\"pageLink\" onClick=\"return prevStructSearch()\">Previous Query</a></td>" );
 		out.println( "</tr>" );
 		out.println( "</table>" );
@@ -586,8 +650,8 @@
 		}
 	}
 	out.println( "<hr size=\"1\">" );
-	
-	
+
+
 	//-------------------------------------
 	// 検索実行・結果取得
 	//-------------------------------------
@@ -843,11 +907,13 @@
 		String childNum = "";
 		String pRowId = "";
 		String cRowId = "";
-		
+
+		// Molfile情報を一括取得する
+		Map<String, String > mapMolData = getMolFile(list, startIndex, endIndex, serverUrl);
+
 		ResultRecord rec;
 		for (int i=startIndex; i<=endIndex; i++) {
 			rec = list.getRecord(i);
-			
 			// ツリー表示用ID、およびイメージ名生成
 			if ( prevNode != rec.getNodeGroup() ) {
 				tParentId++;
@@ -861,7 +927,8 @@
 			tChildId = String.valueOf(tParentId) + "child";
 			prevNode = rec.getNodeGroup();
 			String tParentImgName = tParentId + "img";
-			
+			String tParentImgName2 = tParentId + "treeimg";
+
 			// レコードページ表示用URL生成
 			String url = "";
 			// ◇ PeakSearch／PeakDifferenceSearchの場合
@@ -891,40 +958,53 @@
 			}
 			
 			if ( parentTreeFlag ) {
-				// スペーサー
-				out.println( "<table width=\"" + tableWidth 
-					+ "\" class=\"treeLayoutSpacer\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
-				out.println( " <tr>" );
-				out.println( "  <td width=\"" + width[0] + "\" height=\"1\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + (Integer.parseInt(width[1]) + Integer.parseInt(width[2])) + "\" height=\"1\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + (Integer.parseInt(width[3]) + Integer.parseInt(width[4])) + "\" height=\"1\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + width[5] + "\" height=\"1\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + width[6] + "\" height=\"1\">&nbsp;</td>" );
-				out.println( " </tr>" );
-				out.println( "</table>" );
-				
 				// ツリー(親)
 				childNum = String.valueOf(nodeMap.get(rec.getNodeGroup()));
 				pRowId = "of" + String.valueOf(tParentId);
 				out.println( "<table width=\"" + tableWidth 
 					+ "\" class=\"pTreeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
-				out.println( "  <tr id=\"" + pRowId + "\" style=\"\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + pRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + pRowId + "');\">" ) ;
+				out.println( "  <tr id=\"" + pRowId + "\" style=\"\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + pRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + pRowId + "');\">" );
 				out.print( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" valign=\"top\" align=\"center\">" );
 				out.print( "<input type=\"checkbox\" name=\"pid\" id=\"" + pRowId + "check\" value=\"\" onClick=\"checkParent('" + pRowId + "', '" + parentNum + "', '" + childNum + "');\">" );
 				out.println( "</td>" );
 				out.print( "  <td class=\"treeLayout2\" width=\"" + (Integer.parseInt(width[1]) - 8) + "\" valign=\"top\">");
 				out.print( "&nbsp;&nbsp;<img class=\"cursorLink\" src=\"" + pluspng + "\" onclick=\"treeMenu("
-					+ tParentId + ")\" name=\"" + tParentImgName + "\" alt=\"\">" );
+					+ tParentId + ")\" name=\"" + tParentImgName + "\" alt=\"\"><br>&nbsp;&nbsp;&nbsp;<img src=\"../image/treeline0.gif\" align=\"middle\" name=\"" + tParentImgName2 + "\">" );
 				out.println( "</td>" );
+
 				out.print( "  <td class=\"treeLayout1\" width=\"" + (Integer.parseInt(width[2]) + 8) + "\" valign=\"top\">");
-				out.print( "<a href=\"javascript:treeMenu(" + tParentId + ")\" class=\"noLinkImg\" title=\"" + rec.getName() + "\">&nbsp;"
-					+ rec.getParentLink() + " " + "</a>" );
-				out.println( "</td>" );
-				String molUrl = serverUrl + "jsp/MolView.jsp?cname=" + URLEncoder.encode(rec.getName() , "UTF-8") + "&site=" + rec.getContributor();
+				out.print( "<a href=\"javascript:treeMenu(" + tParentId + ")\" class=\"noLinkImg\" title=\"" + rec.getName() + "\">&nbsp;" + rec.getParentLink() + " " + "</a><br>" );
+
+				// 個々のスペクトル数を表示
+				String dispNum = childNum;
+				if ( Integer.parseInt(childNum) == 1 ) {
+				 	dispNum += " spectrum";
+				}
+				else {
+				 	dispNum += " spectra&nbsp;&nbsp;&nbsp;";
+				}
+				out.println( "<div align=\"right\" style=\"cursor: pointer;font-size: 12px;\">" + dispNum + "&nbsp;&nbsp;</div>" );
+				out.println( "  </td>" );
 				out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;<b>" + rec.getFormula() + "</b>&nbsp;</td>" );
-				out.print( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\" align=\"left\">" );
-				out.print( "<img class=\"cursorLink\" src=\"" + strucOffGif + "\" onMouseUp=\"this.src='" + strucOffGif + "'\" onMouseDown=\"this.src='" + strucOnGif 
-					+ "'\" onMouseOut=\"this.src='" + strucOffGif + "'\" onMouseOver=\"this.src='" + strucOverGif + "'\" onClick=\"popupMolView('" + molUrl + "');\" alt=\"Structure of " + rec.getFormula() + "\">" );
+				out.println( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\" align=\"left\">" );
+
+				// アップレットで化学構造式を表示
+				String key = rec.getName().toLowerCase() ;
+				if ( mapMolData.containsKey(key) ) {
+					String moldata = mapMolData.get(key).trim();
+					if ( !moldata.equals("") ) {
+						out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
+						out.println( "    <param name=\"options\" value=\"depict\">" );
+						out.println( "    <param name=\"mol\" value=\"");
+						out.print( moldata );
+						out.println( "\">");
+						out.println( "   </applet>\n");
+					}
+				}
+				else {
+					out.println( "<img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\">");
+				}
+
 				out.println( "</td>" );
 				out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );
 				out.println( "  <td class=\"treeLayout2\" width=\"" + width[6] + "\" valign=\"top\">&nbsp;</td>" );
@@ -941,13 +1021,28 @@
 			out.print( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" valign=\"top\" align=\"center\">" );
 			out.print( "<input type=\"checkbox\" name=\"id\" value=\"" + cCheckValue + "\" id=\"" + cRowId + "check\" onClick=\"checkChild('" + pRowId + "', '" + cRowId + "', '" + parentNum + "', '" + childNum + "');\">" );
 			out.println( "</td>" );
-			out.println( "  <td class=\"treeLayout2\" width=\"" + width[1] + "\" valign=\"top\">&nbsp;&nbsp;&#9492;&nbsp;</td>" );
+
+			// ツリー子の罫線を表示
+			String gifLine = "treeline2.gif";
+			if ( i == endIndex ) {
+				gifLine = "treeline3.gif";
+			}
+			else if ( i < endIndex ) {
+				ResultRecord nextRec = list.getRecord(i+1);
+				int nextNode = nextRec.getNodeGroup();
+				if ( nextNode != rec.getNodeGroup() ) {
+					gifLine = "treeline3.gif";
+				}
+			}
+
+			out.println( "  <td class=\"treeLayout2\" width=\"" + width[1] + "\" valign=\"top\">"
+				+ "&nbsp;&nbsp;&nbsp;<img src=\"../image/" + gifLine + "\" align=\"absmiddle\" border=\"0\"></td>" );
 			out.print( "  <td class=\"treeLayout1\" width=\"" + width[2] + "\" valign=\"top\">" );
 			out.print( "<a href=\"" + url + "\" target=\"_blank\">&nbsp;" + rec.getChildLink() + "</a>" );
 			out.println( "</td>" );
-			out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" + rec.getFormula() + "&nbsp;</td>" );
+			out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" /*+ rec.getFormula()*/ + "&nbsp;</td>" );
 			out.println( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\">&nbsp;</td>" );
-			out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" + rec.getDispEmass() + "&nbsp;</td>" );
+			out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" /*+ rec.getDispEmass() */ + "&nbsp;</td>" );
 			out.println( "  <td class=\"treeLayout2\" width=\"" + width[6] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" + rec.getId() + "&nbsp;</td>" );
 			out.println( " </tr>" );
 			
