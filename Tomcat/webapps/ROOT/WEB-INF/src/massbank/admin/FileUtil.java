@@ -1,0 +1,240 @@
+/*******************************************************************************
+ *
+ * Copyright (C) 2008 JST-BIRD MassBank
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *******************************************************************************
+ *
+ * ファイル操作ユーティリティクラス
+ *
+ * ver 1.0.3 2009.07.03
+ *
+ ******************************************************************************/
+package massbank.admin;
+
+import java.io.*;
+import java.net.URL;
+import java.util.logging.*;
+import massbank.admin.CmdExecute;
+import massbank.admin.CmdResult;
+
+public class FileUtil {
+	
+	/** OS名 */
+	private static String OS_NAME = System.getProperty("os.name");
+	
+	/**
+	 * アーカイブを解凍する（ZIP形式）
+	 * @param archivePath アーカイブのパス
+	 * @param destPath 解凍先のパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean unZip(String archivePath, String destPath) {
+		String[] cmd = new String[]{ "unzip", "-oq", archivePath, "-d", destPath };
+		return command( cmd );
+	}
+	
+	/**
+	 * アーカイブを解凍する
+	 * @param archivePath アーカイブのパス
+	 * @param destPath 解凍先のパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean uncompress(String archivePath, String destPath) {
+		// ドライブ名がある場合は取り除く
+		int pos = archivePath.indexOf(":");
+		if ( pos >= 0 ) {
+			archivePath = archivePath.substring(pos + 1);
+		}
+		String cmd[] = new String[]{ "tar", "xfz", archivePath, "-C", destPath };
+		return command( cmd );
+	}
+
+	/**
+	 * ファイルをコピーする
+	 * @deprecated Windowsで使用した場合はコピー先ファイルが不適切な所有者になる（OS依存）
+	 * @param srcPath コピー元ファイルのパス
+	 * @param destPath コピー先ファイルのパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean copyFile(String srcPath, String destPath) {
+		String[] cmd = new String[]{ "cp", "-pf", srcPath, destPath };
+		return command( cmd );
+	}
+
+	/**
+	 * ディレクトリをコピーする
+	 * @deprecated Windowsで使用した場合はコピー先ディレクトリが不適切な所有者になる（OS依存）
+	 * @param srcPath コピー元ディレクトリのパス
+	 * @param destPath コピー先ディレクトリのパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean copyDir(String srcPath, String destPath) {
+		String[] cmd = new String[]{ "cp", "-pfr", srcPath, destPath };
+		return command( cmd );
+	}
+	
+	/**
+	 * ファイルを削除する
+	 * @param filePath 削除するファイルのパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean removeFile(String filePath) {
+		String[] cmd = new String[]{ "rm", "-f", filePath };
+		return command( cmd );
+	}
+
+	/**
+	 * ディレクトリを削除する
+	 * @param dirPath 削除するディレクトリのパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean removeDir(String dirPath) {
+		String[] cmd = new String[]{ "rm", "-Rf", dirPath };
+		return command( cmd );
+	}
+
+	/**
+	 * 権限を変更する
+	 * @param permission 権限
+	 * @param path 権限変更対象のディレクトリもしくはフォルダパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean changeMode(String permission, String path) {
+		String[] cmd = new String[]{ "chmod", "-R", permission, path };
+		return command( cmd );
+	}
+	
+	/**
+	 * シェルを実行する
+	 * @param filePath 実行するシェルのパス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean executeShell(String filePath) {
+		String[] cmd = new String[]{ filePath };
+		return command( cmd );
+	}
+
+	/**
+	 * ファイルをダウンロードする
+	 * @param srcUrl ファイルソースのURL
+	 * @param savePath 格納先パス
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean downloadFile(String srcUrl, String savePath ) {
+		try {
+			URL url = new URL( srcUrl );
+			InputStream inpstrm = url.openStream();
+			OutputStream outstrm = new FileOutputStream(savePath);
+			byte buf[] = new byte[8192];
+			int len = 0;
+			while( ( len = inpstrm.read(buf) ) != -1 ) {
+				outstrm.write( buf, 0, len );
+			}
+			outstrm.flush();
+			outstrm.close();
+			inpstrm.close();
+		}
+		catch ( Exception ex ) {
+			Logger.global.severe( ex.toString() );
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * SQLファイルを実行する
+	 * @param host リモートホスト名
+	 * @param db 対象のDB名
+	 * @param file 実行するファイル名
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean execSqlFile(String host, String db, String file) {
+		String opHost = "";
+		if (host != null && !host.equals("")) {
+			opHost = " --host=" + host;
+		}
+		String main = "mysql" + opHost + " --user=bird --password=bird2006 " + db + " < \"" + file + "\"";
+		
+		String[] cmd = null;
+		if(OS_NAME.indexOf("Windows") != -1){
+			cmd = new String[]{ "cmd", "/c", main };
+		}
+		else {
+			cmd = new String[]{ "sh", "-c", main };
+		}
+		
+		return command( cmd );
+	}
+	
+	/**
+	 * SQLダンプを実行する
+	 * @param host リモートホスト名
+	 * @param db 対象のDB名
+	 * @param tables 対象のテーブル
+	 * @param file 出力するファイル名
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean execSqlDump(String host, String db, String[] tables, String file) {
+		String opHost = "";
+		if (host != null && !host.equals("")) {
+			opHost = " --host=" + host;
+		}
+		StringBuilder strTable = new StringBuilder();
+		if (tables != null) {
+			for (String table : tables) {
+				strTable.append(" " + table);
+			}
+		}
+		String main = "mysqldump" + opHost + " --user=bird --password=bird2006 " + db + strTable.toString() + " > \"" + file + "\"";
+		
+		String[] cmd = null;
+		if(OS_NAME.indexOf("Windows") != -1){
+			cmd = new String[]{ "cmd", "/c", main };
+		}
+		else {
+			cmd = new String[]{ "sh", "-c", main };
+		}
+		
+		return command( cmd );
+	}
+	
+	/**
+	 * コマンドを実行する
+	 * @param cmd 実行コマンド
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean command(String[] cmd) {
+		// コマンド実行
+		CmdResult res = new CmdExecute().exec(cmd);
+			// エラー出力があればログに書き出す
+		String err = res.getStderr();
+		if ( !err.equals("") ) {
+			String cmdline = "";
+			for ( int i = 0; i < cmd.length; i++ ) {
+				cmdline += cmd[i] + " ";
+			}
+			String crlf = System.getProperty("line.separator");
+			String errMsg = crlf + "[Command] " + cmdline + crlf + "[Error Discription]" + crlf + err;
+			Logger.global.warning( errMsg );
+		}
+			// 終了コード取得
+		if ( res.getStatus() != 0 ) {
+			return false;
+		}
+		return true;
+	}
+}

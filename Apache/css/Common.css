@@ -1,0 +1,418 @@
+@charset "UTF-8";
+/*******************************************************************************
+ *
+ * Copyright (C) 2008 JST-BIRD MassBank
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *******************************************************************************
+ *
+ * MassBank共通スタイルシート
+ *
+ * ver 1.0.13 2009.05.29
+ *
+ ******************************************************************************/
+
+/**
+ * MassBank内で使用するフォント
+ */
+.msbkFont {
+	font-family: Arial, 'MS UI Gothic', sans-serif, monospace;
+}
+
+/**
+ * 背景イメージ
+ */
+.backgroundImg {
+/*
+	background-image: url(../image/background.jpg);
+*/
+}
+
+/**
+ * Copyrighit用
+ */
+.footer {
+	font-size :10pt;
+}
+
+/**
+ * リンク用textクラス
+ */
+a.text:link {
+	color: #39405A;
+	text-decoration: none;
+}
+a.text:visited {
+	color: #313131;
+	text-decoration: none;
+}
+a.text:hover {
+	color: #003399;
+	text-decoration: none;
+}
+a.text:active {
+	color: #3366CC;
+	text-decoration: none;
+}
+
+/**
+ * リンク用text2クラス
+ */
+a.text2:link {
+	text-decoration: none;
+
+}
+a.text2:visited {
+	text-decoration: none;
+}
+a.text2:hover {
+	text-decoration: none;
+	color: #003399;
+}
+a.text2:active {
+	text-decoration: none;
+}
+
+/**
+ * フォント10px
+ */
+.font10px {
+	font-size: 10px;
+	line-height: 160%;
+	color: #39405A;
+	text-decoration: none;
+}
+
+/**
+ * フォント10px2
+ */
+.font10px2 {
+	font-size: 10px;
+	line-height: 160%;
+	text-decoration: none;
+}
+
+/**
+ * フォント12px
+ */
+.font12px {
+	font-size: 12px;
+	line-height: 160%;
+	color: #39405A;
+	text-decoration: none;
+}
+
+/**
+ * フォント12px2
+ */
+.font12px2 {
+	margin-left: 20px;
+	font-size: 12px;
+	line-height: 160%;
+	color: #39405A;
+	text-decoration: none;
+}
+
+/**
+ * フォント14px
+ */
+.font14px {
+	font-size: 14px;
+	line-height: 160%;
+	color: #39405A;
+	text-decoration: none;
+}
+
+/**
+ * フォント16px
+ */
+.font16px {
+	font-size: 16px;
+	line-height: 160%;
+	color: #39405A;
+	text-decoration: none;
+}
+
+/**
+ * カーソルリンク
+ */
+.cursorLink {
+	cursor: pointer;
+}
+
+/**
+ * カーソルテキスト
+ */
+.cursorText {
+	cursor: text;
+}
+
+/**
+ * カーソル処理中
+ */
+.cursorWait {
+	cursor: wait;
+}
+
+/**
+ * カーソルデフォルト
+ */
+.cursorDefault {
+	cursor: default;
+}
+
+/**
+ * カーソルヘルプ
+ */
+.cursorHelp {
+	cursor: help;
+}
+
+/**
+ * formタグの必須スタイル
+ */
+.formStyle {
+	margin: 0;
+}
+
+/**
+ * divタグ用9pxスペーサー
+ */
+.divSpacer9px {
+	height: 9px;
+	overflow: hidden;
+}
+
+/**
+ * トップページのツール名表示用フォント
+ */
+.fonttitle {
+	font-family: Arial;
+	font-size: 14px;
+	line-height: 160%;
+	color: #003399;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+/**
+ * トップページ用フォント 濃グレー
+ */
+.fontgray {
+	font-size: 12px;
+	line-height: 160%;
+	color: #313131;
+}
+
+/**
+ * トップページ公開データ一覧
+ * テーブル表示用フォント
+ */
+.dataList {
+	font-family: Arial;
+	font-size: 12px;
+	line-height: 140%;
+}
+
+/**
+ * トップページ公開データ一覧
+ * データ提供機関名表示用フォント
+ */
+.contributor {
+	text-decoration: none;
+	color: blue;
+}
+
+/**
+ * トップページ用フォント1
+ */
+.mtxt1 {
+	font-size: 12px;
+	font-family: Arial;
+	font-weight: bold;
+	text-decoration: none;
+	color: navy;
+}
+
+/**
+ * トップページ用フォント2
+ */
+.mtxt2 {
+	font-size: 12px;
+	font-family: Arial;
+	font-weight: bold;
+	text-decoration: none;
+	color: dimgray;
+}
+
+/**
+ * ページ上部の薄い影
+ */
+.pageShadow {
+	background-image: url(../image/index_bg_002.gif);
+	background-repeat: repeat-x;
+}
+
+/**
+ * Spectral Browserドキュメントで使用（ul）
+ */
+ul.doc {
+	margin: 10px 0px 13px 40px;
+	padding: 0;
+}
+
+/**
+ * Spectral Browserドキュメントで使用（li）
+ */
+li.doc {
+	margin: 0;
+}
+
+/**
+ * メニューリンク用フォント
+ */
+.menuFont {
+	font-size:13px;
+	letter-spacing:-1px
+}
+
+/**
+ * Batch Search Service、Browse Pageで使用
+ */
+.boxA {
+	width: 600px;
+	border: 1px DimGray solid;
+	padding: 8px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background-color: WhiteSmoke;
+}
+
+/**
+ * Batch Search Service マニュアルにて使用
+ */
+.box1 {
+	font-size:13px;
+	line-height: 110%;
+	border: 1px DimGray solid;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 35px;
+	margin-right: 50px;
+	padding: 8px;
+	background-color: WhiteSmoke;
+}
+
+/**
+ * 上付き文字用スタイル
+ */
+.strSuper {
+	font-size:9px;
+	vertical-align: super;
+}
+
+/**
+ * 下付き文字用スタイル
+ */
+.strSub {
+	font-size:9px;
+	vertical-align: sub;
+}
+
+
+/**
+ * 注釈文字用スタイル
+ */
+.strAnnotation {
+	font-size: 10px;
+	color: #313131;
+}
+
+
+/**
+ * 検索ページフォーム
+ */
+table.form-box {
+	background-color:WhiteSmoke;
+	border:1px silver solid;
+}
+
+/**
+ * Instrument Typeパラメータ表示テーブル
+ */
+table.inst {
+	border-collapse: collapse;
+}
+
+/**
+ * Instrument Typeパラメータ表示スクロールバー
+ */
+div.inst-scroll {
+	height:250px;
+	overflow-y: scroll;
+	border-left: 1px silver solid;
+	border-right: 1px silver solid;
+	border-bottom: 1px silver solid;
+}
+
+/**
+ * Instrument Typeパラメータ表示の見出し
+ */
+td.inst-title {
+	background-color: dimgray;
+	color: white;
+	padding-left: 7px;
+}
+
+/**
+ * Instrument Typeパラメータ表示の項目
+ */
+td.inst-item {
+	padding: 5px;
+	border-left: 1px silver solid;
+	border-right: 1px silver solid;
+	border-bottom: 1px silver solid;
+}
+
+/**
+ * 検索ボタン
+ */
+input.search {
+	background:PaleGoldenrod;
+}
+
+/**
+ * Peak Search Advanced
+ */
+.bgProduct {
+	background-color:MidnightBlue;
+	color:white;
+	letter-spacing:-1px;
+	padding-left:7px;
+	padding-right:7px;
+}
+.bgNeutral {
+	background-color:DarkGreen;
+	color:white;
+	letter-spacing:-1px;
+	padding-left:7px;
+	padding-right:7px;
+}
+
+.logic {
+	font-size:9pt;
+	letter-spacing:-1px;
+}

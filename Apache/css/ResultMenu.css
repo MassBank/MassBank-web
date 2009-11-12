@@ -1,0 +1,67 @@
+@charset "UTF-8";
+/*******************************************************************************
+ *
+ * Copyright (C) 2008 JST-BIRD MassBank
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *******************************************************************************
+ *
+ * オリジナル右クリックメニュー用スタイルシート
+ *
+ * ver 1.0.1 2008.12.05
+ *
+ ******************************************************************************/
+
+/**
+ * メニューメインスタイル
+ */
+#menu {
+	position:absolute;
+	background-color: #ffcccc;
+	border: 1px solid #ACA899;
+	padding: 3pt;
+	visibility: hidden;
+}
+
+/**
+ * メニュー項目スタイル（通常用）
+ */
+.menuItem1 {
+	padding-left: 8pt;
+	font-family: Arial;
+	font-size: 12px;
+	color: #000000;
+}
+
+/**
+ * メニュー項目スタイル（使用不可時）
+ */
+.menuItem2 {
+	padding-left: 8pt;
+	font-family: Arial;
+	font-size: 12px;
+	color: #aca899;
+}
+
+/**
+ * メニューセパレータスタイル
+ */
+hr { 
+	border: 0 none; 
+	height: 1px; 
+	color: #ACA899;
+	background-color: #ACA899;
+}
