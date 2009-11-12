@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.7 2009.10.23
+ * ver 1.0.9 2009.11.10
  *
  ******************************************************************************/
 
@@ -87,9 +87,16 @@
 
 /*更新情報============================================== */
 #news p
-{ line-height: 2em; padding-left:8px; }
+{ line-height: 2em; padding-left:30px; }
 
 #news .anniversary { color: #f60 }
+
+#news .h_over { background-color:#e5edff; cursor:pointer; }
+#news .d_exp1 { background:url(../img/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+#news .d_exp2 { background:url(../img/exp2_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+
+#news .show { display:; }
+#news .hid { display:none; }
 
 /*データベースサービス============================================== */
 #database p, #spectrum p, #quick p, #peak p, #substructure p, #record p, #spectral p, #batch p, #browse p, #manual p
@@ -139,6 +146,9 @@
 { padding: 0 0 30px; padding-left:8px; }
 
 #manual .h_link { outline:0px none black; }
+#manual .h_over { background-color:#e5edff; cursor:pointer; }
+#manual .d_exp1 { background:url(../img/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+#manual .d_exp2 { background:url(../img/exp2_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
 
 #manual .p_text { padding-bottom:20px; padding-left:50px; }
 #manual .p_link { padding: 5px 0 0px; padding-left:30px; line-height: 34px; position:relative; margin-right:7px; z-index:0; }
@@ -154,9 +164,9 @@
 { padding: 0 0 30px; padding-left:8px; }
 
 #about .p_text { padding-bottom:5px; }
-#about .ul_list { padding-left:28px; padding-bottom:0px; line-height: 24px; }
 #about .p_details { padding: 0 0 30px; padding-left:42px; font-size:12px; }
-#about .p_member { padding-left:32px; }
+#about .ul_list { padding-left:28px; padding-bottom:0px; line-height: 24px; }
+#about .li_list { padding-bottom:15px; }
 
 /*お問い合わせ============================================== */
 #contact p

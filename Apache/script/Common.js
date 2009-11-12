@@ -36,7 +36,7 @@ var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		// NS6
  * @param className1 初期値のクラス名
  * @param className2 切り替えクラス名
  */
-function change(elementId, className1, className2) {
+function switchClass(elementId, className1, className2) {
 	
 	if ( !op && !ie && !ns4 && !ns6 ) {
 		alert("Your browser is not supported.");

@@ -419,6 +419,8 @@ function allTreeCtrl() {
 	if ( document.resultForm.treeCtrl.value.indexOf("Close") == -1 ) {
 		image1 = "plus.png";
 		image2 = "../image/minus.png";
+		imageTree1 = "treeline0.gif";
+		imageTree2 = "../image/treeline1.gif";
 		type = "";
 		document.resultForm.treeCtrl.value = "Close All Tree";
 		isOpen = true;
@@ -426,20 +428,26 @@ function allTreeCtrl() {
 	else {
 		image1 = "minus.png";
 		image2 = "../image/plus.png";
+		imageTree1 = "treeline1.gif";
+		imageTree2 = "../image/treeline0.gif";
 		type = "none";
 		document.resultForm.treeCtrl.value = "Open All Tree";
 		isOpen = false;
 	}
 	
-	// アイコン変更
 	parentId = 0;
 	while (true) {
 		img = document.images[parentId++];
 		if ( img == null ) {
 			break;
-		} 
+		}
+		// +-アイコン変更
 		if ( img.src.indexOf(image1) >= 0 ) {
 			img.src = image2;
+		}
+		// ツリー罫線の表示切替
+		else if ( img.src.indexOf(imageTree1) >= 0 ) {
+			img.src = imageTree2;
 		}
 	}
 	
@@ -520,6 +528,19 @@ function treeMenu(parentId) {
 	else {
 		element.style.display = "none";
 	}
+
+	// ツリー罫線の表示切替
+	image0 = "treeline0.gif";
+	image1 = "treeline1.gif";
+	imgName = parentId + "treeimg";
+	imgBefore = document.images[imgName];
+	if ( imgBefore.src.indexOf(image0) >= 0 ) {
+		imgAfter = image1;
+	}
+	else {
+		imgAfter = image0;
+	}
+	imgBefore.src = "../image/" + imgAfter;
 }
 
 /**

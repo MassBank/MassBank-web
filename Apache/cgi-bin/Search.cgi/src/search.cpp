@@ -35,7 +35,7 @@
 using namespace std;
 
 //¢£ ¥Ð¡¼¥¸¥ç¥ó¾ðÊó ¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-const static string VERSION_INFO = "5.0.5 2008.12.05";
+const static string VERSION_INFO = "5.0.8 2009.10.30";
 //¢£ ¥Ð¡¼¥¸¥ç¥ó¾ðÊó ¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 
 MYSQL *hMySql;
@@ -52,7 +52,7 @@ double m_fSum;
 int m_iCnt;
 bool isQuick = false;
 bool isInteg = false;
-
+bool isAPI = false;
 
 /********************************************************************
  * ¥á¥¤¥ó
@@ -100,8 +100,9 @@ void outResult()
 	char sql[1000];
 	for ( unsigned int i = 0; i < vecScore.size(); i++ ) {
 		RES_SCORE resScore = vecScore.at(i);
-		if ( isQuick ) {
-			sprintf( sql, "select NAME, ION, FORMULA from SPECTRUM S, RECORD R"
+
+		if ( isQuick || isAPI ) {
+			sprintf( sql, "select NAME, ION, FORMULA, EXACT_MASS from SPECTRUM S, RECORD R"
 						  " where S.ID = R.ID and S.ID='%s'", resScore.id.c_str() );
 		}
 		else if ( isInteg ) {
@@ -128,9 +129,13 @@ void outResult()
 
 			printf( "%s\t%s\t%.12f\t%s",
 				strId.c_str(), strName.c_str(), resScore.score, strIon.c_str() );
-			if ( isQuick ) {
+			if ( isQuick || isAPI ) {
 				string formula = fields[2];
 				printf( "\t%s", formula.c_str() );
+			}
+			if ( isAPI ) {
+				string emass = fields[3];
+				printf( "\t%s", emass.c_str() );
 			}
 			printf( "\n" );
 		}
@@ -258,16 +263,34 @@ bool searchPeak()
 	double fMin;
 	double fMax;
 	char sqlw[1000];
+	char sqlwp[256];
+
+	//----------------------------------------------------------------
+	// precursor m/z¤Ç¤Î¹Ê¤ê¹þ¤ß¤Ë»ÈÍÑ¤¹¤ë¸¡º÷¾ò·ï¤òÍÑ°Õ¤·¤Æ¤ª¤¯
+	//----------------------------------------------------------------
+	bool isPre = false;
+	if ( queryParam.precursor > 0 ) {
+		isPre = true;
+		int pre1 = queryParam.precursor - 1;
+		int pre2 = queryParam.precursor + 1;
+		sprintf( sqlwp, " and (S.PRECURSOR_MZ is not null and S.PRECURSOR_MZ between %d and %d)", pre1, pre2 );
+	}
 
 	string sql;
-	// ¸¡º÷ÂÐ¾ÝALL¤Î¾ì¹ç
+	//¡ü ¸¡º÷ÂÐ¾ÝALL¤Î¾ì¹ç
 	bool isFilter = false;
 	vector<string> vecTargetId;
 	if ( queryParam.instType.empty() || queryParam.instType.find("ALL") != string::npos ) {
 		if ( queryParam.ion != "0" ) {
 			sql = "select R.ID from RECORD R, SPECTRUM S where R.ID = S.ID and ION = ";
 			sql += queryParam.ion;
+			// precursor m/z¹Ê¤ê¹þ¤ß¾ò·ï¥»¥Ã¥È
+			if ( isPre ) {
+				sql += sqlwp;
+			}
 			sql += " order by ID";
+
+//			printf(sql.c_str());
 			long lNumRows = dbExecuteSql( sql.c_str() );
 
 			//** ¸¡º÷ÂÐ¾Ý¤ÎID¤¬¤Ê¤¤¤Î¤Ç½ªÎ»
@@ -277,7 +300,9 @@ bool searchPeak()
 
 			isFilter = true;
 
+			//--------------------------------------------------------
 			// ¸¡º÷ÂÐ¾Ý¤ÎID¤ò³ÊÇ¼
+			//--------------------------------------------------------
 		 	for ( long l = 0; l < lNumRows; l++ ) {
 				MYSQL_ROW fields = mysql_fetch_row( resMySql );
 				vecTargetId.push_back(fields[0]);
@@ -286,7 +311,7 @@ bool searchPeak()
 			mysql_free_result( resMySql );
 		}
 	}
-	// ¸¡º÷ÂÐ¾ÝALL°Ê³°¤Î¾ì¹ç
+	//¡ü ¸¡º÷ÂÐ¾ÝALL°Ê³°¤Î¾ì¹ç
 	else {
 		//------------------------------------------------------------
 		// (1) ¸¡º÷ÂÐ¾Ý¤ÎINSTRUMENT_TYPE¤¬Â¸ºß¤¹¤ë¤«¥Á¥§¥Ã¥¯
@@ -301,7 +326,7 @@ bool searchPeak()
 			}
 		}
 		sql = "select INSTRUMENT_NO from INSTRUMENT where INSTRUMENT_TYPE in(";
-		sql +=  strInstType.erase( strInstType.length() -1, 1 );
+		sql += strInstType.erase( strInstType.length() -1, 1 );
 		sql += ")";
 		long lNumRows = dbExecuteSql( sql.c_str() );
 
@@ -325,7 +350,7 @@ bool searchPeak()
 		mysql_free_result( resMySql );
 
 		if ( queryParam.ion == "0" ) {
-			sql = "select ID from RECORD where INSTRUMENT_NO in(";
+			sql = "select R.ID from RECORD R, SPECTRUM S where R.ID = S.ID and INSTRUMENT_NO in(";
 			sql += instNo;
 			sql += ")";
 		}
@@ -336,7 +361,13 @@ bool searchPeak()
 			sql += instNo;
 			sql += ")";
 		}
+		// precursor m/z¹Ê¤ê¹þ¤ß¾ò·ï¥»¥Ã¥È
+		if ( isPre ) {
+			sql += sqlwp;
+		}
+
 		sql += " order by ID";
+//		printf(sql.c_str());
 		lNumRows = dbExecuteSql( sql.c_str() );
 
 		//** ¸¡º÷ÂÐ¾Ý¤ÎID¤¬¤Ê¤¤¤Î¤Ç½ªÎ»
@@ -356,6 +387,10 @@ bool searchPeak()
 		mysql_free_result( resMySql );
 	}
 
+
+	//---------------------------------------------------
+	// ¥Ô¡¼¥¯ÃÍ¼èÆÀ
+	//---------------------------------------------------
 	for ( unsigned int i = 0; i < queryMz.size(); i++ ) {
 		string strMz = queryMz.at(i);
 		double fMz = atof( strMz.c_str() );
@@ -367,8 +402,8 @@ bool searchPeak()
 			fMax = fMz + fTolerance;
 		}
 		else {
-			fMin = fMz * (1 - fTolerance / 1000);
-			fMax = fMz * (1 + fTolerance / 1000);
+			fMin = fMz * (1 - fTolerance / 1000000);
+			fMax = fMz * (1 + fTolerance / 1000000);
 		}
 		fMin -= 0.00001;
 		fMax += 0.00001;
@@ -565,6 +600,7 @@ void setQueryParam()
 	queryParam.weight    = PARAM_WEIGHT_SQUARE;
 	queryParam.norm      = PARAM_NORM_SQRT;
 	queryParam.tolUnit   = "unit";
+	queryParam.precursor = 0;
 
 	if ( !mapReqParam["START"].empty() ) {
 		val = atoi( mapReqParam["START"].c_str() );
@@ -621,6 +657,10 @@ void setQueryParam()
 		}
 	}
 
+	if ( !mapReqParam["API"].empty() ) {
+		isAPI = true;
+	}
+
 	if ( !mapReqParam["INST"].empty() ) {
 		queryParam.instType = mapReqParam["INST"];
 	}
@@ -630,6 +670,11 @@ void setQueryParam()
 	}
 	else {
 		queryParam.ion = mapReqParam["ION"];
+	}
+
+	if ( !mapReqParam["PRE"].empty() ) {
+		val = atoi( mapReqParam["PRE"].c_str() );
+		if ( val > 0 ) 	queryParam.precursor = val;
 	}
 }
 

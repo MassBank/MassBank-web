@@ -43,6 +43,7 @@ struct QUERY_PARAM {
 	string	val;
 	string	instType;
 	string	ion;
+	int precursor;
 };
 
 struct HIT_PEAK {

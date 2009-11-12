@@ -21,7 +21,7 @@
  *
  * リザルトページ用スタイルシート
  *
- * ver 1.0.2 2008.12.05
+ * ver 1.0.3 2009.10.28
  *
  ******************************************************************************/
 
@@ -70,8 +70,10 @@ th.listLayout3 {
 table.pTreeLayout {
 	border-left:1px DimGray solid;
 	border-right:1px DimGray solid;
+	border-top:1px silver solid;
 	font-size: 11pt;
 }
+
 table.cTreeLayout {
 	border-left:1px DimGray solid;
 	border-right:1px DimGray solid;
