@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.9 2009.11.10
+ * ver 1.0.10 2009.11.16
  *
  ******************************************************************************/
 
@@ -140,6 +140,7 @@
 #download .p_link { padding: 0px 0 20px; padding-left:60px; line-height: 34px; position:relative; margin-right:7px; z-index:0; }
 
 #download .latest { color: #f60; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
+#download .old { color: #999; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
 
 /*マニュアル============================================== */
 #manual p
