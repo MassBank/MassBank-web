@@ -22,7 +22,7 @@
  *
  * 構造式登録
  *
- * ver 1.1.4 2009.09.10
+ * ver 1.1.5 2009.11.18
  *
  ******************************************************************************/
 %>
@@ -218,16 +218,16 @@
 					isWarn = true;
 				}
 				else if (line.indexOf("\t") != -1 && line.split("\t").length >= 2) {
-					String compound = line.split("\t")[0];
-					String masterName = line.split("\t")[1];
+					String compound = line.split("\t")[0].trim();
+					String masterName = line.split("\t")[1].trim();
 					
 					// 化合物名チェック
-					if ( compound.trim().length() == 0 ) {
+					if ( compound.length() == 0 ) {
 						op.println( msgWarn( LIST_FILE_NAME + " line " + r.getLineNumber() + " : not compound name.") );
 						isWarn = true;
 					}
 					// ファイル名チェック
-					else if ( masterName.trim().length() == 0 ) {
+					else if ( masterName.length() == 0 ) {
 						op.println( msgWarn( LIST_FILE_NAME + " line " + r.getLineNumber() + " : no file name.") );
 						isWarn = true;
 					}
@@ -323,7 +323,7 @@
 	private boolean regist(DatabaseAccess db, JspWriter op, 
 	                       TreeMap<String, String> list, String dataPath, String regPath, String[] registInfo, String cgiUrl, String cgiParam) throws IOException {
 		
-		boolean isNotError = true;
+		boolean isSuccess = true;
 		DecimalFormat idFormat = new DecimalFormat("'" + registInfo[0] + "'000000");
 		NumberFormat nf = NumberFormat.getNumberInstance();
 		String sql = "";
@@ -367,16 +367,15 @@
 			try { db.executeUpdate("COMMIT;"); } catch (SQLException ee) {}
 			Logger.global.severe( "SQL : " + sql );
 			e.printStackTrace();
-			op.println( msgErr( "database access error.") );
-			isNotError = false;
+			isSuccess = false;
 		}
 		catch (IOException e) {
 			Logger.global.severe( "\"" + masterFileName.getPath() + "\" to \"" + registFileName.getPath() + "\" copy failed." );
-			op.println( msgErr( "server error.") );
-			isNotError = false;
+			e.printStackTrace();
+			isSuccess = false;
 		}
 		
-		if ( isNotError ) {
+		if ( isSuccess ) {
 			// 正常登録処理
 			
 			// StructureSearch 登録処理
@@ -420,12 +419,11 @@
 			catch (SQLException e) {
 				Logger.global.severe( "SQL : " + sql );
 				e.printStackTrace();
-				op.println( msgErr( "database access error.") );
-				isNotError = false;
+				op.println( msgErr( "rollback(sql) failed." ) );
 			}
 		}
 		
-		return isNotError;
+		return isSuccess;
 	}
 	
 	/**
@@ -523,6 +521,7 @@ function selDb() {
 	boolean upResult = false;
 	DatabaseAccess db = null;
 	StringBuilder dbArgs = new StringBuilder();
+	boolean isTmpRemove = true;
 	
 	try {
 		//----------------------------------------------------
@@ -727,7 +726,7 @@ function selDb() {
 		if ( (new File( dataPath )).isDirectory() ) {
 			// list.tsvファイル存在チェック
 			if ( !(new File( listTsvPath )).isFile() ) {
-				out.println( msgErr( "[" + LIST_FILE_NAME + "]&nbsp;&nbsp; not exists in upload file.") );
+				out.println( msgErr( "[" + LIST_FILE_NAME + "]&nbsp;&nbsp; not included in the up-loading file.") );
 				isResult = false;
 			}
 			else if ( (new File( listTsvPath )).length() == 0 ) {
@@ -807,7 +806,17 @@ function selDb() {
 		//---------------------------------------------
 		isResult = regist(db, out, list, dataPath, structurePath, registInfo, cgiUrl, cgiParam);
 		if ( !isResult ) {
-			return;
+			Logger.global.severe( "registration failed." + NEW_LINE +
+			                      "    registration file path : " + tmpPath );
+			out.println( msgErr( "registration failed. refer to&nbsp;&nbsp;[" + tmpPath + "]." ) );
+			
+			if ( dataPath.indexOf(MOLDATA_DIR_NAME) != -1 ) {
+				out.println( msgInfo( "0 molfile registered.") );
+			}
+			else {
+				out.println( msgInfo( "0 gif registered.") );
+			}
+			isTmpRemove = false;
 		}
 	}
 	finally {
@@ -816,7 +825,7 @@ function selDb() {
 			db.close();
 		}
 		File tmpDir = new File(tmpPath);
-		if (tmpDir.exists()) {
+		if ( isTmpRemove && tmpDir.exists() ) {
 			FileUtil.removeDir( tmpDir.getPath() );
 		}
 		if ( FileUpload.isMultipartContent(request) ) {
