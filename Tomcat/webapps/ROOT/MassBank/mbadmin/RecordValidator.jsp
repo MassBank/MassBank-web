@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.4 2009.09.10
+ * ver 1.0.5 2009.11.18
  *
  ******************************************************************************/
 %>
@@ -144,7 +144,7 @@
 		final String[] requiredList = {
 		    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "COPYRIGHT: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
 		    "CH$EXACT_MASS: ", "CH$SMILES: ", "CH$IUPAC: ", "AC$INSTRUMENT: ", "AC$INSTRUMENT_TYPE: ",
-		    "AC$ANALYTICAL_CONDITION: MS_TYPE ", "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: m/z int. rel.int."
+		    "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: m/z int. rel.int."
 		};
 		for (int i=0; i<dataList.length; i++) {
 			String name = dataList[i];

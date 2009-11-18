@@ -20,7 +20,7 @@
  *
  * DBìoò^ópÇÃSQLÇê∂ê¨Ç∑ÇÈÉNÉâÉX
  *
- * ver 1.0.11 2009.06.30
+ * ver 1.0.12 2009.11.18
  *
  ******************************************************************************/
 package massbank.admin;
@@ -123,8 +123,7 @@ public class SqlFileGenerator {
 					  || name.equals("DATE")
 					  || name.equals("MS$FOCUSED_ION")
 					  || name.equals("AC$INSTRUMENT")
-					  || name.equals("AC$INSTRUMENT_TYPE")
-					  || name.equals("AC$ANALYTICAL_CONDITION") ) {
+					  || name.equals("AC$INSTRUMENT_TYPE") ) {
 					this.setRecord();
 				}
 				//***********************************************
@@ -245,58 +244,41 @@ public class SqlFileGenerator {
 		}
 		else if ( name.equals("AC$INSTRUMENT_TYPE") ) {
 			this.acInstType = value.trim();
-		}
-		else if ( name.equals("AC$ANALYTICAL_CONDITION") ) {
-			String[] item = value.split(" ");
-			if ( item[0].equals("MS_TYPE") ) {
-				boolean isFound = false;
-				int i = 0;
-				for ( i = 0; i < this.instNo.length; i++ ) {
-					String find = "(MS_TYPE:";
-					int pos = this.instName[i].indexOf(find);
-					if ( pos >= 0 ) {
-						String inst = this.instName[i].substring( 0, pos ).trim();
-						String msType = this.instName[i].substring( pos + find.length() );
-						msType = msType.replace( ")", "" ).trim();
-						if ( this.acInst.equals(inst) && item[1].equals(msType) ) {
-							isFound = true;
-							break;
-						}
-					}
-					else {
-						if (  this.acInstType.equals(this.instType[i]) && this.acInst.equals(this.instName[i]) ) {
-							isFound = true;
-							break;
-						}
-					}
+			boolean isFound = false;
+			int i = 0;
+			for ( i = 0; i < this.instNo.length; i++ ) {
+				if (  this.acInstType.equals(this.instType[i]) && this.acInst.equals(this.instName[i]) ) {
+					isFound = true;
+					break;
 				}
-				if ( isFound ) {
-					valReco += ", " + this.instNo[i];
+			}
+			if ( isFound ) {
+				// DBÇ…ìoò^çœÇ›INSTRUMENTÇÃèÍçá
+				valReco += ", " + this.instNo[i];
+			}
+			else {
+				// DBÇ…ñ¢ìoò^INSTRUMENTÇÃèÍçá
+				int instNo = 1;
+				String keyStr = this.acInstType + "\t" + this.acInst;
+				if ( this.instNew.containsKey(keyStr) ) {
+					// ä˘Ç…êVãKìoò^èàóùÇçsÇ¡ÇƒÇ¢ÇÈINSTRUMENTÇÃèÍçá
+					instNo = this.instNew.get(keyStr);
 				}
 				else {
-					// DBÇ…ñ¢ìoò^INSTRUMENTÇÃèÍçá
-					int instNo = 1;
-					String keyStr = this.acInstType + "\t" + this.acInst;
-					if ( this.instNew.containsKey(keyStr) ) {
-						// êVãKìoò^çœÇ›INSTRUMENTÉäÉXÉgÇ…ë∂ç›Ç∑ÇÈèÍçá
-						instNo = this.instNew.get(keyStr);
-					}
-					else {
-						// êVãKìoò^çœÇ›INSTRUMENTÉäÉXÉgÇ…ë∂ç›ÇµÇ»Ç¢èÍçá
-						for (int tmpNo=instNo; tmpNo<Integer.MAX_VALUE; tmpNo++) {
-							if (!usedNoList.contains(String.valueOf(tmpNo))) {
-								usedNoList.add(String.valueOf(tmpNo));
-								instNo = tmpNo;
-								break;
-							}
+					// Ç‹ÇæêVãKìoò^èàóùÇçsÇ¡ÇƒÇ¢Ç»Ç¢INSTRUMENTÇÃèÍçá
+					for (int tmpNo=instNo; tmpNo<Integer.MAX_VALUE; tmpNo++) {
+						if (!usedNoList.contains(String.valueOf(tmpNo))) {
+							usedNoList.add(String.valueOf(tmpNo));
+							instNo = tmpNo;
+							break;
 						}
-						this.instNew.put(keyStr, instNo);
-						valInst = "'" + instNo + "', '" + this.acInstType + "', '" + this.acInst + "'";
 					}
-					valReco += ", " + String.valueOf(instNo);
+					this.instNew.put(keyStr, instNo);
+					valInst = "'" + instNo + "', '" + this.acInstType + "', '" + this.acInst + "'";
 				}
-				nameReco += ", INSTRUMENT_NO";
+				valReco += ", " + String.valueOf(instNo);
 			}
+			nameReco += ", INSTRUMENT_NO";
 		}
 	}
 
