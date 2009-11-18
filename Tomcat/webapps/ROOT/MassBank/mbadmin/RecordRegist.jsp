@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.3 2009.09.10
+ * ver 1.0.4 2009.11.18
  *
  ******************************************************************************/
 %>
@@ -147,7 +147,7 @@
 		final String[] requiredList = {
 		    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "COPYRIGHT: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
 		    "CH$EXACT_MASS: ", "CH$SMILES: ", "CH$IUPAC: ", "AC$INSTRUMENT: ", "AC$INSTRUMENT_TYPE: ",
-		    "AC$ANALYTICAL_CONDITION: MS_TYPE ", "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: m/z int. rel.int."
+		    "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: m/z int. rel.int."
 		};
 		for (int i=0; i<dataList.length; i++) {
 			String name = dataList[i];
@@ -653,6 +653,7 @@ function selDb() {
 	String upFileName = "";
 	boolean upResult = false;
 	DatabaseAccess db = null;
+	boolean isTmpRemove = true;
 	
 	try {
 		//----------------------------------------------------
@@ -838,7 +839,7 @@ function selDb() {
 			}
 		}
 		else {
-			out.println( msgErr( "[" + RECDATA_DIR_NAME + "]&nbsp;&nbsp; directory not exists in upload file.") );
+			out.println( msgErr( "[" + RECDATA_DIR_NAME + "]&nbsp;&nbsp; directory is not included in the up-loading file.") );
 			isResult = false;
 		}
 		if ( !isResult ) {
@@ -885,8 +886,11 @@ function selDb() {
 		ArrayList<File> copiedFiles = new ArrayList<File>();	// ロールバック（登録ファイル削除）用
 		isResult = registRecord(db, out, conf, dbHostName, tmpPath, regFileList, recPath, selDbName, baseUrl, copiedFiles);
 		if ( !isResult ) {
-			out.println( msgErr( "server error." ) );
+			Logger.global.severe( "registration failed." + NEW_LINE +
+			                      "    registration file path : " + tmpPath );
+			out.println( msgErr( "registration failed. refer to&nbsp;&nbsp;[" + tmpPath + "]." ) );
 			out.println( msgInfo( "0 record registered." ) );
+			isTmpRemove = false;
 			
 			//---------------------------------------------
 			// ロールバック処理
@@ -918,7 +922,7 @@ function selDb() {
 			db.close();
 		}
 		File tmpDir = new File(tmpPath);
-		if (tmpDir.exists()) {
+		if ( isTmpRemove && tmpDir.exists() ) {
 			FileUtil.removeDir( tmpDir.getPath() );
 		}
 		if ( FileUpload.isMultipartContent(request) ) {
