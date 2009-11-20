@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.1 2009.07.13
+ * ver 2.0.2 2009.11.20
  *
  ******************************************************************************/
 %>
@@ -126,8 +126,8 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <meta name="author" content="MassBank.jp" />
-<meta name="description" content="MassBankは日本質量分析学会の公式データベースです。MassBankはJST-BIRDプロジェクトとして開発しています。マススペクトルを測定した研究者がインターネットで公開する分散型データベースです。" />
-<meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, resolution, spectral, database, 慶応義塾大学, 先端生命, 研究所" />
+<meta name="description" content="MassBank は日本質量分析学会の公式データベースです。MassBank は JST-BIRD プロジェクトとして開発しています。マススペクトルを測定した研究者がインターネットで公開する分散型データベースです。" />
+<meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, resolution, spectral, database, 慶應義塾大学, 先端生命, 研究所" />
 <meta name="revisit_after" content="10 days">
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
 <title>MassBank | High Resolution Mass Spectral Database</title>
@@ -157,8 +157,8 @@
 </noscript>
 <!--ここまで▲JS OFF対応-->
 
-<!--ここから▼更新情報-->
-<h2 id="h_news" class="hide_text">更新情報</h2>
+<!--ここから▼ニュース-->
+<h2 id="h_news" class="hide_text">ニュース</h2>
 <p id="headline">
 <%
 	//-------------------------------------
@@ -169,8 +169,8 @@
 	}
 %>
 </p>
-<div id="home_news" class="text_right"><a href="./ja/news.html" class="bullet_link">過去の更新情報はこちら</a></div>
-<!--ここまで▲更新情報-->
+<div id="home_news" class="text_right"><a href="./ja/news.html" class="bullet_link">過去のニュースはこちら</a></div>
+<!--ここまで▲ニュース-->
 
 <!--ここから▼マススペクトルデータベース　ショートカットボタン一覧-->
 <h2 id="h_home_massdb" class="hide_text">マススペクトルデータベース</h2>
@@ -292,8 +292,8 @@ MassBank は <a href="http://www.mssj.jp/index-jp.html" target="_blank">日本�
 </noscript>
 <!--ed▲JS OFF support-->
 
-<!--st▼update infomation-->
-<h2 id="h_news_en" class="hide_text">Update Infomation</h2>
+<!--st▼news-->
+<h2 id="h_news_en" class="hide_text">News</h2>
 <p id="headline">
 <%
 	//-------------------------------------
@@ -304,8 +304,8 @@ MassBank は <a href="http://www.mssj.jp/index-jp.html" target="_blank">日本�
 	}
 %>
 </p>
-<div id="home_news" class="text_right"><a href="./en/news.html" class="bullet_link">All updated information</a></div>
-<!--ed▲update infomation-->
+<div id="home_news" class="text_right"><a href="./en/news.html" class="bullet_link">All news</a></div>
+<!--ed▲news-->
 
 <!--st▼mass spectrum database shortcut button list-->
 <h2 id="h_home_massdb_en" class="hide_text">Database Service</h2>
