@@ -20,7 +20,7 @@
  *
  * ファイル操作ユーティリティクラス
  *
- * ver 1.0.3 2009.07.03
+ * ver 1.0.4 2009.11.20
  *
  ******************************************************************************/
 package massbank.admin;
@@ -44,7 +44,7 @@ public class FileUtil {
 	 */
 	public static boolean unZip(String archivePath, String destPath) {
 		String[] cmd = new String[]{ "unzip", "-oq", archivePath, "-d", destPath };
-		return command( cmd );
+		return command( cmd, true );
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class FileUtil {
 			archivePath = archivePath.substring(pos + 1);
 		}
 		String cmd[] = new String[]{ "tar", "xfz", archivePath, "-C", destPath };
-		return command( cmd );
+		return command( cmd, false );
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class FileUtil {
 	 */
 	public static boolean copyFile(String srcPath, String destPath) {
 		String[] cmd = new String[]{ "cp", "-pf", srcPath, destPath };
-		return command( cmd );
+		return command( cmd, false );
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class FileUtil {
 	 */
 	public static boolean copyDir(String srcPath, String destPath) {
 		String[] cmd = new String[]{ "cp", "-pfr", srcPath, destPath };
-		return command( cmd );
+		return command( cmd, false );
 	}
 	
 	/**
@@ -94,7 +94,7 @@ public class FileUtil {
 	 */
 	public static boolean removeFile(String filePath) {
 		String[] cmd = new String[]{ "rm", "-f", filePath };
-		return command( cmd );
+		return command( cmd, false );
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class FileUtil {
 	 */
 	public static boolean removeDir(String dirPath) {
 		String[] cmd = new String[]{ "rm", "-Rf", dirPath };
-		return command( cmd );
+		return command( cmd, false );
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class FileUtil {
 	 */
 	public static boolean changeMode(String permission, String path) {
 		String[] cmd = new String[]{ "chmod", "-R", permission, path };
-		return command( cmd );
+		return command( cmd, false );
 	}
 	
 	/**
@@ -125,7 +125,7 @@ public class FileUtil {
 	 */
 	public static boolean executeShell(String filePath) {
 		String[] cmd = new String[]{ filePath };
-		return command( cmd );
+		return command( cmd, false );
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class FileUtil {
 			cmd = new String[]{ "sh", "-c", main };
 		}
 		
-		return command( cmd );
+		return command( cmd, true );
 	}
 	
 	/**
@@ -209,17 +209,18 @@ public class FileUtil {
 			cmd = new String[]{ "sh", "-c", main };
 		}
 		
-		return command( cmd );
+		return command( cmd, true );
 	}
 	
 	/**
 	 * コマンドを実行する
 	 * @param cmd 実行コマンド
+	 * @param isLongTimeOut タイムアウト値延長フラグ
 	 * @return true:成功 / false:失敗
 	 */
-	public static boolean command(String[] cmd) {
+	public static boolean command(String[] cmd, boolean isLongTimeOut) {
 		// コマンド実行
-		CmdResult res = new CmdExecute().exec(cmd);
+		CmdResult res = new CmdExecute(isLongTimeOut).exec(cmd);
 			// エラー出力があればログに書き出す
 		String err = res.getStderr();
 		if ( !err.equals("") ) {
