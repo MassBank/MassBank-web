@@ -20,7 +20,7 @@
  *
  * コマンド実行クラス
  *
- * ver 1.0.3 2009.06.15
+ * ver 1.0.4 2009.11.20
  *
  ******************************************************************************/
 package massbank.admin;
@@ -39,7 +39,24 @@ public final class CmdExecute {
 	private boolean isTimeout = false;
 	
 	// タイムアウト時間（ミリ秒単位）
-	private final long timout = 60000L;
+	private long timout = 60000L;
+
+	/**
+	 * デフォルトコンストラクタ
+	 */
+	public CmdExecute() {
+	}
+	
+	/**
+	 * コンストラクタ
+	 *
+	 * @param isLongTimeOut タイムアウト値延長フラグ
+	 */
+	public CmdExecute(boolean isLongTimeOut) {
+		if ( isLongTimeOut ) {
+			this.timout = 300000L;			
+		}
+	}
 	
 	/**
 	 * コマンドを実行
