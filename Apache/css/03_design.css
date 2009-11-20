@@ -38,7 +38,7 @@
 
 #headline { width:695px; }
 #headline .anniversary { color: #f60; font-weight: bold; }
-#headline .note { color: #DC143C; font-weight: bold; }
+#headline .note { color: #DC143C; }
 #home_news { width:695px; padding:0 0 10px; border-bottom: 1px #ccc solid; }
 
 #h_home_massdb
@@ -91,7 +91,7 @@
 { line-height: 2em; padding-left:30px; }
 
 #news .anniversary { color: #f60; font-weight: bold; }
-#news .note { color: #DC143C; font-weight: bold; }
+#news .note { color: #DC143C; }
 
 #news .h_over { background-color:#e5edff; cursor:pointer; }
 #news .d_exp1 { background:url(../img/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
