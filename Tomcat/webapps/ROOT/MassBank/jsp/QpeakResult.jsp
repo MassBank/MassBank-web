@@ -22,7 +22,7 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.12 2009.10.29
+ * ver 1.0.13 2009.11.27
  *
  ******************************************************************************/
 %>
@@ -241,18 +241,28 @@
 		errMsg = "Illegal value of cutoff threshold.";
 	}
 	else {
-		for ( int lp = 0; lp < peakList.size(); lp++ ) {
-			line = (String)peakList.get(lp);
-			int posP = line.indexOf(" ");
-			String peak = line.substring( 0, posP );
-			
-			// 相対強度へ変換
-			String inte = line.substring( posP+1, line.length() );
-			Double dblInte = Double.parseDouble(inte) / maxInte * 999 + 0.5;
-			int relInte = dblInte.intValue();
-			
-			paramPeak.append( peak + "," + String.valueOf(relInte) + "@");
-			paramMz.append( peak + "," );
+		try {
+			for ( int lp = 0; lp < peakList.size(); lp++ ) {
+				line = (String)peakList.get(lp);
+				int posP = line.indexOf(" ");
+				String peak = line.substring( 0, posP );
+				
+				// 相対強度へ変換
+				String inte = line.substring( posP+1, line.length() );
+				Double dblInte = Double.parseDouble(inte) / maxInte * 999 + 0.5;
+				int relInte = dblInte.intValue();
+				
+				paramPeak.append( peak + "," + String.valueOf(relInte) + "@");
+				paramMz.append( peak + "," );
+			}
+		}
+		catch (StringIndexOutOfBoundsException oe) {
+			isError = true;
+			errMsg = "Illegal data format.";
+		}
+		catch (NumberFormatException nfe) {
+			isError = true;
+			errMsg = "Illegal value of intensity.";
 		}
 	}
 %>
@@ -430,10 +440,16 @@
 					score = "0";
 					hit = hitScore;
 				}
-				// スコアを小数第4位で四捨五入
+				// スコアを小数第5位で四捨五入
 				if ( score.length() > 7 ) {
 					BigDecimal bdScore = new BigDecimal( score );
-					score = (bdScore.setScale(4, BigDecimal.ROUND_HALF_UP)).toString(); 
+					score = (bdScore.setScale(4, BigDecimal.ROUND_HALF_UP)).toString();
+					if ( Float.parseFloat(score) >= 1f ) {
+						score = "0.9999";
+					}
+					else if ( Float.parseFloat(score) < 0.0001f ) {
+						score = "0.0001";
+					}
 				}
 				
 				// レコードページへのリンクURLをセット
