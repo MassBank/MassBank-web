@@ -20,7 +20,7 @@
  *
  * MassBank共通スクリプト
  *
- * ver 1.0.6 2009.10.23
+ * ver 1.0.7 2009.12.08
  *
  ******************************************************************************/
 
@@ -29,6 +29,71 @@ var op  = (window.opera) ? 1 : 0;								// OP
 var ie  = (!op && document.all) ? 1 : 0;						// IE
 var ns4 = (document.layers) ? 1 : 0;							// NS4
 var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		// NS6
+
+/**
+ * Cookie情報設定
+ * @param isCookieConf massbank.confでのクッキー有効無効フラグ
+ * @param cookiename クッキー名
+ * @param keyInstGrp キー名
+ * @param keyInst キー名
+ * @param keyIon キー名
+ */
+function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyIon) {
+	// ブラウザのクッキー許可の場合
+	if (window.navigator.cookieEnabled) {
+		
+		// クッキーに設定する値
+		var cookieInstGrp = keyInstGrp + "=";
+		var cookieInst = keyInst + "=";
+		var cookieIon = keyIon + "=";
+		
+		var instGrpVals = document.getElementsByName("inst_grp");
+		for (var i=0; i<instGrpVals.length; i++) {
+			if (instGrpVals[i].checked) {
+				cookieInstGrp += instGrpVals[i].value + ",";
+			}
+		}
+		if (cookieInstGrp.substring(cookieInstGrp.length - 1) == ",") {
+			cookieInstGrp = cookieInstGrp.substring(0, cookieInstGrp.length - 1);
+		}
+		
+		var instVals = document.getElementsByName("inst");
+		for (var i=0; i<instVals.length; i++) {
+			if (instVals[i].checked) {
+				cookieInst += instVals[i].value + ",";
+			}
+		}
+		if (cookieInst.substring(cookieInst.length - 1) == ",") {
+			cookieInst = cookieInst.substring(0, cookieInst.length - 1);
+		}
+		
+		var ionVals = document.getElementsByName("ion");
+		for (var i=0; i<ionVals.length; i++) {
+			if (ionVals[i].checked) {
+				cookieIon += ionVals[i].value;
+				break;
+			}
+		}
+		var cookieVal = cookieInstGrp + ";" + cookieInst + ";" + cookieIon;
+		
+		// 有効期限計算
+		var date = new Date();
+		var time = date.getTime();
+		if ( isCookieConf) {
+			// 有効期限を30日に設定
+			time += (30 * 24 * 60 * 60 * 1000);
+		} else {
+			// 有効期限を過去に設定
+			time -= 30;
+		}
+		// 有効期限をグリニッジ標準時に変換
+		date.setTime(time);
+		var gmtTime = date.toGMTString();
+		
+		// Cookie設定
+		document.cookie = cookieName + "=" + escape(cookieVal) + ";expires=" + gmtTime;
+	}
+}
 
 /**
  * 要素のclass属性の動的切り替え
@@ -180,5 +245,23 @@ function doWait() {
 function expandMolView(url) {
 	win = window.open(url, "ExpandMolView",
 		'width=380,height=380,menubar=no,toolbar=no,scrollbars=no,status=no,left=0,top=0,screenX=0,screenY=0');
+	win.focus();
+}
+
+
+/**
+ * MassCalculator表示
+ */
+function openMassCalc() {
+	if ( ie ) {
+		leftX = window.screenLeft + document.body.clientWidth - 350;
+		topY =  window.screenTop + 20;
+	}
+	else {
+		leftX = window.screenX + document.body.clientWidth - 350;
+		topY =  window.screenTop + 20;
+	}
+	win = window.open("./MassCalc.html", "MassCalc",
+		'width=320,height=325,menubar=no,toolbar=no,scrollbars=no,status=no,left=' + leftX + ',top=' + topY + ',screenX=' + leftX + ',screenY=' + topY);
 	win.focus();
 }
