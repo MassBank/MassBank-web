@@ -22,7 +22,7 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.7 2009.10.30
+ * ver 1.0.8 2009.12.09
  *
  ******************************************************************************/
 %>
@@ -33,29 +33,26 @@
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
 <%@ page import="massbank.BatchJobManager" %>
 <%@ page import="massbank.BatchJobInfo" %>
+<%@ include file="./Common.jsp"%>
 <%!
 	/**
 	 * HTML出力
-	 * @param url
+	 * @param sampleUrl
+	 * @param sampleZipUrl
 	 * @param message
 	 * @param mailAddress
-	 * @param isJp
 	 * @return html
 	 */
-	private String outInputForm( String url, String message, String mailAddress, boolean isJp ) {
-		String sampleUrl = "http://www.massbank.jp/sample/sample1_ja.txt";
-		if ( !isJp ) {
-			sampleUrl = "http://www.massbank.jp/sample/sample1_en.txt";
-		}
+	private String outInputForm( String sampleUrl, String sampleZipUrl, String message, String mailAddress ) {
 		StringBuffer html = new StringBuffer();
-		html.append("<form action=\"" + url + "\" enctype=\"multipart/form-data\" method=\"POST\">\n");
+		html.append("<form action=\"./BatchSearch.html\" enctype=\"multipart/form-data\" method=\"POST\">\n");
 		html.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"15\" class=\"form-box\">\n");
 		html.append("<tr>\n");
 		html.append("<td><b>Query File</b></td>\n");
 		html.append("<td>\n");
 		html.append("<input type=\"file\" name=\"file\" size=\"32\">&nbsp;&nbsp;&nbsp;&nbsp;\n");
 		html.append("<img src=\"./img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"font12px text\" href=\"" + sampleUrl + "\" target=\"_blank\">sample file</a></b>&nbsp;&nbsp;");
-		html.append("<img src=\"./img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"font12px text\" href=\"http://www.massbank.jp/sample/sample.zip\" target=\"_blank\">sample archive</a></b>&nbsp;");
+		html.append("<img src=\"./img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"font12px text\" href=\"" + sampleZipUrl + "\" target=\"_blank\">sample archive</a></b>&nbsp;");
 		html.append("</td>\n");
 		html.append("</tr>\n");
 		html.append("<tr>\n");
@@ -80,21 +77,6 @@
 		return html.toString();
 	}
 %>
-<%
-	//-------------------------------------
-	// ブラウザ優先言語による言語判別
-	//-------------------------------------
-	String browserLang = (request.getHeader("accept-language") != null) ? request.getHeader("accept-language") : "";
-	boolean isJp = false;
-	if ( browserLang.startsWith("ja") || browserLang.equals("") ) {
-		isJp = true;
-	}
-	
-	String manualUrl = "http://www.massbank.jp/manuals/UserManual_ja.pdf";
-	if ( !isJp ) {
-		manualUrl = "http://www.massbank.jp/manuals/UserManual_en.pdf";
-	}
-%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -103,6 +85,7 @@
 <meta name="keywords" content="Batch, Similarity">
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="./css/Common.css">
+<script type="text/javascript" src="./script/Common.js"></script>
 <title>MassBank | Database | Batch Service</title>
 </head>
 <body class="msbkFont">
@@ -112,14 +95,14 @@
 				<h1>Batch Service</h1>
 			</td>
 			<td align="right" class="font12px">
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=manualUrl%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
 <iframe src="./menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
 <%
-	String url = "./BatchSearch.html";
 	String tempDir = System.getProperty("java.io.tmpdir");
 	
 	// パラメータ取得
@@ -134,7 +117,7 @@
 	DiskFileUpload dfu = new DiskFileUpload();
 	if ( !dfu.isMultipartContent(request) ) {
 		isInput = true;
-		out.print( outInputForm(url, "", "", isJp) );
+		out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, "", "") );
 	}
 	else {
 		dfu.setSizeMax(-1);
@@ -177,12 +160,12 @@
 			isError = true;
 		}
 		if ( isError ) {
-			out.print( outInputForm(url, message, mailAddress, isJp) );
+			out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, message, mailAddress) );
 		}
 		// ジョブ同時実行数は5まで
 		else if ( cnt > 5 ) {
 			message = "System is busy now. Please retry later.";
-			out.print( outInputForm(url, message, mailAddress, isJp) );
+			out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, message, mailAddress) );
 		}
 		else {
 			// セッションID, IPアドレス, 時刻
@@ -210,7 +193,7 @@
 				File f = new File( tempDir + "/" + tempName );
 				f.delete();
 				message = "Your job is already running.";
-				out.print( outInputForm(url, message, mailAddress, isJp) );
+				out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, message, mailAddress) );
 			}
 			else {
 				// ジョブエントリを追加する

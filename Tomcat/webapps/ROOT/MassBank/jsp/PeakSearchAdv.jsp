@@ -22,25 +22,11 @@
  *
  * Peak Search Advanced
  *
- * ver 1.0.1 2009.10.30
+ * ver 1.0.2 2009.12.09
  *
  ******************************************************************************/
 %>
-<%
-	//-------------------------------------
-	// ブラウザ優先言語による言語判別
-	//-------------------------------------
-	String browserLang = (request.getHeader("accept-language") != null) ? request.getHeader("accept-language") : "";
-	boolean isJp = false;
-	if ( browserLang.startsWith("ja") || browserLang.equals("") ) {
-		isJp = true;
-	}
-	
-	String manualUrl = "http://www.massbank.jp/manuals/UserManual_ja.pdf";
-	if ( !isJp ) {
-		manualUrl = "http://www.massbank.jp/manuals/UserManual_en.pdf";
-	}
-%>
+<%@ include file="./Common.jsp"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -51,6 +37,7 @@
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="css/Common.css">
 <link rel="stylesheet" type="text/css" href="css/Result.css">
+	<script type="text/javascript" src="script/Common.js"></script>
 <title>MassBank | Database | Peak Search Advanced</title>
 <script>
 <!--
@@ -111,7 +98,8 @@ function chageMode(reqType) {
 				<h1>Peak Search Advanced&nbsp;<span style="font-size:16px;color:Tomato;">BETA</span></h1>
 			</td>
 			<td align="right" class="font12px">
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=manualUrl%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>

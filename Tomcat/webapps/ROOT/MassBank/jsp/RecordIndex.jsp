@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.17 2009.07.13
+ * ver 1.0.18 2009.12.09
  *
  ******************************************************************************/
 %>
@@ -46,6 +46,7 @@
 <%@ page import="org.jfree.ui.RectangleInsets" %>
 <%@ page import="org.jfree.ui.VerticalAlignment" %>
 <%@ page import="org.jfree.util.SortOrder" %>
+<%@ include file="./Common.jsp"%>
 <%!
 	/** Windowsディレクトリ区切り文字 **/
 	private static final String WIN_DIR_DELIM = "\\";
@@ -156,10 +157,21 @@
 	<meta name="keywords" content="QqTOF, QqQ, GC-TOF, LC-TOF, LC-Q, FAB-MS, ESI, TOF, LC, GC">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
+	<script type="text/javascript" src="./script/Common.js"></script>
 	<title>MassBank | Database | Record Index</title>
 </head>
 <body class="msbkFont">
-	<h1>Record Index</h1>
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td>
+				<h1>Record Index</h1>
+			</td>
+			<td align="right" class="font12px">
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</td>
+		</tr>
+	</table>
 	<iframe src="./menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 	<hr size="1">
 

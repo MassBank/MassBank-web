@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.1 2009.10.29
+ * ver 1.0.2 2009.12.09
  *
  ******************************************************************************/
 %>
@@ -36,6 +36,7 @@
 <%@ page import="massbank.ResultList" %>
 <%@ page import="massbank.ResultRecord" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
 	private static final String tableWidth = "950";
@@ -386,7 +387,15 @@ function prevPeakSearchAdv() {
 <title><%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
-<h1><%=title%></h1>
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td><h1><%=title%></h1></td>
+			<td align="right" class="font12px">
+				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</td>
+		</tr>
+	</table>
 <iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
 <%
@@ -465,7 +474,7 @@ function prevPeakSearchAdv() {
 	}
 	out.println( " </tr>" );
 	out.println( "</table>" );
-	out.println( "<br><img src=\"../image/arrow_r.gif\" hspace=\"5\"><a href=\"../PeakSearch2.html\" onClick=\"return prevPeakSearchAdv()\">Previous Query</a>" );
+	out.println( "<br><a href=\"../PeakSearch2.html\" onClick=\"return prevPeakSearchAdv()\">Edit / Resubmit Query</a>" );
 	out.println( "<hr size=\"1\">" );
 
 	//--------------------------------------------------------

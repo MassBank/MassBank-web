@@ -22,7 +22,7 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.11 2009.10.30
+ * ver 1.0.12 2009.12.09
  *
  ******************************************************************************/
 %>
@@ -31,6 +31,7 @@
 <%@ page import="org.apache.commons.fileupload.DiskFileUpload" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
 <%@ page import="org.apache.commons.lang.NumberUtils" %>
+<%@ include file="./Common.jsp"%>
 <%!
 	/**
 	 * パラメータセット処理
@@ -96,22 +97,6 @@
 		}
 		return true;
 	}
-%>
-<%
-	//-------------------------------------
-	// ブラウザ優先言語による言語判別
-	//-------------------------------------
-	String browserLang = (request.getHeader("accept-language") != null) ? request.getHeader("accept-language") : "";
-	boolean isJp = false;
-	if ( browserLang.startsWith("ja") || browserLang.equals("") ) {
-		isJp = true;
-	}
-	
-	String manualUrl = "http://www.massbank.jp/manuals/UserManual_ja.pdf";
-	if ( !isJp ) {
-		manualUrl = "http://www.massbank.jp/manuals/UserManual_en.pdf";
-	}
-	
 %>
 <html>
 <head>
@@ -403,7 +388,8 @@ function clearQuery(index) {
 				<h1>Substructure Search</h1>
 			</td>
 			<td align="right" class="font12px">
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=manualUrl%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>

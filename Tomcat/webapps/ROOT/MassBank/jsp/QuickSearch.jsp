@@ -22,28 +22,15 @@
  *
  * Quick Search Page表示用モジュール
  *
- * ver 1.0.9 2009.10.29
+ * ver 1.0.10 2009.12.09
  *
  ******************************************************************************/
 %>
 <%@ page import="java.util.*" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetInstInfo" %>
+<%@ include file="./Common.jsp"%>
 <%
-	//-------------------------------------
-	// ブラウザ優先言語による言語判別
-	//-------------------------------------
-	String browserLang = (request.getHeader("accept-language") != null) ? request.getHeader("accept-language") : "";
-	boolean isJp = false;
-	if ( browserLang.startsWith("ja") || browserLang.equals("") ) {
-		isJp = true;
-	}
-	
-	String manualUrl = "http://www.massbank.jp/manuals/UserManual_ja.pdf";
-	if ( !isJp ) {
-		manualUrl = "http://www.massbank.jp/manuals/UserManual_en.pdf";
-	}
-	
 	//-------------------------------------------
 	// 検索タイプを設定
 	//-------------------------------------------
@@ -60,7 +47,7 @@
 	else {
 		postJspName = "QpeakResult.jsp";
 	}
-
+	
 	//-------------------------------------
 	// リクエストパラメータ取得
 	//-------------------------------------
@@ -134,8 +121,8 @@
 	<meta name="keywords" content="Quick, Compound, Exact Mass,Formula">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
-	<script type="text/javascript" src="script/Common.js"></script>
-	<script type="text/javascript" src="script/QuickSearch.js"></script>
+	<script type="text/javascript" src="./script/Common.js"></script>
+	<script type="text/javascript" src="./script/QuickSearch.js"></script>
 	<title>MassBank | Database | Quick Search</title>
 </head>
 <body class="msbkFont backgroundImg cursorDefault" onload="initFocus();">
@@ -145,11 +132,11 @@
 				<h1>Quick Search</h1>
 			</td>
 			<td align="right" class="font12px">
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=manualUrl%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
-	
 	<iframe src="menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 	<hr size="1">
 

@@ -22,15 +22,16 @@
  *
  * Browse Page表示用モジュール
  *
- * ver 1.0.10 2009.10.29
+ * ver 1.0.11 2009.12.09
  *
  ******************************************************************************/
 %>
-
-<%@ page import="java.util.*,java.io.*" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.util.*" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.ServerStatus" %>
+<%@ include file="./Common.jsp"%>
 <%
 	String site = "0";
 	if ( request.getParameter( "site" ) != null ) {
@@ -58,6 +59,7 @@
 		<meta name="keywords" content="Browse">
 		<meta name="revisit_after" content="30 days">
 		<link rel="stylesheet" type="text/css" href="css/Common.css">
+	<script type="text/javascript" src="./script/Common.js"></script>
 		<title>MassBank | Database | Browse Page</title>
 	</head>
 	<body class="msbkFont">
@@ -67,6 +69,7 @@
 					<h1>Browse Page</h1>
 				</td>
 				<td align="right" class="font12px">
+					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="http://www.massbank.jp/manuals/browse_doc.html" target="_blank">user manual (in Japanese)</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				</td>
 			</tr>

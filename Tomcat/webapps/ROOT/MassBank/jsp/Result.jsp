@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.17 2009.10.29
+ * ver 2.0.2 2009.12.09
  *
  ******************************************************************************/
 %>
@@ -35,6 +35,7 @@
 <%@ page import="massbank.ResultRecord" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
 	private static final String tableWidth = "950";
@@ -353,7 +354,15 @@
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
-<h1><%=title%></h1>
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td><h1><%=title%></h1></td>
+			<td align="right" class="font12px">
+				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</td>
+		</tr>
+	</table>
 <iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
@@ -514,7 +523,7 @@
 		out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;Ionization Mode:</td>" );
 		out.println( "  <td><b>" + ionMode + "</b></td>" );
 		out.println( "  <td align=\"right\">" );
-		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Previous Query</a>" );
+		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Edit / Resubmit Query</a>" );
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( "</table>" );
@@ -544,7 +553,7 @@
 		}
 		
 		out.println( "  <td align=\"right\">" );
-		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Previous Query</a>" );
+		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Edit / Resubmit Query</a>" );
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( "</table>" );
@@ -626,7 +635,7 @@
 		
 		out.println( "</tr>" );
 		out.println( "<tr>");
-		out.println( "<td>&nbsp;&nbsp;<a href=\"../StructureSearch.html\" class=\"pageLink\" onClick=\"return prevStructSearch()\">Previous Query</a></td>" );
+		out.println( "<td>&nbsp;&nbsp;<a href=\"../StructureSearch.html\" class=\"pageLink\" onClick=\"return prevStructSearch()\">Edit / Resubmit Query</a></td>" );
 		out.println( "</tr>" );
 		out.println( "</table>" );
 		
@@ -747,7 +756,7 @@
 	if ( list.getResultNum() > 0 ) {
 		out.println( "  <td align=\"right\">" );
 		out.println( "   <input style=\"width:120\" type=\"button\" name=\"treeCtrl\" value=\"Open All Tree\" onClick=\"allTreeCtrl()\">" );
-		out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Show Spectra\" onClick=\"return submitShowSpectra();\">" );
+		out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Multiple Display\" onClick=\"return submitShowSpectra();\">" );
 		out.println( "   <input style=\"width:120\" type=\"button\" name=\"search\" value=\"Spectrum Search\" onClick=\"submitSearchPage();\">" );
 		out.println( "  </td>" );
 	}

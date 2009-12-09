@@ -22,7 +22,7 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.13 2009.11.27
+ * ver 1.0.14 2009.12.09
  *
  ******************************************************************************/
 %>
@@ -34,6 +34,7 @@
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
 	private static final String tableWidth = "950";
@@ -143,7 +144,15 @@
 		out.println( " <title>MassBank | Database | Quick Search Results</title>" );
 		out.println( "</head>" );
 		out.println( "<body class=\"msbkFont cursorDefault\">" );
-		out.println( "<h1>Quick Search Results</h1>" );
+		out.println( " <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">" );
+		out.println( "  <tr>" );
+		out.println( "   <td><h1>Quick Search Results</h1></td>" );
+		out.println( "   <td align=\"right\" class=\"font12px\">" );
+		out.println( "    <img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "    <img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "   </td>" );
+		out.println( "  </tr>" );
+		out.println( " </table>" );
 		out.println( "<iframe src=\"../menu.html\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<table width=\"900\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" );
@@ -152,7 +161,7 @@
 		out.println( "   <font color=\"Crimson\" size=\"+1\"><b>Error : No input data.</b></font>" );
 		out.println( "  </td>" );
 		out.println( "  <td align=\"right\" valign=\"bottom\">" );
-		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting()\">Previous Query</a>" );
+		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting()\">Edit / Resubmit Query</a>" );
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( "</table>" );
@@ -285,7 +294,15 @@
 <title>MassBank | Database | Quick Search Results</title>
 </head>
 <body class="msbkFont cursorDefault">
-<h1>Quick Search Results</h1>
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td><h1>Quick Search Results</h1></td>
+			<td align="right" class="font12px">
+				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</td>
+		</tr>
+	</table>
 <iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
@@ -301,7 +318,7 @@
 		out.println( "   <font color=\"Crimson\" size=\"+1\"><b>Error : " + errMsg + "</b></font>" );
 		out.println( "  </td>" );
 		out.println( "  <td align=\"right\" valign=\"bottom\">" );
-		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting()\">Previous Query</a>" );
+		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting()\">Edit / Resubmit Query</a>" );
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( "</table>" );
@@ -322,8 +339,7 @@
 		// 設定ファイル内容を取得
 		//-------------------------------------------
 		String path = request.getRequestURL().toString();
-		int pos = path.indexOf("/jsp");
-		String baseUrl = path.substring( 0, pos+1 );
+		String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
 		GetConfig conf = new GetConfig(baseUrl);
 		String serverUrl = conf.getServerUrl();
 		
@@ -344,7 +360,7 @@
 		out.println( " </tr>" );
 		out.println( " <tr>" );
 		out.println( "  <td align=\"right\">" );
-		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting()\">Previous Query</a>" );
+		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting()\">Edit / Resubmit Query</a>" );
 		out.println( "  </td>" );
 		out.println( "</tr>" );
 		out.println( "</table>" );
