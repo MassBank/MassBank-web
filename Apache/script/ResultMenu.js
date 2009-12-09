@@ -20,7 +20,7 @@
  *
  * ResultMenu用スクリプト
  *
- * ver 1.0.3 2009.09.07
+ * ver 1.0.4 2009.12.09
  *
  ******************************************************************************/
 
@@ -165,7 +165,7 @@ function dispRightMenu(ev, isDisp) {
 				  + "</tr>"
 				  + "<tr>"
 				  + "<td nowrap class='menuItem1' onClick='closeRightMenu(event, true); parameterResetting(\"" + refType + "\");' onMouseDown='closeRightMenu(event, false);'"
-				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Previous Query</td>"
+				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Edit / Resubmit Query</td>"
 				  + "</tr>"
 				  + "<tr>"
 				  + "<td colspan='2'><hr></td>"
