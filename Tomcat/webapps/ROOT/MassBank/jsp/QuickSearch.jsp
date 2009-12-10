@@ -22,7 +22,7 @@
  *
  * Quick Search Page表示用モジュール
  *
- * ver 1.0.10 2009.12.09
+ * ver 1.0.11 2009.12.10
  *
  ******************************************************************************/
 %>
@@ -250,7 +250,7 @@
 					<table>
 						<tr>
 							<td>
-								<input type="submit" value="Search" onclick="return checkSubmit();" class="search">
+								<input type="submit" value="Search" onclick="<% if(!isKeyword){out.print("beforeSubmit(); ");} %>return checkSubmit();" class="search">
 								<input type="hidden" name="type" value="quick">
 								<input type="hidden" name="searchType" value="<% if(isKeyword){out.print("keyword");}else{out.print("peak");}%>">
 								<input type="hidden" name="sortKey" value="name">
