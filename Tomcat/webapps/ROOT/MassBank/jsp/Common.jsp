@@ -20,23 +20,23 @@
  *
  *******************************************************************************
  *
- * ‹¤’ÊJSPiÃ“IƒCƒ“ƒNƒ‹[ƒh—pj
+ * å…±é€šJSPï¼ˆé™çš„ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ç”¨ï¼‰
  *
- * ver 1.0.0 2009.12.09
+ * ver 1.0.1 2009.12.10
  *
  ******************************************************************************/
 %>
 <%
 	//-------------------------------------
-	// ŽQÆæƒx[ƒXURL
+	// å‚ç…§å…ˆãƒ™ãƒ¼ã‚¹URL
 	//-------------------------------------
-	/* ’Êí‚ÍŒcœäƒT[ƒo‚ðŽQÆ‚·‚é */
+	/* é€šå¸¸ã¯æ…¶æ‡‰ã‚µãƒ¼ãƒã‚’å‚ç…§ã™ã‚‹ */
 	String refBaseUrl = "http://www.massbank.jp/";
 //	String refReqUrl = request.getRequestURL().toString();
 //	String refBaseUrl = refReqUrl.substring( 0, (refReqUrl.indexOf("/jsp")+1) );
 	
 	//-------------------------------------
-	// ƒuƒ‰ƒEƒU—DæŒ¾Œê‚É‚æ‚éŒ¾Œê”»•Ê
+	// ãƒ–ãƒ©ã‚¦ã‚¶å„ªå…ˆè¨€èªžã«ã‚ˆã‚‹è¨€èªžåˆ¤åˆ¥
 	//-------------------------------------
 	String browserLang = (request.getHeader("accept-language") != null) ? request.getHeader("accept-language") : "";
 	boolean isJp = false;
@@ -45,7 +45,7 @@
 	}
 	
 	//-------------------------------------
-	// ŠeURLÝ’è
+	// å„URLè¨­å®š
 	//-------------------------------------
 	String MANUAL_URL = refBaseUrl + "manuals/UserManual_ja.pdf";
 	String SAMPLE_URL = refBaseUrl + "sample/sample1_ja.txt";
