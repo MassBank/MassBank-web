@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.2 2009.12.09
+ * ver 2.0.3 2009.12.10
  *
  ******************************************************************************/
 %>
@@ -69,7 +69,7 @@
 					ename = URLEncoder.encode( name, "utf-8" );
 				}
 				catch ( UnsupportedEncodingException e ) {
- 					System.out.println( "msg:" + e.getMessage() );
+ 					e.printStackTrace();
 				}
 				param += ename + "@";
 			}

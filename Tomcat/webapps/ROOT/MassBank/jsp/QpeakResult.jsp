@@ -22,7 +22,7 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.14 2009.12.09
+ * ver 1.0.15 2009.12.10
  *
  ******************************************************************************/
 %>
@@ -57,14 +57,13 @@
 			String rec = (String)list.get(i);
 			String[] fields = rec.split(";");
 			String name    = fields[0];  
-			System.out.println(name);
 			if ( !name.equals(prevName) ) {
 				String ename = "";
 				try {
 					ename = URLEncoder.encode( name, "utf-8" );
 				}
 				catch ( UnsupportedEncodingException e ) {
- 					System.out.println( "msg:" + e.getMessage() );
+					e.printStackTrace();
 				}
 				param += ename + "@";
 			}
@@ -87,7 +86,6 @@
 			String temp = (String)result.get(i);
 			String[] item = temp.split("\t");
 			String line = item[0];
-			System.out.println(line);
 			if ( line.indexOf("---NAME:") >= 0 ) {
 				if ( !key.equals("") && !map.containsKey(key) && !moldata.trim().equals("") ) {
 					// Molfileデータ格納
@@ -190,7 +188,7 @@
 	ArrayList<String> peakList = new ArrayList<String>();
 	String line = "";
 	for ( int l1 = 0; l1 < inpLines.length; l1++ ) {
-		line = inpLines[l1].trim();
+		line = inpLines[l1].trim().replaceAll("\\r", "");
 		if ( !line.equals("") ) {
 			String sublines[] = line.split(";");
 			for ( int lp2 = 0 ; lp2 < sublines.length; lp2++ ) {
@@ -376,7 +374,7 @@
 				 + "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 				 + "&CUTOFF=" + pCutoff + "&NUM=0&VAL=" + paramPeak.toString();
 		param += paramInst;
-		ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+		ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
 		
 		out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
 		

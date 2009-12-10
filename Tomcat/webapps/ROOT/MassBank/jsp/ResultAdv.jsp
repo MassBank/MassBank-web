@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.2 2009.12.09
+ * ver 1.0.3 2009.12.10
  *
  ******************************************************************************/
 %>
@@ -230,7 +230,7 @@
 					ename = URLEncoder.encode( name, "utf-8" );
 				}
 				catch ( UnsupportedEncodingException e ) {
- 					System.out.println( "msg:" + e.getMessage() );
+ 					e.printStackTrace();
 				}
 				param += ename + "@";
 			}
