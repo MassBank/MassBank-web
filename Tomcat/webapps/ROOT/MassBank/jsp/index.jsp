@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.2 2009.11.20
+ * ver 2.0.3 2009.12.11
  *
  ******************************************************************************/
 %>
@@ -329,8 +329,9 @@ MassBank は <a href="http://www.mssj.jp/index-jp.html" target="_blank">日本�
 <!--st▼about MassBank summary-->
 <h2 id="h_about_en" class="hide_text">About MassBank</h2>
 <p class="p_about1">
-MassBank is supported by <a href="http://www-bird.jst.go.jp/index_e.html" target="_blank">JST-BIRD</a> project.<br />
-MassBank is a distributed database on the internet in order to open a spectrum to the public by a researcher who measured it.<br />
+MassBank is supported by the <a href="http://www-bird.jst.go.jp/index_e.html" target="_blank">JST-BIRD</a>.<br />
+MassBank is a distributed database to freely share mass spectra among researchers and data contributors.<br />
+The software platform is open-source, and spectra are copyrighted by the contributors.<br />
 </p>
 <p class="p_link">
 <a href="./en/about.html" class="bullet_link">Details of MassBank</a><br />
