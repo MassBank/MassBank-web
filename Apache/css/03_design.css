@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.11 2009.11.20
+ * ver 1.0.12 2009.12.11
  *
  ******************************************************************************/
 
@@ -116,12 +116,16 @@
 #published .p_num { padding-bottom:10px; }
 #published .p_link { padding: 5px 0 30px; padding-left:8px; line-height: 34px; }
 #published .new { background:#fff5ee; }
-#published th.analysis_ja { width:170px; }
-#published th.spectra_ja { width:95px; }
-#published th.compound_ja { width:95px; }
-#published th.analysis_en { width:170px; }
-#published th.spectra_en { width:95px; }
-#published th.compound_en { width:95px; }
+#published th.prefix_ja { width:44px; }
+#published th.analysis_ja { width:165px; }
+#published th.spectra_ja { width:90px; }
+#published th.compound_ja { width:86px; }
+#published th.prefix_en { width:44px; }
+#published th.analysis_en { width:165px; }
+#published th.spectra_en { width:90px; }
+#published th.compound_en { width:86px; }
+
+#published td { height:20px; }
 
 /*ドキュメント============================================== */
 #document p
