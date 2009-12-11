@@ -20,7 +20,7 @@
  *
  * スペクトル表示アプレット
  *
- * ver 2.0.10 2009.12.07
+ * ver 2.0.11 2009.12.10
  *
  ******************************************************************************/
 import javax.swing.JApplet;
@@ -62,6 +62,12 @@ public class Display extends JApplet
 		
 		// アプレットコンテキスト取得
 		context = getAppletContext();
+		
+		// 環境設定ファイルからサーバURL取得
+		String confPath = getCodeBase().toString();
+		confPath = confPath.replaceAll( "jsp/", "" );
+		GetConfig conf = new GetConfig(confPath);
+		baseUrl = conf.getServerUrl();
 		
 		//---------------------------------------------
 		// リクエスト種別をセットする
@@ -235,10 +241,6 @@ public class Display extends JApplet
 	 */
 	public Vector<String> getPeaksFromDB()
 	{
-		String confPath = getCodeBase().toString();
-		confPath = confPath.replaceAll( "jsp/", "" );
-		GetConfig conf = new GetConfig(confPath);
-		baseUrl = conf.getServerUrl();
 		String jspUrl = baseUrl + "jsp/";
 		String id = getParameter("id");
 		String site = getParameter("site");
