@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+
+Name: PSGr.java
+Digest-Algorithms: SHA MD5 
+SHA-Digest: h/BFfNSAXFfLdarpMaaqsi2oCJk=
+MD5-Digest: 9G/aplHFaUYwxmZKkRkbDA==
+
+Name: PixelConsumer.java
+Digest-Algorithms: SHA MD5 
+SHA-Digest: VxxlUg44FM4ldzgiy+KexdSIafA=
+MD5-Digest: iGMdmTk8vQe/dt87yWI4Kw==
+

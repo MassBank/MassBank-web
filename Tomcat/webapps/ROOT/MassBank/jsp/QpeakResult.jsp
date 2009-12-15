@@ -22,7 +22,7 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.15 2009.12.10
+ * ver 1.0.16 2009.12.15
  *
  ******************************************************************************/
 %>
@@ -393,7 +393,7 @@
 		out.println( "  </td>" );
 		if ( hitCnt > 0 ) {
 			out.println( "  <td align=\"right\">" );
-			out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Show Spectra\" onClick=\"return submitFormCheck();\">" );
+			out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Multiple Display\" onClick=\"return submitFormCheck();\">" );
 			out.println( "   <input style=\"width:120\" type=\"button\" name=\"search\" value=\"Spectrum Search\" onClick=\"submitSearchPage();\">" );
 			out.println( "  </td>" );
 		}
@@ -440,6 +440,8 @@
 				String formula = fields[3];
 				String hitScore= fields[4];
 				String site    = fields[5];
+//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
 				
 				// ヒットピーク数、スコア
@@ -470,7 +472,7 @@
 				typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 				String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
 								 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff;
-				String valstr = name.replace("\"", "&quot;") + "\t" + id + "\t" + ion + "\t" + formula + "\t" + site;
+				String valstr = name.replace("\"", "&quot;") + "\t" + id + "\t" + formula + "\t0\t" + site;
 				
 				String rowId = String.valueOf(i);
 				out.println( " <tr id=\"" + rowId + "\"onmouseover=\"overBgColor(this, '#E6E6FA', '" + rowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + rowId + "');\">" );

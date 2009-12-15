@@ -22,7 +22,7 @@
  *
  * スペクトル複数表示用モジュール
  *
- * ver 1.0.10 2009.06.01
+ * ver 1.0.11 2009.12.15
  *
  ******************************************************************************/
 %>
@@ -97,7 +97,7 @@
 		html.add( "\t\t<hr size=\"1\">" );
 		html.add( "\t\t<br>" );
 		html.add( "\t\t<applet code=\"DisplayAll.class\" archive=\"../applet/DisplayAll2.jar\""
-						+ " width=\"980\" height=\"" + Integer.toString(250*num) + "\">" );
+						+ " width=\"980\" height=\"" + Integer.toString(262*num) + "\">" );
 		paramName = "id";
 		String pnum = "";
 		if ( type.equals("peak") || type.equals("diff") ) {
@@ -128,11 +128,15 @@
 			String[] fields = ids[i].split("\t");
 			String id = fields[1];
 			String name = fields[0];
+			String formula = fields[2];
+			String mass = fields[3];
 			String site = fields[fields.length-1];
 			pnum = Integer.toString(i+1);
 			html.add( "\t\t\t<param name=\"" + paramName + pnum + "\" value=\"" + id + "\">" );
 			html.add( "\t\t\t<param name=\"name" + pnum + "\" value=\"" + name +"\">" );
 			html.add( "\t\t\t<param name=\"site" + pnum + "\" value=\"" + site +"\">" );
+			html.add( "\t\t\t<param name=\"formula" + pnum + "\" value=\"" + formula +"\">" );
+			html.add( "\t\t\t<param name=\"mass" + pnum + "\" value=\"" + mass +"\">" );
 		}
 		html.add( "\t\t</applet>" );
 		html.add( "\t\t<br><br>" );

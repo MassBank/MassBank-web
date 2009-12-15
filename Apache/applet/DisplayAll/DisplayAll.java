@@ -18,9 +18,9 @@
  *
  *******************************************************************************
  *
- * スペクトル表示 クラス
+ * Multiple Spectra Display アプレット
  *
- * ver 2.0.5 2008.12.05
+ * ver 2.0.6 2009.12.14
  *
  ******************************************************************************/
 
@@ -36,6 +36,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -43,6 +46,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+
 
 import javax.swing.BoxLayout;
 import javax.swing.JApplet;
@@ -52,6 +62,8 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 import massbank.GetConfig;
 import massbank.MassBankCommon;
@@ -86,7 +98,14 @@ public class DisplayAll extends JApplet
 	private String reqType = "";
 	private String[] precursor = null;
 	private String searchParam = "";
-	
+	private String paramMz  = "";
+	private String paramTol = "";
+	private String paramInt = "";
+	private RecordInfo[] info = null;
+	private int[] cnt = null;
+	private String[] urlList = null;
+	private String serverUrl = "";
+
 	/**
 	 * 
 	 */
@@ -155,7 +174,6 @@ public class DisplayAll extends JApplet
 			public void actionPerformed(ActionEvent e)
 			{
 				xscale = (getWidth() - 2.0f * MARGIN) / massRange;
-//				float yscale = (getHeight() - 2.0f * MARGIN) / intensityRange;
 				int xpos = (movex + minx) / 2;
 				if (Math.abs(massStart - tmpMassStart) <= 2
 						&& Math.abs(massRange - tmpMassRange) <= 2)
@@ -271,8 +289,7 @@ public class DisplayAll extends JApplet
 			// x軸
 			int step = setStep((int)massRange);
 			int start = (step - (int)massStart % step) % step;
-			for (int i = start; i < (int)massRange; i += step)
-			{
+			for (int i = start; i < (int)massRange; i += step) {
 				g.drawLine(MARGIN + (int) (i * xscale),
 						height - MARGIN, MARGIN + (int) (i * xscale),
 						height - MARGIN + 2);
@@ -282,8 +299,7 @@ public class DisplayAll extends JApplet
 			}
 
 			// y軸
-			for (int i = 0; i <= intensityRange; i += intensityRange / 5)
-			{
+			for (int i = 0; i <= intensityRange; i += intensityRange / 5) {
 				g.drawLine(MARGIN - 2, height - MARGIN - (int) (i * yscale),
 							MARGIN,	height - MARGIN - (int) (i * yscale));
 				g.drawString(String.valueOf(i),	0, height - MARGIN - (int) (i * yscale));
@@ -667,10 +683,12 @@ public class DisplayAll extends JApplet
 		String site;
 
 		public NameButton(String name, String id, String site) {
-			super("<html><a href=\"\">" + name + "</a></html>");
+			super("<html>" + id + ":&nbsp;&nbsp;<a href=\"\">" + name + "</a></html>");
 			acc = id;
 			this.site = site;
 			this.addActionListener(this);
+			setPreferredSize(new Dimension(770, getPreferredSize().height));
+			setHorizontalAlignment(SwingConstants.LEFT);
 		}
 
 		public void actionPerformed(ActionEvent ae) {
@@ -704,199 +722,213 @@ public class DisplayAll extends JApplet
 		String confPath = getCodeBase().toString();
 		confPath = confPath.replaceAll( "jsp/", "" );
 		GetConfig conf = new GetConfig(confPath);
-		String[] urlList = conf.getSiteUrl();
-		String severUrl = conf.getServerUrl();
-		baseUrl = severUrl + "jsp/";
+		urlList = conf.getSiteUrl();
+		serverUrl = conf.getServerUrl();
+		baseUrl = serverUrl + "jsp/";
 
-		try {
-			// ピーク検索、ピーク差検索時のパラメータ取得
-			int paramMzNum = 0;
-			String paramMz  = "";
-			String paramTol = "";
-			String paramInt = "";
-			if ( getParameter("type") != null ) {
-				reqType = getParameter("type");
-				if ( reqType.equals("peak") || reqType.equals("diff") ) {
-					paramMzNum = Integer.parseInt( getParameter("pnum") );
+		// ピーク検索、ピーク差検索時のパラメータ取得
+		int paramMzNum = 0;
+		if ( getParameter("type") != null ) {
+			reqType = getParameter("type");
+			if ( reqType.equals("peak") || reqType.equals("diff") ) {
+				paramMzNum = Integer.parseInt( getParameter("pnum") );
 
-					searchParam = "&num=" + paramMzNum;
-					for ( int i = 0; i < paramMzNum; i++ ) {
-						String pnum = Integer.toString(i);
-						String mz = getParameter( "mz" + pnum );
-						String tol = getParameter( "tol" + pnum );
-						String rInt = getParameter( "int" + pnum );
-						paramMz  += mz  + ",";
-						paramTol += tol + ",";
-						paramInt += rInt + ",";
-						searchParam += "&mz" + pnum + "=" + mz;
-						searchParam += "&tol" + pnum + "=" + tol;
-						searchParam += "&int" + pnum + "=" + rInt;
-					}
+				searchParam = "&num=" + paramMzNum;
+				for ( int i = 0; i < paramMzNum; i++ ) {
+					String pnum = Integer.toString(i);
+					String mz = getParameter( "mz" + pnum );
+					String tol = getParameter( "tol" + pnum );
+					String rInt = getParameter( "int" + pnum );
+					paramMz  += mz  + ",";
+					paramTol += tol + ",";
+					paramInt += rInt + ",";
+					searchParam += "&mz" + pnum + "=" + mz;
+					searchParam += "&tol" + pnum + "=" + tol;
+					searchParam += "&int" + pnum + "=" + rInt;
 				}
 			}
-
-			numSpct = Integer.valueOf(getParameter("num"));
-			plotPane = new PlotPane[numSpct];
-			clear();
-			peaks1 = new Peak[numSpct];
-			String[][] nameList = new String[numSpct][4];
-			String[] param = new String[urlList.length];
-			int[] cnt = new int[urlList.length];
-			for ( int i = 0; i < urlList.length; i++ ) {
-				 param[i] = "";
-			}
-
-			int siteMax = 0;
-			for ( int i = 0; i < numSpct; i++ ) {
-				String pnum = Integer.toString(i+1);
-				// パラメータ取得
-				nameList[i][0] = getParameter( "id" + pnum );
-				nameList[i][1] = getParameter( "name" + pnum );
-				nameList[i][2] = getParameter( "site" + pnum );
-
-				int site = Integer.parseInt( nameList[i][2] );
-				nameList[i][3] = Integer.toString( cnt[site]++ );
-				param[site] += nameList[i][0] + ",";
-				
-				if ( siteMax < site ) {
-					siteMax = site;
-				}
-			}
-
-			String line;
-			String[] tmp;
-			ArrayList resultList = new ArrayList();
-			for ( int i = 0; i < siteMax + 1; i++ ) {
-				if ( cnt[i] == 0 ) {
-					resultList.add( null );
-					continue;
-				}
-				
-				// パラメータ最後尾カンマを取り除く
-				param[i] = param[i].substring( 0, param[i].length() - 1 );
-				
-				// リクエストURLセット
-				String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GDATA2];
-				String reqStr = baseUrl + MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
-				 + "&id=" + param[i] + "&site=" + Integer.toString(i);
-				
-				if ( reqType.equals("peak") || reqType.equals("diff") ) {
-					reqStr += "&diff=";
-					if ( reqType.equals("peak") ) {
-						reqStr += "no";
-					}
-					else {
-						reqStr += "yes";
-					}
-					reqStr += "&mz=" + paramMz.substring( 0, paramMz.length() -1 );
-					reqStr += "&tol=" + paramTol.substring( 0, paramTol.length() -1 );
-					reqStr += "&int=" + paramInt.substring( 0, paramInt.length() -1 );
-				}
-				
-				URL url = new URL( reqStr );
-				URLConnection con = url.openConnection();
-
-				// レスポンス取得
-				BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
-				ArrayList<String> result = new ArrayList<String>();
-
-				// レスポンス格納　
-				while ( (line = in.readLine()) != null ) {
-					if ( !line.equals("") ) {
-						result.add( line );
-					}
-				}
-				resultList.add( result );
-				in.close();
-			}
-			
-			hitPeaks.mzInfoList = new ArrayList[numSpct];
-			precursor = new String[numSpct];
-			Vector mzAry = new Vector();
-			for ( int i = 0; i < numSpct; i++ ) {
-				int site = Integer.parseInt( nameList[i][2] );
-				int no = Integer.parseInt( nameList[i][3] );
-				ArrayList result = (ArrayList)resultList.get(site);
-				line = (String)result.get(no);
-
-				// ピーク検索、ピーク差検索から呼ばれた場合、ヒットしたm/z値が返るので格納する
-				String findStr = "hit=";
-				int pos = line.indexOf( findStr );
-				if ( pos > 0 ) { 
-					String hit = line.substring( pos + 4 );
-					String[] hitMzInfo = hit.split("\t");
-					
-					boolean isDiff = false;
-					// ピーク検索の場合
-					if ( reqType.equals("diff") ) {
-						isDiff = true;
-					}
-					// m/z値を格納
-					ArrayList mzInfoList = hitPeaks.setMz( hitMzInfo, isDiff );
-					hitPeaks.mzInfoList[i] = new ArrayList();
-					hitPeaks.mzInfoList[i].addAll(mzInfoList);
-					line = line.substring( 0, pos );
-				}
-
-				// プレカーサー
-				findStr = "precursor=";
-				pos = line.indexOf(findStr);
-				int posNext = 0;
-				if ( pos > 0 ) { 
-					posNext = line.indexOf( "\t", pos );
-					precursor[i] = line.substring( pos + findStr.length(), posNext );
-					line = line.substring( 0, pos );
-				}
-				else {
-					precursor[i] = "";
-				}
-
-				tmp = line.split("\t\t");
-				Vector mzs = new Vector();
-
-				// m/z格納
-				for (int j = 0; j < tmp.length; j++ ) {
-					mzs.add( tmp[j] );
-				}
-				mzAry.add( mzs );
-				
-				// m/zの最大値を整数第2で切り上げた値をレンジの最大値とする
-				String lastValStr = (String)mzs.lastElement();
-				String[] lastVals = lastValStr.split("\t");
-				int massMax = new BigDecimal(lastVals[0]).setScale(-2, BigDecimal.ROUND_UP).intValue();
-				if ( massMax > MASS_MAX ) {
-					MASS_MAX = massMax;
-				}
-			}
-			
-			massRange = MASS_MAX;
-
-			for ( int i = 0; i < numSpct; i++ ) {
-				plotPane[i] = new PlotPane(i);
-				plotPane[i].setPreferredSize( new Dimension(1000, 800) );
-				plotPane[i].repaint(); 
-
-				JPanel pane1 = new JPanel();
-				String name = nameList[i][1];
-				String id = nameList[i][0];
-				String site = nameList[i][2];
-				pane1.add( new NameButton( name, id, site ) );
-				pane1.add( new JLabel("ID:" + id ) );
-				pane1.setLayout( new FlowLayout(FlowLayout.LEFT) );
-				pane1.setMaximumSize( new Dimension(pane1.getMaximumSize().width, 100) );
-				add(pane1);
-				add(plotPane[i]);
-				ButtonPane pane2 = new ButtonPane();
-				pane2.addDiffButton(plotPane[i].idPeak);
-				pane2.setLayout( new FlowLayout(FlowLayout.LEFT, 0, 0) );
-				pane2.setMaximumSize( new Dimension(pane2.getMaximumSize().width, 100) );
-				add(pane2);
-				peaks1[i] = new Peak((Vector<String>)mzAry.get(i));
-			}
-			initMass();
-		} catch (Exception ex) {
-			ex.printStackTrace();
 		}
+
+		numSpct = Integer.valueOf(getParameter("num"));
+		plotPane = new PlotPane[numSpct];
+		clear();
+		peaks1 = new Peak[numSpct];
+		info = new RecordInfo[numSpct];
+		cnt = new int[urlList.length];
+		HashSet<String> compoundNameList = new HashSet();
+		for ( int i = 0; i < numSpct; i++ ) {
+			// パラメータ取得
+			String pnum = Integer.toString(i+1);
+			int siteNo = Integer.parseInt( getParameter( "site" + pnum ) );
+			String id = getParameter( "id" + pnum );
+			String title = getParameter( "name" + pnum );
+			String formula = getParameter( "formula" + pnum );
+			String mass = getParameter( "mass" + pnum );
+			int num = cnt[siteNo]++;
+			info[i] = new RecordInfo(id, title, siteNo, num, formula, mass);
+			String[] items = title.split(";");
+			compoundNameList.add(items[0]);
+		}
+
+		// ピークデータ取得
+		ArrayList resultList = getPeakData();
+
+		// Molfileデータ取得
+		Map<String, String > mapMolData = getMolData(compoundNameList);
+
+		hitPeaks.mzInfoList = new ArrayList[numSpct];
+		precursor = new String[numSpct];
+		Vector mzAry = new Vector();
+		for ( int i = 0; i < numSpct; i++ ) {
+			int siteNo = info[i].getSiteNo();
+			int num = info[i].getNumber();
+			ArrayList result = (ArrayList)resultList.get(siteNo);
+			String line = (String)result.get(num);
+
+			// ピーク検索、ピーク差検索から呼ばれた場合、ヒットしたm/z値が返るので格納する
+			String findStr = "hit=";
+			int pos = line.indexOf( findStr );
+			if ( pos > 0 ) { 
+				String hit = line.substring( pos + 4 );
+				String[] hitMzInfo = hit.split("\t");
+				
+				boolean isDiff = false;
+				// ピーク検索の場合
+				if ( reqType.equals("diff") ) {
+					isDiff = true;
+				}
+				// m/z値を格納
+				ArrayList mzInfoList = hitPeaks.setMz( hitMzInfo, isDiff );
+				hitPeaks.mzInfoList[i] = new ArrayList();
+				hitPeaks.mzInfoList[i].addAll(mzInfoList);
+				line = line.substring( 0, pos );
+			}
+
+			// プレカーサー
+			findStr = "precursor=";
+			pos = line.indexOf(findStr);
+			int posNext = 0;
+			if ( pos > 0 ) { 
+				posNext = line.indexOf( "\t", pos );
+				precursor[i] = line.substring( pos + findStr.length(), posNext );
+				line = line.substring( 0, pos );
+			}
+			else {
+				precursor[i] = "";
+			}
+
+			String[] tmp = line.split("\t\t");
+			Vector mzs = new Vector();
+
+			// m/z格納
+			for (int j = 0; j < tmp.length; j++ ) {
+				mzs.add( tmp[j] );
+			}
+			mzAry.add( mzs );
+			
+			// m/zの最大値を整数第2で切り上げた値をレンジの最大値とする
+			String lastValStr = (String)mzs.lastElement();
+			String[] lastVals = lastValStr.split("\t");
+			int massMax = new BigDecimal(lastVals[0]).setScale(-2, BigDecimal.ROUND_UP).intValue();
+			if ( massMax > MASS_MAX ) {
+				MASS_MAX = massMax;
+			}
+		}
+		massRange = MASS_MAX;
+
+		for ( int i = 0; i < numSpct; i++ ) {
+			plotPane[i] = new PlotPane(i);
+			plotPane[i].setPreferredSize( new Dimension(780, 200) );
+			plotPane[i].repaint(); 
+
+			JPanel pane1 = new JPanel();
+			String title = info[i].getTitle();
+			String id = info[i].getID();
+			String site = String.valueOf(info[i].getSiteNo());
+			pane1.add( new NameButton( title, id, site ) );
+//			pane1.add( new JLabel("  ID: " + id ) );
+			pane1.setLayout( new FlowLayout(FlowLayout.LEFT) );
+			pane1.setMaximumSize( new Dimension(pane1.getMaximumSize().width, 100) );
+			JPanel parentPane = new JPanel();
+			JPanel childPane1 = new JPanel();
+			JPanel childPane2 = new JPanel();
+			childPane2.setBackground(Color.WHITE);
+			childPane1.add(pane1);
+			childPane1.add(plotPane[i]);
+
+			ButtonPane pane2 = new ButtonPane();
+			pane2.addDiffButton(plotPane[i].idPeak);
+			pane2.setLayout( new FlowLayout(FlowLayout.LEFT, 0, 0) );
+			pane2.setMaximumSize( new Dimension(pane2.getMaximumSize().width, 100) );
+			childPane1.add(pane2);
+			childPane1.setLayout( new BoxLayout(childPane1, BoxLayout.Y_AXIS) );
+			parentPane.add(childPane1);
+
+			//●パネル右上: FORMULAとEXACT MASSを表示
+			String html = "<html><div style=\"margin-left:10px;\">Formula: <font color=green>"
+						 + info[i].getFormula() + "</font>";
+			String emass = info[i].getExactMass();
+			if ( !emass.equals("0") ) {
+				html += "<br>Exact Mass: <font color=green>" + emass + "</font>";
+			}
+			html += "</div></html>";
+			JLabel lbl2 = new JLabel(html);
+			lbl2.setPreferredSize( new Dimension(200, 30) );
+			lbl2.setBackground(Color.WHITE);
+			lbl2.setOpaque(true);
+			childPane2.add(lbl2);
+
+			//●パネル右中: Mol構造表示パネルをセット
+			JPanel pane3 = null;
+			String[] items = title.split(";");
+			boolean isExist = false;
+			String compoundName = items[0].toLowerCase();
+			if ( mapMolData.containsKey(compoundName) ) {
+				String moldata = mapMolData.get(compoundName);
+				if ( !moldata.equals("") ) {
+					pane3 = (MolViewPaneExt)new MolViewPaneExt(moldata, 200, this);
+					isExist = true;
+				}
+			}
+			if ( !isExist ) {
+				// データを取得できなかった場合
+				JLabel lbl = new JLabel( "Not Available", JLabel.CENTER );
+				lbl.setPreferredSize( new Dimension(180, 180) );
+				lbl.setBackground(new Color(0xF8,0xF8,0xFF));
+				lbl.setBorder( new LineBorder(Color.BLACK, 1) );
+				lbl.setOpaque(true);
+				GridBagLayout layout = new GridBagLayout();
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.insets = new Insets(1, 1, 1, 1);
+				layout.setConstraints(lbl, gbc);
+
+				pane3 = new JPanel();
+				pane3.setPreferredSize( new Dimension(200, 200) );
+				pane3.setBackground(Color.WHITE);
+				pane3.add(lbl);
+			}
+			childPane2.add(pane3);
+
+			//●パネル右下: 構造式表示下部の余白
+			JLabel lbl3 = new JLabel("");
+			lbl3.setPreferredSize( new Dimension(200, 30) );
+			childPane2.add(lbl3);
+			childPane2.setPreferredSize( new Dimension(200, 260) );
+			parentPane.add(childPane2);
+			parentPane.setLayout( new BoxLayout(parentPane, BoxLayout.X_AXIS) );
+			add(parentPane);
+
+			// 上下スペクトルの区切り
+			JPanel spacePane = new JPanel();
+			spacePane.setPreferredSize( new Dimension(800, 2) );
+			spacePane.setBackground(Color.white);
+			JLabel lbl4 = new JLabel("");
+			lbl4.setPreferredSize( new Dimension(800, 2) );
+			spacePane.add(lbl4);
+			add(spacePane);
+			peaks1[i] = new Peak((Vector<String>)mzAry.get(i));
+		}
+		initMass();
 	}
 
 	/**
@@ -935,5 +967,228 @@ public class DisplayAll extends JApplet
 	public int getIntensity()
 	{
 		return intensityRange;
+	}
+
+	/**
+	 * ピークデータ取得
+	 */
+	public ArrayList<String> getPeakData()
+	{
+		String[] param = new String[urlList.length];
+		for ( int i = 0; i < urlList.length; i++ ) {
+			 param[i] = "";
+		}
+		int siteMax = 0;
+		for ( int i = 0; i < numSpct; i++ ) {
+			int site = info[i].getSiteNo();
+			param[site] += info[i].getID() + ",";
+			if ( siteMax < site ) {
+				siteMax = site;
+			}
+		}
+
+		String line;
+		String[] tmp;
+		ArrayList resultList = new ArrayList();
+		for ( int i = 0; i < siteMax + 1; i++ ) {
+			if ( cnt[i] == 0 ) {
+				resultList.add( null );
+				continue;
+			}
+
+			// パラメータ最後尾カンマを取り除く
+			param[i] = param[i].substring( 0, param[i].length() - 1 );
+
+			// リクエストURLセット
+			String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GDATA2];
+			String reqStr = baseUrl + MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
+				 + "&id=" + param[i] + "&site=" + Integer.toString(i);
+			
+			if ( reqType.equals("peak") || reqType.equals("diff") ) {
+				reqStr += "&diff=";
+				if ( reqType.equals("peak") ) {
+					reqStr += "no";
+				}
+				else {
+					reqStr += "yes";
+				}
+				reqStr += "&mz=" + paramMz.substring( 0, paramMz.length() -1 );
+				reqStr += "&tol=" + paramTol.substring( 0, paramTol.length() -1 );
+				reqStr += "&int=" + paramInt.substring( 0, paramInt.length() -1 );
+			}
+
+			try {
+				URL url = new URL( reqStr );
+				URLConnection con = url.openConnection();
+				
+				// レスポンス取得
+				BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
+				ArrayList<String> result = new ArrayList<String>();
+				
+				// レスポンス格納
+				while ( (line = in.readLine()) != null ) {
+					if ( !line.equals("") ) {
+						result.add( line );
+					}
+				}
+				resultList.add( result );
+				in.close();
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return resultList;
+	}
+
+	/**
+	 * Molfileデータ取得
+	 */
+	private Map<String,String> getMolData(HashSet<String> compoundNameList) {
+		Iterator it = compoundNameList.iterator();
+		String param = "";
+		while ( it.hasNext() ) {
+			String name = (String)it.next();
+			String ename = "";
+			try {
+				ename = URLEncoder.encode( name, "utf-8" );
+			}
+			catch ( UnsupportedEncodingException e ) {
+				e.printStackTrace();
+			}
+			param += ename + "@";
+		}
+		if ( !param.equals("") ) {
+			param = param.substring(0, param.length()-1);
+			param = "&names=" + param;
+		}
+		MassBankCommon mbcommon = new MassBankCommon();
+		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETMOL];
+		ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+
+		Map<String, String> map = new HashMap();
+		boolean isStart = false;
+		int cnt = 0;
+		String key = "";
+		String moldata = "";
+		for ( int i = 0; i < result.size(); i++ ) {
+			String temp = (String)result.get(i);
+			String[] item = temp.split("\t");
+			String line = item[0];
+			if ( line.indexOf("---NAME:") >= 0 ) {
+				if ( !key.equals("") && !map.containsKey(key) && !moldata.trim().equals("") ) {
+					// Molfileデータ格納
+					map.put(key, moldata);
+				}
+				// 次のデータのキー名
+				key = line.substring(8).toLowerCase();
+				moldata = "";
+			}
+			else {
+				moldata += line + "\n";
+			}
+		}
+		if ( !map.containsKey(key) && !moldata.trim().equals("") ) {
+			map.put(key, moldata);
+		}
+		return map;
+	}
+
+	/*
+	 * レコード情報格納データクラス
+	 */
+	class RecordInfo {
+		private String id = "";
+		private String title = "";
+		private int siteNo = 0;
+		private int num = 0;
+		private String formula = "";
+		private String exactMass = "";
+		
+		/**
+		 * コンストラクタ
+		 */
+		public RecordInfo(String id, String title, int siteNo, int num, String formula, String mass) {
+			this.id = id;
+			this.title = title;
+			this.siteNo = siteNo;
+			this.num = num;
+			this.formula = formula;
+			this.exactMass = mass;
+		}
+		
+		/**
+		 * IDをセットする
+		 */
+		public void setID(String val) {
+			this.id = val;
+		}
+		/**
+		 * レコードタイトルをセットする
+		 */
+		public void setTitle(String val) {
+			this.title = val;
+		}
+		/**
+		 * 分子式をセットする
+		 */
+		public void setFormula(String val) {
+			this.formula = val;
+		}
+		/**
+		 * 精密質量をセットする
+		 */
+		public void setExactMass(String val) {
+			this.exactMass = val;
+		}
+		/**
+		 * サイト番号をセットする
+		 */
+		public void setSiteNo(int val) {
+			this.siteNo = val;
+		}
+		/**
+		 * 番号をセットする
+		 */
+		public void setNumber(int val) {
+			this.num = val;
+		}
+		
+		/**
+		 * IDを取得する
+		 */
+		public String getID() {
+			return this.id;
+		}
+		/**
+		 * レコードタイトルを取得する
+		 */
+		public String getTitle() {
+			return this.title;
+		}
+		/**
+		 * サイト番号を取得する
+		 */
+		public int getSiteNo() {
+			return this.siteNo;
+		}
+		/**
+		 * 番号を取得する
+		 */
+		public int getNumber() {
+			return this.num;
+		}
+		/**
+		 * 分子式を取得する
+		 */
+		public String getFormula() {
+			return this.formula;
+		}
+		/**
+		 * 精密質量を取得する
+		 */
+		public String getExactMass() {
+			return this.exactMass;
+		}
 	}
 }

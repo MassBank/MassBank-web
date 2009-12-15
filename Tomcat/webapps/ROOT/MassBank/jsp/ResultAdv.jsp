@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.3 2009.12.10
+ * ver 1.0.4 2009.12.15
  *
  ******************************************************************************/
 %>
@@ -536,7 +536,7 @@ function prevPeakSearchAdv() {
 	if ( list.getResultNum() > 0 ) {
 		out.println( "  <td align=\"right\">" );
 		out.println( "   <input style=\"width:120\" type=\"button\" name=\"treeCtrl\" value=\"Open All Tree\" onClick=\"allTreeCtrl()\">" );
-		out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Show Spectra\" onClick=\"return submitShowSpectra();\">" );
+		out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Multiple Display\" onClick=\"return submitShowSpectra();\">" );
 //		out.println( "   <input style=\"width:120\" type=\"button\" name=\"search\" value=\"Spectrum Search\" onClick=\"submitSearchPage();\">" );
 		out.println( "  </td>" );
 	}
@@ -746,7 +746,8 @@ function prevPeakSearchAdv() {
 			}
 			
 			//■ ツリー(子)
-			String cCheckValue = rec.getInfo() + "\t" + id + "\t" + site;
+			String cCheckValue = rec.getInfo() + "\t" + rec.getId() + "\t" + rec.getFormula()
+							+ "\t" + rec.getDispEmass().replaceAll("&nbsp;", "") + "\t" + site;
 			cRowId = String.valueOf(tChildIndex) + "of" + String.valueOf(tParentId);
 			out.println( " <tr valign=\"top\" id=\"" + cRowId + "\" onmouseover=\"overBgColor(this, '#E6E6FA', '"
 						+ cRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + cRowId + "');\">" );
