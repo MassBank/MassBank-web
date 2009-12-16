@@ -20,7 +20,7 @@
  *
  * ヒットピーク情報格納 クラス
  *
- * ver 2.0.4 2008.12.05
+ * ver 2.0.5 2008.12.16
  *
  ******************************************************************************/
 
@@ -106,11 +106,11 @@ public class HitPeaks
 		MzInfo mzInfo = new MzInfo();
 		// ピーク差検索の場合
 		if ( isDiff ) {
-			float diffmz = 0;
-			float diffmz2 = 0;
+			double diffmz = 0;
+			double diffmz2 = 0;
 			for ( int i = 0; i < hitMzInfo.length; i++ ) {
 				String[] val = hitMzInfo[i].split(",");
-				diffmz = Float.parseFloat(val[0]);
+				diffmz = Double.parseDouble(val[0]);
 				if ( diffmz != diffmz2 ) {
 					if ( i > 0 ) {
 						mzInfoList.add(mzInfo);
@@ -119,8 +119,8 @@ public class HitPeaks
 					mzInfo.diffmz = val[0];
 				}
 				if ( val.length > 1  ) {
-					float mz1 = Float.parseFloat(val[1]);
-					float mz2 = Float.parseFloat(val[2]);
+					double mz1 = Double.parseDouble(val[1]);
+					double mz2 = Double.parseDouble(val[2]);
 					mzInfo.mz1Ary.add(mz1);
 					mzInfo.mz2Ary.add(mz2);
 				}
@@ -131,7 +131,7 @@ public class HitPeaks
 		// ピーク検索の場合
 		else {
 			for ( int i = 0; i < hitMzInfo.length; i++ ) {
-				float mz1 = Float.parseFloat(hitMzInfo[i]);
+				double mz1 = Double.parseDouble(hitMzInfo[i]);
 				mzInfo.mz1Ary.add(mz1);
 				mzInfo.barColor.add(0);
 			}
@@ -158,7 +158,7 @@ public class HitPeaks
 	  * @param  idNum 表示するスペクトルの順番
 	  * @return ヒットしたピークのリスト
 	 */
-	public ArrayList<Float> getMz1( int idNum ) {
+	public ArrayList<Double> getMz1( int idNum ) {
 		return getMzList( idNum, this.pnum, 1 );
 	}
 
@@ -168,17 +168,17 @@ public class HitPeaks
 	 * @param  idNum 表示するスペクトルの順番
 	 * @return ヒットしたピークのリスト
 	 */
-	public ArrayList<Float> getMz2( int idNum ) {
+	public ArrayList<Double> getMz2( int idNum ) {
 		return getMzList( idNum, this.pnum, 2 );
 	}
 
 	/**
 	 * ピークのリストを取得する
 	 */
-	private ArrayList<Float> getMzList( int idNum, int pnum, int flg ) {
+	private ArrayList<Double> getMzList( int idNum, int pnum, int flg ) {
 		ArrayList<MzInfo> mzInfo = mzInfoList[idNum];
 		MzInfo mzs = mzInfo.get( pnum - 1 );
-		ArrayList<Float> mzAry = new ArrayList<Float>();
+		ArrayList<Double> mzAry = new ArrayList<Double>();
 		if ( flg == 0 || flg == 1 ) {
 			mzAry.addAll( mzs.mz1Ary );
 		}
@@ -194,8 +194,8 @@ public class HitPeaks
 	public class MzInfo 
 	{
 		String diffmz = "";
-		ArrayList<Float> mz1Ary = new ArrayList<Float>();
-		ArrayList<Float> mz2Ary = new ArrayList<Float>();
+		ArrayList<Double> mz1Ary = new ArrayList<Double>();
+		ArrayList<Double> mz2Ary = new ArrayList<Double>();
 		ArrayList<Integer> barColor = new ArrayList<Integer>();
 	}
 }

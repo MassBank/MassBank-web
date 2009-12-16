@@ -20,7 +20,7 @@
  *
  * ピークデータ クラス
  *
- * ver 2.0.1 2008.12.05
+ * ver 2.0.2 2009.12.16
  *
  ******************************************************************************/
 
@@ -31,56 +31,55 @@ import java.util.Vector;
  */
 public class Peak
 {
-	float[] mz;
+	double[] mz;
 	int[] intensity;
-	int[] top10Index;
 
+	/**
+	 * 
+	 * @param data
+	 */
 	public Peak(String[] data)
 	{
 		clear();
 
 		int i;
 		String[] words;
-		mz = new float[data.length];
+		mz = new double[data.length];
 		intensity = new int[data.length];
 		for(i = 0; i < data.length; i ++){
 			words = data[i].split("	");
-			mz[i] = Float.parseFloat(words[0]);
+			mz[i] = Double.parseDouble(words[0]);
 			intensity[i] = Integer.parseInt(words[1]);
 		}
-
-		searchTop10Peaks();
 	}
 
+	/**
+	 * 
+	 * @param data
+	 */
 	public Peak(Vector<String> data)
 	{
 		clear();
 
 		int i = 0;
 		String[] words;
-		mz = new float[data.size()];
+		mz = new double[data.size()];
 		intensity = new int[data.size()];
 		while(data.size() > 0){
 			words = data.remove(0).split("\t");
-			mz[i] = Float.parseFloat(words[0]);
+			mz[i] = Double.parseDouble(words[0]);
 			intensity[i] = Integer.parseInt(words[1]);
 			i ++;
 		}
-
-//		searchTop10Peaks();
 	}
 
 	public void clear()
 	{
 		mz = null;
 		intensity = null;
-		top10Index = new int[10];
-		for(int i = 0; i < 10; i ++){
-			top10Index[i] = 0;
-		}
 	}
 
-	public float[] getMZ()
+	public double[] getMZ()
 	{
 		return mz;
 	}
@@ -90,12 +89,29 @@ public class Peak
 		return intensity;
 	}
 
-	public float getMaxMZ()
-	{
-		return mz[mz.length-1];
+	/**
+	 * 最大m/zとプリカーサーの比較
+	 * @param プリカーサー
+	 * @return 最大m/zとプリカーサーの大きい方
+	 */
+	public double compMaxMzPrecusor(String precursor) {
+		double mzMax;
+		if (mz.length == 0) {
+			mzMax = 0d;
+		}
+		else {
+			mzMax = mz[mz.length-1];
+		}
+		try {
+			Double.parseDouble(precursor);
+		} catch (Exception e) {
+			return mzMax;
+		}
+		
+		return Math.max(mzMax, Double.parseDouble(precursor));
 	}
 
-	public int getMaxIntensity(float start, float end)
+	public int getMaxIntensity(double start, double end)
 	{
 		int max = 0;
 		for(int i = 0; i < intensity.length; i ++){
@@ -116,10 +132,10 @@ public class Peak
 		return mz.length;
 	}
 
-	public float getMZ(int index)
+	public double getMZ(int index)
 	{
 		if(index < 0 || index >= mz.length)
-			return -1.0f;
+			return -1.0d;
 		return mz[index];
 	}
 
@@ -130,12 +146,7 @@ public class Peak
 		return intensity[index];
 	}
 
-	public int[] getTop10Index()
-	{
-		return top10Index;
-	}
-
-	public int getIndex(float target)
+	public int getIndex(double target)
 	{
 		int i;
 		for(i = 0; i < mz.length; i ++){
@@ -143,32 +154,5 @@ public class Peak
 				break;
 		}
 		return i;
-	}
-
-	private void searchTop10Peaks()
-	{
-		if (mz == null || intensity == null)
-			return;
-
-		int max, i, j, k;
-		for (i = 0; i < 10; i++)
-			top10Index[i] = -1;
-		for (i = 0; i < 10; i++) {
-			max = 0;
-			for (j = 0; j < intensity.length; j++) {
-				if (max < intensity[j]) {
-					for (k = 0; k < i; k++) {
-						if (j == top10Index[k])
-							break;
-					}
-					if (k == i) {
-						max = intensity[j];
-						top10Index[i] = j;
-					}
-				}
-			}
-			if (max == 0)
-				break;
-		}
 	}
 }
