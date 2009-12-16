@@ -22,7 +22,7 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.12 2009.12.09
+ * ver 1.0.13 2009.12.16
  *
  ******************************************************************************/
 %>
@@ -313,7 +313,7 @@ function readMolfile(index) {
 			"<b>Read Molfile</b><br>"
 		  + "<form action='./StructureSearch.html' enctype='multipart/form-data' method='POST'>"
 		  + "<input type='file' name='file' size='50'><br><br>"
-		  + "<input type='submit' value='OK'>"
+		  + "<input type='submit' value='OK' onClick=\"return checkFileExtention(forms[0].file.value);\">"
 		  + "<input type='button' value='CANCEL' onClick='cancelEditor()'>"
 		  + "<input type='hidden' name='num' value='" + String(index) + "'>";
 	

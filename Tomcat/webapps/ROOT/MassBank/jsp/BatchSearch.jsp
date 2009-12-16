@@ -22,7 +22,7 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.8 2009.12.09
+ * ver 1.0.9 2009.12.16
  *
  ******************************************************************************/
 %>
@@ -66,7 +66,7 @@
 		html.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
 		html.append("<tr>\n");
 		html.append("<td>\n");
-		html.append("<br><input type=\"submit\" value=\"Submit\" class=\"search\">\n");
+		html.append("<br><input type=\"submit\" value=\"Submit\" class=\"search\" onClick=\"return checkFileExtention(forms[0].file.value);\">\n");
 		html.append("</td>\n");
 		html.append("</tr>\n");
 		html.append("</table>\n");

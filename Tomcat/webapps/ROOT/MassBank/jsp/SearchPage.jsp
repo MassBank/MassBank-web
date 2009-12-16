@@ -22,7 +22,7 @@
  *
  * Search Page表示用モジュール
  *
- * ver 1.0.12 2009.12.09
+ * ver 1.0.13 2009.12.16
  *
  ******************************************************************************/
 %>
@@ -109,7 +109,7 @@
 		<form action="./SearchPage.html" enctype="multipart/form-data" method="POST">
 			<img src="./image/file.gif" align="left">
 			<input type="file" name="File" size="32">&nbsp;
-			<input type="submit" value="File Read">&nbsp;&nbsp;
+			<input type="submit" value="File Read" onClick="return checkFileExtention(forms[0].File.value);">&nbsp;&nbsp;
 			<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="font12px text" href="<%=SAMPLE_URL%>" target="_blank">sample file</a></b>&nbsp;
 			<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="font12px text" href="<%=SAMPLE_ZIP_URL%>">sample archive</a></b>&nbsp;
 		</form>
