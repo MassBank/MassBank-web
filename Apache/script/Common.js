@@ -20,7 +20,7 @@
  *
  * MassBank共通スクリプト
  *
- * ver 1.0.8 2009.12.09
+ * ver 1.0.9 2009.12.16
  *
  ******************************************************************************/
 
@@ -153,6 +153,38 @@ function selBoxInst(key, num) {
 	else {
 		obj2.checked = false;
 	}
+}
+
+/**
+ * ファイル拡張子のチェック
+ * @param path ファイルの絶対パス
+ */
+function checkFileExtention(path) {
+	var file;
+	var ext;
+	var invalidList = new Array(
+							"xls", "xlsx", "doc", "docx", "ppt", "pptx", "pdf",
+							"bmp", "jpg", "gif", "png", "cab", "lzh", "tar", "zip",
+							"exe", "wma", "aac", "mp3");
+	
+	if (path == "") {
+		alert("No file.");
+		return false;
+	}
+	
+	// ファイル名取得
+	file = path.substring(path.lastIndexOf('/', path.length) + 1);
+	file = file.substring(file.lastIndexOf('\\', file.length) + 1);
+	// 拡張子取得
+	ext = file.substring(file.lastIndexOf('.', file.length) + 1);
+	
+	for (var i=0; i<invalidList.length; i++) {
+		if (invalidList[i] == ext.toLowerCase()) {
+			alert("The extension is illegal.");
+			return false;
+		}
+	}
+	return true;
 }
 
 /*
