@@ -20,7 +20,7 @@
  *
  * ピーク情報データ クラス
  *
- * ver 1.0.0 2008.12.05
+ * ver 1.0.1 2009.12.15
  *
  ******************************************************************************/
 
@@ -34,7 +34,7 @@ public class PeakData {
 	private int peakNum = 0;
 	
 	/** m/z */
-	private float[] mz;
+	private double[] mz;
 
 	/** 強度 */
 	private int[] intensity;
@@ -55,13 +55,13 @@ public class PeakData {
 				peakNum = 0;
 			}
 		}
-		mz = new float[peakNum];
+		mz = new double[peakNum];
 		intensity = new int[peakNum];
 		selectPeakFlag = new boolean[peakNum];
 		String[] words;
 		for (int i=0; i<peakNum; i++) {
 			words = data[i].split("\t");
-			mz[i] = Float.parseFloat(words[0]);
+			mz[i] = Double.parseDouble(words[0]);
 			intensity[i] = Integer.parseInt(words[1]);
 		}
 	}
@@ -81,7 +81,7 @@ public class PeakData {
 	 * @param end マスレンジ(m/z)終了値
 	 * @return レコード内の指定されたマスレンジ(m/z)の間で最大の強度
 	 */
-	public int getMaxIntensity(float start, float end) {
+	public int getMaxIntensity(double start, double end) {
 		int max = 0;
 		for (int i = 0; i < peakNum; i++) {
 			if (mz[i] > end)
@@ -100,9 +100,9 @@ public class PeakData {
 	 * @param index インデックス
 	 * @return m/z
 	 */
-	public float getMz(int index) {
+	public double getMz(int index) {
 		if (index < 0 || index >= peakNum) {
-			return -1.0f;
+			return -1.0d;
 		}
 		return mz[index];
 	}
@@ -112,21 +112,21 @@ public class PeakData {
 	 * @param プリカーサー
 	 * @return 最大m/zとプリカーサーの大きい方
 	 */
-	public float compMaxMzPrecusor(String precursor) {
-		float mzMax;
+	public double compMaxMzPrecusor(String precursor) {
+		double mzMax;
 		if (mz.length == 0) {
-			mzMax = 0f;
+			mzMax = 0d;
 		}
 		else {
 			mzMax = mz[mz.length-1];
 		}
 		try {
-			Float.parseFloat(precursor);
+			Double.parseDouble(precursor);
 		} catch (Exception e) {
 			return mzMax;
 		}
 		
-		return Math.max(mzMax, Float.parseFloat(precursor));
+		return Math.max(mzMax, Double.parseDouble(precursor));
 	}
 	
 	/**
@@ -146,7 +146,7 @@ public class PeakData {
 	 * @param mz m/z
 	 * @return インデックス
 	 */
-	public int getIndex(float mz) {
+	public int getIndex(double mz) {
 		int i;
 		for (i = 0; i < peakNum; i++) {
 			if (this.mz[i] >= mz)

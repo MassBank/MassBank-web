@@ -55,7 +55,7 @@ public class PackageSpecData {
 	private int recNum = 0;
 	
 	/** 選択済みピークm/zリスト */
-	private TreeSet<Float> selectedPeakList = new TreeSet<Float>();
+	private TreeSet<Double> selectedPeakList = new TreeSet<Double>();
 	
 	/**
 	 * デフォルトコンストラクタ
@@ -69,7 +69,7 @@ public class PackageSpecData {
 	public void initAllData() {
 		recInfo = new ArrayList<PackageRecData>();
 		recNum = 0;
-		selectedPeakList = new TreeSet<Float>();
+		selectedPeakList = new TreeSet<Double>();
 	}
 	
 	/**
@@ -90,7 +90,7 @@ public class PackageSpecData {
 			recInfo.add(queryRecData);
 		}
 		recNum = recInfo.size();
-		selectedPeakList = new TreeSet<Float>();
+		selectedPeakList = new TreeSet<Double>();
 	}
 	
 	/**
@@ -206,7 +206,7 @@ public class PackageSpecData {
 	 * @param mz 選択済みとするm/z
 	 */
 	public void addSelectedPeakList(String mz) {
-		selectedPeakList.add(Float.valueOf(mz));
+		selectedPeakList.add(Double.parseDouble(mz));
 	}
 	
 	/**
@@ -221,7 +221,7 @@ public class PackageSpecData {
 	 * 選択済みピークリストの取得
 	 * @return 選択済みピークリスト
 	 */
-	public TreeSet<Float> getSelectedPeakList() {
+	public TreeSet<Double> getSelectedPeakList() {
 		return selectedPeakList;
 	}
 	
