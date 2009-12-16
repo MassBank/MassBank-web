@@ -8,8 +8,7 @@ javac -cp .;build "%TOMCAT_MASSBANK%GetConfig.java" -d ./build
 javac -cp .;build canvas/DrawPane.java -d ./build
 javac -cp .;build draw2d/MOLformat.java -d ./build
 javac -cp .;build metabolic/MolFigure.java -d ./build
-javac -cp .;build MolViewPane.java -d ./build
-javac -cp .;build *.java -d build
+javac -cp .;build *.java -d ./build
 
 cd ./build
 jar cfmv ../DisplayAll2.jar ../MANIFEST.MF *.class massbank/*.class *
