@@ -20,7 +20,7 @@
  *
  * Multiple Spectra Display アプレット
  *
- * ver 2.0.6 2009.12.14
+ * ver 2.0.7 2009.12.16
  *
  ******************************************************************************/
 
@@ -29,6 +29,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -36,23 +38,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Vector;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.net.URLEncoder;
-import java.io.UnsupportedEncodingException;
-
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JApplet;
@@ -60,9 +58,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 import massbank.GetConfig;
@@ -80,14 +78,14 @@ public class DisplayAll extends JApplet
 	static int MIN_RANGE = 5;
 	static int DEF_EX_PANE_SIZE = 150;
 
-	float massStart = 0;
-	float massRange = 0;
+	double massStart = 0;
+	double massRange = 0;
 	int intensityRange = INTENSITY_MAX;
 	boolean head2tail = false;
 	boolean underDrag = false;
 	Point fromPos = null;
 	Point toPos = null;
-	float xscale = 0;
+	double xscale = 0;
 	JSplitPane jsp_plt2ext = null;
 	boolean isMZFlag = false;
 	int numSpct;
@@ -126,8 +124,8 @@ public class DisplayAll extends JApplet
 			int loopCoef;
 			int minx;
 			int width;
-			float tmpMassStart;
-			float tmpMassRange;
+			double tmpMassStart;
+			double tmpMassRange;
 			int tmpIntensityRange;
 			int movex;
 
@@ -141,7 +139,7 @@ public class DisplayAll extends JApplet
 				width = w;
 				movex = 0 + MARGIN;
 				// 目的拡大率を算出
-				float xs = (getWidth() - 2.0f * MARGIN)
+				double xs = (getWidth() - 2.0d * MARGIN)
 						/ massRange;
 				tmpMassStart = massStart
 						+ ((minx - MARGIN) / xs);
@@ -155,14 +153,14 @@ public class DisplayAll extends JApplet
 				{
 					// 最大値を検出。
 					int max = 0;
-					float start = Math.max(tmpMassStart, 0.0f);
+					double start = Math.max(tmpMassStart, 0.0d);
 					for (int i=0; i<peaks1.length; i++) {
 						if (max < peaks1[i].getMaxIntensity(start, start + tmpMassRange)) {
 							max = peaks1[i].getMaxIntensity(start, start + tmpMassRange);
 						}
 					}
 					// 50単位に変換してスケールを決定
-					tmpIntensityRange = (int)((1.0f + max / 50.0f) * 50.0f);
+					tmpIntensityRange = (int)((1.0d + max / 50.0d) * 50.0d);
 					if(tmpIntensityRange > INTENSITY_MAX)
 						tmpIntensityRange = INTENSITY_MAX;
 				}
@@ -173,7 +171,7 @@ public class DisplayAll extends JApplet
 			 */
 			public void actionPerformed(ActionEvent e)
 			{
-				xscale = (getWidth() - 2.0f * MARGIN) / massRange;
+				xscale = (getWidth() - 2.0d * MARGIN) / massRange;
 				int xpos = (movex + minx) / 2;
 				if (Math.abs(massStart - tmpMassStart) <= 2
 						&& Math.abs(massRange - tmpMassRange) <= 2)
@@ -240,10 +238,10 @@ public class DisplayAll extends JApplet
 			super.paintComponent(g);
 			int width = getWidth();
 			int height = getHeight();
-			xscale = (width - 2.0f * MARGIN) / massRange;
+			xscale = (width - 2.0d * MARGIN) / massRange;
 			
-			ArrayList<Float> mz1Ary = null;
-			ArrayList<Float> mz2Ary = null;
+			ArrayList<Double> mz1Ary = null;
+			ArrayList<Double> mz2Ary = null;
 			ArrayList<Integer> colorAry = null;
 
 			// ピークバー色づけするカラーをセット
@@ -271,7 +269,7 @@ public class DisplayAll extends JApplet
 				marginTop = MARGIN;
 			}
 			
-			float yscale = (height - (float)(MARGIN +marginTop) ) / intensityRange;
+			double yscale = (height - (double)(MARGIN +marginTop) ) / intensityRange;
 			
 			// 背景を白にする
 			g.setColor(Color.white);
@@ -293,7 +291,7 @@ public class DisplayAll extends JApplet
 				g.drawLine(MARGIN + (int) (i * xscale),
 						height - MARGIN, MARGIN + (int) (i * xscale),
 						height - MARGIN + 2);
-				g.drawString(String.valueOf(i + massStart),
+				g.drawString(formatMass(i + massStart, true),
 						MARGIN + (int) (i * xscale) - 5,
 						height - 1);
 			}
@@ -313,8 +311,8 @@ public class DisplayAll extends JApplet
 				return;
 			}
 
-			float hitMz1Prev = 0;
-			float hitMz2Prev = 0;
+			double hitMz1Prev = 0;
+			double hitMz2Prev = 0;
 			int hitMz1Cnt = -1;
 			int hitMz2Cnt = -1;
 			
@@ -323,7 +321,7 @@ public class DisplayAll extends JApplet
 			//========================================================
 			g.setColor(Color.black);
 			int end, its, x, w;
-			float peak;
+			double peak;
 			start = peaks1[idPeak].getIndex(massStart);
 			end = peaks1[idPeak].getIndex(massStart + massRange);
 			for (int i = start; i < end; i++) {
@@ -343,7 +341,7 @@ public class DisplayAll extends JApplet
 				boolean isHit = false;
 				if ( reqType.equals("peak") || reqType.equals("diff") ) {
 					int j = 0;
-					float mz = 0;
+					double mz = 0;
 					
 					// ヒットピークmz1と一致しているか
 					for ( j = 0; j < mz1Ary.size(); j++ ) {
@@ -406,7 +404,7 @@ public class DisplayAll extends JApplet
 					else {
 						g.setColor(Color.black);
 					}
-					g.drawString(String.valueOf(peak),
+					g.drawString(formatMass(peak, false),
 								x, height - MARGIN - (int) (its * yscale));
 				}
 				g.setColor(Color.black);
@@ -424,11 +422,11 @@ public class DisplayAll extends JApplet
 					diffmz = (bgMzZDiff.setScale(1, BigDecimal.ROUND_DOWN)).toString(); 
 				}
 
-				float mz1Prev = 0;
+				double mz1Prev = 0;
 				int hitCnt = 0;
 				for ( int j = 0; j < mz1Ary.size(); j++ ) {
-					float mz1 = mz1Ary.get(j);
-					float mz2 = mz2Ary.get(j);
+					double mz1 = mz1Ary.get(j);
+					double mz2 = mz2Ary.get(j);
 					if ( mz1 - mz1Prev >= 1 ) {
 						g.setColor(Color.GRAY);
 
@@ -579,6 +577,51 @@ public class DisplayAll extends JApplet
 		public void mouseEntered(MouseEvent e) {}
 		public void mouseExited(MouseEvent e) {}
 		public void mouseMoved(MouseEvent e) {}
+		
+		
+		/**
+		 * m/zの表示用フォーマット
+		 * 画面表示用にm/zの桁数を合わせて返却する
+		 * @param mass フォーマット対象のm/z
+		 * @param isForce 桁数強制統一フラグ（true:0埋めと切捨てを行う、false:切捨てのみ行う）
+		 * @return フォーマット後のm/z
+		 */
+		private String formatMass(double mass, boolean isForce) {
+			final int ZERO_DIGIT = 4;
+			String massStr = String.valueOf(mass);
+			if (isForce) {
+				// 強制的に全ての桁を統一する（0埋めと切捨てを行う）
+				if (massStr.indexOf(".") == -1) {
+					massStr += ".0000";
+				}
+				else {
+					if (massStr.indexOf(".") != -1) {
+						String [] tmpMzStr = massStr.split("\\.");
+						if (tmpMzStr[1].length() <= ZERO_DIGIT) {
+							int addZeroCnt = ZERO_DIGIT - tmpMzStr[1].length();
+							for (int j=0; j<addZeroCnt; j++) {
+								massStr += "0";
+							}
+						}
+						else {
+							if (tmpMzStr[1].length() > ZERO_DIGIT) {
+								massStr = tmpMzStr[0] + "." + tmpMzStr[1].substring(0, ZERO_DIGIT);
+							}
+						}
+					}
+				}
+			}
+			else {
+				// 桁を超える場合のみ桁を統一する（切捨てのみ行う）
+				if (massStr.indexOf(".") != -1) {
+					String [] tmpMzStr = massStr.split("\\.");
+					if (tmpMzStr[1].length() > ZERO_DIGIT) {
+						massStr = tmpMzStr[0] + "." + tmpMzStr[1].substring(0, ZERO_DIGIT);
+					}
+				}
+			}
+			return massStr;
+		}
 	}
 
 	/**
@@ -949,12 +992,16 @@ public class DisplayAll extends JApplet
 	{
 		massRange = -1;
 		for ( int id = 0; id < numSpct; id ++ ) {
-			float max = peaks1[id].getMaxMZ();
+			double max = peaks1[id].compMaxMzPrecusor(precursor[id]);
 			if ( massRange < max ) { massRange = max; }
 		}
 
+		// massRangeが100で割り切れる場合は+100の余裕を持つ
+		if (massRange != 0d && (massRange % 100.0d) == 0d) {
+			massRange += 100.0d;
+		}
 		// massRangeを100単位にそろえる
-		massRange = (float) Math.ceil(massRange / 100.0) * 100.0f;
+		massRange = (double) Math.ceil(massRange / 100.0d) * 100.0d;
 		massStart = 0;
 		intensityRange = INTENSITY_MAX;
 
