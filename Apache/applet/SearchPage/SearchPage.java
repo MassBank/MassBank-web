@@ -773,7 +773,12 @@ public class SearchPage extends JApplet {
 					if (usrData == null) {
 						usrData = new UserFileData();
 					}
-					peaksLine += line.trim();
+					if (line.lastIndexOf(";") != -1) {
+						peaksLine += line.trim();						
+					}
+					else {
+						peaksLine += line.trim() + ";";
+					}
 				}
 				else if (line.trim().startsWith("Name:")) {
 					if (usrData == null) {
