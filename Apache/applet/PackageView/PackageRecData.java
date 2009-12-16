@@ -56,7 +56,7 @@ public class PackageRecData {
 	private int peakNum = 0;
 	
 	/** m/z */
-	private float[] mz;
+	private double[] mz;
 	
 	/** 強度 */
 	private int[] intensity;
@@ -234,7 +234,7 @@ public class PackageRecData {
 	 * @param end マスレンジ(m/z)終了値
 	 * @return レコード内の指定されたマスレンジ(m/z)の間で最大の強度
 	 */
-	public int getMaxIntensity(float start, float end) {
+	public int getMaxIntensity(double start, double end) {
 		int max = 0;
 		for (int i=0; i<this.peakNum; i++) {
 			if (this.mz[i] > end) {
@@ -267,7 +267,7 @@ public class PackageRecData {
 	 * @param index インデックス
 	 * @return m/z
 	 */
-	public float getMz(int index) {
+	public double getMz(int index) {
 		return mz[index];
 	}
 
@@ -277,28 +277,28 @@ public class PackageRecData {
 	 * @param mz m/z
 	 */
 	public void setMz(int index, String mz) {
-		this.mz[index] = Float.parseFloat(mz);
+		this.mz[index] = Double.parseDouble(mz);
 	}
 	
 	/**
 	 * 最大m/zとプリカーサーの比較
 	 * @return 最大m/zとプリカーサーの大きい方
 	 */
-	public float compMaxMzPrecusor() {
-		float mzMax;
+	public double compMaxMzPrecusor() {
+		double mzMax;
 		if (mz == null || mz.length == 0) {
-			mzMax = 0f;
+			mzMax = 0d;
 		}
 		else {
 			mzMax = mz[mz.length-1];
 		}
 		try {
-			Float.parseFloat(precursor);
+			Double.parseDouble(precursor);
 		} catch (Exception e) {
 			return mzMax;
 		}
 		
-		return Math.max(mzMax, Float.parseFloat(precursor));
+		return Math.max(mzMax, Double.parseDouble(precursor));
 	}
 	
 	/**
@@ -319,7 +319,7 @@ public class PackageRecData {
 		
 		int index = -1;
 		for (int i=0; i<peakNum; i++) {
-			if (this.mz[i] == Float.parseFloat(mz)) {
+			if (this.mz[i] == Double.parseDouble(mz)) {
 				index = i;
 				break;
 			}
@@ -349,7 +349,7 @@ public class PackageRecData {
 	public void setSelectPeak(String mz, boolean status) {
 		int index = -1;
 		for (int i=0; i<peakNum; i++) {
-			if (this.mz[i] == Float.parseFloat(mz)) {
+			if (this.mz[i] == Double.parseDouble(mz)) {
 				index = i;
 				break;
 			}
@@ -449,7 +449,7 @@ public class PackageRecData {
 	 */
 	public void setPeakNum(int peakNum) {
 		this.peakNum = peakNum;
-		this.mz = new float[peakNum];
+		this.mz = new double[peakNum];
 		this.intensity = new int[peakNum];
 		this.selectPeak = new boolean[peakNum];
 		this.peakColorType = new int[peakNum];
@@ -461,7 +461,7 @@ public class PackageRecData {
 	 * @param target m/z指定値
 	 * @return インデックス
 	 */
-	public int getIndex(float target) {
+	public int getIndex(double target) {
 		int index;
 		for (index=0; index<this.peakNum; index++) {
 			if (this.mz[index] >= target) {

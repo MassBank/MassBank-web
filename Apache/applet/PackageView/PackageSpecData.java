@@ -20,7 +20,7 @@
  *
  * スペクトル情報データ クラス
  *
- * ver 1.0.2 2009.09.17
+ * ver 1.0.3 2009.12.16
  *
  ******************************************************************************/
 
@@ -52,7 +52,7 @@ public class PackageSpecData {
 	private int recNum = 0;
 	
 	/** 選択済みピークm/zリスト */
-	private TreeSet<Float> selectedPeakList = new TreeSet<Float>();
+	private TreeSet<Double> selectedPeakList = new TreeSet<Double>();
 	
 	/**
 	 * デフォルトコンストラクタ
@@ -66,7 +66,7 @@ public class PackageSpecData {
 	public void initAllData() {
 		recInfo = new ArrayList<PackageRecData>();
 		recNum = 0;
-		selectedPeakList = new TreeSet<Float>();
+		selectedPeakList = new TreeSet<Double>();
 	}
 	
 	/**
@@ -161,7 +161,7 @@ public class PackageSpecData {
 	 * @return 結果(選択済：true、未選択：false)
 	 */
 	public boolean containsSelectedPeak(String mz) {
-		return selectedPeakList.contains(Float.valueOf(mz));
+		return selectedPeakList.contains(Double.valueOf(mz));
 	}
 	
 	/**
@@ -176,7 +176,7 @@ public class PackageSpecData {
 	 * @param mz 選択済みとするm/z
 	 */
 	public void addSelectedPeakList(String mz) {
-		selectedPeakList.add(Float.valueOf(mz));
+		selectedPeakList.add(Double.valueOf(mz));
 	}
 	
 	/**
@@ -184,14 +184,14 @@ public class PackageSpecData {
 	 * @param mz 選択解除するm/z
 	 */
 	public void removeSelectedPeakList(String mz) {
-		selectedPeakList.remove(Float.valueOf(mz));
+		selectedPeakList.remove(Double.valueOf(mz));
 	}
 	
 	/**
 	 * 選択済みピークリストの取得
 	 * @return 選択済みピークリスト
 	 */
-	public TreeSet<Float> getSelectedPeakList() {
+	public TreeSet<Double> getSelectedPeakList() {
 		return selectedPeakList;
 	}
 	

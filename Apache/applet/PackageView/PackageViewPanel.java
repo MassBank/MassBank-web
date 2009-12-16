@@ -20,7 +20,7 @@
  *
  * PackageView クラス
  *
- * ver 1.0.3 2009.04.01
+ * ver 1.0.4 2009.12.16
  *
  ******************************************************************************/
 
@@ -114,8 +114,8 @@ public class PackageViewPanel extends JPanel {
 	private int tmpMoveXPoint = -1;						// 現在のx軸可動値(退避用)
 	private int tmpMoveYPoint = -1;						// 現在のy軸可動値(退避用)
 
-	private float massStart = 0;
-	private float massRange = 0;
+	private double massStart = 0;
+	private double massRange = 0;
 	private int massRangeMax = 0;
 	private int intensityRange = 0;
 	
@@ -285,7 +285,7 @@ public class PackageViewPanel extends JPanel {
 			tmpMassRange = new BigDecimal(
 					String.valueOf(recData.compMaxMzPrecusor())).setScale(-2, BigDecimal.ROUND_UP).intValue();
 			// m/zの最大値が100で割り切れる場合はレンジを+100する
-			if (recData.compMaxMzPrecusor() % 100f == 0f) {
+			if (recData.compMaxMzPrecusor() % 100d == 0d) {
 				tmpMassRange += 100;
 			}
 			if (massRangeMax < tmpMassRange) {
@@ -682,16 +682,47 @@ public class PackageViewPanel extends JPanel {
 	}
 	
 	/**
-	 * 数値(float)の切り上げ
-	 * 指定された位で切り上げする
-	 * @param num 切り上げ対象の数値
-	 * @param place 切り上げする位
-	 * @return 切り上げ後の数値
+	 * m/zの表示用フォーマット
+	 * 画面表示用にm/zの桁数を合わせて返却する
+	 * @param mass フォーマット対象のm/z
+	 * @param isForce 桁数強制統一フラグ（true:0埋めと切捨てを行う、false:切捨てのみ行う）
+	 * @return フォーマット後のm/z
 	 */
-	private float roundUp(float num, int place) {
-		float newNum = new BigDecimal(
-				String.valueOf(num)).setScale(place, BigDecimal.ROUND_UP).floatValue();
-		return newNum;
+	private String formatMass(double mass, boolean isForce) {
+		final int ZERO_DIGIT = 4;
+		String massStr = String.valueOf(mass);
+		if (isForce) {
+			// 強制的に全ての桁を統一する（0埋めと切捨てを行う）
+			if (massStr.indexOf(".") == -1) {
+				massStr += ".0000";
+			}
+			else {
+				if (massStr.indexOf(".") != -1) {
+					String [] tmpMzStr = massStr.split("\\.");
+					if (tmpMzStr[1].length() <= ZERO_DIGIT) {
+						int addZeroCnt = ZERO_DIGIT - tmpMzStr[1].length();
+						for (int j=0; j<addZeroCnt; j++) {
+							massStr += "0";
+						}
+					}
+					else {
+						if (tmpMzStr[1].length() > ZERO_DIGIT) {
+							massStr = tmpMzStr[0] + "." + tmpMzStr[1].substring(0, ZERO_DIGIT);
+						}
+					}
+				}
+			}
+		}
+		else {
+			// 桁を超える場合のみ桁を統一する（切捨てのみ行う）
+			if (massStr.indexOf(".") != -1) {
+				String [] tmpMzStr = massStr.split("\\.");
+				if (tmpMzStr[1].length() > ZERO_DIGIT) {
+					massStr = tmpMzStr[0] + "." + tmpMzStr[1].substring(0, ZERO_DIGIT);
+				}
+			}
+		}
+		return massStr;
 	}
 	
 	/**
@@ -776,8 +807,8 @@ public class PackageViewPanel extends JPanel {
 		private final Color selectRecColor = new Color(153, 51, 255);		// レコード選択色
 		private final Color onCursorColor = Color.BLUE;					// カーソル上色
 		
-		private float xscale = 0f;											// x軸方向拡大率
-		private float yscale = 0f;											// y軸方向拡大率
+		private double xscale = 0d;											// x軸方向拡大率
+		private double yscale = 0d;											// y軸方向拡大率
 		
 		private int marginTop = MARGIN;									// 上部余白
 		private int marginRight = MARGIN;									// 右部余白
@@ -924,7 +955,7 @@ public class PackageViewPanel extends JPanel {
 		private void setStatusLabel() {
 			if (specData.getSelectedPeakNum() != 0) {
 				StringBuffer sb = new StringBuffer();
-				Iterator<Float> ite = specData.getSelectedPeakList().iterator();
+				Iterator<Double> ite = specData.getSelectedPeakList().iterator();
 				while (ite.hasNext()) {
 					sb.append(String.valueOf(ite.next()) + ",&nbsp;&nbsp;");
 				}
@@ -963,16 +994,16 @@ public class PackageViewPanel extends JPanel {
 			
 			// x軸方向拡大率の算出
 //			xscale = (width - 2.0f * MARGIN) / massRange;
-			xscale = (width - (2.0f * MARGIN) - ((recNum-1) * moveXPoint)) / massRange;
-			if (xscale < 0f) {
-				xscale = 0f;
+			xscale = (width - (2.0d * MARGIN) - ((recNum-1) * moveXPoint)) / massRange;
+			if (xscale < 0d) {
+				xscale = 0d;
 			}
 			
 			// y軸方向拡大率の算出
 //			float yscale = (height - (float)(MARGIN +marginTop) ) / intensityRange;
-			yscale = (height - (float)(MARGIN + marginTop + (recNum-1) * moveYPoint) ) / intensityRange;
-			if (yscale < 0f) {
-				yscale = 0f;
+			yscale = (height - (double)(MARGIN + marginTop + (recNum-1) * moveYPoint) ) / intensityRange;
+			if (yscale < 0d) {
+				yscale = 0d;
 			}
 			
 			int tmpMarginTop = 0;
@@ -1100,7 +1131,7 @@ public class PackageViewPanel extends JPanel {
 					
 					// グラフ基準x軸へのm/z文字列描画
 					if (i == (loopCount-1)) {
-						g.drawString(String.valueOf(j + massStart),
+						g.drawString(formatMass(j + massStart, true),
 									 baseX + (int)(j * xscale) - 5,
 									 height - 1);
 					}
@@ -1265,7 +1296,7 @@ public class PackageViewPanel extends JPanel {
 				}
 				
 				int end, its, x, y, w;
-				float mz;
+				double mz;
 				start = recData.getIndex(massStart);
 				end = recData.getIndex(massStart + massRange);
 				for (int j=start; j<end; j++) {
@@ -1293,7 +1324,7 @@ public class PackageViewPanel extends JPanel {
 					
 					// 選択済ピークであるかを判定
 					if (specData.getSelectedPeakNum() != 0) {
-						Iterator<Float> ite = specData.getSelectedPeakList().iterator();
+						Iterator<Double> ite = specData.getSelectedPeakList().iterator();
 						while (ite.hasNext()) {
 							if (String.valueOf(mz).equals(String.valueOf(ite.next()))) {
 								isSelectedLine = true;
@@ -1423,7 +1454,7 @@ public class PackageViewPanel extends JPanel {
 				
 				
 				int end, its, x, y, w, h;
-				float mz;
+				double mz;
 				start = recData.getIndex(massStart);
 				end = recData.getIndex(massStart + massRange);
 				for (int j=start; j<end; j++) {
@@ -1476,7 +1507,7 @@ public class PackageViewPanel extends JPanel {
 						// さらに、エリア内の場合はカーソル上Peakのm/zと同じかを判定
 						if (inPeakArea) {
 							for (int k=0; k<overCursorMz.size(); k++) {
-								if (Float.valueOf(String.valueOf(overCursorMz.get(k))) == mz) {
+								if (Double.parseDouble(String.valueOf(overCursorMz.get(k))) == mz) {
 									isOnLine = true;
 									break;
 								}
@@ -1486,7 +1517,7 @@ public class PackageViewPanel extends JPanel {
 					
 					// 選択済ピークm/zであるかの判定
 					if (specData.getSelectedPeakNum() != 0) {
-						Iterator<Float> ite = specData.getSelectedPeakList().iterator();
+						Iterator<Double> ite = specData.getSelectedPeakList().iterator();
 						while (ite.hasNext()) {
 							if (String.valueOf(mz).equals(String.valueOf(ite.next()))) {
 								isSelectedLine = true;
@@ -1589,7 +1620,7 @@ public class PackageViewPanel extends JPanel {
 					
 					// グラフ内に描画できる場合のみ描画
 					if (isMzDraw && y >= tmpMarginTop) {
-						g.drawString(String.valueOf(mz), x, y);
+						g.drawString(formatMass(mz, false), x, y);
 					}
 					
 					
@@ -1624,7 +1655,7 @@ public class PackageViewPanel extends JPanel {
 				if ( recData != null
 						&& !recData.getPrecursor().equals("") ) {
 					
-					float pre = Float.parseFloat(recData.getPrecursor());
+					double pre = Double.parseDouble(recData.getPrecursor());
 					int preX = baseX + (int)((pre - massStart) * xscale) - (int)Math.floor(xscale / 8);
 
 					// プリカーサーm/zがグラフ内の場合のみ描画
@@ -1766,10 +1797,10 @@ public class PackageViewPanel extends JPanel {
 					if ((fromPos != null) && (toPos != null)) {
 						
 						if (Math.min(fromPos.x, toPos.x) < 0) {
-							massStart = roundUp(Math.max(0, massStart - massRange / 3), 1);
+							massStart = Math.max(0, massStart - massRange / 3);
 						}
 						else if (Math.max(fromPos.x, toPos.x) > getWidth()) {
-							massStart = roundUp(Math.min(massRangeMax - massRange, massStart + massRange / 3), 1);
+							massStart = Math.min(massRangeMax - massRange, massStart + massRange / 3);
 						}
 						else {
 							if (specData != null) {
@@ -1882,7 +1913,7 @@ public class PackageViewPanel extends JPanel {
 
 					PackageRecData recData = null;
 					
-					TreeSet<Float> tmpClickMzList = new TreeSet<Float>();
+					TreeSet<Double> tmpClickMzList = new TreeSet<Double>();
 					
 					for (int i=0; i<recNum; i++) {
 						
@@ -1909,7 +1940,7 @@ public class PackageViewPanel extends JPanel {
 						}
 						
 						int end, its, x, y, w;
-						float mz;
+						double mz;
 						start = recData.getIndex(massStart);
 						end = recData.getIndex(massStart + massRange);
 						for (int j=start; j<end; j++) {
@@ -1987,7 +2018,7 @@ public class PackageViewPanel extends JPanel {
 						selectPopup = new JPopupMenu();
 						JMenuItem item = null;
 						
-						Iterator<Float> ite = tmpClickMzList.iterator();
+						Iterator<Double> ite = tmpClickMzList.iterator();
 						while (ite.hasNext()) {
 							String mz = String.valueOf(ite.next());
 							item = new JMenuItem(mz);
@@ -2058,8 +2089,8 @@ public class PackageViewPanel extends JPanel {
 			private int loopCoef;
 			private int toX;
 			private int fromX;
-			private float tmpMassStart;
-			private float tmpMassRange;
+			private double tmpMassStart;
+			private double tmpMassRange;
 			private int tmpIntensityRange;
 			private int movex;
 
@@ -2075,8 +2106,8 @@ public class PackageViewPanel extends JPanel {
 				movex = 0 + MARGIN;
 				// 目的拡大率を算出
 //				float xs = (getWidth() - 2.0f * MARGIN) / massRange;
-				float xs = (getWidth() - (2.0f * MARGIN) - ((recNum-1) * moveXPoint)) / massRange;
-				tmpMassStart = roundUp(massStart + ((toX - MARGIN) / xs), 1);
+				double xs = (getWidth() - (2.0d * MARGIN) - ((recNum-1) * moveXPoint)) / massRange;
+				tmpMassStart = massStart + ((toX - MARGIN) / xs);
 				
 				tmpMassRange = 10 * (fromX / (10 * xs));
 				if (tmpMassRange < MASS_RANGE_MIN) {
@@ -2086,7 +2117,7 @@ public class PackageViewPanel extends JPanel {
 				// Intensityのレンジを設定
 				if (massRange <= massRangeMax) {
 					int maxIntensity = 0;
-					float start = Math.max(tmpMassStart, 0.0f);
+					double start = Math.max(tmpMassStart, 0.0d);
 					// 全てのレコード内から強度の最大値を算出
 					PackageRecData recData = null;
 					for ( int i=0; i<recNum; i++ ) {
@@ -2096,7 +2127,7 @@ public class PackageViewPanel extends JPanel {
 						}
 					}
 					// 50単位に変換してスケールを決定
-					tmpIntensityRange = (int)((1.0f + maxIntensity / 50.0f) * 50.0f);
+					tmpIntensityRange = (int)((1.0d + maxIntensity / 50.0d) * 50.0d);
 					if(tmpIntensityRange > INTENSITY_RANGE_MAX) {
 						tmpIntensityRange = INTENSITY_RANGE_MAX;
 					}
@@ -2126,9 +2157,9 @@ public class PackageViewPanel extends JPanel {
 				else {
 					
 					loopCoef++;
-					massStart = roundUp(massStart
+					massStart = massStart
 							+ (((tmpMassStart + massStart) / 2 - massStart)
-									* loopCoef / LOOP), 1);
+									* loopCoef / LOOP);
 					massRange = massRange
 							+ (((tmpMassRange + massRange) / 2 - massRange)
 									* loopCoef / LOOP);
@@ -2229,7 +2260,7 @@ public class PackageViewPanel extends JPanel {
 					urlParam.append("&int=5");										// int ：5
 					
 					int index = 0;
-					Iterator<Float> ite = specData.getSelectedPeakList().iterator();
+					Iterator<Double> ite = specData.getSelectedPeakList().iterator();
 					while (ite.hasNext()) {
 						if (index != 0) {
 							urlParam.append("&op"+ index +"=and");					// op  ：and
@@ -2428,19 +2459,19 @@ public class PackageViewPanel extends JPanel {
 			if ( SwingUtilities.isLeftMouseButton(e) ) {
 				
 				if (btnName.equals("<<")) {
-					massStart = roundUp(Math.max(0, massStart - massRange), 1);
+					massStart = Math.max(0, massStart - massRange);
 					PackageViewPanel.this.repaint();
 				}
 				else if (btnName.equals("<")) {
-					massStart = roundUp(Math.max(0, massStart - massRange / 4), 1);
+					massStart = Math.max(0, massStart - massRange / 4);
 					PackageViewPanel.this.repaint();
 				}
 				else if (btnName.equals(">")) {
-					massStart = roundUp(Math.min(massRangeMax - massRange, massStart + massRange / 4), 1);
+					massStart = Math.min(massRangeMax - massRange, massStart + massRange / 4);
 					PackageViewPanel.this.repaint();
 				}
 				else if (btnName.equals(">>")) {
-					massStart = roundUp(Math.min(massRangeMax - massRange, massStart + massRange), 1);
+					massStart = Math.min(massRangeMax - massRange, massStart + massRange);
 					PackageViewPanel.this.repaint();
 				}
 				else if (btnName.equals("top")) {

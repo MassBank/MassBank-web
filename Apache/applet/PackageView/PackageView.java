@@ -20,7 +20,7 @@
  *
  * PackageView ƒNƒ‰ƒX
  *
- * ver 1.0.6 2009.09.17
+ * ver 1.0.7 2009.12.16
  *
  ******************************************************************************/
 
@@ -190,7 +190,12 @@ public class PackageView extends JApplet {
 					if (recData == null) {
 						recData = new PackageRecData();
 					}
-					peaksLine += line.trim();
+					if (line.lastIndexOf(";") != -1) {
+						peaksLine += line.trim();						
+					}
+					else {
+						peaksLine += line.trim() + ";";
+					}
 				}
 				else if (line.trim().startsWith("Name:")) {
 					if (recData == null) {
@@ -375,7 +380,7 @@ public class PackageView extends JApplet {
 		public HeaderPane() {
 
 			JLabel title = new JLabel();
-			title.setText("<html>&nbsp;Spectral Browser&nbsp;&nbsp;&nbsp;&nbsp;<i>ver. 1.05</i></html>");
+			title.setText("<html>&nbsp;Spectral Browser&nbsp;&nbsp;&nbsp;&nbsp;<i>ver. 1.06</i></html>");
 			title.setPreferredSize(new Dimension(0, 18));
 			
 			GridBagLayout gbl = new GridBagLayout();
