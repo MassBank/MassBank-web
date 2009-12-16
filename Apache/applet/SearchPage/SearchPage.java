@@ -20,7 +20,7 @@
  *
  * SearchPage クラス
  *
- * ver 1.0.11 2009.10.30
+ * ver 1.0.12 2009.12.16
  *
  ******************************************************************************/
 
@@ -218,7 +218,7 @@ public class SearchPage extends JApplet {
 	public static final int MAX_DISPLAY_NUM = 20;				// Package View最大表示可能件数
 	
 	private CookieManager cm;							// Cookie Manager
-	private final String COOKIE_PRE = "PRE";			// Cookie情報キー（PRECURSOR）
+//	private final String COOKIE_PRE = "PRE";			// Cookie情報キー（PRECURSOR）
 	private final String COOKIE_TOL = "TOL";			// Cookie情報キー（TOLERANCE）
 	private final String COOKIE_CUTOFF = "CUTOFF"; 	// Cookie情報キー（COOKIE_CUTOFF）
 	private final String COOKIE_INST = "INST";			// Cookie情報キー（INSTRUMENT）
@@ -302,8 +302,8 @@ public class SearchPage extends JApplet {
 		PeakData rPeak = resultPlot.getPeaks(0);
 		if (qPeak == null && rPeak == null)
 			return;
-		float qMax = 0;
-		float rMax = 0;
+		double qMax = 0d;
+		double rMax = 0d;
 		if (qPeak != null)
 			qMax = qPeak.compMaxMzPrecusor(queryPlot.getPrecursor());
 		if (rPeak != null)
@@ -348,7 +348,7 @@ public class SearchPage extends JApplet {
 	 * @param start
 	 * @param end
 	 */
-	public int getMaxIntensity(float start, float end) {
+	public int getMaxIntensity(double start, double end) {
 		PeakData qPaek = queryPlot.getPeaks(0);
 		PeakData dPeak = resultPlot.getPeaks(0);
 		int qm = 0;
@@ -1270,21 +1270,21 @@ public class SearchPage extends JApplet {
 	 * Precursor m/z情報初期化
 	 */
 	private void initPreInfo() {
-		// Cookie情報用リストにCookieからPrecursor状態を取得
-		ArrayList<String> valueList = cm.getCookie(COOKIE_PRE);
-		
-		// Cookieが存在する場合
-		if (valueList.size() != 0) {
-			try {
-				PRECURSOR = Integer.valueOf(valueList.get(0));
-			} catch (Exception e) {
-				// PRECURSORはデフォルト値を使用
-			}
-		} else {
+//		// Cookie情報用リストにCookieからPrecursor状態を取得
+//		ArrayList<String> valueList = cm.getCookie(COOKIE_PRE);
+//		
+//		// Cookieが存在する場合
+//		if (valueList.size() != 0) {
+//			try {
+//				PRECURSOR = Integer.valueOf(valueList.get(0));
+//			} catch (Exception e) {
+//				// PRECURSORはデフォルト値を使用
+//			}
+//		} else {
 			PRECURSOR = -1;
-			valueList.add(String.valueOf(PRECURSOR));
-			cm.setCookie(COOKIE_PRE, valueList);
-		}
+//			valueList.add(String.valueOf(PRECURSOR));
+//			cm.setCookie(COOKIE_PRE, valueList);
+//		}
 	}
 	
 	/**
@@ -1964,8 +1964,8 @@ public class SearchPage extends JApplet {
 			
 			if (isChange) {
 				
-				// Cookie情報用リスト
-				ArrayList<String> valueList = new ArrayList<String>();
+//				// Cookie情報用リスト
+//				ArrayList<String> valueList = new ArrayList<String>();
 				
 				if (preField.getText().equals("")) {
 					PRECURSOR = -1;
@@ -1973,10 +1973,10 @@ public class SearchPage extends JApplet {
 				else {
 					PRECURSOR = Integer.parseInt(preField.getText());
 				}
-				valueList.add(String.valueOf(PRECURSOR));
+//				valueList.add(String.valueOf(PRECURSOR));
 				
-				// Precursor m/z値をCookieに設定
-				cm.setCookie(COOKIE_PRE, valueList);
+//				// Precursor m/z値をCookieに設定
+//				cm.setCookie(COOKIE_PRE, valueList);
 			}
 		}
 		
@@ -3343,7 +3343,7 @@ public class SearchPage extends JApplet {
 		public int compare(Object o1, Object o2) {
 			String mz1 = String.valueOf(o1).split("\t")[0];
 			String mz2 = String.valueOf(o2).split("\t")[0];
-			return Float.valueOf(mz1).compareTo(Float.valueOf(mz2));
+			return Double.valueOf(mz1).compareTo(Double.valueOf(mz2));
 		}
 	}
 }
