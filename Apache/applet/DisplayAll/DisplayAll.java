@@ -20,7 +20,7 @@
  *
  * Multiple Spectra Display アプレット
  *
- * ver 2.0.7 2009.12.16
+ * ver 2.0.8 2009.12.17
  *
  ******************************************************************************/
 
@@ -72,7 +72,7 @@ import massbank.MassBankCommon;
 public class DisplayAll extends JApplet
 {
 	private static final long serialVersionUID = 1L;
-	int MASS_MAX = 0;
+	private int massRangeMax = 0;
 	static int INTENSITY_MAX = 1000;
 	static int MARGIN = 15;
 	static int MIN_RANGE = 5;
@@ -149,7 +149,7 @@ public class DisplayAll extends JApplet
 				}
 
 				// Intensityのレンジを設定
-				if (massRange <= MASS_MAX)
+				if (massRange <= massRangeMax)
 				{
 					// 最大値を検出。
 					int max = 0;
@@ -535,7 +535,7 @@ public class DisplayAll extends JApplet
 						massStart = Math.max(0, massStart - massRange / 3);
 	
 					else if (Math.max(fromPos.x, toPos.x) > getWidth())
-						massStart = Math.min(MASS_MAX - massRange, massStart + massRange / 3);
+						massStart = Math.min(massRangeMax - massRange, massStart + massRange / 3);
 					else {
 						if (peaks1 != null) {
 							timer = new Timer(30,
@@ -680,10 +680,10 @@ public class DisplayAll extends JApplet
 				massStart = Math.max(0, massStart - massRange
 						/ 4);
 			else if (com.equals(">"))
-				massStart = Math.min(MASS_MAX - massRange,
+				massStart = Math.min(massRangeMax - massRange,
 						massStart + massRange / 4);
 			else if (com.equals(">>"))
-				massStart = Math.min(MASS_MAX - massRange,
+				massStart = Math.min(massRangeMax - massRange,
 						massStart + massRange);
 			else if (com.equals("mz"))
 				isMZFlag = ! isMZFlag;
@@ -868,16 +868,7 @@ public class DisplayAll extends JApplet
 				mzs.add( tmp[j] );
 			}
 			mzAry.add( mzs );
-			
-			// m/zの最大値を整数第2で切り上げた値をレンジの最大値とする
-			String lastValStr = (String)mzs.lastElement();
-			String[] lastVals = lastValStr.split("\t");
-			int massMax = new BigDecimal(lastVals[0]).setScale(-2, BigDecimal.ROUND_UP).intValue();
-			if ( massMax > MASS_MAX ) {
-				MASS_MAX = massMax;
-			}
 		}
-		massRange = MASS_MAX;
 
 		for ( int i = 0; i < numSpct; i++ ) {
 			plotPane[i] = new PlotPane(i);
@@ -981,7 +972,8 @@ public class DisplayAll extends JApplet
 	{
 		peaks1 = null;
 		massStart = 0;
-		massRange = MASS_MAX;
+		massRangeMax = 0;
+		massRange = 0;
 		intensityRange = INTENSITY_MAX;
 	}
 
@@ -997,13 +989,15 @@ public class DisplayAll extends JApplet
 		}
 
 		// massRangeが100で割り切れる場合は+100の余裕を持つ
-		if (massRange != 0d && (massRange % 100.0d) == 0d) {
-			massRange += 100.0d;
+		if (massRange != 0.0 && (massRange % 100.0) == 0.0) {
+			massRange += 100.0;
 		}
 		// massRangeを100単位にそろえる
-		massRange = (double) Math.ceil(massRange / 100.0d) * 100.0d;
+		massRange = (double) Math.ceil(massRange / 100.0) * 100.0;
+		
 		massStart = 0;
 		intensityRange = INTENSITY_MAX;
+		massRangeMax = (int)massRange;
 
 		repaint();
 	}
