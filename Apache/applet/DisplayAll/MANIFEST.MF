@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Implementation-Version: 2.0.7 2009.12.16
+Implementation-Version: 2.0.8 2009.12.17
 Implementation-Vendor: JST-BIRD MassBank
