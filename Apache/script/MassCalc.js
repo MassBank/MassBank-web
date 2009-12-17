@@ -20,12 +20,20 @@
  *
  * MassCalculator用スクリプト
  *
- * ver 1.0.0 2009.12.08
+ * ver 1.0.1 2009.12.17
  *
  ******************************************************************************/
 
+var op = (window.opera) ? 1 : 0;								//OP
+var ie = (!op && document.all) ? 1 : 0;							//IE
+var ns4 = (document.layers) ? 1 : 0;							//NS4
+var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		//NS6
+
 // フォーカスオブジェクト格納用
 var focusObj = null;
+
+document.onkeydown = function(ev) { keyDownEvent(ev); }
+document.onkeyup = function(ev) { keyUpEvent(ev); }
 
 /**
  * 初期フォーカス設定
@@ -153,6 +161,10 @@ function massCalc(atomicArray) {
 	for (i=0; i<massArray.length; i++) {
 		mass = eval(mass + massArray[i]);
 	}
+	if (mass.toString() == "NaN") {
+		mass = "invalid."
+		return mass;
+	}
 	
 	// 小数点以下の表示を6桁に合わせる（切り捨て、0埋め）
 	mass += "";
@@ -209,9 +221,18 @@ function resetForm() {
 /**
  * キーダウンイベント処理
  */
-function keyDownEvent() {
+function keyDownEvent(ev) {
 	focusObj = document.activeElement;
-	var code = event.keyCode;
+	
+	// キーコード取得
+	var code = -1;
+	if ( ie ) {
+		code = event.keyCode;
+	}
+	else {
+		code = ev.keyCode;
+	}
+	
 	if (code == 13 && focusObj.name != "calc" && focusObj.name != "clear") {
 		// Enterキーでフォーカス変更実行（フォーカスがボタン以外の場合）
 		document.forms[0].calc.focus();
@@ -221,10 +242,19 @@ function keyDownEvent() {
 /**
  * キーアップイベント処理
  */
-function keyUpEvent() {
-	var code = event.keyCode;
+function keyUpEvent(ev) {
+	// キーコード取得
+	var code = -1;
+	if ( ie ) {
+		code = event.keyCode;
+	}
+	else {
+		code = ev.keyCode;
+	}
+	
 	if (code == 27) {
 		// Escキーでウィンドウクローズ
+		window.opener = window;			//FF対応
 		window.close();
 	}
 	else if (code == 13 && focusObj.name != "calc" && focusObj.name != "clear") {
