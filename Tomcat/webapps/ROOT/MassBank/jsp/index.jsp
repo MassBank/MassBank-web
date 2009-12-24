@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.3 2009.12.11
+ * ver 2.0.4 2009.12.24
  *
  ******************************************************************************/
 %>
@@ -32,8 +32,11 @@
 <%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.InputStreamReader" %>
 <%!
-	/** 更新情報表示数 */
+	/** ニュース表示数 */
 	private final int DISP_NEWS_NUM = 3;
+	
+	/** イベント表示数 */
+	private final int DISP_EVENT_NUM = 3;
 %>
 <%
 	//-------------------------------------
@@ -70,46 +73,79 @@
 	
 	
 	//-------------------------------------
-	// 更新情報読み込み
+	// 表示用の外部情報読み込み
 	//-------------------------------------
+	ArrayList<String> readHtmlList = new ArrayList<String>() {{add("/news.html"); add("/event.html");}};
 	ArrayList<String> newsList = new ArrayList<String>(DISP_NEWS_NUM);
+	ArrayList<String> eventList = new ArrayList<String>(DISP_EVENT_NUM);
 	BufferedReader br = null;
-	try {
-		final String reqUrl = request.getRequestURL().toString();
-		String langStr = "ja";
-		if ( !isJpTop ) {
-			langStr = "en";
-		}
-		URL url = new URL( reqUrl.substring(0, reqUrl.indexOf("jsp")) + langStr + "/news.html" );
-		URLConnection con = url.openConnection();
-		br = new BufferedReader( new InputStreamReader(con.getInputStream(), "UTF-8") );
-		String line;
-		String newLine;
-		boolean readFlag = false;
-		while ((line = br.readLine()) != null) {
-			if ( !readFlag && line.indexOf("<h2>") != -1 ) {
-				readFlag = true;
-			}
-			if ( readFlag ) {
-				if ( line.indexOf("<em>") != -1 ) {
-					// パスを修正後に表示用リストに追加
-					newLine = line.replaceAll("\"./", "\"./" + langStr + "/");
-					newLine = newLine.replaceAll("\"../", "\"./");
-					newsList.add(newLine);
+	final String reqUrl = request.getRequestURL().toString();
+	String langStr = "ja";
+	if ( !isJpTop ) {
+		langStr = "en";
+	}
+	for (String readHtml : readHtmlList) {
+		try {
+			URL url = new URL( reqUrl.substring(0, reqUrl.indexOf("jsp")) + langStr + readHtml );
+			URLConnection con = url.openConnection();
+			br = new BufferedReader( new InputStreamReader(con.getInputStream(), "UTF-8") );
+			String line;
+			String newLine = "";
+			boolean readFlag = false;
+			int eventDetail = 0;
+			while ((line = br.readLine()) != null) {
+				//-------------------------------------
+				// ニュース読み込み
+				//-------------------------------------
+				if ( readHtml.equals("/news.html") ) {
+					if ( !readFlag && line.indexOf("<h2>") != -1 ) {
+						readFlag = true;
+					}
+					if ( readFlag ) {
+						if ( line.indexOf("<em>") != -1 ) {
+							// パスを修正後に表示用リストに追加
+							newLine = line.replaceAll("\"./", "\"./" + langStr + "/");
+							newLine = newLine.replaceAll("\"../", "\"./");
+							newsList.add(newLine);
+						}
+						if ( newsList.size() == DISP_NEWS_NUM ) {
+							break;
+						}
+					}
 				}
-				if ( newsList.size() == DISP_NEWS_NUM ) {
-					break;
+				//-------------------------------------
+				// イベント読み込み
+				//-------------------------------------
+				else if ( readHtml.equals("/event.html") ) {
+					if ( !readFlag && line.indexOf("<h2>") != -1 ) {
+						readFlag = true;
+					}
+					if ( readFlag ) {
+						if ( line.indexOf("<a ") != -1 ) {
+							newLine = line.replaceAll("\"../", "\"./");
+							newLine = newLine.substring(0, newLine.indexOf("</a>")+4);
+							eventDetail += 1;
+						}
+						else if (eventDetail == 1) {
+							newLine += line.substring(line.indexOf("&nbsp;:"), line.indexOf("</span>"));
+							newLine += "<br />";
+							eventList.add(newLine);
+							eventDetail = 0;
+						}
+						if ( eventList.size() == DISP_EVENT_NUM ) {
+							break;
+						}
+					}
 				}
 			}
-		}
-	} catch (Exception e) {
-		e.printStackTrace();
-	} finally {
-		if ( br != null ) {
-			br.close();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if ( br != null ) {
+				br.close();
+			}
 		}
 	}
-	
 	
 	//-------------------------------------
 	// HTML出力
@@ -162,18 +198,18 @@
 <p id="headline">
 <%
 	//-------------------------------------
-	// 更新情報表示
+	// ニュース表示
 	//-------------------------------------
 	for (String outStr : newsList) {
 		out.print(outStr + System.getProperty("line.separator"));
 	}
 %>
 </p>
-<div id="home_news" class="text_right"><a href="./ja/news.html" class="bullet_link">過去のニュースはこちら</a></div>
+<div id="home_news" class="text_right separate"><a href="./ja/news.html" class="bullet_link">過去のニュース</a></div>
 <!--ここまで▲ニュース-->
 
-<!--ここから▼マススペクトルデータベース　ショートカットボタン一覧-->
-<h2 id="h_home_massdb" class="hide_text">マススペクトルデータベース</h2>
+<!--ここから▼データベースサービス　ショートカットボタン一覧-->
+<h2 id="h_home_massdb" class="hide_text">データベースサービス</h2>
 <div class="massdb_bg clr">
 <ul id="line1" class="hide_text">
 <li id="home_btn1"><a href="./SearchPage.html" title="Spectrum Search">Spectrum Search</a></li>
@@ -189,22 +225,26 @@
 <li id="home_btn9"><a href="./RecordIndex.html" title="Record Index">Record Index</a></li>
 </ul>
 </div><!--div class="massdb_bg"-->
-<!--ここまで▲マススペクトルデータベース　ショートカットボタン一覧-->
+<p class="p_dbsammary separate">
+MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本質量分析学会</a> の公式データベースです。
+</p>
+<p />
+<!--ここまで▲データベースサービス　ショートカットボタン一覧-->
 
-<!--ここから▼MassBankについてのサマリー-->
-<h2 id="h_about" class="hide_text">MassBankについて</h2>
-<p class="p_about1">
-MassBank は <a href="http://www-bird.jst.go.jp/index.html" target="_blank">JST-BIRD</a> プロジェクト として開発しています。<br />
-マススペクトルを測定した研究者がインターネットで公開する分散型データベースです。<br />
+<!--ここから▼イベント-->
+<h2 id="h_event" class="hide_text">イベント</h2>
+<p id="headline">
+<%
+	//-------------------------------------
+	// イベント表示
+	//-------------------------------------
+	for (String outStr : eventList) {
+		out.print(outStr + System.getProperty("line.separator"));
+	}
+%>
 </p>
-<p class="p_link">
-<a href="./ja/about.html" class="bullet_link">MassBank の詳細はこちら</a><br />
-<a href="./ja/contact.html" class="bullet_link">マススペクトルの公開方法についてのお問い合わせはこちら</a>
-</p>
-<p class="p_about2">
-MassBank は <a href="http://www.mssj.jp/index-jp.html" target="_blank">日本質量分析学会 </a>の公式データベースです。<br />
-</p>
-<!--ここまで▲MassBankについてのサマリー-->
+<div id="home_event" class="text_right"><a href="./ja/event.html" class="bullet_link">イベント一覧</a></div>
+<!--ここまで▲イベント-->
 
 </div><!--div id="main" class="fr clr"-->
 <!--ここまで▲右カラムメインコンテンツ-->
@@ -297,14 +337,14 @@ MassBank は <a href="http://www.mssj.jp/index-jp.html" target="_blank">日本�
 <p id="headline">
 <%
 	//-------------------------------------
-	// show update infomation 
+	// show news
 	//-------------------------------------
 	for (String outStr : newsList) {
 		out.print(outStr + System.getProperty("line.separator"));
 	}
 %>
 </p>
-<div id="home_news" class="text_right"><a href="./en/news.html" class="bullet_link">All news</a></div>
+<div id="home_news" class="text_right separate"><a href="./en/news.html" class="bullet_link">All news</a></div>
 <!--ed▲news-->
 
 <!--st▼mass spectrum database shortcut button list-->
@@ -324,23 +364,26 @@ MassBank は <a href="http://www.mssj.jp/index-jp.html" target="_blank">日本�
 <li id="home_btn9"><a href="./RecordIndex.html" title="Record Index">Record Index</a></li>
 </ul>
 </div><!--div class="massdb_bg"-->
+<p class="p_dbsammary separate">
+<a href="http://www.mssj.jp/index.html" target="_blank">The Mass Spectorometry Society of Japan</a> officially supports MassBank.
+</p>
+<p />
 <!--ed▲mass spectrum database shortcut button list-->
 
-<!--st▼about MassBank summary-->
-<h2 id="h_about_en" class="hide_text">About MassBank</h2>
-<p class="p_about1">
-MassBank is supported by the <a href="http://www-bird.jst.go.jp/index_e.html" target="_blank">JST-BIRD</a>.<br />
-MassBank is a distributed database to freely share mass spectra among researchers and data contributors.<br />
-The software platform is open-source, and spectra are copyrighted by the contributors.<br />
+<!--st▼event-->
+<h2 id="h_event_en" class="hide_text">Event</h2>
+<p id="headline">
+<%
+	//-------------------------------------
+	// show event
+	//-------------------------------------
+	for (String outStr : eventList) {
+		out.print(outStr + System.getProperty("line.separator"));
+	}
+%>
 </p>
-<p class="p_link">
-<a href="./en/about.html" class="bullet_link">Details of MassBank</a><br />
-<a href="./en/contact.html" class="bullet_link">For information on contributing a spectrum</a>
-</p>
-<p class="p_about2">
-<a href="http://www.mssj.jp/index.html" target="_blank">The Mass Spectorometry Society of Japan</a> officially supports MassBank.<br />
-</p>
-<!--ed▲about MassBank summary-->
+<div id="home_event" class="text_right"><a href="./en/event.html" class="bullet_link">All event</a></div>
+<!--ed▲event-->
 
 </div><!--div id="main" class="fr clr"-->
 <!--ed▲right column main-->

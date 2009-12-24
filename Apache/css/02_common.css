@@ -21,7 +21,7 @@
  *
  * ヘッダ・フッタ・ナビゲーション・リンクルールなどの共通パーツCSS
  *
- * ver 1.0.3 2009.10.23
+ * ver 1.0.4 2009.12.17
  *
  ******************************************************************************/
 
@@ -64,7 +64,7 @@ a:hover, a:active{ color:#004d99; text-decoration: underline;}
 a img, a:link img, a:visited img, a:hover img, a:active img{ border:none; text-decoration:none; }
 
 /*各種ブレット*/
-.bullet_link, .bullet_up, .bullet_down, .bullet_back, .bullet_blank, .bullet_file, .bullet_download, .bullet_pdf { padding:4px 4px 4px 20px; } .bullet_ppt { padding:4px 4px 4px 20px; }
+.bullet_link, .bullet_up, .bullet_down, .bullet_back, .bullet_blank, .bullet_file, .bullet_download, .bullet_pdf, .bullet_ppt { padding:4px 4px 4px 20px; }
 
 .bullet_link { background:#f2f6ff url(../img/bullet_link.gif) no-repeat 2px center; }
 a:hover.bullet_link { background:#e5edff url(../img/bullet_link.gif) no-repeat 2px center; }
@@ -127,18 +127,19 @@ h4 { background-color:#fdfdfd; width:650px; padding:0 0 0 10px; position:relativ
 
 /*body idによるh1アイコン自動表示*/
 #news h1 { background-position: 0 0; }
+#event h1 { background-position: 0 -50px; }
 #database h1, #spectrum h1, #quick h1, #peak h1, #substructure h1, #record h1, #spectral h1, #batch h1, #browse h1, #advanced h1
-{ background-position: 0 -50px; }
-#published h1 { background-position: 0 -100px; }
-#document h1 { background-position: 0 -150px; }
-#download h1 { background-position: 0 -200px; }
-#manual h1 { background-position: 0 -250px; }
-#about h1 { background-position: 0 -300px; }
-#contact h1 { background-position: 0 -350px; }
-#group h1 { background-position: 0 -400px; }
-#sitemap h1 { background-position: 0 -450px; }
-#regulation h1 { background-position: 0 -500px; }
-#copyright h1 { background-position: 0 -550px; }
+{ background-position: 0 -100px; }
+#published h1 { background-position: 0 -150px; }
+#document h1 { background-position: 0 -200px; }
+#download h1 { background-position: 0 -250px; }
+#manual h1 { background-position: 0 -300px; }
+#about h1 { background-position: 0 -350px; }
+#contact h1 { background-position: 0 -400px; }
+#group h1 { background-position: 0 -450px; }
+#sitemap h1 { background-position: 0 -500px; }
+#regulation h1 { background-position: 0 -550px; }
+#copyright h1 { background-position: 0 -600px; }
 
 
 /*ナビゲーション設定============================================== */
