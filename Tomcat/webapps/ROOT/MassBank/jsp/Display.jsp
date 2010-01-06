@@ -22,12 +22,13 @@
  *
  * スペクトル複数表示用モジュール
  *
- * ver 1.0.11 2009.12.15
+ * ver 1.0.12 2010.01.06
  *
  ******************************************************************************/
 %>
 
 <%@ page import="java.util.*,java.io.*" %>
+<%@ include file="./Common.jsp"%>
 <%
 	//*************************************************************************
 	// パラメータ
@@ -82,14 +83,21 @@
 		html.add( "\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" );
 		html.add( "\t\t<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">" );
 		html.add( "\t\t<meta http-equiv=\"imagetoolbar\" content=\"no\">" );
+		html.add( "\t\t<meta name=\"description\" content=\"Multiple Display\">" );
+		html.add( "\t\t<meta name=\"keywords\" content=\"Multiple,Display\">" );
 		html.add( "\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
-		html.add( "\t\t<title>MassBank | Database | Multiple Spectra Display</title>" );
+		html.add( "\t\t<script type=\"text/javascript\" src=\"../script/Common.js\"></script>" );
+		html.add( "\t\t<title>MassBank | Database | Multiple Display</title>" );
 		html.add( "\t</head>" );
 		html.add( "\t<body class=\"msbkFont\">" );
 		html.add( "\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">" );
 		html.add( "\t\t\t<tr>" );
 		html.add( "\t\t\t\t<td>" );
-		html.add( "\t\t\t\t\t<h1>Multiple Spectra Display</h1>" );
+		html.add( "\t\t\t\t\t<h1>Multiple Display</h1>" );
+		html.add( "\t\t\t\t</td>" );
+		html.add( "\t\t\t\t<td align=\"right\" class=\"font12px\">" );
+		html.add( "\t\t\t\t\t<img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		html.add( "\t\t\t\t\t<img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		html.add( "\t\t\t\t</td>" );
 		html.add( "\t\t\t</tr>" );
 		html.add( "\t\t</table>" );
