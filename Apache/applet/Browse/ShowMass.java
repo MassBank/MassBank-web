@@ -20,17 +20,28 @@
  *
  * 右クリックイベント処理 クラス
  *
- * ver 2.0.7 2009.07.21
+ * ver 2.0.8 2010.01.06
  *
  ******************************************************************************/
 
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
-import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import massbank.MassBankCommon;
 
@@ -107,7 +118,7 @@ public class ShowMass implements MouseListener{
 			// ポップアップメニュー作成
 			JPopupMenu popup = new JPopupMenu();
 			JMenuItem item1 = new JMenuItem( "Show Record" );
-			JMenuItem item2 = new JMenuItem( "Show Spectra" );
+			JMenuItem item2 = new JMenuItem( "Multiple Display" );
 			popup.add( item1 );
 			popup.add( item2 );
 			
@@ -120,7 +131,7 @@ public class ShowMass implements MouseListener{
 			// 選択行が複数の場合
 			else if ( num > 1 ) {
 				item2.addActionListener( 
-						new PopupSpectraListener(
+						new PopupMultipleDisplayListener(
 								(String[])accs.toArray(new String[accs.size()]), 
 								(String[])names.toArray(new String[names.size()])) );
 				item1.setEnabled( false );
@@ -197,9 +208,9 @@ public class ShowMass implements MouseListener{
 	}
 	
 	/**
-	 * ポップアップメニュー "Show Spectra" 処理
+	 * ポップアップメニュー "Multiple Display" 処理
 	 */
-	private class PopupSpectraListener implements ActionListener {
+	private class PopupMultipleDisplayListener implements ActionListener {
 		
 		/** ACCESSION配列 */
 		private String[] accs = null;
@@ -211,7 +222,7 @@ public class ShowMass implements MouseListener{
 		 * @param accs ACCESSION配列
 		 * @param names RECORD_TITLE配列
 		 */
-		public PopupSpectraListener(String[] accs, String[] names) {
+		public PopupMultipleDisplayListener(String[] accs, String[] names) {
 			this.accs = accs;
 			this.names = names;
 		}
@@ -227,9 +238,10 @@ public class ShowMass implements MouseListener{
 			for ( int i = 0; i < accs.length; i++ ) {
 				String name = names[i];
 				String id = accs[i];
-				String dontcare = "";
+				String formula = "";
+				String mass = "";
 				String site = BrowsePage.site;
-				param += "id=" + name + "\t" + id + "\t" + dontcare + "\t" + site + "&";
+				param += "id=" + name + "\t" + id + "\t" + formula + "\t" + mass + "\t" + site + "&";
 			}
 			param = param.substring( 0, param.length() -1 );
 
@@ -261,7 +273,7 @@ public class ShowMass implements MouseListener{
 				}
 				in.close();
 
-				reqUrl += "?type=ShowMass Spectra&" + "name=" + filename;
+				reqUrl += "?type=Multiple Display&" + "name=" + filename;
 				BrowsePage.applet.getAppletContext().showDocument( new URL(reqUrl), "_blank" );
 
 			} catch ( Exception ex ) {

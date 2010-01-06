@@ -20,7 +20,7 @@
  *
  * SearchPage クラス
  *
- * ver 1.0.12 2009.12.16
+ * ver 1.0.13 2010.01.06
  *
  ******************************************************************************/
 
@@ -1241,8 +1241,8 @@ public class SearchPage extends JApplet {
 		
 		JMenuItem item1 = new JMenuItem("Show Record");
 		item1.addActionListener(new PopupShowRecordListener(tbl));
-		JMenuItem item2 = new JMenuItem("Show Spectra");
-		item2.addActionListener(new PopupShowSpectraListener(tbl));
+		JMenuItem item2 = new JMenuItem("Multiple Display");
+		item2.addActionListener(new PopupMultipleDisplayListener(tbl));
 		
 		// 可視設定
 		if (tbl.equals(queryFileTable)) {
@@ -3264,10 +3264,10 @@ public class SearchPage extends JApplet {
 	}
 
 	/**
-	 * ポップアップメニューShow Spectraリスナークラス
+	 * ポップアップメニューMultiple Displayリスナークラス
 	 * SerarchPageのインナークラス。
 	 */
-	class PopupShowSpectraListener implements ActionListener {
+	class PopupMultipleDisplayListener implements ActionListener {
 		
 		private JTable eventTbl;	// イベント発生テーブル
 		
@@ -3275,7 +3275,7 @@ public class SearchPage extends JApplet {
 		 * コンストラクタ
 		 * @param eventTbl イベントが発生したテーブル
 		 */
-		public PopupShowSpectraListener(JTable eventTbl) {
+		public PopupMultipleDisplayListener(JTable eventTbl) {
 			this.eventTbl = eventTbl;
 		}
 		
@@ -3295,13 +3295,13 @@ public class SearchPage extends JApplet {
 
 				int idCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_ID);
 				int nameCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_NAME);
-				int ionCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_ION);
 				int siteCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_CONTRIBUTOR);
 				for (int i = 0; i < selRows.length; i++) {
 					int row = selRows[i];
 					String name = (String)eventTbl.getValueAt(row, nameCol);
 					String id = (String)eventTbl.getValueAt(row, idCol);
-					String ion = (String)eventTbl.getValueAt(row, ionCol);
+					String formula = "";
+					String mass = "";
 					name = URLEncoder.encode(name);
 					String siteName = (String)eventTbl.getValueAt(row, siteCol);
 					String site = "0";
@@ -3311,8 +3311,7 @@ public class SearchPage extends JApplet {
 							break;
 						}
 					}
-					param += "id=" + name + "\t" + id + "\t" + ion + "\t"
-							+ site + "&";
+					param += "id=" + name + "\t" + id + "\t" + formula + "\t" + mass + "\t"	+ site + "&";
 				}
 				param = param.substring(0, param.length() - 1);
 
@@ -3331,7 +3330,7 @@ public class SearchPage extends JApplet {
 				}
 				in.close();
 
-				reqUrl += "?type=Show Spectra&" + "name=" + filename;
+				reqUrl += "?type=Multiple Display&" + "name=" + filename;
 				context.showDocument(new URL(reqUrl), "_blank");
 			} catch (Exception ex) {
 				ex.printStackTrace();
