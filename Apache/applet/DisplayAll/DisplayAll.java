@@ -20,7 +20,7 @@
  *
  * Multiple Spectra Display アプレット
  *
- * ver 2.0.8 2009.12.17
+ * ver 2.0.9 2010.01.06
  *
  ******************************************************************************/
 
@@ -899,10 +899,13 @@ public class DisplayAll extends JApplet
 			parentPane.add(childPane1);
 
 			//●パネル右上: FORMULAとEXACT MASSを表示
-			String html = "<html><div style=\"margin-left:10px;\">Formula: <font color=green>"
-						 + info[i].getFormula() + "</font>";
+			String html = "<html><div style=\"margin-left:10px;\">";
+			String formula = info[i].getFormula();
+			if ( !formula.equals("") ) {
+				html += "Formula: <font color=green>" + formula + "</font>";
+			}
 			String emass = info[i].getExactMass();
-			if ( !emass.equals("0") ) {
+			if ( !emass.equals("") && !emass.equals("0") ) {
 				html += "<br>Exact Mass: <font color=green>" + emass + "</font>";
 			}
 			html += "</div></html>";
