@@ -20,7 +20,7 @@
  *
  * ResultMenu用スクリプト
  *
- * ver 1.0.4 2009.12.09
+ * ver 1.0.5 2010.01.08
  *
  ******************************************************************************/
 
@@ -144,17 +144,8 @@ function dispRightMenu(ev, isDisp) {
 				  + "<td colspan='2'><hr></td>"
 				  + "</tr>"
 				  + "<tr>"
-				  + "<td nowrap" + checkProperty + ">Check All</td>"
-				  + "</tr>"
-				  + "<tr>"
-				  + "<td nowrap" + unCheckProperty + ">UnCheck All</td>"
-				  + "</tr>"
-				  + "<tr>"
-				  + "<td colspan='2'><hr></td>"
-				  + "</tr>"
-				  + "<tr>"
 				  + "<td nowrap class='menuItem1' onClick='closeRightMenu(event, true); clickShowSpectra();' onMouseDown='closeRightMenu(event, false);'"
-				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Show Spectra</td>"
+				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Multiple Display</td>"
 				  + "</tr>"
 				  + "<tr>"
 				  + "<td nowrap class='menuItem1' onClick='closeRightMenu(event, true); submitSearchPage();' onMouseDown='closeRightMenu(event, false);'"
@@ -164,19 +155,17 @@ function dispRightMenu(ev, isDisp) {
 				  + "<td colspan='2'><hr></td>"
 				  + "</tr>"
 				  + "<tr>"
-				  + "<td nowrap class='menuItem1' onClick='closeRightMenu(event, true); parameterResetting(\"" + refType + "\");' onMouseDown='closeRightMenu(event, false);'"
-				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Edit / Resubmit Query</td>"
+				  + "<td nowrap" + checkProperty + ">Check All</td>"
+				  + "</tr>"
+				  + "<tr>"
+				  + "<td nowrap" + unCheckProperty + ">UnCheck All</td>"
 				  + "</tr>"
 				  + "<tr>"
 				  + "<td colspan='2'><hr></td>"
 				  + "</tr>"
 				  + "<tr>"
-				  + "<td nowrap class='menuItem1' onClick='closeRightMenu(event, true); resultsTop();' onMouseDown='closeRightMenu(event, false);'"
-				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Results Top</td>"
-				  + "</tr>"
-				  + "<tr>"
-				  + "<td nowrap class='menuItem1' onClick='closeRightMenu(event, true); resultsEnd();' onMouseDown='closeRightMenu(event, false);'"
-				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Results End</td>"
+				  + "<td nowrap class='menuItem1' onClick='closeRightMenu(event, true); parameterResetting(\"" + refType + "\");' onMouseDown='closeRightMenu(event, false);'"
+				  + " onMouseOver='changeBgColor(this, true, true)' onMouseOut='changeBgColor(this, false, true)'>Edit / Resubmit Query</td>"
 				  + "</tr>"
 				  + "<tr>"
 				  + "<td colspan='2'><hr></td>"
@@ -258,20 +247,6 @@ function changeBgColor(obj, isMouse, isState) {
 	if ( !isState ) {
 		obj.style.color = "#ACA899";
 	}
-}
-
-/**
- * 結果最上部表示
- */
-function resultsTop() {
-	location.href = "#resultsTop";
-}
-
-/**
- * 結果最下部表示
- */
-function resultsEnd() {
-	location.href = "#resultsEnd";
 }
 
 /**
