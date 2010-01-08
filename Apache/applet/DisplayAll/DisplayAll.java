@@ -545,12 +545,7 @@ public class DisplayAll extends JApplet
 					// ã´äEê¸ï`âÊ
 				    Graphics2D g2 = (Graphics2D)g;
 				    g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{4.0f}, 0.0f));
-				    g2.draw(new Line2D.Float(bx, height - MARGIN, bx, MARGIN));
-				    
-				    // éOäpÉ}Å[ÉNï\é¶
-					int [] xp = { bx, bx + 6, bx - 6 };
-					int [] yp = { height - MARGIN, height - MARGIN + 6, height - MARGIN + 6 };
-					g.fillPolygon( xp, yp, xp.length );
+				    g2.draw(new Line2D.Float(bx, height, bx, MARGIN));
 				}
 			}
 
@@ -1073,7 +1068,7 @@ public class DisplayAll extends JApplet
 			spacePane.add(lbl4);
 			add(spacePane);
 			String ion = info[i].getIon();
-			peaks1[i] = new Peak((Vector<String>)mzAry.get(i), precursor[i], emass, ion);
+			peaks1[i] = new Peak((Vector<String>)mzAry.get(i), emass, ion);
 		}
 		initMass();
 	}
