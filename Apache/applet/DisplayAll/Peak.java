@@ -20,75 +20,121 @@
  *
  * ピークデータ クラス
  *
- * ver 2.0.2 2009.12.16
+ * ver 2.0.3 2010.01.08
  *
  ******************************************************************************/
 
+import java.math.BigDecimal;
 import java.util.Vector;
 
 /**
  * ピークデータ クラス
  */
-public class Peak
-{
-	double[] mz;
-	int[] intensity;
+public class Peak {
+	
+	/** m/z */
+	private double[] mz;
+	
+	/** 強度 */
+	private int[] intensity;
+	
+	/** ピーク差表示用 */
+	private String[] diff;
 
+	/** ピーク差表示基準値 */
+	private String base = null;
+	
+	
 	/**
-	 * 
+	 * コンストラクタ
 	 * @param data
+	 * @param emass
+	 * @param ion
 	 */
-	public Peak(String[] data)
+	public Peak(String[] data, String emass, String ion)
 	{
 		clear();
 
+		if ( !emass.equals("") && !emass.equals("0") ) {
+			if ( ion.equals("1") ) {
+				emass = String.valueOf(Double.parseDouble(emass) + 1.0078250321);
+			}
+			else if ( ion.equals("-1") ) {
+				emass = String.valueOf(Double.parseDouble(emass) - 1.0078250321);
+			}
+			base = new BigDecimal(Double.parseDouble(emass)).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+		}
+		
 		int i;
 		String[] words;
 		mz = new double[data.length];
 		intensity = new int[data.length];
+		diff = new String[data.length];
 		for(i = 0; i < data.length; i ++){
 			words = data[i].split("	");
 			mz[i] = Double.parseDouble(words[0]);
 			intensity[i] = Integer.parseInt(words[1]);
+			if ( base != null ) {
+				diff[i] =  new BigDecimal(mz[i] - Double.parseDouble(base)).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+			}
 		}
 	}
 
 	/**
-	 * 
+	 * コンストラクタ
 	 * @param data
 	 */
-	public Peak(Vector<String> data)
+	public Peak(Vector<String> data, String emass, String ion)
 	{
 		clear();
 
+		if ( !emass.equals("") && !emass.equals("0") ) {
+			if ( ion.equals("1") ) {
+				emass = String.valueOf(Double.parseDouble(emass) + 1.0078250321);
+			}
+			else if ( ion.equals("-1") ) {
+				emass = String.valueOf(Double.parseDouble(emass) - 1.0078250321);
+			}
+			base = new BigDecimal(Double.parseDouble(emass)).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+		}
+		
 		int i = 0;
 		String[] words;
 		mz = new double[data.size()];
 		intensity = new int[data.size()];
+		diff = new String[data.size()];
 		while(data.size() > 0){
 			words = data.remove(0).split("\t");
 			mz[i] = Double.parseDouble(words[0]);
 			intensity[i] = Integer.parseInt(words[1]);
+			if ( base != null ) {
+				diff[i] =  new BigDecimal(mz[i] - Double.parseDouble(base)).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+			}
 			i ++;
 		}
 	}
 
-	public void clear()
-	{
+	public void clear() {
 		mz = null;
 		intensity = null;
 	}
 
-	public double[] getMZ()
-	{
+	public double[] getMZ() {
 		return mz;
 	}
 
-	public int[] getIntensity()
-	{
+	public int[] getIntensity() {
 		return intensity;
 	}
-
+	
+	public String[] getDiff() {
+		return diff;
+	}
+	
+	public String getBase() {
+		return base;
+	}
+	
 	/**
 	 * 最大m/zとプリカーサーの比較
 	 * @param プリカーサー
@@ -154,5 +200,9 @@ public class Peak
 				break;
 		}
 		return i;
+	}
+	
+	public String getDiff(int index) {
+		return diff[index];
 	}
 }

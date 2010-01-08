@@ -20,7 +20,7 @@
  *
  * 右クリックイベント処理 クラス
  *
- * ver 2.0.8 2010.01.06
+ * ver 2.0.9 2010.01.08
  *
  ******************************************************************************/
 
@@ -240,8 +240,9 @@ public class ShowMass implements MouseListener{
 				String id = accs[i];
 				String formula = "";
 				String mass = "";
+				String ion = "";
 				String site = BrowsePage.site;
-				param += "id=" + name + "\t" + id + "\t" + formula + "\t" + mass + "\t" + site + "&";
+				param += "id=" + name + "\t" + id + "\t" + formula + "\t" + mass + "\t" + ion + "\t" + site + "&";
 			}
 			param = param.substring( 0, param.length() -1 );
 

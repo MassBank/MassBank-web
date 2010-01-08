@@ -20,15 +20,17 @@
  *
  * Multiple Spectra Display アプレット
  *
- * ver 2.0.9 2010.01.06
+ * ver 2.0.10 2010.01.08
  *
  ******************************************************************************/
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -38,6 +40,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Line2D;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -58,6 +61,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -88,9 +92,11 @@ public class DisplayAll extends JApplet
 	double xscale = 0;
 	JSplitPane jsp_plt2ext = null;
 	boolean isMZFlag = false;
+	boolean isMassDiff = false;
 	int numSpct;
 	PlotPane[] plotPane;
 	Peak[] peaks1 = null;
+	ButtonPane[] buttonPane;
 	private String baseUrl;
 	private HitPeaks hitPeaks = new HitPeaks();
 	private String reqType = "";
@@ -230,7 +236,8 @@ public class DisplayAll extends JApplet
 			return 100;
 		}
 
-		/* (非 Javadoc)
+		/**
+		 * (非 Javadoc)
 		 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 		 */
 		public void paintComponent(Graphics g)
@@ -304,7 +311,7 @@ public class DisplayAll extends JApplet
 			}
 
 			// ピークがない場合
-			if ( peaks1[idPeak].mz[0] == 0 ) {
+			if ( peaks1[idPeak].getMZ(0) == 0 ) {
 				g.setFont( new Font("Arial", Font.ITALIC, 24) );
 				g.setColor( Color.LIGHT_GRAY );
 				g.drawString( "No peak was observed.",	width/2-110, height / 2 );
@@ -322,14 +329,17 @@ public class DisplayAll extends JApplet
 			g.setColor(Color.black);
 			int end, its, x, w;
 			double peak;
+			String baseDiff = peaks1[idPeak].getBase();
+			String msDiff;
 			start = peaks1[idPeak].getIndex(massStart);
 			end = peaks1[idPeak].getIndex(massStart + massRange);
 			for (int i = start; i < end; i++) {
 				peak = peaks1[idPeak].getMZ(i);
 				its = peaks1[idPeak].getIntensity(i);
+				msDiff = peaks1[idPeak].getDiff(i);
 				x = MARGIN + (int) ((peak - massStart) * xscale) - (int) Math.floor(xscale / 8);
 				w = (int) (xscale / 8);
-				if(MARGIN > x){
+				if(MARGIN >= x){
 					w = w - (MARGIN - x);
 					x = MARGIN;
 				}
@@ -337,9 +347,13 @@ public class DisplayAll extends JApplet
 					w = 2;
 				}
 				
-				// ピーク検索、ピーク差検索の場合、ヒットしたピークに色づけする
 				boolean isHit = false;
-				if ( reqType.equals("peak") || reqType.equals("diff") ) {
+				// 差表示境界線描画
+				if ( isMassDiff && baseDiff != null) {
+					g.setColor(Color.magenta);
+				}
+				// PeakSearch、PeakDifferenceSearchの場合はヒットピークに色づけする
+				else if ( reqType.equals("peak") || reqType.equals("diff") ) {
 					int j = 0;
 					double mz = 0;
 					
@@ -394,8 +408,18 @@ public class DisplayAll extends JApplet
 				g.fill3DRect(x,	height - MARGIN - (int) (its * yscale),
 								w, (int)(its * yscale), true);
 				
+				// 差を描画
+				if ( isMassDiff && baseDiff != null ) {
+					String sign = "";
+					if ( Double.parseDouble(msDiff) > 0 ) {
+						sign = "+";
+					}
+					g.setColor(Color.magenta);
+					g.drawString(sign + msDiff,
+							x, height - MARGIN - (int) (its * yscale));
+				}
 				// m/z値を描画
-				if ( its > intensityRange * 0.4 || isMZFlag || isHit ) {
+				else if ( its > intensityRange * 0.4 || isMZFlag || isHit ) {
 					if ( isMZFlag && its > intensityRange * 0.4 ) {
 						g.setColor(Color.red);
 					}
@@ -413,7 +437,7 @@ public class DisplayAll extends JApplet
 			//========================================================
 			// ピーク差検索でヒットしたピークの位置を表示
 			//========================================================
-			if ( reqType.equals("diff") ) {
+			if ( !isMassDiff && baseDiff != null && reqType.equals("diff") ) {
 				String[] diffmzs = hitPeaks.getDiffMz(idPeak);
 				String diffmz = diffmzs[ hitPeaks.getListNum()-1 ];
 				int pos = diffmz.indexOf(".");
@@ -462,7 +486,7 @@ public class DisplayAll extends JApplet
 					mz1Prev = mz1;
 				}
 			}
-
+			
 			// プレカーサーm/zにマーク付け
 			if ( !precursor[idPeak].equals("") ) {
 				int pre = Integer.parseInt(precursor[idPeak]);
@@ -474,6 +498,44 @@ public class DisplayAll extends JApplet
 					int [] xp = { xPre, xPre + 6, xPre - 6 };
 					int [] yp = { yPre, yPre + 6, yPre + 6 };
 					g.setColor( Color.RED );
+					g.fillPolygon( xp, yp, xp.length );
+				}
+			}
+			
+			// 差表示境界描画
+			if ( isMassDiff && baseDiff != null) {
+				
+				if (Double.parseDouble(baseDiff) > massStart && Double.parseDouble(baseDiff) <= massStart + massRange) {
+					g.setColor(Color.black);
+					int bx = MARGIN + (int) ((Double.parseDouble(baseDiff) - massStart) * xscale) - (int) Math.floor(xscale / 8);
+					double bw = xscale / 8;
+					if(MARGIN >= bx){
+						bw = bw - (MARGIN - bx);
+						bx = MARGIN;
+					}
+					if ( bw < 2.0 ) {
+						bw = 2.0;
+					}
+					bx += new BigDecimal(bw).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+					int align = new BigDecimal(2.0 / step * 2.0).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+					if ( align < 1 ) {
+						align = 1;
+					}
+					bx -= align;
+					
+					// 基準値描画
+				    g.setFont(g.getFont().deriveFont(14.0f));
+					g.drawString(peaks1[idPeak].getBase(), bx, MARGIN);
+					g.setFont(g.getFont().deriveFont(9.0f));
+					
+					// 境界線描画
+				    Graphics2D g2 = (Graphics2D)g;
+				    g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{4.0f}, 0.0f));
+				    g2.draw(new Line2D.Float(bx, height - MARGIN, bx, MARGIN));
+				    
+				    // 三角マーク表示
+					int [] xp = { bx, bx + 6, bx - 6 };
+					int [] yp = { height - MARGIN, height - MARGIN + 6, height - MARGIN + 6 };
 					g.fillPolygon( xp, yp, xp.length );
 				}
 			}
@@ -628,12 +690,16 @@ public class DisplayAll extends JApplet
 	 * 
 	 */
 	@SuppressWarnings("serial")
-	class ButtonPane extends JPanel implements ActionListener
-	{
-		private String comNameDiff = "show_diff";
+	class ButtonPane extends JPanel implements ActionListener {
 		
-		ButtonPane()
-		{
+		JToggleButton mzDisp = null;
+		JToggleButton msDiff = null;
+		private String comNameDiff = "show_diff";
+		private int index;
+		
+		public ButtonPane(int idx) {
+			index = idx;
+			
 			JButton leftmostB = new JButton("<<");
 			leftmostB.setActionCommand("<<");
 			leftmostB.addActionListener(this);
@@ -654,17 +720,23 @@ public class DisplayAll extends JApplet
 			rightmostB.addActionListener(this);
 			rightmostB.setMargin(new Insets(0, 0, 0, 0));
 
-			JButton mzDisp = new JButton("show all m/z");
+			mzDisp = new JToggleButton("show all m/z");
 			mzDisp.setActionCommand("mz");
 			mzDisp.addActionListener(this);
 			mzDisp.setMargin(new Insets(0, 0, 0, 0));
 
+			msDiff = new JToggleButton("mass difference");
+			msDiff.setActionCommand("msdiff");
+			msDiff.addActionListener(this);
+			msDiff.setMargin(new Insets(0, 0, 0, 0));
+			
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			add(leftmostB);
 			add(leftB);
 			add(rightB);
 			add(rightmostB);
 			add(mzDisp);
+			add(msDiff);
 		}
 
 		/**
@@ -685,9 +757,31 @@ public class DisplayAll extends JApplet
 			else if (com.equals(">>"))
 				massStart = Math.min(massRangeMax - massRange,
 						massStart + massRange);
-			else if (com.equals("mz"))
-				isMZFlag = ! isMZFlag;
-
+			else if (com.equals("mz")) {
+				isMZFlag = mzDisp.isSelected();
+				if ( isMZFlag ) { 
+					msDiff.setSelected(false);
+					isMassDiff = msDiff.isSelected();
+				}
+				for (int i=0; i<buttonPane.length; i++) {
+					if (i == index) continue;
+					buttonPane[i].mzDisp.setSelected(isMZFlag);
+					buttonPane[i].msDiff.setSelected(isMassDiff);
+				}
+			}
+			else if (com.equals("msdiff")) {
+				isMassDiff = msDiff.isSelected();
+				if ( isMassDiff ) {
+					mzDisp.setSelected(false);
+					isMZFlag = mzDisp.isSelected();
+				}
+				for (int i=0; i<buttonPane.length; i++) {
+					if (i == index) continue;
+					buttonPane[i].mzDisp.setSelected(isMZFlag);
+					buttonPane[i].msDiff.setSelected(isMassDiff);
+				}
+			}
+			
 			// Diffボタン押下時
 			int pos = com.indexOf( comNameDiff );
 			if ( pos >= 0 ) {
@@ -794,6 +888,7 @@ public class DisplayAll extends JApplet
 
 		numSpct = Integer.valueOf(getParameter("num"));
 		plotPane = new PlotPane[numSpct];
+		buttonPane = new ButtonPane[numSpct];
 		clear();
 		peaks1 = new Peak[numSpct];
 		info = new RecordInfo[numSpct];
@@ -807,8 +902,9 @@ public class DisplayAll extends JApplet
 			String title = getParameter( "name" + pnum );
 			String formula = getParameter( "formula" + pnum );
 			String mass = getParameter( "mass" + pnum );
+			String ion = getParameter( "ion" + pnum );
 			int num = cnt[siteNo]++;
-			info[i] = new RecordInfo(id, title, siteNo, num, formula, mass);
+			info[i] = new RecordInfo(id, title, siteNo, num, formula, mass, ion);
 			String[] items = title.split(";");
 			compoundNameList.add(items[0]);
 		}
@@ -821,7 +917,7 @@ public class DisplayAll extends JApplet
 
 		hitPeaks.mzInfoList = new ArrayList[numSpct];
 		precursor = new String[numSpct];
-		Vector mzAry = new Vector();
+		Vector<Vector<String>> mzAry = new Vector<Vector<String>>();
 		for ( int i = 0; i < numSpct; i++ ) {
 			int siteNo = info[i].getSiteNo();
 			int num = info[i].getNumber();
@@ -861,7 +957,7 @@ public class DisplayAll extends JApplet
 			}
 
 			String[] tmp = line.split("\t\t");
-			Vector mzs = new Vector();
+			Vector<String> mzs = new Vector<String>();
 
 			// m/z格納
 			for (int j = 0; j < tmp.length; j++ ) {
@@ -880,7 +976,6 @@ public class DisplayAll extends JApplet
 			String id = info[i].getID();
 			String site = String.valueOf(info[i].getSiteNo());
 			pane1.add( new NameButton( title, id, site ) );
-//			pane1.add( new JLabel("  ID: " + id ) );
 			pane1.setLayout( new FlowLayout(FlowLayout.LEFT) );
 			pane1.setMaximumSize( new Dimension(pane1.getMaximumSize().width, 100) );
 			JPanel parentPane = new JPanel();
@@ -890,11 +985,11 @@ public class DisplayAll extends JApplet
 			childPane1.add(pane1);
 			childPane1.add(plotPane[i]);
 
-			ButtonPane pane2 = new ButtonPane();
-			pane2.addDiffButton(plotPane[i].idPeak);
-			pane2.setLayout( new FlowLayout(FlowLayout.LEFT, 0, 0) );
-			pane2.setMaximumSize( new Dimension(pane2.getMaximumSize().width, 100) );
-			childPane1.add(pane2);
+			buttonPane[i] = new ButtonPane(i);
+			buttonPane[i].addDiffButton(plotPane[i].idPeak);
+			buttonPane[i].setLayout( new FlowLayout(FlowLayout.LEFT, 0, 0) );
+			buttonPane[i].setMaximumSize( new Dimension(buttonPane[i].getMaximumSize().width, 100) );
+			childPane1.add(buttonPane[i]);
 			childPane1.setLayout( new BoxLayout(childPane1, BoxLayout.Y_AXIS) );
 			parentPane.add(childPane1);
 
@@ -963,7 +1058,8 @@ public class DisplayAll extends JApplet
 			lbl4.setPreferredSize( new Dimension(800, 2) );
 			spacePane.add(lbl4);
 			add(spacePane);
-			peaks1[i] = new Peak((Vector<String>)mzAry.get(i));
+			String ion = info[i].getIon();
+			peaks1[i] = new Peak((Vector<String>)mzAry.get(i), emass, ion);
 		}
 		initMass();
 	}
@@ -1148,17 +1244,19 @@ public class DisplayAll extends JApplet
 		private int num = 0;
 		private String formula = "";
 		private String exactMass = "";
+		private String ion = "";
 		
 		/**
 		 * コンストラクタ
 		 */
-		public RecordInfo(String id, String title, int siteNo, int num, String formula, String mass) {
+		public RecordInfo(String id, String title, int siteNo, int num, String formula, String mass, String ion) {
 			this.id = id;
 			this.title = title;
 			this.siteNo = siteNo;
 			this.num = num;
 			this.formula = formula;
 			this.exactMass = mass;
+			this.ion = ion;
 		}
 		
 		/**
@@ -1184,6 +1282,12 @@ public class DisplayAll extends JApplet
 		 */
 		public void setExactMass(String val) {
 			this.exactMass = val;
+		}
+		/**
+		 * イオンをセットする
+		 */
+		public void setIon(String val) {
+			this.ion = val;
 		}
 		/**
 		 * サイト番号をセットする
@@ -1233,6 +1337,12 @@ public class DisplayAll extends JApplet
 		 */
 		public String getExactMass() {
 			return this.exactMass;
+		}
+		/**
+		 * イオンを取得する
+		 */
+		public String getIon() {
+			return this.ion;
 		}
 	}
 }

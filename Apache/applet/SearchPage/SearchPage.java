@@ -20,7 +20,7 @@
  *
  * SearchPage ƒNƒ‰ƒX
  *
- * ver 1.0.13 2010.01.06
+ * ver 1.0.14 2010.01.08
  *
  ******************************************************************************/
 
@@ -3295,6 +3295,7 @@ public class SearchPage extends JApplet {
 
 				int idCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_ID);
 				int nameCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_NAME);
+				int ionCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_ION);
 				int siteCol = eventTbl.getColumnModel().getColumnIndex(SearchPage.COL_LABEL_CONTRIBUTOR);
 				for (int i = 0; i < selRows.length; i++) {
 					int row = selRows[i];
@@ -3302,6 +3303,7 @@ public class SearchPage extends JApplet {
 					String id = (String)eventTbl.getValueAt(row, idCol);
 					String formula = "";
 					String mass = "";
+					String ion = (String)eventTbl.getValueAt(row, ionCol);
 					name = URLEncoder.encode(name);
 					String siteName = (String)eventTbl.getValueAt(row, siteCol);
 					String site = "0";
@@ -3311,7 +3313,7 @@ public class SearchPage extends JApplet {
 							break;
 						}
 					}
-					param += "id=" + name + "\t" + id + "\t" + formula + "\t" + mass + "\t"	+ site + "&";
+					param += "id=" + name + "\t" + id + "\t" + formula + "\t" + mass + "\t"	+ ion + "\t" + site + "&";
 				}
 				param = param.substring(0, param.length() - 1);
 

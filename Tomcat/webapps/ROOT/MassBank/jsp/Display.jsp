@@ -22,7 +22,7 @@
  *
  * スペクトル複数表示用モジュール
  *
- * ver 1.0.12 2010.01.06
+ * ver 1.0.13 2010.01.08
  *
  ******************************************************************************/
 %>
@@ -138,6 +138,7 @@
 			String name = fields[0];
 			String formula = fields[2];
 			String mass = fields[3];
+			String ion = fields[4];
 			String site = fields[fields.length-1];
 			pnum = Integer.toString(i+1);
 			html.add( "\t\t\t<param name=\"" + paramName + pnum + "\" value=\"" + id + "\">" );
@@ -145,6 +146,7 @@
 			html.add( "\t\t\t<param name=\"site" + pnum + "\" value=\"" + site +"\">" );
 			html.add( "\t\t\t<param name=\"formula" + pnum + "\" value=\"" + formula +"\">" );
 			html.add( "\t\t\t<param name=\"mass" + pnum + "\" value=\"" + mass +"\">" );
+			html.add( "\t\t\t<param name=\"ion" + pnum + "\" value=\"" + ion +"\">" );
 		}
 		html.add( "\t\t</applet>" );
 		html.add( "\t\t<br><br>" );

@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.18 2009.12.15
+ * ver 2.0.19 2010.01.08
  *
  ******************************************************************************/
 %>
@@ -1025,7 +1025,7 @@
 			
 			// ツリー(子)
 			String cCheckValue = rec.getInfo() + "\t" + rec.getId() + "\t" + rec.getFormula()
-							+ "\t" + rec.getDispEmass().replaceAll("&nbsp;", "") + "\t" + rec.getContributor();
+							+ "\t" + rec.getDispEmass().replaceAll("&nbsp;", "") + "\t" + rec.getIon() + "\t" + rec.getContributor();
 			cRowId = String.valueOf(tChildIndex) + "of" + String.valueOf(tParentId);
 			out.println( " <tr id=\"" + cRowId + "\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + cRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + cRowId + "');\">" );
 			out.print( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" valign=\"top\" align=\"center\">" );
