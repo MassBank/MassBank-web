@@ -48,14 +48,18 @@ public class Peak {
 	/**
 	 * コンストラクタ
 	 * @param data
+	 * @param pre
 	 * @param emass
 	 * @param ion
 	 */
-	public Peak(String[] data, String emass, String ion)
-	{
+	public Peak(String[] data, String pre, String emass, String ion) {
 		clear();
 
-		if ( !emass.equals("") && !emass.equals("0") ) {
+		// 差表示用ベース値算出
+		if ( !pre.equals("") ) {
+			base = new BigDecimal(Double.parseDouble(pre)).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+		}
+		else if ( !emass.equals("") && !emass.equals("0") ) {
 			if ( ion.equals("1") ) {
 				emass = String.valueOf(Double.parseDouble(emass) + 1.0078250321);
 			}
@@ -83,12 +87,18 @@ public class Peak {
 	/**
 	 * コンストラクタ
 	 * @param data
+	 * @param pre
+	 * @param emass
+	 * @param ion
 	 */
-	public Peak(Vector<String> data, String emass, String ion)
-	{
+	public Peak(Vector<String> data, String pre, String emass, String ion) {
 		clear();
-
-		if ( !emass.equals("") && !emass.equals("0") ) {
+		
+		// 差表示用ベース値算出
+		if ( !pre.equals("") ) {
+			base = new BigDecimal(Double.parseDouble(pre)).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+		}
+		else if ( !emass.equals("") && !emass.equals("0") ) {
 			if ( ion.equals("1") ) {
 				emass = String.valueOf(Double.parseDouble(emass) + 1.0078250321);
 			}

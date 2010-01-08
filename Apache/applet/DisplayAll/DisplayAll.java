@@ -491,6 +491,20 @@ public class DisplayAll extends JApplet
 			if ( !precursor[idPeak].equals("") ) {
 				int pre = Integer.parseInt(precursor[idPeak]);
 				int xPre = MARGIN + (int)((pre - massStart) * xscale) - (int)Math.floor(xscale / 8);
+				double pw = xscale / 8;
+				if(MARGIN >= xPre){
+					pw = pw - (MARGIN - xPre);
+					xPre = MARGIN;
+				}
+				if ( pw < 2.0 ) {
+					pw = 2.0;
+				}
+				xPre += new BigDecimal(pw).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+				int align = new BigDecimal(2.0 / step * 2.0).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+				if ( align < 1 ) {
+					align = 1;
+				}
+				xPre -= align;
 				int yPre = height - MARGIN;
 				
 				// プリカーサーm/zがグラフ内の場合のみ描画
@@ -507,7 +521,7 @@ public class DisplayAll extends JApplet
 				
 				if (Double.parseDouble(baseDiff) > massStart && Double.parseDouble(baseDiff) <= massStart + massRange) {
 					g.setColor(Color.black);
-					int bx = MARGIN + (int) ((Double.parseDouble(baseDiff) - massStart) * xscale) - (int) Math.floor(xscale / 8);
+					int bx = MARGIN + (int)((Double.parseDouble(baseDiff) - massStart) * xscale) - (int)Math.floor(xscale / 8);
 					double bw = xscale / 8;
 					if(MARGIN >= bx){
 						bw = bw - (MARGIN - bx);
@@ -1059,7 +1073,7 @@ public class DisplayAll extends JApplet
 			spacePane.add(lbl4);
 			add(spacePane);
 			String ion = info[i].getIon();
-			peaks1[i] = new Peak((Vector<String>)mzAry.get(i), emass, ion);
+			peaks1[i] = new Peak((Vector<String>)mzAry.get(i), precursor[i], emass, ion);
 		}
 		initMass();
 	}
