@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.4 2009.12.24
+ * ver 2.0.5 2010.01.12
  *
  ******************************************************************************/
 %>
@@ -243,7 +243,7 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 	}
 %>
 </p>
-<div id="home_event" class="text_right"><a href="./ja/event.html" class="bullet_link">イベント一覧</a></div>
+<div id="home_event" class="text_right"><a href="./ja/event.html" class="bullet_link">関連イベント一覧</a></div>
 <!--ここまで▲イベント-->
 
 </div><!--div id="main" class="fr clr"-->
@@ -382,7 +382,7 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 	}
 %>
 </p>
-<div id="home_event" class="text_right"><a href="./en/event.html" class="bullet_link">All event</a></div>
+<div id="home_event" class="text_right"><a href="./en/event.html" class="bullet_link">All related event</a></div>
 <!--ed▲event-->
 
 </div><!--div id="main" class="fr clr"-->
