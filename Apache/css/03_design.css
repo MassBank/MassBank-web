@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.13 2009.12.24
+ * ver 1.0.14  2010.01.12
  *
  ******************************************************************************/
 
@@ -219,8 +219,8 @@
 
 /*サイトマップ============================================== */
 #sitemap_link { padding-left:8px; line-height: 30px; }
-#sitemap_link .db_sub { padding: 0 0 5px 30px; }
-#sitemap_link .sitemap_function { padding: 15px 0 0; }
+#sitemap_link .ul_list { padding-left:20px; padding-bottom:0px; line-height: 20px; }
+#sitemap_link .split { width:320px; }
 
 /*フッター============================================== */
 #footer iframe { border-style:none; margin:0px; overflow:hidden; width:300px; height:60px; float:left; padding: 20px 0 0; }
