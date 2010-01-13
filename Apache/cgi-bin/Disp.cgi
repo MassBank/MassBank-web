@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.12  2009.12.02
+# ver 3.0.13  2010.01.13
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -436,7 +436,7 @@ if ( $copyright ne '' ) {
 }
 print "<pre style=\"font-family:Courier New;font-size:10pt\">\n";
 
-@boundary = ( 'CH\$', 'AC\$', 'MS\$', 'PK\$' );
+@boundary = ( 'CH\$', 'SP\$', 'AC\$', 'MS\$', 'PK\$' );
 $num = @boundary;
 $step = 0;
 $existCopyright = false;
