@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.13  2010.01.13
+# ver 3.0.14  2010.01.14
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -436,11 +436,12 @@ if ( $copyright ne '' ) {
 }
 print "<pre style=\"font-family:Courier New;font-size:10pt\">\n";
 
-@boundary = ( 'CH\$', 'SP\$', 'AC\$', 'MS\$', 'PK\$' );
+@boundary = ( 'CH\$', 'AC\$', 'MS\$', 'PK\$' );
 $num = @boundary;
 $step = 0;
 $existCopyright = false;
 $isRelated = false;
+$isSpBoundary = false;
 foreach $l ( @Line ) {
 	if ( $step == 0 && $l =~ /^COPYRIGHT/) {
 		$existCopyright = true;
@@ -449,8 +450,12 @@ foreach $l ( @Line ) {
 		if ( $step == 0 && $existCopyright eq false && $copyright ne '' ) {
 			print "COPYRIGHT: $copyright\n";
 		}
-		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
+		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">\n";
 		$step++;
+	}
+	if ( $isSpBoundary eq false && $l =~ /^SP\$/ ) {
+		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">\n";
+		$isSpBoundary = true;		
 	}
 	if ( $l =~ /^AC\$INSTRUMENT:/ ) {
 		$sql = "SELECT t1.INSTRUMENT_NAME FROM INSTRUMENT t1, (SELECT INSTRUMENT_NO FROM RECORD WHERE ID='$id') t2 WHERE t1.INSTRUMENT_NO = t2.INSTRUMENT_NO;";
