@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.14  2010.01.12
+ * ver 1.0.15  2010.01.25
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 #database p, #spectrum p, #quick p, #peak p, #substructure p, #record p, #spectral p, #batch p, #browse p, #manual p
 { padding: 0 0 30px; }
 
-#database img { float:left; margin:5px 10px 0; border:1px solid; border-color:#666; width:230px; height:135px; }
+#database .capture { float:left; margin:5px 10px 0; border:1px solid; border-color:#666; width:230px; height:135px; }
 #database .cb { clear:both; }
 #database .p_text { padding: 0;  }
 #database .p_link { padding: 5px 0 5px;  line-height: 34px; }
@@ -169,20 +169,13 @@
 /*マニュアル============================================== */
 #manual p
 { padding: 0 0 30px; padding-left:8px; }
-
-#manual .h_link { outline:0px none black; }
-#manual .h_over { background-color:#e5edff; cursor:pointer; }
-#manual .d_exp1 { background:url(../img/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
-#manual .d_exp2 { background:url(../img/exp2_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
-
-#manual .p_text { padding-bottom:20px; padding-left:50px; }
-#manual .p_link { padding: 5px 0 0px; padding-left:30px; line-height: 34px; position:relative; margin-right:7px; z-index:0; }
+#manual .p_text { padding-bottom:20px; padding-left:35px; }
+#manual .p_link { padding: 5px 0 0px; padding-left:15px; line-height: 34px; position:relative; margin-right:7px; z-index:0; }
 
 #manual .latest { color: #f60; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
 #manual .old { color: #999; position:absolute; left:0; width:100%; text-align:right; z-index:-1; }
 
-#manual .show { display:; }
-#manual .hid { display:none; }
+#manual .cod { color: #999; }
 
 /*MassBankについて============================================== */
 #about p
