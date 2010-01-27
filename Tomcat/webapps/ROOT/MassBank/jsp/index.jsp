@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.5 2010.01.12
+ * ver 2.0.6 2010.01.27
  *
  ******************************************************************************/
 %>
@@ -280,7 +280,7 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 <!--ここから▼フッター-->
 <div id="footer" class="clr">
 <iframe src="./copyrightline.html" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
-<div class="fr above"><a href="./index.html?lang=en#pagetop" title="このページの最上部へ" class="text_right bullet_up">このページの最上部へ</a></div>
+<div class="fr above"><a href="./index.html?lang=ja#pagetop" title="最上部へ" class="text_right bullet_up">最上部へ</a></div>
 </div>
 <!--ここまで▲フッター-->
 
@@ -419,7 +419,7 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 <!--st▼footer-->
 <div id="footer" class="clr">
 <iframe src="./copyrightline.html" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
-<div class="fr above"><a href="./index.html?lang=en#pagetop" title="To top of the page" class="text_right bullet_up">To top of the page</a></div>
+<div class="fr above"><a href="./index.html?lang=en#pagetop" title="To top" class="text_right bullet_up">To top</a></div>
 </div>
 <!--ed▲footer-->
 
