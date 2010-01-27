@@ -21,7 +21,7 @@
  *
  * ヘッダ・フッタ・ナビゲーション・リンクルールなどの共通パーツCSS
  *
- * ver 1.0.4 2009.12.17
+ * ver 1.0.5 2010.01.27
  *
  ******************************************************************************/
 
@@ -64,12 +64,12 @@ a:hover, a:active{ color:#004d99; text-decoration: underline;}
 a img, a:link img, a:visited img, a:hover img, a:active img{ border:none; text-decoration:none; }
 
 /*各種ブレット*/
-.bullet_link, .bullet_up, .bullet_down, .bullet_back, .bullet_blank, .bullet_file, .bullet_download, .bullet_pdf, .bullet_ppt { padding:4px 4px 4px 20px; }
+.bullet_link, .bullet_up, .bullet_down, .bullet_back, .bullet_blank, .bullet_file, .bullet_download, .bullet_pdf, .bullet_ppt, .bullet_home { padding:4px 4px 4px 20px; }
 
 .bullet_link { background:#f2f6ff url(../img/bullet_link.gif) no-repeat 2px center; }
 a:hover.bullet_link { background:#e5edff url(../img/bullet_link.gif) no-repeat 2px center; }
-.bullet_up { background:#f2f6ff url(../img/bullet_up.gif) no-repeat 2px center; }
-a:hover.bullet_up { background:#e5edff url(../img/bullet_up.gif) no-repeat 2px center; }
+.bullet_up { background: url(../img/bullet_up.gif) no-repeat 2px center; }
+a:hover.bullet_up { background: url(../img/bullet_up.gif) no-repeat 2px center; }
 .bullet_down { background:#f2f6ff url(../img/bullet_down.gif) no-repeat 2px center; }
 a:hover.bullet_down { background:#e5edff url(../img/bullet_down.gif) no-repeat 2px center; }
 .bullet_back { background:#f2f6ff url(../img/bullet_back.gif) no-repeat 2px center; }
@@ -84,6 +84,8 @@ a:hover.bullet_blank { background:#e5edff url(../img/bullet_blank.gif) no-repeat
 a:hover.bullet_pdf { background:#e5edff url(../img/bullet_pdf.gif) no-repeat 2px center; }
 .bullet_ppt { background:#f2f6ff url(../img/bullet_ppt.gif) no-repeat 2px center; }
 a:hover.bullet_ppt { background:#e5edff url(../img/bullet_ppt.gif) no-repeat 2px center; }
+.bullet_home { background: url(../img/bullet_home.gif) no-repeat 2px center; }
+a:hover.bullet_home { background: url(../img/bullet_home.gif) no-repeat 2px center; }
 #main li { background:url(../img/bullet_list.gif) no-repeat left 12px; padding:4px 4px 4px 10px;}
 
 
