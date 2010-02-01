@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.14  2010.01.14
+# ver 3.0.15  2010.02.01
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -450,11 +450,11 @@ foreach $l ( @Line ) {
 		if ( $step == 0 && $existCopyright eq false && $copyright ne '' ) {
 			print "COPYRIGHT: $copyright\n";
 		}
-		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">\n";
+		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
 		$step++;
 	}
 	if ( $isSpBoundary eq false && $l =~ /^SP\$/ ) {
-		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">\n";
+		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
 		$isSpBoundary = true;		
 	}
 	if ( $l =~ /^AC\$INSTRUMENT:/ ) {
