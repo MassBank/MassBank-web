@@ -20,7 +20,7 @@
  *
  * スペクトル情報格納 クラス
  *
- * ver 1.0.3 2009.09.17
+ * ver 1.0.4 2010.02.01
  *
  ******************************************************************************/
 
@@ -191,7 +191,7 @@ public class PackageSpecData {
 	 * @return 結果(選択済：true、未選択：false)
 	 */
 	public boolean containsSelectedPeak(String mz) {
-		return selectedPeakList.contains(Float.valueOf(mz));
+		return selectedPeakList.contains(Double.valueOf(mz));
 	}
 	
 	/**
@@ -214,7 +214,7 @@ public class PackageSpecData {
 	 * @param mz 選択解除するm/z
 	 */
 	public void removeSelectedPeakList(String mz) {
-		selectedPeakList.remove(Float.valueOf(mz));
+		selectedPeakList.remove(Double.valueOf(mz));
 	}
 	
 	/**
