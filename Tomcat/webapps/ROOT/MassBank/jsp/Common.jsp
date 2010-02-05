@@ -22,7 +22,7 @@
  *
  * 共通JSP（静的インクルード用）
  *
- * ver 1.0.1 2009.12.10
+ * ver 1.0.2 2010.02.05
  *
  ******************************************************************************/
 %>
@@ -47,11 +47,10 @@
 	//-------------------------------------
 	// 各URL設定
 	//-------------------------------------
-	String MANUAL_URL = refBaseUrl + "manuals/UserManual_ja.pdf";
-	String SAMPLE_URL = refBaseUrl + "sample/sample1_ja.txt";
+	String SAMPLE_URL = refBaseUrl + "sample/sample.txt";
 	String SAMPLE_ZIP_URL = refBaseUrl + "sample/sample.zip";
+	String MANUAL_URL = refBaseUrl + "manuals/UserManual_ja.pdf";
 	if ( !isJp ) {
 		MANUAL_URL = refBaseUrl + "manuals/UserManual_en.pdf";
-		SAMPLE_URL = refBaseUrl + "sample/sample1_en.txt";
 	}
 %>
