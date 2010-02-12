@@ -20,7 +20,7 @@
  *
  * Admin Tool 共通クラス
  *
- * ver 1.0.7 2009.02.18
+ * ver 1.0.8 2010.02.10
  *
  ******************************************************************************/
 package massbank.admin;
@@ -130,7 +130,7 @@ public class AdminCommon {
 		}
 		return url;
 	}
-
+	
 	/**
 	 * ApacheのMassBankディレクトリのパス取得
 	 */
@@ -145,21 +145,33 @@ public class AdminCommon {
 	}
 
 	/**
-	 * admin.confに定義されたパスを取得する
+	 * 管理者権限フラグ取得
+	 */
+	public boolean isAdmin() {
+		boolean ret = false;
+		String adminFlag = getSetting( "admin", false );
+		if ( adminFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+
+	/**
+	 * admin.confに定義された値を取得する
 	 * @param name 項目名
 	 */
-	private String getSetting( String name, boolean isPath ) {
-		String path = "";
+	private String getSetting( String key, boolean isPath ) {
+		String val = "";
 		String line = "";
 		try {
 			BufferedReader in = new BufferedReader( new FileReader( confFilePath ) );
 			while ( ( line = in.readLine() ) != null ) {
 				int pos = line.indexOf( "=" );
 				if ( pos >= 0 ) {
-					String nameInfo = line.substring( 0, pos );
-					String pathInfo = line.substring( pos + 1 );
-					if ( name.equals( nameInfo ) ) {
-						path = pathInfo.trim();
+					String keyInfo = line.substring( 0, pos );
+					String valInfo = line.substring( pos + 1 );
+					if ( key.equals( keyInfo ) ) {
+						val = valInfo.trim();
 						break;
 					}
 				}
@@ -170,13 +182,13 @@ public class AdminCommon {
 			ex.printStackTrace();
 		}
 
-		if ( isPath && !path.equals("") ) {
+		if ( isPath && !val.equals("") ) {
 			// パス末尾にファイルの区切り文字なければ付加する
-			char chrLast = path.charAt( path.length()-1 );
+			char chrLast = val.charAt( val.length()-1 );
 			if ( chrLast != '/' && chrLast != '\\' ) {
-				path += File.separator;
+				val += File.separator;
 			}
 		}
-		return path;
+		return val;
 	}
 }
