@@ -22,7 +22,7 @@
  *
  * Admin Tool メニュー
  *
- * ver 1.0.7 2009.09.04
+ * ver 1.0.8 2010.02.05
  *
  ******************************************************************************/
 %>
@@ -126,6 +126,7 @@ body {
 					<td class="<%=rlMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rlMenu%>'" onClick="parent.location.href='RecordList.jsp'">Record List</td>
 					<td class="<%=slMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=slMenu%>'" onClick="parent.location.href='StructureList.jsp'">Structure List</td>
 					<td class="<%=rgMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rgMenu%>'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</td>
+					<td class="menu" onMouseOver="className='menuOver'" onMouseOut="className='menu'" onClick="parent.location.href='Manager.jsp'">Dababase Manager</td>
 				</tr>
 			</table>
 		</td>

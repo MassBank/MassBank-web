@@ -22,7 +22,7 @@
  *
  * Admin Tool トップページ
  *
- * ver 1.0.8 2009.11.18
+ * ver 1.0.9 2010.02.05
  *
  ******************************************************************************/
 %>
@@ -58,7 +58,7 @@
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='FileUpload.jsp'">File Upload</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='../jsp/DispVersion.jsp'">Version Information</div>
-		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='Config.jsp'">Configuration</div>
+		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='Manager.jsp'">Database Manager</div>
 	</div>
 </div>
 <br />

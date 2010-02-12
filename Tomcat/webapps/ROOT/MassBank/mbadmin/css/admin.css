@@ -20,7 +20,7 @@
  *
  * Admin Tool用スタイルシート
  *
- * ver 1.0.5 2009.07.02
+ * ver 1.0.8 2010.02.05
  *
  ******************************************************************************/
 
@@ -168,7 +168,9 @@ hr {
 	margin-top: 7px;
 	cursor: pointer;
 }
-
+table.fixed {
+	table-layout: fixed;
+}
 td.details {
 	padding-top: 4px;
 	padding-bottom: 4px;
@@ -185,6 +187,15 @@ td.leftIndent {
 td.center {
 	text-align: center;
 }
+td.manage {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 7px;
+	text-align: left;
+	font-size: 13px;
+	min-height: 40px;
+	word-break:break-all;
+}
 tr.rowHeader {
 	height: 20px;
 	text-align: center;
@@ -193,12 +204,12 @@ tr.rowHeader {
 	font-weight: bold;
 }
 tr.rowEnable {
-	height: 20px;
+	min-height: 20px;
 	background-color:WhiteSmoke;
 	font-weight: bold;
 }
 tr.rowDisable {
-	height: 20px;
+	min-height: 20px;
 	background-color: WhiteSmoke;
 	color: LightSteelBlue;
 	font-weight: bold;
@@ -228,9 +239,17 @@ div.count {
 	color: DarkGoldenrod;
 	font-weight: bold;
 }
+.urlFont {
+	color: #297acc;
+	font-style: italic;
+}
 .note {
 	font-size: 12px;
 	font-style: italic;
 	color: #39405A;
 	text-decoration: none;
+}
+.readOnly {
+	background-color: WhiteSmoke;
+	color : DimGray;
 }

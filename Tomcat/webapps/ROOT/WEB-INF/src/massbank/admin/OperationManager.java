@@ -20,13 +20,14 @@
  *
  * ユーザ操作管理クラス
  *
- * ver 1.0.0 2009.06.16
+ * ver 1.0.1 2010.02.05
  *
  ******************************************************************************/
 package massbank.admin;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -35,7 +36,10 @@ import java.util.Set;
  */
 public class OperationManager {
 
-    /** 管理対象ページ（Instrument Manager） */
+    /** 管理対象ページ（Database Manager） */
+    public final String P_MANAGER = "Manager";
+    
+    /** 管理対象ページ（Instrument Editor） */
     public final String P_INSTRUMENT = "Instrument";
     
     /** 管理対象ページ（Record List） */
@@ -80,23 +84,54 @@ public class OperationManager {
      */
     public boolean startOparation(String page, String type, String db) {
     	boolean isOperation = false;
-    	String key = page + type + db;
+    	String key = page + type;
+    	if ( db != null ) {
+    		key += db;
+    	}
     	
-    	// 装置情報関連ページのユーザ制限処理
-    	if ( page.equals(P_INSTRUMENT) ) {
-     		if ( !oSet.contains(P_INSTRUMENT + TP_UPDATE + db) &&
-    				!oSet.contains(P_RECORD + TP_UPDATE + db) ) {
-    			isOperation = true;
+    	// データベース管理関連ページのユーザ制限処理
+    	//  ->データベースの更新に関する処理（データベース管理、装置情報、レコード、構造式）を
+    	//    1つでも行っている場合は操作不可
+    	if ( page.equals(P_MANAGER) ) {
+    		isOperation = true;
+    		Iterator<String> i = oSet.iterator();
+    		while ( i.hasNext() ) { 
+                String useKey = (String)i.next();
+                if ( useKey.equals(P_MANAGER + TP_UPDATE) ||
+                		useKey.indexOf(P_INSTRUMENT + TP_UPDATE) != -1 ||
+                		useKey.indexOf(P_RECORD + TP_UPDATE) != -1 ||
+                		useKey.indexOf(P_STRUCTURE + TP_UPDATE) != -1 ) {
+                	
+                	isOperation = false;
+                	break;
+                }
     		}
      		if ( isOperation && !type.equals(TP_VIEW)) {
         		// 制限したい操作の場合はキーを保持
      			oSet.add(key);
     		}    		
     	}
+    	// 装置情報関連ページのユーザ制限処理
+    	//  ->データベース管理、該当DBの装置情報、該当DBのレコードの
+    	//    処理を行っている場合は操作不可
+		else if ( page.equals(P_INSTRUMENT) ) {
+     		if ( !oSet.contains(P_MANAGER + TP_UPDATE) &&
+     				!oSet.contains(P_INSTRUMENT + TP_UPDATE + db) &&
+    				!oSet.contains(P_RECORD + TP_UPDATE + db) ) {
+    			isOperation = true;
+    		}
+     		if ( isOperation && !type.equals(TP_VIEW)) {
+        		// 制限したい操作の場合はキーを保持
+     			oSet.add(key);
+    		}
+    	}
     	// レコード関連ページのユーザ制限処理
+    	//  ->データベース管理、該当DBの装置情報、該当DBのレコードの
+    	//    処理を行っている場合は操作不可
     	else if ( page.equals(P_RECORD) ) {
-     		if ( !oSet.contains(P_RECORD + TP_UPDATE + db) &&
-    				!oSet.contains(P_INSTRUMENT + TP_UPDATE + db) ) {
+     		if ( !oSet.contains(P_MANAGER + TP_UPDATE) &&
+    				!oSet.contains(P_INSTRUMENT + TP_UPDATE + db) &&
+    				!oSet.contains(P_RECORD + TP_UPDATE + db) ) {
     			isOperation = true;
     		}
      		if ( isOperation && !type.equals(TP_VIEW) ) {
@@ -105,8 +140,10 @@ public class OperationManager {
     		}
     	}
     	// 構造式関連ページのユーザ制限処理
+    	//  ->データベース管理、該当DBの構造式の処理を行っている場合は操作不可
     	else if ( page.equals(P_STRUCTURE) ) {
-    		if ( !oSet.contains(P_STRUCTURE + TP_UPDATE + db) ) {
+    		if ( !oSet.contains(P_MANAGER + TP_UPDATE) &&
+    				!oSet.contains(P_STRUCTURE + TP_UPDATE + db) ) {
     			isOperation = true;
     		}
     		if ( isOperation && !type.equals(TP_VIEW) ) {
@@ -127,8 +164,11 @@ public class OperationManager {
      * @return 操作終了結果
      */
     public boolean endOparation(String page, String type, String db) {
-    	String key = page + type + db;
-    	
+    	String key = page + type;
+    	if ( db != null ) {
+    		key += db;
+    	}
+
     	return oSet.remove(key);
     }
 }
