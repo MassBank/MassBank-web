@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.19 2010.01.08
+ * ver 2.0.20 2010.02.17
  *
  ******************************************************************************/
 %>
@@ -710,11 +710,23 @@
 	
 	
 	DecimalFormat numFormat = new DecimalFormat("###,###,###");
-	int pageNo = Integer.parseInt((String)reqParams.get( "pageNo" ));
+	int totalPage = list.getTotalPageNum();
+	int pageNo = 0;
+	try {
+		pageNo = Integer.parseInt((String)reqParams.get( "pageNo" ));
+		if ( totalPage < pageNo ) {
+			pageNo = totalPage;
+		}
+		else if ( 1 > pageNo ) {
+			pageNo = 0;
+		}
+	}
+	catch ( NumberFormatException nfe ) {
+		nfe.printStackTrace();
+	}
 	int[] dispIndex = list.getDispRecordIndex(pageNo);
 	int startIndex = dispIndex[0];
 	int endIndex = dispIndex[1];
-	int totalPage = list.getTotalPageNum();
 	reqParams.put( "totalPageNo", String.valueOf(totalPage) );
 	
 	
@@ -905,227 +917,229 @@
 		//-------------------------------------
 		// 結果表示
 		//-------------------------------------
-		int prevNode = -1;
-		
-		boolean parentTreeFlag = true;
-		int tParentId = -1;
-		String tChildId = "";
-		int tChildIndex = 0;
-		HashMap<Integer, Integer> nodeMap = list.getDispParentNodeMap(startIndex, endIndex);
-		String parentNum = String.valueOf(nodeMap.size());
-		String childNum = "";
-		String pRowId = "";
-		String cRowId = "";
+		if ( startIndex > -1 && endIndex > -1 ) {
+			int prevNode = -1;
+			
+			boolean parentTreeFlag = true;
+			int tParentId = -1;
+			String tChildId = "";
+			int tChildIndex = 0;
+			HashMap<Integer, Integer> nodeMap = list.getDispParentNodeMap(startIndex, endIndex);
+			String parentNum = String.valueOf(nodeMap.size());
+			String childNum = "";
+			String pRowId = "";
+			String cRowId = "";
 
-		// Molfile情報を一括取得する
-		Map<String, String > mapMolData = getMolFile(list, startIndex, endIndex, serverUrl);
+			// Molfile情報を一括取得する
+			Map<String, String > mapMolData = getMolFile(list, startIndex, endIndex, serverUrl);
 
-		ResultRecord rec;
-		for (int i=startIndex; i<=endIndex; i++) {
-			rec = list.getRecord(i);
-			// ツリー表示用ID、およびイメージ名生成
-			if ( prevNode != rec.getNodeGroup() ) {
-				tParentId++;
-				parentTreeFlag = true;
-				tChildIndex = 0;
-			}
-			else {
-				parentTreeFlag = false;
-				tChildIndex++;
-			}
-			tChildId = String.valueOf(tParentId) + "child";
-			prevNode = rec.getNodeGroup();
-			String tParentImgName = tParentId + "img";
-			String tParentImgName2 = tParentId + "treeimg";
-
-			// レコードページ表示用URL生成
-			String url = "";
-			// ◇ PeakSearch／PeakDifferenceSearchの場合
-			if ( refPeak || refPeakDiff ) {
-				if ( refPeak ) {
-					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
+			ResultRecord rec;
+			for (int i=startIndex; i<=endIndex; i++) {
+				rec = list.getRecord(i);
+				// ツリー表示用ID、およびイメージ名生成
+				if ( prevNode != rec.getNodeGroup() ) {
+					tParentId++;
+					parentTreeFlag = true;
+					tChildIndex = 0;
 				}
 				else {
-					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISPDIFF];
+					parentTreeFlag = false;
+					tChildIndex++;
 				}
-				url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + recordParam;
-			}
-			// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
-			else if( refQuick || refRecIndex || refStruct ) {
-				typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
-				url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor();
-			}
-			
-			
-			//------------------------------------
-			// ツリータグ出力
-			//------------------------------------
-			if ( parentTreeFlag ) {
-				if ( i > startIndex ) {
+				tChildId = String.valueOf(tParentId) + "child";
+				prevNode = rec.getNodeGroup();
+				String tParentImgName = tParentId + "img";
+				String tParentImgName2 = tParentId + "treeimg";
+
+				// レコードページ表示用URL生成
+				String url = "";
+				// ◇ PeakSearch／PeakDifferenceSearchの場合
+				if ( refPeak || refPeakDiff ) {
+					if ( refPeak ) {
+						typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
+					}
+					else {
+						typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISPDIFF];
+					}
+					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + recordParam;
+				}
+				// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
+				else if( refQuick || refRecIndex || refStruct ) {
+					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
+					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor();
+				}
+				
+				
+				//------------------------------------
+				// ツリータグ出力
+				//------------------------------------
+				if ( parentTreeFlag ) {
+					if ( i > startIndex ) {
+						out.println( "</table>" );
+					}
+				}
+				
+				if ( parentTreeFlag ) {
+					// ツリー(親)
+					childNum = String.valueOf(nodeMap.get(rec.getNodeGroup()));
+					pRowId = "of" + String.valueOf(tParentId);
+					out.println( "<table width=\"" + tableWidth 
+						+ "\" class=\"pTreeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
+					out.println( "  <tr id=\"" + pRowId + "\" style=\"\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + pRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + pRowId + "');\">" );
+					out.print( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" valign=\"top\" align=\"center\">" );
+					out.print( "<input type=\"checkbox\" name=\"pid\" id=\"" + pRowId + "check\" value=\"\" onClick=\"checkParent('" + pRowId + "', '" + parentNum + "', '" + childNum + "');\">" );
+					out.println( "</td>" );
+					out.print( "  <td class=\"treeLayout2\" width=\"" + (Integer.parseInt(width[1]) - 8) + "\" valign=\"top\">");
+					out.print( "&nbsp;&nbsp;<img class=\"cursorLink\" src=\"" + pluspng + "\" onclick=\"treeMenu("
+						+ tParentId + ")\" name=\"" + tParentImgName + "\" alt=\"\"><br>&nbsp;&nbsp;&nbsp;<img src=\"../image/treeline0.gif\" align=\"middle\" name=\"" + tParentImgName2 + "\">" );
+					out.println( "</td>" );
+
+					out.print( "  <td class=\"treeLayout1\" width=\"" + (Integer.parseInt(width[2]) + 8) + "\" valign=\"top\">");
+					out.print( "<a href=\"javascript:treeMenu(" + tParentId + ")\" class=\"noLinkImg\" title=\"" + rec.getName() + "\">&nbsp;" + rec.getParentLink() + " " + "</a><br>" );
+
+					// 個々のスペクトル数を表示
+					String dispNum = childNum;
+					if ( Integer.parseInt(childNum) == 1 ) {
+					 	dispNum += " spectrum";
+					}
+					else {
+					 	dispNum += " spectra&nbsp;&nbsp;&nbsp;";
+					}
+					out.println( "<div align=\"right\" style=\"cursor: pointer;font-size: 12px;\">" + dispNum + "&nbsp;&nbsp;</div>" );
+					out.println( "  </td>" );
+					out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;<b>" + rec.getFormula() + "</b>&nbsp;</td>" );
+					out.println( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\" align=\"left\">" );
+
+					// アップレットで化学構造式を表示
+					String key = rec.getName().toLowerCase() ;
+					if ( mapMolData.containsKey(key) ) {
+						String moldata = mapMolData.get(key).trim();
+						if ( !moldata.equals("") ) {
+							out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
+							out.println( "    <param name=\"options\" value=\"depict\">" );
+							out.println( "    <param name=\"mol\" value=\"");
+							out.print( moldata );
+							out.println( "\">");
+							out.println( "   </applet>\n");
+						}
+					}
+					else {
+						out.println( "<img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\">");
+					}
+
+					out.println( "</td>" );
+					out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );
+					out.println( "  <td class=\"treeLayout2\" width=\"" + width[6] + "\" valign=\"top\">&nbsp;</td>" );
+					out.println( " </tr>" );
+					out.println( "</table>" );
+					out.println( "<table width=\"" + tableWidth + "\" id=\"" + tChildId + "\" style=\"display:none\""
+						+ " class=\"cTreeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
+				}
+				
+				// ツリー(子)
+				String cCheckValue = rec.getInfo() + "\t" + rec.getId() + "\t" + rec.getFormula()
+								+ "\t" + rec.getDispEmass().replaceAll("&nbsp;", "") + "\t" + rec.getIon() + "\t" + rec.getContributor();
+				cRowId = String.valueOf(tChildIndex) + "of" + String.valueOf(tParentId);
+				out.println( " <tr id=\"" + cRowId + "\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + cRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + cRowId + "');\">" );
+				out.print( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" valign=\"top\" align=\"center\">" );
+				out.print( "<input type=\"checkbox\" name=\"id\" value=\"" + cCheckValue + "\" id=\"" + cRowId + "check\" onClick=\"checkChild('" + pRowId + "', '" + cRowId + "', '" + parentNum + "', '" + childNum + "');\">" );
+				out.println( "</td>" );
+
+				// ツリー子の罫線を表示
+				String gifLine = "treeline2.gif";
+				if ( i == endIndex ) {
+					gifLine = "treeline3.gif";
+				}
+				else if ( i < endIndex ) {
+					ResultRecord nextRec = list.getRecord(i+1);
+					int nextNode = nextRec.getNodeGroup();
+					if ( nextNode != rec.getNodeGroup() ) {
+						gifLine = "treeline3.gif";
+					}
+				}
+
+				out.println( "  <td class=\"treeLayout2\" width=\"" + width[1] + "\" valign=\"top\">"
+					+ "&nbsp;&nbsp;&nbsp;<img src=\"../image/" + gifLine + "\" align=\"absmiddle\" border=\"0\"></td>" );
+				out.print( "  <td class=\"treeLayout1\" width=\"" + width[2] + "\" valign=\"top\">" );
+				out.print( "<a href=\"" + url + "\" target=\"_blank\">&nbsp;" + rec.getChildLink() + "</a>" );
+				out.println( "</td>" );
+				out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" /*+ rec.getFormula()*/ + "&nbsp;</td>" );
+				out.println( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\">&nbsp;</td>" );
+				out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" /*+ rec.getDispEmass() */ + "&nbsp;</td>" );
+				out.println( "  <td class=\"treeLayout2\" width=\"" + width[6] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" + rec.getId() + "&nbsp;</td>" );
+				out.println( " </tr>" );
+				
+				// 最終行
+				if ( i == endIndex ) { 
+					out.println( "</table>" );
+					out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayoutEnd\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
+					out.println( " <tr>" );
+					out.println( "  <td width=\"" + width[0] + "\">&nbsp;</td>" );
+					out.println( "  <td width=\"" + (Integer.parseInt(width[1]) + Integer.parseInt(width[2])) + "\">&nbsp;</td>" );
+					out.println( "  <td width=\"" + (Integer.parseInt(width[3]) + Integer.parseInt(width[4])) + "\">&nbsp;</td>" );
+					out.println( "  <td width=\"" + width[5] + "\">&nbsp;</td>" );
+					out.println( "  <td width=\"" + width[6] + "\">&nbsp;</td>" );
+					out.println( " </tr>" );
 					out.println( "</table>" );
 				}
 			}
+			out.println( "</table>" );
+			out.println( "<a name=\"resultsEnd\"></a>" );
 			
-			if ( parentTreeFlag ) {
-				// ツリー(親)
-				childNum = String.valueOf(nodeMap.get(rec.getNodeGroup()));
-				pRowId = "of" + String.valueOf(tParentId);
-				out.println( "<table width=\"" + tableWidth 
-					+ "\" class=\"pTreeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
-				out.println( "  <tr id=\"" + pRowId + "\" style=\"\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + pRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + pRowId + "');\">" );
-				out.print( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" valign=\"top\" align=\"center\">" );
-				out.print( "<input type=\"checkbox\" name=\"pid\" id=\"" + pRowId + "check\" value=\"\" onClick=\"checkParent('" + pRowId + "', '" + parentNum + "', '" + childNum + "');\">" );
-				out.println( "</td>" );
-				out.print( "  <td class=\"treeLayout2\" width=\"" + (Integer.parseInt(width[1]) - 8) + "\" valign=\"top\">");
-				out.print( "&nbsp;&nbsp;<img class=\"cursorLink\" src=\"" + pluspng + "\" onclick=\"treeMenu("
-					+ tParentId + ")\" name=\"" + tParentImgName + "\" alt=\"\"><br>&nbsp;&nbsp;&nbsp;<img src=\"../image/treeline0.gif\" align=\"middle\" name=\"" + tParentImgName2 + "\">" );
-				out.println( "</td>" );
-
-				out.print( "  <td class=\"treeLayout1\" width=\"" + (Integer.parseInt(width[2]) + 8) + "\" valign=\"top\">");
-				out.print( "<a href=\"javascript:treeMenu(" + tParentId + ")\" class=\"noLinkImg\" title=\"" + rec.getName() + "\">&nbsp;" + rec.getParentLink() + " " + "</a><br>" );
-
-				// 個々のスペクトル数を表示
-				String dispNum = childNum;
-				if ( Integer.parseInt(childNum) == 1 ) {
-				 	dispNum += " spectrum";
+			
+			//-------------------------------------
+			// ページリンク（下部）タグ出力
+			//-------------------------------------
+			out.println( "<table width=\"" + tableWidth + "\" height=\"30\" cellpadding=\"2\" cellspacing=\"0\" class=\"pageLinkBottom\">" );
+			out.println( " <tr>" );
+			for (int i=pageIndex[0]; i<=pageIndex[1]; i++) {
+				if ( i == pageIndex[0] ) {
+					if ( !refRecIndex && pageNo != 1 ) {
+						out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + 1 + ")\">First</a></b></td>" );
+						out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + (pageNo-1) + ")\">Prev</a></td>" );
+					}
+					else if ( refRecIndex && pageNo != 1 ) {
+						out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=1\" class=\"pageLink\">First</a></b></td>" );
+						out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + (pageNo-1) + "\" class=\"pageLink\">Prev</a></td>" );
+					}
+					else {
+						out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">First</font></td>" );
+						out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">Prev</font></td>" );
+					}
+					out.println( "  <td width=\"8\" align=\"center\" valign=\"bottom\">&nbsp;</td>" );
+				}
+				if ( !refRecIndex && i != pageNo ) {
+					out.println( "  <td width=\"16\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + i + ")\">" + i + "</a></td>" );
+				}
+				else if ( refRecIndex && i != pageNo ) {
+					out.println( "  <td width=\"16\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + i + "\" class=\"pageLink\">" + i + "</a></td>" );
 				}
 				else {
-				 	dispNum += " spectra&nbsp;&nbsp;&nbsp;";
+					out.println( "  <td width=\"16\" align=\"center\" valign=\"bottom\"><i><b>" + i + "</b></i></td>" );
 				}
-				out.println( "<div align=\"right\" style=\"cursor: pointer;font-size: 12px;\">" + dispNum + "&nbsp;&nbsp;</div>" );
-				out.println( "  </td>" );
-				out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;<b>" + rec.getFormula() + "</b>&nbsp;</td>" );
-				out.println( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\" align=\"left\">" );
-
-				// アップレットで化学構造式を表示
-				String key = rec.getName().toLowerCase() ;
-				if ( mapMolData.containsKey(key) ) {
-					String moldata = mapMolData.get(key).trim();
-					if ( !moldata.equals("") ) {
-						out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
-						out.println( "    <param name=\"options\" value=\"depict\">" );
-						out.println( "    <param name=\"mol\" value=\"");
-						out.print( moldata );
-						out.println( "\">");
-						out.println( "   </applet>\n");
+				if ( i == pageIndex[1] ) {
+					out.println( "  <td width=\"8\" align=\"center\" valign=\"bottom\">&nbsp;</td>" );
+					if ( !refRecIndex && pageNo != totalPage ) {
+						out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + (pageNo+1) + ")\">Next</a></td>" );
+						out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + totalPage + ")\">Last</a></td>" );
+					}
+					else if ( refRecIndex && pageNo != totalPage ) {
+						out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + (pageNo+1) + "\" class=\"pageLink\">Next</a></td>" );
+						out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + totalPage + "\" class=\"pageLink\">Last</a></td>" );
+					}
+					else {
+						out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">Next</font></td>" );
+						out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">Last</font></td>" );
 					}
 				}
-				else {
-					out.println( "<img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\">");
-				}
-
-				out.println( "</td>" );
-				out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );
-				out.println( "  <td class=\"treeLayout2\" width=\"" + width[6] + "\" valign=\"top\">&nbsp;</td>" );
-				out.println( " </tr>" );
-				out.println( "</table>" );
-				out.println( "<table width=\"" + tableWidth + "\" id=\"" + tChildId + "\" style=\"display:none\""
-					+ " class=\"cTreeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
 			}
-			
-			// ツリー(子)
-			String cCheckValue = rec.getInfo() + "\t" + rec.getId() + "\t" + rec.getFormula()
-							+ "\t" + rec.getDispEmass().replaceAll("&nbsp;", "") + "\t" + rec.getIon() + "\t" + rec.getContributor();
-			cRowId = String.valueOf(tChildIndex) + "of" + String.valueOf(tParentId);
-			out.println( " <tr id=\"" + cRowId + "\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + cRowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + cRowId + "');\">" );
-			out.print( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" valign=\"top\" align=\"center\">" );
-			out.print( "<input type=\"checkbox\" name=\"id\" value=\"" + cCheckValue + "\" id=\"" + cRowId + "check\" onClick=\"checkChild('" + pRowId + "', '" + cRowId + "', '" + parentNum + "', '" + childNum + "');\">" );
-			out.println( "</td>" );
-
-			// ツリー子の罫線を表示
-			String gifLine = "treeline2.gif";
-			if ( i == endIndex ) {
-				gifLine = "treeline3.gif";
-			}
-			else if ( i < endIndex ) {
-				ResultRecord nextRec = list.getRecord(i+1);
-				int nextNode = nextRec.getNodeGroup();
-				if ( nextNode != rec.getNodeGroup() ) {
-					gifLine = "treeline3.gif";
-				}
-			}
-
-			out.println( "  <td class=\"treeLayout2\" width=\"" + width[1] + "\" valign=\"top\">"
-				+ "&nbsp;&nbsp;&nbsp;<img src=\"../image/" + gifLine + "\" align=\"absmiddle\" border=\"0\"></td>" );
-			out.print( "  <td class=\"treeLayout1\" width=\"" + width[2] + "\" valign=\"top\">" );
-			out.print( "<a href=\"" + url + "\" target=\"_blank\">&nbsp;" + rec.getChildLink() + "</a>" );
-			out.println( "</td>" );
-			out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" /*+ rec.getFormula()*/ + "&nbsp;</td>" );
-			out.println( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\">&nbsp;</td>" );
-			out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" /*+ rec.getDispEmass() */ + "&nbsp;</td>" );
-			out.println( "  <td class=\"treeLayout2\" width=\"" + width[6] + "\" valign=\"top\">&nbsp;&nbsp;&nbsp;&nbsp;" + rec.getId() + "&nbsp;</td>" );
+			out.println( "  <td valign=\"bottom\">&nbsp;&nbsp;&nbsp;( Total <i><b>" + totalPage + "</b></i> Page )</td>" );
+			out.println( "  <td class=\"font12px\" align=\"right\" valign=\"top\">" );
+			out.println( "   <a class=\"moveDispLink\" href=\"#resultsTop\">&nbsp;&nbsp;<span class=\"font10px2\">&#9650;&nbsp;</span>Results Top</a>" );
+			out.println( "  </td>" );
 			out.println( " </tr>" );
-			
-			// 最終行
-			if ( i == endIndex ) { 
-				out.println( "</table>" );
-				out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayoutEnd\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
-				out.println( " <tr>" );
-				out.println( "  <td width=\"" + width[0] + "\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + (Integer.parseInt(width[1]) + Integer.parseInt(width[2])) + "\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + (Integer.parseInt(width[3]) + Integer.parseInt(width[4])) + "\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + width[5] + "\">&nbsp;</td>" );
-				out.println( "  <td width=\"" + width[6] + "\">&nbsp;</td>" );
-				out.println( " </tr>" );
-				out.println( "</table>" );
-			}
+			out.println( "</table>");
 		}
-		out.println( "</table>" );
-		out.println( "<a name=\"resultsEnd\"></a>" );
-		
-		
-		//-------------------------------------
-		// ページリンク（下部）タグ出力
-		//-------------------------------------
-		out.println( "<table width=\"" + tableWidth + "\" height=\"30\" cellpadding=\"2\" cellspacing=\"0\" class=\"pageLinkBottom\">" );
-		out.println( " <tr>" );
-		for (int i=pageIndex[0]; i<=pageIndex[1]; i++) {
-			if ( i == pageIndex[0] ) {
-				if ( !refRecIndex && pageNo != 1 ) {
-					out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + 1 + ")\">First</a></b></td>" );
-					out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + (pageNo-1) + ")\">Prev</a></td>" );
-				}
-				else if ( refRecIndex && pageNo != 1 ) {
-					out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=1\" class=\"pageLink\">First</a></b></td>" );
-					out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + (pageNo-1) + "\" class=\"pageLink\">Prev</a></td>" );
-				}
-				else {
-					out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">First</font></td>" );
-					out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">Prev</font></td>" );
-				}
-				out.println( "  <td width=\"8\" align=\"center\" valign=\"bottom\">&nbsp;</td>" );
-			}
-			if ( !refRecIndex && i != pageNo ) {
-				out.println( "  <td width=\"16\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + i + ")\">" + i + "</a></td>" );
-			}
-			else if ( refRecIndex && i != pageNo ) {
-				out.println( "  <td width=\"16\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + i + "\" class=\"pageLink\">" + i + "</a></td>" );
-			}
-			else {
-				out.println( "  <td width=\"16\" align=\"center\" valign=\"bottom\"><i><b>" + i + "</b></i></td>" );
-			}
-			if ( i == pageIndex[1] ) {
-				out.println( "  <td width=\"8\" align=\"center\" valign=\"bottom\">&nbsp;</td>" );
-				if ( !refRecIndex && pageNo != totalPage ) {
-					out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + (pageNo+1) + ")\">Next</a></td>" );
-					out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"\" class=\"pageLink\" onClick=\"return changePage('" + type + "', " + totalPage + ")\">Last</a></td>" );
-				}
-				else if ( refRecIndex && pageNo != totalPage ) {
-					out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + (pageNo+1) + "\" class=\"pageLink\">Next</a></td>" );
-					out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><a href=\"" + pageLinkUrl + "&pageNo=" + totalPage + "\" class=\"pageLink\">Last</a></td>" );
-				}
-				else {
-					out.println( "  <td width=\"34\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">Next</font></td>" );
-					out.println( "  <td width=\"38\" align=\"center\" valign=\"bottom\"><font color=\"#3300CC\">Last</font></td>" );
-				}
-			}
-		}
-		out.println( "  <td valign=\"bottom\">&nbsp;&nbsp;&nbsp;( Total <i><b>" + totalPage + "</b></i> Page )</td>" );
-		out.println( "  <td class=\"font12px\" align=\"right\" valign=\"top\">" );
-		out.println( "   <a class=\"moveDispLink\" href=\"#resultsTop\">&nbsp;&nbsp;<span class=\"font10px2\">&#9650;&nbsp;</span>Results Top</a>" );
-		out.println( "  </td>" );
-		out.println( " </tr>" );
-		out.println( "</table>");
 		out.println( "<br>" );
 	}
 %>
