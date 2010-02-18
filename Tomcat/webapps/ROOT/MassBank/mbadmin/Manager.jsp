@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.0 2010.02.12
+ * ver 1.0.1 2010.02.18
  *
  ******************************************************************************/
 %>
@@ -115,25 +115,25 @@
 	 * Database、Name、Long Name、URLを一括でチェックして1つでもエラーがあればfalseを返却する
 	 * @param op JspWriter
 	 * @param dbName
-	 * @param shortName
-	 * @param longName
+	 * @param shortLabel
+	 * @param longLabel
 	 * @param url
 	 * @throws IOException
 	 * @return 結果
 	 */
-	private boolean checkValue(JspWriter op, String dbName, String shortName, String longName, String url) throws IOException {
+	private boolean checkValue(JspWriter op, String dbName, String shortLabel, String longLabel, String url) throws IOException {
 		
 		boolean ret = true;
 		
-		final String TYPE_DB = "Database";
-		final String TYPE_NAME = "Name";
-		final String TYPE_LONGNAME = "Long Name";
+		final String TYPE_DB = "DB Name";
+		final String TYPE_SHORTLABEL = "Short Label";
+		final String TYPE_LONGLABEL = "Long Label";
 		final String TYPE_URL = "URL";
 		
 		// 一括チェック用リスト作成
 		final String[][] list = { {TYPE_DB, dbName},
-		                          {TYPE_NAME, shortName},
-		                          {TYPE_LONGNAME, longName},
+		                          {TYPE_SHORTLABEL, shortLabel},
+		                          {TYPE_LONGLABEL, longLabel},
 		                          {TYPE_URL, url} };
 		
 		for (int i=0; i<list.length; i++) {
@@ -196,7 +196,7 @@
 				String line = "";
 				while ((line = br.readLine()) != null) {
 					if ( line.indexOf("SAMPLE_DB") != -1 ) {
-						line = line.replaceAll("SAMPLE_DB", dbName);
+						line = StringUtils.replace(line, "SAMPLE_DB", dbName);
 					}
 					bw.write(line + NEW_LINE);
 				}
@@ -304,7 +304,7 @@
 	private boolean isExistDb(String[] dbList, String[] urlList, int siteNo, String dbName, String urlStr) {
 		boolean ret = false;
 		
-		if ( siteNo >= dbList.length || siteNo == -1 || dbName.equals("") || urlStr.equals("") ) {
+		if ( siteNo >= dbList.length || siteNo == -1 || dbName == null || dbName.equals("") || urlStr == null || urlStr.equals("") ) {
 			ret = false;
 		}
 		else if ( dbList[siteNo].toUpperCase().equals(dbName.toUpperCase()) &&
@@ -489,14 +489,14 @@ function selNo() {
 		// Firefox以外の場合
 		if (navigator.userAgent.indexOf("Firefox") == -1) {
 			objForm.siteDb.value = document.getElementById( String("no" + no + "Db") ).innerText;
-			objForm.siteName.value = document.getElementById( String("no" + no + "Name") ).innerText;
-			objForm.siteLongName.value = document.getElementById( String("no" + no + "LongName") ).innerText;
+			objForm.siteShortLabel.value = document.getElementById( String("no" + no + "ShortLabel") ).innerText;
+			objForm.siteLongLabel.value = document.getElementById( String("no" + no + "LongLabel") ).innerText;
 			objForm.siteUrl.value = document.getElementById( String("no" + no + "Url") ).innerText;
 		}
 		else {
 			objForm.siteDb.value = document.getElementById( String("no" + no + "Db") ).textContent;
-			objForm.siteName.value = document.getElementById( String("no" + no + "Name") ).textContent;
-			objForm.siteLongName.value = document.getElementById( String("no" + no + "LongName") ).textContent;
+			objForm.siteShortLabel.value = document.getElementById( String("no" + no + "ShortLabel") ).textContent;
+			objForm.siteLongLabel.value = document.getElementById( String("no" + no + "LongLabel") ).textContent;
 			objForm.siteUrl.value = document.getElementById( String("no" + no + "Url") ).textContent;
 		}
 		
@@ -533,8 +533,8 @@ function selNo() {
 	}
 	else {
 		objForm.siteDb.value = "";
-		objForm.siteName.value = "";
-		objForm.siteLongName.value = "";
+		objForm.siteShortLabel.value = "";
+		objForm.siteLongLabel.value = "";
 		objForm.siteType[0].checked = true;
 		objForm.siteType[0].disabled = false;
 		objForm.siteType[1].disabled = false;
@@ -710,11 +710,11 @@ function beforeDel(isAdmin) {
 	//----------------------------------------------------
 	request.setCharacterEncoding("utf-8");
 	String act = "";
-	int reqSiteNo = -1;
+	int reqNo = -1;
 	String reqSiteDb = "";
-	String reqSiteName = "";
-	String reqSiteLongName = "";
-	String reqSiteType = "";
+	String reqShortLabel = "";
+	String reqLongLabel = "";
+	String reqUrlType = "";
 	String reqSiteUrl = "";
 	String reqSiteUrlBefore = "";
 	Enumeration<String> names = (Enumeration<String>)request.getParameterNames();
@@ -724,19 +724,19 @@ function beforeDel(isAdmin) {
 			act = request.getParameter(key);
 		}
 		else if ( key.equals("siteNo") ) {
-			reqSiteNo = Integer.parseInt(request.getParameter(key).trim());
+			reqNo = Integer.parseInt(request.getParameter(key).trim());
 		}
 		else if ( key.equals("siteDb") ) {
 			reqSiteDb = request.getParameter(key);
 		}
-		else if ( key.equals("siteName") ) {
-			reqSiteName = request.getParameter(key).trim();
+		else if ( key.equals("siteShortLabel") ) {
+			reqShortLabel = request.getParameter(key).trim();
 		}
-		else if ( key.equals("siteLongName") ) {
-			reqSiteLongName = request.getParameter(key).trim();
+		else if ( key.equals("siteLongLabel") ) {
+			reqLongLabel = request.getParameter(key).trim();
 		}
 		else if ( key.equals("siteType") ) {
-			reqSiteType = request.getParameter(key).trim();
+			reqUrlType = request.getParameter(key).trim();
 		}
 		else if ( key.equals("siteUrl") ) {
 			reqSiteUrl = request.getParameter(key).trim();
@@ -828,20 +828,20 @@ function beforeDel(isAdmin) {
 		// 追加処理
 		//----------------------------------------------------
 		if ( act.equals("add") ) {
-			reqSiteNo = beforeDbList.length;
+			reqNo = beforeDbList.length;
 			
 			// 入力値チェック
-			if ( !checkValue(out, reqSiteDb, reqSiteName, reqSiteLongName, reqSiteUrl) ) {
+			if ( !checkValue(out, reqSiteDb, reqShortLabel, reqLongLabel, reqSiteUrl) ) {
 				out.println( msgErr("additional failure.") );
 				isResult = false;
 			}
-			// URLチェック
-			else if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(reqSiteType) ) {
-				if ( reqSiteType.equals(URL_TYPE_LOCAL) ) {
+			// URL種別チェック
+			else if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(reqUrlType) ) {
+				if ( reqUrlType.equals(URL_TYPE_LOCAL) ) {
 					out.println( msgErr("url on the external cannot be specified.") );
 					isResult = false;
 				}
-				else if ( reqSiteType.equals(URL_TYPE_EXTERNAL) ) {
+				else if ( reqUrlType.equals(URL_TYPE_EXTERNAL) ) {
 					out.println( msgErr("url of the local cannot be specified.") );
 					isResult = false;
 				}
@@ -854,7 +854,7 @@ function beforeDel(isAdmin) {
 			// 追加
 			else {
 				// 内部サイトのデータベースの追加処理を行う
-				if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(URL_TYPE_EXTERNAL) ) {
+				if ( getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(URL_TYPE_LOCAL) ) {
 				
 					// SQLファイル準備
 					File baseSql = new File(baseSqlPath + "create.sql" );
@@ -897,7 +897,7 @@ function beforeDel(isAdmin) {
 				}
 				
 				// massbank.conf 追加処理
-				isResult = upConf.addConfig(reqSiteNo, reqSiteName, reqSiteLongName, reqSiteUrl, reqSiteDb);
+				isResult = upConf.addConfig(reqNo, reqShortLabel, reqLongLabel, reqSiteUrl, reqSiteDb);
 				if ( !isResult ) {
 					Logger.global.severe( "edit massbank.conf failed." );
 					out.println( msgErr("edit of massbank.conf failed.") );
@@ -920,17 +920,17 @@ function beforeDel(isAdmin) {
 		//----------------------------------------------------
 		else if ( act.equals("edit") ) {
 			// 入力値チェック
-			if ( !checkValue(out, reqSiteDb, reqSiteName, reqSiteLongName, reqSiteUrl) ) {
+			if ( !checkValue(out, reqSiteDb, reqShortLabel, reqLongLabel, reqSiteUrl) ) {
 				out.println( msgErr("edit failure.") );
 				isResult = false;
 			}
-			// URLチェック
-			else if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(reqSiteType) ) {
-				if ( reqSiteType.equals(URL_TYPE_LOCAL) ) {
+			// URL種別チェック
+			else if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(reqUrlType) ) {
+				if ( reqUrlType.equals(URL_TYPE_LOCAL) ) {
 					out.println( msgErr("url on the external cannot be specified.") );
 					isResult = false;
 				}
-				else if ( reqSiteType.equals(URL_TYPE_EXTERNAL) ) {
+				else if ( reqUrlType.equals(URL_TYPE_EXTERNAL) ) {
 					out.println( msgErr("url of the local cannot be specified.") );
 					isResult = false;
 				}
@@ -938,7 +938,7 @@ function beforeDel(isAdmin) {
 			// 編集
 			else {
 				// massbank.conf 編集処理
-				isResult = upConf.editConfig(reqSiteNo, reqSiteName, reqSiteLongName, reqSiteUrl);
+				isResult = upConf.editConfig(reqNo, reqShortLabel, reqLongLabel, reqSiteUrl);
 				if ( !isResult ) {
 					Logger.global.severe( "edit massbank.conf failed." );
 					out.println( msgErr("edit of massbank.conf failed.") );
@@ -966,20 +966,20 @@ function beforeDel(isAdmin) {
 				isResult = false;
 			}
 			// 存在しないDBの場合
-			else if ( !isExistDb(beforeDbList, beforeUrlList, reqSiteNo, reqSiteDb, reqSiteUrlBefore) ) {
-				reqSiteNo = -1;
+			else if ( !isExistDb(beforeDbList, beforeUrlList, reqNo, reqSiteDb, reqSiteUrlBefore) ) {
+				reqNo = -1;
 				isResult = true;
 			}
 			// 削除
 			else {
 				// massbank.conf 削除処理
-				isResult = upConf.delConfig(reqSiteNo);
+				isResult = upConf.delConfig(reqNo);
 				if ( !isResult ) {
 					Logger.global.severe( "edit massbank.conf failed." );
 					out.println( msgErr("edit of massbank.conf failed.") );
 				}
 				else {
-					reqSiteNo = -1;
+					reqNo = -1;
 				}
 				
 				// massbank.conf 整形処理
@@ -991,7 +991,7 @@ function beforeDel(isAdmin) {
 				}
 				
 				// 内部サイトのデータベースの削除処理を行う
-				if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrlBefore).equals(URL_TYPE_EXTERNAL) ) {
+				if ( getUrlType(baseUrl, hostName, ipAddress, reqSiteUrlBefore).equals(URL_TYPE_LOCAL) ) {
 					
 					// フォルダ削除処理
 					for (int i=0; i<dbPathes.length; i++) {
@@ -1040,8 +1040,8 @@ function beforeDel(isAdmin) {
 		// 登録済み情報取得
 		//----------------------------------------------------
 		String[] siteDbList = gtConf.getDbName();
-		String[] siteNameList = gtConf.getSiteName();
-		String[] siteLongNameList = gtConf.getSiteLongName();
+		String[] siteShortLabelList = gtConf.getSiteName();
+		String[] siteLongLabelList = gtConf.getSiteLongName();
 		String[] siteUrlList = gtConf.getSiteUrl();
 		siteUrlList[0] = gtConf.getServerUrl();
 		
@@ -1049,8 +1049,8 @@ function beforeDel(isAdmin) {
 		// 編集領域表示
 		//----------------------------------------------------
 		String selDb = "";
-		String selName = "";
-		String selLongName = "";
+		String selShortLabel = "";
+		String selLongLabel = "";
 		String selUrlType = "";
 		String selUrl = "";
 		String isUrlLocChecked = "";
@@ -1062,9 +1062,9 @@ function beforeDel(isAdmin) {
 		if ( !isResult ) {
 			// エラーの場合は値を引き継ぐ
 			selDb = reqSiteDb;
-			selName = reqSiteName;
-			selLongName = reqSiteLongName;
-			selUrlType = reqSiteType;
+			selShortLabel = reqShortLabel;
+			selLongLabel = reqLongLabel;
+			selUrlType = reqUrlType;
 			selUrl = reqSiteUrl;
 			if ( !selUrlType.equals(URL_TYPE_EXTERNAL) ) {
 				isUrlLocChecked = " checked";
@@ -1082,11 +1082,11 @@ function beforeDel(isAdmin) {
 			}
 		}
 		else if ( act.equals("add") || act.equals("edit") ) {
-			selDb = siteDbList[reqSiteNo];
-			selName = siteNameList[reqSiteNo];
-			selLongName = siteLongNameList[reqSiteNo];
-			selUrlType = reqSiteType;
-			selUrl = siteUrlList[reqSiteNo];
+			selDb = siteDbList[reqNo];
+			selShortLabel = siteShortLabelList[reqNo];
+			selLongLabel = siteLongLabelList[reqNo];
+			selUrlType = reqUrlType;
+			selUrl = siteUrlList[reqNo];
 			if ( !selUrlType.equals(URL_TYPE_EXTERNAL) ) {
 				isUrlLocChecked = " checked";
 				isUrlExtDisabled = " disabled";
@@ -1100,11 +1100,11 @@ function beforeDel(isAdmin) {
 		}
 		else {
 			selDb = "";
-			selName = "";
-			selLongName = "";
-			selUrlType = reqSiteType;
+			selShortLabel = "";
+			selLongLabel = "";
+			selUrlType = reqUrlType;
 			isUrlLocChecked = " checked";
-			if ( reqSiteNo == -1 || !selUrlType.equals(URL_TYPE_EXTERNAL) ) {
+			if ( reqNo == -1 || !selUrlType.equals(URL_TYPE_EXTERNAL) ) {
 				selUrl = "http://localhost/MassBank/";
 			}
 			else {
@@ -1115,23 +1115,23 @@ function beforeDel(isAdmin) {
 		out.println( "<div style=\"width:980px; border: 2px Gray solid; padding:15px; background-color:WhiteSmoke;\">" );
 		out.println( "<table width=\"97%\" align=\"center\" cellspacing=\"2\" cellpadding=\"2\">" );
 		out.println( "<tr>" );
-		out.println( "<td width=\"50\" title=\"Site No.\"><b>No.</b></td>" );
-		out.println( "<td width=\"15\"></td>" ) ;
-		out.println( "<td width=\"180\" title=\"Database Name\"><b>Database</b></td>" );
-		out.println( "<td title=\"Site Name\"><b>Name</b></td>" );
-		out.println( "<td title=\"Site Name (Long)\"><b>Long Name</b></td>" );
+		out.println( "<td width=\"50\" title=\"Database No.\"><b>No.</b></td>" );
+		out.println( "<td width=\"35\"></td>" ) ;
+		out.println( "<td width=\"180\" title=\"Database Name\"><b>DB Name</b></td>" );
+		out.println( "<td title=\"Short Label\"><b>Short Label</b></td>" );
+		out.println( "<td title=\"Long Label\"><b>Long Label</b></td>" );
 		out.println( "</tr>" );
 		out.println( "<tr height=\"10\">" );
 		out.println( "<td>" );
 		out.println( "<select name=\"siteNo\" style=\"width:100%;\" onChange=\"selNo();\">" );
-		if ( reqSiteNo == -1 ) {
+		if ( reqNo == -1 ) {
 			out.println( "<option value=\"-1\" selected>+</option>" );
 		}
 		else {
 			out.println( "<option value=\"-1\">+</option>" );
 		}
 		for (int i=0; i<siteDbList.length; i++) {
-			if ( reqSiteNo == i ) {
+			if ( reqNo == i ) {
 				out.println( "<option value=\"" + i + "\" selected>" + i + "</option>" );
 			}
 			else {
@@ -1142,8 +1142,8 @@ function beforeDel(isAdmin) {
 		out.println( "</td>" );
 		out.println( "<td></td>" ) ;
 		out.println( "<td><input type=\"text\" style=\"width:98%;\" name=\"siteDb\" value=\"" + selDb + "\"></td>" );
-		out.println( "<td><input type=\"text\" style=\"width:98%;\" name=\"siteName\" value=\"" + selName + "\"></td>" );
-		out.println( "<td><input type=\"text\" style=\"width:98%;\" name=\"siteLongName\" value=\"" + selLongName + "\"></td>" );
+		out.println( "<td><input type=\"text\" style=\"width:98%;\" name=\"siteShortLabel\" value=\"" + selShortLabel + "\"></td>" );
+		out.println( "<td><input type=\"text\" style=\"width:100%;\" name=\"siteLongLabel\" value=\"" + selLongLabel + "\"></td>" );
 		out.println( "</tr>" );
 		
 		out.println( "<tr>" );
@@ -1184,15 +1184,19 @@ function beforeDel(isAdmin) {
 			}
 		}
 		out.println( "<br><hr><br>" );
-		out.println( "\t<div class=\"count baseFont\">" + nf.format(siteDbList.length) + " database&nbsp;(" + externalNum + " external site)</div>" );
+		out.println( "\t<div class=\"count baseFont\">" + nf.format(siteDbList.length) + " database" );
+		if ( externalNum > 0 ) {
+			out.print(  "&nbsp;(" + externalNum + " external database)" );
+		}
+		out.println( "</div>" );
 		out.println( "\t<table width=\"980\" cellspacing=\"1\" cellpadding=\"0\" bgcolor=\"Lavender\" class=\"fixed\">" );
 		out.println( "\t\t<thead>");
 		out.println( "\t\t<tr class=\"rowHeader\">");
 		out.println( "\t\t\t<td width=\"30\">No.</td>" );
-		out.println( "\t\t\t<td width=\"90\">Database</td>" );
-		out.println( "\t\t\t<td width=\"305\">URL</td>" );
-		out.println( "\t\t\t<td width=\"110\">Name</td>" );
-		out.println( "\t\t\t<td width=\"160\">Long Name</td>" );
+		out.println( "\t\t\t<td width=\"90\">DB Name</td>" );
+		out.println( "\t\t\t<td>URL</td>" );
+		out.println( "\t\t\t<td width=\"120\">Short Label</td>" );
+		out.println( "\t\t\t<td width=\"150\">Long Label</td>" );
 		out.println( "\t\t\t<td width=\"64\">Status</td>" );
 		out.println( "\t\t\t<td width=\"215\">Details</td>" );
 		out.println( "\t\t</tr>");
@@ -1203,7 +1207,7 @@ function beforeDel(isAdmin) {
 			StringBuilder details = new StringBuilder();
 			
 			// massbank.conf 取得チェック
-			if ( siteDbList[i].equals("") || siteNameList[i].equals("") || siteLongNameList[i].equals("") || siteUrlList[i].equals("") ) {
+			if ( siteDbList[i].equals("") || siteShortLabelList[i].equals("") || siteLongLabelList[i].equals("") || siteUrlList[i].equals("") ) {
 				status = STATUS_ERR;
 				details.append( "<span class=\"errFont\">massbank.conf is wrong.</span><br />" );
 			}
@@ -1244,15 +1248,15 @@ function beforeDel(isAdmin) {
 				}
 			}
 			else {
-				details.append( "<span class=\"msgFont\">external site.</span><br />" );
+				details.append( "<span class=\"msgFont\">external database.</span><br />" );
 			}
 			
-			out.println( "\t\t<tr class=\"rowEnable\" id=\"row" + i + "\" height=\"50\">" );
+			out.println( "\t\t<tr class=\"rowEnable\" id=\"row" + i + "\">" );
 			out.println( "\t\t\t<td class=\"manage\" id=\"no" + i + "No\">" + i + "</td>");
 			out.println( "\t\t\t<td class=\"manage\" id=\"no" + i + "Db\">" + Sanitizer.html(siteDbList[i]) + "</td>");
 			out.println( "\t\t\t<td class=\"manage\" id=\"no" + i + "Url\"><a href=\"" + siteUrlList[i] + "\" target=\"_blank\" class=\"urlFont\">" + Sanitizer.html(siteUrlList[i]) + "</a></td>");
-			out.println( "\t\t\t<td class=\"manage\" id=\"no" + i + "Name\">" + Sanitizer.html(siteNameList[i]) + "</td>");
-			out.println( "\t\t\t<td class=\"manage\" id=\"no" + i + "LongName\">" + Sanitizer.html(siteLongNameList[i]) + "</td>");
+			out.println( "\t\t\t<td class=\"manage\" id=\"no" + i + "ShortLabel\">" + Sanitizer.html(siteShortLabelList[i]) + "</td>");
+			out.println( "\t\t\t<td class=\"manage\" id=\"no" + i + "LongLabel\">" + Sanitizer.html(siteLongLabelList[i]) + "</td>");
 			out.println( "\t\t\t<td class=\"center\" id=\"no" + i + "Status\">" + status + "</td>" );
 			out.println( "\t\t\t<td class=\"details\">" + details.toString() + "<input type=\"hidden\" id=\"no" + i + "Type\" value=\"" + getUrlType(baseUrl, hostName, ipAddress, siteUrlList[i]) + "\"></td>" );
 			out.println( "\t\t</tr>");
