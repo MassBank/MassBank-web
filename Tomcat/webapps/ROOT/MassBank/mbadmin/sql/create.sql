@@ -1,11 +1,9 @@
-DROP DATABASE IF EXISTS SAMPLE_DB;
-CREATE DATABASE SAMPLE_DB;
-USE SAMPLE_DB;
+CREATE DATABASE `SAMPLE_DB`;
+USE `SAMPLE_DB`;
 
 --
 -- Table structure for table `PEAK`
 --
-DROP TABLE IF EXISTS PEAK;
 CREATE TABLE PEAK (
 	ID          char(8)  NOT NULL,
 	MZ          double   NOT NULL,
@@ -17,7 +15,6 @@ CREATE TABLE PEAK (
 --
 -- Table structure for table `SPECTRUM`
 --
-DROP TABLE IF EXISTS SPECTRUM;
 CREATE TABLE SPECTRUM (
 	ID          char(8)      NOT NULL,
 	NAME        varchar(255) NOT NULL,
@@ -32,7 +29,6 @@ CREATE TABLE SPECTRUM (
 --
 -- Table structure for table `TREE`
 --
-DROP TABLE IF EXISTS TREE;
 CREATE TABLE TREE (
 	NO          int unsigned      NOT NULL,
 	PARENT      int unsigned      NOT NULL,
@@ -47,7 +43,6 @@ CREATE TABLE TREE (
 --
 -- Table structure for table `RECORD`
 --
-DROP TABLE IF EXISTS RECORD;
 CREATE TABLE RECORD (
 	ID            CHAR(8) NOT NULL,
 	DATE          DATE,
@@ -64,7 +59,6 @@ CREATE TABLE RECORD (
 --
 -- Table structure for table `CH_NAME`
 --
-DROP TABLE IF EXISTS CH_NAME;
 CREATE TABLE CH_NAME (
 	ID              CHAR(8)      NOT NULL,
 	NAME            VARCHAR(200) NOT NULL,
@@ -74,7 +68,6 @@ CREATE TABLE CH_NAME (
 --
 -- Table structure for table `CH_LINK`
 --
-DROP TABLE IF EXISTS CH_LINK;
 CREATE TABLE CH_LINK (
 	ID              CHAR(8) NOT NULL,
 	CAS             TEXT,
@@ -94,7 +87,6 @@ CREATE TABLE CH_LINK (
 --
 -- Table structure for table `INSTRUMENT`
 --
-DROP TABLE IF EXISTS INSTRUMENT;
 CREATE TABLE INSTRUMENT (
 	INSTRUMENT_NO      TINYINT UNSIGNED NOT NULL,
 	INSTRUMENT_TYPE    VARCHAR(50)      NOT NULL,
@@ -105,7 +97,6 @@ CREATE TABLE INSTRUMENT (
 --
 -- Table structure for table `MOLFILE`
 --
-DROP TABLE IF EXISTS MOLFILE;
 CREATE TABLE MOLFILE (
 	FILE              VARCHAR(8)        NOT NULL,
 	NAME              VARCHAR(200)      NOT NULL,
