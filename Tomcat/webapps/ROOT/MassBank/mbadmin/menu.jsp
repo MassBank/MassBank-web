@@ -22,11 +22,22 @@
  *
  * Admin Tool メニュー
  *
- * ver 1.0.8 2010.02.05
+ * ver 1.0.9 2010.02.26
  *
  ******************************************************************************/
 %>
 
+<%@ page import="massbank.admin.AdminCommon" %>
+<%
+	//----------------------------------------------------
+	// パラメータ取得
+	//----------------------------------------------------
+	final String reqUrl = request.getRequestURL().toString();
+	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
+	final String realPath = application.getRealPath("/");
+	AdminCommon admin = new AdminCommon(reqUrl, realPath);
+	boolean isPortal = admin.isPortal();
+%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
 <head>
@@ -106,6 +117,7 @@ body {
 	String fuMenu = (referer.indexOf("/FileUpload.jsp") == -1)      ? "menu" : "menuSelect";
 	String rgMenu = (referer.indexOf("/GenRecordList.jsp") == -1)   ? "menu" : "menuSelect";
 	String viMenu = (referer.indexOf("/DispVersion.jsp") == -1)     ? "menu" : "menuSelect";
+	String dbMenu = (referer.indexOf("/Manager.jsp") == -1)         ? "menu" : "menuSelect";
 %>
 
 <body>
@@ -113,6 +125,9 @@ body {
 	<tr>
 		<td>
 			<table cellspacing="3" cellpadding="0" bgcolor="Lavender" style="border:1px Gainsboro solid;" width="920px">
+<%
+	if ( isPortal ) {
+%>
 				<tr>
 					<td class="titl" onClick="parent.location.href='./'" rowspan="2">&nbsp;ADMIN TOOL&nbsp;<br>MENU</td>
 					<td class="<%=rvMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rvMenu%>'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</td>
@@ -126,8 +141,27 @@ body {
 					<td class="<%=rlMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rlMenu%>'" onClick="parent.location.href='RecordList.jsp'">Record List</td>
 					<td class="<%=slMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=slMenu%>'" onClick="parent.location.href='StructureList.jsp'">Structure List</td>
 					<td class="<%=rgMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rgMenu%>'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</td>
-					<td class="menu" onMouseOver="className='menuOver'" onMouseOut="className='menu'" onClick="parent.location.href='Manager.jsp'">Dababase Manager</td>
+					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Dababase Manager</td>
 				</tr>
+<%
+	}
+	else  {
+%>
+				<tr>
+					<td class="titl" onClick="parent.location.href='./'" rowspan="2">&nbsp;ADMIN TOOL&nbsp;<br>MENU</td>
+					<td class="<%=rvMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rvMenu%>'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</td>
+					<td class="<%=rrMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rrMenu%>'" onClick="parent.location.href='RecordRegist.jsp'">Record Registration</td>
+					<td class="<%=srMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=srMenu%>'" onClick="parent.location.href='StructureRegist.jsp'">Structure Registration</td>
+					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Dababase Manager</td>
+				</tr>
+				<tr>
+					<td class="<%=ieMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ieMenu%>'" onClick="parent.location.href='InstEdit.jsp'">Instrument Editor</td>
+					<td class="<%=rlMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rlMenu%>'" onClick="parent.location.href='RecordList.jsp'">Record List</td>
+					<td class="<%=slMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=slMenu%>'" onClick="parent.location.href='StructureList.jsp'">Structure List</td>
+				</tr>
+<%
+	}
+%>
 			</table>
 		</td>
 		<td class="home" onClick="parent.location.href='../'" width="58px">&nbsp;HOME&nbsp;</td>

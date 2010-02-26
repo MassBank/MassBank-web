@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.4 2009.11.18
+ * ver 1.0.5 2010.02.26
  *
  ******************************************************************************/
 %>
@@ -59,6 +59,7 @@
 <%@ page import="massbank.admin.SqlFileGenerator" %>
 <%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ include file="../jsp/Common.jsp"%>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -745,7 +746,7 @@ function selDb() {
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"http://www.massbank.jp/sample/recdata.zip\">recdata.zip</a>.</span><br>" );
+		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + RECDATA_ZIP_URL + "\">recdata.zip</a>.</span><br>" );
 		out.println( "</form>" );
 		out.println( "<hr><br>" );
 		if ( !FileUpload.isMultipartContent(request) ) {

@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.1 2010.02.18
+ * ver 1.0.2 2010.02.26
  *
  ******************************************************************************/
 %>
@@ -170,7 +170,11 @@
 			// 使用不可文字が含まれている場合
 			else if ( type.equals(TYPE_DB) ) {
 				if ( StringUtils.indexOfAny(str, new String[]{"\\", "/", ":", "*", "?", "\"", "<", ">", "|", "."}) != -1 ) {
-					op.println( msgErr( "[" + type + "]&nbsp;&nbsp;character that cannot be used ." ) );
+					op.println( msgErr( "[" + type + "]&nbsp;&nbsp;character that cannot be used." ) );
+					ret = false;
+				}
+				else if ( str.toLowerCase().equals("mysql") || str.toLowerCase().equals("test") ) {
+					op.println( msgErr( "[" + type + "]&nbsp;&nbsp; that cannot be used." ) );
 					ret = false;
 				}
 			}

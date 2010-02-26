@@ -22,21 +22,32 @@
  *
  * Admin Tool トップページ
  *
- * ver 1.0.9 2010.02.05
+ * ver 1.0.10 2010.02.26
  *
  ******************************************************************************/
 %>
 
+<%@ page import="massbank.admin.AdminCommon" %>
+<%
+	//----------------------------------------------------
+	// パラメータ取得
+	//----------------------------------------------------
+	final String reqUrl = request.getRequestURL().toString();
+	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
+	final String realPath = application.getRealPath("/");
+	AdminCommon admin = new AdminCommon(reqUrl, realPath);
+	boolean isPortal = admin.isPortal();
+%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="Content-Style-Type" content="text/css">
 	<link rel="stylesheet" type="text/css" href="css/admin.css">
-	<title>Admin | MassBank Server Administration Tool</title>
+	<title>Admin | MassBank Administration Tool</title>
 </head>
 <body id="top">
-<h2>MassBank Server Administration Tool</h2>
+<h2>MassBank Administration Tool</h2>
 <br />
 <hr>
 <br />
@@ -51,13 +62,17 @@
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='StructureList.jsp'">Structure List</div>
 	</div>
 	<div class="baseHerf" style="margin-left:490px;">
-<!--
+<%
+	if ( isPortal ) {
+%>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='RecordUtil.jsp?act=check'">Validator</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='RecordUtil.jsp?act=sql'">SQL File Generator</div>
--->
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='FileUpload.jsp'">File Upload</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='../jsp/DispVersion.jsp'">Version Information</div>
+<%
+	}
+%>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='Manager.jsp'">Database Manager</div>
 	</div>
 </div>

@@ -22,35 +22,55 @@
  *
  * 共通JSP（静的インクルード用）
  *
- * ver 1.0.2 2010.02.05
+ * ver 1.0.3 2010.02.26
  *
  ******************************************************************************/
 %>
+
+<%@ page import="massbank.admin.AdminCommon" %>
 <%
+	//----------------------------------------------------
+	// パラメータ取得
+	//----------------------------------------------------
+	final String commonReqUrl = request.getRequestURL().toString();
+	String commonBaseUrl = "";
+	if ( commonReqUrl.indexOf("/jsp") != -1 ) {
+		commonBaseUrl = commonReqUrl.substring( 0, (commonReqUrl.indexOf("/jsp") + 1 ) );
+	}
+	else {
+		commonBaseUrl = commonReqUrl.substring( 0, (commonReqUrl.indexOf("/mbadmin") + 1 ) );
+	}
+	final String commonRealPath = application.getRealPath("/");
+	AdminCommon commonAdmin = new AdminCommon(commonReqUrl, commonRealPath);
+	boolean isPortal = commonAdmin.isPortal();
+	
 	//-------------------------------------
 	// 参照先ベースURL
 	//-------------------------------------
-	/* 通常は慶應サーバを参照する */
-	String refBaseUrl = "http://www.massbank.jp/";
-//	String refReqUrl = request.getRequestURL().toString();
-//	String refBaseUrl = refReqUrl.substring( 0, (refReqUrl.indexOf("/jsp")+1) );
+	String commonRefBaseUrl = "http://www.massbank.jp/";
+	if ( !isPortal ) {
+		commonRefBaseUrl = commonBaseUrl;
+	}
 	
 	//-------------------------------------
 	// ブラウザ優先言語による言語判別
 	//-------------------------------------
-	String browserLang = (request.getHeader("accept-language") != null) ? request.getHeader("accept-language") : "";
+	String commonBrowserLang = (request.getHeader("accept-language") != null) ? request.getHeader("accept-language") : "";
 	boolean isJp = false;
-	if ( browserLang.startsWith("ja") || browserLang.equals("") ) {
+	if ( commonBrowserLang.startsWith("ja") || commonBrowserLang.equals("") ) {
 		isJp = true;
 	}
 	
 	//-------------------------------------
 	// 各URL設定
 	//-------------------------------------
-	String SAMPLE_URL = refBaseUrl + "sample/sample.txt";
-	String SAMPLE_ZIP_URL = refBaseUrl + "sample/sample.zip";
-	String MANUAL_URL = refBaseUrl + "manuals/UserManual_ja.pdf";
+	String SAMPLE_URL = commonRefBaseUrl + "sample/sample.txt";
+	String SAMPLE_ZIP_URL = commonRefBaseUrl + "sample/sample.zip";
+	String MANUAL_URL = commonRefBaseUrl + "manuals/UserManual_ja.pdf";
 	if ( !isJp ) {
-		MANUAL_URL = refBaseUrl + "manuals/UserManual_en.pdf";
+		MANUAL_URL = commonRefBaseUrl + "manuals/UserManual_en.pdf";
 	}
+	String RECDATA_ZIP_URL = commonRefBaseUrl + "sample/recdata.zip";
+	String MOLDATA_ZIP_URL = commonRefBaseUrl + "sample/moldata.zip";
+	String GIFDATA_ZIP_URL = commonRefBaseUrl + "sample/gifdata.zip";
 %>
