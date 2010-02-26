@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.2 2010.02.26
+ * ver 1.0.3 2010.02.26
  *
  ******************************************************************************/
 %>
@@ -1122,7 +1122,7 @@ function beforeDel(isAdmin) {
 		out.println( "<td width=\"50\" title=\"Database No.\"><b>No.</b></td>" );
 		out.println( "<td width=\"35\"></td>" ) ;
 		out.println( "<td width=\"180\" title=\"Database Name\"><b>DB Name</b></td>" );
-		out.println( "<td title=\"Short Label\"><b>Short Label</b></td>" );
+		out.println( "<td width=\"180\" title=\"Short Label\"><b>Short Label</b></td>" );
 		out.println( "<td title=\"Long Label\"><b>Long Label</b></td>" );
 		out.println( "</tr>" );
 		out.println( "<tr height=\"10\">" );
