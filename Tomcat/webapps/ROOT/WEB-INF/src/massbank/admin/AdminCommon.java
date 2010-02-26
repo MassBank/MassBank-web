@@ -20,7 +20,7 @@
  *
  * Admin Tool 共通クラス
  *
- * ver 1.0.8 2010.02.10
+ * ver 1.0.9 2010.02.26
  *
  ******************************************************************************/
 package massbank.admin;
@@ -156,6 +156,18 @@ public class AdminCommon {
 		return ret;
 	}
 
+	/**
+	 * ポータルサイトフラグ取得
+	 */
+	public boolean isPortal() {
+		boolean ret = false;
+		String adminFlag = getSetting( "portal", false );
+		if ( adminFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+	
 	/**
 	 * admin.confに定義された値を取得する
 	 * @param name 項目名
