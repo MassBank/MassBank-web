@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.4 2009.12.15
+ * ver 1.0.5 2010.03.15
  *
  ******************************************************************************/
 %>
@@ -711,7 +711,7 @@ function prevPeakSearchAdv() {
 				else {
 				 	dispNum += " spectra&nbsp;&nbsp;&nbsp;";
 				}
-				out.println( "<div align=\"right\" style=\"cursor: pointer;font-size: 12px;\">" + dispNum + "&nbsp;&nbsp;</div>" );
+				out.println( "<div align=\"right\" style=\"font-size: 12px;\">" + dispNum + "&nbsp;&nbsp;</div>" );
 				out.println( "</td>" );
 
 				//** Formula, Structure

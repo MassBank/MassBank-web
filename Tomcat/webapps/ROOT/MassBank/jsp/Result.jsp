@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.20 2010.02.17
+ * ver 2.0.21 2010.03.15
  *
  ******************************************************************************/
 %>
@@ -1005,7 +1005,7 @@
 					else {
 					 	dispNum += " spectra&nbsp;&nbsp;&nbsp;";
 					}
-					out.println( "<div align=\"right\" style=\"cursor: pointer;font-size: 12px;\">" + dispNum + "&nbsp;&nbsp;</div>" );
+					out.println( "<div align=\"right\" style=\"font-size: 12px;\">" + dispNum + "&nbsp;&nbsp;</div>" );
 					out.println( "  </td>" );
 					out.println( "  <td class=\"treeLayout2\" width=\"" + width[3] + "\" valign=\"top\">&nbsp;<b>" + rec.getFormula() + "</b>&nbsp;</td>" );
 					out.println( "  <td class=\"treeLayout1\" width=\"" + width[4] + "\" valign=\"top\" align=\"left\">" );
