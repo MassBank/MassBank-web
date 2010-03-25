@@ -20,7 +20,7 @@
  *
  * Cookieî•ñŠÇ— ƒNƒ‰ƒX
  *
- * ver 1.0.3 2008.12.18
+ * ver 1.0.4 2010.03.25
  *
  ******************************************************************************/
 
@@ -152,7 +152,12 @@ public class CookieManager {
 			} else {
 				time -= (double)expDate;
 			}
-			time = Double.parseDouble(String.valueOf(date.call("setTime", new Object[]{time})));
+			try {
+				time = Double.parseDouble(String.valueOf(date.call("setTime", new Object[]{time})));
+			}
+			catch (Exception e) {
+				time = Double.parseDouble(String.valueOf(date.eval("setTime(" + String.valueOf(time) + ")")));
+			}
 			String gmtTime = String.valueOf(date.call("toGMTString", null));
 			
 			// Cookieİ’èî•ñİ’èˆ—
@@ -161,8 +166,9 @@ public class CookieManager {
 			String cookieVal = paramVal + "; " + timeVal;
 			doc.setMember("cookie", cookieVal);
 		}
-		catch (JSException e) {
-			System.out.println(JSUtil.getStackTrace(e));
+		catch (JSException jse) {
+			System.out.println("Unsupported javascript was used.");
+			System.out.println(JSUtil.getStackTrace(jse));
 			return false;
 		}
 		return true;
@@ -177,7 +183,15 @@ public class CookieManager {
 		
 		String values = "";	// ‘ÎÛCookieî•ñ
 		try {
-			String[] allCookie = String.valueOf(doc.getMember("cookie")).split(";");
+			String tmpAllCookie = (String)doc.getMember("cookie");
+			if (tmpAllCookie == null) {
+				try {
+					tmpAllCookie = (String)doc.eval("cookie");
+				}
+				catch (JSException jse) {				
+				}
+			}
+			String[] allCookie = tmpAllCookie.split(";");
 			String[] tmp;
 			for (int i=0; i<allCookie.length; i++) {
 				tmp = allCookie[i].split("=");
