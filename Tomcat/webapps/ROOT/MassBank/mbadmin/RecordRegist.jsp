@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.5 2010.02.26
+ * ver 1.0.6 2010.03.31
  *
  ******************************************************************************/
 %>
@@ -243,13 +243,13 @@
 				}
 				if ( !findRequired ) {
 					// 必須項目が見つからない場合
-					op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is required item not exist." ) );
+					op.println( msgWarn( "some required items do not exist in&nbsp;&nbsp;[" + name + "]." ) );
 					break;
 				}
 				else {
 					if ( !findValue ) {
 						// 値が存在しない場合
-						op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is required item value not exist." ) );
+						op.println( msgWarn( "value of some required items of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;does not exist." ) );
 						break;
 					}
 					else {
@@ -262,11 +262,11 @@
 						// ACESSION
 						if ( requiredStr.equals("ACCESSION: ") ) {
 							if ( !val.equals(name.replace(REC_EXTENSION, "")) ) {
-								op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is file name or required item value illegal." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[ACCESSION:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal or file name is illegal." ) );
 								break;
 							}
 							if ( val.length() != 8 ) {
-								op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is required item value illegal." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[ACCESSION:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
 								break;
 							}
 							idStr = val;
@@ -277,7 +277,7 @@
 								Integer.parseInt(val);
 							}
 							catch (NumberFormatException e) {
-								op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is required item value illegal." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$NUM_PEAK:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
 								break;
 							}
 						}
@@ -321,7 +321,7 @@
 								}
 							}
 							if ( mzDuplication || mzNotNumeric || intensityNotNumeric || invalidFormat ) {
-								op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is required item value illegal." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$PEAK: m/z int. rel.int.]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
 								break;
 							}
 						}
