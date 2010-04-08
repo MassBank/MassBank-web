@@ -20,7 +20,7 @@
  *
  * バッチ検索ジョブ管理クラス
  *
- * ver 1.0.1 2008.12.05
+ * ver 1.0.3 2010.04.08
  *
  ******************************************************************************/
 package massbank;
@@ -227,7 +227,8 @@ public class BatchJobManager {
 		String key = jobInfo.getSessionId() + "," + jobInfo.getTimeStamp();
 		String val = jobInfo.getIpAddr()    + "," + jobInfo.getMailAddr()
 				 + "," + jobInfo.getFileName()  + "," + jobInfo.getFileSize()
-				 + "," + jobInfo.getTempName()  + "," + jobInfo.getStatus();
+				 + "," + jobInfo.getTempName()  + "," + jobInfo.getStatus()
+				 + "," + jobInfo.getInstType(false) + "," + jobInfo.getIonMode();
 		synchronized (this.proper) {
 			if ( isCountup ) {
 				int cnt = this.getCount() + 1;

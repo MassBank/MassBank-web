@@ -18,15 +18,38 @@
  *
  *******************************************************************************
  *
- * Admin Tool 共通クラス
+ * 管理者設定共通クラス
  *
- * ver 1.0.9 2010.02.26
+ * ver 1.0.11 2010.04.06
  *
  ******************************************************************************/
 package massbank.admin;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
+/**
+ * 管理者設定共通クラス
+ * 以下の機能を提供する
+ * 
+ *   ＜機能＞                       ＜admin.conf キー名＞
+ *   DBサーバホスト名取得           db_host_name
+ *   CGIヘッダ取得                  cgi_header
+ *   DBルートパス取得               db_path
+ *   Molfileルートパス取得          mol_path
+ *   Profileルートパス取得          profile_path
+ *   GIFルートパス取得              gif_path
+ *   出力先パス取得                 out_path
+ *   出力先パス取得                 primary_server_url
+ *   MassBankディレクトリパス取得   -
+ *   管理者権限フラグ取得           admin
+ *   ポータルサイトフラグ取得       portal
+ *   SMTPアドレス取得               mail_batch_smtp
+ *   送信者名取得                   mail_batch_name
+ *   Fromアドレス取得               mail_batch_from
+ *   
+ */
 public class AdminCommon {
 	
 	private String confFilePath = "";
@@ -39,10 +62,21 @@ public class AdminCommon {
 	public AdminCommon( String reqUrl, String realPath ) {
 		int pos1 = reqUrl.indexOf( "/", (new String("http://")).length() );
 		int pos2 = reqUrl.lastIndexOf( "/" );
-		String subDir = reqUrl.substring( pos1 + 1, pos2 );
-		subDir = subDir.replace( "jsp", "" );
-		subDir = subDir.replace( "mbadmin", "" );
-		realPath = realPath.replace( subDir, "" );
+		String subDir = "";
+		if (pos1 + 1 < reqUrl.length()) {
+			subDir = reqUrl.substring( pos1 + 1, pos2 );
+			subDir = subDir.replace( "jsp", "" );
+			subDir = subDir.replace( "mbadmin", "" );
+			subDir = subDir.replace( "Knapsack", "" );
+			if (!subDir.equals("")) {
+				if (!subDir.endsWith("/")) {
+					subDir += "/";
+				}
+				if ((new File(realPath).getName()).equals(subDir.substring(0, subDir.length()-1))) {
+					subDir = "";
+				}
+			}
+		}
 		this.confFilePath = realPath + subDir + "mbadmin/admin.conf";
 	}
 	
@@ -103,7 +137,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * Gifルートパス取得
+	 * GIFルートパス取得
 	 */
 	public String getGifRootPath() {
 		String path = getSetting( "gif_path", true );
@@ -132,7 +166,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * ApacheのMassBankディレクトリのパス取得
+	 * MassBankディレクトリパス取得
+	 * ApacheのMassBankディレクトリのリアルパスを取得する
 	 */
 	public String getMassBankPath() {
 		String path = "";
@@ -167,10 +202,33 @@ public class AdminCommon {
 		}
 		return ret;
 	}
+
+	/**
+	 * SMTPアドレス取得（Batch Service用）
+	 */
+	public String getMailSmtp() {
+		return getSetting( "mail_batch_smtp", false );
+	}
+	
+	/**
+	 * 送信者名取得（Batch Service用）
+	 */
+	public String getMailName() {
+		return getSetting( "mail_batch_name", false );
+	}
+	
+	/**
+	 * Fromアドレス取得（Batch Service用）
+	 */
+	public String getMailFrom() {
+		return getSetting( "mail_batch_from", false );
+	}
 	
 	/**
 	 * admin.confに定義された値を取得する
-	 * @param name 項目名
+	 * 「#」で始まる行はコメント行とする
+	 * @param key キー名
+	 * @param isPath 取得しようとする値がパスであるかどうか
 	 */
 	private String getSetting( String key, boolean isPath ) {
 		String val = "";
@@ -178,6 +236,9 @@ public class AdminCommon {
 		try {
 			BufferedReader in = new BufferedReader( new FileReader( confFilePath ) );
 			while ( ( line = in.readLine() ) != null ) {
+				if (line.startsWith("#")) {
+					continue;
+				}
 				int pos = line.indexOf( "=" );
 				if ( pos >= 0 ) {
 					String keyInfo = line.substring( 0, pos );

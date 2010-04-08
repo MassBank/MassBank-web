@@ -22,61 +22,23 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.9 2009.12.16
+ * ver 1.0.10 2010.04.08
  *
  ******************************************************************************/
 %>
-<%@ page import="java.io.*" %>
-<%@ page import="java.util.*" %>
+<%@ page import="java.io.File" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Calendar" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="org.apache.commons.fileupload.DiskFileUpload" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
 <%@ page import="massbank.BatchJobManager" %>
 <%@ page import="massbank.BatchJobInfo" %>
 <%@ include file="./Common.jsp"%>
-<%!
-	/**
-	 * HTML出力
-	 * @param sampleUrl
-	 * @param sampleZipUrl
-	 * @param message
-	 * @param mailAddress
-	 * @return html
-	 */
-	private String outInputForm( String sampleUrl, String sampleZipUrl, String message, String mailAddress ) {
-		StringBuffer html = new StringBuffer();
-		html.append("<form action=\"./BatchSearch.html\" enctype=\"multipart/form-data\" method=\"POST\">\n");
-		html.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"15\" class=\"form-box\">\n");
-		html.append("<tr>\n");
-		html.append("<td><b>Query File</b></td>\n");
-		html.append("<td>\n");
-		html.append("<input type=\"file\" name=\"file\" size=\"32\">&nbsp;&nbsp;&nbsp;&nbsp;\n");
-		html.append("<img src=\"./img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"font12px text\" href=\"" + sampleUrl + "\" target=\"_blank\">sample file</a></b>&nbsp;&nbsp;");
-		html.append("<img src=\"./img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"font12px text\" href=\"" + sampleZipUrl + "\" target=\"_blank\">sample archive</a></b>&nbsp;");
-		html.append("</td>\n");
-		html.append("</tr>\n");
-		html.append("<tr>\n");
-		html.append("<td><b>Mail Address</b></td>\n");
-		html.append("<td><input type=\"text\" name=\"mail\" size=\"32\" value=\"" + mailAddress + "\"></td>\n");
-		html.append("</tr>\n");
-		html.append("<tr>\n");
-		html.append("<td colspan=\"2\">This service will appear as a part of Quick Search Page.</td>\n");
-		html.append("</tr>\n");
-		html.append("</table>\n");
-		html.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
-		html.append("<tr>\n");
-		html.append("<td>\n");
-		html.append("<br><input type=\"submit\" value=\"Submit\" class=\"search\" onClick=\"return checkFileExtention(forms[0].file.value);\">\n");
-		html.append("</td>\n");
-		html.append("</tr>\n");
-		html.append("</table>\n");
-		html.append("</form>\n");
-		if ( message != null && !message.equals("") ) {
-			html.append("<font color=\"red\"><b>" + message + "</b></font><br>\n");
-		}
-		return html.toString();
-	}
-%>
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -100,9 +62,23 @@
 			</td>
 		</tr>
 	</table>
-<iframe src="./menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
-<hr size="1">
+	<iframe src="./menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+	<hr size="1">
+	
+	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
+	<jsp:include page="../pserver/ServerInfo.jsp" />
 <%
+	boolean isHtml = false;
+	boolean isHtmlResult = false;
+	String time = "";
+	String instGrp = "";
+	String instType = "";
+	String ionMode  = "1";
+	
+	boolean isFirst = false;
+	List<String> instGrpList = new ArrayList<String>();
+	List<String> instTypeList = new ArrayList<String>();
+	
 	String tempDir = System.getProperty("java.io.tmpdir");
 	
 	// パラメータ取得
@@ -112,21 +88,23 @@
 	File temp = null;
 	long fileSize = 0;
 	
-	boolean isInput = false;
 	String message = "";
-	DiskFileUpload dfu = new DiskFileUpload();
-	if ( !dfu.isMultipartContent(request) ) {
-		isInput = true;
-		out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, "", "") );
+	if ( !DiskFileUpload.isMultipartContent(request) ) {
+		isHtml = true;
 	}
 	else {
+		DiskFileUpload dfu = new DiskFileUpload();
 		dfu.setSizeMax(-1);
 		dfu.setSizeThreshold(1024);
 		dfu.setRepositoryPath(tempDir);
-		dfu.setHeaderEncoding("Windows-31J");
+		dfu.setHeaderEncoding("utf-8");
 		List list = dfu.parseRequest(request);
 		Iterator iterator = list.iterator();
 		
+		
+		//-------------------------------------
+		// リクエストパラメータ取得
+		//-------------------------------------
 		while ( iterator.hasNext() ) {
 			FileItem fItem = (FileItem)iterator.next();
 			if ( ! fItem.isFormField() ) {
@@ -139,9 +117,35 @@
 				}
 			}
 			else if ( fItem.getFieldName().equals("mail") ) {
-				mailAddress = fItem.getString();
+				mailAddress = fItem.getString().trim();
+			}
+			else if ( fItem.getFieldName().equals("inst_grp") ) {
+				instGrpList.add(fItem.getString().trim());
+			}
+			else if ( fItem.getFieldName().equals("inst") ) {
+				instTypeList.add(fItem.getString().trim());
+			}
+			else if ( fItem.getFieldName().equals("ion") ) {
+				ionMode = fItem.getString().trim();
 			}
 		}
+		for ( int i = 0; i < instGrpList.size(); i++ ) {
+			instGrp += instGrpList.get(i);
+			if ( i < instGrpList.size() - 1 ) {
+				instGrp += ",";
+			}
+		}
+		for ( int i = 0; i < instTypeList.size(); i++ ) {
+			instType += instTypeList.get(i);
+			if ( i < instTypeList.size() - 1 ) {
+				instType += ",";
+			}
+		}
+		
+		
+		//-------------------------------------
+		// ジョブ実行
+		//-------------------------------------
 		BatchJobManager job = new BatchJobManager();
 		int cnt = job.getCount();
 		boolean isError = false;
@@ -160,12 +164,12 @@
 			isError = true;
 		}
 		if ( isError ) {
-			out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, message, mailAddress) );
+			isHtml = true;
 		}
 		// ジョブ同時実行数は5まで
 		else if ( cnt > 5 ) {
 			message = "System is busy now. Please retry later.";
-			out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, message, mailAddress) );
+			isHtml = true;
 		}
 		else {
 			// セッションID, IPアドレス, 時刻
@@ -180,9 +184,11 @@
 			jobInfo.setFileName( flName);
 			jobInfo.setFileSize( String.valueOf(fileSize) );
 			jobInfo.setTempName( tempName );
+			jobInfo.setInstType( instType.split(",") );
+			jobInfo.setIonMode( ionMode );
 			
 			SimpleDateFormat sdf2 = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-			String time = sdf2.format(new Date(timeMillis));
+			time = sdf2.format(new Date(timeMillis));
 			
 			// ジョブエントリをセット
 			job.setEntry(jobInfo);
@@ -193,26 +199,85 @@
 				File f = new File( tempDir + "/" + tempName );
 				f.delete();
 				message = "Your job is already running.";
-				out.print( outInputForm(SAMPLE_URL, SAMPLE_ZIP_URL, message, mailAddress) );
+				isHtml = true;
 			}
 			else {
 				// ジョブエントリを追加する
 				job.addEntry();
-				
-				out.println("<table border=\"0\" cellpadding=\"0\" cellspacing=\"15\">");
-				out.println("<tr>");
-				out.println("<td>");
-				out.println("[" + time + "]" + "<br>");
-				out.println("Your batch search is accepted.<br>");
-				out.println("The results will be sent to " + mailAddress + " later.");
-				out.println("</td>");
-				out.println("</tr>");
-				out.println("</table>");
+				isHtmlResult = true;
 			}
 		}
 	}
+	
+	
+	//-------------------------------------
+	// HTML出力
+	//-------------------------------------
+	// 通常用HTML
+	if (isHtml) {
+		out.println("\t<form name=\"form_query\" action=\"./BatchSearch.html\" enctype=\"multipart/form-data\" method=\"POST\">");
+		out.println("\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+		out.println("\t\t\t<tr>");
+		out.println("\t\t\t\t<td valign=\"top\">");
+		out.println("\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"15\" class=\"form-box\" width=\"488\">");
+		out.println("\t\t\t\t\t\t<tr>");
+		out.println("\t\t\t\t\t\t\t<td valign=\"top\" width=\"100px\"><b>Query File</b></td>");
+		out.println("\t\t\t\t\t\t\t<td>");
+		out.println("\t\t\t\t\t\t\t\t<input type=\"file\" name=\"file\" size=\"32\"><br>&nbsp;&nbsp;&nbsp;");
+		out.println("\t\t\t\t\t\t\t\t<img src=\"./img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"font12px text\" href=\"" + SAMPLE_URL + "\" target=\"_blank\">sample file</a></b>&nbsp;&nbsp;");
+		out.println("\t\t\t\t\t\t\t\t<img src=\"./img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"font12px text\" href=\"" + SAMPLE_ZIP_URL + "\" target=\"_blank\">sample archive</a></b>&nbsp;");
+		out.println("\t\t\t\t\t\t\t</td>");
+		out.println("\t\t\t\t\t\t</tr>");
+		out.println("\t\t\t\t\t\t<tr>");
+		out.println("\t\t\t\t\t\t\t<td width=\"100px\"><b>Mail Address</b></td>");
+		out.println("\t\t\t\t\t\t\t<td><input type=\"text\" name=\"mail\" size=\"32\" value=\"" + mailAddress + "\"></td>");
+		out.println("\t\t\t\t\t\t</tr>");
+		out.println("\t\t\t\t\t\t<tr style=\"padding-top:10px;\">");
+		out.println("\t\t\t\t\t\t\t<td colspan=\"2\" class=\"font12px\" style=\"text-indent:20px;\">This service will appear as a part of Quick Search Page.</td>");
+		out.println("\t\t\t\t\t\t</tr>");
+		out.println("\t\t\t\t\t</table>");
+		out.println("\t\t\t\t\t<br>");
+		out.println("\t\t\t\t\t<table>");
+		out.println("\t\t\t\t\t\t<tr>");
+		out.println("\t\t\t\t\t\t\t<td>");
+		out.println("\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Submit\" class=\"search\" onClick=\"return checkFileExtention(form_query.file.value) && checkSubmit();\">");
+		out.println("\t\t\t\t\t\t\t</td>");
+		out.println("\t\t\t\t\t\t</tr>");
+		out.println("\t\t\t\t\t</table>");
+		out.println("\t\t\t\t</td>");
+		out.println("\t\t\t\t<td valign=\"top\" style=\"padding:0px 15px;\">");
 %>
-<hr size="1">
-<iframe src="./copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<jsp:include page="Instrument.jsp" flush="true">
+	<jsp:param name="ion" value="<%= ionMode %>" />
+	<jsp:param name="first" value="<%= isFirst %>" />
+	<jsp:param name="inst_grp" value="<%= instGrp %>" />
+	<jsp:param name="inst" value="<%= instType %>" />
+</jsp:include>
+<%
+		out.println("\t\t\t\t</td>");
+		out.println("\t\t\t</tr>");
+		out.println("\t\t</table>");
+		out.println("\t\t<input type=\"hidden\" name=\"isFirst\" value=\"" + isFirst + "\"");
+		out.println("\t</form>");
+		if ( message != null && !message.equals("") ) {
+			out.println("\t<font color=\"red\"><b>" + message + "</b></font><br>");
+		}
+	}
+	// 結果用HTML
+	if (isHtmlResult) {
+		out.println("\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"15\">");
+		out.println("\t\t<tr>");
+		out.println("\t\t\t<td>");
+		out.println("\t\t\t\t<span>[ " + time + " ]" + "</span><br>");
+		out.println("\t\t\t\t<span>Your batch search is accepted.</span><br>");
+		out.println("\t\t\t\t<span>The results will be sent to " + mailAddress + " later.</span>");
+		out.println("\t\t\t</td>");
+		out.println("\t\t</tr>");
+		out.println("\t</table>");
+	}
+%>
+	<br>
+	<hr size="1">
+	<iframe src="./copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 </body>
 </html>

@@ -20,22 +20,25 @@
  *
  * バッチ検索サービス
  *
- * ver 1.0.2 2008.12.05
+ * ver 1.0.3 2010.04.02
  *
  ******************************************************************************/
 package massbank;
 
-import java.io.*;
 import java.util.ArrayList;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import massbank.BatchJobManager;
-import massbank.BatchJobWorker;
-import java.util.Date;
 import java.util.LinkedList;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * バッチ検索サービスServletクラス
+ */
 public class BatchService extends HttpServlet {
-	public String baseUrl = "";
+	public static String BASE_URL = "";
+	public static String REAL_PATH = "";
 	public int cnt = 0;
 	private BatchJobMonitor mon = null;
 
@@ -44,10 +47,11 @@ public class BatchService extends HttpServlet {
 	 */
 	public void init() throws ServletException {
 		String baseUrl = getInitParameter("baseUrl");
-		this.baseUrl = "http://localhost/MassBank/";
+		BASE_URL = "http://localhost/MassBank/";
 		if ( baseUrl != null ) {
-			this.baseUrl = baseUrl;
+			BASE_URL = baseUrl;
 		}
+		REAL_PATH = this.getServletContext().getRealPath("/");
 		// アクティブ状態になっているジョブを未実行状態にする
 		BatchJobManager job = new BatchJobManager();
 		job.setPassiveAll();
@@ -127,14 +131,14 @@ public class BatchService extends HttpServlet {
 				if ( num == 0 ) {
 					continue;
 				}
-	
+				
 				// ジョブ実行
 				BatchJobWorker[] thread = new BatchJobWorker[num];
 				for ( int i = 0; i < num; i++ ) {
 					BatchJobInfo jobInfo = entryList.get(i);
 					job.setEntry( jobInfo );
 					job.setActive();
-					thread[i] = new BatchJobWorker( baseUrl, jobInfo );
+					thread[i] = new BatchJobWorker( jobInfo );
 					thread[i].start();
 					this.thList.add(thread[i]);
 				}

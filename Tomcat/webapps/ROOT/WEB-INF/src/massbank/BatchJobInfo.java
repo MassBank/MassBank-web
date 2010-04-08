@@ -20,7 +20,7 @@
  *
  * バッチ検索ジョブ管理データクラス
  *
- * ver 1.0.1 2008.12.05
+ * ver 1.0.3 2010.04.08
  *
  ******************************************************************************/
 package massbank;
@@ -34,6 +34,8 @@ public class BatchJobInfo {
 	private String fileSize  = "";
 	private String tempName  = "";
 	private String status    = "";
+	private String instType  = "";
+	private String ionMode   = "";
 	public static final int SESSION_ID = 0;
 	public static final int TIME_STAMP = 1;
 	public static final int IP_ADDR    = 2;
@@ -42,7 +44,9 @@ public class BatchJobInfo {
 	public static final int FILE_SIZE  = 5;
 	public static final int TEMP_NAME  = 6;
 	public static final int STATUS     = 7;
-
+	public static final int INST_TYPE  = 8;
+	public static final int ION_MODE   = 9;
+	
 	public BatchJobInfo() {
 	}
 	public BatchJobInfo(String[] items) {
@@ -54,6 +58,8 @@ public class BatchJobInfo {
 		this.fileSize  = items[FILE_SIZE];
 		this.tempName  = items[TEMP_NAME];
 		this.status    = items[STATUS];
+		this.instType  = items[INST_TYPE].replaceAll("@", ",");
+		this.ionMode   = items[ION_MODE];
 	}
 	public void setSessionId(String val) {
 		this.sessionId = val;
@@ -79,6 +85,19 @@ public class BatchJobInfo {
 	public void setStatus(String val) {
 		this.status = val;
 	}
+	public void setInstType(String[] vals) {
+		String tmpInstType = "";
+		for (String val : vals) {
+			tmpInstType += val.trim() + ",";
+		}
+		if (!tmpInstType.equals("")) {
+			tmpInstType = tmpInstType.substring(0, tmpInstType.length()-1);
+		}
+		this.instType = tmpInstType;
+	}
+	public void setIonMode(String val) {
+		this.ionMode = val;
+	}
 	public String getSessionId() {
 		return this.sessionId;
 	}
@@ -103,5 +122,15 @@ public class BatchJobInfo {
 	public String getStatus() {
 		return this.status;
 	}
-
+	public String getInstType(boolean isCsv) {
+		if (isCsv) {
+			return this.instType;
+		}
+		else {
+			return this.instType.replaceAll(",", "@");			
+		}
+	}
+	public String getIonMode() {
+		return this.ionMode;
+	}
 }
