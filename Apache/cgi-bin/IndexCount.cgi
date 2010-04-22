@@ -19,9 +19,9 @@
 #
 #===============================================================================
 #
-# 統計表示用のレコードカウント取得
+# RecordIndexページ用件数カウントCGI
 #
-# ver 3.0.1  2008.12.05
+# ver 3.0.2  2010.04.22
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -67,11 +67,11 @@ foreach my $item ( @ans ) {
 	outCount( $head, $val, 0, $sqlparam );
 }
 
-# Compound Name ===========================================================
+# Ion & Compound Name =====================================================
+$sqltype = 1;
 foreach my $val ( @params ) {
 	if ( $val eq 'Positive' || $val eq 'Negative' ) {
 		$head = "ION:";
-		$sqltype = 0;
 		if ( $val eq 'Positive' ) {
 			$sqlparam = "where S.ION > 0";
 		}
@@ -81,15 +81,14 @@ foreach my $val ( @params ) {
 	}
 	else {
 		$head = "COMPOUND:";
-		$sqltype = 1;
 		if ( $val eq '1-9' ) {
-			$sqlparam = "where NAME regexp '^[0-9]' ";
+			$sqlparam = "where S.NAME regexp '^[0-9]' ";
 		}
 		elsif ( $val eq 'Others' ) {
-			$sqlparam = "where NAME regexp '^[^a-z0-9]' ";
+			$sqlparam = "where S.NAME regexp '^[^a-z0-9]' ";
 		}
 		else {
-			$sqlparam = "where NAME like '$val\%' ";
+			$sqlparam = "where S.NAME like '$val\%' ";
 		}
 	}
 	outCount( $head, $val, $sqltype, $sqlparam );
@@ -118,13 +117,8 @@ sub outCount() {
 sub getSql() {
 	my $sqltype = $_[0];
 	my $sqlparam = $_[1];
-	my @sqlstr = ("select count(*) from "
-				 . "( select distinct S.ID from SPECTRUM S "
-				 . "LEFT JOIN RECORD R ON S.ID = R.ID "
-				 . "LEFT JOIN CH_NAME N ON R.ID = N.ID "
-				 . "$sqlparam) as Tmptbl",
-				  "select count(*) from SPECTRUM "
-			     . "$sqlparam");
+	my @sqlstr = ("SELECT COUNT(*) FROM RECORD R $sqlparam",
+				  "SELECT COUNT(*) FROM SPECTRUM S $sqlparam");
 	return $sqlstr[$sqltype];
 }
 
