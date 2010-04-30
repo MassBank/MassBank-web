@@ -20,7 +20,7 @@
  *
  * MassBank共通クラス(Applet, JSP, Servlet 全てにおいて使用される)
  *
- * ver 1.0.18 2009.10.15
+ * ver 1.0.19 2010.04.28
  *
  ******************************************************************************/
 package massbank;
@@ -64,7 +64,7 @@ public class MassBankCommon {
 	public static final String REQ_TYPE_PEAKADV   = "peakadv";
 	public static final String REQ_TYPE_GETRECORD = "grecord";
 	public static final String REQ_TYPE_GETMOL    = "gmol";
-
+	public static final String REQ_TYPE_GETSTRUCT = "gstrct";
 	
 	// ＜CGIテーブルインデックス＞
 	public static final int CGI_TBL_NUM_TYPE = 0;		// CGI種別指定
@@ -97,7 +97,8 @@ public class MassBankCommon {
 	public static final int CGI_TBL_TYPE_PEAKADV  = 23;
 	public static final int CGI_TBL_TYPE_GETRECORD= 24;
 	public static final int CGI_TBL_TYPE_GETMOL   = 25;
-
+	public static final int CGI_TBL_TYPE_GETSTRUCT= 26;
+	
 
 	// ＜CGIテーブル＞
 	public static final String[][] CGI_TBL = {
@@ -108,16 +109,16 @@ public class MassBankCommon {
 		  REQ_TYPE_RCDIDX,   REQ_TYPE_INST,
 		  REQ_TYPE_MOL,      REQ_TYPE_GSDATA,    REQ_TYPE_GDATA3,
 		  REQ_TYPE_GETLIST,  REQ_TYPE_STRUCT,    REQ_TYPE_PEAKADV,  REQ_TYPE_GETRECORD,
-		  REQ_TYPE_GETMOL
+		  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT
 		} ,
-		{ "PeakSearch2.cgi",  "PeakSearch2.cgi",      "Disp.cgi",        "GetData.cgi",
-		  "GetData2.cgi",    "Search.cgi",          "GetName.cgi",     "GetPeakById.cgi",
-		  "QstarTable.cgi",  "GetSon.cgi",          "Disp.cgi",        "QuickSearch.cgi",
-		  "PeakSearch2.cgi", "PeakSearch2.cgi",     "ExistRecord.cgi", "IndexCount.cgi",
-		  "RecordIndex.cgi", "GetInstInfo.cgi",
-		  "MolfileAPI.cgi",  "GetSpectrumData.cgi", "GetData3.cgi",
+		{ "PeakSearch2.cgi",   "PeakSearch2.cgi",     "Disp.cgi",         "GetData.cgi",
+		  "GetData2.cgi",      "Search.cgi",          "GetName.cgi",      "GetPeakById.cgi",
+		  "QstarTable.cgi",    "GetSon.cgi",          "Disp.cgi",         "QuickSearch.cgi",
+		  "PeakSearch2.cgi",   "PeakSearch2.cgi",     "ExistRecord.cgi",  "IndexCount.cgi",
+		  "RecordIndex.cgi",   "GetInstInfo.cgi",
+		  "MolfileAPI.cgi",    "GetSpectrumData.cgi", "GetData3.cgi",
 		  "GetRecordList.cgi", "StructureSearch.cgi", "PeakSearchAdv.cgi", "GetRecordInfo.cgi",
-		  "GetMolfile.cgi"
+		  "GetMolfile.cgi",    "GetStructure.cgi"
 		}
 	};
 
