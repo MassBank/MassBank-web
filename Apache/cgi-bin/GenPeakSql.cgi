@@ -21,7 +21,7 @@
 #
 # [Admin Tool] PEAK.sqlファイル生成
 #
-# ver 3.0.5  2009.08.14
+# ver 3.0.6  2010.05.24
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -65,7 +65,12 @@ foreach my $name ( @fname_list ) {
 				if ( $pos >= 0 ) {
 					$val = substr($val, $pos + 1);
 				}
-				$precursor = $val;
+				$val =~ s/^\s+//;
+				$val =~ s/\s+$//;
+				# simple numeric check
+				if ( length($val) > 0 && !($val =~ /[^-,^.,^0-9]/) ) {
+					$precursor = $val;
+				}
 			}
 		}
 		elsif ( /^AC\$ANALYTICAL_CONDITION: / ) {
