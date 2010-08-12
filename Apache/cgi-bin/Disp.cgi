@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.15  2010.02.01
+# ver 3.0.16  2010.08.12
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -411,8 +411,10 @@ $sql = "SELECT FILE FROM MOLFILE WHERE NAME=\"$cond\"";
 $gifId = $ans[0][0];
 $gifFile = "../DB/gif/$db_name/$gifId.gif";
 $gifUrl = "$myServer/DB/gif/$db_name/$gifId.gif";
-if ( -f $gifFile ) {
-	print "\t\t\t\t\t<img src=\"$gifUrl\" alt=\"\" border=\"1\" width=\"180\" height=\"180\" onClick=\"expandMolView('$gifUrl')\" style=\"margin:10px\"><br>\n";
+$gifLargeFile = "../DB/gif_large/$db_name/$gifId.gif";
+$gifLargeUrl = "$myServer/DB/gif_large/$db_name/$gifId.gif";
+if ( -f $gifFile && -f $gifLargeFile ) {
+	print "\t\t\t\t\t<img src=\"$gifUrl\" alt=\"\" border=\"1\" width=\"180\" height=\"180\" onClick=\"expandMolView('$gifLargeUrl')\" style=\"margin:10px\"><br>\n";
 }
 else {
 print << "HTML";
