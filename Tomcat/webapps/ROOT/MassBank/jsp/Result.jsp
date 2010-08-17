@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.22 2010.04.28
+ * ver 2.0.24 2010.08.17
  *
  ******************************************************************************/
 %>
@@ -58,10 +58,10 @@
 	 * @param serverUrl
 	 * @param urlList
 	 * @param dbNameList
-	 * @return List<Map>(Map<String, String>, Map<String, String>) 画像とMolfile情報をそれぞれ格納したMapをListに格納
+	 * @return List<Map>(Map<String, String>, Map<String, String>, Map<String, String>) 画像とMolfile情報をそれぞれ格納したMapをListに格納
 	 */
 	private List<Map> getStructure(ResultList list, int startIndex, int endIndex, String serverUrl, String[] urlList, String[] dbNameList) {
-		List<Map> resultList = new ArrayList<Map>(2);
+		List<Map> resultList = new ArrayList<Map>(3);
 		
 		String prevName = "";
 		String param = "";
@@ -82,17 +82,20 @@
 		}
 		if ( !param.equals("") ) {
 			param = param.substring(0, param.length()-1);
-			param = "&gtype=gif_small&names=" + param;
+			param = "&names=" + param;
 		}
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
 		ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
 		
 		Map<String, String> gifMap = new HashMap<String, String>();
+		Map<String, String> gifSmallMap = new HashMap<String, String>();
+		Map<String, String> gifLargeMap = new HashMap<String, String>();
 		Map<String, String> molMap = new HashMap<String, String>();
 		String key = "";
 		int siteNo = -1;
-		String gifUrl = "";
+		String gifSmallUrl = "";
+		String gifLargeUrl = "";
 		String molData = "";
 		for ( int i = 0; i < result.size(); i++ ) {
 			String temp = (String)result.get(i);
@@ -100,9 +103,13 @@
 			String line = item[0];
 			if ( line.indexOf("---NAME:") >= 0 ) {
 				if ( !key.equals("") ) {
-					// GIFURL格納
-					if ( !gifMap.containsKey(key) && !gifUrl.trim().equals("")) {
-						gifMap.put(key, gifUrl);
+					// GIFSMALLURL格納
+					if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("")) {
+						gifSmallMap.put(key, gifSmallUrl);
+					}
+					// GIFLARGEURL格納
+					if ( !gifLargeMap.containsKey(key) && !gifLargeUrl.trim().equals("")) {
+						gifLargeMap.put(key, gifLargeUrl);
 					}
 					// Molfileデータ格納
 					else if ( !molMap.containsKey(key) && !molData.trim().equals("")) {
@@ -112,16 +119,26 @@
 				// 次のデータのキー名
 				key = line.substring(8).toLowerCase();
 				siteNo = Integer.parseInt(item[1]);
-				gifUrl = "";
+				gifSmallUrl = "";
+				gifLargeUrl = "";
 				molData = "";
 			}
-			else if ( line.indexOf("---GIF:") != -1 ) {
-				String gifFile = line.replaceAll("---GIF:", "");
+			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
+				String gifFile = line.replaceAll("---GIF_SMALL:", "");
 				if ( siteNo == 0 ) {
-					gifUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+					gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
 				}
 				else {
-					gifUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+					gifSmallUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+				}
+			}
+			else if ( line.indexOf("---GIF_LARGE:") != -1 ) {
+				String gifFile = line.replaceAll("---GIF_LARGE:", "");
+				if ( siteNo == 0 ) {
+					gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+				}
+				else {
+					gifLargeUrl = urlList[siteNo] + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
 				}
 			}
 			else {
@@ -132,13 +149,17 @@
 				molData += line + "|\n";
 			}
 		}
-		if ( !gifMap.containsKey(key) && !gifUrl.trim().equals("") ) {
-			gifMap.put(key, gifUrl);
+		if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("") ) {
+			gifSmallMap.put(key, gifSmallUrl);
+		}
+		if ( !gifLargeMap.containsKey(key) && !gifLargeUrl.trim().equals("") ) {
+			gifLargeMap.put(key, gifLargeUrl);
 		}
 		if ( !molMap.containsKey(key) && !molData.trim().equals("") ) {
 			molMap.put(key, molData);
 		}
-		resultList.add(gifMap);
+		resultList.add(gifSmallMap);
+		resultList.add(gifLargeMap);
 		resultList.add(molMap);
 		
 		return resultList;
@@ -380,6 +401,7 @@
 	<script type="text/javascript" src="../script/Common.js"></script>
 	<script type="text/javascript" src="../script/Result.js"></script>
 	<script type="text/javascript" src="../script/ResultMenu.js"></script>
+	<script type="text/javascript" src="../script/StructSearch.js"></script>
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -961,8 +983,9 @@
 
 			// 化学構造式表示情報を一括取得する
 			List<Map> structureResult = getStructure(list, startIndex, endIndex, serverUrl, urlList, dbNameList);
-			Map<String, String> mapGifUrl = structureResult.get(0);
-			Map<String, String> mapMolData = structureResult.get(1);
+			Map<String, String> mapGifSmallUrl = structureResult.get(0);
+			Map<String, String> mapGifLargeUrl = structureResult.get(1);
+			Map<String, String> mapMolData = structureResult.get(2);
 			
 			ResultRecord rec;
 			for (int i=startIndex; i<=endIndex; i++) {
@@ -1043,8 +1066,13 @@
 
 					// 化学構造式を表示（画像がなければアプレットで表示）
 					String key = rec.getName().toLowerCase();
-					if ( mapGifUrl.containsKey(key) ) {
-						out.println( "   <img src=\"" + mapGifUrl.get(key) + "\" width=\"80\" height=\"80\">");
+					if ( mapGifSmallUrl.containsKey(key) ) {
+						if ( mapGifLargeUrl.containsKey(key) ) {
+							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key).replaceAll("gif_small", "gif_large") + "')\" style=\"margin:0px; cursor:pointer\">");
+						}
+						else {
+							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
+						}
 					}
 					else if ( mapMolData.containsKey(key) ) {
 						String moldata = mapMolData.get(key).trim();
@@ -1058,7 +1086,7 @@
 						}
 					}
 					else {
-						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\">");
+						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
 					}
 
 					out.println( "  </td>" );
@@ -1117,7 +1145,6 @@
 					out.println( "</table>" );
 				}
 			}
-			out.println( "</table>" );
 			out.println( "<a name=\"resultsEnd\"></a>" );
 			
 			

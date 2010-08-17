@@ -20,7 +20,7 @@
  *
  * MassBank共通スクリプト
  *
- * ver 1.0.9 2009.12.16
+ * ver 1.0.10 2010.08.17
  *
  ******************************************************************************/
 
@@ -276,7 +276,8 @@ function doWait() {
  */
 function expandMolView(url) {
 	win = window.open(url, "ExpandMolView",
-		'width=380,height=380,menubar=no,toolbar=no,scrollbars=no,status=no,left=0,top=0,screenX=0,screenY=0');
+		'width=436,height=436,menubar=no,toolbar=no,scrollbars=no,status=no,location=yes,resizable=yes,left=0,top=0,screenX=0,screenY=0');
+	win.blur();	// chrome対応
 	win.focus();
 }
 

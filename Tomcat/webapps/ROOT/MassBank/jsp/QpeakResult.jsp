@@ -22,7 +22,7 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.16 2009.12.15
+ * ver 1.0.17 2010.08.17
  *
  ******************************************************************************/
 %>
@@ -48,22 +48,29 @@
 	private final String strucOnGif = "../image/strucOn.gif";
 
 	/**
-	 * Molfile情報を一括取得する
+	 * 構造式情報を一括取得する
+	 * @param list
+	 * @param serverUrl
+	 * @param urlList
+	 * @param dbNameList
+	 * @return List<Map>(Map<String, String>, Map<String, String>, Map<String, String>) 画像とMolfile情報をそれぞれ格納したMapをListに格納
 	 */
-	private Map<String,String> getMolFile(ArrayList list, String serverUrl) {
+	private List<Map> getStructure(ArrayList list, String serverUrl, String[] urlList, String[] dbNameList) {
+		List<Map> resultList = new ArrayList<Map>(3);
+		
 		String prevName = "";
 		String param = "";
 		for ( int i = 0; i < list.size(); i++ ) {
 			String rec = (String)list.get(i);
 			String[] fields = rec.split(";");
-			String name    = fields[0];  
+			String name = fields[0];  
 			if ( !name.equals(prevName) ) {
 				String ename = "";
 				try {
 					ename = URLEncoder.encode( name, "utf-8" );
 				}
 				catch ( UnsupportedEncodingException e ) {
-					e.printStackTrace();
+ 					e.printStackTrace();
 				}
 				param += ename + "@";
 			}
@@ -74,39 +81,84 @@
 			param = "&names=" + param;
 		}
 		MassBankCommon mbcommon = new MassBankCommon();
-		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETMOL];
+		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
 		ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
-
-		Map<String, String> map = new HashMap();
-		boolean isStart = false;
-		int cnt = 0;
+		
+		Map<String, String> gifMap = new HashMap<String, String>();
+		Map<String, String> gifSmallMap = new HashMap<String, String>();
+		Map<String, String> gifLargeMap = new HashMap<String, String>();
+		Map<String, String> molMap = new HashMap<String, String>();
 		String key = "";
-		String moldata = "";
+		int siteNo = -1;
+		String gifSmallUrl = "";
+		String gifLargeUrl = "";
+		String molData = "";
 		for ( int i = 0; i < result.size(); i++ ) {
 			String temp = (String)result.get(i);
 			String[] item = temp.split("\t");
 			String line = item[0];
 			if ( line.indexOf("---NAME:") >= 0 ) {
-				if ( !key.equals("") && !map.containsKey(key) && !moldata.trim().equals("") ) {
+				if ( !key.equals("") ) {
+					// GIFSMALLURL格納
+					if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("")) {
+						gifSmallMap.put(key, gifSmallUrl);
+					}
+					// GIFLARGEURL格納
+					if ( !gifLargeMap.containsKey(key) && !gifLargeUrl.trim().equals("")) {
+						gifLargeMap.put(key, gifLargeUrl);
+					}
 					// Molfileデータ格納
-					map.put(key, moldata);
+					else if ( !molMap.containsKey(key) && !molData.trim().equals("")) {
+						molMap.put(key, molData);
+					}
 				}
 				// 次のデータのキー名
 				key = line.substring(8).toLowerCase();
-				moldata = "";
+				siteNo = Integer.parseInt(item[1]);
+				gifSmallUrl = "";
+				gifLargeUrl = "";
+				molData = "";
+			}
+			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
+				String gifFile = line.replaceAll("---GIF_SMALL:", "");
+				if ( siteNo == 0 ) {
+					gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+				}
+				else {
+					gifSmallUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+				}
+			}
+			else if ( line.indexOf("---GIF_LARGE:") != -1 ) {
+				String gifFile = line.replaceAll("---GIF_LARGE:", "");
+				if ( siteNo == 0 ) {
+					gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+				}
+				else {
+					gifLargeUrl = urlList[siteNo] + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+				}
 			}
 			else {
 				// JME Editor 
 				if ( line.indexOf("M  CHG") >= 0 ) {
 					continue;
 				}
-				moldata += line + "|\n";
+				molData += line + "|\n";
 			}
 		}
-		if ( !map.containsKey(key) && !moldata.trim().equals("") ) {
-			map.put(key, moldata);
+		if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("") ) {
+			gifSmallMap.put(key, gifSmallUrl);
 		}
-		return map;
+		if ( !gifLargeMap.containsKey(key) && !gifLargeUrl.trim().equals("") ) {
+			gifLargeMap.put(key, gifLargeUrl);
+		}
+		if ( !molMap.containsKey(key) && !molData.trim().equals("") ) {
+			molMap.put(key, molData);
+		}
+		resultList.add(gifSmallMap);
+		resultList.add(gifLargeMap);
+		resultList.add(molMap);
+		
+		return resultList;
 	}
 %>
 <%
@@ -340,6 +392,8 @@
 		String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
 		GetConfig conf = new GetConfig(baseUrl);
 		String serverUrl = conf.getServerUrl();
+		String[] dbNameList = conf.getDbName();
+		String[] urlList = conf.getSiteUrl();
 		
 		
 		//-------------------------------------
@@ -421,11 +475,13 @@
 			out.println( "  <th height=\"30\" width=\"" + width[5] + "\" class=\"listLayout3\">Score</th>" );
 			out.println( " </tr>" );
 			out.println( "</table>" );
-
-
-			// Molfile情報を一括取得する
-			Map<String, String> mapMolData = getMolFile(result, serverUrl);
-
+			
+			// 化学構造式表示情報を一括取得する
+			List<Map> structureResult = getStructure(result, serverUrl, urlList, dbNameList);
+			Map<String, String> mapGifSmallUrl = structureResult.get(0);
+			Map<String, String> mapGifLargeUrl = structureResult.get(1);
+			Map<String, String> mapMolData = structureResult.get(2);
+			
 			//-------------------------------------
 			// 結果表示
 			//-------------------------------------
@@ -440,9 +496,6 @@
 				String formula = fields[3];
 				String hitScore= fields[4];
 				String site    = fields[5];
-//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-
 				
 				// ヒットピーク数、スコア
 				String score = "";
@@ -493,7 +546,15 @@
 				// アップレットで化学構造式を表示
 				String[] cutName = name.split(";");
 				String key = cutName[0].toLowerCase();
-				if ( mapMolData.containsKey(key) ) {
+				if ( mapGifSmallUrl.containsKey(key) ) {
+					if ( mapGifLargeUrl.containsKey(key) ) {
+						out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key).replaceAll("gif_small", "gif_large") + "')\" style=\"margin:0px; cursor:pointer\">");
+					}
+					else {
+						out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
+					}
+				}
+				else if ( mapMolData.containsKey(key) ) {
 					String moldata = mapMolData.get(key).trim();
 					if ( !moldata.equals("") ) {
 						out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
@@ -505,7 +566,7 @@
 					}
 				}
 				else {
-					out.println( "<img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\">");
+					out.println( "<img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
 				}
 				out.println( "</td>" );
 				

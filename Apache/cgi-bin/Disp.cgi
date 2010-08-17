@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.16  2010.08.12
+# ver 3.0.17  2010.08.17
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -414,7 +414,7 @@ $gifUrl = "$myServer/DB/gif/$db_name/$gifId.gif";
 $gifLargeFile = "../DB/gif_large/$db_name/$gifId.gif";
 $gifLargeUrl = "$myServer/DB/gif_large/$db_name/$gifId.gif";
 if ( -f $gifFile && -f $gifLargeFile ) {
-	print "\t\t\t\t\t<img src=\"$gifUrl\" alt=\"\" border=\"1\" width=\"180\" height=\"180\" onClick=\"expandMolView('$gifLargeUrl')\" style=\"margin:10px\"><br>\n";
+	print "\t\t\t\t\t<img src=\"$gifUrl\" alt=\"\" border=\"1\" width=\"180\" height=\"180\" onClick=\"expandMolView('$gifLargeUrl')\" style=\"margin:10px; cursor:pointer\"><br>\n";
 }
 else {
 print << "HTML";

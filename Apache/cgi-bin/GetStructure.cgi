@@ -21,7 +21,7 @@
 #
 # 構造情報一括取得
 #
-# ver 1.0.0  2010.04.28
+# ver 1.0.1  2010.08.17
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -30,7 +30,6 @@ use DBI;
 print "Content-Type: text/plain\n\n";
 
 my $query = new CGI;
-my $gifType = $query->param('gtype');
 my $names = $query->param('names');
 my $DbName = $query->param('dsn');
 open(F, "DB_HOST_NAME");
@@ -43,9 +42,9 @@ my $User = 'bird';
 my $PassWord = 'bird2006';
 my $MolDir = "../DB/molfile/$DbName";
 my $GifDir = "../DB/gif/$DbName";
-if ( $gifType eq 'gif_small' || $gifType eq 'gif_big' ) {
-	$GifDir = "../DB/$gifType/$DbName";
-}
+my $GifSmallDir = "../DB/gif_small/$DbName";
+my $GifLargeDir = "../DB/gif_large/$DbName";
+
 my $dbh = DBI->connect($DB, $User, $PassWord) || &errorexit;
 my @name_list = split( '@', $names );
 my $in = "NAME in(";
@@ -58,11 +57,32 @@ $in .= ")";
 @ans = &MySql("select FILE, NAME from MOLFILE where $in");
 foreach $x ( @ans ) {
 	($fname, $name) = @$x;
+	my $allGif = 1;
 	print "---NAME:$name\n";
 	if ( -f "$GifDir/$fname.gif" ) {
 		print "---GIF:$fname.gif\n";
 	}
 	else {
+		print "---GIF:\n";
+		$allGif = 0;
+	}
+	if ( -f "$GifSmallDir/$fname.gif" ) {
+		print "---GIF_SMALL:$fname.gif\n";
+	}
+	else {
+		print "---GIF_SMALL:\n";
+		$allGif = 0;
+	}
+	if ( -f "$GifLargeDir/$fname.gif" ) {
+		print "---GIF_LARGE:$fname.gif\n";
+	}
+	else {
+		print "---GIF_LARGE:\n";
+		$allGif = 0;
+	}
+	
+	# When all GIF doesn't exist
+	if ( $allGif == 0 ) {
 		open(F, "$MolDir/$fname.mol");
 		@mol = ();
 		while ( <F> ) {
