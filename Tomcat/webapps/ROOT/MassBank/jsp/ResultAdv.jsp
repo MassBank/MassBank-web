@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.7 2010.08.18
+ * ver 1.0.8 2010.08.18
  *
  ******************************************************************************/
 %>
@@ -295,29 +295,35 @@
 			}
 			else if ( line.indexOf("---GIF:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF:", "");
-				if ( siteNo == 0 ) {
-					gifUrl = serverUrl + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
-				}
-				else {
-					gifUrl = urlList[siteNo] + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+				if ( !gifFile.equals("") ) {
+					if ( siteNo == 0 ) {
+						gifUrl = serverUrl + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+					}
+					else {
+						gifUrl = urlList[siteNo] + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+					}
 				}
 			}
 			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_SMALL:", "");
-				if ( siteNo == 0 ) {
-					gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
-				}
-				else {
-					gifSmallUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+				if ( !gifFile.equals("") ) {
+					if ( siteNo == 0 ) {
+						gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+					}
+					else {
+						gifSmallUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+					}
 				}
 			}
 			else if ( line.indexOf("---GIF_LARGE:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_LARGE:", "");
-				if ( siteNo == 0 ) {
-					gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
-				}
-				else {
-					gifLargeUrl = urlList[siteNo] + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+				if ( !gifFile.equals("") ) {
+					if ( siteNo == 0 ) {
+						gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+					}
+					else {
+						gifLargeUrl = urlList[siteNo] + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+					}
 				}
 			}
 			else {

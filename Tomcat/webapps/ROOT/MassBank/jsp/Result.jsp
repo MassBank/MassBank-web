@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.25 2010.08.18
+ * ver 2.0.26 2010.08.18
  *
  ******************************************************************************/
 %>
@@ -131,29 +131,35 @@
 			}
 			else if ( line.indexOf("---GIF:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF:", "");
-				if ( siteNo == 0 ) {
-					gifUrl = serverUrl + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
-				}
-				else {
-					gifUrl = urlList[siteNo] + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+				if ( !gifFile.equals("") ) {
+					if ( siteNo == 0 ) {
+						gifUrl = serverUrl + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+					}
+					else {
+						gifUrl = urlList[siteNo] + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+					}
 				}
 			}
 			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_SMALL:", "");
-				if ( siteNo == 0 ) {
-					gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
-				}
-				else {
-					gifSmallUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+				if ( !gifFile.equals("") ) {
+					if ( siteNo == 0 ) {
+						gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+					}
+					else {
+						gifSmallUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
+					}
 				}
 			}
 			else if ( line.indexOf("---GIF_LARGE:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_LARGE:", "");
-				if ( siteNo == 0 ) {
-					gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
-				}
-				else {
-					gifLargeUrl = urlList[siteNo] + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+				if ( !gifFile.equals("") ) {
+					if ( siteNo == 0 ) {
+						gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+					}
+					else {
+						gifLargeUrl = urlList[siteNo] + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
+					}
 				}
 			}
 			else {
