@@ -21,7 +21,7 @@
  *
  * MassBank共通スタイルシート
  *
- * ver 1.0.13 2009.05.29
+ * ver 1.0.14 2010.08.18
  *
  ******************************************************************************/
 
@@ -415,4 +415,17 @@ input.search {
 .logic {
 	font-size:9pt;
 	letter-spacing:-1px;
+}
+
+/**
+ * 化学構造式プレビューウィンドウ
+ */
+#preview_structure {
+	position:absolute;
+	border:1px solid DimGray;
+	background:#333;
+	padding:5px;
+	display:none;
+	color:#fff;
+	font-weight:bold;
 }

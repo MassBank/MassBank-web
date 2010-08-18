@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.24 2010.08.17
+ * ver 2.0.25 2010.08.18
  *
  ******************************************************************************/
 %>
@@ -61,7 +61,7 @@
 	 * @return List<Map>(Map<String, String>, Map<String, String>, Map<String, String>) 画像とMolfile情報をそれぞれ格納したMapをListに格納
 	 */
 	private List<Map> getStructure(ResultList list, int startIndex, int endIndex, String serverUrl, String[] urlList, String[] dbNameList) {
-		List<Map> resultList = new ArrayList<Map>(3);
+		List<Map> resultList = new ArrayList<Map>(4);
 		
 		String prevName = "";
 		String param = "";
@@ -94,6 +94,7 @@
 		Map<String, String> molMap = new HashMap<String, String>();
 		String key = "";
 		int siteNo = -1;
+		String gifUrl = "";
 		String gifSmallUrl = "";
 		String gifLargeUrl = "";
 		String molData = "";
@@ -103,6 +104,10 @@
 			String line = item[0];
 			if ( line.indexOf("---NAME:") >= 0 ) {
 				if ( !key.equals("") ) {
+					// GIFURL格納
+					if ( !gifMap.containsKey(key) && !gifUrl.trim().equals("")) {
+						gifMap.put(key, gifUrl);
+					}
 					// GIFSMALLURL格納
 					if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("")) {
 						gifSmallMap.put(key, gifSmallUrl);
@@ -119,9 +124,19 @@
 				// 次のデータのキー名
 				key = line.substring(8).toLowerCase();
 				siteNo = Integer.parseInt(item[1]);
+				gifUrl = "";
 				gifSmallUrl = "";
 				gifLargeUrl = "";
 				molData = "";
+			}
+			else if ( line.indexOf("---GIF:") != -1 ) {
+				String gifFile = line.replaceAll("---GIF:", "");
+				if ( siteNo == 0 ) {
+					gifUrl = serverUrl + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+				}
+				else {
+					gifUrl = urlList[siteNo] + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
+				}
 			}
 			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_SMALL:", "");
@@ -149,6 +164,9 @@
 				molData += line + "|\n";
 			}
 		}
+		if ( !gifMap.containsKey(key) && !gifUrl.trim().equals("") ) {
+			gifMap.put(key, gifUrl);
+		}
 		if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("") ) {
 			gifSmallMap.put(key, gifSmallUrl);
 		}
@@ -158,6 +176,7 @@
 		if ( !molMap.containsKey(key) && !molData.trim().equals("") ) {
 			molMap.put(key, molData);
 		}
+		resultList.add(gifMap);
 		resultList.add(gifSmallMap);
 		resultList.add(gifLargeMap);
 		resultList.add(molMap);
@@ -402,6 +421,7 @@
 	<script type="text/javascript" src="../script/Result.js"></script>
 	<script type="text/javascript" src="../script/ResultMenu.js"></script>
 	<script type="text/javascript" src="../script/StructSearch.js"></script>
+	<script type="text/javascript" src="../script/jquery_imgprev.js"></script>
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -983,9 +1003,10 @@
 
 			// 化学構造式表示情報を一括取得する
 			List<Map> structureResult = getStructure(list, startIndex, endIndex, serverUrl, urlList, dbNameList);
-			Map<String, String> mapGifSmallUrl = structureResult.get(0);
-			Map<String, String> mapGifLargeUrl = structureResult.get(1);
-			Map<String, String> mapMolData = structureResult.get(2);
+			Map<String, String> mapGifUrl = structureResult.get(0);
+			Map<String, String> mapGifSmallUrl = structureResult.get(1);
+			Map<String, String> mapGifLargeUrl = structureResult.get(2);
+			Map<String, String> mapMolData = structureResult.get(3);
 			
 			ResultRecord rec;
 			for (int i=startIndex; i<=endIndex; i++) {
@@ -1066,13 +1087,25 @@
 
 					// 化学構造式を表示（画像がなければアプレットで表示）
 					String key = rec.getName().toLowerCase();
+					StringBuilder previewName = new StringBuilder(rec.getName());
+					if (previewName.length() > 17) {
+						previewName.delete(17, previewName.length());
+						previewName.append("...");
+					}
 					if ( mapGifSmallUrl.containsKey(key) ) {
+						if ( mapGifUrl.containsKey(key) ) {
+							out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+						}
+						else {
+							out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+						}
 						if ( mapGifLargeUrl.containsKey(key) ) {
-							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key).replaceAll("gif_small", "gif_large") + "')\" style=\"margin:0px; cursor:pointer\">");
+							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key) + "')\" style=\"margin:0px; cursor:pointer\">");
 						}
 						else {
 							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
 						}
+						out.println( "  </a>" );
 					}
 					else if ( mapMolData.containsKey(key) ) {
 						String moldata = mapMolData.get(key).trim();
@@ -1086,7 +1119,9 @@
 						}
 					}
 					else {
+						out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
 						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
+						out.println( "  </a>" );
 					}
 
 					out.println( "  </td>" );
