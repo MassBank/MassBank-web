@@ -20,12 +20,13 @@
  *
  * 環境設定ファイルの情報を更新するクラス
  *
- * ver 1.0.0 2010.02.12
+ * ver 1.0.1 2010.08.20
  *
  ******************************************************************************/
 package massbank.admin;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -100,19 +101,29 @@ public class UpdateConfig {
 	/**
 	 * 編集
 	 * @param siteNo サイト番号
+	 * @param internalSiteList 内部サイト番号リスト
 	 * @param name サイト名称
 	 * @param longName ロングサイト名称
 	 * @param url サーバURL
+	 * @param db DB名称
 	 * @return 結果
 	 */
-	public boolean editConfig(int siteNo, String name, String longName, String url) {
+	public boolean editConfig(int siteNo, ArrayList<Integer> internalSiteList, String name, String longName, String url, String db) {
 		setSetting("Name", siteNo, name);
 		setSetting("LongName", siteNo, longName);
 		if ( siteNo == MYSVR_INFO_NUM ) {
 			setSetting("FrontServer", siteNo, url);
+			for (Integer internalSiteNo : internalSiteList) {
+				if (internalSiteNo != MYSVR_INFO_NUM) {
+					setSetting("URL", internalSiteNo, url);
+				}
+			}
 		}
 		else {
 			setSetting("URL", siteNo, url);
+		}
+		if ( db != null && !db.equals("") ) {
+			setSetting("DB", siteNo, db);
 		}
 		
 		saveConf();

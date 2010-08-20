@@ -22,11 +22,12 @@
  *
  * データベース管理画面
  *
- * ver 1.0.3 2010.02.26
+ * ver 1.0.4 2010.08.20
  *
  ******************************************************************************/
 %>
 
+<%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Enumeration" %>
 <%@ page import="java.util.logging.Logger" %>
@@ -46,6 +47,7 @@
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.Sanitizer" %>
 <%@ page import="massbank.admin.AdminCommon" %>
+<%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
 <%@ page import="massbank.admin.UpdateConfig" %>
@@ -65,8 +67,8 @@
 	/** ステータス（エラー） */
 	private final String STATUS_ERR = "<span class=\"errFont\">error</span>";
 	
-	/** URL種別（local） */
-	private final String URL_TYPE_LOCAL = "local";
+	/** URL種別（internal） */
+	private final String URL_TYPE_INTERNAL = "internal";
 	
 	/** URL種別（external） */
 	private final String URL_TYPE_EXTERNAL = "external";
@@ -140,7 +142,7 @@
 			String type = list[i][0];
 			String str = list[i][1];
 			
-			// null、空白の場合
+			// null、トリム後空白の場合
 			if ( StringUtils.isBlank(str) ) {
 				op.println( msgErr( "[" + type + "]&nbsp;&nbsp;is blank." ) );
 				ret = false;
@@ -378,7 +380,7 @@
 		     (!judgeHost.equals("") && url.indexOf(judgeHost) != -1) ||
 		     (!judgeIp.equals("") && url.indexOf(judgeIp) != -1) ) {
 			
-			return URL_TYPE_LOCAL;
+			return URL_TYPE_INTERNAL;
 		}
 		else {
 			return URL_TYPE_EXTERNAL;
@@ -436,6 +438,14 @@ function initLoad() {
 		if ( no == -1) {
 			objForm.siteDb.readOnly = false;
 			objForm.siteDb.className = "";
+			objForm.siteUrl.readOnly = true;
+			objForm.siteUrl.className = "readOnly";
+			if (navigator.userAgent.indexOf("Firefox") == -1) {
+				objForm.siteUrl.value = document.getElementById( String("no0Url") ).innerText;
+			}
+			else {
+				objForm.siteUrl.value = document.getElementById( String("no0Url") ).textContent;
+			}
 			objForm.btnAdd.disabled = false;
 			objForm.btnEdit.disabled = true;
 			objForm.btnDelete.disabled = true;
@@ -448,8 +458,12 @@ function initLoad() {
 			objForm.btnDelete.disabled = true;
 		}
 		else {
-			objForm.siteDb.readOnly = true;
-			objForm.siteDb.className = "readOnly";
+			if ( document.getElementById( String("no" + no + "Type") ).value == "<%=URL_TYPE_INTERNAL%>" ) {
+				objForm.siteDb.readOnly = true;
+				objForm.siteDb.className = "readOnly";
+				objForm.siteUrl.readOnly = true;
+				objForm.siteUrl.className = "readOnly";
+			}
 			objForm.btnAdd.disabled = true;
 			objForm.btnEdit.disabled = false;
 			objForm.btnDelete.disabled = false;
@@ -505,31 +519,37 @@ function selNo() {
 		}
 		
 		// 内部サイトの場合
-		if ( document.getElementById( String("no" + no + "Type") ).value == "<%=URL_TYPE_LOCAL%>" ) {
+		if ( document.getElementById( String("no" + no + "Type") ).value == "<%=URL_TYPE_INTERNAL%>" ) {
+			objForm.siteDb.readOnly = true;
+			objForm.siteDb.className = "readOnly";
 			objForm.siteType[0].disabled = false;
 			objForm.siteType[1].disabled = true;
 			objForm.siteType[0].checked = true;
-			setClass('locLabel', 'readOnly', '');
+			setClass('intLabel', 'readOnly', '');
 			setClass('extLabel', '', 'readOnly');
+			objForm.siteUrl.readOnly = true;
+			objForm.siteUrl.className = "readOnly";
 		}
 		// 外部サイトの場合
 		else {
+			objForm.siteDb.readOnly = false;
+			objForm.siteDb.className = "";
 			objForm.siteType[0].disabled = true;
 			objForm.siteType[1].disabled = false;
 			objForm.siteType[1].checked = true;
-			setClass('locLabel', '', 'readOnly');
+			setClass('intLabel', '', 'readOnly');
 			setClass('extLabel', 'readOnly', '');
+			objForm.siteUrl.readOnly = false;
+			objForm.siteUrl.className = "";
 		}
 		if ( no == 0 ) {
-			objForm.siteDb.readOnly = true;
-			objForm.siteDb.className = "readOnly";
+			objForm.siteUrl.readOnly = false;
+			objForm.siteUrl.className = "";
 			objForm.btnAdd.disabled = true;
 			objForm.btnEdit.disabled = false;
 			objForm.btnDelete.disabled = true;
 		}
 		else {
-			objForm.siteDb.readOnly = true;
-			objForm.siteDb.className = "readOnly";
 			objForm.btnAdd.disabled = true;
 			objForm.btnEdit.disabled = false;
 			objForm.btnDelete.disabled = false;
@@ -543,9 +563,16 @@ function selNo() {
 		objForm.siteType[0].disabled = false;
 		objForm.siteType[1].disabled = false;
 		objForm.siteType[0].checked = true;
-		setClass('locLabel', 'readOnly', '');
+		setClass('intLabel', 'readOnly', '');
 		setClass('extLabel', 'readOnly', '');
-		objForm.siteUrl.value = "http://localhost/MassBank/";
+		objForm.siteUrl.readOnly = true;
+		objForm.siteUrl.className = "readOnly";
+		if (navigator.userAgent.indexOf("Firefox") == -1) {
+			objForm.siteUrl.value = document.getElementById( String("no0Url") ).innerText;
+		}
+		else {
+			objForm.siteUrl.value = document.getElementById( String("no0Url") ).textContent;
+		}
 		
 		objForm.siteDb.readOnly = false;
 		objForm.siteDb.className = "";
@@ -566,10 +593,19 @@ function selType() {
 	no = objForm.siteNo.value;
 	if ( no == -1 ) {
 		if ( objForm.siteType[1].checked ) {
+			objForm.siteUrl.readOnly = false;
+			objForm.siteUrl.className = "";
 			objForm.siteUrl.value = "http://";
 		}
 		else {
-			objForm.siteUrl.value = "http://localhost/MassBank/";
+			objForm.siteUrl.readOnly = true;
+			objForm.siteUrl.className = "readOnly";
+			if (navigator.userAgent.indexOf("Firefox") == -1) {
+				objForm.siteUrl.value = document.getElementById( String("no0Url") ).innerText;
+			}
+			else {
+				objForm.siteUrl.value = document.getElementById( String("no0Url") ).textContent;
+			}
 		}
 	}
 }
@@ -629,7 +665,7 @@ function beforeAdd(judgeBase, judgeHost, judgeIp) {
 		     (judgeHost != "" && urlVal.indexOf(judgeHost) != -1) ||
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) != -1) ) {
 			
-			alert("URL of the local cannot be specified.");
+			alert("URL of the internal cannot be specified.");
 			return false;
 		}
 	}
@@ -671,7 +707,7 @@ function beforeEdit(judgeBase, judgeHost, judgeIp) {
 		     (judgeHost != "" && urlVal.indexOf(judgeHost) != -1) ||
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) != -1) ) {
 			
-			alert("URL of the local cannot be specified.");
+			alert("URL of the internal cannot be specified.");
 			return false;
 		}
 	}
@@ -762,7 +798,7 @@ function beforeDel(isAdmin) {
 	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
 	final String realPath = application.getRealPath("/");
 	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String[] dbPathes = new String[]{admin.getDbRootPath(), admin.getMolRootPath(), admin.getProfileRootPath(), admin.getGifRootPath()};
+	final String[] dbPathes = new String[]{admin.getDbRootPath(), admin.getMolRootPath(), admin.getProfileRootPath(), admin.getGifRootPath(), admin.getGifSmallRootPath(), admin.getGifLargeRootPath()};
 	final String dbHostName = admin.getDbHostName();
 	final String massbankConfPath = admin.getMassBankPath() + "massbank.conf";
 	GetConfig gtConf = new GetConfig(baseUrl);
@@ -824,6 +860,7 @@ function beforeDel(isAdmin) {
 		}
 		
 		// 編集前の情報を保持
+		String beforeServerUrl = gtConf.getServerUrl();
 		String[] beforeDbList = gtConf.getDbName();
 		String[] beforeUrlList = gtConf.getSiteUrl();
 		
@@ -841,12 +878,12 @@ function beforeDel(isAdmin) {
 			}
 			// URL種別チェック
 			else if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(reqUrlType) ) {
-				if ( reqUrlType.equals(URL_TYPE_LOCAL) ) {
+				if ( reqUrlType.equals(URL_TYPE_INTERNAL) ) {
 					out.println( msgErr("url on the external cannot be specified.") );
 					isResult = false;
 				}
 				else if ( reqUrlType.equals(URL_TYPE_EXTERNAL) ) {
-					out.println( msgErr("url of the local cannot be specified.") );
+					out.println( msgErr("url of the internal cannot be specified.") );
 					isResult = false;
 				}
 			}
@@ -858,7 +895,7 @@ function beforeDel(isAdmin) {
 			// 追加
 			else {
 				// 内部サイトのデータベースの追加処理を行う
-				if ( getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(URL_TYPE_LOCAL) ) {
+				if ( getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(URL_TYPE_INTERNAL) ) {
 				
 					// SQLファイル準備
 					File baseSql = new File(baseSqlPath + "create.sql" );
@@ -930,19 +967,61 @@ function beforeDel(isAdmin) {
 			}
 			// URL種別チェック
 			else if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(reqUrlType) ) {
-				if ( reqUrlType.equals(URL_TYPE_LOCAL) ) {
+				if ( reqUrlType.equals(URL_TYPE_INTERNAL) ) {
 					out.println( msgErr("url on the external cannot be specified.") );
 					isResult = false;
 				}
 				else if ( reqUrlType.equals(URL_TYPE_EXTERNAL) ) {
-					out.println( msgErr("url of the local cannot be specified.") );
+					out.println( msgErr("url of the internal cannot be specified.") );
 					isResult = false;
 				}
 			}
 			// 編集
 			else {
-				// massbank.conf 編集処理
-				isResult = upConf.editConfig(reqNo, reqShortLabel, reqLongLabel, reqSiteUrl);
+				ArrayList<Integer> internalSiteList = null;
+				
+				// 内部サイトの場合
+				if ( reqUrlType.equals(URL_TYPE_INTERNAL) ) {
+					// 内部サイト番号リスト生成
+					if (reqNo == 0) {
+						internalSiteList = new ArrayList<Integer>();
+						for (int i=1; i<beforeUrlList.length; i++) {
+							if (beforeServerUrl.equals(beforeUrlList[i])) {
+								internalSiteList.add(i);
+							}
+						}
+					}
+					
+					// massbank.conf 編集処理
+					isResult = upConf.editConfig(reqNo, internalSiteList, reqShortLabel, reqLongLabel, reqSiteUrl, null);
+					
+					// TREEテーブル更新処理
+					DatabaseAccess db = new DatabaseAccess(dbHostName, reqSiteDb);
+					String sql = "";
+					try {
+						if ( db.open() ) {
+							sql = "UPDATE TREE SET INFO='" + Sanitizer.sql("MassBank / " + reqLongLabel) + "' WHERE NO=1 AND PARENT=0;";
+							db.executeUpdate(sql);
+						}
+						else {
+							out.println( msgWarn( "not connect to database.") );
+						}
+					}
+					catch (Exception e) {
+						Logger.global.severe( "SQL : " + sql );
+						e.printStackTrace();
+						out.println( msgWarn( "TREE table update failed." ) );
+					}
+					finally {
+						if ( db != null ) {
+							db.close();
+						}
+					}
+				}
+				else {
+					// massbank.conf 編集処理
+					isResult = upConf.editConfig(reqNo, internalSiteList, reqShortLabel, reqLongLabel, reqSiteUrl, reqSiteDb);
+				}
 				if ( !isResult ) {
 					Logger.global.severe( "edit massbank.conf failed." );
 					out.println( msgErr("edit of massbank.conf failed.") );
@@ -995,7 +1074,7 @@ function beforeDel(isAdmin) {
 				}
 				
 				// 内部サイトのデータベースの削除処理を行う
-				if ( getUrlType(baseUrl, hostName, ipAddress, reqSiteUrlBefore).equals(URL_TYPE_LOCAL) ) {
+				if ( getUrlType(baseUrl, hostName, ipAddress, reqSiteUrlBefore).equals(URL_TYPE_INTERNAL) ) {
 					
 					// フォルダ削除処理
 					for (int i=0; i<dbPathes.length; i++) {
@@ -1057,11 +1136,11 @@ function beforeDel(isAdmin) {
 		String selLongLabel = "";
 		String selUrlType = "";
 		String selUrl = "";
-		String isUrlLocChecked = "";
+		String isUrlIntChecked = "";
 		String isUrlExtChecked = "";
-		String isUrlLocDisabled = "";
+		String isUrlIntDisabled = "";
 		String isUrlExtDisabled = "";
-		String locLabelClass = "";
+		String intLabelClass = "";
 		String extLabelClass = "";
 		if ( !isResult ) {
 			// エラーの場合は値を引き継ぐ
@@ -1071,7 +1150,7 @@ function beforeDel(isAdmin) {
 			selUrlType = reqUrlType;
 			selUrl = reqSiteUrl;
 			if ( !selUrlType.equals(URL_TYPE_EXTERNAL) ) {
-				isUrlLocChecked = " checked";
+				isUrlIntChecked = " checked";
 				if ( act.equals("edit") || act.equals("del") ) {
 					isUrlExtDisabled = " disabled";
 					extLabelClass = "readOnly";
@@ -1080,8 +1159,8 @@ function beforeDel(isAdmin) {
 			else {
 				isUrlExtChecked = " checked";
 				if ( act.equals("edit") || act.equals("del") ) {
-					isUrlLocDisabled = " disabled";
-					locLabelClass = "readOnly";
+					isUrlIntDisabled = " disabled";
+					intLabelClass = "readOnly";
 				}
 			}
 		}
@@ -1092,14 +1171,14 @@ function beforeDel(isAdmin) {
 			selUrlType = reqUrlType;
 			selUrl = siteUrlList[reqNo];
 			if ( !selUrlType.equals(URL_TYPE_EXTERNAL) ) {
-				isUrlLocChecked = " checked";
+				isUrlIntChecked = " checked";
 				isUrlExtDisabled = " disabled";
 				extLabelClass = "readOnly";
 			}
 			else {
 				isUrlExtChecked = " checked";
-				isUrlLocDisabled = " disabled";
-				locLabelClass = "readOnly";
+				isUrlIntDisabled = " disabled";
+				intLabelClass = "readOnly";
 			}
 		}
 		else {
@@ -1107,7 +1186,7 @@ function beforeDel(isAdmin) {
 			selShortLabel = "";
 			selLongLabel = "";
 			selUrlType = reqUrlType;
-			isUrlLocChecked = " checked";
+			isUrlIntChecked = " checked";
 			if ( reqNo == -1 || !selUrlType.equals(URL_TYPE_EXTERNAL) ) {
 				selUrl = "http://localhost/MassBank/";
 			}
@@ -1159,7 +1238,7 @@ function beforeDel(isAdmin) {
 		out.println( "<tr>" );
 		out.println( "<td colspan=\"2\"></td>" );
 		out.println( "<td>" );
-		out.println( "<input type=\"radio\" name=\"siteType\" value=\"" + URL_TYPE_LOCAL + "\" onClick=\"selType();\"" + isUrlLocChecked + isUrlLocDisabled + "> <span id=\"locLabel\" class=\"" + locLabelClass + "\">local</span>&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "<input type=\"radio\" name=\"siteType\" value=\"" + URL_TYPE_INTERNAL + "\" onClick=\"selType();\"" + isUrlIntChecked + isUrlIntDisabled + "> <span id=\"intLabel\" class=\"" + intLabelClass + "\">internal</span>&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "<input type=\"radio\" name=\"siteType\" value=\"" + URL_TYPE_EXTERNAL + "\" onClick=\"selType();\"" + isUrlExtChecked + isUrlExtDisabled + "> <span id=\"extLabel\" class=\"" + extLabelClass + "\">external</span>" );
 		out.println( "</td>" );
 		out.println( "<td colspan=\"2\"><input type=\"text\" style=\"width:100%;\" name=\"siteUrl\" value=\"" + selUrl + "\"></td>" );

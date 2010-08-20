@@ -20,7 +20,7 @@
  *
  * 管理者設定共通クラス
  *
- * ver 1.0.11 2010.04.06
+ * ver 1.0.12 2010.08.20
  *
  ******************************************************************************/
 package massbank.admin;
@@ -40,6 +40,8 @@ import java.io.FileReader;
  *   Molfileルートパス取得          mol_path
  *   Profileルートパス取得          profile_path
  *   GIFルートパス取得              gif_path
+ *   GIFSMALLルートパス取得         gif_small_path
+ *   GIFLARGEルートパス取得         gif_large_path
  *   出力先パス取得                 out_path
  *   出力先パス取得                 primary_server_url
  *   MassBankディレクトリパス取得   -
@@ -143,6 +145,28 @@ public class AdminCommon {
 		String path = getSetting( "gif_path", true );
 		if ( path.equals("") ) {
 			path = "/var/www/html/MassBank/DB/gif/";
+		}
+		return path;
+	}
+	
+	/**
+	 * GIFSMALLルートパス取得
+	 */
+	public String getGifSmallRootPath() {
+		String path = getSetting( "gif_small_path", true );
+		if ( path.equals("") ) {
+			path = "/var/www/html/MassBank/DB/gif_small/";
+		}
+		return path;
+	}
+	
+	/**
+	 * GIFLARGEルートパス取得
+	 */
+	public String getGifLargeRootPath() {
+		String path = getSetting( "gif_large_path", true );
+		if ( path.equals("") ) {
+			path = "/var/www/html/MassBank/DB/gif_large/";
 		}
 		return path;
 	}
