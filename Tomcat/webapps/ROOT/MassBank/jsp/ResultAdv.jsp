@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.8 2010.08.18
+ * ver 1.0.9 2010.08.26
  *
  ******************************************************************************/
 %>
@@ -454,7 +454,8 @@
 <script type="text/javascript" src="../script/Common.js"></script>
 <script type="text/javascript" src="../script/Result.js"></script>
 <script type="text/javascript" src="../script/ResultMenu.js"></script>
-<script type="text/javascript" src="../script/jquery_imgprev.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/StructurePreview.js"></script>
 <script>
 <!--
 function prevPeakSearchAdv() {

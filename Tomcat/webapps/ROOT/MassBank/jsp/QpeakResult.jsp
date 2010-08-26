@@ -22,7 +22,7 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.19 2010.08.18
+ * ver 1.0.20 2010.08.26
  *
  ******************************************************************************/
 %>
@@ -366,7 +366,8 @@
 <script type="text/javascript" src="../script/Common.js"></script>
 <script type="text/javascript" src="../script/QpeakResult.js"></script>
 <script type="text/javascript" src="../script/QpeakResultMenu.js"></script>
-<script type="text/javascript" src="../script/jquery_imgprev.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/StructurePreview.js"></script>
 <title>MassBank | Database | Quick Search Results</title>
 </head>
 <body class="msbkFont cursorDefault">

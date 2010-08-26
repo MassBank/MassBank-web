@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.26 2010.08.18
+ * ver 2.0.27 2010.08.26
  *
  ******************************************************************************/
 %>
@@ -427,7 +427,8 @@
 	<script type="text/javascript" src="../script/Result.js"></script>
 	<script type="text/javascript" src="../script/ResultMenu.js"></script>
 	<script type="text/javascript" src="../script/StructSearch.js"></script>
-	<script type="text/javascript" src="../script/jquery_imgprev.js"></script>
+	<script type="text/javascript" src="../script/jquery.js"></script>
+	<script type="text/javascript" src="../script/StructurePreview.js"></script>
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
