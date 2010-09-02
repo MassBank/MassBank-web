@@ -21,21 +21,22 @@
 #
 # レコードページ表示
 #
-# ver 3.0.17  2010.08.17
+# ver 3.0.18  2010.09.02
 #
 #-------------------------------------------------------------------------------
 %FMT = (
-'PUBLICATION:',	       'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
-'CH\$LINK: CAS',       'http://webbook.nist.gov/cgi/cbook.cgi?ID=%s',
-'CH\$LINK: CHEBI',     'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
-'CH\$LINK: CHEMPDB',   'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;
+'PUBLICATION:',         'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
+'CH\$LINK: CAS',        'http://webbook.nist.gov/cgi/cbook.cgi?ID=%s',
+'CH\$LINK: CHEBI',      'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
+'CH\$LINK: CHEMPDB',    'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;
 CODE=%s',
-'CH\$LINK: KEGG',      'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
-'CH\$LINK: NIKKAJI',   'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
-'CH\$LINK: PUBCHEM',   'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
-'CH\$LINK: LIPIDBANK', 'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
-'CH\$LINK: KAPPAVIEW', 'http://kpv.kazusa.or.jp/kpv/display.jsp?id=%s&t=c',
-'CH\$LINK: KNAPSACK',  'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
+'CH\$LINK: CHEMSPIDER', 'http://www.chemspider.com/%s',
+'CH\$LINK: KEGG',       'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
+'CH\$LINK: NIKKAJI',    'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
+'CH\$LINK: PUBCHEM',    'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
+'CH\$LINK: LIPIDBANK',  'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
+'CH\$LINK: KAPPAVIEW',  'http://kpv.kazusa.or.jp/kpv/display.jsp?id=%s&t=c',
+'CH\$LINK: KNAPSACK',   'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
 'CH\$LINK: OligosaccharideDataBase', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html%s',
 'CH\$LINK: OligosaccharideDataBase2D', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html',
 'MS\$RELATED_MS: PREVIOUS_SPECTRUM', 'Dispatcher.jsp?type=disp&id=%s'
@@ -438,12 +439,13 @@ if ( $copyright ne '' ) {
 }
 print "<pre style=\"font-family:Courier New;font-size:10pt\">\n";
 
-@boundary = ( 'CH\$', 'AC\$', 'MS\$', 'PK\$' );
+@boundary = ( 'CH\$', 'AC\$', 'PK\$' );
 $num = @boundary;
 $step = 0;
 $existCopyright = false;
 $isRelated = false;
 $isSpBoundary = false;
+$isMsBoundary = false;
 foreach $l ( @Line ) {
 	if ( $step == 0 && $l =~ /^COPYRIGHT/) {
 		$existCopyright = true;
@@ -457,7 +459,11 @@ foreach $l ( @Line ) {
 	}
 	if ( $isSpBoundary eq false && $l =~ /^SP\$/ ) {
 		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
-		$isSpBoundary = true;		
+		$isSpBoundary = true;
+	}
+	if ( $isMsBoundary eq false && $l =~ /^MS\$/ ) {
+		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
+		$isMsBoundary = true;
 	}
 	if ( $l =~ /^AC\$INSTRUMENT:/ ) {
 		$sql = "SELECT t1.INSTRUMENT_NAME FROM INSTRUMENT t1, (SELECT INSTRUMENT_NO FROM RECORD WHERE ID='$id') t2 WHERE t1.INSTRUMENT_NO = t2.INSTRUMENT_NO;";
