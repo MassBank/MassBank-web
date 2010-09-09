@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.6 2010.01.27
+ * ver 2.0.7 2010.09.06
  *
  ******************************************************************************/
 %>
@@ -216,7 +216,7 @@
 <li id="home_btn2"><a href="./QuickSearch.html" title="Quick Search">Quick Search</a></li>
 <li id="home_btn3"><a href="./PeakSearch.html" title="Peak Search">Peak Search</a></li>
 <li id="home_btn4"><a href="./StructureSearch.html" title="Substructure Search">Substructure Search</a></li>
-<li id="home_btn5"><a href="./PeakSearchAdv.html" title="Peak Search Advanced">Peak Search Advanced</a></li>
+<li id="home_btn5"><a href="./AdvancedSearch.html" title="Advanced Search">Advanced Search</a></li>
 </ul>
 <ul id="line2" class="hide_text">
 <li id="home_btn6"><a href="./PackageView.html" title="Spectral Browser">Spectral Browser</a></li>
@@ -355,7 +355,7 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 <li id="home_btn2"><a href="./QuickSearch.html" title="Quick Search">Quick Search</a></li>
 <li id="home_btn3"><a href="./PeakSearch.html" title="Peak Search">Peak Search</a></li>
 <li id="home_btn4"><a href="./StructureSearch.html" title="Substructure Search">Substructure Search</a></li>
-<li id="home_btn5"><a href="./PeakSearchAdv.html" title="Peak Search Advanced">Peak Search Advanced</a></li>
+<li id="home_btn5"><a href="./AdvancedSearch.html" title="Advanced Search">Advanced Search</a></li>
 </ul>
 <ul id="line2" class="hide_text">
 <li id="home_btn6"><a href="./PackageView.html" title="Spectral Browser">Spectral Browser</a></li>

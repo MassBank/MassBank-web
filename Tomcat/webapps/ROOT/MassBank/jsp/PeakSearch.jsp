@@ -22,11 +22,18 @@
  *
  * Peak Search Page表示用モジュール
  *
- * ver 1.0.8 2009.12.09
+ * ver 1.0.10 2010.09.09
  *
  ******************************************************************************/
 %>
-<%@ page import="java.util.*" %>
+
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Hashtable" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetInstInfo" %>
 <%@ include file="./Common.jsp"%>
@@ -34,10 +41,14 @@
 	//-------------------------------------
 	// リクエストパラメータ取得
 	//-------------------------------------
+	final int NUM_FORMULA_STD = 6; 
+	final int NUM_FORMULA_ADV = 5;
 	String type = "peak";
 	String relInte  = "100";
 	String tol  = "0.3";
 	String ionMode  = "1";
+	String mode = "and";
+	Map inputFormula= new HashMap();
 	boolean isFirst = true;
 	List instGrpList = new ArrayList<String>();
 	List instTypeList = new ArrayList<String>();
@@ -59,10 +70,12 @@
 		}
 		else {
 			String val = request.getParameter( key );
-			if ( key.equals("type") )		type = val;
-			else if ( key.equals("int") )	relInte  = val;
-			else if ( key.equals("tol") )	tol      = val;
-			else if ( key.equals("ion") )	ionMode  = val;
+			if ( key.equals("type") )				type     = val;
+			else if ( key.equals("mode") )			mode     = val;
+			else if ( key.indexOf("formula") >= 0 )	inputFormula.put( key, val );
+			else if ( key.equals("int") )			relInte  = val;
+			else if ( key.equals("tol") )			tol      = val;
+			else if ( key.equals("ion") )			ionMode  = val;
 			else if ( key.indexOf("mz") >= 0 || key.indexOf("op") >= 0 ) {
 				params.put( key, val );
 			}
@@ -86,6 +99,15 @@
 			instType += ",";
 		}
 	}
+	
+	
+	//-------------------------------------
+	// ポスト先
+	//-------------------------------------
+	String formAction = "./jsp/Result.jsp";
+	if (type.equals("product") || type.equals("neutral")) {
+		formAction = "./jsp/ResultAdv.jsp";
+	}
 %>
 <html>
 <head>
@@ -94,15 +116,18 @@
 	<meta http-equiv="Content-Script-Type" content="text/javascript">
 	<meta http-equiv="imagetoolbar" content="no">
 	<meta name="description" content="Search by ion and neutral loss">
-	<meta name="keywords" content="Peak, m/z, Formula, difference">
+	<meta name="keywords" content="Peak, m/z, Formula, difference, Product, Ion, Neutral, Loss">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
-	<script type="text/javascript" src="script/AtomicMass.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
 	<script type="text/javascript" src="script/Common.js"></script>
+	<script type="text/javascript" src="script/jquery.js"></script>
+	<script type="text/javascript" src="script/FormulaSuggest.js"></script>
+	<script type="text/javascript" src="script/AtomicMass.js"></script>
 	<script type="text/javascript" src="script/PeakSearch.js"></script>
 	<title>MassBank | Database | Peak Search</title>
 </head>
-<body class="msbkFont backgroundImg cursorDefault" onload="initFocus();">
+<body class="msbkFont backgroundImg cursorDefault" onload="loadCheck('<%=type%>');">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
 			<td>
@@ -120,42 +145,73 @@
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
 	<jsp:include page="../pserver/ServerInfo.jsp" />
 
-	<form name="form_query" method="post" action="jsp/Result.jsp" style="display:inline">
-		<table border="0" cellpadding="0" cellspacing="0">
+	<form name="form_query" method="post" action="<%=formAction%>" style="display:inline">
+		<table border="0" cellpadding="0">
 			<tr>
-				<td valign="top">
-					<table border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td width="130">
-								<input type="radio" name="type" value="peak" onClick="changeSearchType(this.value)"<% if(type.equals("peak")) out.print(" checked"); %>><b><i>Peak Search</i></b>
-							</td>
-							<td width="50"></td>
-							<td width="210">
-								<input type="radio" name="type" value="diff" onClick="changeSearchType(this.value)"<% if(type.equals("diff")) out.print(" checked"); %>><b><i>Peak Difference Search</i></b>
-							</td>
-						</tr>
-						<tr>
-							<td id="underbar1" height="4"<% if(type.equals("peak")) out.print(" bgcolor=\"OliveDrab\""); %>></td>
-							<td></td>
-							<td id="underbar2" height="4"<% if(type.equals("diff")) out.print(" bgcolor=\"DarkOrchid\""); %>></td>
-						</tr>
-						<tr>
-							<td colspan="3" height="10"></td>
-						</tr>
-					</table>
-
-					<table border="0" cellpadding="0" cellspacing="12" class="form-box">
-						<tr>
-							<th></th>
-							<th id="mz"><i>m/z</i></th>
-							<th>Formula</th>
-						</tr>
+				<td colspan="7" height="10"></td>
+			</tr>
+			<tr>
+				<td width="130">
+					<input type="radio" name="type" value="peak" onClick="return changeSearchType(this.value);"<% if(type.equals("peak")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('peak');">Peak Search</span></i></b>
+				</td>
+				<td width="30"></td>
+				<td width="210">
+					<input type="radio" name="type" value="diff" onClick="return changeSearchType(this.value);"<% if(type.equals("diff")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('diff');">Peak Difference Search</span></i></b>
+				</td>
+				<td width="30"></td>
+				<td width="120">
+					<input type="radio" name="type" value="product" onClick="return changeSearchType(this.value);"<% if(type.equals("product")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('product');">Product Ion</span></i></b>
+				</td>
+				<td width="30"></td>
+				<td width="130">
+					<input type="radio" name="type" value="neutral" onClick="return changeSearchType(this.value);"<% if(type.equals("neutral")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('neutral');">Neutral Loss</span></i></b>
+				</td>
+			</tr>
+			<tr>
+				<td id="underbar1" height="4"<% if(type.equals("peak")) out.print(" bgcolor=\"OliveDrab\""); %>></td>
+				<td></td>
+				<td id="underbar2" height="4"<% if(type.equals("diff")) out.print(" bgcolor=\"DarkOrchid\""); %>></td>
+				<td></td>
+				<td id="underbar3" height="4"<% if(type.equals("product")) out.print(" bgcolor=\"MidnightBlue\""); %>></td>
+				<td></td>
+				<td id="underbar4" height="4"<% if(type.equals("neutral")) out.print(" bgcolor=\"DarkGreen\""); %>></td>
+			</tr>
+			<tr>
+				<td colspan="7" height="10"></td>
+			</tr>
+		</table>
+		<hr size="1">
+		
+		<!--// Peak Search-->
+<%
+	if (type.equals("peak") || type.equals("diff")) {
+		out.println( "\t\t<div id=\"standard\" class=\"showObj\">" );
+	}
+	else {
+		out.println( "\t\t<div id=\"standard\" class=\"hidObj\">" );
+	}
+	
+	String mzLabel = "<i>m/z</i>";
+	String allowImage = "<img src=\"image/arrow_peak.gif\" alt=\"\">";
+	if (type.equals("diff")) {
+		mzLabel = "<i>m/z</i> Diff.";
+		allowImage = "<img src=\"image/arrow_diff.gif\" alt=\"\">";
+	}
+%>
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="top">
+						<table border="0" cellpadding="0" cellspacing="12" class="form-box">
+							<tr>
+								<th></th>
+								<th id="mz"><%=mzLabel%></th>
+								<th>Formula</th>
+							</tr>
 <%
 	final String[] logic = { "and", "or" };
-	final int numForm = 6; 
-	String[] mz = new String[numForm];
-	String[] op = new String[numForm];
-	for ( int i = 0; i < numForm; i++ ) {
+	String[] mz = new String[NUM_FORMULA_STD];
+	String[] op = new String[NUM_FORMULA_STD];
+	for ( int i = 0; i < NUM_FORMULA_STD; i++ ) {
 		String key = "mz" + String.valueOf(i);
 		if ( params.containsKey(key) ) {
 			mz[i] = (String)params.get(key);
@@ -165,75 +221,171 @@
 			mz[i] = "";
 			op[i] = "";
 		}
-		out.println( "\t\t\t\t\t\t<tr>" );
+		out.println( "\t\t\t\t\t\t\t<tr>" );
 		if ( i != 0 ) {
-			out.println( "\t\t\t\t\t\t\t<td>" );
-			out.println( "\t\t\t\t\t\t\t\t<select name=\"op" + i + "\">" );
+			out.println( "\t\t\t\t\t\t\t\t<td>" );
+			out.println( "\t\t\t\t\t\t\t\t\t<select name=\"op" + i + "\">" );
 			for ( int j = 0; j < logic.length; j++ ) {
-				out.print( "\t\t\t\t\t\t\t\t\t<option value=\"" + logic[j] + "\"" );
+				out.print( "\t\t\t\t\t\t\t\t\t\t<option value=\"" + logic[j] + "\"" );
 				if ( logic[j].equals(op[i]) ) {
 					out.print( " selected" );
 				}
 				out.println( ">" + logic[j].toUpperCase() + "</option>" );
 			}
-			out.println( "\t\t\t\t\t\t\t\t</select>" );
-			out.println( "\t\t\t\t\t\t\t</td>" );
+			out.println( "\t\t\t\t\t\t\t\t\t</select>" );
+			out.println( "\t\t\t\t\t\t\t\t</td>" );
 		}
 		else {
-			out.println( "\t\t\t\t\t\t\t<td></td>" );
+			out.println( "\t\t\t\t\t\t\t\t<td></td>" );
 		}
 
 		// m/z
-		out.println( "\t\t\t\t\t\t\t<td><input name=\"mz" + i + "\" type=\"text\" size=\"10\" value=\"" + mz[i] + "\"></td>" );
+		out.println( "\t\t\t\t\t\t\t\t<td><input name=\"mz" + i + "\" type=\"text\" size=\"10\" value=\"" + mz[i] + "\"></td>" );
 		
 		// Formula
-		out.println( "\t\t\t\t\t\t\t<td>" );
-		out.println( "\t\t\t\t\t\t\t\t<img src=\"image/arrow.gif\" alt=\"\">" );
-		out.println( "\t\t\t\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" size=\"20\" value=\"\">" );
-		out.println( "\t\t\t\t\t\t\t\t<input name=\"calc" + i + "\" type=\"button\" value=\"Mass Calc\" onClick=\"setMZ(" + i + ", fom" + i + ".value)\">" );
-		out.println( "\t\t\t\t\t\t\t</td>" );
-		out.println( "\t\t\t\t\t\t</tr>" );
+		out.println( "\t\t\t\t\t\t\t\t<td>" );
+		out.println( "\t\t\t\t\t\t\t\t\t<span id=\"arrow" + i + "\">" + allowImage + "</span>" );
+		out.println( "\t\t\t\t\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" size=\"20\" value=\"\">" );
+		out.println( "\t\t\t\t\t\t\t\t\t<input name=\"calc" + i + "\" type=\"button\" value=\"Mass Calc\" onClick=\"setMZ(" + i + ", fom" + i + ".value)\">" );
+		out.println( "\t\t\t\t\t\t\t\t</td>" );
+		out.println( "\t\t\t\t\t\t\t</tr>" );
 	}
 %>
-						<tr>
-							<td colspan="5" height="1"></td>
-						</tr>
-						<tr>
-							<td colspan="3">
-								<b>Rel.Intensity</b>&nbsp;<input name="int" type="text" size="10" value="<%= relInte %>">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tolerance</b>&nbsp;<input name="tol" type="text" size="10" value="<%= tol %>">
-							</td>
-						</tr>
-						<tr>
-							<td colspan="4" align="right">
-								<input type="button" name="reset" value="Reset" onClick="resetForm()">
-							</td>
-						</tr>
-					</table>
-					<br>
-					<table>
-						<tr>
-							<td>
-								<input type="submit" value="Search" onclick="return checkSubmit();" class="search">
-								<input type="hidden" name="op0" value="or">
-								<input type="hidden" name="sortKey" value="name">
-								<input type="hidden" name="sortAction" value="1">
-								<input type="hidden" name="pageNo" value="1">
-								<input type="hidden" name="exec" value="">
-							</td>
-						</tr>
-					</table>
-				</td>
-				<td style="padding:15px 15px;" valign="top">
-					<br>
-					<jsp:include page="Instrument.jsp" flush="true">
-						<jsp:param name="ion" value="<%= ionMode %>" />
-						<jsp:param name="first" value="<%= isFirst %>" />
-						<jsp:param name="inst_grp" value="<%= instGrp %>" />
-						<jsp:param name="inst" value="<%= instType %>" />
-					</jsp:include>
-				</td>
-			</tr>
-		</table>
+							<tr>
+								<td colspan="5" height="1"></td>
+							</tr>
+							<tr>
+								<td colspan="3">
+									<b>Rel.Intensity</b>&nbsp;<input name="int" type="text" size="10" value="<%= relInte %>">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tolerance</b>&nbsp;<input name="tol" type="text" size="10" value="<%= tol %>">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4" align="right">
+									<input type="button" name="reset" value="Reset" onClick="resetForm()">
+								</td>
+							</tr>
+						</table>
+						<br>
+						<table>
+							<tr>
+								<td>
+									<input type="submit" value="Search" onclick="return checkSubmit();" class="search">
+									<input type="hidden" name="op0" value="or">
+									<input type="hidden" name="sortKey" value="name">
+									<input type="hidden" name="sortAction" value="1">
+									<input type="hidden" name="pageNo" value="1">
+									<input type="hidden" name="exec" value="">
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td style="padding:0px 15px;" valign="top">
+						<jsp:include page="Instrument.jsp" flush="true">
+							<jsp:param name="ion" value="<%= ionMode %>" />
+							<jsp:param name="first" value="<%= isFirst %>" />
+							<jsp:param name="inst_grp" value="<%= instGrp %>" />
+							<jsp:param name="inst" value="<%= instType %>" />
+						</jsp:include>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<!--// Peak Search Advanced -->
+<%
+	if (type.equals("product") || type.equals("neutral")) {
+		out.println( "\t\t<div id=\"advance\" class=\"showObj\">" );
+	}
+	else {
+		out.println( "\t\t<div id=\"advance\" class=\"hidObj\">" );
+	}
+%>
+			<div class="boxA" style="width:720px">
+				<br>
+				<table border="0" cellpadding="0" cellspacing="3" style="margin:8px">
+<%
+	String style = "bgProduct";
+	String str = "Product&nbsp;Ion&nbsp;";
+	if ( type.equals("neutral") ) {
+		style = "bgNeutral";
+		str = "Neutral&nbsp;Loss&nbsp;";
+	}
+	String condition = "<b class=\"logic\">AND</b>";
+	if ( mode.equals("or") ) {
+		condition = "<b class=\"logic\">OR</b>";
+	}
+	else if ( mode.equals("seq") ) {
+		condition = "<img src=\"./image/arrow_neutral.gif\">";
+	}
+
+	out.println("\t\t\t\t\t<tr>");
+	for ( int i = 1; i <= NUM_FORMULA_ADV; i++ ) {
+		out.println( "\t\t\t\t\t\t<td align=\"center\" width=\"110\"><span id=\"advanceType" + i +"\" class=\"" + style + "\">"
+					+ str + String.valueOf(i) + "</span></td>" );
+		if ( i < NUM_FORMULA_ADV ) {
+			out.println( "\t\t\t\t\t\t<td></td>" );
+		}
+	}
+	out.println("\t\t\t\t\t</tr>");
+
+	out.println("\t\t\t\t\t<tr>");
+	for ( int i = 1; i <= NUM_FORMULA_ADV; i++ ) {
+		out.println( "\t\t\t\t\t\t<td align=\"center\">Formula</td>" );
+		if ( i < NUM_FORMULA_ADV ) {
+			out.println( "\t\t\t\t\t\t<td></td>" );
+		}
+	}
+	out.println("\t\t\t\t\t</tr>");
+
+	out.println("\t\t\t\t\t<tr>");
+	for ( int i = 1; i <= NUM_FORMULA_ADV; i++ ) {
+		String key = "formula" + String.valueOf(i);
+		String val = "";
+		if ( inputFormula.containsKey(key) ) {
+			val = (String)inputFormula.get(key);
+		}
+		out.println( "\t\t\t\t\t\t<td align=\"center\">" );
+		out.println( "\t\t\t\t\t\t\t<input id=\"" + key + "\" class=\"FormulaSuggest\" name=\"" + key + "\" type=\"text\" size=\"12\" value=\"" + val + "\" autocomplete=\"off\">" );
+		out.println( "\t\t\t\t\t\t</td>" );
+		if ( i < NUM_FORMULA_ADV ) {
+			out.println( "\t\t\t\t\t\t<td id=\"cond" + String.valueOf(i) + "\" width=\"26\" align=\"center\">" + condition + "</td>");
+		}
+	}
+	out.println("\t\t\t\t\t</tr>");
+	out.println("\t\t\t\t\t<tr height=\"50\">");
+	out.println("\t\t\t\t\t\t<td colspan=\"7\">");
+	
+	String[] valMode = new String[]{ "and", "or" };
+	String[] strMode = new String[]{ "AND", "OR" };
+	if ( type.equals("neutral") ) {
+		valMode = new String[]{ "and", "seq" };
+		strMode = new String[]{ "AND", "SEQUENCE" };
+	}
+	for ( int i = 0; i < valMode.length; i++ ) {
+		out.print( "\t\t\t\t\t\t\t<input type=\"radio\" name=\"mode\" value=\"" + valMode[i] + "\" onClick=\"chageMode(this.value)\"" );
+		if ( mode.equals(valMode[i]) ) {
+			out.print(" checked");
+		}
+		out.println( "><b><span id=\"modeTxt" + i + "\">" + strMode[i] + "</span></b>&nbsp;&nbsp;&nbsp;" );
+	}
+	out.println("\t\t\t\t\t\t</td>");
+	out.println("\t\t\t\t\t\t<td colspan=\"4\" align=\"right\">");
+	out.println("\t\t\t\t\t\t\t<input type=\"button\" name=\"reset\" value=\"Reset\" onClick=\"resetForm()\">");
+	out.println("\t\t\t\t\t\t</td>");
+	out.println("\t\t\t\t\t</tr>");
+%>
+				</table>
+				<table border="0" cellpadding="10" cellspacing="0">
+					<tr>
+						<td><font class="font12px">* The targets of Peak Search Advanced are only Keio and Riken data.</font></td>
+					</tr>
+				</table>
+			</div>
+			<br>
+			<input type="submit" value="Search" class="search">
+		</div>
+
+		<div id="loaded"></div>
 	</form>
 	<br>
 	<hr size="1">

@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.9 2010.08.26
+ * ver 1.0.10 2010.09.05
  *
  ******************************************************************************/
 %>
@@ -459,7 +459,7 @@
 <script>
 <!--
 function prevPeakSearchAdv() {
-	document.resultForm.action = "../PeakSearchAdv.html";
+	document.resultForm.action = "../PeakSearch.html";
 	document.resultForm.target = "_self";
 	document.resultForm.submit();
 	return false;
@@ -556,7 +556,7 @@ function prevPeakSearchAdv() {
 	}
 	out.println( " </tr>" );
 	out.println( "</table>" );
-	out.println( "<br><a href=\"../PeakSearch2.html\" onClick=\"return prevPeakSearchAdv()\">Edit / Resubmit Query</a>" );
+	out.println( "<br><a href=\"\" class=\"pageLink\" onClick=\"return prevPeakSearchAdv()\">Edit / Resubmit Query</a>" );
 	out.println( "<hr size=\"1\">" );
 
 	//--------------------------------------------------------

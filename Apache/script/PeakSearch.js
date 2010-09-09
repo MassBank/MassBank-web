@@ -18,9 +18,9 @@
  *
  *******************************************************************************
  *
- * PeakSearch/PeakDifferenceSearchPage用スクリプト
+ * PeakSearch用スクリプト
  *
- * ver 1.0.4 2009.01.08
+ * ver 1.0.6 2010.09.08
  *
  ******************************************************************************/
 
@@ -31,10 +31,46 @@ var ns4 = (document.layers) ? 1 : 0;							//NS4
 var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		//NS6
 
 /**
+ * Advance用jQuery関数呼び出し
+ */
+$(function(){
+	$("input.FormulaSuggest").FormulaSuggest();
+});
+
+/**
+ * ページロード時表示チェック
+ * @param reqType リクエスト種別
+ */
+function loadCheck(reqType) {
+	var f1 = document.forms[0];
+	var checkedType = "";
+	if (f1.type[0].checked) {
+		checkedType = "peak";
+	}
+	else if (f1.type[1].checked) {
+		checkedType = "diff";
+	}
+	else if (f1.type[2].checked) {
+		checkedType = "product";
+	}
+	else if (f1.type[3].checked) {
+		checkedType = "neutral";
+	}
+	
+	if (reqType == checkedType) {
+		initFocus();
+	}
+	else {
+		changeSearchType(checkedType);
+	}
+}
+
+/**
  * 初期フォーカス設定
  */
 function initFocus() {
-	document.forms[0].mz0.focus();
+	// フォーカス可能であればフォーカスを当てる
+	try { document.forms[0].mz0.focus(); } catch(e) {}
 	return;
 }
 
@@ -43,24 +79,183 @@ function initFocus() {
  * @param reqType リクエスト種別
  */
 function changeSearchType(reqType) {
+	if ( !op && !ie && !ns4 && !ns6 ) {
+		alert("Your browser is not supported.");
+		return false;
+	}
+	
+	var elementLd = null;
+	var elementMz = null;
+	var elementSt = null;
+	var elementAd = null;
+	if (ns4) {											//NS4
+		elementLd = document.layers["loaded"];
+		elementSt = document.layers["standard"];
+		elementAd = document.layers["advance"];
+	}
+	else {												//OP,IE,NS6
+		elementLd = document.getElementById("loaded");
+		elementSt = document.getElementById("standard");
+		elementAd = document.getElementById("advance");
+	}
+	
+	// ページロード済みチェック
+	if (elementLd == null) return false;
 	var color1 = "OliveDrab";
 	var color2 = "DarkOrchid";
-	if( reqType == document.forms[0].type[0].value || reqType == "" ) {
-		val = "<i>m/z</i>";
+	var color3 = "MidnightBlue";
+	var color4 = "DarkGreen";
+	if( reqType == document.forms[0].type[0].value || reqType == "") {
+		document.forms[0].type[0].checked = true;
+		var elementMz = document.getElementById( "mz" );
+		elementMz.innerHTML = "<i>m/z</i>";
 		color2 = "White";
+		color3 = "White";
+		color4 = "White";
+		elementSt.className = "showObj";
+		elementAd.className = "hidObj";
+		document.forms[0].action = "./jsp/Result.jsp";
+		changeStandard("peak");
 	}
-	else {
-		val = "<i>m/z</i>&nbsp;Dif.";
+	else if ( reqType == document.forms[0].type[1].value ) {
+		document.forms[0].type[1].checked = true;
+		var elementMz = document.getElementById( "mz" );
+		elementMz.innerHTML = "<i>m/z</i>&nbsp;Diff.";
 		color1 = "White";
+		color3 = "White";
+		color4 = "White";
+		elementSt.className = "showObj";
+		elementAd.className = "hidObj";
+		document.forms[0].action = "./jsp/Result.jsp";
+		changeStandard("diff");
 	}
-
-	var ele = document.getElementById( "mz" );
-	ele.innerHTML = val;
+	else if ( reqType == document.forms[0].type[2].value ) {
+		document.forms[0].type[2].checked = true;
+		color1 = "White";
+		color2 = "White";
+		color4 = "White";
+		elementSt.className = "hidObj";
+		elementAd.className = "showObj";
+		document.forms[0].action = "./jsp/ResultAdv.jsp";
+		resetForm();
+		changeAdvance("product", "and");
+	}
+	else if ( reqType == document.forms[0].type[3].value ) {
+		document.forms[0].type[3].checked = true;
+		color1 = "White";
+		color2 = "White";
+		color3 = "White";
+		elementSt.className = "hidObj";
+		elementAd.className = "showObj";
+		document.forms[0].action = "./jsp/ResultAdv.jsp";
+		resetForm();
+		changeAdvance("neutral", "and");
+	}
+	
 	document.getElementById( "underbar1" ).bgColor = color1;
 	document.getElementById( "underbar2" ).bgColor = color2;
+	document.getElementById( "underbar3" ).bgColor = color3;
+	document.getElementById( "underbar4" ).bgColor = color4;
 	
 	// フォーカス初期化
 	initFocus();
+}
+
+/**
+ * Peak、PeakDifference検索用
+ * @param reqType リクエスト種別
+ */
+function changeStandard(reqType) {
+	var arrowObj = null
+	for (cnt=0; cnt<6; cnt++) {
+		if (ns4) {											//NS4
+			arrowObj = document.layers["arrow" + cnt];
+		}
+		else {												//OP,IE,NS6
+			arrowObj = document.getElementById("arrow" + cnt);
+		}
+		
+		if (reqType == "peak") {
+			arrowObj.innerHTML = "<img src=\"image/arrow_peak.gif\" alt=\"\">";
+		}
+		else if (reqType == "diff") {
+			arrowObj.innerHTML = "<img src=\"image/arrow_diff.gif\" alt=\"\">";
+		}
+	}
+}
+
+/**
+ * ProductIon、NeutralLoss検索用
+ * @param reqType リクエスト種別
+ * @param mode 検索条件
+ */
+function changeAdvance(reqType, mode) {
+	// 検索種別ラベル設定
+	var typeLblObj = null;
+	var typeTxt = "Product&nbsp;Ion&nbsp;";
+	var typeClass = "bgProduct";
+	if (reqType == "neutral") {
+		typeTxt = "Neutral&nbsp;Loss&nbsp;";
+		typeClass = "bgNeutral";
+	}
+	for (cnt=1; cnt<6; cnt++) {
+		if (ns4) {											//NS4
+			typeLblObj = document.layers["advanceType" + cnt];
+		}
+		else {												//OP,IE,NS6
+			typeLblObj = document.getElementById("advanceType" + cnt);
+		}
+		
+		typeLblObj.innerHTML = typeTxt + cnt;
+		typeLblObj.className = typeClass;
+	}
+	
+	// モードラジオボタンテキスト変更
+	var modeTxtObj = null;
+	if (ns4) {											//NS4
+		modeTxtObj = document.layers["modeTxt1"];
+	}
+	else {												//OP,IE,NS6
+		modeTxtObj = document.getElementById("modeTxt1");
+	}
+	document.forms[0].mode[0].value = "and";
+	document.forms[0].mode[1].value = "or";
+	modeTxtObj.innerHTML = "OR";
+	if (reqType == "neutral") {
+		document.forms[0].mode[0].value = "and";
+		document.forms[0].mode[1].value = "seq";
+		modeTxtObj.innerHTML = "SEQUENCE";
+	}
+	
+	// モードラジオボタン選択設定
+	if (mode == "and") {
+		document.forms[0].mode[0].checked = true;
+		document.forms[0].mode[1].checked = false;
+	}
+	else {
+		document.forms[0].mode[0].checked = false;
+		document.forms[0].mode[1].checked = true;
+	}
+	chageMode(mode);
+}
+/**
+ * ProductIon、NeutralLoss用検索条件変更
+ * @param modeValue 
+ */
+function chageMode(modeValue) {
+	if ( modeValue == "seq" ) {
+		val = "<img src=\"./image/arrow_neutral.gif\">"
+	}
+	else if ( modeValue == "and" ) {
+		val = "<b class=\"logic\">AND</b>";
+	}
+	else if ( modeValue == "or" ) {
+		val = "<b class=\"logic\">OR</b>";
+	}
+	for ( i = 1; i <= 4; i++ ) {
+		ele = document.getElementById( "cond"+ String(i) );
+		ele.innerHTML = val;
+	}
 }
 
 /**
@@ -94,10 +289,10 @@ function setMZ(index, fom) {
 
 /**
  * 原子(原子記号+原子数)配列返却
- * @param fom 組成式(半角英数字)
+ * @param newFom 組成式(半角英数字)
  * @return atomicArray 組成式から求めた原子配列
  */
-function getAtomicArray(fom) {
+function getAtomicArray(newFom) {
 	
 	atomicArray = new Array();
 	nextChar = "";
@@ -213,15 +408,38 @@ function toHalfChar(LargeChar) {
  */
 function resetForm() {
 	var f1 = document.forms[0];
-	for ( i = 0; i < 6; i++ ) {
-		if ( i > 0 ) {
-			f1["op" + i].value = "and";
+	var reqType = "";
+	if (f1.type[0].checked || f1.type[1].checked) {
+		for ( i=0; i<6; i++ ) {
+			if ( i>0 ) {
+				f1["op" + i].value = "and";
+			}
+			f1["mz" + i].value = "";
+			f1["fom" + i].value = "";
 		}
-		f1["mz" + i].value = "";
-		f1["fom" + i].value = "";
+		f1.int.value = "100";
+		f1.tol.value = "0.3";
+		if (f1.type[0].checked) {
+			reqType = "peak";
+		}
+		else if (f1.type[1].checked) {
+			reqType = "diff";
+		}
+	
+		initFocus(reqType);
 	}
-	f1.int.value = "100";
-	f1.tol.value = "0.3";
-
-	initFocus();
+	else if (f1.type[2].checked || f1.type[3].checked) {
+		for ( i=1; i<6; i++ ) {
+			f1["formula" + i].value = "";
+		}
+		if (f1.type[2].checked) {
+			reqType = "product";
+		}
+		else if (f1.type[3].checked) {
+			reqType = "neutral";
+		}
+		f1.mode[0].checked = true;
+		f1.mode[1].checked = false;
+		changeAdvance(reqType, "and");
+	}
 }
