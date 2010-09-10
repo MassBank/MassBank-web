@@ -20,7 +20,7 @@
  *
  * PeakSearch用スクリプト
  *
- * ver 1.0.6 2010.09.08
+ * ver 1.0.7 2010.09.09
  *
  ******************************************************************************/
 
@@ -29,13 +29,6 @@ var op = (window.opera) ? 1 : 0;								//OP
 var ie = (!op && document.all) ? 1 : 0;							//IE
 var ns4 = (document.layers) ? 1 : 0;							//NS4
 var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		//NS6
-
-/**
- * Advance用jQuery関数呼び出し
- */
-$(function(){
-	$("input.FormulaSuggest").FormulaSuggest();
-});
 
 /**
  * ページロード時表示チェック
