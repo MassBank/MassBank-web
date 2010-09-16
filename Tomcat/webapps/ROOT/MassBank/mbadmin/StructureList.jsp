@@ -22,7 +22,7 @@
  *
  * 登録済み構造式一覧
  *
- * ver 1.1.3  2009.10.19
+ * ver 1.1.5  2010.09.16
  *
  ******************************************************************************/
 %>
@@ -191,7 +191,7 @@
 				}
 				else {
 					stateStr = "-";
-					detailStr = "unregistered structure.";
+					detailStr = "structure data unregistered.";
 				}
 				
 				// 表示情報退避
@@ -204,7 +204,7 @@
 				String idStr = e.getValue();
 				String fileStr = " ";
 				String stateStr = STATUS_WARN;
-				String detailStr = "<span class=\"warnFont\">unused compound.</span>";
+				String detailStr = "<span class=\"warnFont\">registered, but orphan compound.</span>";
 				String gifFile = "";
 				String molFile = "";
 				if ( !mainList.containsKey(compound) ) {
@@ -394,11 +394,13 @@
 	 * @param op JspWriter出力バッファ
 	 * @param ids 削除対象の構造式ID
 	 * @param gifPath Gif格納パス
+	 * @param gifSmallPath GifSmall格納パス
+	 * @param gifLargePath GifLarge格納パス
 	 * @param molPath Molfile格納パス
 	 * @return 結果
 	 * @throws IOException
 	 */
-	private boolean delStructureInfo( DatabaseAccess db, JspWriter op, String[] ids, String gifPath, String molPath ) throws IOException {
+	private boolean delStructureInfo( DatabaseAccess db, JspWriter op, String[] ids, String gifPath, String gifSmallPath, String gifLargePath, String molPath ) throws IOException {
 		
 		if (ids == null || ids.length != 0) {
 			//----------------------------------------------------
@@ -408,6 +410,10 @@
 			File file = null;
 			for ( int i=0; i<ids.length; i++ ) {
 				file = new File( gifPath + "/" + ids[i] + GIF_EXTENSION );
+				if ( file.isFile() ) { file.delete(); }
+				file = new File( gifSmallPath + "/" + ids[i] + GIF_EXTENSION );
+				if ( file.isFile() ) { file.delete(); }
+				file = new File( gifLargePath + "/" + ids[i] + GIF_EXTENSION );
 				if ( file.isFile() ) { file.delete(); }
 				file = new File( molPath + "/" + ids[i] + MOL_EXTENSION );
 				if ( file.isFile() ) { file.delete(); }
@@ -721,6 +727,8 @@ function popupMolView(url) {
 	final String dbRootPath = admin.getDbRootPath();
 	final String molRootPath = admin.getMolRootPath();
 	final String gifRootPath = admin.getGifRootPath();
+	final String gifSmallRootPath = admin.getGifSmallRootPath();
+	final String gifLargeRootPath = admin.getGifLargeRootPath();
 	final String dbHostName = admin.getDbHostName();
 	final String tmpPath = (new File(outPath + File.separator + sdf.format(new Date()))).getPath() + File.separator;
 	final String backupPath = tmpPath + "backup" + File.separator;
@@ -771,6 +779,8 @@ function popupMolView(url) {
 			selDbName = dbNames.get(0);
 		}
 		final String gifPath = (new File(gifRootPath + "/" + selDbName)).getPath();
+		final String gifSmallPath = (new File(gifSmallRootPath + "/" + selDbName)).getPath();
+		final String gifLargePath = (new File(gifLargeRootPath + "/" + selDbName)).getPath();
 		final String molPath = (new File(molRootPath + "/" + selDbName)).getPath();
 		if ( !(new File(gifPath)).isDirectory() && !(new File(molPath)).isDirectory() ) {
 			out.println( msgErr( "[" + gifPath + "]&nbsp;&nbsp;and&nbsp;&nbsp;[" + molPath + "]&nbsp;&nbsp;directory not exist." ) );
@@ -870,6 +880,16 @@ function popupMolView(url) {
 					if ( srcFile.isFile() ) {
 						FileUtils.copyFile(srcFile, destFile);
 					}
+					srcFile = new File(gifSmallPath + File.separator + structId + GIF_EXTENSION);
+					destFile = new File(backupPath + structId + GIF_EXTENSION + "s");
+					if ( srcFile.isFile() ) {
+						FileUtils.copyFile(srcFile, destFile);
+					}
+					srcFile = new File(gifLargePath + File.separator + structId + GIF_EXTENSION);
+					destFile = new File(backupPath + structId + GIF_EXTENSION + "l");
+					if ( srcFile.isFile() ) {
+						FileUtils.copyFile(srcFile, destFile);
+					}
 					srcFile = new File(molPath + File.separator + structId + MOL_EXTENSION);
 					destFile = new File(backupPath + structId + MOL_EXTENSION);
 					if ( srcFile.isFile() ) {
@@ -886,13 +906,23 @@ function popupMolView(url) {
 			}
 			
 			// 削除
-			isResult = delStructureInfo( db, out, ids, gifPath, molPath );
+			isResult = delStructureInfo( db, out, ids, gifPath, gifSmallPath, gifLargePath, molPath );
 			if ( !isResult ) {
 				// ファイルロールバック
 				try {
 					for ( String structId : ids ) {
 						srcFile = new File(backupPath + structId + GIF_EXTENSION);
 						destFile = new File(gifPath + File.separator + structId + GIF_EXTENSION);
+						if ( srcFile.isFile() ) {
+							FileUtils.copyFile(srcFile, destFile);
+						}
+						srcFile = new File(backupPath + structId + GIF_EXTENSION + "s");
+						destFile = new File(gifSmallPath + File.separator + structId + GIF_EXTENSION);
+						if ( srcFile.isFile() ) {
+							FileUtils.copyFile(srcFile, destFile);
+						}
+						srcFile = new File(backupPath + structId + GIF_EXTENSION + "l");
+						destFile = new File(gifLargePath + File.separator + structId + GIF_EXTENSION);
 						if ( srcFile.isFile() ) {
 							FileUtils.copyFile(srcFile, destFile);
 						}
