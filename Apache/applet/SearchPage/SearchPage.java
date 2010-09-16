@@ -2699,7 +2699,7 @@ public class SearchPage extends JApplet {
 					recData.setResultRecord(true);
 					
 					// === 統合レコードフラグ ===
-					recData.setIntegRecord(recData.getId());
+					recData.setIntegRecord(recData.getName());
 					
 					// === スコア ===
 					recData.setScore(score);
@@ -2804,7 +2804,7 @@ public class SearchPage extends JApplet {
 						recData.setId(line, findStr);
 						
 						// === 統合レコードフラグ ===
-						recData.setIntegRecord(recData.getId());
+						recData.setIntegRecord(recData.getName());
 						
 						// === スコア ===
 						recData.setScore("");
@@ -2937,9 +2937,6 @@ public class SearchPage extends JApplet {
 			// == クエリーレコードフラグ ===
 			recData.setQueryRecord(true);
 			
-			// === 統合レコードフラグ ===
-			recData.setIntegRecord(id);
-			
 			// === ID ===
 			recData.setId(id);
 			
@@ -2981,6 +2978,9 @@ public class SearchPage extends JApplet {
 			// === 化合物名 ===
 			findStr = "name=";
 			recData.setName(line, findStr);
+			
+			// === 統合レコードフラグ ===
+			recData.setIntegRecord(recData.getName());
 			
 			// === プリカーサー ===
 			findStr = "precursor=";

@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.18  2010.09.02
+# ver 3.0.19  2010.09.16
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -124,7 +124,7 @@ $dbh  = DBI->connect($SQLDB, $User, $PassWord) || &myexit;
 $precursor = $ans[0][0];
 $short_name = substr( $name, 0, index($name, ';') );
 $str_merge = "";
-if ( substr($Acc,2,1) eq "X" ) {
+if ( index($name, "MERGED") != -1 ) {
 	$str_merge = "<span style=\"background-color:Blue;color:white;font-size:12pt;font-family:Arial;\">&nbsp;MERGED&nbsp;SPECTRUM&nbsp;</span>";
 }
 

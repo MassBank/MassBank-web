@@ -22,7 +22,7 @@
 # [Admin Tool] 統合スペクトル生成
 #             (レコードファイル, MERGE.sql, UPADTE.sql)
 #
-# ver 1.0.1  2008.12.05
+# ver 1.0.2  2010.09.16
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -53,7 +53,7 @@ $dbh = DBI->connect($SQLDB, $User, $PassWord) || &myexit;
 my $sql = "select max(ID) from SPECTRUM";
 my @ans = &MySql($sql);
 my $id = $ans[0][0];
-my $sql = "select ifnull(max(ID),0) from SPECTRUM where substring(ID,3,1)='X'";
+my $sql = "select ifnull(max(ID),0) from SPECTRUM where NAME like '%MERGED%'";
 my @ans = &MySql($sql);
 my $max_id = $ans[0][0];
 my $prefix = substr($id, 0, 2);

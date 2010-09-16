@@ -20,7 +20,7 @@
  *
  * レコード情報格納 クラス
  *
- * ver 1.0.3 2009.12.14
+ * ver 1.0.4 2010.09.16
  *
  ******************************************************************************/
 
@@ -549,11 +549,11 @@ public class PackageRecData {
 	
 	/**
 	 * 統合レコードフラグ設定
-	 * @param id ID
+	 * @param title レコードタイトル
 	 */
-	public void setIntegRecord(String id) {
-		// IDの先頭から3桁目が"X"の場合に、統合スペクトルと判断する
-		if (id.substring(2, 3).equals("X")) {
+	public void setIntegRecord(String title) {
+		// RECORD_TITLEに"MERGED"が含まれていた場合に、統合スペクトルと判断する
+		if ( title.indexOf("MERGED") != -1 ) {
 			this.integRecord = true;
 		}
 	}

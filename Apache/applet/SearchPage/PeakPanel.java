@@ -20,7 +20,7 @@
  *
  * ピークパネル クラス
  *
- * ver 1.0.7 2009.12.14
+ * ver 1.0.8 2010.09.16
  *
  ******************************************************************************/
 
@@ -1514,12 +1514,8 @@ public class PeakPanel extends JPanel {
 		if (key.length() != 0 ) {
 			typeLbl1 = spType;
 			if ( !invalid ) {
-				try {
-					if ( key.substring(2,3).equals("X") ) {
-						typeLbl2 = SP_TYPE_MERGED;
-					}
-				} catch (IndexOutOfBoundsException e) {
-					// 統合スペクトルではない
+				if ( name.indexOf("MERGED") != -1 ) {
+					typeLbl2 = SP_TYPE_MERGED;
 				}
 			}
 		}
