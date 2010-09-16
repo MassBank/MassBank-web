@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.6 2010.02.26
+ * ver 1.0.7 2010.09.16
  *
  ******************************************************************************/
 %>
@@ -313,6 +313,15 @@
 							} catch (ParseException e) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not date format.</span><br />" );
+							}
+						}
+						// CH$COMPOUND_CLASS
+						else if ( requiredStr.equals("CH$COMPOUND_CLASS: ") ) {
+							if ( !val.startsWith("Natural Product") && 
+							     !val.startsWith("Non Natural Product") ) {
+								
+								if ( status.equals("") ) status = STATUS_WARN;
+								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not compound class format.</span><br />" );
 							}
 						}
 						// CH$EXACT_MASS
