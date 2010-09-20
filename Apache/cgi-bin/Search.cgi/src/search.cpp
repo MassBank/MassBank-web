@@ -18,6 +18,8 @@
  *
  ******************************************************************************/
 #include <string>
+#include <stdlib.h>
+#include <string.h>
 #include <vector>
 #include <list>
 #include <iostream>
