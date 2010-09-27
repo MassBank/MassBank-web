@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.19  2010.09.16
+# ver 3.0.20  2010.09.27
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -414,7 +414,10 @@ $gifFile = "../DB/gif/$db_name/$gifId.gif";
 $gifUrl = "$myServer/DB/gif/$db_name/$gifId.gif";
 $gifLargeFile = "../DB/gif_large/$db_name/$gifId.gif";
 $gifLargeUrl = "$myServer/DB/gif_large/$db_name/$gifId.gif";
-if ( -f $gifFile && -f $gifLargeFile ) {
+if ( -f $gifFile ) {
+	if ( ! -f $gifLargeFile ) {
+		$gifLargeUrl = "../image/not_available_l.gif";
+	}
 	print "\t\t\t\t\t<img src=\"$gifUrl\" alt=\"\" border=\"1\" width=\"180\" height=\"180\" onClick=\"expandMolView('$gifLargeUrl')\" style=\"margin:10px; cursor:pointer\"><br>\n";
 }
 else {
