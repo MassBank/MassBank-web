@@ -22,7 +22,7 @@
  *
  * 登録済み構造式一覧
  *
- * ver 1.1.5  2010.09.16
+ * ver 1.1.6  2010.09.27
  *
  ******************************************************************************/
 %>
@@ -126,11 +126,13 @@
 	 * @param reqUrl リクエストURL
 	 * @param selDbName DB名
 	 * @param gifPath Gif格納パス
+	 * @param gifSmallPath GifSmall格納パス
+	 * @param gifLargePath GifLarge格納パス
 	 * @param molPath Molfile格納パス
 	 * @return 結果
 	 * @throws IOException
 	 */
-	private boolean dispStructureList( DatabaseAccess db, JspWriter op, String reqUrl, String selDbName, String gifPath, String molPath ) throws IOException {
+	private boolean dispStructureList( DatabaseAccess db, JspWriter op, String reqUrl, String selDbName, String gifPath, String gifSmallPath, String gifLargePath, String molPath ) throws IOException {
 		TreeMap<String, String> mainList = new TreeMap<String, String>();
 		TreeMap<String, String> subList = new TreeMap<String, String>();
 		HashSet<String> tmpList = new HashSet<String>();
@@ -159,6 +161,7 @@
 				rsStructure.put(rs[1].getString("NAME"), rs[1].getString("FILE"));
 			}
 			
+			// １）レコード登録済の化合物の登録を検出
 			for (String compound : rsCompound) {
 				String idStr = "-";
 				String fileStr = " ";
@@ -169,24 +172,48 @@
 				if (rsStructure.get(compound) != null) {
 					idStr = rsStructure.get(compound);
 					gifFile = idStr + GIF_EXTENSION;
-					File file = new File( gifPath + "/" + gifFile );
-					if ( file.isFile() ) {
+					molFile = idStr + MOL_EXTENSION;
+					
+					// GIF & MOLFILE
+					if ( !(new File( gifPath + "/" + gifFile )).isFile() && !(new File( molPath + "/" + molFile )).isFile() ) {
+						stateStr = STATUS_ERR;
+						if ( !detailStr.equals(" ") ) { detailStr += "<br />"; }
+						detailStr += "<span class=\"errFont\">gif not exist.</span><br><span class=\"errFont\">molfile not exist.</span>";
+					}
+					else if ( !(new File( gifPath + "/" + gifFile )).isFile() ) {
+						stateStr = STATUS_WARN;
+						if ( !detailStr.equals(" ") ) { detailStr += "<br />"; }
+						detailStr += "<span class=\"warnFont\">gif not exist.</span>";
+						fileStr = molFile;
+					}
+					else if ( !(new File( molPath + "/" + molFile )).isFile() ) {
+						stateStr = STATUS_WARN;
+						if ( !detailStr.equals(" ") ) { detailStr += "<br />"; }
+						detailStr += "<span class=\"warnFont\">molfile not exist.</span>";
 						fileStr = gifFile;
-						stateStr = STATUS_OK;
-						registNum++;
 					}
 					else {
-						molFile = idStr + MOL_EXTENSION;
-						file = new File( molPath + "/" + molFile );
-						if ( file.isFile() ) {
-							fileStr = molFile;
-							stateStr = STATUS_OK;
-							registNum++;
-						}
-						else {
-							stateStr = STATUS_ERR;
-							detailStr = "<span class=\"errFont\">file not exist.</span>";
-						}
+						fileStr = gifFile;
+					}
+					
+					// GIF_SMALL
+					if ( !(new File( gifSmallPath + "/" + gifFile )).isFile() ) {
+						if ( stateStr.equals("") ) { stateStr = STATUS_WARN; }
+						if ( !detailStr.equals(" ") ) { detailStr += "<br>"; }
+						detailStr += "<span class=\"warnFont\">gif_small not exist.</span>";
+					}
+					// GIF_LARGE
+					if ( !(new File( gifLargePath + "/" + gifFile )).isFile() ) {
+						if ( stateStr.equals("") ) { stateStr = STATUS_WARN; }
+						if ( !detailStr.equals(" ") ) { detailStr += "<br>"; }
+						detailStr += "<span class=\"warnFont\">gif_large not exist.</span>";
+					}
+					
+					if ( !stateStr.equals(STATUS_ERR) ) {
+						registNum++;
+					}
+					if ( stateStr.equals("") ) {
+						stateStr = STATUS_OK;
 					}
 				}
 				else {
@@ -198,7 +225,8 @@
 				mainList.put(compound, fileStr + "\t" + compound + "\t" + idStr + "\t" + stateStr + "\t" + detailStr);
 				tmpList.add(idStr);
 			}
-			// MOLFILEテーブル（レコード未登録）の登録を検出
+			
+			// ２）MOLFILEテーブル（レコード未登録）の登録を検出
 			for ( Map.Entry<String, String> e : rsStructure.entrySet() ) {
 				String compound = e.getKey();
 				String idStr = e.getValue();
@@ -209,64 +237,106 @@
 				String molFile = "";
 				if ( !mainList.containsKey(compound) ) {
 					gifFile = idStr + GIF_EXTENSION;
-					File file = new File( gifPath + File.separator + gifFile );
-					if ( file.isFile() ) {
+					molFile = idStr + MOL_EXTENSION;
+					
+					// GIF & MOLFILE
+					if ( !(new File( gifPath + "/" + gifFile )).isFile() && !(new File( molPath + "/" + molFile )).isFile() ) {
+						stateStr = STATUS_WARN;
+						detailStr += "<br /><span class=\"warnFont\">gif not exist.</span><br /><span class=\"warnFont\">molfile not exist.</span>";
+					}
+					else if ( !(new File( gifPath + "/" + gifFile )).isFile() ) {
+						stateStr = STATUS_WARN;
+						detailStr += "<br /><span class=\"warnFont\">gif not exist.</span>";
+						fileStr = molFile;
+					}
+					else if ( !(new File( molPath + "/" + molFile )).isFile() ) {
+						stateStr = STATUS_WARN;
+						detailStr += "<br /><span class=\"warnFont\">molfile not exist.</span>";
 						fileStr = gifFile;
 					}
 					else {
-						molFile = idStr + MOL_EXTENSION;
-						file = new File( molPath + File.separator + molFile );
-						if ( file.isFile() ) {
-							fileStr = molFile;
-						}
-						else {
-							stateStr = STATUS_ERR;
-							detailStr = "<span class=\"errFont\">file not exist.</span><br />" + detailStr;
-						}
+						fileStr = gifFile;
 					}
+					
+					// GIF_SMALL
+					if ( !(new File( gifSmallPath + "/" + gifFile )).isFile() ) {
+						detailStr += "<br /><span class=\"warnFont\">gif_small not exist.</span>";
+					}
+					// GIF_LARGE
+					if ( !(new File( gifLargePath + "/" + gifFile )).isFile() ) {
+						detailStr += "<br /><span class=\"warnFont\">gif_large not exist.</span>";
+					}
+					
 					unRelatedNum++;
 					mainList.put(compound, fileStr + "\t" + compound + "\t" + idStr + "\t" + stateStr + "\t" + detailStr);
 					tmpList.add(idStr);
 				}
 			}
-			// ファイルのみの登録を検出
+			// ３）ファイルのみの登録を検出
 			File gifDir = new File(gifPath);
+			File gifSmallDir = new File(gifSmallPath);
+			File gifLargeDir = new File(gifLargePath);
 			File molDir = new File(molPath);
-			String[] gifList = new String[0];
-			String[] molList = new String[0];
+			ArrayList<String[]> workList = new ArrayList<String[]>();
 			if ( gifDir.isDirectory() ) {
-				gifList = gifDir.list();
+				workList.add(gifDir.list());
+			}
+			if ( gifSmallDir.isDirectory() ) {
+				workList.add(gifSmallDir.list());
+			}
+			if ( gifLargeDir.isDirectory() ) {
+				workList.add(gifLargeDir.list());
 			}
 			if ( molDir.isDirectory() ) {
-				molList = molDir.list();
+				workList.add(molDir.list());
 			}
-			String[][] structList = new String[][]{gifList, molList};
-			for ( int i=0; i<structList.length; i++ ) {
-				for ( String fileName : structList[i] ) {
-					String idStr = " ";
-					String compound = "-";
-					String stateStr = STATUS_WARN;
-					String detailStr = "<span class=\"warnFont\">file only. [<i>" + fileName + "</i>]</span>";
-					String filePath = gifPath;
-					String extention = GIF_EXTENSION;
-					if ( i != 0 ) {
-						filePath = molPath;
-						extention = MOL_EXTENSION;
+			
+			HashSet<String> fileSet = new HashSet<String>();
+			for (String[] fileArray : workList) {
+				for (int i=0; i<fileArray.length; i++) {
+					String fileId = fileArray[i];
+					int extPos = fileArray[i].lastIndexOf(".");
+					if (extPos > 0) {
+						fileId = fileArray[i].substring(0, extPos);
 					}
-					File tmp = new File(filePath + File.separator + fileName);
-					if ( tmp.isFile() ) {
-						if (fileName.lastIndexOf(".") > 0) {
-							// 対象の拡張子以外のファイルは保持しない
-							String suffix = fileName.substring(fileName.lastIndexOf("."));
-							if ( !suffix.equals(extention) ) {
-								continue;
-							}
-							idStr = fileName.substring(0, fileName.lastIndexOf(extention));
-							// 既にIDが登録されている場合は保持しない
-							if ( tmpList.add(idStr) ) {
-								subList.put(compound, fileName + "\t" + compound + "\t" + idStr + "\t" + stateStr + "\t" + detailStr);
-							}
-						}
+					fileSet.add(fileId);
+				}
+			}
+			
+			Iterator<String> it = fileSet.iterator();
+			while ( it.hasNext() ) {
+				String idStr = (String)it.next();
+				String fileName = " ";
+				String compound = "-";
+				String stateStr = STATUS_WARN;
+				String detailStr = " ";
+				boolean isFileOnly = false;
+				
+				// 既にIDが登録されている場合は保持しない
+				if ( tmpList.add(idStr) ) {
+					if ( (new File( gifPath + "/" + idStr + GIF_EXTENSION )).isFile() ) {
+						if ( !detailStr.equals(" ") ) { detailStr += "<br />"; }
+						detailStr += "<span class=\"warnFont\">gif only. [<i>" + idStr + GIF_EXTENSION + "</i>]</span>";
+						isFileOnly = true;
+					}
+					if ( (new File( gifSmallPath + "/" + idStr + GIF_EXTENSION )).isFile() ) {
+						if ( !detailStr.equals(" ") ) { detailStr += "<br />"; }
+						detailStr += "<span class=\"warnFont\">gif_small only. [<i>" + idStr + GIF_EXTENSION + "</i>]</span>";
+						isFileOnly = true;
+					}
+					if ( (new File( gifLargePath + "/" + idStr + GIF_EXTENSION )).isFile() ) {
+						if ( !detailStr.equals(" ") ) { detailStr += "<br />"; }
+						detailStr += "<span class=\"warnFont\">gif_large only. [<i>" + idStr + GIF_EXTENSION + "</i>]</span>";
+						isFileOnly = true;
+					}
+					if ( (new File( molPath + "/" + idStr + MOL_EXTENSION )).isFile() ) {
+						if ( !detailStr.equals(" ") ) { detailStr += "<br />"; }
+						detailStr += "<span class=\"warnFont\">molfile only. [<i>" + idStr + MOL_EXTENSION + "</i>]</span>";
+						isFileOnly = true;
+					}
+					
+					if ( isFileOnly ) {
+						subList.put(idStr, fileName + "\t" + compound + "\t" + idStr + "\t" + stateStr + "\t" + detailStr);
 					}
 				}
 			}
@@ -334,11 +404,17 @@
 				strTitle = "";
 			}
 			else if (val[3].indexOf("error") == -1) {
-				try {
-					structureUrl = "../jsp/MolView.jsp?cname=" + URLEncoder.encode(val[1] , "UTF-8") + "&site=0";
+				if (val[4].indexOf("gif not exist.") > -1 && val[4].indexOf("molfile not exist.") > -1) {
+					strBtnDisable = " disabled";
+					strTitle = "";
 				}
-				catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
+				else {
+					try {
+						structureUrl = "./StructureView.jsp?cname=" + URLEncoder.encode(val[1] , "UTF-8");
+					}
+					catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			else {
@@ -782,8 +858,12 @@ function popupMolView(url) {
 		final String gifSmallPath = (new File(gifSmallRootPath + "/" + selDbName)).getPath();
 		final String gifLargePath = (new File(gifLargeRootPath + "/" + selDbName)).getPath();
 		final String molPath = (new File(molRootPath + "/" + selDbName)).getPath();
-		if ( !(new File(gifPath)).isDirectory() && !(new File(molPath)).isDirectory() ) {
-			out.println( msgErr( "[" + gifPath + "]&nbsp;&nbsp;and&nbsp;&nbsp;[" + molPath + "]&nbsp;&nbsp;directory not exist." ) );
+		if ( !(new File(gifPath)).isDirectory() ||
+		     !(new File(gifSmallPath)).isDirectory() ||
+		     !(new File(gifLargePath)).isDirectory() ||
+		     !(new File(molPath)).isDirectory() ) {
+			
+			out.println( msgErr( "[" + gifPath + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + gifSmallPath + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + gifLargePath + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + molPath + "]&nbsp;&nbsp;directory not exist." ) );
 			return;
 		}
 		
@@ -833,7 +913,7 @@ function popupMolView(url) {
 				out.println( msgWarn( "other users are updating. please access later. ") );
 				return;
 			}
-			isResult = dispStructureList( db, out, reqUrl, selDbName, gifPath, molPath );
+			isResult = dispStructureList( db, out, reqUrl, selDbName, gifPath, gifSmallPath, gifLargePath, molPath );
 			if ( !isResult ) {
 				return;
 			}
