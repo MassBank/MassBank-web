@@ -20,7 +20,7 @@
  *
  * 管理者設定共通クラス
  *
- * ver 1.0.12 2010.08.20
+ * ver 1.0.14 2010.09.30
  *
  ******************************************************************************/
 package massbank.admin;
@@ -28,6 +28,7 @@ package massbank.admin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 /**
  * 管理者設定共通クラス
@@ -50,6 +51,7 @@ import java.io.FileReader;
  *   SMTPアドレス取得               mail_batch_smtp
  *   送信者名取得                   mail_batch_name
  *   Fromアドレス取得               mail_batch_from
+ *   スケジュール取得               schedule
  *   
  */
 public class AdminCommon {
@@ -70,6 +72,7 @@ public class AdminCommon {
 			subDir = subDir.replace( "jsp", "" );
 			subDir = subDir.replace( "mbadmin", "" );
 			subDir = subDir.replace( "Knapsack", "" );
+			subDir = subDir.replace( "extend", "" );
 			if (!subDir.equals("")) {
 				if (!subDir.endsWith("/")) {
 					subDir += "/";
@@ -249,6 +252,20 @@ public class AdminCommon {
 	}
 	
 	/**
+	 * スケジュール取得
+	 */
+	public ArrayList<String> getSchedule() {
+		String[] tmp = getSetting( "schedule", false ).split("\t");
+		ArrayList<String> vals = new ArrayList<String>();
+		for (String val : tmp) {
+			if ( !val.trim().equals("") ) {
+				vals.add(val.trim());
+			}
+		}
+		return vals;
+	}
+	
+	/**
 	 * admin.confに定義された値を取得する
 	 * 「#」で始まる行はコメント行とする
 	 * @param key キー名
@@ -260,7 +277,7 @@ public class AdminCommon {
 		try {
 			BufferedReader in = new BufferedReader( new FileReader( confFilePath ) );
 			while ( ( line = in.readLine() ) != null ) {
-				if (line.startsWith("#")) {
+				if (line.startsWith("#") || line.equals("")) {
 					continue;
 				}
 				int pos = line.indexOf( "=" );
@@ -268,8 +285,13 @@ public class AdminCommon {
 					String keyInfo = line.substring( 0, pos );
 					String valInfo = line.substring( pos + 1 );
 					if ( key.equals( keyInfo ) ) {
-						val = valInfo.trim();
-						break;
+						if ( !key.equals("schedule") ) {
+							val = valInfo.trim();
+							break;
+						}
+						else {
+							val += valInfo.trim() + "\t";
+						}
 					}
 				}
 			}
