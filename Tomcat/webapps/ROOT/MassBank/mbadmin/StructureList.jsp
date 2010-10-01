@@ -22,7 +22,7 @@
  *
  * 登録済み構造式一覧
  *
- * ver 1.1.6  2010.09.27
+ * ver 1.1.7  2010.10.01
  *
  ******************************************************************************/
 %>
@@ -410,7 +410,7 @@
 				}
 				else {
 					try {
-						structureUrl = "./StructureView.jsp?cname=" + URLEncoder.encode(val[1] , "UTF-8");
+						structureUrl = "./StructureView.jsp?dname=" + selDbName + "&cname=" + URLEncoder.encode(val[1] , "UTF-8");
 					}
 					catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
@@ -485,13 +485,14 @@
 			StringBuilder sqlParam = new StringBuilder();
 			File file = null;
 			for ( int i=0; i<ids.length; i++ ) {
+				// 必ずGIFよりもMolfileを先に削除する（画像自動生成プログラムがMolfileの存在でGIFを生成するため）
+				file = new File( molPath + "/" + ids[i] + MOL_EXTENSION );
+				if ( file.isFile() ) { file.delete(); }
 				file = new File( gifPath + "/" + ids[i] + GIF_EXTENSION );
 				if ( file.isFile() ) { file.delete(); }
 				file = new File( gifSmallPath + "/" + ids[i] + GIF_EXTENSION );
 				if ( file.isFile() ) { file.delete(); }
 				file = new File( gifLargePath + "/" + ids[i] + GIF_EXTENSION );
-				if ( file.isFile() ) { file.delete(); }
-				file = new File( molPath + "/" + ids[i] + MOL_EXTENSION );
 				if ( file.isFile() ) { file.delete(); }
 				sqlParam.append( "\"" + ids[i] + "\"," );
 			}

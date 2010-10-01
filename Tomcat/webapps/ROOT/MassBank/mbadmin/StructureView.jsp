@@ -22,7 +22,7 @@
  *
  * 構造式表示用モジュール
  *
- * ver 1.0.0 2010.09.27
+ * ver 1.0.1 2010.10.01
  *
  ******************************************************************************/
 %>
@@ -38,12 +38,13 @@
 	/**
 	 * 構造式画像URLを取得する
 	 * 必ず自サーバにある構造式情報を取得する
+	 * @param dbName
 	 * @param name
 	 * @param serverUrl
 	 * @param dbNameList
 	 * @return List<String> 画像URLを格納したLIST
 	 */
-	private List<String> getStructure(String name, String serverUrl, String[] dbNameList) {
+	private List<String> getStructure(String dbName, String name, String serverUrl, String[] dbNameList) {
 		List<String> resultList = new ArrayList<String>(4);
 		
 		String param = "";
@@ -59,7 +60,14 @@
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
 		ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
 		
-		int relSiteNo = -1;
+		int targetSiteNo = -1;
+		for(int i=0; i<dbNameList.length; i++) {
+			if (dbNameList[i].equals(dbName)) {
+				targetSiteNo = i;
+				break;
+			}
+		}
+		
 		String gifUrl = "";
 		String gifSmallUrl = "";
 		String gifLargeUrl = "";
@@ -69,9 +77,13 @@
 			String temp = (String)result.get(i);
 			String[] item = temp.split("\t");
 			String line = item[0];
+			int relSiteNo = Integer.parseInt(item[item.length -1]);
+			if (targetSiteNo != relSiteNo) {
+				continue;
+			}
+			
 			if ( line.indexOf("---NAME:") >= 0 ) {
 				if ( !isFind ) {
-					relSiteNo = Integer.parseInt(item[1]);
 					isFind = true;
 				}
 				else {
@@ -81,19 +93,19 @@
 			else if ( line.indexOf("---GIF:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF:", "");
 				if ( !gifFile.equals("") ) {
-					gifUrl = serverUrl + "DB/gif/" + dbNameList[relSiteNo] + "/" + gifFile;
+					gifUrl = serverUrl + "DB/gif/" + dbNameList[targetSiteNo] + "/" + gifFile;
 				}
 			}
 			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_SMALL:", "");
 				if ( !gifFile.equals("") ) {
-					gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[relSiteNo] + "/" + gifFile;
+					gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[targetSiteNo] + "/" + gifFile;
 				}
 			}
 			else if ( line.indexOf("---GIF_LARGE:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_LARGE:", "");
 				if ( !gifFile.equals("") ) {
-					gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[relSiteNo] + "/" + gifFile;
+					gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[targetSiteNo] + "/" + gifFile;
 				}
 			}
 			else {
@@ -117,6 +129,11 @@
 	GetConfig conf = new GetConfig( baseUrl );
 	String serverUrl = conf.getServerUrl();
 	String[] dbNameList = conf.getDbName();
+	
+	String reqDbName = "";
+	if ( request.getParameter( "dname" ) != null ) {
+		reqDbName = request.getParameter( "dname" );
+	}
 	
 	String reqCompoundName = "";
 	if ( request.getParameter( "cname" ) != null ) {
@@ -145,7 +162,7 @@
 			<td>
 <%
 	// 化学構造式表示情報を取得する
-	List<String> structureResult = getStructure(reqCompoundName, serverUrl, dbNameList);
+	List<String> structureResult = getStructure(reqDbName, reqCompoundName, serverUrl, dbNameList);
 	String gifUrl = structureResult.get(0);
 	String gifSmallUrl = structureResult.get(1);
 	String gifLargeUrl = structureResult.get(2);
