@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.7 2010.09.16
+ * ver 1.0.8 2010.10.05
  *
  ******************************************************************************/
 %>
@@ -332,6 +332,13 @@
 							catch (NumberFormatException e) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not numeric.</span><br />" );
+							}
+						}
+						// AC$INSTRUMENT_TYPE
+						else if ( requiredStr.equals("AC$INSTRUMENT_TYPE: ") && !val.equals(DEFAULT_VALUE) ) {
+							if ( val.trim().indexOf(" ") != -1 ) {
+								if ( status.equals("") ) status = STATUS_WARN;
+								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is space included.</span><br />" );
 							}
 						}
 						// AC$ANALYTICAL_CONDITION: MODE
