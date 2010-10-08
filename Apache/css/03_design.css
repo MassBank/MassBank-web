@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.18  2010.07.12
+ * ver 1.0.19  2010.10.06
  *
  ******************************************************************************/
 
@@ -193,6 +193,7 @@
 
 #contact .p_text { padding-bottom:15px; }
 #contact .p_contact { padding: 0 0 30px; padding-left:34px; }
+#contact .p_mailinglist { padding: 0 0 15px; padding-left:34px; }
 
 /*研究協力グループ============================================== */
 #group p
