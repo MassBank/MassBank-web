@@ -21,7 +21,7 @@
 #
 # 化学構造式用GIFファイル生成
 #
-# ver 1.0.0  2010.09.30
+# ver 1.0.1  2010.10.08
 #
 #-------------------------------------------------------------------------------
 use File::Spec;
@@ -85,8 +85,8 @@ foreach my $db_name (@db_names) {
 			$gif_file =~ s/\.mol/\.gif/;
 			if ( ! -f $gif_file ) {
 				`java -jar $massbank_dir/applet/MolView.jar size=$gif_size out_dir=$massbank_dir/DB/$gif_dir/$db_name/ molfile=$mol_file`;
-				chmod(0777, $gif_file);
 			}
+			chmod(0777, $gif_file);
 		}
 	}
 }
