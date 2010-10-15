@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.7 2010.09.06
+ * ver 2.0.8 2010.10.15
  *
  ******************************************************************************/
 %>
@@ -165,6 +165,7 @@
 <meta name="description" content="MassBank は日本質量分析学会の公式データベースです。MassBank は JST-BIRD プロジェクトとして開発しています。マススペクトルを測定した研究者がインターネットで公開する分散型データベースです。" />
 <meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, resolution, spectral, database, 慶應義塾大学, 先端生命, 研究所" />
 <meta name="revisit_after" content="10 days">
+<meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
 <title>MassBank | High Resolution Mass Spectral Database</title>
 </head>
@@ -304,6 +305,7 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 <meta name="description" content="The Mass Spectorometry Society of Japan officially supports MassBank. MassBank is supported by JST-BIRD project. MassBank is a distributed database on the internet in order to open a spectrum to the public by a researcher who measured it." />
 <meta name="keywords" content="MassBank, massbank, resolution, mass, spectral, database, Keio" />
 <meta name="revisit_after" content="10 days">
+<meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
 <title>MassBank | High Resolution Mass Spectral Database</title>
 </head>
