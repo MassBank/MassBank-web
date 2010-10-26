@@ -20,7 +20,7 @@
  *
  * バージョン情報管理クラス
  *
- * ver 1.0.3 2008.12.19
+ * ver 1.0.4 2010.10.25
  *
  ******************************************************************************/
 package massbank.admin;
@@ -34,8 +34,9 @@ import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.net.URL;
 import java.net.URLConnection;
-import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import massbank.GetConfig;
+import massbank.MassBankEnv;
 import massbank.admin.AdminCommon;
 import massbank.admin.VersionInfo;
 import massbank.admin.FileUtil;
@@ -97,8 +98,6 @@ public class VersionManager {
 
 	// JSP名
 	private String jspName = "";
-	// ベースURL
-	private String baseUrl = "";
 	// ApacheのMassBanパス
 	private String massBankPath = "";
 	// TomcatのROOTパス
@@ -125,11 +124,10 @@ public class VersionManager {
 	 * コンストラクタ
 	 */
 	public VersionManager(String reqUrl, String realPath) {
-		int pos1 = reqUrl.indexOf("/jsp");
 		// JSPファイル名をセット
 		this.jspName = reqUrl.substring( reqUrl.lastIndexOf("/") + 1 );
 		// ベースURLセット
-		this.baseUrl = reqUrl.substring( 0, pos1 + 1 );
+		String baseUrl = MassBankEnv.get( MassBankEnv.KEY_BASE_URL );
 
 		// 設定ファイル読込み
 		GetConfig conf = new GetConfig(baseUrl);
@@ -137,23 +135,17 @@ public class VersionManager {
 		String[] urlList = conf.getSiteUrl();
 		this.myServerUrl = urlList[GetConfig.MYSVR_INFO_NUM];
 
-		AdminCommon admin = new AdminCommon(reqUrl, realPath);
 		// プライマリサーバURL取得
-		this.priServerUrl = admin.getPServerUrl();
+		this.priServerUrl = MassBankEnv.get( MassBankEnv.KEY_PRIMARY_SERVER_URL );
 		// ApacheのMassBanパス取得
-		this.massBankPath = admin.getMassBankPath();
+		this.massBankPath = MassBankEnv.get( MassBankEnv.KEY_APACHE_APPROOT_PATH);
+		// TomcatのROOTパスをセット
+		this.webRootPath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_DOCROOT_PATH );
+		// TomcatのMassBankパスをセット
+		this.tomcatMbPath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPROOT_PATH );
 		// CGIヘッダー取得
+		AdminCommon admin = new AdminCommon(reqUrl, this.webRootPath);
 		this.cgiHeader = admin.getCgiHeader();
-
-		// Tomcatパスをセット
-		String tomcatPath = System.getProperty("catalina.home");
-		this.webRootPath = tomcatPath + "/webapps/ROOT/";
-		String path = this.webRootPath;
-		int pos2 = baseUrl.lastIndexOf("MassBank");
-		if ( pos2 >= 0 ) {
-			path += baseUrl.substring(pos2);
-		}
-		this.tomcatMbPath = path;
 	}
 
 
@@ -558,13 +550,13 @@ public class VersionManager {
 	 * @return バージョン情報
 	 */
 	private List<VersionInfo> getVerApplet() {
-		List verInfoList = new ArrayList<VersionInfo>();
+		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 	
 		// appletディレクトリのファイルリスト取得
 		String appletPath = massBankPath + "applet/";
 		File file = new File( appletPath );
 		String allList[] = file.list();
-		ArrayList<String> targetList = new ArrayList();
+		ArrayList<String> targetList = new ArrayList<String>();
 		for ( int i = 0; i < allList.length; i++ ) {
 			if ( allList[i].indexOf(".jar") >= 0 ) {
 				targetList.add( allList[i] );
@@ -587,13 +579,13 @@ public class VersionManager {
 	 * @return バージョン情報
 	 */
 	private List<VersionInfo> getVerComLib() {
-		List verInfoList = new ArrayList<VersionInfo>();
+		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
 		// WEB-INF/libディレクトリのファイルリスト取得
 		String libPath = webRootPath + "WEB-INF/lib/";
 		File file = new File(libPath);
 		String allList[] = file.list();
-		ArrayList<String> targetList = new ArrayList();
+		ArrayList<String> targetList = new ArrayList<String>();
 		for ( int i = 0; i < allList.length; i++ ) {
 			boolean isExclusion = false;
 			for ( int j = 0; j < EXCLUSION_COM_LIB.length; j++ ) {
@@ -623,7 +615,7 @@ public class VersionManager {
 	 * @return バージョン情報
 	 */
 	private List<VersionInfo> getVerCgi() {
-		List verInfoList = new ArrayList<VersionInfo>();
+		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
 		// バージョン情報取得CGIを実行
 		String strUrl = myServerUrl + "/cgi-bin/GetVersion.cgi";
@@ -666,14 +658,14 @@ public class VersionManager {
 	 * @return バージョン情報
 	 */
 	private List<VersionInfo> getVerAdminTool() {
-		List verInfoList = new ArrayList<VersionInfo>();
+		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
 		// ファイルリスト取得
 		for ( int i = 0; i < ADMIN_DIR.length; i++ ) {
 			String path = tomcatMbPath + "mbadmin/" + ADMIN_DIR[i];
 			File file = new File(path);
 			String allList[] = file.list();
-			List<String> targetList = new ArrayList();
+			List<String> targetList = new ArrayList<String>();
 			for ( int j = 0; j < allList.length; j++ ) {
 				if ( allList[j].matches(ADMIN_EXTENSION_REGEX[i]) ) {
 					targetList.add(allList[j]);
@@ -704,12 +696,12 @@ public class VersionManager {
 	 * @return バージョン情報
 	 */
 	private List<VersionInfo> getVerOther(String path, String extension) {
-		List verInfoList = new ArrayList<VersionInfo>();
+		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
 		// ファイルリスト取得
 		File file1 = new File(path);
 		String allList[] = file1.list();
-		List<String> targetList = new ArrayList();
+		List<String> targetList = new ArrayList<String>();
 		for ( int i = 0; i < allList.length; i++ ) {
 			if ( allList[i].indexOf(extension) >= 0 ) {
 				targetList.add(allList[i]);

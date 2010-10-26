@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.18 2009.12.09
+ * ver 1.0.19 2010.10.26
  *
  ******************************************************************************/
 %>
@@ -30,13 +30,13 @@
 <%@ page import="java.io.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="massbank.MassBankCommon" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="java.awt.Color" %>
 <%@ page import="java.awt.Font" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="org.jfree.chart.ChartFactory" %>
-<%@ page import="org.jfree.chart.ChartFrame" %>
 <%@ page import="org.jfree.chart.ChartUtilities" %>
 <%@ page import="org.jfree.chart.JFreeChart" %>
 <%@ page import="org.jfree.chart.plot.PiePlot" %>
@@ -48,10 +48,6 @@
 <%@ page import="org.jfree.util.SortOrder" %>
 <%@ include file="./Common.jsp"%>
 <%!
-	/** Windowsディレクトリ区切り文字 **/
-	private static final String WIN_DIR_DELIM = "\\";
-	/** Linuxディレクトリ区切り文字 **/
-	private static final String LIN_DIR_DELIM = "/";
 	/** インデックス種別 **/
 	private static final String[] indexType = { "site", "inst", "ion", "cmpd" };
 	/** テーブルヘッダー **/
@@ -87,9 +83,7 @@
 	ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, "" );
 	
 	Map<String, Integer>[] countMap = new HashMap[siteNameList.length];
-	ArrayList countList = new ArrayList();
 	ArrayList<String> keyList = new ArrayList();
-	String[] siteCount = new String[siteNameList.length];
 	
 	for ( int siteNum = 0; siteNum < siteNameList.length; siteNum++ ) {
 		countMap[siteNum] = new HashMap();
@@ -132,7 +126,7 @@
 			}
 		}
 	}
-	ArrayList<String> adjustKeyList = new ArrayList();
+	ArrayList<String> adjustKeyList = new ArrayList<String>();
 	adjustKeyList.add( "//" );
 	adjustKeyList.add( keyList.get(0) );
 	adjustKeyList.add( "//" );
@@ -184,7 +178,7 @@
 	String url = "./jsp/Result.jsp?";
 	
 	String linkUrl = "";
-	String paramType = mbcommon.REQ_TYPE_RCDIDX;
+	String paramType = MassBankCommon.REQ_TYPE_RCDIDX;
 	String paramIdxType = "";
 	String paramSearchKey = "";
 	
@@ -404,26 +398,6 @@
 	}
 	
 	
-	// ファイル出力先パス生成
-	String reqURL = request.getRequestURL().toString();
-	String realPath = application.getRealPath(reqURL);
-	String realAppPath = null;
-	String reqURI = request.getRequestURI();
-	String jspDir = reqURI.substring(0, reqURI.lastIndexOf("/"));
-	String tmpDir = null;
-	if ( osName.indexOf("Windows") >= 0 ) {
-		// Tomcatアプリケーション配置ディレクトリパス生成
-		realAppPath = realPath.substring(0, realPath.indexOf(WIN_DIR_DELIM + "http"));
-		// テンポラリディレクトリパス生成(JSP配置ディレクトリと同階層のtempディレクトリ)
-		tmpDir = (jspDir.substring(0, jspDir.lastIndexOf("/")) + "/temp/").replace("/", WIN_DIR_DELIM);
-	}
-	else {
-		// Tomcatアプリケーション配置ディレクトリパス生成
-		realAppPath = realPath.substring(0, realPath.indexOf(LIN_DIR_DELIM + "http"));
-		// テンポラリディレクトリパス生成(JSP配置ディレクトリと同階層のtempディレクトリ)
-		tmpDir = (jspDir.substring(0, jspDir.lastIndexOf("/")) + "/temp/").replace("/", LIN_DIR_DELIM);
-	}
-	
 	// グラフ一括生成＆出力
 	LinkedHashMap<String, DefaultPieDataset> graphDataMap = new LinkedHashMap<String, DefaultPieDataset>(2);
 	graphDataMap.put("Contributor", siteGraphData);
@@ -499,7 +473,7 @@
 		
 		// グラフのファイル出力
 		fileName = "massbank_" + key + "_Graph.jpg";
-		filePath = realAppPath + tmpDir + fileName;
+		filePath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPTEMP_PATH ) + fileName;
 		BufferedOutputStream outStream = null;
 		try {
 			outStream = new BufferedOutputStream(new FileOutputStream(filePath));
