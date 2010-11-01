@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.8 2010.10.15
+ * ver 2.0.9 2010.11.01
  *
  ******************************************************************************/
 %>
@@ -106,6 +106,7 @@
 							// パスを修正後に表示用リストに追加
 							newLine = line.replaceAll("\"./", "\"./" + langStr + "/");
 							newLine = newLine.replaceAll("\"../", "\"./");
+							newLine = newLine.replaceAll("<br />", "&nbsp;&nbsp;<img src=\"./img/new.gif\"><br />");
 							newsList.add(newLine);
 						}
 						if ( newsList.size() == DISP_NEWS_NUM ) {
