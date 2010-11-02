@@ -20,7 +20,7 @@
  *
  * 環境設定ファイルの情報を更新するクラス
  *
- * ver 1.0.1 2010.08.20
+ * ver 1.0.2 2010.11.02
  *
  ******************************************************************************/
 package massbank.admin;
@@ -37,6 +37,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import massbank.MassBankEnv;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,20 +51,11 @@ public class UpdateConfig {
 	private String confPath;
 	
 	/**
-	 * コンストラクタ
-	 * @param baseUrl
-	 * @param realConfPath massbank.conf（絶対パス指定）
+	 * デフォルトコンストラクタ
 	 */
-	public UpdateConfig(String baseUrl, String realConfPath) {
-		String confName = "";
-		if (realConfPath.lastIndexOf("/") != -1) {
-			confName = realConfPath.substring(realConfPath.lastIndexOf("/") + 1);
-		}
-		else if (realConfPath.lastIndexOf("\\") != -1) {
-			confName = realConfPath.substring(realConfPath.lastIndexOf("\\") + 1);
-		}
-		String url =  baseUrl + confName;
-		this.confPath = realConfPath;
+	public UpdateConfig() {
+		String url = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_URL);
+		this.confPath = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_PATH);
 		try {
 			// ドキュメントビルダーファクトリを生成
 			DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();

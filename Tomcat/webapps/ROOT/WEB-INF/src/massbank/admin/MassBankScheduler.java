@@ -20,7 +20,7 @@
  *
  * MassBank用スケジューラ
  *
- * ver 1.0.0 2010.09.30
+ * ver 1.0.1 2010.11.01
  *
  ******************************************************************************/
 package massbank.admin;
@@ -77,13 +77,7 @@ public class MassBankScheduler extends HttpServlet {
 	 * サーブレット初期化処理
 	 */
 	public void init() throws ServletException {
-		
-		String baseUrl = getInitParameter("baseUrl");
-		if ( baseUrl == null ) {
-			baseUrl = "http://localhost/MassBank/";
-		}
-		String realPath = this.getServletContext().getRealPath("/");
-		AdminCommon admin = new AdminCommon(baseUrl, realPath);
+		AdminCommon admin = new AdminCommon();
 		ArrayList<String> scheduleList = admin.getSchedule();
 		
 		int threadPoolSize = (( MAX_THREAD_POOL_SIZE > scheduleList.size() ) ? scheduleList.size() : MAX_THREAD_POOL_SIZE);

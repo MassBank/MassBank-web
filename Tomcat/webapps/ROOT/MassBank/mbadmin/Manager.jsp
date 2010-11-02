@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.4 2010.08.20
+ * ver 1.0.5 2010.11.02
  *
  ******************************************************************************/
 %>
@@ -46,6 +46,7 @@
 <%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.Sanitizer" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.admin.AdminCommon" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
@@ -209,9 +210,9 @@
 				bw.flush();
 		}
 		catch (IOException e) {
-			Logger.global.severe( "sql file preparation failed." + NEW_LINE +
-			                      "    base sql file : " + baseSql.toString() + NEW_LINE +
-			                      "    work sql file : " + workSql.getPath() );
+			Logger.getLogger("global").severe( "sql file preparation failed." + NEW_LINE +
+			                                   "    base sql file : " + baseSql.toString() + NEW_LINE +
+			                                   "    work sql file : " + workSql.getPath() );
 			e.printStackTrace();
 			return false;
 		}
@@ -285,8 +286,8 @@
 				bw.flush();
 		}
 		catch (IOException e) {
-			Logger.global.severe( "conf file fairing failed." + NEW_LINE +
-			                      "    conf file : " + confFile.toString() );
+			Logger.getLogger("global").severe( "conf file fairing failed." + NEW_LINE +
+			                                   "    conf file : " + confFile.toString() );
 			e.printStackTrace();
 			return false;
 		}
@@ -795,18 +796,21 @@ function beforeDel(isAdmin) {
 	// 各種パラメータを取得
 	//----------------------------------------------------
 	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String[] dbPathes = new String[]{admin.getDbRootPath(), admin.getMolRootPath(), admin.getProfileRootPath(), admin.getGifRootPath(), admin.getGifSmallRootPath(), admin.getGifLargeRootPath()};
-	final String dbHostName = admin.getDbHostName();
-	final String massbankConfPath = admin.getMassBankPath() + "massbank.conf";
+	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	final String[] dbPathes = new String[]{ MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH),
+	                                        MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH),
+	                                        MassBankEnv.get(MassBankEnv.KEY_PROFILE_PATH),
+	                                        MassBankEnv.get(MassBankEnv.KEY_GIF_PATH),
+	                                        MassBankEnv.get(MassBankEnv.KEY_GIF_SMALL_PATH),
+	                                        MassBankEnv.get(MassBankEnv.KEY_GIF_LARGE_PATH) };
+	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String massbankConfPath = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_PATH);
 	GetConfig gtConf = new GetConfig(baseUrl);
-	UpdateConfig upConf = new UpdateConfig(baseUrl, massbankConfPath);
+	UpdateConfig upConf = new UpdateConfig();
+	AdminCommon admin = new AdminCommon();
 	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
 	final String tmpPath = (new File(outPath + "/" + sdf.format(new Date()))).getPath() + File.separator;
-	final String jspRealPath = application.getRealPath(request.getServletPath());
-	final String baseSqlPath = (new File(jspRealPath)).getParent() + File.separator + "sql" + File.separator;
+	final String baseSqlPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPADMIN_PATH) + "sql" + File.separator;
 	boolean isResult = true;
 	OperationManager om = OperationManager.getInstance();
 	NumberFormat nf = NumberFormat.getNumberInstance();
@@ -819,15 +823,10 @@ function beforeDel(isAdmin) {
 		ipAddress = InetAddress.getLocalHost().getHostAddress();
 	}
 	catch (UnknownHostException uhe) {
-		Logger.global.severe( "get host name or get ip address failed." );
+		Logger.getLogger("global").severe( "get host name or get ip address failed." );
 		uhe.printStackTrace();
 		out.println( msgErr( "the host name or ip address cannot be taken.") );
 		return;
-	}
-	
-	String massbankPath = (new File(admin.getMassBankPath())).getName();
-	if ( !massbankPath.equals("") ) {
-		massbankPath += "/";
 	}
 	
 	try {
@@ -902,8 +901,8 @@ function beforeDel(isAdmin) {
 					File workSql = new File(tmpPath + "create.sql" );
 					isResult = preparationSql( baseSql, workSql, reqSiteDb );
 					if ( !isResult ) {
-						Logger.global.severe( "sql file create failed." + NEW_LINE +
-						                      "    file : " + workSql.getPath() );
+						Logger.getLogger("global").severe( "sql file create failed." + NEW_LINE +
+						                                   "    file : " + workSql.getPath() );
 						out.println( msgErr("add database failed.") );
 						return;
 					}
@@ -911,8 +910,8 @@ function beforeDel(isAdmin) {
 					// SQLファイル実行
 					isResult = FileUtil.execSqlFile(dbHostName, "", workSql.getPath());
 					if ( !isResult ) {
-						Logger.global.severe( "sql file execute failed." + NEW_LINE +
-						                      "    file : " + workSql.getPath() );
+						Logger.getLogger("global").severe( "sql file execute failed." + NEW_LINE +
+						                                   "    file : " + workSql.getPath() );
 						out.println( msgErr("add database failed.") );
 						return;
 					}
@@ -923,14 +922,14 @@ function beforeDel(isAdmin) {
 						if ( !workDir.isDirectory() ) {
 							isResult = workDir.mkdir();
 							if ( !isResult ) {
-								Logger.global.severe( "add derectory failed." + NEW_LINE +
-								                      "    file : " + workDir.getPath() );
+								Logger.getLogger("global").severe( "add derectory failed." + NEW_LINE +
+								                                   "    file : " + workDir.getPath() );
 							}
 							if(os.indexOf("Windows") == -1){
 								isResult = FileUtil.changeMode("777", workDir.getPath());
 								if ( !isResult ) {
-									Logger.global.severe( "chmod derectory failed." + NEW_LINE +
-									                      "    file : " + workDir.getPath() );
+									Logger.getLogger("global").severe( "chmod derectory failed." + NEW_LINE +
+									                                   "    file : " + workDir.getPath() );
 								}
 							}
 						}
@@ -940,7 +939,7 @@ function beforeDel(isAdmin) {
 				// massbank.conf 追加処理
 				isResult = upConf.addConfig(reqNo, reqShortLabel, reqLongLabel, reqSiteUrl, reqSiteDb);
 				if ( !isResult ) {
-					Logger.global.severe( "edit massbank.conf failed." );
+					Logger.getLogger("global").severe( "edit massbank.conf failed." );
 					out.println( msgErr("edit of massbank.conf failed.") );
 					return;
 				}
@@ -1008,7 +1007,7 @@ function beforeDel(isAdmin) {
 						}
 					}
 					catch (Exception e) {
-						Logger.global.severe( "SQL : " + sql );
+						Logger.getLogger("global").severe( "SQL : " + sql );
 						e.printStackTrace();
 						out.println( msgWarn( "TREE table update failed." ) );
 					}
@@ -1023,7 +1022,7 @@ function beforeDel(isAdmin) {
 					isResult = upConf.editConfig(reqNo, internalSiteList, reqShortLabel, reqLongLabel, reqSiteUrl, reqSiteDb);
 				}
 				if ( !isResult ) {
-					Logger.global.severe( "edit massbank.conf failed." );
+					Logger.getLogger("global").severe( "edit massbank.conf failed." );
 					out.println( msgErr("edit of massbank.conf failed.") );
 					return;
 				}
@@ -1058,7 +1057,7 @@ function beforeDel(isAdmin) {
 				// massbank.conf 削除処理
 				isResult = upConf.delConfig(reqNo);
 				if ( !isResult ) {
-					Logger.global.severe( "edit massbank.conf failed." );
+					Logger.getLogger("global").severe( "edit massbank.conf failed." );
 					out.println( msgErr("edit of massbank.conf failed.") );
 				}
 				else {
@@ -1086,8 +1085,8 @@ function beforeDel(isAdmin) {
 							catch ( IOException e) {
 								e.printStackTrace();
 								isResult = false;
-								Logger.global.severe( "delete derectory failed." + NEW_LINE +
-								                      "    file : " + workDir.getPath() );
+								Logger.getLogger("global").severe( "delete derectory failed." + NEW_LINE +
+								                                   "    file : " + workDir.getPath() );
 							}
 						}
 					}
@@ -1097,8 +1096,8 @@ function beforeDel(isAdmin) {
 					File workSql = new File(tmpPath + "drop.sql" );
 					isResult = preparationSql( baseSql, workSql, reqSiteDb );
 					if ( !isResult ) {
-						Logger.global.severe( "sql file create failed." + NEW_LINE +
-						                      "    file : " + workSql.getPath() );
+						Logger.getLogger("global").severe( "sql file create failed." + NEW_LINE +
+						                                   "    file : " + workSql.getPath() );
 						out.println( msgErr("drop database failed.") );
 						return;
 					}
@@ -1106,8 +1105,8 @@ function beforeDel(isAdmin) {
 					// SQLファイル実行
 					isResult = FileUtil.execSqlFile(dbHostName, "", workSql.getPath());
 					if ( !isResult ) {
-						Logger.global.severe( "sql file execute failed." + NEW_LINE +
-						                      "    file : " + workSql.getPath() );
+						Logger.getLogger("global").severe( "sql file execute failed." + NEW_LINE +
+						                                   "    file : " + workSql.getPath() );
 						out.println( msgErr("drop database failed.") );
 						return;
 					}
@@ -1303,8 +1302,8 @@ function beforeDel(isAdmin) {
 				File workSql = new File(tmpPath + "use.sql" );
 				isResult = preparationSql( baseSql, workSql, siteDbList[i] );
 				if ( !isResult ) {
-					Logger.global.severe( "sql file create failed." + NEW_LINE +
-					                      "    file : " + workSql.getPath() );
+					Logger.getLogger("global").severe( "sql file create failed." + NEW_LINE +
+					                                   "    file : " + workSql.getPath() );
 					out.println( msgErr("use database failed.") );
 					return;
 				}

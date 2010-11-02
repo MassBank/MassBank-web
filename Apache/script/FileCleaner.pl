@@ -21,7 +21,7 @@
 #
 # ファイルクリーナー
 #
-# ver 1.0.0  2010.10.29
+# ver 1.0.1  2010.11.02
 #
 #-------------------------------------------------------------------------------
 
@@ -44,6 +44,7 @@
 # 使用例：
 #    FileCleaner.pl /usr/local/tomcat/logs/ log 30
 #    FileCleaner.pl /tmp/ log&tmp&txt
+#    FileCleaner.pl "C:/MassBank/tomcat/logs/" "log&txt"
 #
 ################################################################################
 
@@ -61,16 +62,13 @@ if ( @ARGV < 2 ) {
 }
 else {
 	# 絶対パスチェック
-	if ( $ARGV[0] =~ m|^/.*$|o || $ARGV[0] =~ m|^.:/.*$|o ) {
+	if ( index($ARGV[0], '\\') > -1 ) {
+		die "Please delimit the path in the '/'.\n";
+	}
+	elsif ( $ARGV[0] =~ m|^/.*$|o || $ARGV[0] =~ m|^["\w]*:/.*$|o ) {
 		$targetPath = $ARGV[0];
 		if ( $targetPath !~ m|^.*/$|o ) {
 			$targetPath .= "/";
-		}
-	}
-	elsif ( $ARGV[0] =~ m|^.:\\.*$|o ) {
-		$targetPath = $ARGV[0];
-		if ( $targetPath !~ m|^.*\\$|o ) {
-			$targetPath .= "\\";
 		}
 	}
 	else {

@@ -20,7 +20,7 @@
  *
  * 管理者設定共通クラス
  *
- * ver 1.0.14 2010.09.30
+ * ver 1.0.15 2010.11.01
  *
  ******************************************************************************/
 package massbank.admin;
@@ -28,80 +28,69 @@ package massbank.admin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import massbank.MassBankEnv;
 
 /**
  * 管理者設定共通クラス
  * 以下の機能を提供する
  * 
- *   ＜機能＞                       ＜admin.conf キー名＞
- *   DBサーバホスト名取得           db_host_name
- *   CGIヘッダ取得                  cgi_header
- *   DBルートパス取得               db_path
- *   Molfileルートパス取得          mol_path
- *   Profileルートパス取得          profile_path
- *   GIFルートパス取得              gif_path
- *   GIFSMALLルートパス取得         gif_small_path
- *   GIFLARGEルートパス取得         gif_large_path
- *   出力先パス取得                 out_path
- *   出力先パス取得                 primary_server_url
- *   MassBankディレクトリパス取得   -
- *   管理者権限フラグ取得           admin
- *   ポータルサイトフラグ取得       portal
- *   SMTPアドレス取得               mail_batch_smtp
- *   送信者名取得                   mail_batch_name
- *   Fromアドレス取得               mail_batch_from
- *   スケジュール取得               schedule
+ *   ＜機能＞                                 ＜取得先＞
+ *   DBサーバホスト名取得（非推奨）           MassBankEnv
+ *   CGIヘッダ取得                            admin.conf(cgi_header)
+ *   Annotationルートパス取得（非推奨）       MassBankEnv
+ *   Molfileルートパス取得（非推奨）          MassBankEnv
+ *   Profileルートパス取得（非推奨）          MassBankEnv
+ *   GIFルートパス取得（非推奨）              MassBankEnv
+ *   GIFSMALLルートパス取得（非推奨）         MassBankEnv
+ *   GIFLARGEルートパス取得（非推奨）         MassBankEnv
+ *   出力先パス取得                           admin.conf(out_path)
+ *   出力先パス取得（非推奨）                 MassBankEnv
+ *   MassBankディレクトリパス取得（非推奨）   MassBankEnv
+ *   管理者権限フラグ取得                     admin.conf(admin)
+ *   ポータルサイトフラグ取得                 admin.conf(portal)
+ *   SMTPアドレス取得（非推奨）               MassBankEnv
+ *   送信者名取得（非推奨）                   MassBankEnv
+ *   Fromアドレス取得（非推奨）               MassBankEnv
+ *   スケジュール取得                         admin.conf(schedule)
+ *   
+ *   ※非推奨の昨日に関してはMassBankEnv#get(String)の使用を推奨する
  *   
  */
 public class AdminCommon {
 	
-	private String confFilePath = "";
+	/**
+	 * デフォルトコンストラクタ
+	 */
+	public AdminCommon() {
+	}
 	
 	/**
 	 * コンストラクタ
 	 * @param reqUrl リクエストURL
 	 * @param realPath アプリケーションパスの絶対パス
+	 * @deprecated 非推奨コンストラクタ
+	 * @see AdminCommon#AdminCommon()
 	 */
 	public AdminCommon( String reqUrl, String realPath ) {
-		int pos1 = reqUrl.indexOf( "/", (new String("http://")).length() );
-		int pos2 = reqUrl.lastIndexOf( "/" );
-		String subDir = "";
-		if (pos1 + 1 < reqUrl.length()) {
-			subDir = reqUrl.substring( pos1 + 1, pos2 );
-			subDir = subDir.replace( "jsp", "" );
-			subDir = subDir.replace( "mbadmin", "" );
-			subDir = subDir.replace( "Knapsack", "" );
-			subDir = subDir.replace( "extend", "" );
-			if (!subDir.equals("")) {
-				if (!subDir.endsWith("/")) {
-					subDir += "/";
-				}
-				if ((new File(realPath).getName()).equals(subDir.substring(0, subDir.length()-1))) {
-					subDir = "";
-				}
-			}
-		}
-		this.confFilePath = realPath + subDir + "mbadmin/admin.conf";
 	}
 	
 	/**
 	 * DBサーバホスト名取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getDbHostName() {
-		String hostName = "localhost";
-		String val = getSetting( "db_host_name", false );
-		if ( !val.equals("") ) {
-			hostName = val;
-		}
-		return hostName;
+		return MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	}
 	
 	/**
 	 * CGIヘッダ取得
 	 */
 	public String getCgiHeader() {
-		String header = getSetting( "cgi_header", false );
+		String header = getSetting( "cgi_header" );
 		if ( !header.equals("") ) {
 			header = "#! " + header;
 		}
@@ -109,101 +98,91 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * DBルートパス取得
+	 * Annotationルートパス取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getDbRootPath() {
-		String path = getSetting( "db_path", true );
-		if ( path.equals("") ) {
-			path = "/var/www/html/MassBank/DB/annotation/";
-		}
-		return path;
+		return MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
 	}
 	
 	/**
 	 * Molfileルートパス取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getMolRootPath() {
-		String path = getSetting( "mol_path", true );
-		if ( path.equals("") ) {
-			path = "/var/www/html/MassBank/DB/molfile/";
-		}
-		return path;
+		return MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
 	}
 	
 	/**
 	 * Profileルートパス取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getProfileRootPath() {
-		String path = getSetting( "profile_path", true );
-		if ( path.equals("") ) {
-			path = "/var/www/html/MassBank/DB/profile/";
-		}
-		return path;
+		return MassBankEnv.get(MassBankEnv.KEY_PROFILE_PATH);
 	}
 	
 	/**
 	 * GIFルートパス取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getGifRootPath() {
-		String path = getSetting( "gif_path", true );
-		if ( path.equals("") ) {
-			path = "/var/www/html/MassBank/DB/gif/";
-		}
-		return path;
+		return MassBankEnv.get(MassBankEnv.KEY_GIF_PATH);
 	}
 	
 	/**
 	 * GIFSMALLルートパス取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getGifSmallRootPath() {
-		String path = getSetting( "gif_small_path", true );
-		if ( path.equals("") ) {
-			path = "/var/www/html/MassBank/DB/gif_small/";
-		}
-		return path;
+		return MassBankEnv.get(MassBankEnv.KEY_GIF_SMALL_PATH);
 	}
 	
 	/**
 	 * GIFLARGEルートパス取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getGifLargeRootPath() {
-		String path = getSetting( "gif_large_path", true );
-		if ( path.equals("") ) {
-			path = "/var/www/html/MassBank/DB/gif_large/";
-		}
-		return path;
+		return MassBankEnv.get(MassBankEnv.KEY_GIF_LARGE_PATH);
 	}
 	
 	/**
 	 * 出力先パス取得
 	 */
 	public String getOutPath() {
-		return getSetting( "out_path", true );
+		String outPath = getSetting( "out_path" );
+		if ( !outPath.equals("") ) {
+			// パス末尾にファイルの区切り文字なければ付加する
+			char chrLast = outPath.charAt( outPath.length()-1 );
+			if ( chrLast != '/' && chrLast != '\\' ) {
+				outPath += File.separator;
+			}
+		}
+		return outPath;
 	}
 
 	/**
 	 * プライマリサーバURL取得
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getPServerUrl() {
-		String url = getSetting( "primary_server_url", true );
-		if ( url.equals("") ) {
-			url = "http://www.massbank.jp/";
-		}
-		return url;
+		return MassBankEnv.get(MassBankEnv.KEY_PRIMARY_SERVER_URL);
 	}
 	
 	/**
 	 * MassBankディレクトリパス取得
 	 * ApacheのMassBankディレクトリのリアルパスを取得する
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getMassBankPath() {
-		String path = "";
-		String dbPath = getDbRootPath();
-		int pos = dbPath.lastIndexOf("DB");
-		if ( pos >= 0 ) {
-			path = dbPath.substring(0, pos);
-		}
-		return path;
+		return MassBankEnv.get(MassBankEnv.KEY_APACHE_APPROOT_PATH);
 	}
 
 	/**
@@ -211,7 +190,7 @@ public class AdminCommon {
 	 */
 	public boolean isAdmin() {
 		boolean ret = false;
-		String adminFlag = getSetting( "admin", false );
+		String adminFlag = getSetting( "admin" );
 		if ( adminFlag.toLowerCase().equals("true") ) {
 			ret = true;
 		}
@@ -223,7 +202,7 @@ public class AdminCommon {
 	 */
 	public boolean isPortal() {
 		boolean ret = false;
-		String adminFlag = getSetting( "portal", false );
+		String adminFlag = getSetting( "portal" );
 		if ( adminFlag.toLowerCase().equals("true") ) {
 			ret = true;
 		}
@@ -232,30 +211,36 @@ public class AdminCommon {
 
 	/**
 	 * SMTPアドレス取得（Batch Service用）
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getMailSmtp() {
-		return getSetting( "mail_batch_smtp", false );
+		return MassBankEnv.get(MassBankEnv.KEY_BATCH_SMTP);
 	}
 	
 	/**
 	 * 送信者名取得（Batch Service用）
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getMailName() {
-		return getSetting( "mail_batch_name", false );
+		return MassBankEnv.get(MassBankEnv.KEY_BATCH_NAME);
 	}
 	
 	/**
 	 * Fromアドレス取得（Batch Service用）
+	 * @deprecated 非推奨メソッド
+	 * @see MassBankEnv#get(String)
 	 */
 	public String getMailFrom() {
-		return getSetting( "mail_batch_from", false );
+		return MassBankEnv.get(MassBankEnv.KEY_BATCH_FROM);
 	}
 	
 	/**
 	 * スケジュール取得
 	 */
 	public ArrayList<String> getSchedule() {
-		String[] tmp = getSetting( "schedule", false ).split("\t");
+		String[] tmp = getSetting( "schedule" ).split("\t");
 		ArrayList<String> vals = new ArrayList<String>();
 		for (String val : tmp) {
 			if ( !val.trim().equals("") ) {
@@ -269,14 +254,17 @@ public class AdminCommon {
 	 * admin.confに定義された値を取得する
 	 * 「#」で始まる行はコメント行とする
 	 * @param key キー名
-	 * @param isPath 取得しようとする値がパスであるかどうか
+	 * @return 値
 	 */
-	private String getSetting( String key, boolean isPath ) {
+	private String getSetting( String key ) {
+		String adminConfPath = MassBankEnv.get(MassBankEnv.KEY_ADMIN_CONF_PATH);
 		String val = "";
-		String line = "";
+		BufferedReader br = null;
 		try {
-			BufferedReader in = new BufferedReader( new FileReader( confFilePath ) );
-			while ( ( line = in.readLine() ) != null ) {
+			br = new BufferedReader( new FileReader( adminConfPath ) );
+			String line = "";
+			while ( ( line = br.readLine() ) != null ) {
+				// "#" で始まる行はコメント行とする
 				if (line.startsWith("#") || line.equals("")) {
 					continue;
 				}
@@ -295,18 +283,12 @@ public class AdminCommon {
 					}
 				}
 			}
-			in.close();
 		}
-		catch (Exception ex) {
-			ex.printStackTrace();
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		if ( isPath && !val.equals("") ) {
-			// パス末尾にファイルの区切り文字なければ付加する
-			char chrLast = val.charAt( val.length()-1 );
-			if ( chrLast != '/' && chrLast != '\\' ) {
-				val += File.separator;
-			}
+		finally {
+			try { if ( br != null ) { br.close(); } } catch (IOException e) {}
 		}
 		return val;
 	}
