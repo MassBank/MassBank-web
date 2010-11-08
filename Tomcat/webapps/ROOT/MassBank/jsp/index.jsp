@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.9 2010.11.01
+ * ver 2.0.10 2010.11.08
  *
  ******************************************************************************/
 %>
@@ -33,7 +33,7 @@
 <%@ page import="java.io.InputStreamReader" %>
 <%!
 	/** ニュース表示数 */
-	private final int DISP_NEWS_NUM = 3;
+	private final int DISP_NEWS_NUM = 5;
 	
 	/** イベント表示数 */
 	private final int DISP_EVENT_NUM = 3;
