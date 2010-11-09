@@ -22,7 +22,7 @@
  *
  * 構造式登録
  *
- * ver 1.1.6 2010.02.26
+ * ver 1.1.7 2010.11.09
  *
  ******************************************************************************/
 %>
@@ -53,12 +53,12 @@
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="massbank.admin.AdminCommon" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
 <%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.Sanitizer" %>
 <%@ include file="../jsp/Common.jsp"%>
 <%!
@@ -156,7 +156,7 @@
 			}
 		}
 		catch (SQLException e) {
-			Logger.global.severe( "SQL : " + sql );
+			Logger.getLogger("global").severe( "SQL : " + sql );
 			e.printStackTrace();
 			op.println( msgErr( "database access error.") );
 			ret = null;
@@ -274,7 +274,7 @@
 			}
 		}
 		catch (SQLException e) {
-			Logger.global.severe( "SQL : " + sql );
+			Logger.getLogger("global").severe( "SQL : " + sql );
 			e.printStackTrace();
 			op.println( msgErr( "database access error.") );
 			return new TreeMap<String, String>();
@@ -366,12 +366,12 @@
 		}
 		catch (SQLException e) {
 			try { db.executeUpdate("COMMIT;"); } catch (SQLException ee) {}
-			Logger.global.severe( "SQL : " + sql );
+			Logger.getLogger("global").severe( "SQL : " + sql );
 			e.printStackTrace();
 			isSuccess = false;
 		}
 		catch (IOException e) {
-			Logger.global.severe( "\"" + masterFileName.getPath() + "\" to \"" + registFileName.getPath() + "\" copy failed." );
+			Logger.getLogger("global").severe( "\"" + masterFileName.getPath() + "\" to \"" + registFileName.getPath() + "\" copy failed." );
 			e.printStackTrace();
 			isSuccess = false;
 		}
@@ -382,9 +382,9 @@
 			// StructureSearch 登録処理
 			boolean tmpRet = execCgi( cgiUrl, cgiParam );
 			if ( !tmpRet ) {
-				Logger.global.severe( "cgi execute failed." + NEW_LINE +
-				                      "    url : " + cgiUrl + NEW_LINE +
-				                      "    param : " + cgiParam );
+				Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
+				                                   "    url : " + cgiUrl + NEW_LINE +
+				                                   "    param : " + cgiParam );
 				op.println( msgWarn( "Substructure Search update failed.(inconsistent)") );
 			}
 			
@@ -418,7 +418,7 @@
 				db.executeUpdate(sql);
 			}
 			catch (SQLException e) {
-				Logger.global.severe( "SQL : " + sql );
+				Logger.getLogger("global").severe( "SQL : " + sql );
 				e.printStackTrace();
 				op.println( msgErr( "rollback(sql) failed." ) );
 			}
@@ -503,16 +503,13 @@ function selDb() {
 	// 各種パラメータ取得および設定
 	//---------------------------------------------
 	request.setCharacterEncoding("utf-8");
-	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
-	final String dbRootPath = admin.getDbRootPath();
-	final String molRootPath = admin.getMolRootPath();
-	final String gifRootPath = admin.getGifRootPath();
-	final String dbHostName = admin.getDbHostName();
-	final String tmpPath = (new File(outPath + "/" + sdf.format(new Date()))).getPath();
+	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String molRootPath = MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
+	final String gifRootPath = MassBankEnv.get(MassBankEnv.KEY_GIF_PATH);
+	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath();
 	GetConfig conf = new GetConfig(baseUrl);
 	OperationManager om = OperationManager.getInstance();
 	String selDbName = "";
@@ -807,8 +804,8 @@ function selDb() {
 		//---------------------------------------------
 		isResult = regist(db, out, list, dataPath, structurePath, registInfo, cgiUrl, cgiParam);
 		if ( !isResult ) {
-			Logger.global.severe( "registration failed." + NEW_LINE +
-			                      "    registration file path : " + tmpPath );
+			Logger.getLogger("global").severe( "registration failed." + NEW_LINE +
+			                                   "    registration file path : " + tmpPath );
 			out.println( msgErr( "registration failed. refer to&nbsp;&nbsp;[" + tmpPath + "]." ) );
 			
 			if ( dataPath.indexOf(MOLDATA_DIR_NAME) != -1 ) {

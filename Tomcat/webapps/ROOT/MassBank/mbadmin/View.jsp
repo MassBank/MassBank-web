@@ -22,13 +22,14 @@
  *
  * レコードファイル表示
  *
- * ver 1.0.2 2008.12.05
+ * ver 1.0.3 2010.11.09
  *
  ******************************************************************************/
 %>
 
-<%@ page import="java.util.*,java.io.*,java.text.*" %>
-<%@ page import="massbank.admin.AdminCommon" %>
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.FileReader" %>
+<%@ page import="massbank.MassBankEnv" %>
 
 <html>
 <head>
@@ -37,22 +38,23 @@
 <body>
 <pre>
 <%
-	String reqUrl = request.getRequestURL().toString();
-	String realPath = application.getRealPath("/");
-	String dbRootPath = new AdminCommon( reqUrl, realPath ).getDbRootPath();
+	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
 	String fileName = request.getParameter("fname");
 	String dbName = request.getParameter("db");
-	String line = "";
+	BufferedReader in = null;
 	try {
 		String filePath = dbRootPath + dbName + "/" + fileName;
-		BufferedReader in = new BufferedReader( new FileReader( filePath ) );
+		in = new BufferedReader( new FileReader( filePath ) );
+		String line = "";
 		while ( ( line = in.readLine() ) != null ) {
 			out.println( line );
 		}
-		in.close();
 	}
-	catch (Exception ex) {
-		ex.printStackTrace();
+	catch (Exception e) {
+		e.printStackTrace();
+	}
+	finally {
+		try { if ( in != null ) { in.close(); } } catch (Exception e) {}
 	}
 %>
 </pre>

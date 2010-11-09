@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.2 2009.09.04
+ * ver 1.0.4 2010.11.09
  *
  ******************************************************************************/
 %>
@@ -48,10 +48,9 @@
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.Sanitizer" %>
-<%@ page import="massbank.admin.AdminCommon" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
@@ -184,7 +183,7 @@
 			}
 		}
 		catch (SQLException e) {
-			Logger.global.severe( "SQL : " + execSql );
+			Logger.getLogger("global").severe( "SQL : " + execSql );
 			e.printStackTrace();
 			op.println( msgErr( "database access error." ) );
 			return false;
@@ -218,7 +217,6 @@
 		for ( Map.Entry<String, String> e : mainList.entrySet() ) {
 			String id = e.getKey();
 			String name = e.getValue();
-			boolean isError = false;
 			val = new StringBuilder();
 			details = new StringBuilder();
 			
@@ -430,7 +428,7 @@
 			db.executeUpdate( sql );
 		}
 		catch (SQLException e) {
-			Logger.global.severe( "SQL : " + sql );
+			Logger.getLogger("global").severe( "SQL : " + sql );
 			e.printStackTrace();
 			op.println( msgErr( "database access error." ) );
 			return -1;
@@ -486,7 +484,7 @@
 		String insertFile = tmpPath + selDbName + "_TREE.sql";
 		boolean ret = FileUtil.execSqlFile(hostName, selDbName, insertFile);
 		if ( !ret ) {
-			Logger.global.severe( "SQLFILE : " + insertFile );
+			Logger.getLogger("global").severe( "SQLFILE : " + insertFile );
 			op.println( msgErr( "sqlfile execute failed." ) );
 			return -1;
 		}
@@ -755,14 +753,12 @@ function popupRecView(url) {
 	// 各種パラメータを取得
 	//----------------------------------------------------
 	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String dbRootPath = admin.getDbRootPath();
-	final String dbHostName = admin.getDbHostName();
+	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	GetConfig conf = new GetConfig(baseUrl);
-	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
-	final String tmpPath = (new File(outPath + "/" + sdf.format(new Date()))).getPath() + File.separator;
+	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	final String backupPath = tmpPath + "backup" + File.separator;
 	DatabaseAccess db = null;
 	boolean isResult = true;
@@ -772,7 +768,7 @@ function popupRecView(url) {
 		//----------------------------------------------------
 		// 存在するDB名を取得
 		//----------------------------------------------------
-		List dbNameList = Arrays.asList(conf.getDbName());
+		List<String> dbNameList = Arrays.asList(conf.getDbName());
 		ArrayList<String> dbNames = new ArrayList<String>();
 		dbNames.add("");
 		File[] dbDirs = (new File( dbRootPath )).listFiles();
@@ -887,8 +883,8 @@ function popupRecView(url) {
 			String[] tables = new String[]{tableInfo[0][0], tableInfo[1][0], tableInfo[2][0], tableInfo[3][0], tableInfo[4][0], tableInfo[5][0]};
 			isResult = FileUtil.execSqlDump(dbHostName, selDbName, tables, dumpPath);
 			if ( !isResult ) {
-				Logger.global.severe( "sqldump failed." + NEW_LINE +
-				                      "    dump file : " + dumpPath );
+				Logger.getLogger("global").severe( "sqldump failed." + NEW_LINE +
+				                                   "    dump file : " + dumpPath );
 				out.println( msgErr( "db dump failed." ) );
 				out.println( msgInfo( "0 record delete." ) );
 				return;
@@ -905,8 +901,8 @@ function popupRecView(url) {
 					}
 				}
 			} catch (IOException e) {
-				Logger.global.severe( "file copy failed." + NEW_LINE +
-				                      "    " + srcFile + " to " + destFile );
+				Logger.getLogger("global").severe( "file copy failed." + NEW_LINE +
+				                                   "    " + srcFile + " to " + destFile );
 				e.printStackTrace();
 				out.println( msgErr( "file dump failed." ) );
 				out.println( msgInfo( "0 record delete." ) );
@@ -934,14 +930,14 @@ function popupRecView(url) {
 					}
 				}
 				catch (IOException e) {
-					Logger.global.severe( "rollback(file delete) failed." );
+					Logger.getLogger("global").severe( "rollback(file delete) failed." );
 					e.printStackTrace();
 					out.println( msgErr( "rollback failed." ) );
 				}
 				// SQLロールバック
 				isResult = FileUtil.execSqlFile(dbHostName, selDbName, dumpPath);
 				if ( !isResult ) {
-					Logger.global.severe( "rollback(sqldump) failed." );
+					Logger.getLogger("global").severe( "rollback(sqldump) failed." );
 					out.println( msgErr( "rollback failed." ) );
 				}
 				out.println( msgInfo( "0 record delete." ) );
@@ -954,9 +950,9 @@ function popupRecView(url) {
 			final String cgiParam = "dsn=" + selDbName;
 			boolean tmpRet = execCgi( cgiUrl, cgiParam );
 			if ( !tmpRet ) {
-				Logger.global.severe( "cgi execute failed." + NEW_LINE +
-				                      "    url : " + cgiUrl + NEW_LINE +
-				                      "    param : " + cgiParam );
+				Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
+				                                   "    url : " + cgiUrl + NEW_LINE +
+				                                   "    param : " + cgiParam );
 			}
 		}
 	}

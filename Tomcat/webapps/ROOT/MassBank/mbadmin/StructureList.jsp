@@ -22,7 +22,7 @@
  *
  * 登録済み構造式一覧
  *
- * ver 1.1.7  2010.10.01
+ * ver 1.1.8  2010.11.09
  *
  ******************************************************************************/
 %>
@@ -54,11 +54,10 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.TreeSet" %>
-<%@ page import="massbank.admin.AdminCommon" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
-<%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.Sanitizer" %>
 <%!
@@ -342,7 +341,7 @@
 			}
 		}
 		catch (SQLException e) {
-			Logger.global.severe( "SQL : " + sql );
+			Logger.getLogger("global").severe( "SQL : " + sql );
 			e.printStackTrace();
 			op.println( msgErr( "database access error." ) );
 			return false;
@@ -507,7 +506,7 @@
 					db.executeUpdate(sql);
 				}
 				catch (SQLException e) {
-					Logger.global.severe( "SQL : " + sql );
+					Logger.getLogger("global").severe( "SQL : " + sql );
 					e.printStackTrace();
 					op.println( msgErr( "database access error." ) );
 					return false;
@@ -797,17 +796,15 @@ function popupMolView(url) {
 	// 各種パラメータ設定
 	//----------------------------------------------------
 	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
-	final String dbRootPath = admin.getDbRootPath();
-	final String molRootPath = admin.getMolRootPath();
-	final String gifRootPath = admin.getGifRootPath();
-	final String gifSmallRootPath = admin.getGifSmallRootPath();
-	final String gifLargeRootPath = admin.getGifLargeRootPath();
-	final String dbHostName = admin.getDbHostName();
-	final String tmpPath = (new File(outPath + File.separator + sdf.format(new Date()))).getPath() + File.separator;
+	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String molRootPath = MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
+	final String gifRootPath = MassBankEnv.get(MassBankEnv.KEY_GIF_PATH);
+	final String gifSmallRootPath = MassBankEnv.get(MassBankEnv.KEY_GIF_SMALL_PATH);
+	final String gifLargeRootPath = MassBankEnv.get(MassBankEnv.KEY_GIF_LARGE_PATH);
+	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	final String backupPath = tmpPath + "backup" + File.separator;
 	final String os = System.getProperty("os.name");
 	GetConfig conf = new GetConfig(baseUrl);
@@ -945,8 +942,8 @@ function popupMolView(url) {
 			String[] tables = new String[]{"MOLFILE"};
 			isResult = FileUtil.execSqlDump(dbHostName, selDbName, tables, dumpPath);
 			if ( !isResult ) {
-				Logger.global.severe( "sqldump failed." + NEW_LINE +
-				                      "    dump file : " + dumpPath );
+				Logger.getLogger("global").severe( "sqldump failed." + NEW_LINE +
+				                                   "    dump file : " + dumpPath );
 				out.println( msgErr( "db dump failed." ) );
 				out.println( msgInfo( "0 structure delete." ) );
 				return;
@@ -978,8 +975,8 @@ function popupMolView(url) {
 					}
 				}
 			} catch (IOException e) {
-				Logger.global.severe( "file copy failed." + NEW_LINE +
-				                      "    " + srcFile + " to " + destFile );
+				Logger.getLogger("global").severe( "file copy failed." + NEW_LINE +
+				                                   "    " + srcFile + " to " + destFile );
 				e.printStackTrace();
 				out.println( msgErr( "file dump failed." ) );
 				out.println( msgInfo( "0 record delete." ) );
@@ -1015,14 +1012,14 @@ function popupMolView(url) {
 					}
 				}
 				catch (IOException e) {
-					Logger.global.severe( "rollback(file delete) failed." );
+					Logger.getLogger("global").severe( "rollback(file delete) failed." );
 					e.printStackTrace();
 					out.println( msgErr( "rollback failed." ) );
 				}
 				// SQLロールバック
 				isResult = FileUtil.execSqlFile(dbHostName, selDbName, dumpPath);
 				if ( !isResult ) {
-					Logger.global.severe( "rollback(sqldump) failed." );
+					Logger.getLogger("global").severe( "rollback(sqldump) failed." );
 					out.println( msgErr( "rollback failed." ) );
 				}
 				out.println( msgInfo( "0 record delete." ) );
@@ -1034,9 +1031,9 @@ function popupMolView(url) {
 			String cgiParam = "db=" + dbArgs.toString();
 			boolean tmpRet = execCgi( cgiUrl, cgiParam );
 			if ( !tmpRet ) {
-				Logger.global.severe( "cgi execute failed." + NEW_LINE +
-				                      "    url : " + cgiUrl + NEW_LINE +
-				                      "    param : " + cgiParam );
+				Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
+				                                   "    url : " + cgiUrl + NEW_LINE +
+				                                   "    param : " + cgiParam );
 				out.println( msgWarn( "Substructure Search update failed.(inconsistent)") );
 			}
 		}

@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.20  2010.09.27
+# ver 3.0.21  2010.11.08
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -69,6 +69,9 @@ while ( <F> ) {
 		$myServer = $_;
 		$myServer =~ s/.*"(.*)".*/$1/g;
 		$myServer =~ s/\r?\n?//g;
+		if ( $myServer !~ m|/$|o ) {
+			$myServer .= "/";
+		}
 		last;
 	} 
 }
@@ -152,7 +155,7 @@ print << "HTML";
 		<hr size="1">
 		<br>
 		<font size="+1" style=\"background-color:LightCyan\">&nbsp;$name&nbsp;</font>
-		<hr>
+		<hr size="1">
 HTML
 
 $height = 200;
@@ -370,7 +373,7 @@ print << "HTML";
 		<table>
 			<tr>
 				<td valign="top">
-					&nbsp;&nbsp;&nbsp;<font style="font-size:10pt;" color="dimgray">Mass Spectrum</font>
+					<font style="font-size:10pt;" color="dimgray">Mass Spectrum</font>
 HTML
 
 $profile = "../DB/profile/$db_name/$Acc.jpg";
@@ -411,9 +414,9 @@ $sql = "SELECT FILE FROM MOLFILE WHERE NAME=\"$cond\"";
 @ans = &MySql($sql);
 $gifId = $ans[0][0];
 $gifFile = "../DB/gif/$db_name/$gifId.gif";
-$gifUrl = "$myServer/DB/gif/$db_name/$gifId.gif";
+$gifUrl = "$myServer"."DB/gif/$db_name/$gifId.gif";
 $gifLargeFile = "../DB/gif_large/$db_name/$gifId.gif";
-$gifLargeUrl = "$myServer/DB/gif_large/$db_name/$gifId.gif";
+$gifLargeUrl = "$myServer"."DB/gif_large/$db_name/$gifId.gif";
 if ( -f $gifFile ) {
 	if ( ! -f $gifLargeFile ) {
 		$gifLargeUrl = "../image/not_available_l.gif";
@@ -433,13 +436,13 @@ print << "HTML";
 				</td>
 			</tr>
 		</table>
-		<hr>
 HTML
 
 
 if ( $copyright ne '' ) {
-	print "\t\t<font style=\"font-size:9pt;font-family:Arial;\">$copyright</font>\n";
+	print "\t\t<font style=\"font-size:8pt;font-family:Arial;\">$copyright</font>\n";
 }
+print "<hr size=\"1\">\n";
 print "<pre style=\"font-family:Courier New;font-size:10pt\">\n";
 
 @boundary = ( 'CH\$', 'AC\$', 'PK\$' );
@@ -467,24 +470,6 @@ foreach $l ( @Line ) {
 	if ( $isMsBoundary eq false && $l =~ /^MS\$/ ) {
 		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
 		$isMsBoundary = true;
-	}
-	if ( $l =~ /^AC\$INSTRUMENT:/ ) {
-		$sql = "SELECT t1.INSTRUMENT_NAME FROM INSTRUMENT t1, (SELECT INSTRUMENT_NO FROM RECORD WHERE ID='$id') t2 WHERE t1.INSTRUMENT_NO = t2.INSTRUMENT_NO;";
-		@ans = &MySql($sql);
-		$instName = $ans[0][0];
-		if ( $instName ne "" ) {
-			print "AC\$INSTRUMENT: $instName\n";
-			next;
-		}
-	}	
-	if ( $l =~ /^AC\$INSTRUMENT_TYPE:/ ) {
-		$sql = "SELECT t1.INSTRUMENT_TYPE FROM INSTRUMENT t1, (SELECT INSTRUMENT_NO FROM RECORD WHERE ID='$id') t2 WHERE t1.INSTRUMENT_NO = t2.INSTRUMENT_NO;";
-		@ans = &MySql($sql);
-		$instType = $ans[0][0];
-		if ( $instType ne "" ) {
-			print "AC\$INSTRUMENT_TYPE: $instType\n";
-			next;
-		}
 	}
 	if ( $l =~ /^RELATED_RECORD/ ) {
 		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";

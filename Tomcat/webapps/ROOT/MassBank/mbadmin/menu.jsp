@@ -22,7 +22,7 @@
  *
  * Admin Tool メニュー
  *
- * ver 1.0.9 2010.02.26
+ * ver 1.0.10 2010.11.09
  *
  ******************************************************************************/
 %>
@@ -32,10 +32,7 @@
 	//----------------------------------------------------
 	// パラメータ取得
 	//----------------------------------------------------
-	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
+	AdminCommon admin = new AdminCommon();
 	boolean isPortal = admin.isPortal();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">

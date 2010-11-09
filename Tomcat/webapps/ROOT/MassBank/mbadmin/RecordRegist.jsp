@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.6 2010.03.31
+ * ver 1.0.7 2010.11.09
  *
  ******************************************************************************/
 %>
@@ -52,7 +52,6 @@
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="massbank.admin.AdminCommon" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
@@ -183,8 +182,8 @@
 					}
 			}
 			catch (IOException e) {
-				Logger.global.severe( "file read failed." + NEW_LINE +
-				                      "    " + file.getPath() );
+				Logger.getLogger("global").severe( "file read failed." + NEW_LINE +
+				                                   "    " + file.getPath() );
 				e.printStackTrace();
 				op.println( msgErr( "server error." ) );
 				return regFileList;
@@ -364,7 +363,7 @@
 				}
 			}
 			catch (SQLException e) {
-				Logger.global.severe( "    sql : " + execSql );
+				Logger.getLogger("global").severe( "    sql : " + execSql );
 				e.printStackTrace();
 				op.println( msgErr( "database access error." ) );
 				return regFileList;
@@ -445,8 +444,8 @@
 				copiedFiles.add(registFile);
 			}
 		} catch (IOException e) {
-			Logger.global.severe( "file copy failed." + NEW_LINE +
-			                      "    " + dataFile + " to " + registFile );
+			Logger.getLogger("global").severe( "file copy failed." + NEW_LINE +
+			                                   "    " + dataFile + " to " + registFile );
 			e.printStackTrace();
 			return false;
 		}
@@ -465,9 +464,9 @@
 		final String peakParam = baseParam + "&fname=" + fname.toString();
 		ret = execCgi( cgiPeakUrl, peakParam );
 		if ( !ret ) {
-			Logger.global.severe( "cgi execute failed." + NEW_LINE +
-			                      "    url : " + cgiPeakUrl + NEW_LINE +
-			                      "    param : " + peakParam );
+			Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
+			                                   "    url : " + cgiPeakUrl + NEW_LINE +
+			                                   "    param : " + peakParam );
 			return false;
 		}
 		op.println( msgHid( "registration : PEAK.sql generated." ) );
@@ -523,9 +522,9 @@
 		final String treeParam = baseParam + "&name=" + siteName;
 		ret = execCgi( cgiTreeUrl, treeParam );
 		if ( !ret ) {
-			Logger.global.severe( "cgi execute failed." + NEW_LINE +
-			                      "    url : " + cgiTreeUrl + NEW_LINE +
-			                      "    param : " + treeParam );
+			Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
+			                                   "    url : " + cgiTreeUrl + NEW_LINE +
+			                                   "    param : " + treeParam );
 			return false;
 		}
 		op.println( msgHid( "registration : TREE.sql generated." ) );
@@ -538,8 +537,8 @@
 			insertFile = tmpPath + selDbName + suffix;
 			ret = FileUtil.execSqlFile(hostName, selDbName, insertFile);
 			if ( !ret ) {
-				Logger.global.severe( "sql file execute failed." + NEW_LINE +
-				                      "    file : " + insertFile );
+				Logger.getLogger("global").severe( "sql file execute failed." + NEW_LINE +
+				                                   "    file : " + insertFile );
 				return false;
 			}
 		}
@@ -551,9 +550,9 @@
 		final String cgiParam = "dsn=" + selDbName;
 		boolean tmpRet = execCgi( cgiHeapUrl, cgiParam );
 		if ( !tmpRet ) {
-			Logger.global.severe( "cgi execute failed." + NEW_LINE +
-			                      "    url : " + cgiHeapUrl + NEW_LINE +
-			                      "    param : " + cgiParam );
+			Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
+			                                   "    url : " + cgiHeapUrl + NEW_LINE +
+			                                   "    param : " + cgiParam );
 		}
 		op.println( msgHid( "registration : heap table updated." ) );
 		
@@ -638,14 +637,11 @@ function selDb() {
 	// 各種パラメータ取得および設定
 	//---------------------------------------------
 	request.setCharacterEncoding("utf-8");
-	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
-	final String dbRootPath = admin.getDbRootPath();
-	final String dbHostName = admin.getDbHostName();
-	final String tmpPath = (new File(outPath + File.separator + sdf.format(new Date()))).getPath() + File.separator;
+	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	GetConfig conf = new GetConfig(baseUrl);
 	OperationManager om = OperationManager.getInstance();
 	String selDbName = "";
@@ -865,8 +861,8 @@ function selDb() {
 		String[] tables = new String[]{"SPECTRUM", "RECORD", "PEAK", "CH_NAME", "CH_LINK", "TREE", "INSTRUMENT"};
 		isResult = FileUtil.execSqlDump(dbHostName, selDbName, tables, dumpPath);
 		if ( !isResult ) {
-			Logger.global.severe( "sqldump failed." + NEW_LINE +
-			                      "    dump file : " + dumpPath );
+			Logger.getLogger("global").severe( "sqldump failed." + NEW_LINE +
+			                                   "    dump file : " + dumpPath );
 			out.println( msgErr( "dump failed." ) );
 			out.println( msgInfo( "0 record registered." ) );
 			return;
@@ -887,8 +883,8 @@ function selDb() {
 		ArrayList<File> copiedFiles = new ArrayList<File>();	// ロールバック（登録ファイル削除）用
 		isResult = registRecord(db, out, conf, dbHostName, tmpPath, regFileList, recPath, selDbName, baseUrl, copiedFiles);
 		if ( !isResult ) {
-			Logger.global.severe( "registration failed." + NEW_LINE +
-			                      "    registration file path : " + tmpPath );
+			Logger.getLogger("global").severe( "registration failed." + NEW_LINE +
+			                                   "    registration file path : " + tmpPath );
 			out.println( msgErr( "registration failed. refer to&nbsp;&nbsp;[" + tmpPath + "]." ) );
 			out.println( msgInfo( "0 record registered." ) );
 			isTmpRemove = false;
@@ -904,7 +900,7 @@ function selDb() {
 				}
 			}
 			catch (IOException e) {
-				Logger.global.severe( "rollback(file delete) failed." );
+				Logger.getLogger("global").severe( "rollback(file delete) failed." );
 				e.printStackTrace();
 				out.println( msgErr( "rollback failed." ) );
 			}
@@ -912,7 +908,7 @@ function selDb() {
 			// ロールバック（mysqldump）
 			isResult = FileUtil.execSqlFile(dbHostName, selDbName, dumpPath);
 			if ( !isResult ) {
-				Logger.global.severe( "rollback(sqldump) failed." );
+				Logger.getLogger("global").severe( "rollback(sqldump) failed." );
 				out.println( msgErr( "rollback failed." ) );
 			}
 			return;

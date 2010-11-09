@@ -22,7 +22,7 @@
  *
  * File Uploader
  *
- * ver 1.0.4 2009.02.05
+ * ver 1.0.5 2011.11.09
  *
  ******************************************************************************/
 %>
@@ -217,9 +217,7 @@ function checkAll() {
 	// 各種パラメータ取得および設定
 	//---------------------------------------------
 	request.setCharacterEncoding("utf-8");
-	final String reqUrl = request.getRequestURL().toString();
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
+	AdminCommon admin = new AdminCommon();
 	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : System.getProperty("java.io.tmpdir");
 	FileUpload up = new FileUpload(request, outPath);
 	

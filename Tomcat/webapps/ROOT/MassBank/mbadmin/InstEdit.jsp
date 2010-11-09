@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.1 2009.09.11
+ * ver 1.0.2 2010.11.09
  *
  ******************************************************************************/
 %>
@@ -36,20 +36,26 @@
 <%@ page import="java.util.logging.Logger" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.TreeMap" %>
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.BufferedWriter" %>
 <%@ page import="java.io.File" %>
+<%@ page import="java.io.FileReader" %>
+<%@ page import="java.io.FileWriter" %>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.io.PrintWriter " %>
+<%@ page import="java.io.UnsupportedEncodingException " %>
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.GetInstInfo" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.Sanitizer" %>
-<%@ page import="massbank.admin.AdminCommon" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
+<%@ page import="org.apache.commons.io.FileUtils" %>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -119,6 +125,8 @@
 	private boolean modInstrument( DatabaseAccess db, ArrayList<String> msgList, String tmpPath, String hostName, String selDb, GetInstInfo instInfo, String instNo, String instType, String instName)  {
 		
 		String dumpPath = tmpPath + selDb + ".dump";
+		String recPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH) + selDb + File.separator;
+		String backupPath = tmpPath + "backup" + File.separator;
 		String[] instNoList = instInfo.getNo();
 		String[] instNameList = instInfo.getName();
 		String[] instTypeList = instInfo.getType();
@@ -155,10 +163,40 @@
 			msgList.add( msgErr( "[Instrument Type] is empty.") );
 			isCheck = false;
 		}
+		else if ( instType.indexOf(";") != -1 ) {
+			msgList.add( msgErr( "[Instrument Type] \";\" cannot be used.") );
+			isCheck = false;
+		}
+		else {
+			try {
+				byte[] bytes = instType.getBytes("MS932");
+				if ( bytes.length != instType.length() ) {
+					msgList.add( msgErr( "[Instrument Type] double-byte character included.") );
+					isCheck = false;
+				}
+			}
+			catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		if ( instName.equals("") ) {
 			msgList.add( msgErr( "[Instrument Name] is empty.") );
 			isCheck = false;
 		}
+		else {
+			try {
+				byte[] bytes = instName.getBytes("MS932");
+				if ( bytes.length != instName.length() ) {
+					msgList.add( msgErr( "[Instrument Name] double-byte character included.") );
+					isCheck = false;
+				}
+			}
+			catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		if ( !isCheck ) {
 			return false;
 		}
@@ -182,7 +220,9 @@
 		
 		boolean res = false;
 		File tmpDir = new File(tmpPath);
+		File backupDir = new File(backupPath);
 		tmpDir.mkdir();
+		backupDir.mkdir();
 		String os = System.getProperty("os.name");
 		if(os.indexOf("Windows") == -1){
 			res = FileUtil.changeMode("777", tmpPath);
@@ -191,29 +231,65 @@
 				return false;
 			}
 		}
+		ResultSet rs = null;
+		String sql = "";
 		try {
 			//----------------------------------------------------
-			// ロールバック用処理
+			// ロールバック用DBダンプ処理
 			//----------------------------------------------------
-			String[] tables = new String[]{"INSTRUMENT", "TREE"};
+			// SQLダンプ
+			String[] tables = new String[]{"INSTRUMENT", "TREE", "SPECTRUM"};
 			res = FileUtil.execSqlDump(hostName, selDb, tables, dumpPath);
 			if ( !res ) {
-				Logger.global.severe( "sqldump failed." + NEW_LINE +
-				                      "    dump file : " + dumpPath );
+				Logger.getLogger("global").severe( "sqldump failed." + NEW_LINE +
+				                                   "    dump file : " + dumpPath );
 				msgList.add( msgErr( "dump failed." ) );
+				return false;
+			}
+			//ファイルダンプ
+			ArrayList<String> recIds = new ArrayList<String>();
+			File srcFile = null;
+			File destFile = null;
+			try {
+				sql = "SELECT ID FROM RECORD WHERE INSTRUMENT_NO=" + instNo + ";";
+				rs = db.executeQuery(sql);
+				while ( rs.next() ) {
+					String targetId = rs.getString("ID");
+					recIds.add(targetId);
+				}
+				for ( String recId : recIds ) {
+					srcFile = new File(recPath + recId + ".txt");
+					destFile = new File(backupPath + recId + ".txt");
+					if ( srcFile.isFile() ) {
+						FileUtils.copyFile(srcFile, destFile);
+					}
+				}
+			}
+			catch (SQLException e) {
+				Logger.getLogger("global").severe( "SQL : " + sql );
+				e.printStackTrace();
+				msgList.add( msgErr( "database access error." ) );
+				return false;
+			}
+			catch (IOException e) {
+				Logger.getLogger("global").severe( "file copy failed." + NEW_LINE +
+				                                   "    " + srcFile + " to " + destFile );
+				e.printStackTrace();
+				msgList.add( msgErr( "file dump failed." ) );
 				return false;
 			}
 			
 			//----------------------------------------------------
-			// INSTRUMENT、TREEテーブルの更新処理
+			// 更新処理
 			//----------------------------------------------------
-			ResultSet rs = null;
-			String sql = "";
+			boolean isUpdate = true;
+			
+			// INSTRUMENT、TREEテーブルの更新処理
+			String prevInstType = "";
 			try {
 				// 変更前装置種別退避
 				sql = "SELECT INSTRUMENT_TYPE FROM INSTRUMENT WHERE INSTRUMENT_NO=" + instNo;
 				rs = db.executeQuery(sql);
-				String prevInstType = "";
 				if ( rs.next() ) {
 					prevInstType = rs.getString("INSTRUMENT_TYPE");
 				}
@@ -223,31 +299,109 @@
 				// TREEテーブル更新
 				sql = "UPDATE TREE SET INFO='" + Sanitizer.sql(instType) + "' WHERE PARENT=1 AND INFO='" + Sanitizer.sql(prevInstType) + "';";
 				db.executeUpdate(sql);
+				// SPECTRUMテーブル更新
+				sql = "UPDATE SPECTRUM s INNER JOIN RECORD r ON s.ID=r.ID SET s.NAME=REPLACE(s.NAME,' " + Sanitizer.sql(prevInstType) + "',' " + Sanitizer.sql(instType) + "') WHERE r.INSTRUMENT_NO=" + instNo + ";";
+				db.executeUpdate(sql);
+				
 				msgList.add( msgInfo( "update instrument [No.] : \"" + instNo + "\"." ) );
 			}
 			catch (SQLException e) {
-				Logger.global.severe( "SQL : " + sql );
+				isUpdate = false;
+				Logger.getLogger("global").severe( "SQL : " + sql );
 				e.printStackTrace();
 				msgList.add( msgErr( "database access error." ) );
-				
-				//----------------------------------------------------
-				// ロールバック処理
-				//----------------------------------------------------
+			}
+			
+			// レコードファイル
+			if ( isUpdate ) {
+				File readFile = null;
+				File outFile = null;
+				BufferedReader br = null;
+				PrintWriter pw = null;
+				for ( String recId : recIds ) {
+					try {
+						readFile = new File(backupPath + recId + ".txt");
+						br = new BufferedReader(new FileReader(readFile));
+						outFile = new File(recPath + recId + ".txt");
+						pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile)));
+						String line = "";
+						while ( (line = br.readLine()) != null ) {
+							String updateLine = "";
+							if ( line.equals("") ) {
+								continue;
+							}
+							else if ( line.startsWith("RECORD_TITLE:") ) {
+								String[] workLine = line.split(";");
+								for (int i=0; i<workLine.length; i++) {
+									if ( workLine[i].trim().equals("") ) {
+										continue;
+									}
+									if (i != 1) {
+										updateLine += workLine[i].trim();
+									}
+									else {
+										updateLine += instType;
+									}
+									if (i+1 != workLine.length) {
+										updateLine += "; ";
+									}
+								}
+							}
+							else if ( line.startsWith("AC$INSTRUMENT:") ) {
+								updateLine = "AC$INSTRUMENT: " + instName;
+							}
+							else if ( line.startsWith("AC$INSTRUMENT_TYPE:") ) {
+								updateLine = "AC$INSTRUMENT_TYPE: " + instType;
+							}
+							else {
+								updateLine = line;
+							}
+							pw.println(updateLine);
+						}
+					}
+					catch (IOException e) {
+						isUpdate = false;
+						e.printStackTrace();
+						msgList.add( msgErr( "server error." ) );
+						break;
+					}
+					finally {
+						try { if (br != null) { br.close(); } } catch (IOException e) {}
+						if (pw != null) { pw.close(); }
+					}
+				}
+			}
+			
+			//----------------------------------------------------
+			// ロールバック処理
+			//----------------------------------------------------
+			if ( !isUpdate ) {
+				// ファイルロールバック
+				try {
+					for ( String recId : recIds ) {
+						srcFile = new File(backupPath + recId + ".txt");
+						destFile = new File(recPath + File.separator + recId + ".txt");
+						if ( srcFile.isFile() ) {
+							FileUtils.copyFile(srcFile, destFile);
+						}
+					}
+				}
+				catch (IOException e) {
+					Logger.getLogger("global").severe( "rollback(file) failed." );
+					e.printStackTrace();
+					msgList.add( msgErr( "rollback failed." ) );
+				}
+				// SQLロールバック
 				res = FileUtil.execSqlFile(hostName, selDb, dumpPath);
 				if ( !res ) {
-					Logger.global.severe( "rollback(sqldump) failed." );
+					Logger.getLogger("global").severe( "rollback(sql) failed." );
 					msgList.add( msgErr( "rollback failed." ) );
 				}
 				return false;
 			}
-			finally {
-				try {
-					if ( rs != null ) { rs.close(); }
-				}
-				catch (SQLException e) {}
-			}
 		}
 		finally {
+			try { if ( rs != null ) { rs.close(); } } catch (SQLException e) {}
 			if (tmpDir.exists()) {
 				FileUtil.removeDir( tmpDir.getPath() );
 			}
@@ -326,12 +480,12 @@
 		}
 		try {
 			//----------------------------------------------------
-			// ロールバック用処理
+			// ロールバック用DBダンプ処理
 			//----------------------------------------------------
 			String[] tables = new String[]{"INSTRUMENT"};
 			res = FileUtil.execSqlDump(hostName, selDb, tables, dumpPath);
 			if ( !res ) {
-				Logger.global.severe( "sqldump failed." + NEW_LINE +
+				Logger.getLogger("global").severe( "sqldump failed." + NEW_LINE +
 				                      "    dump file : " + dumpPath );
 				msgList.add( msgErr( "dump failed." ) );
 				return false;
@@ -362,7 +516,7 @@
 				msgList.add( msgInfo( "delete instrument [No.] : \"" + instNo + "\"." ) );
 			}
 			catch (SQLException e) {
-				Logger.global.severe( "    sql : " + sql );
+				Logger.getLogger("global").severe( "    sql : " + sql );
 				e.printStackTrace();
 				msgList.add( msgErr( "database access error." ) );
 				
@@ -371,7 +525,7 @@
 				//----------------------------------------------------
 				res = FileUtil.execSqlFile(hostName, selDb, dumpPath);
 				if ( !res ) {
-					Logger.global.severe( "rollback(sqldump) failed." );
+					Logger.getLogger("global").severe( "rollback(sqldump) failed." );
 					msgList.add( msgErr( "rollback failed." ) );
 				}
 				return false;
@@ -480,7 +634,7 @@
 				}
 			}
 			catch (SQLException e) {
-				Logger.global.severe( "    sql : " + sql );
+				Logger.getLogger("global").severe( "    sql : " + sql );
 				e.printStackTrace();
 				op.println( msgErr( "database access error." ) );
 				return false;
@@ -749,16 +903,13 @@ function selNo() {
 	// 各種パラメータを取得
 	//----------------------------------------------------
 	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
-	final String dbRootPath = admin.getDbRootPath();
-	final String dbHostName = admin.getDbHostName();
-	final String tmpPath = (new File(outPath + File.separator + sdf.format(new Date()))).getPath() + File.separator;
+	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String annotationPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	GetConfig conf = new GetConfig(baseUrl);
 	GetInstInfo instInfo = null;
-	OperationManager om = OperationManager.getInstance();
 	DatabaseAccess db = null;
 	boolean isResult = true;
 	ArrayList<String> msgList = new ArrayList<String>();
@@ -770,7 +921,7 @@ function selNo() {
 		List<String> dbNameList = Arrays.asList(conf.getDbName());
 		ArrayList<String> dbNames = new ArrayList<String>();
 		dbNames.add("");
-		File[] dbDirs = (new File( dbRootPath )).listFiles();
+		File[] dbDirs = (new File( annotationPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
 				if ( dbDir.isDirectory() ) {
@@ -786,7 +937,7 @@ function selNo() {
 			}
 		}
 		if (dbDirs == null || dbNames.size() == 0) {
-			out.println( msgErr( "[" + dbRootPath + "]&nbsp;&nbsp;directory not exist." ) );
+			out.println( msgErr( "[" + annotationPath + "]&nbsp;&nbsp;directory not exist." ) );
 			return;
 		}
 		Collections.sort(dbNames);

@@ -22,26 +22,19 @@
  *
  * 共通JSP（静的インクルード用）
  *
- * ver 1.0.3 2010.02.26
+ * ver 1.0.4 2010.11.08
  *
  ******************************************************************************/
 %>
 
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.admin.AdminCommon" %>
 <%
 	//----------------------------------------------------
 	// パラメータ取得
 	//----------------------------------------------------
-	final String commonReqUrl = request.getRequestURL().toString();
-	String commonBaseUrl = "";
-	if ( commonReqUrl.indexOf("/jsp") != -1 ) {
-		commonBaseUrl = commonReqUrl.substring( 0, (commonReqUrl.indexOf("/jsp") + 1 ) );
-	}
-	else {
-		commonBaseUrl = commonReqUrl.substring( 0, (commonReqUrl.indexOf("/mbadmin") + 1 ) );
-	}
-	final String commonRealPath = application.getRealPath("/");
-	AdminCommon commonAdmin = new AdminCommon(commonReqUrl, commonRealPath);
+	String commonBaseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	AdminCommon commonAdmin = new AdminCommon();
 	boolean isPortal = commonAdmin.isPortal();
 	
 	//-------------------------------------

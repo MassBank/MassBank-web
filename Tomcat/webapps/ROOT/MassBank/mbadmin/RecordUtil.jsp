@@ -22,17 +22,17 @@
  *
  * レコード情報ユーティリティ
  *
- * ver 1.0.11 2008.12.05
+ * ver 1.0.12 2010.11.09
  *
  ******************************************************************************/
 %>
 
 <%@ page import="java.util.*,java.io.*,java.text.*,java.net.*" %>
-<%@ page import="massbank.GetInstInfo" %>
 <%@ page import="massbank.admin.AdminCommon" %>
 <%@ page import="massbank.admin.Validator" %>
 <%@ page import="massbank.admin.SqlFileGenerator" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%!
 	//** ファイル出力先ディレクトリ **
 	private static final String DEF_OUT_DIR = System.getProperty("java.io.tmpdir") + File.separator;
@@ -69,7 +69,6 @@
 	//---------------------------------------------
 	// リクエストパラメータ取得
 	//---------------------------------------------
-	String fileName = "";
 	boolean isInput = true;
 	if ( request.getParameter("mode") != null ) {
 		String mode = request.getParameter("mode");
@@ -143,7 +142,7 @@ function changeSort() {
 	String reqUrl = request.getRequestURL().toString();
 	String find = "mbadmin/";
 	int pos1 = reqUrl.indexOf( find );
-	String baseUrl = reqUrl.substring( 0, pos1  );
+	String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	String jspName = reqUrl.substring( pos1 + find.length() );
 	String url = "";
 	
@@ -157,9 +156,8 @@ function changeSort() {
 	//---------------------------------------------
 	// サーバー側パス取得
 	//---------------------------------------------
-	String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	String dbRootPath = admin.getDbRootPath();
+	AdminCommon admin = new AdminCommon();
+	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
 	String outPath = admin.getOutPath();
 	
 	if ( outPath.equals("") ) {

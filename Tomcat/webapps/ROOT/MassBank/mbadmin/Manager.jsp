@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.5 2010.11.02
+ * ver 1.0.6 2010.11.09
  *
  ******************************************************************************/
 %>
@@ -43,7 +43,6 @@
 <%@ page import="java.net.UnknownHostException" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.Sanitizer" %>
 <%@ page import="massbank.MassBankEnv" %>
@@ -807,14 +806,14 @@ function beforeDel(isAdmin) {
 	final String massbankConfPath = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_PATH);
 	GetConfig gtConf = new GetConfig(baseUrl);
 	UpdateConfig upConf = new UpdateConfig();
-	AdminCommon admin = new AdminCommon();
-	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
-	final String tmpPath = (new File(outPath + "/" + sdf.format(new Date()))).getPath() + File.separator;
+	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	final String baseSqlPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPADMIN_PATH) + "sql" + File.separator;
 	boolean isResult = true;
 	OperationManager om = OperationManager.getInstance();
 	NumberFormat nf = NumberFormat.getNumberInstance();
 	final String os = System.getProperty("os.name");
+	AdminCommon admin = new AdminCommon();
 	boolean isAdmin = admin.isAdmin();
 	String hostName = "";
 	String ipAddress = "";

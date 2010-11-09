@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.8 2010.10.05
+ * ver 1.0.9 2010.11.09
  *
  ******************************************************************************/
 %>
@@ -48,7 +48,7 @@
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.text.ParseException" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="massbank.admin.AdminCommon" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.FileUpload" %>
@@ -207,8 +207,8 @@
 				}
 			}
 			catch (IOException e) {
-				Logger.global.severe( "file read failed." + NEW_LINE +
-				                      "    " + file.getPath() );
+				Logger.getLogger("global").severe( "file read failed." + NEW_LINE +
+				                                   "    " + file.getPath() );
 				e.printStackTrace();
 				op.println( msgErr( "server error." ) );
 				validationMap.clear();
@@ -235,6 +235,8 @@
 			//----------------------------------------------------
 			// 必須項目に対するメインチェック処理
 			//----------------------------------------------------
+			String[] recTitle = null;
+			boolean isNameCheck = false;
 			int peakNum = 0;
 			for (int j=0; j<requiredList.length; j++ ) {
 				String requiredStr = requiredList[j];
@@ -304,6 +306,14 @@
 								detailsErr.append( "<span class=\"errFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is 8 digits necessary.</span><br />" );
 							}
 						}
+						// RECORD_TITLE
+						else if ( requiredStr.equals("RECORD_TITLE: ") ) {
+							recTitle = val.split(";");
+							if ( recTitle.length < 2 ) {
+								if ( status.equals("") ) status = STATUS_WARN;
+								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not record title format.</span><br />" );
+							}
+						}
 						// DATE
 						else if ( requiredStr.equals("DATE: ") && !val.equals(DEFAULT_VALUE) ) {
 							val = val.replace(".", "/");
@@ -313,6 +323,16 @@
 							} catch (ParseException e) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not date format.</span><br />" );
+							}
+						}
+						// CH$NAME
+						else if ( requiredStr.equals("CH$NAME: ") ) {
+							if ( !isNameCheck && recTitle.length >= 2 ) {
+								if ( !val.trim().startsWith(recTitle[0].trim()) ) {
+									if ( status.equals("") ) status = STATUS_WARN;
+									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;verify integrity of record title.</span><br />" );
+								}
+								isNameCheck = true;
 							}
 						}
 						// CH$COMPOUND_CLASS
@@ -336,6 +356,16 @@
 						}
 						// AC$INSTRUMENT_TYPE
 						else if ( requiredStr.equals("AC$INSTRUMENT_TYPE: ") && !val.equals(DEFAULT_VALUE) ) {
+							if ( recTitle.length >= 2 ) {
+								if ( !val.trim().startsWith(recTitle[1].trim()) ) {
+									if ( status.equals("") ) status = STATUS_WARN;
+									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;verify integrity of record title.</span><br />" );
+								}
+							}
+							if ( val.trim().indexOf(" ") != -1 ) {
+								if ( status.equals("") ) status = STATUS_WARN;
+								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is space included.</span><br />" );
+							}
 							if ( val.trim().indexOf(" ") != -1 ) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is space included.</span><br />" );
@@ -450,7 +480,7 @@
 				}
 			}
 			catch (SQLException e) {
-				Logger.global.severe( "    sql : " + execSql );
+				Logger.getLogger("global").severe( "    sql : " + execSql );
 				e.printStackTrace();
 				op.println( msgErr( "database access error." ) );
 				return new TreeMap<String, String>();
@@ -588,13 +618,11 @@ function selDb() {
 	//---------------------------------------------
 	request.setCharacterEncoding("utf-8");
 	final String reqUrl = request.getRequestURL().toString();
-	final String baseUrl = reqUrl.substring( 0, (reqUrl.indexOf("/mbadmin") + 1 ) );
-	final String realPath = application.getRealPath("/");
-	AdminCommon admin = new AdminCommon(reqUrl, realPath);
-	final String outPath = (!admin.getOutPath().equals("")) ? admin.getOutPath() : FileUpload.UPLOAD_PATH;
-	final String dbRootPath = admin.getDbRootPath();
-	final String dbHostName = admin.getDbHostName();
-	final String tmpPath = (new File(outPath + File.separator + sdf.format(new Date()))).getPath() + File.separator;
+	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	GetConfig conf = new GetConfig(baseUrl);
 	String selDbName = "";
 	FileUpload up = null;
