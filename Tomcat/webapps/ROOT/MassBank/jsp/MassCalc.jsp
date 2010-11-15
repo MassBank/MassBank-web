@@ -22,7 +22,7 @@
  *
  * MassCalculator表示用モジュール
  *
- * ver 1.0.1 2009.12.17
+ * ver 1.0.2 2010.11.15
  *
  ******************************************************************************/
 %>
@@ -66,13 +66,20 @@
 	<meta name="keywords" content="Mass,Calc,mz,Formula">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<link rel="stylesheet" type="text/css" href="./css/03_design.css" media="all">
+	<script type="text/javascript" src="script/jquery.js"></script>
 	<script type="text/javascript" src="script/AtomicMass.js"></script>
 	<script type="text/javascript" src="script/MassCalc.js"></script>
 	<title>MassBank | Mass Calculator</title>
 </head>
-<body class="msbkFont backgroundImg cursorDefault" bgcolor="#cee6f2" onload="initFocus();">
+<body class="msbkFont backgroundImg cursorDefault" bgcolor="#cee6f2">
 	<h2 style="margin:0px;">Mass Calculator</h2>
 	<hr size="1">
+	<noscript>
+		<p id="js_use" class="clr">
+			<em class="e16">Javascript is used in this site</em><br />
+			&nbsp;&nbsp;Javascript is used in this site. If Javascript cannot be used, it is not correctly displayed. Please enable the use of Javascript. And reload.
+		</p>
+	</noscript>
 	<form style="margin:0px;">
 		<table border="0" cellpadding="0" cellspacing="3">
 			<tr>
@@ -85,13 +92,13 @@
 	for ( int i=0; i<numForm; i++ ) {
 		out.println( "\t\t\t<tr>" );
 		out.println( "\t\t\t\t<td>" );
-		out.println( "\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" value=\"\" maxlength=\"20\" style=\"width:140px; ime-mode:disabled;\">" );
+		out.println( "\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" value=\"\" maxlength=\"20\" style=\"width:140px; ime-mode:disabled;\" class=\"Formula\">" );
 		out.println( "\t\t\t\t</td>" );
 		out.println( "\t\t\t\t<td>" );
 		out.println( "\t\t\t\t\t<img src=\"./image/arrow_r.gif\" alt=\"\" style=\"margin:0 5px;\">" );
 		out.println( "\t\t\t\t</td>" );
 		out.println( "\t\t\t\t<td>" );
-		out.println( "\t\t\t\t\t<input name=\"mz" + i + "\" type=\"text\" size=\"15\" value=\"\" readonly tabindex=\"-1\" style=\"width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;\"></td>" );
+		out.println( "\t\t\t\t\t<input name=\"mz" + i + "\" type=\"text\" size=\"15\" value=\"\" readonly tabindex=\"-1\" style=\"width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;\" class=\"Mass\"></td>" );
 		out.println( "\t\t\t\t</td>" );
 		out.println( "\t\t\t</tr>" );
 	}
@@ -99,7 +106,6 @@
 
 			<tr>
 				<td colspan="3" align="right">
-					<input type="button" name="calc" value="Calc" onClick="setMZ()" style="width:70px;">&nbsp;
 					<input type="button" name="clear" value="Clear" onClick="resetForm()" style="width:70px;">
 				</td>
 			</tr>

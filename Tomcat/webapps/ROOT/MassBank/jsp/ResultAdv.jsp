@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.10 2010.09.05
+ * ver 1.0.11 2010.11.15
  *
  ******************************************************************************/
 %>
@@ -360,14 +360,45 @@
 	//-------------------------------------
 	boolean refNeutral = false;
 	String title = "";
+	String hTitle = "";
 	String type = request.getParameter("type");
-	if ( type.equals("product") ) {
+	if ( type == null ) {
+		out.println( "<html>" );
+		out.println( "<head>" );
+		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
+		out.println( " <title>MassBank | Database | Results</title>" );
+		out.println( "</head>" );
+		out.println( "<body class=\"msbkFont cursorDefault\">" );
+		out.println( "<h1>Results</h1>" );
+		out.println( "<iframe src=\"../menu.html\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<hr size=\"1\">" );
+		out.println( "<b>Search Parameters :</b><br>" );
+		out.println( "<div class=\"divSpacer9px\"></div>" );
+		out.println( "<hr size=\"1\">" );
+
+		out.println( "<table width=\"900\" cellpadding=\"0\" cellspacing=\"0\">" );
+		out.println( " <tr>" );
+		out.println( "  <td>" );
+		out.println( "   <b>Results : <font color=\"green\">0 Hit.</font></b>" );
+		out.println( "  </td>" );
+		out.println( " </tr>" );
+		out.println( "</table>" );
+		out.println( "</form>" );
+		out.println( "<hr size=\"1\">" );
+		out.println( "<iframe src=\"../copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "</body>" );
+		out.println( "</html>" );
+		return;
+	}
+	else if ( type.equals("product") ) {
 		refNeutral = false;
-		title = "Product Ion Search Results";
+		title = "Peak Search Results (Peaks by Molecular Formula)";
+		hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:Navy\">(Peaks by Molecular Formula)</span>";
 	}
 	else if ( type.equals("neutral") ) {
 		refNeutral = true;
-		title = "Neutral Loss Search Results";
+		title = "Peak Search Results (Peak Differences by Molecular Formula)";
+		hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:DarkGreen\">(Peak Differences by Molecular Formula)</span>";
 	}
 
 	//-------------------------------------
@@ -471,7 +502,7 @@ function prevPeakSearchAdv() {
 <body class="msbkFont cursorDefault">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
-			<td><h1><%=title%></h1></td>
+			<td><h1><%=hTitle%></h1></td>
 			<td align="right" class="font12px">
 				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -493,12 +524,12 @@ function prevPeakSearchAdv() {
 	}
 	else {
 		style = "bgProduct";
-		str = "Product&nbsp;Ion&nbsp;";
+		str = "Ion&nbsp;";
 	}
 	String logic = "";
 	String mode = (String)reqParams.get("mode");
 	if ( mode.equals("seq") ) {
-		logic = "<img src=\"../image/arrow_green.gif\">";
+		logic = "<img src=\"../image/arrow_neutral.gif\">";
 	}
 	else {
 		logic = "<b class=\"logic\">" + mode.toUpperCase() + "</b>";
@@ -544,14 +575,21 @@ function prevPeakSearchAdv() {
 	advParam += StringUtils.join(listSwapFormula.toArray(), ",") + "&mode=" + mode;
 
 
-	out.println( "<b>Query</b><br>");
+	out.println( "<b>Query :</b><br>");
 	out.println( "<table border=\"0\" cellpadding=\"0\" cellspacing=\"3\" style=\"margin:8px\">" );
 	out.println( " <tr>" );
 	for ( int i = 0; i < listFormula.size(); i++ ) {
-		out.println( "  <td align=\"center\"><b class=\"" + style + "\">" + str + String.valueOf(i+1)
-					 + "</b><br>" + listFormula.get(i) + "</td>" );
+		out.println( "  <td align=\"center\" width=\"100\" class=\"" + style + "\">" + str + String.valueOf(i+1) + "</td>" );
 		if ( i < listFormula.size() - 1 ) {
-			out.println( "  <td width=\"40\" align=\"center\"><br>" + logic + "</td>" );
+			out.println( "  <td></td>" );
+		}
+	}
+	out.println( " </tr>" );
+	out.println( " <tr>" );
+	for ( int i = 0; i < listFormula.size(); i++ ) {
+		out.println( "<td align=\"center\">" + listFormula.get(i) + "</td>" );
+		if ( i < listFormula.size() - 1 ) {
+			out.println( "  <td width=\"30\" align=\"center\">" + logic + "</td>" );
 		}
 	}
 	out.println( " </tr>" );
@@ -609,7 +647,6 @@ function prevPeakSearchAdv() {
 		out.println( "   <b>Results : <font color=\"green\">" + numFormat.format(list.getResultNum()) 
 			+ " Hit.</font>&nbsp;&nbsp;<font size=\"2\" color=\"green\">( " + numFormat.format(startIndex+1) 
 			+ " - " + numFormat.format(endIndex+1) + " Displayed )</font></b>" );
-//		out.println( "&nbsp;&nbsp;<font size=\"2\" color=\"tomato\"><b>" + list.getCompoundNum() + "&nbsp;Compounds</b></font>" );
 	}
 	else {
 		out.println( "   <b>Results : <font color=\"green\">0 Hit.</font></b>" );
@@ -619,7 +656,7 @@ function prevPeakSearchAdv() {
 		out.println( "  <td align=\"right\">" );
 		out.println( "   <input style=\"width:120\" type=\"button\" name=\"treeCtrl\" value=\"Open All Tree\" onClick=\"allTreeCtrl()\">" );
 		out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Multiple Display\" onClick=\"return submitShowSpectra();\">" );
-//		out.println( "   <input style=\"width:120\" type=\"button\" name=\"search\" value=\"Spectrum Search\" onClick=\"submitSearchPage();\">" );
+		out.println( "   <input style=\"width:120\" type=\"button\" name=\"search\" value=\"Spectrum Search\" onClick=\"submitSearchPage();\">" );
 		out.println( "  </td>" );
 	}
 	out.println( " </tr>" );

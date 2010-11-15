@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.27 2010.08.26
+ * ver 2.0.28 2010.11.15
  *
  ******************************************************************************/
 %>
@@ -201,7 +201,8 @@
 	boolean refQuick    = false;			// QuickSearch
 	boolean refRecIndex = false;			// RecordIndex
 	boolean refStruct   = false;			// Substructure Search
-	String title = "";								// タイトル
+	String title = "";						// タイトル
+	String hTitle = "";						// ヘッダー用タイトル
 	
 	String type = request.getParameter("type");
 	if ( type == null ) {
@@ -235,23 +236,28 @@
 	
 	if ( type.equals(MassBankCommon.REQ_TYPE_PEAK) ) {			// 遷移元がPeakSearch
 		refPeak = true;
-		title = "Peak Search Results";
+		title = "Peak Search Results (Peaks by m/z value)";
+		hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:OliveDrab\">(Peaks by <i>m/z</i> value)</span>";
 	}
 	else if ( type.equals(MassBankCommon.REQ_TYPE_PEAKDIFF) ) {	// 遷移元がPeakDifferenceSearch
 		refPeakDiff = true;
-		title = "Peak Difference Search Results";
+		title = "Peak Search Results (Peak Differences by m/z value)";
+		hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:DarkOrchid\">(Peak Differences by <i>m/z</i> value)</span>";
 	}
 	else if ( type.equals(MassBankCommon.REQ_TYPE_QUICK) ) {	// 遷移元がQuickSearch
 		refQuick = true;
 		title = "Quick Search Results";
+		hTitle = "Quick Search Results";
 	}
 	else if ( type.equals(MassBankCommon.REQ_TYPE_RCDIDX) ) {	// 遷移元がRecordIndex
 		refRecIndex = true;
 		title = "Record Index Results";
+		hTitle = "Record Index Results";
 	}
 	else if ( type.equals(MassBankCommon.REQ_TYPE_STRUCT) ) {	// 遷移元がSubstructure Search
 		refStruct = true;
 		title = "Substructure Search Results";
+		hTitle = "Substructure Search Results";
 	}
 	
 	//-------------------------------------
@@ -373,7 +379,6 @@
 			}
 			reqParams.remove( "fom" + i );
 		}
-		reqParams.put( "op0", "or" );
 	}
 	
 	// URLパラメータ（検索実行用）生成
@@ -434,7 +439,7 @@
 <body class="msbkFont cursorDefault">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
-			<td><h1><%=title%></h1></td>
+			<td><h1><%=hTitle%></h1></td>
 			<td align="right" class="font12px">
 				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

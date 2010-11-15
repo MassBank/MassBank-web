@@ -20,86 +20,109 @@
  *
  * MassCalculator用スクリプト
  *
- * ver 1.0.1 2009.12.17
+ * ver 1.0.2 2010.11.15
  *
  ******************************************************************************/
 
-var op = (window.opera) ? 1 : 0;								//OP
-var ie = (!op && document.all) ? 1 : 0;							//IE
-var ns4 = (document.layers) ? 1 : 0;							//NS4
-var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		//NS6
-
-// フォーカスオブジェクト格納用
-var focusObj = null;
-
-document.onkeydown = function(ev) { keyDownEvent(ev); }
-document.onkeyup = function(ev) { keyUpEvent(ev); }
+/**
+ * jQuery実行
+ */
+$(function() {
+	$("*").initFocus();
+	$("*").exitMassCalc();
+	$("input.Formula").massCalc();
+});
 
 /**
- * 初期フォーカス設定
+ * フォーカス初期化
  */
-function initFocus() {
-	document.forms[0].fom0.focus();
-	return;
+$.fn.initFocus = function() {
+	$("input.Formula:eq(0)").focus();
 }
 
 /**
- * 組成式を元として求めたmassをm/zに設定
+ * Escキー押下時のWindowクローズ
  */
-function setMZ() {
-	for (var i=0; i<6; i++) {
-		var mass = "";
-		var fom = eval("document.forms[0].fom" + i + ".value");
-		if (fom != "") {
-			atomicArray = new Array();
-			
-			// 入力された組成式の前後の半角/全角スペースをトリム
-			fom = fom.replace(/^[\s　]+|[\s　]+$/g, "");
-			
-			// 入力された組成式の全角文字を半角文字へ変換
-			newFom = fom.replace(/[Ａ-Ｚａ-ｚ０-９]/g, toHalfChar);
-			
-			// 整形した値を再設定
-			fomObj = eval("document.forms[0].fom" + i);
-			fomObj.value = newFom;
-			
-			// 組成式から原子(原子記号+原子数)に分解した配列を取得
-			atomicArray = getAtomicArray(newFom);
-			
-			// 原子(原子記号+原子数)配列から原子ごとのm/zを全て加算した値を取得
-			mass = massCalc(atomicArray);
-		}
+$.fn.exitMassCalc = function() {
+	$(this).each(function() {
+		$(this).keyup(function(e) {
+			if ( e.keyCode == 27 ) {
+				window.opener = window;			//FF対応
+				window.close();
+			}
+		});
+	});
+}
+
+/**
+ * リアルタイムMassCalc
+ */
+$.fn.massCalc = function() {
+	
+	$(this).each(function() {
 		
-		// 結果を入力フォームに設定
-		mzObj = eval("document.forms[0].mz" + i);
-		mzObj.value = mass;
-	}
+		var prevFormula = "";	// 入力前の値を保持
+		var targetIndex = 0;	// 入力対象のインデックスを保持
+		
+		// キーダウン時
+		$(this).keydown(function(e) {
+			prevFormula = $(this).val();
+			targetIndex = $("input.Formula").index(this);
+		});
+		
+		// キーアップ時
+		$(this).keyup(function(e) {
+			var inputFormula = $(this).val();
+			if ( prevFormula == inputFormula ) {
+				return;
+			}
+			var mass = "";
+			if ( inputFormula != "" ) {
+				var atomicArray = new Array();
+				
+				// 入力された組成式の前後の半角/全角スペースをトリム
+				inputFormula = inputFormula.replace(/^[\s　]+|[\s　]+$/g, "");
+				
+				// 入力された組成式の全角文字を半角文字へ変換
+				inputFormula = inputFormula.replace(/[Ａ-Ｚａ-ｚ０-９]/g, toHalfChar2);
+				
+				// 組成式から原子(原子記号+原子数)に分解した配列を取得
+				atomicArray = getAtomicArray2(inputFormula);
+				
+				// 原子(原子記号+原子数)配列から原子ごとのm/zを全て加算した値を取得
+				mass = massCalc2(atomicArray);
+			}
+			
+			// 結果を入力フォームに設定
+			$("input.Mass:eq(" + targetIndex + ")").val(mass);
+		});
+	});
 }
 
 /**
  * 原子(原子記号+原子数)配列返却
- * @param fom 組成式(半角英数字)
+ * @param formula 組成式(半角英数字)
  * @return atomicArray 組成式から求めた原子配列
  */
-function getAtomicArray(fom) {
+function getAtomicArray2(formula) {
 	
-	atomicArray = new Array();
-	nextChar = "";
-	subStrIndex = 0;
-	endChrFlag = 0;
+	var atomicArray = new Array();
+	var nextChar = "";
+	var subStrIndex = 0;
+	var endChrFlag = 0;
 	
 	// 入力値を適切な場所で区切り原子(原子記号+原子数)を配列に格納する
-	for (i=0; i<newFom.length; i++) {
+	for (i=0; i<formula.length; i++) {
 		
-		if ((i+1) < newFom.length) {
-			nextChar = newFom.charAt(i+1);
+		if ((i+1) < formula.length) {
+			nextChar = formula.charAt(i+1);
 		} else {
 			endChrFlag = 1;
 		}
 		
 		// 次の文字がない場合または、次の文字が大文字の英字の場合は区切る
 		if (endChrFlag == 1 || nextChar.match(/[A-Z]/)) {
-			atomicArray.push(newFom.substring(subStrIndex,i+1));
+			atomicArray.push(formula.substring(subStrIndex,i+1));
 			subStrIndex = i+1;
 		}
 	}
@@ -112,14 +135,14 @@ function getAtomicArray(fom) {
  * @param atomicArray 原子(原子記号+原子数)配列
  * @return mass 組成式から求めたmass
  */
-function massCalc(atomicArray) {
-	mass = "";
-	massArray = new Array();
+function massCalc2(atomicArray) {
+	var mass = "";
+	var massArray = new Array();
 	for (i=0; i<atomicArray.length; i++) {
-		atom = "";
-		atomNum = 0;
-		subStrIndex = 0;
-		atomNumFlag = 0;
+		var atom = "";
+		var atomNum = 0;
+		var subStrIndex = 0;
+		var atomNumFlag = 0;
 		
 		// 原子を原子記号と原子数に分ける
 		for (j=0; j<atomicArray[i].length; j++) {
@@ -152,7 +175,7 @@ function massCalc(atomicArray) {
 			massArray[i] = atomicMass[atom] * atomNum;
 		} else {
 			// 原子質量配列に該当するものがない場合は入力エラー
-			mass = "invalid."
+			mass = "-";
 			return mass;
 		}
 	}
@@ -162,22 +185,22 @@ function massCalc(atomicArray) {
 		mass = eval(mass + massArray[i]);
 	}
 	if (mass.toString() == "NaN") {
-		mass = "invalid."
+		mass = "-";
 		return mass;
 	}
 	
-	// 小数点以下の表示を6桁に合わせる（切り捨て、0埋め）
+	// 小数点以下の表示を5桁に合わせる（切り捨て、0埋め）
 	mass += "";
 	if (mass.indexOf(".") == -1) {
-		mass += ".000000";
+		mass += ".00000";
 	}
 	else {
 		var tmpMass = mass.split(".");
-		if (tmpMass[1].length > 6) {
-			mass = tmpMass[0] + "." + tmpMass[1].substring(0, 6);
+		if (tmpMass[1].length > 5) {
+			mass = tmpMass[0] + "." + tmpMass[1].substring(0, 5);
 		}
 		else {
-			var zeroCnt = 6 - tmpMass[1].length;
+			var zeroCnt = 5 - tmpMass[1].length;
 			for (var i=0; i<zeroCnt; i++) {
 				mass += "0";
 			}
@@ -189,22 +212,23 @@ function massCalc(atomicArray) {
 
 /**
  * 全角->半角変換
- * @param LargeChar 変換対象となる全角1字
- * @return hanChr 半角文字
+ * @param fullChar 変換対象となる全角1字
+ * @return 半角文字
  */
-function toHalfChar(LargeChar) {
-	hanChr = "";
-	hanStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-			 "abcdefghijklmnopqlstuvwxyz" +
-			 "0123456789";
-	zenStr = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ" +
-			 "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ" +
-			 "０１２３４５６７８９";
-	index = zenStr.indexOf(LargeChar);
-	hanChr = hanStr.charAt(index);
+function toHalfChar2(fullChar) {
+	var halfChr = "";
+	var halfCharList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+					   "abcdefghijklmnopqlstuvwxyz" +
+					    "0123456789";
+	var fullCharList = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ" +
+					   "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ" +
+					   "０１２３４５６７８９";
+	var index = fullCharList.indexOf(fullChar);
+	halfChr = halfCharList.charAt(index);
 	
-	return hanChr;
+	return halfChr;
 }
+
 
 /**
  * フォーム初期化
@@ -215,52 +239,5 @@ function resetForm() {
 		f1["mz" + i].value = "";
 		f1["fom" + i].value = "";
 	}
-	initFocus();
-}
-
-/**
- * キーダウンイベント処理
- */
-function keyDownEvent(ev) {
-	focusObj = document.activeElement;
-	
-	// キーコード取得
-	var code = -1;
-	if ( ie ) {
-		code = event.keyCode;
-	}
-	else {
-		code = ev.keyCode;
-	}
-	
-	if (code == 13 && focusObj.name != "calc" && focusObj.name != "clear") {
-		// Enterキーでフォーカス変更実行（フォーカスがボタン以外の場合）
-		document.forms[0].calc.focus();
-	}
-}
-
-/**
- * キーアップイベント処理
- */
-function keyUpEvent(ev) {
-	// キーコード取得
-	var code = -1;
-	if ( ie ) {
-		code = event.keyCode;
-	}
-	else {
-		code = ev.keyCode;
-	}
-	
-	if (code == 27) {
-		// Escキーでウィンドウクローズ
-		window.opener = window;			//FF対応
-		window.close();
-	}
-	else if (code == 13 && focusObj.name != "calc" && focusObj.name != "clear") {
-		// EnterキーでCalc実行（フォーカスがボタン以外の場合）
-		document.getElementsByName("calc").item(0).click();
-		focusObj.focus();
-		focusObj = null;
-	}
+	$("*").initFocus();
 }

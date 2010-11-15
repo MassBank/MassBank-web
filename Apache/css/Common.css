@@ -21,7 +21,7 @@
  *
  * MassBank共通スタイルシート
  *
- * ver 1.0.15 2010.09.05
+ * ver 1.0.16 2010.11.15
  *
  ******************************************************************************/
 
@@ -267,21 +267,6 @@ a.text2:active {
 }
 
 /**
- * Spectral Browserドキュメントで使用（ul）
- */
-ul.doc {
-	margin: 10px 0px 13px 40px;
-	padding: 0;
-}
-
-/**
- * Spectral Browserドキュメントで使用（li）
- */
-li.doc {
-	margin: 0;
-}
-
-/**
  * メニューリンク用フォント
  */
 .menuFont {
@@ -290,29 +275,14 @@ li.doc {
 }
 
 /**
- * Batch Search Service、Browse Pageで使用
+ * Browse Page、Peak Searchで使用
  */
 .boxA {
 	width: 600px;
-	border: 1px DimGray solid;
+	border: 1px silver solid;
 	padding: 8px;
-	margin-top: 10px;
+	margin-top: 0px;
 	margin-bottom: 10px;
-	background-color: WhiteSmoke;
-}
-
-/**
- * Batch Search Service マニュアルにて使用
- */
-.box1 {
-	font-size:13px;
-	line-height: 110%;
-	border: 1px DimGray solid;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	margin-left: 35px;
-	margin-right: 50px;
-	padding: 8px;
 	background-color: WhiteSmoke;
 }
 
@@ -346,8 +316,8 @@ li.doc {
  * 検索ページフォーム
  */
 table.form-box {
-	background-color:WhiteSmoke;
-	border:1px silver solid;
+	background-color: WhiteSmoke;
+	border: 1px silver solid;
 }
 
 /**
@@ -399,7 +369,7 @@ input.search {
  */
 .bgProduct {
 	font-weight:bold;
-	background-color:MidnightBlue;
+	background-color:Navy;
 	color:white;
 	letter-spacing:-1px;
 	padding-left:7px;
@@ -415,8 +385,9 @@ input.search {
 }
 
 .logic {
-	font-size:9pt;
-	letter-spacing:-1px;
+	font-size: 9pt;
+	font-weight: bold;
+	letter-spacing: -1px;
 }
 
 /**

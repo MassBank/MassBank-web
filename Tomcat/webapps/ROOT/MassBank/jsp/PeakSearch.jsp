@@ -22,7 +22,7 @@
  *
  * Peak Search Page表示用モジュール
  *
- * ver 1.0.10 2010.09.09
+ * ver 1.0.11 2010.11.15
  *
  ******************************************************************************/
 %>
@@ -34,8 +34,7 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="massbank.MassBankCommon" %>
-<%@ page import="massbank.GetInstInfo" %>
+<%@ page import="massbank.admin.AdminCommon" %>
 <%@ include file="./Common.jsp"%>
 <%
 	//-------------------------------------
@@ -43,16 +42,17 @@
 	//-------------------------------------
 	final int NUM_FORMULA_STD = 6; 
 	final int NUM_FORMULA_ADV = 5;
-	String type = "peak";
+	String searchOf = "peak";
+	String searchBy = "mz";
 	String relInte  = "100";
 	String tol  = "0.3";
 	String ionMode  = "1";
 	String mode = "and";
 	Map inputFormula= new HashMap();
 	boolean isFirst = true;
-	List instGrpList = new ArrayList<String>();
-	List instTypeList = new ArrayList<String>();
-	Hashtable params = new Hashtable<String, String>();
+	List<String> instGrpList = new ArrayList<String>();
+	List<String> instTypeList = new ArrayList<String>();
+	Hashtable<String, String> params = new Hashtable<String, String>();
 	int paramCnt = 0;
 	Enumeration names = request.getParameterNames();
 	if ( names.hasMoreElements() ) {
@@ -70,7 +70,8 @@
 		}
 		else {
 			String val = request.getParameter( key );
-			if ( key.equals("type") )				type     = val;
+			if ( key.equals("searchof") )			searchOf = val;
+			else if ( key.equals("searchby") )		searchBy = val;
 			else if ( key.equals("mode") )			mode     = val;
 			else if ( key.indexOf("formula") >= 0 )	inputFormula.put( key, val );
 			else if ( key.equals("int") )			relInte  = val;
@@ -81,7 +82,17 @@
 			}
 		}
 	}
-	
+
+	String type = "";
+	if ( searchBy.equals("mz") ) {
+		if ( searchOf.equals("peak") ) type = "peak";
+		else type = "diff";
+	}
+	else {
+		if ( searchOf.equals("peak") ) type = "product";
+		else type = "neutral";
+	}
+
 	if ( paramCnt > 0 ) {
 		isFirst = false;
 	}
@@ -105,7 +116,7 @@
 	// ポスト先
 	//-------------------------------------
 	String formAction = "./jsp/Result.jsp";
-	if (type.equals("product") || type.equals("neutral")) {
+	if ( searchBy.equals("formula")) {
 		formAction = "./jsp/ResultAdv.jsp";
 	}
 %>
@@ -122,12 +133,14 @@
 	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
 	<script type="text/javascript" src="script/Common.js"></script>
 	<script type="text/javascript" src="script/jquery.js"></script>
+<% if ( isPortal ) { %>
 	<script type="text/javascript" src="script/FormulaSuggest.js"></script>
+<% } %>
 	<script type="text/javascript" src="script/AtomicMass.js"></script>
 	<script type="text/javascript" src="script/PeakSearch.js"></script>
 	<title>MassBank | Database | Peak Search</title>
 </head>
-<body class="msbkFont backgroundImg cursorDefault" onload="loadCheck('<%=type%>');">
+<body class="msbkFont backgroundImg cursorDefault" onload="loadCheck('<%=searchOf%>', '<%=searchBy%>');">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
 			<td>
@@ -148,43 +161,47 @@
 	<form name="form_query" method="post" action="<%=formAction%>" style="display:inline">
 		<table border="0" cellpadding="0">
 			<tr>
-				<td colspan="7" height="10"></td>
-			</tr>
-			<tr>
-				<td width="130">
-					<input type="radio" name="type" value="peak" onClick="return changeSearchType(this.value);"<% if(type.equals("peak")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('peak');">Peak Search</span></i></b>
+				<td width="90"><b>Search of</b></td>
+				<td width="100">
+					<input type="radio" name="searchof" value="peak" tabindex="1" onClick="return changeSearchType('peak','');"<% if(searchOf.equals("peak")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('peak','')"><b>Peaks</b></span></i></b>
 				</td>
-				<td width="30"></td>
-				<td width="210">
-					<input type="radio" name="type" value="diff" onClick="return changeSearchType(this.value);"<% if(type.equals("diff")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('diff');">Peak Difference Search</span></i></b>
-				</td>
-				<td width="30"></td>
-				<td width="120">
-					<input type="radio" name="type" value="product" onClick="return changeSearchType(this.value);"<% if(type.equals("product")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('product');">Product Ion</span></i></b>
-				</td>
-				<td width="30"></td>
-				<td width="130">
-					<input type="radio" name="type" value="neutral" onClick="return changeSearchType(this.value);"<% if(type.equals("neutral")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('neutral');">Neutral Loss</span></i></b>
+				<td width="20">&nbsp;</td>
+				<td width="170">
+					<input type="radio" name="searchof" value="diff" tabindex="2" onClick="return changeSearchType('diff','');"<% if(searchOf.equals("diff")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('diff','')">Peak&nbsp;Differences</span></i></b>
 				</td>
 			</tr>
 			<tr>
-				<td id="underbar1" height="4"<% if(type.equals("peak")) out.print(" bgcolor=\"OliveDrab\""); %>></td>
 				<td></td>
-				<td id="underbar2" height="4"<% if(type.equals("diff")) out.print(" bgcolor=\"DarkOrchid\""); %>></td>
+				<td id="underbar1" height="4"<% if(type.equals("peak")){out.print(" bgcolor=\"OliveDrab\"");}else if(type.equals("product")){out.print(" bgcolor=\"MidnightBlue\"");} %>></td>
 				<td></td>
-				<td id="underbar3" height="4"<% if(type.equals("product")) out.print(" bgcolor=\"MidnightBlue\""); %>></td>
+				<td id="underbar2" height="4"<% if(type.equals("diff")){out.print(" bgcolor=\"DarkOrchid\"");}else if(type.equals("neutral")){out.print(" bgcolor=\"DarkGreen\"");} %>></td>
+			</tr>
+<% if ( isPortal ) { %>
+			<tr>
+				<td><b>Search by</b></td>
+				<td>
+					<input type="radio" name="searchby" value="mz" tabindex="3" onClick="return changeSearchType('','mz');"<% if(searchBy.equals("mz")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('','mz')"><b><i>m/z</i>-Value</b></span></i></b>
+				</td>
 				<td></td>
-				<td id="underbar4" height="4"<% if(type.equals("neutral")) out.print(" bgcolor=\"DarkGreen\""); %>></td>
+				<td>
+					<input type="radio" name="searchby" value="formula" tabindex="4" onClick="return changeSearchType('','formula');"<% if(searchBy.equals("formula")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('','formula')">Molecular&nbsp;Formula</span></i></b>
+				</td>
 			</tr>
 			<tr>
-				<td colspan="7" height="10"></td>
+				<td></td>
+				<td id="underbar3" height="4"<% if(type.equals("peak")){out.print(" bgcolor=\"OliveDrab\"");}else if(type.equals("product")){out.print(" bgcolor=\"MidnightBlue\"");} %>></td>
+				<td></td>
+				<td id="underbar4" height="4"<% if(type.equals("diff")){out.print(" bgcolor=\"DarkOrchid\"");}else if(type.equals("neutral")){out.print(" bgcolor=\"DarkGreen\"");} %>></td>
 			</tr>
+<% } else { %>
+			<input type="hidden" name ="searchby" value="mz">
+<% } %>
 		</table>
 		<hr size="1">
 		
 		<!--// Peak Search-->
 <%
-	if (type.equals("peak") || type.equals("diff")) {
+	if ( searchBy.equals("mz") ) {
 		out.println( "\t\t<div id=\"standard\" class=\"showObj\">" );
 	}
 	else {
@@ -193,7 +210,7 @@
 	
 	String mzLabel = "<i>m/z</i>";
 	String allowImage = "<img src=\"image/arrow_peak.gif\" alt=\"\">";
-	if (type.equals("diff")) {
+	if ( searchOf.equals("diff") && searchBy.equals("mz") ) {
 		mzLabel = "<i>m/z</i> Diff.";
 		allowImage = "<img src=\"image/arrow_diff.gif\" alt=\"\">";
 	}
@@ -209,6 +226,7 @@
 							</tr>
 <%
 	final String[] logic = { "and", "or" };
+	String lblLogic = logic[0].toUpperCase();
 	String[] mz = new String[NUM_FORMULA_STD];
 	String[] op = new String[NUM_FORMULA_STD];
 	for ( int i = 0; i < NUM_FORMULA_STD; i++ ) {
@@ -222,13 +240,14 @@
 			op[i] = "";
 		}
 		out.println( "\t\t\t\t\t\t\t<tr>" );
-		if ( i != 0 ) {
+		if ( i == 0 ) {
 			out.println( "\t\t\t\t\t\t\t\t<td>" );
-			out.println( "\t\t\t\t\t\t\t\t\t<select name=\"op" + i + "\">" );
+			out.println( "\t\t\t\t\t\t\t\t\t<select name=\"op0\" class=\"mzLogics\" tabindex=\"5\">" );
 			for ( int j = 0; j < logic.length; j++ ) {
 				out.print( "\t\t\t\t\t\t\t\t\t\t<option value=\"" + logic[j] + "\"" );
-				if ( logic[j].equals(op[i]) ) {
+				if ( logic[j].equals(op[0]) ) {
 					out.print( " selected" );
+					lblLogic = logic[j].toUpperCase();
 				}
 				out.println( ">" + logic[j].toUpperCase() + "</option>" );
 			}
@@ -236,31 +255,30 @@
 			out.println( "\t\t\t\t\t\t\t\t</td>" );
 		}
 		else {
-			out.println( "\t\t\t\t\t\t\t\t<td></td>" );
+			out.println( "\t\t\t\t\t\t\t\t<td align=\"right\"><span class=\"logic\">" + lblLogic + "</span>&nbsp;</td>" );
 		}
-
+		
 		// m/z
-		out.println( "\t\t\t\t\t\t\t\t<td><input name=\"mz" + i + "\" type=\"text\" size=\"10\" value=\"" + mz[i] + "\"></td>" );
+		out.println( "\t\t\t\t\t\t\t\t<td><input name=\"mz" + i + "\" type=\"text\" size=\"14\" value=\"" + mz[i] + "\" class=\"Mass\" tabindex=\"" + (i+5) + "\"></td>" );
 		
 		// Formula
 		out.println( "\t\t\t\t\t\t\t\t<td>" );
 		out.println( "\t\t\t\t\t\t\t\t\t<span id=\"arrow" + i + "\">" + allowImage + "</span>" );
-		out.println( "\t\t\t\t\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" size=\"20\" value=\"\">" );
-		out.println( "\t\t\t\t\t\t\t\t\t<input name=\"calc" + i + "\" type=\"button\" value=\"Mass Calc\" onClick=\"setMZ(" + i + ", fom" + i + ".value)\">" );
+		out.println( "\t\t\t\t\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" size=\"20\" value=\"\" class=\"Formula\" tabindex=\"" + (i+11) + "\">" );
 		out.println( "\t\t\t\t\t\t\t\t</td>" );
 		out.println( "\t\t\t\t\t\t\t</tr>" );
 	}
 %>
 							<tr>
-								<td colspan="5" height="1"></td>
+								<td colspan="3" height="1"></td>
 							</tr>
 							<tr>
 								<td colspan="3">
-									<b>Rel.Intensity</b>&nbsp;<input name="int" type="text" size="10" value="<%= relInte %>">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tolerance</b>&nbsp;<input name="tol" type="text" size="10" value="<%= tol %>">
+									<b>Rel.Intensity</b>&nbsp;<input name="int" type="text" size="10" value="<%= relInte %>" tabindex="17">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tolerance</b>&nbsp;<input name="tol" type="text" size="10" value="<%= tol %>" tabindex="18">
 								</td>
 							</tr>
 							<tr>
-								<td colspan="4" align="right">
+								<td colspan="3" align="right">
 									<input type="button" name="reset" value="Reset" onClick="resetForm()">
 								</td>
 							</tr>
@@ -269,8 +287,12 @@
 						<table>
 							<tr>
 								<td>
-									<input type="submit" value="Search" onclick="return checkSubmit();" class="search">
-									<input type="hidden" name="op0" value="or">
+									<input type="submit" value="Search" onclick="return checkSubmit();" class="search" tabindex="19">
+									<input type="hidden" name="op1" value="<%=lblLogic.toLowerCase()%>">
+									<input type="hidden" name="op2" value="<%=lblLogic.toLowerCase()%>">
+									<input type="hidden" name="op3" value="<%=lblLogic.toLowerCase()%>">
+									<input type="hidden" name="op4" value="<%=lblLogic.toLowerCase()%>">
+									<input type="hidden" name="op5" value="<%=lblLogic.toLowerCase()%>">
 									<input type="hidden" name="sortKey" value="name">
 									<input type="hidden" name="sortAction" value="1">
 									<input type="hidden" name="pageNo" value="1">
@@ -293,7 +315,7 @@
 
 		<!--// Peak Search Advanced -->
 <%
-	if (type.equals("product") || type.equals("neutral")) {
+	if ( searchBy.equals("formula") ) {
 		out.println( "\t\t<div id=\"advance\" class=\"showObj\">" );
 	}
 	else {
@@ -305,14 +327,14 @@
 				<table border="0" cellpadding="0" cellspacing="3" style="margin:8px">
 <%
 	String style = "bgProduct";
-	String str = "Product&nbsp;Ion&nbsp;";
-	if ( type.equals("neutral") ) {
+	String str = "Ion&nbsp;";
+	if ( searchBy.equals("formula") && searchOf.equals("diff") ) {
 		style = "bgNeutral";
 		str = "Neutral&nbsp;Loss&nbsp;";
 	}
-	String condition = "<b class=\"logic\">AND</b>";
+	String condition = "<span class=\"logic\">AND</span>";
 	if ( mode.equals("or") ) {
-		condition = "<b class=\"logic\">OR</b>";
+		condition = "<span class=\"logic\">OR</span>";
 	}
 	else if ( mode.equals("seq") ) {
 		condition = "<img src=\"./image/arrow_neutral.gif\">";
@@ -320,10 +342,10 @@
 
 	out.println("\t\t\t\t\t<tr>");
 	for ( int i = 1; i <= NUM_FORMULA_ADV; i++ ) {
-		out.println( "\t\t\t\t\t\t<td align=\"center\" width=\"110\"><span id=\"advanceType" + i +"\" class=\"" + style + "\">"
-					+ str + String.valueOf(i) + "</span></td>" );
+		out.println( "\t\t\t\t\t\t<td align=\"center\" width=\"110\" id=\"advanceType" + i +"\" class=\"" + style + "\">"
+					+ str + String.valueOf(i) + "</td>" );
 		if ( i < NUM_FORMULA_ADV ) {
-			out.println( "\t\t\t\t\t\t<td></td>" );
+			out.println( "\t\t\t\t\t\t<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>" );
 		}
 	}
 	out.println("\t\t\t\t\t</tr>");
@@ -357,7 +379,7 @@
 	
 	String[] valMode = new String[]{ "and", "or" };
 	String[] strMode = new String[]{ "AND", "OR" };
-	if ( type.equals("neutral") ) {
+	if ( searchBy.equals("formula") && searchOf.equals("diff") ) {
 		valMode = new String[]{ "and", "seq" };
 		strMode = new String[]{ "AND", "SEQUENCE" };
 	}
@@ -382,6 +404,7 @@
 				</table>
 			</div>
 			<br>
+			<input type="hidden" name="type" value="<%=type%>">
 			<input type="submit" value="Search" class="search">
 		</div>
 
