@@ -21,7 +21,7 @@
 #
 # Peak Search 検索処理
 #
-# ver 3.0.1  2008.12.05
+# ver 3.0.2  2010.11.16
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -140,22 +140,23 @@ for ( $i = 0; $i < $Arg{'num'}; $i ++ ) {
 		$sql = "select ID from PEAK where (MZ between $min and $max) and RELATIVE > $val";
 	}
 	@ans = &MySql($sql);
-	if ( $op eq 'and' ) { %new = (); } else { %new = %res; }
-	for $item ( @ans ) {
-		$id = $$item[0];
-		if ( $op eq 'and' ) {
-			$new{$id} = '' if ( defined($res{$id}) );
-		}
-		elsif ( $op eq 'or' ) {
-			$new{$id} = '';
-		}
-		elsif ( $op eq 'sub' ) {
-			if ( $type eq 'diff' ) {
+	if ( $i != 0 ) {
+		if ( $op eq 'and' ) { %new = (); }
+		for $item ( @ans ) {
+			$id = $$item[0];
+			if ( $op eq 'and' ) {
 				$new{$id} = '' if ( defined($res{$id}) );
 			}
-			else {
-				delete $new{$id} if ( defined($res{$id}) );
+			elsif ( $op eq 'or' ) {
+				$new{$id} = '';
 			}
+		}
+	}
+	else {
+		%new = ();
+		for $item ( @ans ) {
+			$id = $$item[0];
+			$new{$id} = '';
 		}
 	}
 	%res = %new;
