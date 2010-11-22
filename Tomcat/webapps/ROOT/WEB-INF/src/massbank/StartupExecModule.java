@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2008 JST-BIRD MassBank
+ * Copyright (C) 2010 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,36 +20,55 @@
  *
  * Tomcat起動時に実行モジュールを起動するサーブレット
  *
- * ver 1.0.1 2008.12.05
+ * ver 1.0.5 2010.11.22
  *
  ******************************************************************************/
 package massbank;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import massbank.admin.CmdExecute;
-import massbank.admin.CmdResult;
-import java.util.logging.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+/**
+ * @deprecated 非推奨クラス
+ * @see MassBankEnv
+ */
 public class StartupExecModule extends HttpServlet {
-	private Process process = null;
+	
+	public static String BASE_URL = "";
+	public static String REAL_PATH = "";
+	public static String MASTER_DB = "";
+	public static String APPLICATION_TEMP = "";
 
 	/**
 	 * サービス初期処理を行う
 	 */
 	public void init() throws ServletException {
-		if ( getInitParameter("path") == null ) {
-			return;
-		}
-		String cmd = getInitParameter("path").trim();
-		if ( !isProcess(cmd) ) {
-			try {
-				process = Runtime.getRuntime().exec(cmd);
-			}
-			catch (Exception e) {
-				Logger.global.severe( e.toString() );
-			}
-		}
+//		String baseUrl = getInitParameter("baseUrl");
+//		BASE_URL = "http://localhost/MassBank/";
+//		if ( baseUrl != null ) {
+//			BASE_URL = baseUrl;
+//		}
+//		REAL_PATH = this.getServletContext().getRealPath("/");
+//		REAL_PATH = REAL_PATH.replace("api", "ROOT");
+//
+//		MASTER_DB = "";
+//		if ( getInitParameter("masterDB") != null ) {
+//			MASTER_DB = getInitParameter("masterDB");
+//		}
+//
+//		int pos1 = BASE_URL.indexOf("/", 8);
+//		String subDir = BASE_URL.substring(pos1, BASE_URL.length());
+//		if ( subDir.equals("/") ) {
+//			subDir = "";
+//		}
+//		APPLICATION_TEMP = REAL_PATH + subDir + "temp/";
+		
+		BASE_URL = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		REAL_PATH = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_DOCROOT_PATH);
+		MASTER_DB = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
+		APPLICATION_TEMP = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
 	}
 
 	public void service(HttpServletRequest req, HttpServletResponse res) {
@@ -59,25 +78,5 @@ public class StartupExecModule extends HttpServlet {
 	 * サービス終了処理を行う
 	 */
 	public void destroy() {
-		if ( process != null ) {
-			process.destroy();
-		}
-	}
-
-	/**
-	 * プロセス生存確認
-	 */
-	private boolean isProcess(String cmd) {
-		String[] pscmd =  new String[]{ "/bin/sh", "-c", "ps ax | grep " + cmd + " | grep -v grep" };
-		CmdResult res = new CmdExecute().exec(pscmd);
-		String stderr = res.getStderr();
-		String stdout = res.getStdout();
-		if ( !stderr.equals("") ) {
-			Logger.global.warning( stderr );
-		}
-		if ( stdout.equals("") ) {
-			return false;
-		}
-		return true;
 	}
 }
