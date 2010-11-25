@@ -20,7 +20,7 @@
  *
  * 環境設定ファイルの情報を更新するクラス
  *
- * ver 1.0.2 2010.11.02
+ * ver 1.0.3 2010.11.25
  *
  ******************************************************************************/
 package massbank.admin;
@@ -54,7 +54,7 @@ public class UpdateConfig {
 	 * デフォルトコンストラクタ
 	 */
 	public UpdateConfig() {
-		String url = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_URL);
+		String confUrl = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_URL);
 		this.confPath = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_PATH);
 		try {
 			// ドキュメントビルダーファクトリを生成
@@ -64,7 +64,7 @@ public class UpdateConfig {
 			DocumentBuilder builder = dbfactory.newDocumentBuilder();
 
 			// パースを実行してDocumentオブジェクトを取得
-			this.doc = builder.parse( url );
+			this.doc = builder.parse( confUrl );
 		}
 		catch ( Exception e ) {
 			e.printStackTrace();
@@ -111,6 +111,8 @@ public class UpdateConfig {
 					setSetting("URL", internalSiteNo, url);
 				}
 			}
+			// BaseUrl 更新
+			MassBankEnv.setBaseUrl(url);
 		}
 		else {
 			setSetting("URL", siteNo, url);

@@ -20,7 +20,7 @@
  *
  * 管理者設定共通クラス
  *
- * ver 1.0.15 2010.11.01
+ * ver 1.0.16 2010.11.25
  *
  ******************************************************************************/
 package massbank.admin;
@@ -37,26 +37,30 @@ import massbank.MassBankEnv;
  * 管理者設定共通クラス
  * 以下の機能を提供する
  * 
- *   ＜機能＞                                 ＜取得先＞
- *   DBサーバホスト名取得（非推奨）           MassBankEnv
- *   CGIヘッダ取得                            admin.conf(cgi_header)
- *   Annotationルートパス取得（非推奨）       MassBankEnv
- *   Molfileルートパス取得（非推奨）          MassBankEnv
- *   Profileルートパス取得（非推奨）          MassBankEnv
- *   GIFルートパス取得（非推奨）              MassBankEnv
- *   GIFSMALLルートパス取得（非推奨）         MassBankEnv
- *   GIFLARGEルートパス取得（非推奨）         MassBankEnv
- *   出力先パス取得                           admin.conf(out_path)
- *   出力先パス取得（非推奨）                 MassBankEnv
- *   MassBankディレクトリパス取得（非推奨）   MassBankEnv
- *   管理者権限フラグ取得                     admin.conf(admin)
- *   ポータルサイトフラグ取得                 admin.conf(portal)
- *   SMTPアドレス取得（非推奨）               MassBankEnv
- *   送信者名取得（非推奨）                   MassBankEnv
- *   Fromアドレス取得（非推奨）               MassBankEnv
- *   スケジュール取得                         admin.conf(schedule)
+ *   ＜機能＞                                       ＜取得先＞
+ *   DBサーバホスト名取得（非推奨）                 MassBankEnv
+ *   CGIヘッダ取得                                  admin.conf(cgi_header)
+ *   Annotationルートパス取得（非推奨）             MassBankEnv
+ *   Molfileルートパス取得（非推奨）                MassBankEnv
+ *   Profileルートパス取得（非推奨）                MassBankEnv
+ *   GIFルートパス取得（非推奨）                    MassBankEnv
+ *   GIFSMALLルートパス取得（非推奨）               MassBankEnv
+ *   GIFLARGEルートパス取得（非推奨）               MassBankEnv
+ *   出力先パス取得                                 admin.conf(out_path)
+ *   出力先パス取得（非推奨）                       MassBankEnv
+ *   MassBankディレクトリパス取得（非推奨）         MassBankEnv
+ *   管理者権限フラグ取得                           admin.conf(admin)
+ *   ポータルサイトフラグ取得                       admin.conf(portal)
+ *   Peak Search（Molecular Formula）表示フラグ取得 admin.conf(service_peakadv)
+ *   Batch Service表示フラグ取得                    admin.conf(service_batch)
+ *   Substructure Search（KNApSAcK）表示フラグ取得  admin.conf(service_knapsack)
+ *   Advanced Search表示フラグ取得                  admin.conf(service_advanced)
+ *   SMTPアドレス取得（非推奨）                     MassBankEnv
+ *   送信者名取得（非推奨）                         MassBankEnv
+ *   Fromアドレス取得（非推奨）                     MassBankEnv
+ *   スケジュール取得                               admin.conf(schedule)
  *   
- *   ※非推奨の昨日に関してはMassBankEnv#get(String)の使用を推奨する
+ *   ※非推奨の機能に関してはMassBankEnv#get(String)の使用を推奨する
  *   
  */
 public class AdminCommon {
@@ -202,13 +206,61 @@ public class AdminCommon {
 	 */
 	public boolean isPortal() {
 		boolean ret = false;
-		String adminFlag = getSetting( "portal" );
-		if ( adminFlag.toLowerCase().equals("true") ) {
+		String portalFlag = getSetting( "portal" );
+		if ( portalFlag.toLowerCase().equals("true") ) {
 			ret = true;
 		}
 		return ret;
 	}
 
+	/**
+	 * Peak Search（Molecular Formula）表示フラグ取得
+	 */
+	public boolean isPeakAdv() {
+		boolean ret = false;
+		String peakAdvFlag = getSetting( "service_peakadv" );
+		if ( peakAdvFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+	
+	/**
+	 * Batch Service表示フラグ取得
+	 */
+	public boolean isBatch() {
+		boolean ret = false;
+		String batchFlag = getSetting( "service_batch" );
+		if ( batchFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+
+	/**
+	 * Substructure Search（KNApSAcK）表示フラグ取得
+	 */
+	public boolean isKnapsack() {
+		boolean ret = false;
+		String knapsackFlag = getSetting( "service_knapsack" );
+		if ( knapsackFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+	
+	/**
+	 * Advanced Search表示フラグ取得
+	 */
+	public boolean isAdvanced() {
+		boolean ret = false;
+		String advancedFlag = getSetting( "service_advanced" );
+		if ( advancedFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+	
 	/**
 	 * SMTPアドレス取得（Batch Service用）
 	 * @deprecated 非推奨メソッド

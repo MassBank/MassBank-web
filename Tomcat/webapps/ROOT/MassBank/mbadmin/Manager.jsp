@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.6 2010.11.09
+ * ver 1.0.7 2010.11.25
  *
  ******************************************************************************/
 %>
@@ -397,6 +397,7 @@
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta equiv="expires" content="0">
 <link rel="stylesheet" type="text/css" href="css/admin.css">
+<script type="text/javascript" src="../script/jquery.js"></script>
 <script type="text/javascript" src="../script/Common.js"></script>
 <title>Admin | Database Manager</title>
 <script language="javascript" type="text/javascript">
@@ -684,6 +685,7 @@ function beforeEdit(judgeBase, judgeHost, judgeIp) {
 	objForm = document.formEdit;
 	judgeBase = judgeBase.toLowerCase().replace("http://", "").replace("https://", "");
 	judgeHost = judgeHost.toLowerCase();
+	var noVal = objForm.siteNo.value;
 	var urlVal = objForm.siteUrl.value;
 	urlVal = urlVal.toLowerCase();
 	
@@ -713,6 +715,11 @@ function beforeEdit(judgeBase, judgeHost, judgeIp) {
 	}
 	
 	objForm.act.value = "edit";
+	if (noVal == "0") {
+		if (objForm.beforeUrl.value.toLowerCase() != urlVal) {
+			objForm.newBaseUrl.value = urlVal;
+		}
+	}
 	return true;
 }
 
@@ -738,6 +745,20 @@ function beforeDel(isAdmin) {
 	}
 	return false;
 }
+
+/**
+ * ページロード完了時処理
+ */
+$(window).load(function() {
+	var baseUrl = $("input[name='newBaseUrl']:hidden").val();
+	if ( baseUrl != "" ) {
+		alert ("URL on the homepage was changed to \"" + baseUrl + "\".\n\nClose the window, please access new URL.");
+		window.opener = window;		// FF等でwindow.close()が機能しない現象への対応
+		var win = window.open(location.href, "_self");
+		win.close();
+	}
+});
+
 //-->
 </script>
 </head>
@@ -757,6 +778,7 @@ function beforeDel(isAdmin) {
 	String reqUrlType = "";
 	String reqSiteUrl = "";
 	String reqSiteUrlBefore = "";
+	String reqNewBaseUrl = "";
 	Enumeration<String> names = (Enumeration<String>)request.getParameterNames();
 	while ( names.hasMoreElements() ) {
 		String key = (String)names.nextElement();
@@ -788,6 +810,9 @@ function beforeDel(isAdmin) {
 		}
 		else if ( key.equals("beforeUrl") ) {
 			reqSiteUrlBefore = request.getParameter(key).trim();
+		}
+		else if ( key.equals("newBaseUrl") ) {
+			reqNewBaseUrl = request.getParameter(key).trim();
 		}
 	}
 	
@@ -1252,6 +1277,7 @@ function beforeDel(isAdmin) {
 		out.println( "</table>" );
 		out.println( "</div>" );
 		out.println( "<input type=\"hidden\" name=\"act\" value=\"\">" );
+		out.println( "<input type=\"hidden\" name=\"newBaseUrl\" value=\"" + reqNewBaseUrl + "\">" );
 		out.println( "<input type=\"hidden\" name=\"beforeUrl\" value=\"\">" );
 		out.println( "</form>" );
 		

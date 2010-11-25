@@ -20,7 +20,7 @@
  *
  * MassBank 環境変数管理クラス
  *
- * ver 1.0.1 2010.10.25
+ * ver 1.0.2 2010.11.25
  *
  ******************************************************************************/
 package massbank;
@@ -62,42 +62,45 @@ import javax.servlet.http.HttpServletResponse;
  *     http://[ホスト名]/MassBank/MassBankEnv?key=[キー]
  *     http://[ホスト名]/MassBank/MassBankEnv
  *     ※上記リクエストへのレスポンスとして取得する
+ *     
+ * ただし、VAL_BASE_URL、VAL_MASSBANK_CONF_URL、VAL_ADMIN_CONF_URL の値に関しては、
+ * AdminTool の DatabaseManager で 0 番目の URL が変更された場合には更新される
  */
 public class MassBankEnv extends HttpServlet {
 
 	// MassBank 環境変数（固定値）取得キー
-	public static final String KEY_LOCAL_URL				= "url.local";
-	public static final String KEY_BASE_URL				= "url.base";
-	public static final String KEY_SUB_URL				= "url.sub";
-	public static final String KEY_SUB_PATH				= "path.sub";
-	public static final String KEY_APACHE_DOCROOT_PATH	= "path.apache.root";
-	public static final String KEY_APACHE_APPROOT_PATH	= "path.apache.app.root";
-	public static final String KEY_TOMCAT_DOCROOT_PATH	= "path.tomcat.root";
-	public static final String KEY_TOMCAT_TEMP_PATH		= "path.tomcat.temp";
-	public static final String KEY_TOMCAT_APPROOT_PATH	= "path.tomcat.app.root";
-	public static final String KEY_TOMCAT_APPJSP_PATH		= "path.tomcat.app.jsp";
-	public static final String KEY_TOMCAT_APPADMIN_PATH	= "path.tomcat.app.mbadmin";
-	public static final String KEY_TOMCAT_APPEXT_PATH		= "path.tomcat.app.extend";
-	public static final String KEY_TOMCAT_APPPSERV_PATH	= "path.tomcat.app.pserver";
-	public static final String KEY_TOMCAT_APPTEMP_PATH	= "path.tomcat.app.temp";
-	public static final String KEY_MASSBANK_CONF_URL		= "url.massbank_conf";
-	public static final String KEY_MASSBANK_CONF_PATH		= "path.massbank_conf";
-	public static final String KEY_ADMIN_CONF_URL			= "url.admin_conf";
-	public static final String KEY_ADMIN_CONF_PATH		= "path.admin_conf";
-	public static final String KEY_DATAROOT_PATH			= "path.data_root";
-	public static final String KEY_ANNOTATION_PATH		= "path.annotation";
-	public static final String KEY_MOLFILE_PATH			= "path.molfile";
-	public static final String KEY_PROFILE_PATH			= "path.profile";
-	public static final String KEY_GIF_PATH				= "path.gif";
-	public static final String KEY_GIF_SMALL_PATH			= "path.gif.small";
-	public static final String KEY_GIF_LARGE_PATH			= "path.gif.large";
+	public static final String KEY_LOCAL_URL				= "url.local";				// ex. "http://localhost/MassBank/"
+	public static final String KEY_BASE_URL				= "url.base";				// ex. "http://[ホスト名]/MassBank/"
+	public static final String KEY_SUB_URL				= "url.sub";				// ex. "MassBank/"
+	public static final String KEY_SUB_PATH				= "path.sub";				// ex. "MassBank/"
+	public static final String KEY_APACHE_DOCROOT_PATH	= "path.apache.root";		// ex. "/var/www/html/"
+	public static final String KEY_APACHE_APPROOT_PATH	= "path.apache.app.root";	// ex. "/var/www/html/MassBank/"
+	public static final String KEY_TOMCAT_DOCROOT_PATH	= "path.tomcat.root";		// ex. "/usr/local/tomcat/webapps/ROOT/"
+	public static final String KEY_TOMCAT_TEMP_PATH		= "path.tomcat.temp";		// ex. "/usr/local/tomcat/temp/"
+	public static final String KEY_TOMCAT_APPROOT_PATH	= "path.tomcat.app.root";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/"
+	public static final String KEY_TOMCAT_APPJSP_PATH		= "path.tomcat.app.jsp";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/jsp/"
+	public static final String KEY_TOMCAT_APPADMIN_PATH	= "path.tomcat.app.mbadmin";// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/mbadmin/"
+	public static final String KEY_TOMCAT_APPEXT_PATH		= "path.tomcat.app.extend";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/extend/"
+	public static final String KEY_TOMCAT_APPPSERV_PATH	= "path.tomcat.app.pserver";// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/pserver/"
+	public static final String KEY_TOMCAT_APPTEMP_PATH	= "path.tomcat.app.temp";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/temp/"
+	public static final String KEY_MASSBANK_CONF_URL		= "url.massbank_conf";		// ex. "http://[ホスト名]/MassBank/massbank.conf"
+	public static final String KEY_MASSBANK_CONF_PATH		= "path.massbank_conf";		// ex. "/var/www/html/MassBank/massbank.conf"
+	public static final String KEY_ADMIN_CONF_URL			= "url.admin_conf";			// ex. "http://[ホスト名]/MassBank/mbadmin/admin.conf"
+	public static final String KEY_ADMIN_CONF_PATH		= "path.admin_conf";		// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/mbadmin/admin.conf"
+	public static final String KEY_DATAROOT_PATH			= "path.data_root";			// ex. "/var/www/html/MassBank/DB/"
+	public static final String KEY_ANNOTATION_PATH		= "path.annotation";		// ex. "/var/www/html/MassBank/DB/annotation/"
+	public static final String KEY_MOLFILE_PATH			= "path.molfile";			// ex. "/var/www/html/MassBank/DB/molfile/"
+	public static final String KEY_PROFILE_PATH			= "path.profile";			// ex. "/var/www/html/MassBank/DB/profile/"
+	public static final String KEY_GIF_PATH				= "path.gif";				// ex. "/var/www/html/MassBank/DB/gif/"
+	public static final String KEY_GIF_SMALL_PATH			= "path.gif.small";			// ex. "/var/www/html/MassBank/DB/gif_small/"
+	public static final String KEY_GIF_LARGE_PATH			= "path.gif.large";			// ex. "/var/www/html/MassBank/DB/gif_large/"
 	// MassBank 環境変数（可変値）取得キー
-	public static final String KEY_PRIMARY_SERVER_URL		= "url.pserver";
-	public static final String KEY_DB_HOST_NAME			= "db.host_name";
-	public static final String KEY_DB_MASTER_NAME			= "db.master_name";
-	public static final String KEY_BATCH_SMTP				= "mail.batch.smtp";
-	public static final String KEY_BATCH_NAME				= "mail.batch.name";
-	public static final String KEY_BATCH_FROM				= "mail.batch.from";
+	public static final String KEY_PRIMARY_SERVER_URL		= "url.pserver";			// ex. "[サーバ監視用URL]"
+	public static final String KEY_DB_HOST_NAME			= "db.host_name";			// ex. "[DBアクセス用ホスト名]"
+	public static final String KEY_DB_MASTER_NAME			= "db.master_name";			// ex. "[ロードバランス用マスタDB名]"
+	public static final String KEY_BATCH_SMTP				= "mail.batch.smtp";		// ex. "[BatchService用メールSMTPサーバ名]"
+	public static final String KEY_BATCH_NAME				= "mail.batch.name";		// ex. "[BatchService用メール送信者名]"
+	public static final String KEY_BATCH_FROM				= "mail.batch.from";		// ex. "[BatchService用メール送信アドレス]"
 	
 	// MassBank 環境変数（固定値）	
 	private static String VAL_LOCAL_URL				= "";	// ex. "http://localhost/MassBank/"
@@ -625,6 +628,20 @@ public class MassBankEnv extends HttpServlet {
 		sb.append(KEY_BATCH_FROM).append("=").append(VAL_BATCH_FROM).append("\n");
 		
 		return sb.toString();
+	}
+	
+	/**
+	 * BaseUrl の値設定
+	 * AdminTool の DatabaseManager で0番目のURLが変更された場合のみ呼ばれる
+	 * @param url 新しい BaseUrl
+	 */
+	public static void setBaseUrl(String url) {
+		VAL_BASE_URL = url;
+		VAL_MASSBANK_CONF_URL = VAL_BASE_URL + "massbank.conf";
+		VAL_ADMIN_CONF_URL = VAL_BASE_URL + "mbadmin/admin.conf";
+		
+		// ログ出力
+		(new MassBankEnv()).envListLog();
 	}
 	
 	/**
