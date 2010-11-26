@@ -22,7 +22,7 @@
  *
  * Peak Search Page表示用モジュール
  *
- * ver 1.0.11 2010.11.15
+ * ver 1.0.12 2010.11.26
  *
  ******************************************************************************/
 %>
@@ -37,6 +37,9 @@
 <%@ page import="massbank.admin.AdminCommon" %>
 <%@ include file="./Common.jsp"%>
 <%
+	AdminCommon admin = new AdminCommon();
+	boolean isPeakAdv = admin.isPeakAdv();
+	
 	//-------------------------------------
 	// リクエストパラメータ取得
 	//-------------------------------------
@@ -133,7 +136,7 @@
 	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
 	<script type="text/javascript" src="script/Common.js"></script>
 	<script type="text/javascript" src="script/jquery.js"></script>
-<% if ( isPortal ) { %>
+<% if ( isPeakAdv ) { %>
 	<script type="text/javascript" src="script/FormulaSuggest.js"></script>
 <% } %>
 	<script type="text/javascript" src="script/AtomicMass.js"></script>
@@ -176,7 +179,7 @@
 				<td></td>
 				<td id="underbar2" height="4"<% if(type.equals("diff")){out.print(" bgcolor=\"DarkOrchid\"");}else if(type.equals("neutral")){out.print(" bgcolor=\"DarkGreen\"");} %>></td>
 			</tr>
-<% if ( isPortal ) { %>
+<% if ( isPeakAdv ) { %>
 			<tr>
 				<td><b>Search by</b></td>
 				<td>

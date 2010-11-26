@@ -20,7 +20,7 @@
  *
  * 管理者設定共通クラス
  *
- * ver 1.0.16 2010.11.25
+ * ver 1.0.17 2010.11.26
  *
  ******************************************************************************/
 package massbank.admin;
@@ -49,12 +49,14 @@ import massbank.MassBankEnv;
  *   出力先パス取得                                 admin.conf(out_path)
  *   出力先パス取得（非推奨）                       MassBankEnv
  *   MassBankディレクトリパス取得（非推奨）         MassBankEnv
- *   管理者権限フラグ取得                           admin.conf(admin)
  *   ポータルサイトフラグ取得                       admin.conf(portal)
+ *   管理者権限フラグ取得                           admin.conf(auth_root)
  *   Peak Search（Molecular Formula）表示フラグ取得 admin.conf(service_peakadv)
  *   Batch Service表示フラグ取得                    admin.conf(service_batch)
  *   Substructure Search（KNApSAcK）表示フラグ取得  admin.conf(service_knapsack)
  *   Advanced Search表示フラグ取得                  admin.conf(service_advanced)
+ *   WEB-API提供フラグ                              admin.conf(service_api)
+ *   AdminTool表示フラグ                            admin.conf(admin_all)
  *   SMTPアドレス取得（非推奨）                     MassBankEnv
  *   送信者名取得（非推奨）                         MassBankEnv
  *   Fromアドレス取得（非推奨）                     MassBankEnv
@@ -190,18 +192,6 @@ public class AdminCommon {
 	}
 
 	/**
-	 * 管理者権限フラグ取得
-	 */
-	public boolean isAdmin() {
-		boolean ret = false;
-		String adminFlag = getSetting( "admin" );
-		if ( adminFlag.toLowerCase().equals("true") ) {
-			ret = true;
-		}
-		return ret;
-	}
-
-	/**
 	 * ポータルサイトフラグ取得
 	 */
 	public boolean isPortal() {
@@ -213,6 +203,18 @@ public class AdminCommon {
 		return ret;
 	}
 
+	/**
+	 * 管理者権限フラグ取得
+	 */
+	public boolean isAdmin() {
+		boolean ret = false;
+		String adminFlag = getSetting( "auth_root" );
+		if ( adminFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+	
 	/**
 	 * Peak Search（Molecular Formula）表示フラグ取得
 	 */
@@ -256,6 +258,30 @@ public class AdminCommon {
 		boolean ret = false;
 		String advancedFlag = getSetting( "service_advanced" );
 		if ( advancedFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+	
+	/**
+	 * WEB-API提供フラグ取得
+	 */
+	public boolean isApi() {
+		boolean ret = false;
+		String apiFlag = getSetting( "service_api" );
+		if ( apiFlag.toLowerCase().equals("true") ) {
+			ret = true;
+		}
+		return ret;
+	}
+	
+	/**
+	 * AdminTool表示フラグ取得
+	 */
+	public boolean isAllAdmin() {
+		boolean ret = false;
+		String apiFlag = getSetting( "admin_all" );
+		if ( apiFlag.toLowerCase().equals("true") ) {
 			ret = true;
 		}
 		return ret;

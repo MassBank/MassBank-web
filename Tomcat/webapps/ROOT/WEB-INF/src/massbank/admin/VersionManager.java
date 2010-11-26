@@ -20,26 +20,32 @@
  *
  * バージョン情報管理クラス
  *
- * ver 1.0.4 2010.10.25
+ * ver 1.0.5 2010.11.26
  *
  ******************************************************************************/
 package massbank.admin;
 
-import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
-import java.util.jar.Attributes;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import org.apache.commons.lang.math.NumberUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+
 import massbank.GetConfig;
 import massbank.MassBankEnv;
-import massbank.admin.AdminCommon;
-import massbank.admin.VersionInfo;
-import massbank.admin.FileUtil;
+
+import org.apache.commons.lang.math.NumberUtils;
 
 public class VersionManager {
 
@@ -144,7 +150,7 @@ public class VersionManager {
 		// TomcatのMassBankパスをセット
 		this.tomcatMbPath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPROOT_PATH );
 		// CGIヘッダー取得
-		AdminCommon admin = new AdminCommon(reqUrl, this.webRootPath);
+		AdminCommon admin = new AdminCommon();
 		this.cgiHeader = admin.getCgiHeader();
 	}
 

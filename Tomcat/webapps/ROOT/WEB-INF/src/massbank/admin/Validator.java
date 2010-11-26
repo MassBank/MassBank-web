@@ -20,19 +20,20 @@
  *
  * レコードバリデータ
  *
- * ver 1.0.3 2009.11.18
+ * ver 1.0.4 2010.11.25
  *
  ******************************************************************************/
 package massbank.admin;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class Validator {
 
 	/** 必須項目の名称 **/
 	private static final String MANDATORY_ITEM [] = {
-		"ACCESSION", "RECORD_TITLE", "DATE", "AUTHORS", "CH$NAME", "CH$FORMULA",
-		"CH$EXACT_MASS", "CH$SMILES", "CH$IUPAC", "AC$INSTRUMENT",
+		"ACCESSION", "RECORD_TITLE", "DATE", "AUTHORS", "COPYRIGHT", "CH$NAME", "CH$FORMULA",
+		"CH$EXACT_MASS", "CH$SMILES", "CH$IUPAC", "AC$INSTRUMENT", "AC$INSTRUMENT_TYPE",
 		"AC$ANALYTICAL_CONDITION: MODE", "PK$NUM_PEAK", "PK$PEAK"
 	};
 
@@ -40,7 +41,7 @@ public class Validator {
 	private String errMsgMandaroty = "";
 
 	/**
-	 * 
+	 * コンストラクタ
 	 */
 	public Validator( String filePath ) {
 

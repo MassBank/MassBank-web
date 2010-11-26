@@ -22,7 +22,7 @@
  *
  * Admin Tool トップページ
  *
- * ver 1.0.11 2010.11.09
+ * ver 1.0.12 2010.11.26
  *
  ******************************************************************************/
 %>
@@ -33,7 +33,7 @@
 	// パラメータ取得
 	//----------------------------------------------------
 	AdminCommon admin = new AdminCommon();
-	boolean isPortal = admin.isPortal();
+	boolean isAllAdmin = admin.isAllAdmin();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
@@ -60,7 +60,7 @@
 	</div>
 	<div class="baseHerf" style="margin-left:490px;">
 <%
-	if ( isPortal ) {
+	if ( isAllAdmin ) {
 %>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='RecordUtil.jsp?act=check'">Validator</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='RecordUtil.jsp?act=sql'">SQL File Generator</div>

@@ -22,12 +22,28 @@
  *
  * レコード情報ユーティリティ
  *
- * ver 1.0.12 2010.11.09
+ * ver 1.0.13 2010.11.26
  *
  ******************************************************************************/
 %>
 
-<%@ page import="java.util.*,java.io.*,java.text.*,java.net.*" %>
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.BufferedWriter" %>
+<%@ page import="java.io.File" %>
+<%@ page import="java.io.FileWriter" %>
+<%@ page import="java.io.InputStreamReader" %>
+<%@ page import="java.io.PrintStream" %>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="java.net.URL" %>
+<%@ page import="java.net.URLConnection" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Locale" %>
+
 <%@ page import="massbank.admin.AdminCommon" %>
 <%@ page import="massbank.admin.Validator" %>
 <%@ page import="massbank.admin.SqlFileGenerator" %>
@@ -103,7 +119,7 @@
 	}
 	String title = "";
 	if ( act.equals("check") ) {
-		title = "Record Information Validator";
+		title = "Validator";
 	}
 	else if ( act.equals("sql") ) {
 		title = "SQL File Generator";
@@ -227,14 +243,17 @@ function changeSort() {
 			out.println( "   <b>Select DB:</b>" );
 			
 			// ファイルリスト取得
-			String inpDirName[] = fileDbDir.list();
+			List<String> confDbList = Arrays.asList(dbNameList);
+			List tmpList = Arrays.asList(fileDbDir.list());
+			Collections.sort(tmpList);
+			String inpDirName[] = (String[])tmpList.toArray(new String[0]);
 			StringBuffer html = new StringBuffer("");
 			html.append( "   <select name=\"db\" onChange=\"changeSort();\">\n" );
 			int cntDir = 0;
 			for ( int i = 0; i < inpDirName.length; i++ ) {
 				File file2 = new File( dbRootPath + inpDirName[i] );
-				// ディレクトリかどうか
-				if ( file2.isDirectory() ) {
+				// ディレクトリが存在し、massbank.confに記述があるDBのみ有効とする
+				if ( file2.isDirectory() && confDbList.contains(inpDirName[i]) ) {
 					html.append( "    <option value=\"" + inpDirName[i] + "\"" );
 					if ( selDbName.equals(inpDirName[i])
 					 || (selDbName.equals("") && cntDir == 0) ) {
