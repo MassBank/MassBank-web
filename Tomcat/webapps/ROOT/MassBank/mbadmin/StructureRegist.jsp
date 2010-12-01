@@ -22,7 +22,7 @@
  *
  * 構造式登録
  *
- * ver 1.1.7 2010.11.09
+ * ver 1.1.8 2010.11.29
  *
  ******************************************************************************/
 %>
@@ -138,17 +138,24 @@
 		String sql = "";
 		ResultSet[] rs = new ResultSet[2];
 		try {
-			sql = "SELECT LEFT(ID, 2) PREFIX FROM SPECTRUM LIMIT 1;";	// SPECTRUMテーブルにレコードがなければ0件
+			sql = "SELECT LEFT(ID, 3) PREFIX FROM SPECTRUM LIMIT 1;";	// SPECTRUMテーブルにレコードがなければ0件
 			rs[0] = db.executeQuery(sql);
 			if ( rs[0].next() ) {
-				ret[0] = rs[0].getString("PREFIX");
+				String tmpPrefix = rs[0].getString("PREFIX");
+				try {
+					Integer.parseInt(tmpPrefix.substring(2));
+					ret[0] = tmpPrefix.substring(0, (tmpPrefix.length() - 1));
+				}
+				catch (NumberFormatException nfe) {
+					ret[0] = tmpPrefix;
+				}
 			}
 			if ( ret[0] == null || ret[0].equals("") ) {
 				op.println( msgErr( "MassBank Record is not registered.") );
 				ret = null;
 			}
 			else {
-				sql = "SELECT IFNULL(MAX(SUBSTRING(FILE, 3)), 0) + 1 STARTID FROM MOLFILE;";
+				sql = "SELECT IFNULL(MAX(SUBSTRING(FILE, " + (ret[0].length() + 1) + ")), 0) + 1 STARTID FROM MOLFILE;";
 				rs[1] = db.executeQuery(sql);
 				if ( rs[1].next() ) {
 					ret[1] = rs[1].getString("STARTID");
@@ -325,7 +332,13 @@
 	                       TreeMap<String, String> list, String dataPath, String regPath, String[] registInfo, String cgiUrl, String cgiParam) throws IOException {
 		
 		boolean isSuccess = true;
-		DecimalFormat idFormat = new DecimalFormat("'" + registInfo[0] + "'000000");
+		DecimalFormat idFormat = null;
+		if (registInfo[0].length() == 3) {
+			idFormat = new DecimalFormat("'" + registInfo[0] + "'00000");
+		}
+		else {
+			idFormat = new DecimalFormat("'" + registInfo[0] + "'000000");
+		}
 		NumberFormat nf = NumberFormat.getNumberInstance();
 		String sql = "";
 		String id = "";

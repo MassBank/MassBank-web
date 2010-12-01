@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.10 2010.11.08
+ * ver 2.0.11 2010.11.30
  *
  ******************************************************************************/
 %>
@@ -162,7 +162,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
-<meta name="author" content="MassBank.jp" />
+<meta name="author" content="MassBank" />
+<meta name="coverage" content="worldwide" />
+<meta name="Targeted Geographic Area" content="japan" />
+<meta name="classification" content="general,computers,internet,miscellaneous" />
+<meta name="rating" content="general" />
+<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 <meta name="description" content="MassBank は日本質量分析学会の公式データベースです。MassBank は JST-BIRD プロジェクトとして開発しています。マススペクトルを測定した研究者がインターネットで公開する分散型データベースです。" />
 <meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, resolution, spectral, database, 慶應義塾大学, 先端生命, 研究所" />
 <meta name="revisit_after" content="10 days">
@@ -302,7 +307,12 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
-<meta name="author" content="MassBank.jp" />
+<meta name="author" content="MassBank" />
+<meta name="coverage" content="worldwide" />
+<meta name="Targeted Geographic Area" content="worldwide" />
+<meta name="classification" content="general,computers,internet,miscellaneous" />
+<meta name="rating" content="general" />
+<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 <meta name="description" content="The Mass Spectorometry Society of Japan officially supports MassBank. MassBank is supported by JST-BIRD project. MassBank is a distributed database on the internet in order to open a spectrum to the public by a researcher who measured it." />
 <meta name="keywords" content="MassBank, massbank, resolution, mass, spectral, database, Keio" />
 <meta name="revisit_after" content="10 days">
