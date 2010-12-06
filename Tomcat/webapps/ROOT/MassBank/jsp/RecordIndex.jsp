@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.19 2010.10.26
+ * ver 1.0.20 2010.12.02
  *
  ******************************************************************************/
 %>
@@ -59,6 +59,7 @@
 %>
 <%
 	ServletContext context = getServletContext();
+	int pos = -1;
 	
 	//-------------------------------------------
 	// システム情報を取得
@@ -68,12 +69,11 @@
 	//-------------------------------------------
 	// 環境設定ファイルからURLリストを取得
 	//-------------------------------------------
-	String path = request.getRequestURL().toString();
-	int pos = path.indexOf("/jsp");
-	String baseUrl = path.substring( 0, pos+1 ) ;
+	String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	GetConfig conf = new GetConfig(baseUrl);
 	String serverUrl = conf.getServerUrl();
-	String[] siteNameList = conf.getSiteLongName();
+	String[] siteNameList = conf.getSiteName();
+	String[] siteLongNameList = conf.getSiteLongName();
 	
 	//-------------------------------------
 	// 検索実行・結果取得
@@ -183,6 +183,7 @@
 	String paramSearchKey = "";
 	
 	String linkName = "";
+	String toolTipName = "";
 	String countStr = "";
 	int siteItemCnt = 0;
 	int instItemCnt = 0;
@@ -240,6 +241,7 @@
 				
 				// リンク名、件数
 				linkName = siteNameList[siteNum];
+				toolTipName = siteLongNameList[siteNum];
 				countStr = "(" + numFormat.format(count) + ")";
 				
 				// パラメータ
@@ -258,7 +260,7 @@
 				
 				// テーブルデータ
 				out.println( "<td>" );
-				out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + linkName + "</a>"
+				out.println( "<a href=\"" + linkUrl + "\" title=\"" + toolTipName.replaceAll(" ", "&nbsp;") + "\" target=\"_self\">" + linkName.replaceAll(" ", "&nbsp;") + "</a>"
 						   + "&nbsp;&nbsp;" + countStr + "&nbsp;&nbsp;" );
 				out.println( "</td>" );
 				
