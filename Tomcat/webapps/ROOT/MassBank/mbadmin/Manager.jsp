@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.7 2010.11.25
+ * ver 1.0.8 2010.12.02
  *
  ******************************************************************************/
 %>
@@ -373,12 +373,13 @@
 		judgeBase = judgeBase.toLowerCase().replaceAll("http://", "").replaceAll("https://", "");
 		judgeHost = judgeHost.toLowerCase();
 		url = url.toLowerCase();
+		String urlHost = url.replaceAll("http://", "").replaceAll("https://", "").replaceAll("/.*", "");
 		
 		if ( url.indexOf("localhost") != -1 ||
 		     url.indexOf("127.0.0.1") != -1 ||
 		     (!judgeBase.equals("") && url.indexOf(judgeBase) != -1) ||
-		     (!judgeHost.equals("") && url.indexOf(judgeHost) != -1) ||
-		     (!judgeIp.equals("") && url.indexOf(judgeIp) != -1) ) {
+		     urlHost.equals(judgeHost) ||
+		     urlHost.equals(judgeIp) ) {
 			
 			return URL_TYPE_INTERNAL;
 		}

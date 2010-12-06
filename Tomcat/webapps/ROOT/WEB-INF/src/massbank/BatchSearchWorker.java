@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.5 2010.11.22
+ * ver 1.0.6 2010.12.06
  *
  ******************************************************************************/
 package massbank;
@@ -104,10 +104,10 @@ public class BatchSearchWorker extends Thread {
 			GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 			this.serverUrl = conf.getServerUrl();
 
-			String tempDir = System.getProperty("java.io.tmpdir");
+			String tempDir = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
 			File temp = File.createTempFile("batchRes", ".txt");
-			String queryFilePath = tempDir + "/" + this.fileName;
-			String resultFilePath = tempDir + "/" + temp.getName();
+			String queryFilePath = ( !this.fileName.equals("") ) ? tempDir + this.fileName : "";
+			String resultFilePath = ( !temp.getName().equals("") ) ? tempDir + temp.getName() : "";
 
 			// ** open temporary file
 			File f1 = new File(queryFilePath);

@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2008 JST-BIRD MassBank
+ * Copyright (C) 2010 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *
  * バッチ検索サービス
  *
- * ver 1.0.3 2010.04.02
+ * ver 1.0.5 2010.12.06
  *
  ******************************************************************************/
 package massbank;
@@ -33,31 +33,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * バッチ検索サービスServletクラス
- */
 public class BatchService extends HttpServlet {
-	public static String BASE_URL = "";
-	public static String REAL_PATH = "";
+	public static final int MAX_NUM_JOB = 5;
 	public int cnt = 0;
-	private BatchJobMonitor mon = null;
+	private JobMonitor mon = null;
 
 	/**
 	 * サービス初期処理を行う
 	 */
 	public void init() throws ServletException {
-		String baseUrl = getInitParameter("baseUrl");
-		BASE_URL = "http://localhost/MassBank/";
-		if ( baseUrl != null ) {
-			BASE_URL = baseUrl;
-		}
-		REAL_PATH = this.getServletContext().getRealPath("/");
-		// アクティブ状態になっているジョブを未実行状態にする
-		BatchJobManager job = new BatchJobManager();
-		job.setPassiveAll();
-
 		// 定期的にジョブを監視
-		mon = new BatchJobMonitor();
+		mon = new JobMonitor();
 		this.mon.start();
 	}
 
@@ -68,12 +54,12 @@ public class BatchService extends HttpServlet {
 	 * サービス終了処理を行う
 	 */
 	public void destroy() {
-		// BatchJobMonitorスレッドに割り込む
+		// JobMonitorスレッドに割り込む
 		this.mon.interrupt();
 		// 終了状態セット
 		this.mon.setTerminate();
 
-		// BatchJobMonitorスレッドが終了するのを待つ
+		// JobMonitorスレッドが終了するのを待つ
 		do {
 			try { this.mon.join(200); }
 			catch ( Exception e ) {}
@@ -83,17 +69,30 @@ public class BatchService extends HttpServlet {
 	/**
 	 * ジョブ監視クラス
 	 */
-	public class BatchJobMonitor extends Thread {
+	public class JobMonitor extends Thread {
 		private boolean isTerminated = false;
 		private LinkedList thList = new LinkedList();
 
-		public BatchJobMonitor() {
+		public JobMonitor() {
 		}
 
 		/**
 		 * スレッドを起動する
 		 */
 		public void run() {
+			try { sleep(5000); }
+			catch (Exception e) {}
+
+			JobManager jobMgr = new JobManager();
+			try {
+				// アクティブ状態になっているジョブを未実行状態にする
+				jobMgr.setInitStatus();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
+
 			do {
 				// 待機
 				try { sleep(10000); }
@@ -103,7 +102,7 @@ public class BatchService extends HttpServlet {
 				int size = this.thList.size();
 				int n = 0;
 				for ( int i = 0; i < size; i++ ) {
-					BatchJobWorker thRunning = (BatchJobWorker)this.thList.get(n);
+					BatchSearchWorker thRunning = (BatchSearchWorker)this.thList.get(n);
 					if ( !thRunning.isAlive() ) {
 						this.thList.remove(n);
 					}
@@ -112,37 +111,49 @@ public class BatchService extends HttpServlet {
 					}
 				}
 
-				// BatchJobWorkerスレッドを終了させる
+				// BatchSearchWorkerスレッドを終了させる
 				if ( isTerminated ) {
 					for ( int i = 0; i < this.thList.size(); i++ ) {
-						BatchJobWorker thRunning = (BatchJobWorker)this.thList.get(i);
+						BatchSearchWorker thRunning = (BatchSearchWorker)this.thList.get(i);
 						thRunning.setTerminate();
 					}
 					break;
 				}
 
 				// 未実行ジョブのリストを取得
-				BatchJobManager job = new BatchJobManager();
-				ArrayList<BatchJobInfo> entryList = job.getPassiveEntry();
-				if ( entryList == null ) {
-					continue;
+				try {
+					ArrayList<JobInfo> jobList = jobMgr.getWaitJobList();
+					if ( jobList == null ) {
+						continue;
+					}
+					int numWait = jobList.size();
+					if ( numWait == 0 ) {
+						continue;
+					}
+
+					// 同時に実行できるジョブ数を制限
+					int numRun = jobMgr.getNumRunJob();
+					int numExec = numWait;
+					if ( numWait > MAX_NUM_JOB - numRun ) {
+						numExec = MAX_NUM_JOB - numRun;
+					}
+					// ジョブ実行
+					BatchSearchWorker[] thread = new BatchSearchWorker[numExec];
+					for ( int i = 0; i < numExec; i++ ) {
+						JobInfo jobInfo = jobList.get(i);
+						String jobId = jobInfo.getJobId();
+						thread[i] = new BatchSearchWorker(jobInfo);
+						thread[i].start();
+						this.thList.add(thread[i]);
+					}
 				}
-				int num = entryList.size();
-				if ( num == 0 ) {
-					continue;
-				}
-				
-				// ジョブ実行
-				BatchJobWorker[] thread = new BatchJobWorker[num];
-				for ( int i = 0; i < num; i++ ) {
-					BatchJobInfo jobInfo = entryList.get(i);
-					job.setEntry( jobInfo );
-					job.setActive();
-					thread[i] = new BatchJobWorker( jobInfo );
-					thread[i].start();
-					this.thList.add(thread[i]);
+				catch (Exception e) {
+					e.printStackTrace();
+					return;
 				}
 			} while(true);
+
+			jobMgr.end();
 		}
 
 		/**
