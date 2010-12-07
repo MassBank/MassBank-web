@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.11 2010.11.30
+ * ver 2.0.12 2010.12.06
  *
  ******************************************************************************/
 %>
@@ -233,7 +233,8 @@
 </ul>
 </div><!--div class="massdb_bg"-->
 <p class="p_dbsammary separate">
-MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本質量分析学会</a> の公式データベースです。
+MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本質量分析学会</a> の公式データベースです。<br />
+MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/jms.1777" target="_blank">DOI</a>) を引用してください。
 </p>
 <p />
 <!--ここまで▲データベースサービス　ショートカットボタン一覧-->
@@ -378,7 +379,8 @@ MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本
 </ul>
 </div><!--div class="massdb_bg"-->
 <p class="p_dbsammary separate">
-<a href="http://www.mssj.jp/index.html" target="_blank">The Mass Spectorometry Society of Japan</a> officially supports MassBank.
+<a href="http://www.mssj.jp/index.html" target="_blank">The Mass Spectorometry Society of Japan</a> officially supports MassBank.<br />
+Please cite the article (<a href="http://dx.doi.org/10.1002/jms.1777" target="_blank">DOI</a>) when using MassBank.
 </p>
 <p />
 <!--ed▲mass spectrum database shortcut button list-->
