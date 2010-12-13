@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.12 2010.12.06
+ * ver 2.0.13 2010.12.13
  *
  ******************************************************************************/
 %>
@@ -262,7 +262,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <div id="navi" class="fl clr">
 <ul id="navi_global" class="hide_text clr">
 <li id="navi_g01" ><a href="./ja/database.html" title="データベースサービス">データベースサービス</a></li>
-<li id="navi_g02" ><a href="./ja/published.html" title="公開データ">公開データ</a></li>
+<li id="navi_g02" ><a href="./ja/statistics.html" title="公開データ">公開データ</a></li>
 <li id="navi_g03" ><a href="./ja/document.html" title="ドキュメント">ドキュメント</a></li>
 <li id="navi_g04" ><a href="./ja/download.html" title="ダウンロード">ダウンロード</a></li>
 <li id="navi_g05" ><a href="./ja/manual.html" title="マニュアル">マニュアル</a></li>
@@ -408,7 +408,7 @@ Please cite the article (<a href="http://dx.doi.org/10.1002/jms.1777" target="_b
 <div id="navi" class="fl clr">
 <ul id="navi_global_en" class="hide_text clr">
 <li id="navi_g01_en" ><a href="./en/database.html" title="Database Service">Database Service</a></li>
-<li id="navi_g02_en" ><a href="./en/published.html" title="Statistics">Statistics </a></li>
+<li id="navi_g02_en" ><a href="./en/statistics.html" title="Statistics">Statistics </a></li>
 <li id="navi_g03_en" ><a href="./en/document.html" title="Document">Document</a></li>
 <li id="navi_g04_en" ><a href="./en/download.html" title="Download">Download</a></li>
 <li id="navi_g05_en" ><a href="./en/manual.html" title="Manual">Manual</a></li>
