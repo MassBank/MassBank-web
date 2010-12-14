@@ -20,7 +20,7 @@
  *
  * DB登録用のSQLを生成するクラス
  *
- * ver 1.0.12 2009.11.18
+ * ver 1.0.13 2010.12.14
  *
  ******************************************************************************/
 package massbank.admin;
@@ -121,7 +121,6 @@ public class SqlFileGenerator {
 					  || name.equals("CH$SMILES")
 					  || name.equals("CH$IUPAC")
 					  || name.equals("DATE")
-					  || name.equals("MS$FOCUSED_ION")
 					  || name.equals("AC$INSTRUMENT")
 					  || name.equals("AC$INSTRUMENT_TYPE") ) {
 					this.setRecord();
@@ -297,18 +296,18 @@ public class SqlFileGenerator {
 		int pos = value.indexOf(" ");
 		if ( pos > 0 ) {
 			String linkName = value.substring( 0, pos );
-			if ( !  (linkName.equals("CAS")
-						|| linkName.equals("CHEBI")
-						|| linkName.equals("CHEMPDB")
-						|| linkName.equals("KEGG")
-						|| linkName.equals("NIKKAJI")
-						|| linkName.equals("PUBCHEM")
-						|| linkName.equals("KNAPSACK")
-						|| linkName.equals("KAPPAVIEW")
-						|| linkName.equals("LIPIDBANK")
-						|| linkName.equals("FLAVONOIDVIEW")
-						|| linkName.equals("KEIO")
-						|| linkName.equals("PRIME")) ) {
+			if ( !(linkName.equals("CAS")
+				|| linkName.equals("CHEBI")
+				|| linkName.equals("CHEMPDB")
+				|| linkName.equals("KEGG")
+				|| linkName.equals("NIKKAJI")
+				|| linkName.equals("PUBCHEM")
+				|| linkName.equals("KNAPSACK")
+				|| linkName.equals("KAPPAVIEW")
+				|| linkName.equals("LIPIDBANK")
+				|| linkName.equals("FLAVONOIDVIEW")
+				|| linkName.equals("KEIO")
+				|| linkName.equals("PRIME")) ) {
 				return;
 			}
 			String linkVal = "";
@@ -321,11 +320,14 @@ public class SqlFileGenerator {
 			else {
 				linkVal = value.substring( pos + 1 );
 			}
-			nameLink += ", " + linkName;
-			valLink += ", '" + linkVal + "'";
+			// CH$LINKは1サイトに対して1リンクのみ有効
+			// 1つのサイトに対して2つ目以降のCH$LINKは無視する
+			if (nameLink.indexOf(linkName) == -1) {
+				nameLink += ", " + linkName;
+				valLink += ", '" + linkVal + "'";
+			}
 		}
 	}
-
 
 	/**
 	 * 項目名と値の分割

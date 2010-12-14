@@ -21,7 +21,7 @@
 #
 # [Admin Tool] PEAK.sqlファイル生成
 #
-# ver 3.0.6  2010.05.24
+# ver 3.0.7  2010.12.14
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -88,7 +88,19 @@ foreach my $name ( @fname_list ) {
 				print OUT "INSERT PEAK VALUES ('$Acc', $mz, $val, $rval);\n";
 			}
 			
-			if ( $ionP == 0 ) { $ion = $ionM; } else { $ion = $ionP; }
+			if ( $ionP == 0 ) {
+				$ion = $ionM;
+			}
+			else {
+				# "MS\$FOCUSED_ION: PRECURSOR_TYPE" と "AC\$ANALYTICAL_CONDITION: MODE" の値に不整合がある場合は、
+				# 必須項目である "AC\$ANALYTICAL_CONDITION: MODE" の値を優先して登録する
+				if ( ($ionP > 0 && $ionM > 0) || ($ionP < 0 && $ionM < 0) ) {
+					$ion = $ionP;
+				}
+				else {
+					$ion = $ionM;
+				}
+			}
 			print OUT "INSERT SPECTRUM(ID, NAME, ION, PRECURSOR_MZ) "
 							. "VALUES('$Acc', '$Title', $ion, $precursor);\n";
 		}
