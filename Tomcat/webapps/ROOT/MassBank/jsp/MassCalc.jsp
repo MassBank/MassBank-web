@@ -22,7 +22,7 @@
  *
  * MassCalculator表示用モジュール
  *
- * ver 1.0.2 2010.11.15
+ * ver 1.0.3 2010.12.20
  *
  ******************************************************************************/
 %>
@@ -30,15 +30,19 @@
 <%@ page import="java.net.URLConnection" %>
 <%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.InputStreamReader" %>
+<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.admin.AdminCommon" %>
 <%
+	AdminCommon admin = new AdminCommon();
+	boolean isPeakAdv = admin.isPeakAdv();
+	
 	//-------------------------------------
 	// Copyright読み込み
 	//-------------------------------------
 	String copyrightLine = "";
 	BufferedReader br = null;
 	try {
-		final String reqUrl = request.getRequestURL().toString();
-		URL url = new URL( reqUrl.substring(0, reqUrl.indexOf("jsp")) + "/copyrightline.html" );
+		URL url = new URL( MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "copyrightline.html" );
 		URLConnection con = url.openConnection();
 		br = new BufferedReader( new InputStreamReader(con.getInputStream(), "UTF-8") );
 		String line;
@@ -48,12 +52,12 @@
 				break;
 			}
 		}
-	} catch (Exception e) {
+	}
+	catch (Exception e) {
 		e.printStackTrace();
-	} finally {
-		if ( br != null ) {
-			br.close();
-		}
+	}
+	finally {
+		if ( br != null ) { br.close(); }
 	}
 %>
 <html>
@@ -61,9 +65,14 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="Content-Style-Type" content="text/css">
 	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta name="author" content="MassBank" />
+	<meta name="coverage" content="worldwide" />
+	<meta name="Targeted Geographic Area" content="worldwide" />
+	<meta name="classification" content="general,computers,internet,miscellaneous" />
+	<meta name="rating" content="general" />
 	<meta http-equiv="imagetoolbar" content="no">
-	<meta name="description" content="Formula to m/z.">
-	<meta name="keywords" content="Mass,Calc,mz,Formula">
+	<meta name="description" content="Mass Calculator is a basic mass calculation tool that you can use everywhere in MassBank. There are Formula to m/z and m/z to formula as a function.">
+	<meta name="keywords" content="Mass,Calc,Calculator,mz,Formula">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<link rel="stylesheet" type="text/css" href="./css/03_design.css" media="all">
 	<script type="text/javascript" src="script/jquery.js"></script>
@@ -73,7 +82,7 @@
 </head>
 <body class="msbkFont backgroundImg cursorDefault" bgcolor="#cee6f2">
 	<h2 style="margin:0px;">Mass Calculator</h2>
-	<hr size="1">
+	<hr size="1" style="margin-top:5; margin-bottom:5;">
 	<noscript>
 		<p id="js_use" class="clr">
 			<em class="e16">Javascript is used in this site</em><br />
@@ -81,35 +90,65 @@
 		</p>
 	</noscript>
 	<form style="margin:0px;">
-		<table border="0" cellpadding="0" cellspacing="3">
-			<tr>
-				<th>Formula</th>
-				<th>&nbsp;</th>
-				<th><i>m/z</i></th>
-			</tr>
+<% if ( isPeakAdv ) { %>
+		<input type="radio" name="type" value="fm" onClick="changeType('fm');" checked><span name="typeLbl" onClick="changeType('fm');" style="text-decoration:underline;"><b>Formula to <i>m/z</i></b></span></i></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="radio" name="type" value="mf" onClick="changeType('mf');"><span name="typeLbl" onClick="changeType('mf');"><b><i>m/z</i> to formula</b></span></i></b>
+		<hr size="1" style="margin-top:5; margin-bottom:5;">
+<% } %>
+		<div id="fCalc" style="height:230px;">
+			<table border="0" cellpadding="0" cellspacing="3">
+				<tr>
+					<th>Formula</th>
+					<th>&nbsp;</th>
+					<th><i>m/z</i></th>
+				</tr>
 <%
 	final int numForm = 6; 
 	for ( int i=0; i<numForm; i++ ) {
-		out.println( "\t\t\t<tr>" );
-		out.println( "\t\t\t\t<td>" );
-		out.println( "\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" value=\"\" maxlength=\"20\" style=\"width:140px; ime-mode:disabled;\" class=\"Formula\">" );
-		out.println( "\t\t\t\t</td>" );
-		out.println( "\t\t\t\t<td>" );
-		out.println( "\t\t\t\t\t<img src=\"./image/arrow_r.gif\" alt=\"\" style=\"margin:0 5px;\">" );
-		out.println( "\t\t\t\t</td>" );
-		out.println( "\t\t\t\t<td>" );
-		out.println( "\t\t\t\t\t<input name=\"mz" + i + "\" type=\"text\" size=\"15\" value=\"\" readonly tabindex=\"-1\" style=\"width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;\" class=\"Mass\"></td>" );
-		out.println( "\t\t\t\t</td>" );
-		out.println( "\t\t\t</tr>" );
+		out.println( "\t\t\t\t<tr>" );
+		out.println( "\t\t\t\t\t<td>" );
+		out.println( "\t\t\t\t\t\t<input name=\"fom" + i + "\" type=\"text\" value=\"\" maxlength=\"20\" style=\"width:170px; ime-mode:disabled;\" class=\"fFormula\">" );
+		out.println( "\t\t\t\t\t</td>" );
+		out.println( "\t\t\t\t\t<td>" );
+		out.println( "\t\t\t\t\t\t<img src=\"./image/arrow_r.gif\" alt=\"\" style=\"margin:0 5px;\">" );
+		out.println( "\t\t\t\t\t</td>" );
+		out.println( "\t\t\t\t\t<td>" );
+		out.println( "\t\t\t\t\t\t<input name=\"mz" + i + "\" type=\"text\" size=\"15\" value=\"\" readonly tabindex=\"-1\" style=\"width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;\" class=\"fMass\"></td>" );
+		out.println( "\t\t\t\t\t</td>" );
+		out.println( "\t\t\t\t</tr>" );
 	}
 %>
 
-			<tr>
-				<td colspan="3" align="right">
-					<input type="button" name="clear" value="Clear" onClick="resetForm()" style="width:70px;">
-				</td>
-			</tr>
-		</table>
+				<tr>
+					<td colspan="3" align="right">
+						<input type="button" name="clear" value="Clear" onClick="resetForm()" style="width:70px;">
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="mCalc" style="height:230px; display:none;">
+			<table border="0" cellpadding="0" cellspacing="3">
+				<tr>
+					<th><i>m/z</i></th>
+					<th>&nbsp;</th>
+					<th>Formula</th>
+				</tr>
+				<tr>
+					<td valign="top">
+						<input name="mz" type=\"text" value="" maxlength="20" style="width:90px; ime-mode:disabled;" class="mMass"><br /><br />
+						<font class="font12px">* Based on data</font><br />
+						<font class="font12px">&nbsp;&nbsp;&nbsp;from Keio and</font><br />
+						<font class="font12px">&nbsp;&nbsp;&nbsp;Riken.</font><br />
+					</td>
+					<td valign="top">
+						<img src="./image/arrow_r.gif" alt="" style="margin:5 5px;">
+					</td>
+					<td>
+						<textarea name="fom" rows="10" cols="20" wrap="off" readonly tabindex="-1" style="width:220px; height:195px; background-color:#eeeeee;border:solid 1px #999;" class="mFormula"></textarea>
+					</td>
+				</tr>
+			</table>
+		</div>
 	</form>
 	<hr size="1">
 	<%=copyrightLine%>

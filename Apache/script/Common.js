@@ -20,7 +20,7 @@
  *
  * MassBank共通スクリプト
  *
- * ver 1.0.10 2010.08.17
+ * ver 1.0.12 2010.12.20
  *
  ******************************************************************************/
 
@@ -287,7 +287,18 @@ function expandMolView(url) {
  */
 function openMassCalc() {
 	var url = location.href;
-	url = url.substring(0, url.indexOf("/jsp") + 1);
+	if ( url.indexOf("/index") != -1 ) {
+		url = url.substring(0, url.indexOf("/index") + 1);
+	}
+	else if ( url.indexOf("/ja") != -1 ) {
+		url = url.substring(0, url.indexOf("/ja") + 1);
+	}
+	else if ( url.indexOf("/en") != -1 ) {
+		url = url.substring(0, url.indexOf("/en") + 1);
+	}
+	else {
+		url = url.substring(0, url.indexOf("/jsp") + 1);
+	}
 	url += "MassCalc.html";
 	if ( ie ) {
 		leftX = window.screenLeft + document.body.clientWidth - 350;
@@ -298,6 +309,6 @@ function openMassCalc() {
 		topY =  window.screenTop + 20;
 	}
 	win = window.open(url, "MassCalc",
-		'width=320,height=325,menubar=no,toolbar=no,scrollbars=no,status=no,left=' + leftX + ',top=' + topY + ',screenX=' + leftX + ',screenY=' + topY);
+		'width=380,height=380,menubar=no,toolbar=no,scrollbars=no,status=no,left=' + leftX + ',top=' + topY + ',screenX=' + leftX + ',screenY=' + topY);
 	win.focus();
 }

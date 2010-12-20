@@ -20,7 +20,7 @@
  *
  * MassCalculator用スクリプト
  *
- * ver 1.0.2 2010.11.15
+ * ver 1.0.3 2010.12.20
  *
  ******************************************************************************/
 
@@ -28,16 +28,19 @@
  * jQuery実行
  */
 $(function() {
-	$("*").initFocus();
+	$.fn.initFocus();
 	$("*").exitMassCalc();
-	$("input.Formula").massCalc();
+	$("input.fFormula").fmCalc();
+	$("input.fMass").resultFocus();
+	$("input.mMass").mfCalc();
+	$("textarea.mFormula").resultFocus();
 });
 
 /**
  * フォーカス初期化
  */
 $.fn.initFocus = function() {
-	$("input.Formula:eq(0)").focus();
+	$("input[name='type']:radio:eq(0)").focus();
 }
 
 /**
@@ -55,9 +58,119 @@ $.fn.exitMassCalc = function() {
 }
 
 /**
- * リアルタイムMassCalc
+ * 計算結果領域クリック時処理
  */
-$.fn.massCalc = function() {
+$.fn.resultFocus = function() {
+	$(this).click(function() {
+		if ( $(this).get(0).tagName.toLowerCase() == "input" ) {
+			$(this).select();
+		}
+		else if ( $(this).get(0).tagName.toLowerCase() == "textarea" ) {
+//			$(this).select();
+		}
+	});
+}
+
+/**
+ * リアルタイムMassCalc（m/z to formula）
+ */
+$.fn.mfCalc = function() {
+	
+	var jsonFiles = ["ion_mass.json", "nloss_mass.json"];		// 読み込み対象のJSONファイル
+	var formulaList = [];										// JSONファイルから読込んだ組成式リスト
+	var isInit = true;
+	
+	// 全組成式取得
+	for (var i=0; i<jsonFiles.length; i++) {
+		$.getJSON(
+			jsonFiles[i],
+			function(jsonData){
+				if (i == 0) {
+					formulaList = $.merge([], jsonData);
+				}
+				else {
+					formulaList = $.merge(formulaList, jsonData);
+				}
+			}
+		);
+	}
+	
+	// フォーカス時
+	$(this).focus(function(){
+		if ( isInit ) {
+			// 小数点以下を5桁以上に統一
+			for (var i=0; i<formulaList.length; i++) {
+				var formula = formulaList[i][0];
+				var mass = formulaList[i][1];
+				if (mass.indexOf(".") == -1) {
+					mass += ".00000";
+				}
+				else {
+					var tmpMass = mass.split(".");
+					if (tmpMass[1].length <= 5) {
+						var zeroCnt = 5 - tmpMass[1].length;
+						for (var j=0; j<zeroCnt; j++) {
+							mass += "0";
+						}
+					}
+				}
+				formulaList[i][1] = mass;
+			}
+			
+			// 重複除去
+			var chkStorage = {};
+			var tmpList = [];
+			for (var i=0; i<formulaList.length; i++) {
+				var value = formulaList[i];
+				if ( !(value in chkStorage) ) {
+					chkStorage[value] = true;
+					tmpList.push(value);
+				}
+			}
+			formulaList = $.merge([], tmpList);
+			formulaList.sort();
+			isInit = false;
+		}
+	});
+	
+	// キーアップ時
+	$(this).keyup(function(e) {
+		var inputMz = $(this).val();
+		var matchFormula = new Array();
+		if ( inputMz != "" ) {
+			// 入力されたm/zの前後の半角/全角スペースをトリム
+			inputMz = inputMz.replace(/^[\s　]+|[\s　]+$/g, "");
+			
+			// 入力されたm/zの全角文字を半角文字へ変換
+			inputMz = inputMz.replace(/[Ａ-Ｚａ-ｚ０-９．]/g, toHalfChar);
+			
+			for (var i in formulaList) {
+				// マッチする値の抽出
+				var formula = formulaList[i][0];
+				var mass = formulaList[i][1];
+				if (mass.indexOf(inputMz) == 0) {
+					matchFormula.push(formula + " (" + mass + ")");
+				}
+				else if (inputMz.indexOf(mass) == 0) {
+					matchFormula.push(formula + " (" + mass + ")");
+				}
+			}
+			matchFormula.sort();
+		}
+		// 結果を入力フォームに設定
+		if ( matchFormula.length > 0 || inputMz == "" ) {
+			$("textarea.mFormula").val(matchFormula.join("\n"));
+		}
+		else {
+			$("textarea.mFormula").val("-");
+		}
+	});
+}
+
+/**
+ * リアルタイムMassCalc（Formula to m/z）
+ */
+$.fn.fmCalc = function() {
 	
 	$(this).each(function() {
 		
@@ -67,7 +180,7 @@ $.fn.massCalc = function() {
 		// キーダウン時
 		$(this).keydown(function(e) {
 			prevFormula = $(this).val();
-			targetIndex = $("input.Formula").index(this);
+			targetIndex = $("input.fFormula").index(this);
 		});
 		
 		// キーアップ時
@@ -84,17 +197,17 @@ $.fn.massCalc = function() {
 				inputFormula = inputFormula.replace(/^[\s　]+|[\s　]+$/g, "");
 				
 				// 入力された組成式の全角文字を半角文字へ変換
-				inputFormula = inputFormula.replace(/[Ａ-Ｚａ-ｚ０-９]/g, toHalfChar2);
+				inputFormula = inputFormula.replace(/[Ａ-Ｚａ-ｚ０-９．]/g, toHalfChar);
 				
 				// 組成式から原子(原子記号+原子数)に分解した配列を取得
-				atomicArray = getAtomicArray2(inputFormula);
+				atomicArray = getAtomicArray(inputFormula);
 				
 				// 原子(原子記号+原子数)配列から原子ごとのm/zを全て加算した値を取得
-				mass = massCalc2(atomicArray);
+				mass = massCalc(atomicArray);
 			}
 			
 			// 結果を入力フォームに設定
-			$("input.Mass:eq(" + targetIndex + ")").val(mass);
+			$("input.fMass:eq(" + targetIndex + ")").val(mass);
 		});
 	});
 }
@@ -104,7 +217,7 @@ $.fn.massCalc = function() {
  * @param formula 組成式(半角英数字)
  * @return atomicArray 組成式から求めた原子配列
  */
-function getAtomicArray2(formula) {
+function getAtomicArray(formula) {
 	
 	var atomicArray = new Array();
 	var nextChar = "";
@@ -135,7 +248,7 @@ function getAtomicArray2(formula) {
  * @param atomicArray 原子(原子記号+原子数)配列
  * @return mass 組成式から求めたmass
  */
-function massCalc2(atomicArray) {
+function massCalc(atomicArray) {
 	var mass = "";
 	var massArray = new Array();
 	for (i=0; i<atomicArray.length; i++) {
@@ -215,20 +328,43 @@ function massCalc2(atomicArray) {
  * @param fullChar 変換対象となる全角1字
  * @return 半角文字
  */
-function toHalfChar2(fullChar) {
+function toHalfChar(fullChar) {
 	var halfChr = "";
 	var halfCharList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 					   "abcdefghijklmnopqlstuvwxyz" +
-					    "0123456789";
+					   "0123456789.";
 	var fullCharList = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ" +
 					   "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ" +
-					   "０１２３４５６７８９";
+					   "０１２３４５６７８９．";
 	var index = fullCharList.indexOf(fullChar);
 	halfChr = halfCharList.charAt(index);
 	
 	return halfChr;
 }
 
+
+/**
+ * 計算種別変更
+ * @param type 種別
+ */
+function changeType(type) {
+	if (type == "fm") {
+		$("#fCalc").show();
+		$("#mCalc").hide();
+		$("input[name='type']:radio").val(["fm"]);
+		$("input[name='type']:radio:eq(0)").focus();
+		$("span[name='typeLbl']:eq(0)").css("text-decoration", "underline");
+		$("span[name='typeLbl']:eq(1)").css("text-decoration", "none");
+	}
+	else {
+		$("#fCalc").hide();
+		$("#mCalc").show();
+		$("input[name='type']:radio").val(["mf"]);
+		$("input[name='type']:radio:eq(1)").focus();
+		$("span[name='typeLbl']:eq(0)").css("text-decoration", "none");
+		$("span[name='typeLbl']:eq(1)").css("text-decoration", "underline");
+	}
+}
 
 /**
  * フォーム初期化
@@ -239,5 +375,5 @@ function resetForm() {
 		f1["mz" + i].value = "";
 		f1["fom" + i].value = "";
 	}
-	$("*").initFocus();
+	$("input.fFormula:eq(0)").focus();
 }

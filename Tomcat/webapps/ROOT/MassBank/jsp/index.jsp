@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.13 2010.12.13
+ * ver 2.0.14 2010.12.20
  *
  ******************************************************************************/
 %>
@@ -163,7 +163,7 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <meta name="author" content="MassBank" />
-<meta name="coverage" content="worldwide" />
+<meta name="coverage" content="japan" />
 <meta name="Targeted Geographic Area" content="japan" />
 <meta name="classification" content="general,computers,internet,miscellaneous" />
 <meta name="rating" content="general" />
@@ -173,6 +173,7 @@
 <meta name="revisit_after" content="10 days">
 <meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
+<script type="text/javascript" src="./script/Common.js"></script>
 <title>MassBank | High Resolution Mass Spectral Database</title>
 </head>
 
@@ -319,6 +320,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <meta name="revisit_after" content="10 days">
 <meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
+<script type="text/javascript" src="./script/Common.js"></script>
 <title>MassBank | High Resolution Mass Spectral Database</title>
 </head>
 
