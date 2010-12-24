@@ -22,7 +22,7 @@
  *
  * Browse Page表示用モジュール
  *
- * ver 1.0.12 2010.09.01
+ * ver 1.0.13 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -55,11 +55,16 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
-		<meta name="description" content="Hierarchical browsing of all data">
-		<meta name="keywords" content="Browse">
+		<meta name="author" content="MassBank" />
+		<meta name="coverage" content="worldwide" />
+		<meta name="Targeted Geographic Area" content="worldwide" />
+		<meta name="rating" content="general" />
+		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+		<meta name="description" content="Hierarchical browsing of all data. To browse the hierarchical tree of all MassBank spectra.">
+		<meta name="keywords" content="Browse,tree">
 		<meta name="revisit_after" content="30 days">
 		<link rel="stylesheet" type="text/css" href="css/Common.css">
-	<script type="text/javascript" src="./script/Common.js"></script>
+		<script type="text/javascript" src="./script/Common.js"></script>
 		<title>MassBank | Database | Browse Page</title>
 	</head>
 	<body class="msbkFont">

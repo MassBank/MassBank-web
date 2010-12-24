@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced
  *
- * ver 1.0.2 2009.12.09
+ * ver 1.0.4 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -32,13 +32,20 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta name="author" content="MassBank" />
+<meta name="coverage" content="worldwide" />
+<meta name="Targeted Geographic Area" content="worldwide" />
+<meta name="rating" content="general" />
+<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 <meta name="description" content="Peak Search Advanced">
 <meta name="keywords" content="Peak,Product Ion,Neutral Loss,Formula">
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="css/Common.css">
 <link rel="stylesheet" type="text/css" href="css/Result.css">
-	<script type="text/javascript" src="script/Common.js"></script>
-<title>MassBank | Database | Peak Search Advanced</title>
+<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
+<script type="text/javascript" src="script/Common.js"></script>
+<script type="text/javascript" src="script/jquery.js"></script>
+<script type="text/javascript" src="script/FormulaSuggest.js"></script>
 <script>
 <!--
 function changeType() {
@@ -63,8 +70,13 @@ function chageMode(reqType) {
 		ele.innerHTML = val;
 	}
 }
+
+$(function(){
+	$("input.FormulaSuggest").FormulaSuggest();
+});
 -->
 </script>
+<title>MassBank | Database | Peak Search Advanced</title>
 </head>
 <%@ page import="java.util.*" %>
 <%
@@ -170,7 +182,7 @@ function chageMode(reqType) {
 			val = (String)inputFormula.get(key);
 		}
 		out.println( "\t\t\t\t<td align=\"center\">" );
-		out.println( "\t\t\t\t\t<input name=\"" + key + "\" type=\"text\" size=\"12\" value=\"" + val + "\">" );
+		out.println( "\t\t\t\t\t<input id=\"" + key + "\" class=\"FormulaSuggest\" name=\"" + key + "\" type=\"text\" size=\"12\" value=\"" + val + "\" autocomplete=\"off\">" );
 		out.println( "\t\t\t\t</td>" );
 		if ( i < NUM_INPUT_FORMULA ) {
 			out.println( "\t\t\t\t<td id=\"arrow" + String.valueOf(i) + "\">" + condition );
@@ -178,7 +190,7 @@ function chageMode(reqType) {
 	}
 	out.println("\t\t\t</tr>");
 	out.println("\t\t\t<tr height=\"50\">");
-	out.println("\t\t\t\t<td colspan=\"3\">");
+	out.println("\t\t\t\t<td colspan=\"7\">");
 	if ( isProductIon ) {
 		String[] valMode = { "and", "or" };
 		String[] strMode = { "AND", "OR" };

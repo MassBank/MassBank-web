@@ -22,7 +22,7 @@
  *
  * Quick Search Page表示用モジュール
  *
- * ver 1.0.11 2009.12.10
+ * ver 1.0.12 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -117,8 +117,13 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="Content-Style-Type" content="text/css">
 	<meta http-equiv="Content-Script-Type" content="text/javascript">
-	<meta name="description" content="Keyword search">
-	<meta name="keywords" content="Quick, Compound, Exact Mass,Formula">
+	<meta name="author" content="MassBank" />
+	<meta name="coverage" content="worldwide" />
+	<meta name="Targeted Geographic Area" content="worldwide" />
+	<meta name="rating" content="general" />
+	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+	<meta name="description" content="Keyword search of chemical compounds. Retrieves the chemical compound(s) specified by chemical name or molecular formula, and displays its spectra.">
+	<meta name="keywords" content="Quick,Compound,ExactMass,Formula">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
 	<script type="text/javascript" src="./script/Common.js"></script>

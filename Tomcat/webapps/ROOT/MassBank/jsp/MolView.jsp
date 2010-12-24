@@ -22,7 +22,7 @@
  *
  * 構造式表示用モジュール
  *
- * ver 1.0.7 2009.09.14
+ * ver 1.0.8 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -57,6 +57,11 @@
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Cache-Control" content="no-cache">
 	<meta equiv="expires" content="0">
+	<meta name="author" content="MassBank" />
+	<meta name="coverage" content="worldwide" />
+	<meta name="Targeted Geographic Area" content="worldwide" />
+	<meta name="rating" content="general" />
+	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 	<script type="text/javascript" src="<%=baseUrl%>script/Common.js"></script>
 	<title><%=compoundName%></title>
 </head>

@@ -22,7 +22,7 @@
  *
  * Peak Search Page表示用モジュール
  *
- * ver 1.0.12 2010.11.26
+ * ver 1.0.13 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -129,8 +129,13 @@
 	<meta http-equiv="Content-Style-Type" content="text/css">
 	<meta http-equiv="Content-Script-Type" content="text/javascript">
 	<meta http-equiv="imagetoolbar" content="no">
-	<meta name="description" content="Search by ion and neutral loss">
-	<meta name="keywords" content="Peak, m/z, Formula, difference, Product, Ion, Neutral, Loss">
+	<meta name="author" content="MassBank" />
+	<meta name="coverage" content="worldwide" />
+	<meta name="Targeted Geographic Area" content="worldwide" />
+	<meta name="rating" content="general" />
+	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+	<meta name="description" content="Search spectra by the m/z value and molecular formula. Retrieves spectra containing the peaks or neutral losses that users specify by m/z values. Retrieves spectra containing the peaks or neutral losses that users specify by molecular formulae.">
+	<meta name="keywords" content="Peak,m/z,Formula,difference,Product,Ion,Neutral,Loss">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
 	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />

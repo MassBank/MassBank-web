@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.20 2010.12.02
+ * ver 1.0.21 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -147,8 +147,13 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="Content-Style-Type" content="text/css">
 	<meta http-equiv="imagetoolbar" content="no">
-	<meta name="description" content="Categorized list of spectra">
-	<meta name="keywords" content="QqTOF, QqQ, GC-TOF, LC-TOF, LC-Q, FAB-MS, ESI, TOF, LC, GC">
+	<meta name="author" content="MassBank" />
+	<meta name="coverage" content="worldwide" />
+	<meta name="Targeted Geographic Area" content="worldwide" />
+	<meta name="rating" content="general" />
+	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+	<meta name="description" content="Categorized list of spectra. To list up all spectra in a specific category including contributors, instrument types and ionization modes.">
+	<meta name="keywords" content="ESI,EI,LC,IT,GC,TOF,FAB,MALDI,MS,MS/MS,MSn,CI,FI,FD,QqQ">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<script type="text/javascript" src="./script/Common.js"></script>

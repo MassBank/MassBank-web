@@ -22,7 +22,7 @@
  *
  * MassBank メニュー
  *
- * ver 1.0.0 2010.11.26
+ * ver 1.0.1 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -43,6 +43,11 @@
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="pragma" content="no-cache">
 		<meta http-equiv="cache-control" content="no-cache">
+		<meta name="author" content="MassBank" />
+		<meta name="coverage" content="worldwide" />
+		<meta name="Targeted Geographic Area" content="worldwide" />
+		<meta name="rating" content="general" />
+		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 		<meta name="ROBOTS" content="NOINDEX,FOLLOW">
 		<link rel="stylesheet" type="text/css" href="./css/Common.css">
 		<title>MassBank | Menu Link</title>

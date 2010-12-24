@@ -22,7 +22,7 @@
  *
  * Search Page表示用モジュール
  *
- * ver 1.0.13 2009.12.16
+ * ver 1.0.14 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -81,8 +81,13 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="imagetoolbar" content="no">
-		<meta name="description" content="Similarity search of MSn spectra">
-		<meta name="keywords" content="Search, Similarity">
+		<meta name="author" content="MassBank" />
+		<meta name="coverage" content="worldwide" />
+		<meta name="Targeted Geographic Area" content="worldwide" />
+		<meta name="rating" content="general" />
+		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+		<meta name="description" content="Search similar spectra on a peak-to-peak basis. Retrieves spectra similar to user’s spectrum in terms of the m/z value. This search is helpful to identify chemical compound by comparing similar spectra on a 3D-display.">
+		<meta name="keywords" content="Search,Similarity,Spectrum">
 		<meta name="revisit_after" content="30 days">
 		<link rel="stylesheet" type="text/css" href="./css/Common.css">
 		<script type="text/javascript" src="./script/Common.js"></script>

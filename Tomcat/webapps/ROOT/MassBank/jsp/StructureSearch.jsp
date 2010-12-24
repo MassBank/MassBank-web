@@ -22,7 +22,7 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.16 2010.11.26
+ * ver 1.0.17 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -508,6 +508,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
+<meta name="author" content="MassBank" />
+<meta name="coverage" content="worldwide" />
+<meta name="Targeted Geographic Area" content="worldwide" />
+<meta name="rating" content="general" />
+<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+<meta name="description" content="Search chemical compounds by substructures. Retrieves chemical compounds whose chemical structure contains the substructures specified by users and display their spectra.">
+<meta name="keywords" content="Structure,compound,chemical,">
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="./css/Common.css">
 <link rel="stylesheet" type="text/css" href="./Knapsack/css/jquery-ui-1.7.2.custom.css">

@@ -22,7 +22,7 @@
  *
  * MassBank Record Direct Access モジュール
  *
- * ver 1.0.2 2008.12.22
+ * ver 1.0.3 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -33,6 +33,11 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="author" content="MassBank" />
+	<meta name="coverage" content="worldwide" />
+	<meta name="Targeted Geographic Area" content="worldwide" />
+	<meta name="rating" content="general" />
+	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 	<title>MassBank Record Direct Access</title>
 </head>
 <body>

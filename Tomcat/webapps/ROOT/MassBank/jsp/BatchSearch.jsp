@@ -2,7 +2,7 @@
 <%
 /*******************************************************************************
  *
- * Copyright (C) 2008 JST-BIRD MassBank
+ * Copyright (C) 2010 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.10 2010.04.08
+ * ver 1.0.11 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -35,16 +35,21 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="org.apache.commons.fileupload.DiskFileUpload" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="massbank.BatchJobManager" %>
-<%@ page import="massbank.BatchJobInfo" %>
+<%@ page import="massbank.JobManager" %>
+<%@ page import="massbank.JobInfo" %>
 <%@ include file="./Common.jsp"%>
 
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<meta name="description" content="Similarity search of MSn spectra in batch process">
-<meta name="keywords" content="Batch, Similarity">
+<meta name="author" content="MassBank" />
+<meta name="coverage" content="worldwide" />
+<meta name="Targeted Geographic Area" content="worldwide" />
+<meta name="rating" content="general" />
+<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+<meta name="description" content="Similarity search of MSn spectra in batch process. To obtain a whole search results for many user's spectra in an e-mail.">
+<meta name="keywords" content="Batch,Similarity,MSn,mail">
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="./css/Common.css">
 <script type="text/javascript" src="./script/Common.js"></script>
@@ -146,8 +151,6 @@
 		//-------------------------------------
 		// ジョブ実行
 		//-------------------------------------
-		BatchJobManager job = new BatchJobManager();
-		int cnt = job.getCount();
 		boolean isError = false;
 		if ( flName.equals("") ) {
 			message = "No input query file.<br>";
@@ -166,36 +169,27 @@
 		if ( isError ) {
 			isHtml = true;
 		}
-		// ジョブ同時実行数は5まで
-		else if ( cnt > 5 ) {
-			message = "System is busy now. Please retry later.";
-			isHtml = true;
-		}
 		else {
 			// セッションID, IPアドレス, 時刻
 			Calendar cal = Calendar.getInstance();
 			long timeMillis = cal.getTimeInMillis();
-			SimpleDateFormat sdf1 = new SimpleDateFormat( "yyyyMMddHHmmss" );
-			BatchJobInfo jobInfo = new BatchJobInfo();
+			SimpleDateFormat sdf2 = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
+			time = sdf2.format(new Date(timeMillis));
+
+			JobInfo jobInfo = new JobInfo();
 			jobInfo.setSessionId( request.getSession(true).getId() );
 			jobInfo.setIpAddr( request.getRemoteAddr() );
 			jobInfo.setMailAddr( mailAddress );
-			jobInfo.setTimeStamp( sdf1.format(new Date(timeMillis)) );
-			jobInfo.setFileName( flName);
-			jobInfo.setFileSize( String.valueOf(fileSize) );
+			jobInfo.setTimeStamp( time );
+			jobInfo.setQueryFileName( flName );
+			jobInfo.setQueryFileSize( String.valueOf(fileSize) );
+			jobInfo.setSearchParam( "inst=" + instType + "&ion=" + ionMode );
 			jobInfo.setTempName( tempName );
-			jobInfo.setInstType( instType.split(",") );
-			jobInfo.setIonMode( ionMode );
 			
-			SimpleDateFormat sdf2 = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-			time = sdf2.format(new Date(timeMillis));
-			
-			// ジョブエントリをセット
-			job.setEntry(jobInfo);
-			
-			// ジョブエントリのチェック
-			if ( !job.checkEntry() ) {
-				// ファイル削除
+			// 重複ジョブエントリを有無をチェックする
+			JobManager jobMgr = new JobManager();
+			if ( !jobMgr.checkDuplicateEntry(jobInfo) ) {
+				// クエリファイルを削除する
 				File f = new File( tempDir + "/" + tempName );
 				f.delete();
 				message = "Your job is already running.";
@@ -203,9 +197,10 @@
 			}
 			else {
 				// ジョブエントリを追加する
-				job.addEntry();
+				String jobId = jobMgr.addJobInfo(jobInfo);
 				isHtmlResult = true;
 			}
+			jobMgr.end();
 		}
 	}
 	

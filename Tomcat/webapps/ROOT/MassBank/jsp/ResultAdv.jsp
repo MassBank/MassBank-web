@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.11 2010.11.15
+ * ver 1.0.12 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -476,6 +476,11 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <meta http-equiv="imagetoolbar" content="no">
+<meta name="author" content="MassBank" />
+<meta name="coverage" content="worldwide" />
+<meta name="Targeted Geographic Area" content="worldwide" />
+<meta name="rating" content="general" />
+<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 <meta name="description" content="Mass Spectrum Search Results">
 <meta name="keywords" content="Results">
 <meta name="revisit_after" content="10 days">

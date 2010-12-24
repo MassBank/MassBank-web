@@ -22,7 +22,7 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.20 2010.08.26
+ * ver 1.0.21 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -357,6 +357,11 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <meta http-equiv="imagetoolbar" content="no">
+<meta name="author" content="MassBank" />
+<meta name="coverage" content="worldwide" />
+<meta name="Targeted Geographic Area" content="worldwide" />
+<meta name="rating" content="general" />
+<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 <meta name="description" content="Mass Spectrum Quick Search Results">
 <meta name="keywords" content="Results">
 <meta name="revisit_after" content="10 days">

@@ -22,7 +22,7 @@
  *
  * Package View表示用モジュール
  *
- * ver 1.0.10 2010.09.01
+ * ver 1.0.11 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -80,8 +80,13 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="imagetoolbar" content="no">
-		<meta name="description" content="3D viewer of user's spectra">
-		<meta name="keywords" content="Spectral,3D,Package,View">
+		<meta name="author" content="MassBank" />
+		<meta name="coverage" content="worldwide" />
+		<meta name="Targeted Geographic Area" content="worldwide" />
+		<meta name="rating" content="general" />
+		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+		<meta name="description" content="3D viewer of user's spectra. To disply and compare user's spectra in an uploaded file.">
+		<meta name="keywords" content="Spectral,3D,Package,View,query">
 		<meta name="revisit_after" content="30 days">
 		<link rel="stylesheet" type="text/css" href="./css/Common.css">
 		<script type="text/javascript" src="./script/Common.js"></script>

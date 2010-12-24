@@ -22,7 +22,7 @@
  *
  * MassCalculator表示用モジュール
  *
- * ver 1.0.3 2010.12.20
+ * ver 1.0.4 2010.12.24
  *
  ******************************************************************************/
 %>
@@ -65,12 +65,12 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="Content-Style-Type" content="text/css">
 	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta http-equiv="imagetoolbar" content="no">
 	<meta name="author" content="MassBank" />
 	<meta name="coverage" content="worldwide" />
 	<meta name="Targeted Geographic Area" content="worldwide" />
-	<meta name="classification" content="general,computers,internet,miscellaneous" />
 	<meta name="rating" content="general" />
-	<meta http-equiv="imagetoolbar" content="no">
+	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 	<meta name="description" content="Mass Calculator is a basic mass calculation tool that you can use everywhere in MassBank. There are Formula to m/z and m/z to formula as a function.">
 	<meta name="keywords" content="Mass,Calc,Calculator,mz,Formula">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
