@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.21  2010.11.08
+# ver 3.0.22  2010.12.17
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -448,7 +448,6 @@ print "<pre style=\"font-family:Courier New;font-size:10pt\">\n";
 @boundary = ( 'CH\$', 'AC\$', 'PK\$' );
 $num = @boundary;
 $step = 0;
-$existCopyright = false;
 $isRelated = false;
 $isSpBoundary = false;
 $isMsBoundary = false;
@@ -457,9 +456,6 @@ foreach $l ( @Line ) {
 		$existCopyright = true;
 	}
 	if ( $step < $num && $l =~ /^$boundary[$step]/ ) {
-		if ( $step == 0 && $existCopyright eq false && $copyright ne '' ) {
-			print "COPYRIGHT: $copyright\n";
-		}
 		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
 		$step++;
 	}
@@ -473,7 +469,7 @@ foreach $l ( @Line ) {
 	}
 	if ( $l =~ /^RELATED_RECORD/ ) {
 		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
-		print $l;
+		print "$l\n";
 		$isRelated = true;
 		next;
 	}

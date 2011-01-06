@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.9 2010.11.09
+ * ver 1.0.10 2010.12.17
  *
  ******************************************************************************/
 %>
@@ -247,8 +247,8 @@
 				for ( int k=0; k<fileContents.size(); k++ ) {
 					String lineStr = fileContents.get(k);
 					
-					// 終了タグ以降は無効（必須項目検出対象としない）
-					if ( lineStr.indexOf("//") != -1 ) {
+					// RELATED_RECORDタグもしくは終了タグ以降は無効（必須項目検出対象としない）
+					if ( lineStr.indexOf("RELATED_RECORD:") != -1 || lineStr.indexOf("//") != -1 ) {
 						break;
 					}
 					// 値（ピーク情報）検出（終了タグまでを全てピーク情報とする）
@@ -264,7 +264,13 @@
 						// 必須項目検出
 						findRequired = true;
 						if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
-							isPeakMode = true;
+							if ( lineStr.indexOf(DEFAULT_VALUE) == -1 ) {
+								isPeakMode = true;
+							}
+							else {
+								findValue = true;
+								valStrs.add(DEFAULT_VALUE);
+							}
 						}
 						else {
 							// 値検出
@@ -336,7 +342,7 @@
 							}
 						}
 						// CH$COMPOUND_CLASS
-						else if ( requiredStr.equals("CH$COMPOUND_CLASS: ") ) {
+						else if ( requiredStr.equals("CH$COMPOUND_CLASS: ") && !val.equals(DEFAULT_VALUE) ) {
 							if ( !val.startsWith("Natural Product") && 
 							     !val.startsWith("Non Natural Product") ) {
 								
@@ -379,7 +385,7 @@
 							}
 						}
 						// PK$NUM_PEAK
-						else if ( requiredStr.equals("PK$NUM_PEAK: ") ) {
+						else if ( requiredStr.equals("PK$NUM_PEAK: ") && !val.equals(DEFAULT_VALUE) ) {
 							try {
 								peakNum = Integer.parseInt(val);
 							}
@@ -389,7 +395,7 @@
 							}
 						}
 						// PK$PEAK: m/z int. rel.int.
-						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
+						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") && !val.equals(DEFAULT_VALUE) ) {
 							if ( peakNum != valStrs.size() ) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;is improper.</span><br />" );

@@ -21,7 +21,7 @@
 #
 # [Admin Tool] PEAK.sqlファイル生成
 #
-# ver 3.0.7  2010.12.14
+# ver 3.0.8  2010.12.17
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -80,12 +80,14 @@ foreach my $name ( @fname_list ) {
 			}
 		}
 		elsif ( /^PK\$PEAK: / ) {
-			while ( <IN> ) {
-				s/\r?\n?//g;
-				last if ( $_ eq '//' );
-				s/^ *//;
-				(my $mz, my $val, my $rval) = split;
-				print OUT "INSERT PEAK VALUES ('$Acc', $mz, $val, $rval);\n";
+			if ( !/N\/A$/ ) {
+				while ( <IN> ) {
+					s/\r?\n?//g;
+					last if ( $_ eq 'RELATED_RECORD:' || $_ eq '//' );
+					s/^ *//;
+					(my $mz, my $val, my $rval) = split;
+					print OUT "INSERT PEAK VALUES ('$Acc', $mz, $val, $rval);\n";
+				}
 			}
 			
 			if ( $ionP == 0 ) {
