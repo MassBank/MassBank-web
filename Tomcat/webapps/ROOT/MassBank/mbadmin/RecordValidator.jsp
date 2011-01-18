@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.10 2010.12.17
+ * ver 1.0.11 2011.01.18
  *
  ******************************************************************************/
 %>
@@ -192,7 +192,7 @@
 							isInvalidInfo = true;
 						}
 					}
-					if ( line.indexOf("//") != -1 ) {
+					if ( line.startsWith("//") ) {
 						// 終了タグ検出時フラグセット
 						isEndTagRead = true;
 					}
@@ -248,7 +248,7 @@
 					String lineStr = fileContents.get(k);
 					
 					// RELATED_RECORDタグもしくは終了タグ以降は無効（必須項目検出対象としない）
-					if ( lineStr.indexOf("RELATED_RECORD:") != -1 || lineStr.indexOf("//") != -1 ) {
+					if ( lineStr.indexOf("RELATED_RECORD:") != -1 || lineStr.startsWith("//") ) {
 						break;
 					}
 					// 値（ピーク情報）検出（終了タグまでを全てピーク情報とする）

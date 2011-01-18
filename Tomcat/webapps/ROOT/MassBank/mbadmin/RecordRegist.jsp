@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.8 2010.12.17
+ * ver 1.0.9 2011.01.18
  *
  ******************************************************************************/
 %>
@@ -214,7 +214,7 @@
 					String lineStr = fileContents.get(k);
 					
 					// RELATED_RECORDタグもしくは終了タグ以降は無効（必須項目検出対象としない）
-					if ( lineStr.indexOf("RELATED_RECORD:") != -1 || lineStr.indexOf("//") != -1 ) {
+					if ( lineStr.indexOf("RELATED_RECORD:") != -1 || lineStr.startsWith("//") ) {
 						break;
 					}
 					// 値（ピーク情報）検出（終了タグまでを全てピーク情報とする）
