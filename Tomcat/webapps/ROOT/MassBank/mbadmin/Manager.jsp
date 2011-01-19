@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.8 2010.12.02
+ * ver 1.0.9 2011.01.19
  *
  ******************************************************************************/
 %>
@@ -1336,7 +1336,7 @@ $(window).load(function() {
 				isResult = FileUtil.execSqlFile(dbHostName, "", workSql.getPath());
 				if ( !isResult ) {
 					status = STATUS_ERR;
-					details.append( "<span class=\"errFont\">database unregistered.</span><br />" );
+					details.append( "<span class=\"errFont\">database not exist in MySQL.</span><br />" );
 				}
 				
 				// フォルダ存在確認
