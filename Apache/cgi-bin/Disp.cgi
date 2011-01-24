@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.22  2010.12.17
+# ver 3.0.23  2011.01.24
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -378,7 +378,7 @@ HTML
 
 $profile = "../DB/profile/$db_name/$Acc.jpg";
 if ( -e $profile ) {
-	print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"$profile\" target=\"_blank\"><font style=\"font-size:10pt;\">Profile</font></a><br>";
+	print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"$profile\" target=\"_blank\"><font style=\"font-size:10pt;\">Profile</font></a>";
 }
 
 
