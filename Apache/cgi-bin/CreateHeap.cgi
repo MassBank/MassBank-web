@@ -21,7 +21,7 @@
 #
 # ヒープテーブル作成
 #
-# ver 3.0.2  2011.01.25
+# ver 3.0.3  2011.01.25
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -46,9 +46,16 @@ my $massbank_dir = File::Spec->rel2abs( dirname($0) . "/../" );
 my @db_names = split(/,/, $query->param('dsn'));
 if ( $#db_names < 0 ) {
 	open(MASSBANK_CONF, "$massbank_dir/massbank.conf");
+	my $serverUrl = "";
 	my $isCommentOut = 0;
+	my $isInternal = 0;
 	while ( my $line = <MASSBANK_CONF> ) {
 		$line =~ s/\r?\n?//g;										# 改行コード変換
+		
+		# 自サーバURL取得
+		if ($line =~ m|<FrontServer URL="(.*)"/>|) {
+			$serverUrl = $1;
+		}
 		
 		# コメントアウト終了検出
 		if ($isCommentOut == 1) {
@@ -67,9 +74,21 @@ if ( $#db_names < 0 ) {
 			next;
 		}
 		
-		# コメントアウトされていないDB名を取得
-		if ($line =~ m|<DB>(.*)</DB>| ) {
+		# サーバ内部DB判定
+		if ($line =~ m|<URL>(.*)</URL>|) {
+			if ($serverUrl eq $1) {
+				$isInternal = 1;
+			}
+			else {
+				$isInternal = 0;
+			}
+			next;
+		}
+		
+		# サーバ内部DBかつ、コメントアウトされていないDB名を取得
+		if ($isInternal == 1 && $line =~ m|<DB>(.*)</DB>| ) {
 			push (@db_names, $1);
+			$isInternal = 0;
 		}
 	}
 	close(MASSBANK_CONF);
