@@ -21,58 +21,106 @@
 #
 # ヒープテーブル作成
 #
-# ver 3.0.1  2008.12.05
+# ver 3.0.2  2011.01.25
 #
 #-------------------------------------------------------------------------------
 use CGI;
 use DBI;
+use File::Spec;
+use File::Basename;
+
+#-------------------------------------------------------------------------------
+# 指定したDBのヒープテーブルを作成する（カンマ区切りでDBの複数指定が可能）
+#   例：CreateHeap.cgi?dsn=[db name],[db name],[db name]…
+#
+# dsnパラメータを未指定の場合は、massbank.confのDBを対象にヒープテーブルを作成する
+# massbank.conf内でコメントアウトされたDBは対象外とする
+#-------------------------------------------------------------------------------
 
 print "Content-Type: text/plain\n\n";
 
-$query = new CGI;
-$db_name = $query->param('dsn');
-if ( $db_name eq '' ) {
-	$db_name = "MassBank";
+my $query = new CGI;
+my $massbank_dir = File::Spec->rel2abs( dirname($0) . "/../" );
+
+# 処理対象のDB一覧を取得
+my @db_names = split(/,/, $query->param('dsn'));
+if ( $#db_names < 0 ) {
+	open(MASSBANK_CONF, "$massbank_dir/massbank.conf");
+	my $isCommentOut = 0;
+	while ( my $line = <MASSBANK_CONF> ) {
+		$line =~ s/\r?\n?//g;										# 改行コード変換
+		
+		# コメントアウト終了検出
+		if ($isCommentOut == 1) {
+			if ($line !~ m|-->| || $line =~ m|<!--| ) {
+				next;
+			}
+			$isCommentOut = 0;
+		}
+		
+		# コメントアウト開始検出
+		if ($line =~ m|<!--| ) {
+			$isCommentOut = 1;
+			if ($line =~ m|-->| ) {
+				$isCommentOut = 0;
+			}
+			next;
+		}
+		
+		# コメントアウトされていないDB名を取得
+		if ($line =~ m|<DB>(.*)</DB>| ) {
+			push (@db_names, $1);
+		}
+	}
+	close(MASSBANK_CONF);
 }
-open(F, "DB_HOST_NAME");
+
+# DBホスト名取得
+my $host_name = "";
+open(F, "$massbank_dir/cgi-bin/DB_HOST_NAME");
 while ( <F> ) {
 	chomp;
 	$host_name .= $_;
 }
 
-$DB = "DBI:mysql:$db_name:$host_name";
-$User = 'bird';
-$PassWord = 'bird2006';
-$dbh  = DBI->connect($DB, $User, $PassWord) || die "connect error \n";
-
-$tbl_name = 'PEAK_HEAP';
-$sql = "show tables like 'PEAK_HEAP'";
-@ret = mysql_query($sql);
-print $ret;
-if ( lc($ret[0][0]) eq 'PEAK_HEAP' ) {
-	$ret_name = $ret[0][0];
-	$sql = "select count(*) from $ret_name";
+# ヒープテーブル作成SQL実行
+my $tbl_name = 'PEAK_HEAP';
+foreach my $db_name (@db_names) {
+	print "\n[$db_name]\n";
+	
+	$DB = "DBI:mysql:$db_name:$host_name";
+	$User = 'bird';
+	$PassWord = 'bird2006';
+	$dbh  = DBI->connect($DB, $User, $PassWord) || next;#die "connect error \n";
+	
+	$sql = "SHOW TABLES LIKE '$tbl_name'";
 	@ret = mysql_query($sql);
-	$cnt = $ret[0][0];
-	$sql = "select count(*) from PEAK";
-	@ret = mysql_query($sql);
-	$cnt1 = $ret[0][0];
-	print "DB=$db_name cnt=$cnt, $cnt1";
-	if ( $cnt == $cnt1 ) {
-		$dbh->disconnect;
-		print " -- OK\n";
-		exit(0);
+	if ( uc($ret[0][0]) eq "$tbl_name" ) {
+		$ret_name = $ret[0][0];
+		$sql = "SELECT COUNT(*) FROM $ret_name";
+		@ret = mysql_query($sql);
+		$heapCnt = $ret[0][0];
+		$sql = "SELECT COUNT(*) FROM PEAK";
+		@ret = mysql_query($sql);
+		$peakCnt = $ret[0][0];
+		print "heapCnt=$heapCnt, peakCnt=$peakCnt";
+		if ( $heapCnt == $peakCnt ) {
+			$dbh->disconnect;
+			print " --OK\n";
+			next;
+		}
 	}
+	
+	$sql = "DROP TABLE IF EXISTS $tbl_name";
+	mysql_execute($sql);
+	$sql = "CREATE TABLE $tbl_name(INDEX(ID),INDEX(MZ),INDEX(RELATIVE)) "
+	     . "TYPE=HEAP SELECT ID,MZ,RELATIVE FROM PEAK";
+	mysql_execute($sql);
+	print " CREATE TABLE $tbl_name --OK\n";
+	
+	$dbh->disconnect;
 }
-
-$sql = "DROP TABLE IF EXISTS $tbl_name";
-mysql_execute($sql);
-$sql = "CREATE TABLE $tbl_name(INDEX(ID),INDEX(MZ),INDEX(RELATIVE)) "
-     . "TYPE=HEAP SELECT ID,MZ,RELATIVE FROM PEAK";
-mysql_execute($sql);
-print "\nCREATE TABLE $tbl_name OK\n";
-
-$dbh->disconnect;
+exit(0);
 
 sub mysql_query() {
 	local($sql) = @_;
