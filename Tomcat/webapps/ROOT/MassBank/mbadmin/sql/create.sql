@@ -5,10 +5,10 @@ USE `SAMPLE_DB`;
 -- Table structure for table `PEAK`
 --
 CREATE TABLE PEAK (
-	ID          char(8)  NOT NULL,
-	MZ          double   NOT NULL,
-	INTENSITY   float    NOT NULL,
-	RELATIVE    smallint NOT NULL,
+	ID          CHAR(8)  NOT NULL,
+	MZ          DOUBLE   NOT NULL,
+	INTENSITY   FLOAT    NOT NULL,
+	RELATIVE    SMALLINT NOT NULL,
 	UNIQUE(ID,MZ)
 );
 
@@ -16,10 +16,10 @@ CREATE TABLE PEAK (
 -- Table structure for table `SPECTRUM`
 --
 CREATE TABLE SPECTRUM (
-	ID          char(8)      NOT NULL,
-	NAME        varchar(255) NOT NULL,
-	ION         tinyint      NOT NULL,
-	PARENT_ID   char(8),
+	ID          CHAR(8)      NOT NULL,
+	NAME        VARCHAR(255) NOT NULL,
+	ION         TINYINT      NOT NULL,
+	PARENT_ID   CHAR(8),
 	COLLISION_ENERGY VARCHAR(10),
 	PRECURSOR_MZ SMALLINT UNSIGNED,
 	PRIMARY KEY(ID),
@@ -30,12 +30,12 @@ CREATE TABLE SPECTRUM (
 -- Table structure for table `TREE`
 --
 CREATE TABLE TREE (
-	NO          int unsigned      NOT NULL,
-	PARENT      int unsigned      NOT NULL,
-	POS         smallint unsigned NOT NULL,
-	SON         smallint          NOT NULL,
-	INFO        varchar(127)      NOT NULL,
-	ID          char(8),
+	NO          INT UNSIGNED      NOT NULL,
+	PARENT      INT UNSIGNED      NOT NULL,
+	POS         SMALLINT UNSIGNED NOT NULL,
+	SON         SMALLINT          NOT NULL,
+	INFO        VARCHAR(127)      NOT NULL,
+	ID          CHAR(8),
 	INDEX(PARENT),
 	INDEX(ID)
 );
@@ -49,8 +49,8 @@ CREATE TABLE RECORD (
 	FORMULA       VARCHAR(30),
 	EXACT_MASS    DOUBLE,
 	INSTRUMENT_NO TINYINT UNSIGNED,
-	SMILES        VARCHAR(200),
-	IUPAC         VARCHAR(200),
+	SMILES        TEXT,
+	IUPAC         TEXT,
 	PRECURSOR_MZ  SMALLINT UNSIGNED,
 	PRIMARY KEY(ID),
 	INDEX(FORMULA, EXACT_MASS, INSTRUMENT_NO)
@@ -73,6 +73,7 @@ CREATE TABLE CH_LINK (
 	CAS             TEXT,
 	CHEBI           TEXT,
 	CHEMPDB         TEXT,
+	CHEMSPIDER      TEXT,
 	KEGG            TEXT,
 	NIKKAJI         TEXT,
 	PUBCHEM         TEXT,

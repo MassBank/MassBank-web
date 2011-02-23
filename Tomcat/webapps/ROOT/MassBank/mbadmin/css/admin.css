@@ -20,7 +20,7 @@
  *
  * Admin Tool用スタイルシート
  *
- * ver 1.0.8 2010.02.05
+ * ver 1.0.9 2011.01.27
  *
  ******************************************************************************/
 
@@ -144,6 +144,11 @@ hr {
 	font-size: 12pt;
 	font-weight: bold;
 }
+#top div.home {
+	width: 100px;
+	font-size: 12pt;
+	font-weight: bold;
+}
 #top div.menu {
 	color: #3300CC;
 	font-size: 14pt;
@@ -163,7 +168,21 @@ hr {
 	color: White;
 	background-color: Crimson;
 	border: 1px Gainsboro solid;
-	border-left: 4px MediumBlue solid;
+	padding: 3px 9px;
+	margin-top: 7px;
+	cursor: pointer;
+}
+#top div.itemHome {
+	color: #3300CC;
+	background-color: Beige;
+	border: 1px Gainsboro solid;
+	padding: 3px 9px;
+	margin-top: 7px;
+}
+#top div.itemHomeOver {
+	color: White;
+	background-color: Crimson;
+	border: 1px Gainsboro solid;
 	padding: 3px 9px;
 	margin-top: 7px;
 	cursor: pointer;

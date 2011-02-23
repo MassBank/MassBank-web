@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.9 2011.01.18
+ * ver 1.0.13 2011.02.18
  *
  ******************************************************************************/
 %>
@@ -214,14 +214,13 @@
 					String lineStr = fileContents.get(k);
 					
 					// RELATED_RECORDタグもしくは終了タグ以降は無効（必須項目検出対象としない）
-					if ( lineStr.indexOf("RELATED_RECORD:") != -1 || lineStr.startsWith("//") ) {
+					if ( lineStr.startsWith("RELATED_RECORD:") || lineStr.startsWith("//") ) {
 						break;
 					}
 					// 値（ピーク情報）検出（終了タグまでを全てピーク情報とする）
 					else if ( isPeakMode ) {
 						findRequired = true;
 						if ( !lineStr.trim().equals("") ) {
-							findValue = true;
 							valStrs.add(lineStr);
 						}
 					}
@@ -230,13 +229,8 @@
 						// 必須項目検出
 						findRequired = true;
 						if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
-							if ( lineStr.indexOf(DEFAULT_VALUE) == -1 ) {
-								isPeakMode = true;
-							}
-							else {
-								findValue = true;
-								valStrs.add(DEFAULT_VALUE);
-							}
+							isPeakMode = true;
+							findValue = true;
 						}
 						else {
 							// 値検出
@@ -266,7 +260,7 @@
 						//----------------------------------------------------
 						// 各値チェック
 						//----------------------------------------------------
-						String val = valStrs.get(0);
+						String val = (valStrs.size() > 0) ? valStrs.get(0) : "";
 						// ACESSION
 						if ( requiredStr.equals("ACCESSION: ") ) {
 							if ( !val.equals(name.replace(REC_EXTENSION, "")) ) {
@@ -285,12 +279,12 @@
 								Integer.parseInt(val);
 							}
 							catch (NumberFormatException e) {
-								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$NUM_PEAK:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$NUM_PEAK:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is not numeric." ) );
 								break;
 							}
 						}
 						// PK$PEAK: m/z int. rel.int.
-						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") && !val.equals(DEFAULT_VALUE) ) {
+						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
 							String peak = "";
 							String mz = "";
 							String intensity = "";
@@ -520,11 +514,11 @@
 		// TREE.sql生成
 		//----------------------------------------------------
 		final String[] tmpDbName = conf.getDbName();
-		final String[] siteLongName = conf.getSiteLongName();
+		final String[] tmpSiteName = conf.getSiteName();
 		String siteName = "";
 		for ( int i=0; i < tmpDbName.length; i++ ) {
 			if ( tmpDbName[i].equals(selDbName) ) {
-				siteName = siteLongName[i];
+				siteName = tmpSiteName[i];
 				break;
 			}
 		}

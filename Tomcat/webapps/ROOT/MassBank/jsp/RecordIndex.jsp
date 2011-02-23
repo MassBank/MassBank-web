@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.21 2010.12.24
+ * ver 1.0.22 2011.02.09
  *
  ******************************************************************************/
 %>
@@ -366,6 +366,9 @@
 	DefaultPieDataset siteGraphData = new DefaultPieDataset();
 	DefaultPieDataset instGraphData = new DefaultPieDataset();
 	
+	// グラフデータ表示件数
+	final int MAX_DISP_DATA = 10;
+	
 	Set keys = null;
 	String key = null;
 	int val = 0;
@@ -375,13 +378,32 @@
 	// Siteグラフデータセット
 	if (totalSiteNum > 0) {
 		keys = siteData.keySet();
+		int siteNum = 0;
 		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
 			key = (String)iterator.next();
 			val = siteData.get(key);
 			percent = new BigDecimal(String.valueOf(val / totalSiteNum * 100));
 			lavel = key + " : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
-			
+			siteNum++;
 			siteGraphData.setValue(lavel, val);
+		}
+		siteGraphData.sortByValues(SortOrder.DESCENDING);
+		
+		// グラフデータが多い場合は表示データを省略
+		long etcVal = 0;
+		int siteCount = siteGraphData.getItemCount();
+		ArrayList<Comparable> etcList = new ArrayList<Comparable>();
+		if ( siteCount > MAX_DISP_DATA) {
+			for (int index=MAX_DISP_DATA; index<siteCount; index++) {
+				etcList.add(siteGraphData.getKey(index));
+			}
+			for (Comparable etcKey:etcList) {
+				etcVal += siteGraphData.getValue(etcKey).longValue();
+				siteGraphData.remove(etcKey);
+			}
+			percent = new BigDecimal(String.valueOf(etcVal / totalSiteNum * 100));
+			lavel = "etc. : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			siteGraphData.setValue(lavel, etcVal);
 		}
 	}
 	else {
@@ -391,13 +413,32 @@
 	// Instrument Typeグラフデータセット
 	if (totalInstNum > 0) {
 		keys = instData.keySet();
+		int instNum = 0;
 		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
 			key = (String)iterator.next();
 			val = instData.get(key);
 			percent = new BigDecimal(String.valueOf(val / totalInstNum * 100));
 			lavel = key + " : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
-			
+			instNum++;
 			instGraphData.setValue(lavel, val);
+		}
+		instGraphData.sortByValues(SortOrder.DESCENDING);
+		
+		// グラフデータが多い場合は表示データを省略
+		long etcVal = 0;
+		int instCount = instGraphData.getItemCount();
+		ArrayList<Comparable> etcList = new ArrayList<Comparable>();
+		if ( instCount > MAX_DISP_DATA) {
+			for (int index=MAX_DISP_DATA; index<instCount; index++) {
+				etcList.add(instGraphData.getKey(index));
+			}
+			for (Comparable etcKey:etcList) {
+				etcVal += instGraphData.getValue(etcKey).longValue();
+				instGraphData.remove(etcKey);
+			}
+			percent = new BigDecimal(String.valueOf(etcVal / totalInstNum * 100));
+			lavel = "etc. : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			instGraphData.setValue(lavel, etcVal);
 		}
 	}
 	else {
@@ -407,8 +448,10 @@
 	
 	// グラフ一括生成＆出力
 	LinkedHashMap<String, DefaultPieDataset> graphDataMap = new LinkedHashMap<String, DefaultPieDataset>(2);
-	graphDataMap.put("Contributor", siteGraphData);
-	graphDataMap.put("Instrument Type", instGraphData);
+	int siteTopNum = (siteGraphData.getItemCount() < MAX_DISP_DATA) ? siteGraphData.getItemCount() : MAX_DISP_DATA;
+	int instTopNum = (instGraphData.getItemCount() < MAX_DISP_DATA) ? instGraphData.getItemCount() : MAX_DISP_DATA;
+	graphDataMap.put("Contributor  top " + siteTopNum, siteGraphData);
+	graphDataMap.put("Instrument Type  top " + instTopNum, instGraphData);
 	DefaultPieDataset data = null;
 	String fileName = null;
 	String filePath = null;
@@ -419,9 +462,6 @@
 		
 		// グラフ用データ取得
 		data = graphDataMap.get(key);
-		
-		// グラフ用データソート
-		data.sortByValues(SortOrder.DESCENDING);
 		
 		// JFreeChartオブジェクト生成
 		JFreeChart chart = ChartFactory.createPieChart(key, data, true, true, false);

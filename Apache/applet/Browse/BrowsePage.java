@@ -20,7 +20,7 @@
  *
  * BrowsPage メインクラス
  *
- * ver 2.0.5 2008.12.05
+ * ver 2.0.6 2011.02.10
  *
  ******************************************************************************/
 
@@ -84,8 +84,8 @@ public class BrowsePage extends JApplet {
 		
 		if (dummy_root.getChildCount() == 0) {
 			// アイコン表示を変更するためルートをEmptyNodeとする
-			String [] siteLongName = conf.getSiteLongName();
-			EmptyNode rootNode = new EmptyNode(MyTreeNode.DUMMY_ROOT, "MassBank / " + siteLongName[Integer.parseInt(site)]);
+			String [] siteName = conf.getSiteName();
+			EmptyNode rootNode = new EmptyNode(MyTreeNode.DUMMY_ROOT, "MassBank / " + siteName[Integer.parseInt(site)]);
 			
 			treeModel = new DefaultTreeModel(rootNode);
 			tree = new JTree(treeModel);

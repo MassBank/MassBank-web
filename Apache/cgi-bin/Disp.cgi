@@ -21,24 +21,28 @@
 #
 # レコードページ表示
 #
-# ver 3.0.23  2011.01.24
+# ver 3.0.25  2011.02.22
 #
 #-------------------------------------------------------------------------------
 %FMT = (
-'PUBLICATION:',         'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
-'CH\$LINK: CAS',        'http://webbook.nist.gov/cgi/cbook.cgi?ID=%s',
-'CH\$LINK: CHEBI',      'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
-'CH\$LINK: CHEMPDB',    'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;
-CODE=%s',
-'CH\$LINK: CHEMSPIDER', 'http://www.chemspider.com/%s',
-'CH\$LINK: KEGG',       'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
-'CH\$LINK: NIKKAJI',    'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
-'CH\$LINK: PUBCHEM',    'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
-'CH\$LINK: LIPIDBANK',  'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
-'CH\$LINK: KAPPAVIEW',  'http://kpv.kazusa.or.jp/kpv/display.jsp?id=%s&t=c',
-'CH\$LINK: KNAPSACK',   'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
+'PUBLICATION:',              'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
+'CH\$LINK: CAS',             'http://webbook.nist.gov/cgi/cbook.cgi?ID=%s',
+'CH\$LINK: CAYMAN',          'http://www.caymanchem.com/app/template/Product.vm/catalog/%s',
+'CH\$LINK: CHEBI',           'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
+'CH\$LINK: CHEMPDB',         'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
+'CH\$LINK: CHEMSPIDER',      'http://www.chemspider.com/%s',
+'CH\$LINK: FLAVONOIDVIEWER', 'http://www.metabolome.jp/software/FlavonoidViewer/',
+'CH\$LINK: HMDB',            'http://www.hmdb.ca/metabolites/%s',
+'CH\$LINK: KAPPAVIEW',       'http://kpv.kazusa.or.jp/kpv/display.jsp?id=%s&t=c',
+'CH\$LINK: KEGG',            'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
+'CH\$LINK: KNAPSACK',        'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
+'CH\$LINK: LIPIDBANK',       'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
+'CH\$LINK: LIPIDMAPS',       'http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=%s',
+'CH\$LINK: NIKKAJI',         'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
+'CH\$LINK: PUBCHEM',         'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
 'CH\$LINK: OligosaccharideDataBase', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html%s',
 'CH\$LINK: OligosaccharideDataBase2D', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html',
+'SP\$LINK: NCBI-TAXONOMY', 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%s',
 'MS\$RELATED_MS: PREVIOUS_SPECTRUM', 'Dispatcher.jsp?type=disp&id=%s'
 );
 

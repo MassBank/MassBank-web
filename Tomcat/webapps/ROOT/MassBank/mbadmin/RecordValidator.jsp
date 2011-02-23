@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.11 2011.01.18
+ * ver 1.0.15 2011.02.18
  *
  ******************************************************************************/
 %>
@@ -182,6 +182,8 @@
 			boolean isInvalidInfo = false;
 			boolean isDoubleByte = false;
 			ArrayList<String> fileContents = new ArrayList<String>();
+			ArrayList<String> workChName =  new ArrayList<String>();	// RECORD_TITLEチェック用にCH$NAMEの値を退避
+			String workAcInstrumentType = "";							// RECORD_TITLEチェック用にAC$INSTRUMENT_TYPEの値を退避
 			String line = "";
 			BufferedReader br = null;
 			try {
@@ -192,13 +194,24 @@
 							isInvalidInfo = true;
 						}
 					}
+					
+					// 終了タグ検出時フラグセット
 					if ( line.startsWith("//") ) {
-						// 終了タグ検出時フラグセット
 						isEndTagRead = true;
 					}
 					fileContents.add(line);
+					
+					// CH$NAME退避
+					if ( line.startsWith("CH$NAME: ") ) {
+						workChName.add(line.trim().replaceAll("CH\\$NAME: ", ""));
+					}
+					// AC$INSTRUMENT_TYPE退避
+					else if ( line.startsWith("AC$INSTRUMENT_TYPE: ") ) {
+						workAcInstrumentType = line.trim().replaceAll("AC\\$INSTRUMENT_TYPE: ", "");
+					}
+					
+					// 全角文字混入チェック
 					if ( !isDoubleByte ) {
-						// 全角文字混入チェック
 						byte[] bytes = line.getBytes("MS932");
 						if ( bytes.length != line.length() ) {
 							isDoubleByte = true;
@@ -235,9 +248,8 @@
 			//----------------------------------------------------
 			// 必須項目に対するメインチェック処理
 			//----------------------------------------------------
-			String[] recTitle = null;
 			boolean isNameCheck = false;
-			int peakNum = 0;
+			int peakNum = -1;
 			for (int j=0; j<requiredList.length; j++ ) {
 				String requiredStr = requiredList[j];
 				ArrayList<String> valStrs = new ArrayList<String>();	// 値
@@ -248,14 +260,13 @@
 					String lineStr = fileContents.get(k);
 					
 					// RELATED_RECORDタグもしくは終了タグ以降は無効（必須項目検出対象としない）
-					if ( lineStr.indexOf("RELATED_RECORD:") != -1 || lineStr.startsWith("//") ) {
+					if ( lineStr.startsWith("RELATED_RECORD:") || lineStr.startsWith("//") ) {
 						break;
 					}
 					// 値（ピーク情報）検出（終了タグまでを全てピーク情報とする）
 					else if ( isPeakMode ) {
 						findRequired = true;
 						if ( !lineStr.trim().equals("") ) {
-							findValue = true;
 							valStrs.add(lineStr);
 						}
 					}
@@ -264,13 +275,8 @@
 						// 必須項目検出
 						findRequired = true;
 						if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
-							if ( lineStr.indexOf(DEFAULT_VALUE) == -1 ) {
-								isPeakMode = true;
-							}
-							else {
-								findValue = true;
-								valStrs.add(DEFAULT_VALUE);
-							}
+							isPeakMode = true;
+							findValue = true;
 						}
 						else {
 							// 値検出
@@ -300,7 +306,7 @@
 						//----------------------------------------------------
 						// 各値チェック
 						//----------------------------------------------------
-						String val = valStrs.get(0);
+						String val = (valStrs.size() > 0) ? valStrs.get(0) : "";
 						// ACESSION
 						if ( requiredStr.equals("ACCESSION: ") ) {
 							if ( !val.equals(name.replace(REC_EXTENSION, "")) ) {
@@ -314,10 +320,35 @@
 						}
 						// RECORD_TITLE
 						else if ( requiredStr.equals("RECORD_TITLE: ") ) {
-							recTitle = val.split(";");
-							if ( recTitle.length < 2 ) {
-								if ( status.equals("") ) status = STATUS_WARN;
-								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not record title format.</span><br />" );
+							if ( !val.equals(DEFAULT_VALUE) ) {
+								if ( val.indexOf(";") != -1 ) {
+									String[] recTitle = val.split(";");
+									if ( !workChName.contains(recTitle[0].trim()) ) {
+										if ( status.equals("") ) status = STATUS_WARN;
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "],&nbsp;&nbsp;compound name is not included in the&nbsp;&nbsp;[CH$NAME].</span><br />" );
+									}
+									if ( !workAcInstrumentType.equals(recTitle[1].trim()) ) {
+										if ( status.equals("") ) status = STATUS_WARN;
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "],&nbsp;&nbsp;instrument type is different from&nbsp;&nbsp;[AC$INSTRUMENT_TYPE].</span><br />" );
+									}
+								}
+								else {
+									if ( status.equals("") ) status = STATUS_WARN;
+									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not record title format.</span><br />" );
+									
+									if ( !workChName.contains(val) ) {
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr +"],&nbsp;&nbsp;compound name is not included in the&nbsp;&nbsp;[CH$NAME].</span><br />" );
+									}
+									if ( !workAcInstrumentType.equals(DEFAULT_VALUE) ) {
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr +"],&nbsp;&nbsp;instrument type is different from&nbsp;&nbsp;[AC$INSTRUMENT_TYPE].</span><br />" );
+									}
+								}
+							}
+							else {
+								if ( !workAcInstrumentType.equals(DEFAULT_VALUE) ) {
+									if ( status.equals("") ) status = STATUS_WARN;
+									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "],&nbsp;&nbsp;instrument type is different from&nbsp;&nbsp;[AC$INSTRUMENT_TYPE].</span><br />" );
+								}
 							}
 						}
 						// DATE
@@ -329,16 +360,6 @@
 							} catch (ParseException e) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not date format.</span><br />" );
-							}
-						}
-						// CH$NAME
-						else if ( requiredStr.equals("CH$NAME: ") ) {
-							if ( !isNameCheck && recTitle.length >= 2 ) {
-								if ( !val.trim().startsWith(recTitle[0].trim()) ) {
-									if ( status.equals("") ) status = STATUS_WARN;
-									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;verify integrity of record title.</span><br />" );
-								}
-								isNameCheck = true;
 							}
 						}
 						// CH$COMPOUND_CLASS
@@ -362,12 +383,6 @@
 						}
 						// AC$INSTRUMENT_TYPE
 						else if ( requiredStr.equals("AC$INSTRUMENT_TYPE: ") && !val.equals(DEFAULT_VALUE) ) {
-							if ( recTitle.length >= 2 ) {
-								if ( !val.trim().startsWith(recTitle[1].trim()) ) {
-									if ( status.equals("") ) status = STATUS_WARN;
-									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;verify integrity of record title.</span><br />" );
-								}
-							}
 							if ( val.trim().indexOf(" ") != -1 ) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is space included.</span><br />" );
@@ -395,10 +410,14 @@
 							}
 						}
 						// PK$PEAK: m/z int. rel.int.
-						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") && !val.equals(DEFAULT_VALUE) ) {
+						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
 							if ( peakNum != valStrs.size() ) {
 								if ( status.equals("") ) status = STATUS_WARN;
-								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;is improper.</span><br />" );
+								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;is mismatch or \"" + DEFAULT_VALUE + "\".</span><br />" );
+							}
+							if ( valStrs.size() == 0 ) {
+								if ( status.equals("") ) status = STATUS_WARN;
+								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$PEAK: m/z int. rel.int.]&nbsp;&nbsp;is no value.</span><br />" );
 							}
 							String peak = "";
 							String mz = "";
