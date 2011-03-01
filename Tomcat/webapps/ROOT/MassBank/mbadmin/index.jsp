@@ -22,7 +22,7 @@
  *
  * Admin Tool トップページ
  *
- * ver 1.0.13 2011.01.27
+ * ver 1.0.14 2011.03.01
  *
  ******************************************************************************/
 %>
@@ -48,7 +48,7 @@
 <br />
 <hr>
 <br />
-<div class="base" style="height:320px;">
+<div class="base" style="height:340px;">
 	<div class="menu">Main Menu</div>
 	<div class="baseHerf" style="float:left;">
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</div>
@@ -72,7 +72,7 @@
 %>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='Manager.jsp'">Database Manager</div>
 	</div>
-	<div class="home" style="margin-left:850px; margin-top:30px; text-align:center;">
+	<div class="home" style="position: absolute; top:480px; left:860px; text-align:center;">
 		<div class="itemHome" onMouseOver="className='itemHomeOver'" onMouseOut="className='itemHome'" onClick="parent.location.href='../'">HOME</div>
 	</div>
 </div>

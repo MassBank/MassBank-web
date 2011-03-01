@@ -22,7 +22,7 @@
  *
  * 構造式登録
  *
- * ver 1.1.8 2010.11.29
+ * ver 1.1.9 2011.03.01
  *
  ******************************************************************************/
 %>
@@ -635,7 +635,7 @@ function selDb() {
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + MOLDATA_ZIP_URL + "\">moldata.zip</a> or <a href=\"" + GIFDATA_ZIP_URL + "\">gifdata.zip</a>.</span><br>" );
+		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + MOLDATA_ZIP_URL + "\">moldata.zip</a>.</span><br>" );
 		out.println( "</form>" );
 		out.println( "<hr><br>" );
 		if ( !FileUpload.isMultipartContent(request) ) {

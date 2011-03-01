@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.25  2011.02.22
+# ver 3.0.26  2011.03.01
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -33,7 +33,7 @@
 'CH\$LINK: CHEMSPIDER',      'http://www.chemspider.com/%s',
 'CH\$LINK: FLAVONOIDVIEWER', 'http://www.metabolome.jp/software/FlavonoidViewer/',
 'CH\$LINK: HMDB',            'http://www.hmdb.ca/metabolites/%s',
-'CH\$LINK: KAPPAVIEW',       'http://kpv.kazusa.or.jp/kpv/display.jsp?id=%s&t=c',
+'CH\$LINK: KAPPAVIEW',       'http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=%s',
 'CH\$LINK: KEGG',            'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
 'CH\$LINK: KNAPSACK',        'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
 'CH\$LINK: LIPIDBANK',       'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
