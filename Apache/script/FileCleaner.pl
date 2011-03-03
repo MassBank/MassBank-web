@@ -21,7 +21,7 @@
 #
 # ファイルクリーナー
 #
-# ver 1.0.1  2010.11.02
+# ver 1.0.2  2011.03.03
 #
 #-------------------------------------------------------------------------------
 
@@ -38,13 +38,13 @@
 #
 # 補足：
 #    [絶対パス]：削除対象ファイルを含む絶対パス（必須）
-#    [拡張子]：削除対象ファイルの拡張子、"&"区切りで複数指定可能（必須）
+#    [拡張子]：削除対象ファイルの拡張子、大括弧で囲み"/"区切りで複数指定可能（必須）
 #    [日数]：削除対象ファイルの保持日数（任意）
 #
 # 使用例：
-#    FileCleaner.pl /usr/local/tomcat/logs/ log 30
-#    FileCleaner.pl /tmp/ log&tmp&txt
-#    FileCleaner.pl "C:/MassBank/tomcat/logs/" "log&txt"
+#    FileCleaner.pl /usr/local/tomcat/logs/ [log] 30
+#    FileCleaner.pl /tmp/ [log/tmp/txt]
+#    FileCleaner.pl "C:/MassBank/tomcat/logs/" [log/txt]
 #
 ################################################################################
 
@@ -61,27 +61,24 @@ if ( @ARGV < 2 ) {
 	die "Usage... $0 path extension [days] \n";
 }
 else {
+	# 絶対パス取得及び整形
+	$targetPath = $ARGV[0];
+	$targetPath =~ s|"||g;
+	$targetPath =~ s|\\|/|g;
+	if ( $targetPath !~ m|^.*/$|o ) { $targetPath .= "/"; }
 	# 絶対パスチェック
-	if ( index($ARGV[0], '\\') > -1 ) {
-		die "Please delimit the path in the '/'.\n";
-	}
-	elsif ( $ARGV[0] =~ m|^/.*$|o || $ARGV[0] =~ m|^["\w]*:/.*$|o ) {
-		$targetPath = $ARGV[0];
-		if ( $targetPath !~ m|^.*/$|o ) {
-			$targetPath .= "/";
-		}
-	}
-	else {
+	if ( $targetPath !~ m|^/[^/].*$|o && $targetPath !~ m|^\w:/.*$|o ) {
 		die "Please specify the absolute path.\n";
 	}
 	if ( ! -e $targetPath ) {
 		die "Please specify the existing path.\n";
 	}
 	# 拡張子チェック
+	$ARGV[1] =~ s|[\[\]]||g;
 	my %extesionHash;
 	for ( @extensionList ) { $extesionHash{$_} = $_; }
 	my $extError = 0;
-	@targetExtList = split( /&/, $ARGV[1] );
+	@targetExtList = split( /\//, $ARGV[1] );
 	foreach my $extension ( @targetExtList ) {
 		if ( !exists($extesionHash{$extension}) ) {
 			$extError = 1;

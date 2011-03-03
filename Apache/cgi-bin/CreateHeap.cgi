@@ -21,7 +21,7 @@
 #
 # ヒープテーブル作成
 #
-# ver 3.0.4  2011.03.02
+# ver 3.0.5  2011.03.03
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -53,7 +53,7 @@ if ( $#db_names < 0 ) {
 		$line =~ s/\r?\n?//g;										# 改行コード変換
 		
 		# 自サーバURL取得
-		if ($line =~ m|<FrontServer URL="(.*)"/>|) {
+		if ($line =~ m|<FrontServer [ ]*URL="(.*)"[ ]*/>|) {
 			$serverUrl = $1;
 		}
 		
@@ -75,7 +75,7 @@ if ( $#db_names < 0 ) {
 		}
 		
 		# サーバ内部DB判定
-		if ($line =~ m|<MiddleServer URL=".*"/>|) {
+		if ($line =~ m|<MiddleServer [ ]*URL=".*"[ ]*/>|) {
 			$isInternal = 1;
 			next;
 		}
