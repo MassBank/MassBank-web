@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.22 2011.02.09
+ * ver 1.0.23 2011.03.04
  *
  ******************************************************************************/
 %>
@@ -36,6 +36,8 @@
 <%@ page import="java.awt.Font" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.DecimalFormat" %>
+<%@ page import="java.util.regex.Matcher" %>
+<%@ page import="java.util.regex.Pattern" %>
 <%@ page import="org.jfree.chart.ChartFactory" %>
 <%@ page import="org.jfree.chart.ChartUtilities" %>
 <%@ page import="org.jfree.chart.JFreeChart" %>
@@ -520,6 +522,8 @@
 		
 		// グラフのファイル出力
 		fileName = "massbank_" + key + "_Graph.jpg";
+		fileName = Pattern.compile("[ ]*top[ ]*[0-9]*").matcher(fileName).replaceAll("");
+		
 		filePath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPTEMP_PATH ) + fileName;
 		BufferedOutputStream outStream = null;
 		try {
