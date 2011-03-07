@@ -21,16 +21,17 @@
 #
 # スペクトルのグループ情報取得
 #
-# ver 3.0.2  2008.12.05
+# ver 3.0.3  2011.03.07
 #
 #-------------------------------------------------------------------------------
 use CGI;
 use DBI;
 
-$query = new CGI;
-$db_name = $query->param('dsn');
-$id = $query->param('id');
-$relation = $query->param('relation');
+my $query = new CGI;
+my $db_name = $query->param('dsn');
+my $id = $query->param('id');
+my $ion = $query->param('ion');
+my $relation = $query->param('relation');
 if ( $db_name eq '' ) {
 	$db_name = "MassBank";
 }
@@ -54,10 +55,16 @@ if ( $relation ne 'true' ) {
 }
 # get child spectrum info & get relation parent spectrum info
 else {
-	@parent_ids = &MySql("select PARENT_ID from SPECTRUM where ID='$id'");
-	if ( $parent_ids[0][0] ne '' ) {
-		$parent_id = $parent_ids[0][0];
-		@child_ids = &MySql("select ID from SPECTRUM where PARENT_ID='$parent_id'");
+	my @parent_info = &MySql("SELECT s.NAME, r.INSTRUMENT_NO FROM SPECTRUM s LEFT JOIN RECORD r ON s.ID=r.ID WHERE s.ID='$id'");
+	if ( $parent_info[0][0] ne '' ) {
+		my $title = $parent_info[0][0];
+		$title =~ s|^([^;]*; [^;]*;) .*|$1|;
+		$title =~ s|'|\'|;
+		my $ionStr = "";
+		$ionStr = " and s.ION > 0" if $ion > 0;
+		$ionStr = " and s.ION < 0" if $ion < 0;
+		my $inst = $parent_info[0][1];
+		my @child_ids = &MySql("SELECT s.ID FROM SPECTRUM s LEFT JOIN RECORD r ON s.ID=r.ID WHERE INSTR(s.NAME, '$title')=1$ionStr and r.INSTRUMENT_NO='$inst' ORDER BY 1");
 		for( $i=0; $i<=$#child_ids; $i++ ) {
 			$child_id = $child_ids[$i][0];
 			if ( $child_id ne '' ) {
@@ -71,35 +78,6 @@ else {
 }
 $dbh->disconnect;
 exit(0);
-
-sub getParentInfo() {
-	local($key_id) = @_;
-	my(@ans, $num, $rec, $name, $precursor);
-	@ans = &MySql("select pp.MZ, pp.RELATIVE from PARENT_SPECTRUM ps left join PARENT_PEAK pp on ps.SPECTRUM_NO = pp.SPECTRUM_NO where ps.ID = '$key_id' order by pp.MZ");
-	$num = @ans;
-	if ( $num == 0 ) {
-		print "0\t0\t\t";
-	}
-	else {
-		foreach $rec ( @ans ) {
-			print join("\t", @$rec), "\t\t";
-		}
-	}
-	
-	# follow record info
-	print "::";
-	
-	@ans = &MySql("select NAME, PRECURSOR_MZ from PARENT_SPECTRUM where ID = '$key_id'");
-	$name = $ans[0][0];
-	if ( $name ne '' ) {
-		print "\tname=$name\t";
-	}
-	$precursor = $ans[0][1];
-	if ( $precursor ne '' ) {
-		print "\tprecursor=$precursor\t";
-	}
-	print "\tid=$key_id\t\n";
-}
 
 sub getChildInfo() {
 	local($key_id) = @_;

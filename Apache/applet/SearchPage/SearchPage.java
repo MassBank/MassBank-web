@@ -20,7 +20,7 @@
  *
  * SearchPage クラス
  *
- * ver 1.0.14 2010.01.08
+ * ver 1.0.17 2011.03.07
  *
  ******************************************************************************/
 
@@ -31,6 +31,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -215,7 +216,7 @@ public class SearchPage extends JApplet {
 	public static int initAppletWidth = 0;					// アプレット初期画面サイズ(幅)
 	public static int initAppletHight = 0;					// アプレット初期画面サイズ(高さ)
 	
-	public static final int MAX_DISPLAY_NUM = 20;				// Package View最大表示可能件数
+	public static final int MAX_DISPLAY_NUM = 30;				// Package View最大表示可能件数
 	
 	private CookieManager cm;							// Cookie Manager
 //	private final String COOKIE_PRE = "PRE";			// Cookie情報キー（PRECURSOR）
@@ -223,7 +224,15 @@ public class SearchPage extends JApplet {
 	private final String COOKIE_CUTOFF = "CUTOFF"; 	// Cookie情報キー（COOKIE_CUTOFF）
 	private final String COOKIE_INST = "INST";			// Cookie情報キー（INSTRUMENT）
 	private final String COOKIE_ION = "ION";			// Cookie情報キー（ION）
-	
+
+	private final JRadioButton dispSelected = new JRadioButton("selected", true);
+	private final JRadioButton dispRelated = new JRadioButton("related");
+	private final JLabel lbl2 = new JLabel("Package View display mode  : ");
+
+	public ProgressDialog dlg;
+	public String[] ps = null;
+	public String param = "";
+
 	/**
 	 * メインプログラム
 	 */
@@ -265,6 +274,9 @@ public class SearchPage extends JApplet {
 		
 		// ウインドウ生成
 		createWindow();
+
+		// 検索中ダイアログ
+		this.dlg = new ProgressDialog(getFrame());
 
 		// ユーザーファイル読込み
 		if (getParameter("file") != null) {
@@ -528,9 +540,6 @@ public class SearchPage extends JApplet {
 		
 		// オプションパネル
 		JPanel dispModePanel = new JPanel();
-		JLabel lbl2 = new JLabel("Package View display mode  : ");
-		final JRadioButton dispSelected = new JRadioButton("selected", true);
-		final JRadioButton dispRelated = new JRadioButton("related");
 		isDispSelected = dispSelected.isSelected();
 		isDispRelated = dispRelated.isSelected();
 		if (isDispSelected) {
@@ -774,7 +783,7 @@ public class SearchPage extends JApplet {
 						usrData = new UserFileData();
 					}
 					if (line.lastIndexOf(";") != -1) {
-						peaksLine += line.trim();						
+						peaksLine += line.trim();
 					}
 					else {
 						peaksLine += line.trim() + ";";
@@ -926,7 +935,6 @@ public class SearchPage extends JApplet {
 	 * @param queryKey クエリーレコードキー
 	 */
 	private void searchDb(String[] ps, String precursor, String queryName, String queryKey) {
-		
 		queryPlot.clear();
 		compPlot.clear();
 		resultPlot.clear();
@@ -935,6 +943,7 @@ public class SearchPage extends JApplet {
 		resultPlot.setPeaks(null, 0);
 		DefaultTableModel dataModel = (DefaultTableModel)resultSorter.getTableModel();
 		dataModel.setRowCount(0);
+		hitLabel.setText("");
 
 		if (queryTabPane.getSelectedIndex() == TAB_ORDER_DB) {
 			queryPlot.setSpectrumInfo(queryName, queryKey, precursor, PeakPanel.SP_TYPE_QUERY, false);	
@@ -1008,91 +1017,109 @@ public class SearchPage extends JApplet {
 			post.append( ps[i].replace("\t", ",") + "@" );
 		}
 
-		// CGI呼び出し
-		int total = 0;
-		try {
-			// サーブレット呼び出し-マルチスレッドでCGIを起動
-			String cgiType = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_SEARCH];
-			ArrayList result = mbcommon.execMultiDispatcher(baseUrl, cgiType, post.toString());
+		// 画面操作を無効する
+		setOperationEnbled(false);
 
-			if (result != null && result.size() > 0) {
-				total = result.size();
+		// 検索中ダイアログ表示する
+		dlg.setVisible(true);
 
-				// 検索結果をDBTableにセット
-				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				siteList = new String[total];
-				for (int i = 0; i < total; i++) {
-					String line = (String) result.get(i);
-					String[] item = line.split("\t");
-					String id = item[0];
-					String name = item[1];
+		this.param = post.toString();
+		this.ps = ps;
+		SwingWorker worker = new SwingWorker() {
+			private ArrayList result = null;
 
-					// Score, Hit
-					String score = "";
-					String hit = "";
-					String hitScore = item[2];
-					int pos = hitScore.indexOf(".");
-					if (pos > 0) {
-						score = "0" + hitScore.substring(pos);
-						hit = hitScore.substring(0, pos);
-					} else {
-						score = "0";
-						hit = hitScore;
-					}
-					Double dblScore = Double.parseDouble(score);
-					Integer ihit = Integer.parseInt(hit);
-
-					// Ion
-					int iIon = Integer.parseInt(item[3]);
-					String ion = "";
-					if (iIon > 0) {
-						ion = "P";
-					} else if (iIon < 0) {
-						ion = "N";
-					} else {
-						ion = "-";
-					}
-
-					// SiteName
-					String siteName = siteNameList[Integer.parseInt(item[4])];
-					siteList[i] = item[4];
-
-					// Name, Score, Hit, ID, Ion, SiteName, No.
-					Object[] rowData = { name, dblScore, ihit, id, ion, siteName, (i + 1) };
-					dataModel.addRow(rowData);
-				}
+			public Object construct() {
+				// サーブレット呼び出し-マルチスレッドでCGIを起動
+				String cgiType = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_SEARCH];
+				result = mbcommon.execMultiDispatcher(baseUrl, cgiType, SearchPage.this.param);
+				return null;
 			}
-			PeakData peak = new PeakData(ps);
-			
-			queryPlot.setPeaks(peak, 0);
-			compPlot.setPeaks(peak, 0);
-			resultTabPane.setSelectedIndex(0);
-			setAllPlotAreaRange(queryPlot);
-			this.setCursor(Cursor.getDefaultCursor());
-			hitLabel.setText(" "
-					+ total
-					+ " Hit.    ("
-					+ ((PRECURSOR < 1) ? "" : "Precursor : " + PRECURSOR + ", ")
-					+ "Tolerance : "
-					+ TOLERANCE
-					+ " "
-					+ ((tolUnit1.isSelected()) ? tolUnit1.getText()
-							: tolUnit2.getText()) + ", Cutoff threshold : "
-					+ CUTOFF_THRESHOLD + ")");
-			hitLabel.setToolTipText(" "
-					+ total
-					+ " Hit.    ("
-					+ ((PRECURSOR < 1) ? "" : "Precursor : " + PRECURSOR + ", ")
-					+ "Tolerance : "
-					+ TOLERANCE
-					+ " "
-					+ ((tolUnit1.isSelected()) ? tolUnit1.getText()
-							: tolUnit2.getText()) + ", Cutoff threshold : "
-					+ CUTOFF_THRESHOLD + ")");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			this.setCursor(Cursor.getDefaultCursor());
-		}
+
+			public void finished() {
+				// 画面操作無効を解除する
+				setOperationEnbled(true);
+
+				// 検索中ダイアログを非表示にする
+				dlg.setVisible(false);
+
+				int total = 0;
+				if (result != null && result.size() > 0) {
+					total = result.size();
+					DefaultTableModel dataModel = (DefaultTableModel)resultSorter.getTableModel();
+
+					// 検索結果をDBTableにセット
+					siteList = new String[total];
+					for (int i = 0; i < total; i++) {
+						String line = (String) result.get(i);
+						String[] item = line.split("\t");
+						String id = item[0];
+						String name = item[1];
+
+						// Score, Hit
+						String score = "";
+						String hit = "";
+						String hitScore = item[2];
+						int pos = hitScore.indexOf(".");
+						if (pos > 0) {
+							score = "0" + hitScore.substring(pos);
+							hit = hitScore.substring(0, pos);
+						} else {
+							score = "0";
+							hit = hitScore;
+						}
+						Double dblScore = Double.parseDouble(score);
+						Integer ihit = Integer.parseInt(hit);
+
+						// Ion
+						int iIon = Integer.parseInt(item[3]);
+						String ion = "";
+						if (iIon > 0) {
+							ion = "P";
+						} else if (iIon < 0) {
+							ion = "N";
+						} else {
+							ion = "-";
+						}
+
+						// SiteName
+						String siteName = siteNameList[Integer.parseInt(item[4])];
+						siteList[i] = item[4];
+
+						// Name, Score, Hit, ID, Ion, SiteName, No.
+						Object[] rowData = { name, dblScore, ihit, id, ion, siteName, (i + 1) };
+						dataModel.addRow(rowData);
+					}
+				}
+
+				PeakData peak = new PeakData(SearchPage.this.ps);
+				queryPlot.setPeaks(peak, 0);
+				compPlot.setPeaks(peak, 0);
+				resultTabPane.setSelectedIndex(0);
+				setAllPlotAreaRange(queryPlot);
+				SearchPage.this.setCursor(Cursor.getDefaultCursor());
+				hitLabel.setText(" "
+						+ total
+						+ " Hit.    ("
+						+ ((PRECURSOR < 1) ? "" : "Precursor : " + PRECURSOR + ", ")
+						+ "Tolerance : "
+						+ TOLERANCE
+						+ " "
+						+ ((tolUnit1.isSelected()) ? tolUnit1.getText()
+								: tolUnit2.getText()) + ", Cutoff threshold : "
+						+ CUTOFF_THRESHOLD + ")");
+				hitLabel.setToolTipText(" "
+						+ total
+						+ " Hit.    ("
+						+ ((PRECURSOR < 1) ? "" : "Precursor : " + PRECURSOR + ", ")
+						+ "Tolerance : "
+						+ TOLERANCE
+						+ " "
+						+ ((tolUnit1.isSelected()) ? tolUnit1.getText()
+								: tolUnit2.getText()) + ", Cutoff threshold : "
+						+ CUTOFF_THRESHOLD + ")");
+			}
+		};
+		worker.start();
 	}
 	
 	/**
@@ -1462,7 +1489,34 @@ public class SearchPage extends JApplet {
 		isIonRadio.put(keyNega, ionNega.isSelected());
 		isIonRadio.put(keyBoth, ionBoth.isSelected());
 	}
-	
+
+	/**
+	 * アプレットのフレームを取得
+	 */
+	protected Frame getFrame() {
+		for (Container p = getParent(); p != null; p = p.getParent()) {
+			if (p instanceof Frame) return (Frame)p;
+		}
+		return null;
+	}
+
+	/**
+	 * 画面操作有効・無効設定
+	 */
+	private void setOperationEnbled(boolean value) {
+		queryFileTable.setEnabled(value);
+		queryDbTable.setEnabled(value);
+		etcPropertyButton.setEnabled(value);
+		btnName.setEnabled(value);
+		btnAll.setEnabled(value);
+		dispSelected.setEnabled(value);
+		dispRelated.setEnabled(value);
+		queryTabPane.setEnabled(value);
+		resultTabPane.setEnabled(value);
+		viewTabPane.setEnabled(value);
+		lbl2.setEnabled(value);
+	}
+
 	/**
 	 * ParameterSetWindowクラス
 	 */
@@ -2561,11 +2615,6 @@ public class SearchPage extends JApplet {
 			String name = (String)queryFileTable.getValueAt(selRow, nameCol);
 			String key = String.valueOf(queryFileTable.getValueAt(selRow, noCol));
 			searchDb(userDataList[selRow].getPeaks(), "", name, key);
-			
-			// マウスカーソルをデフォルトカーソルに
-			if (!SearchPage.this.getCursor().equals(Cursor.getDefaultCursor())) {
-				SearchPage.this.setCursor(Cursor.getDefaultCursor());
-			}
 		}
 	}
 	
@@ -2610,9 +2659,19 @@ public class SearchPage extends JApplet {
 			String id;
 			String name;
 			String relation;
+			int ion;
 			String score;
 			String siteName;
 			String site = "0";
+			PackageRecData recData = null;
+
+			if (isIonRadio.get("Posi")) {
+				ion = 1;
+			} else if (isIonRadio.get("Nega")) {
+				ion = -1;
+			} else {
+				ion = 0;
+			}
 			
 			if (isDispSelected) {
 				
@@ -2635,7 +2694,6 @@ public class SearchPage extends JApplet {
 				}
 				
 				// PackageView表示データ設定
-				PackageRecData recData;
 				boolean recChangeFlag = true;
 				PeakData peak = null;
 				for (int i=0; i<selRows.length; i++) {
@@ -2654,7 +2712,7 @@ public class SearchPage extends JApplet {
 					
 					String reqUrl = baseUrl + "jsp/"
 							+ MassBankCommon.DISPATCHER_NAME + "?type="
-							+ typeName + "&id=" + id + "&site=" + site + "&relation=" + relation;
+							+ typeName + "&id=" + id + "&site=" + site + "&relation=" + relation + "&ion=" + ion;
 					
 					String line = "";
 					String findStr;
@@ -2770,7 +2828,7 @@ public class SearchPage extends JApplet {
 				}
 				String reqUrl = baseUrl + "jsp/"
 						+ MassBankCommon.DISPATCHER_NAME + "?type="
-						+ typeName + "&id=" + id + "&site=" + site + "&relation=" + relation;
+						+ typeName + "&id=" + id + "&site=" + site + "&relation=" + relation + "&ion=" + ion;
 				String precursor = "";
 				PeakData peak = null;
 				try {
@@ -2778,7 +2836,6 @@ public class SearchPage extends JApplet {
 					URLConnection con = url.openConnection();
 					String line = "";
 					String findStr;
-					PackageRecData recData;
 					boolean recChangeFlag = true;
 					BufferedReader in = new BufferedReader(
 							new InputStreamReader(con.getInputStream()));
@@ -2850,8 +2907,8 @@ public class SearchPage extends JApplet {
 						}
 					}
 					in.close();
-
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					ex.printStackTrace();
 					SearchPage.this.setCursor(Cursor.getDefaultCursor());
 				}
@@ -2863,9 +2920,48 @@ public class SearchPage extends JApplet {
 				resultPlot.setPeaks(peak, 0);
 				resultPlot.setSpectrumInfo(name, id, precursor, PeakPanel.SP_TYPE_RESULT, false);
 				compPlot.setPeaks(peak, 1);
+
 				setAllPlotAreaRange();
 				compPlot.setTolerance(String.valueOf(TOLERANCE), tolUnit1.isSelected());
 			}
+
+			// 構造式画像のファイル名を取得する
+			id = recData.getId();
+			site = recData.getSite();
+			String temp = recData.getName();
+			String[] items = temp.split(";");
+			name = URLEncoder.encode(items[0]);
+			String getUrl = baseUrl + "jsp/GetCompoudInfo.jsp?name=" + name + "&site=" + site + "&id=" + id;
+			String gifMFileName = "";
+			String gifSFileName = "";
+			String formula = "";
+			String emass = "";
+			try {
+				URL url = new URL(getUrl);
+				URLConnection con = url.openConnection();
+				BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
+				String line = "";
+				while ( (line = in.readLine()) != null ) {
+					if ( line.indexOf("GIF:") >= 0 ) {
+						gifMFileName = line.replace("GIF:", "");
+					}
+					else if ( line.indexOf("GIF_SMALL:") >= 0 ) {
+						gifSFileName = line.replace("GIF_SMALL:", "");
+					}
+					else if ( line.indexOf("FORMULA:") >= 0 ) {
+						formula = line.replace("FORMULA:", "");
+					}
+					else if ( line.indexOf("EXACT_MASS:") >= 0 ) {
+						emass = line.replace("EXACT_MASS:", "");
+					}
+				}
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			resultPlot.loadStructGif(gifMFileName, gifSFileName);
+			resultPlot.setCompoundInfo(formula, emass);
+
 			SearchPage.this.setCursor(Cursor.getDefaultCursor());
 		}
 	}
@@ -3022,12 +3118,6 @@ public class SearchPage extends JApplet {
 			String name = (String)queryDbTable.getValueAt(selRow, nameCol);
 			String key = (String)queryDbTable.getValueAt(selRow, idCol);
 			searchDb(tmpPeak, recData.getPrecursor(), name, key);
-			
-			
-			// マウスカーソルをデフォルトカーソルに
-			if (!SearchPage.this.getCursor().equals(Cursor.getDefaultCursor())) {
-				SearchPage.this.setCursor(Cursor.getDefaultCursor());
-			}
 		}
 	}
 
