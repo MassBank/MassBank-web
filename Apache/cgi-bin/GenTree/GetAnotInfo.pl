@@ -20,16 +20,14 @@
 #
 # [Admin Tool] TREE.sqlファイル生成 - 中間ファイル作成処理
 #
-# ver 1.0.10  2009.06.19
+# ver 1.0.11  2011.03.08
 #
 #-------------------------------------------------------------------------------
 $conf = shift(@ARGV);
 
 require $conf || die "configuration file error\n";
 
-# ver 1.0.1 add Start ----------------------------------------------------
 @SrcDir = @ARGV;
-# ver 1.0.1 add End   ----------------------------------------------------
 
 for $tag ( 0 .. $#Tag ) {
 	@tag = @{$Tag[$tag]};
@@ -37,56 +35,70 @@ for $tag ( 0 .. $#Tag ) {
 	foreach $dir ( @SrcDir ) {
 		opendir(dIR, $dir);
 		while ( $file = readdir(dIR) ) {
-# ver 1.0.1 mod Start ----------------------------------------------------
-#			next if ( $file =~ /^\./ );
 			next if ( $file =~ /^\./ || $file !~ /\.txt$/ );
-# ver 1.0.1 mod End   ----------------------------------------------------
 			local(@data) = ();
-# ver 1.0.7 add Start ----------------------------------------------------
-				$ion_type = '';
-# ver 1.0.7 add End   ----------------------------------------------------
+			my $acc = '';
+			my $title = '';
+			my $instrument = '';
+			my $mw = '';
+			my $formula = '';
+			my $name = '';
+			my $ion_ptype = '';
+			my $ion_itype = '';
+			my $ion_mode = '';
+			my $mstype = '';
+			my $ce = '';
+			my $rt = '';
+			my $mt = '';
+			my $sc = '';
+			my $st = '';
+			my $pmz = '';
 			open(fILE, "$dir/$file");
 			while ( <fILE> ) {
 				s/\r?\n?//g;
-				($key, $val) = /^([^:]*): (.*)$/;
-				for $i ( 0 .. $#tag ) {
-					if ( $key eq $tag[$i] && $data[$i] eq '' ) {
-						$eval = sprintf('$data[$i] = %s($i, $val)', $GetProc[$tag]);
-						eval($eval);
-					}
-				}
-				$acc = $val if ( $key eq 'ACCESSION' );
-# ver 1.0.8 add Start ----------------------------------------------------
-				$title = $val if ( $key eq 'RECORD_TITLE' );
-# ver 1.0.8 add End   ----------------------------------------------------
-# ver 1.0.8 mod Start ----------------------------------------------------
-#				$ion_type = $val if ( $key eq 'AC$INSTRUMENT_TYPE' );
-				$inst_type = $val if ( $key eq 'AC$INSTRUMENT_TYPE' );
-# ver 1.0.8 mod End   ----------------------------------------------------
+				
+				# massbank.confの$GetProc()を呼び出さずに直接レコードの値を取得する
+				if ( /^ACCESSION: (.*)$/ )                                 { $acc = $1; }
+				if ( /^RECORD_TITLE: (.*)$/ )                              { $title = $1; }
+				if ( /^CH\$EXACT_MASS: (.*)$/ )                            { $mw = $1; }
+				if ( /^CH\$FORMULA: (.*)$/ )                               { $formula = $1; }
+				if ( /^AC\$INSTRUMENT_TYPE: (.*)$/ )                       { $instrument = $1; }
+				if ( /^AC\$ANALYTICAL_CONDITION: MS_TYPE (.*)$/ )          { $mstype = $1; }
+				if ( /^AC\$ANALYTICAL_CONDITION: MODE (.*)$/ )             { $ion_mode = $1; }
+				if ( /^AC\$ANALYTICAL_CONDITION: COLLISION_ENERGY (.*)$/ ) { $ce = $1; }
+				if ( /^AC\$ANALYTICAL_CONDITION: MIGRATION_TIME (.*)$/ )   { $mt = $1; }
+				if ( /^AC\$ANALYTICAL_CONDITION: RETENTION_TIME (.*)$/ )   { $rt = $1; }
+				if ( /^AC\$ANALYTICAL_CONDITION: SAMPLING_CONE (.*)$/ )    { $sc = $1; }
+				if ( /^AC\$ANALYTICAL_CONDITION: SPECTRUM_TYPE (.*)$/ )    { $st = $1; }
+				if ( /^MS\$FOCUSED_ION: PRECURSOR_TYPE (.*)$/ )            { $ion_ptype = $1; }
+				if ( /^MS\$FOCUSED_ION: PRECURSOR_M/Z (.*)$/ )              { $pmz = $1; }
+				if ( /^MS\$FOCUSED_ION: ION_TYPE (.*)$/ )                  { $ion_itype = $1; }
 			}
 			close(fILE);
-
+			
+			# edit value
+			($name) = ($title =~ /^([^;]*);/);
+			$mw = int($mw + 0.5) if( $mw > 0 );
+			
+			# set tree value
+			$data[0] = $instrument;
+			$data[1] = $mw;
+			$data[2] = $formula;
+			$data[3] = $name;
+			$data[4] = $ion_itype;
+			$data[4] = $ion_ptype if ($data[4] eq '');
+			$data[4] = $ion_mode if ($data[4] eq '');
+			$data[5] = $mstype if ($mstype ne '');
+			$data[5] .= "  /  $pmz" if ($pmz ne '');
+			$data[5] .= "  /  $ce" if ($ce ne '');
+			$data[5] .= "  /  $rt" if ($ce eq '' && $rt ne '');
+			$data[5] .= "  /  $mt" if ($ce eq '' && $rt eq '' && $mt ne '');
+			$data[5] .= "  /  $sc" if ($ce eq '' && $rt eq '' && $mt eq '' && $sc ne '');
+			$data[5] .= "  /  $st" if ($ce eq '' && $rt eq '' && $mt eq '' && $sc eq '' && $st ne '');
 			for $j ( 0 .. $#data ) {
-				if ( @data[$j] eq '' ) {
-					splice(@data, $j, 1);
-				}
+				if ( $data[$j] eq '' ) { $data[$j] = '---'; }
 			}
-# ver 1.0.8 add Start ----------------------------------------------------
-			my($info, $ion) = ($title =~ /^[^;]*; [^;]*; [^;]*; ([^;]*); (.*)$/);
-			if ( $info eq 'MERGED' ) {
-				$data[4] = $ion;
-				$data[5] = "MS/MS $info";
-			}
-# ver 1.0.8 add End   ----------------------------------------------------
-# ver 1.0.8 mod Start ----------------------------------------------------
-#			if ( $ion_type ne '' ) {
-#				$data[0] = $ion_type;
-#			}
-			if ( $inst_type ne '' ) {
-				$data[0] = $inst_type;
-			}
-# ver 1.0.8 mod End   ----------------------------------------------------
-
+			
 			push(@data, $acc);
 			push(@info, [ @data ]);
 		}
@@ -101,7 +113,6 @@ for $tag ( 0 .. $#Tag ) {
 		print join("\t", @out), "\n";
 	}
 }
-
 exit(0);
 
 sub mySort() {
