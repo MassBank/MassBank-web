@@ -20,7 +20,7 @@
 #
 # [Admin Tool] TREE.sqlファイル生成 - 中間ファイル作成処理
 #
-# ver 1.0.11  2011.03.08
+# ver 1.0.12  2011.03.09
 #
 #-------------------------------------------------------------------------------
 $conf = shift(@ARGV);
@@ -71,7 +71,7 @@ for $tag ( 0 .. $#Tag ) {
 				if ( /^AC\$ANALYTICAL_CONDITION: SAMPLING_CONE (.*)$/ )    { $sc = $1; }
 				if ( /^AC\$ANALYTICAL_CONDITION: SPECTRUM_TYPE (.*)$/ )    { $st = $1; }
 				if ( /^MS\$FOCUSED_ION: PRECURSOR_TYPE (.*)$/ )            { $ion_ptype = $1; }
-				if ( /^MS\$FOCUSED_ION: PRECURSOR_M/Z (.*)$/ )              { $pmz = $1; }
+				if ( /^MS\$FOCUSED_ION: PRECURSOR_M\/Z (.*)$/ )            { $pmz = $1; }
 				if ( /^MS\$FOCUSED_ION: ION_TYPE (.*)$/ )                  { $ion_itype = $1; }
 			}
 			close(fILE);
