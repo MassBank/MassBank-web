@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.9 2011.01.19
+ * ver 1.0.10 2011.03.10
  *
  ******************************************************************************/
 %>
@@ -732,7 +732,7 @@ function beforeDel(isAdmin) {
 	
 	// 削除許可判定
 	if ( isAdmin != "true" ) {
-		alert("Unauthorized user.\nPlease set \"admin=true\" to admin.conf.");
+		alert("Unauthorized user.\nPlease set \"auth_root=true\" to admin.conf.");
 		return false;
 	}
 	
