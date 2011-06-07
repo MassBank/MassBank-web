@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.10 2011.03.10
+ * ver 1.0.14 2011.06.04
  *
  ******************************************************************************/
 %>
@@ -652,7 +652,7 @@ function beforeAdd(judgeBase, judgeHost, judgeIp) {
 		if ( urlVal.indexOf("localhost") == -1 &&
 		     urlVal.indexOf("127.0.0.1") == -1 &&
 		     (judgeBase != "" && urlVal.indexOf(judgeBase) == -1) &&
-		     (judgeHost != "" && urlVal.indexOf(judgeHost) == -1) &&
+		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) == -1 || urlVal.indexOf("https://"+judgeHost) == -1)) &&
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) == -1) ) {
 			
 			alert("URL on the external cannot be specified.");
@@ -664,7 +664,7 @@ function beforeAdd(judgeBase, judgeHost, judgeIp) {
 		if ( urlVal.indexOf("localhost") != -1 ||
 		     urlVal.indexOf("127.0.0.1") != -1 ||
 		     (judgeBase != "" && urlVal.indexOf(judgeBase) != -1) ||
-		     (judgeHost != "" && urlVal.indexOf(judgeHost) != -1) ||
+		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) != -1 || urlVal.indexOf("https://"+judgeHost) != -1)) ||
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) != -1) ) {
 			
 			alert("URL of the internal cannot be specified.");
@@ -695,7 +695,7 @@ function beforeEdit(judgeBase, judgeHost, judgeIp) {
 		if ( urlVal.indexOf("localhost") == -1 &&
 		     urlVal.indexOf("127.0.0.1") == -1 &&
 		     (judgeBase != "" && urlVal.indexOf(judgeBase) == -1) &&
-		     (judgeHost != "" && urlVal.indexOf(judgeHost) == -1) &&
+		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) == -1 || urlVal.indexOf("https://"+judgeHost) == -1)) &&
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) == -1) ) {
 			
 			alert("URL on the external cannot be specified.");
@@ -707,7 +707,7 @@ function beforeEdit(judgeBase, judgeHost, judgeIp) {
 		if ( urlVal.indexOf("localhost") != -1 ||
 		     urlVal.indexOf("127.0.0.1") != -1 ||
 		     (judgeBase != "" && urlVal.indexOf(judgeBase) != -1) ||
-		     (judgeHost != "" && urlVal.indexOf(judgeHost) != -1) ||
+		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) != -1 || urlVal.indexOf("https://"+judgeHost) != -1)) ||
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) != -1) ) {
 			
 			alert("URL of the internal cannot be specified.");
@@ -718,7 +718,7 @@ function beforeEdit(judgeBase, judgeHost, judgeIp) {
 	objForm.act.value = "edit";
 	if (noVal == "0") {
 		if (objForm.beforeUrl.value.toLowerCase() != urlVal) {
-			objForm.newBaseUrl.value = urlVal;
+			objForm.newBaseUrl.value = objForm.siteUrl.value;
 		}
 	}
 	return true;
@@ -752,7 +752,7 @@ function beforeDel(isAdmin) {
  */
 $(window).load(function() {
 	var baseUrl = $("input[name='newBaseUrl']:hidden").val();
-	if ( baseUrl != "" ) {
+	if ( baseUrl != undefined && baseUrl != "" ) {
 		alert ("URL on the homepage was changed to \"" + baseUrl + "\".\n\nClose the window, please access new URL.");
 		window.opener = window;		// FF等でwindow.close()が機能しない現象への対応
 		var win = window.open(location.href, "_self");
@@ -820,7 +820,6 @@ $(window).load(function() {
 	//----------------------------------------------------
 	// 各種パラメータを取得
 	//----------------------------------------------------
-	final String reqUrl = request.getRequestURL().toString();
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String[] dbPathes = new String[]{ MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH),
 	                                        MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH),
@@ -1218,7 +1217,7 @@ $(window).load(function() {
 				selUrl = "http://";
 			}
 		}
-		out.println( "<form name=\"formEdit\" method=\"post\" action=\"" + reqUrl + "\" onSubmit=\"doWait();\">" );
+		out.println( "<form name=\"formEdit\" method=\"post\" action=\"./Manager.jsp\" onSubmit=\"doWait();\">" );
 		out.println( "<div style=\"width:980px; border: 2px Gray solid; padding:15px; background-color:WhiteSmoke;\">" );
 		out.println( "<table width=\"97%\" align=\"center\" cellspacing=\"2\" cellpadding=\"2\">" );
 		out.println( "<tr>" );
