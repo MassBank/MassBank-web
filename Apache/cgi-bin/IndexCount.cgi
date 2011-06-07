@@ -21,7 +21,7 @@
 #
 # RecordIndexページ用件数カウントCGI
 #
-# ver 3.0.2  2010.04.22
+# ver 3.0.3  2011.06.02
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -46,49 +46,72 @@ my $dbh  = DBI->connect($DB, $User, $PassWord) || die "connect error \n";
 
 print "Content-Type: text/plain\n\n";
 
-my @params = (
-		   'Positive', 'Negative',
-		   'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-		   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1-9', 'Others');
-
 # Total ===================================================================
 outCount( '', 'site', 1, '' );
 
 # Instrument Type =========================================================
-my $head = "";
+my $head = "INSTRUMENT:";
 my $val = "";
 my $sqlparam = "";
 my $sqltype = 0;
-my @ans = MySql("select distinct INSTRUMENT_NO, INSTRUMENT_TYPE from INSTRUMENT order by INSTRUMENT_NO");
+my @ans = MySql("SELECT DISTINCT INSTRUMENT_NO, INSTRUMENT_TYPE FROM INSTRUMENT ORDER BY INSTRUMENT_TYPE");
 foreach my $item ( @ans ) {
-	$head = "INSTRUMENT:";
 	$val = "$$item[1]";
-	$sqlparam = "where R.INSTRUMENT_NO = '$$item[0]' ";
+	$sqlparam = "WHERE R.INSTRUMENT_NO = '$$item[0]' ";
 	outCount( $head, $val, 0, $sqlparam );
 }
 
+# MS Type =================================================================
+$head = "MS:";
+@ans = &MySql("SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'");
+$cnt = @ans;
+if ( $cnt != 0 ) {
+	@ans = &MySql("SELECT DISTINCT MS_TYPE FROM RECORD ORDER BY MS_TYPE");
+	foreach my $item ( @ans ) {
+		$val = "$$item[0]";
+		$sqlparam = "WHERE R.MS_TYPE = '$val' ";
+		if ( $val ne '' ) {
+			outCount( $head, $val, 0, $sqlparam );
+		}
+		else {
+			outCount( $head, "Others", 0, $sqlparam );
+		}
+	}
+}
+else {
+	outCount( $head, "Others", 0, "" );
+}
+
+# Merged Type ===========================================================
+$head = "MERGED:";
+outCount( $head, "Normal", 1, "WHERE INSTR(NAME, 'MERGED') = 0" );
+outCount( $head, "Merged", 1, "WHERE INSTR(NAME, 'MERGED') > 0" );
+
 # Ion & Compound Name =====================================================
 $sqltype = 1;
+my @params = ( 'Positive', 'Negative',
+			   'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+			   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1-9', 'Others');
 foreach my $val ( @params ) {
 	if ( $val eq 'Positive' || $val eq 'Negative' ) {
 		$head = "ION:";
 		if ( $val eq 'Positive' ) {
-			$sqlparam = "where S.ION > 0";
+			$sqlparam = "WHERE S.ION > 0";
 		}
 		elsif ( $val eq 'Negative' ) {
-			$sqlparam = "where S.ION < 0";
+			$sqlparam = "WHERE S.ION < 0";
 		}
 	}
 	else {
 		$head = "COMPOUND:";
 		if ( $val eq '1-9' ) {
-			$sqlparam = "where S.NAME regexp '^[0-9]' ";
+			$sqlparam = "WHERE S.NAME REGEXP '^[0-9]' ";
 		}
 		elsif ( $val eq 'Others' ) {
-			$sqlparam = "where S.NAME regexp '^[^a-z0-9]' ";
+			$sqlparam = "WHERE S.NAME REGEXP '^[^a-z0-9]' ";
 		}
 		else {
-			$sqlparam = "where S.NAME like '$val\%' ";
+			$sqlparam = "WHERE S.NAME LIKE '$val\%' ";
 		}
 	}
 	outCount( $head, $val, $sqltype, $sqlparam );
@@ -110,6 +133,7 @@ sub outCount() {
 	}
 	foreach my $item ( @ans ) {
 		my $count = $$item[0];
+		if ( $head eq "MS:" && $val eq "Others" && $count == 0 ) { next; }
 		print "$head$val\t$count\n";
 	}
 }

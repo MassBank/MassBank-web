@@ -21,7 +21,7 @@
 #
 # [Admin Tool] PEAK.sqlファイル生成
 #
-# ver 3.0.9  2011.01.28
+# ver 3.0.11  2011.06.03
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -31,6 +31,8 @@ my $src_dir = $query->param('src_dir');
 my $out_dir = $query->param('out_dir');
 my $db_name = $query->param('db');
 my $fname = $query->param('fname');
+my $recVersion = $query->param('ver');
+if ( !defined($recVersion) ) { $recVersion = 1; }
 my @fname_list = split(',' , $fname);
 
 my %PrecType = ('[M+H]+', 1, '[M+2H]++', 2, '[M-H]-', -1, '[M-2H]--', -2);
@@ -73,21 +75,26 @@ foreach my $name ( @fname_list ) {
 				}
 			}
 		}
-		elsif ( /^AC\$ANALYTICAL_CONDITION: / ) {
+		elsif ( $recVersion == 1 && /^AC\$ANALYTICAL_CONDITION: /
+			 || $recVersion != 1 && /^AC\$MASS_SPECTROMETRY: / ) {
 			my($item, $val) = ($_ =~ /^[^:]*: ([^\s]*) (.*)/);
-			if ( $item eq 'MODE' ) {
+			if ( $item eq 'MODE' || $item eq 'ION_MODE' ) {
 				if ( $Mode{$val} ) { $ionM = $Mode{$val} };
 			}
 		}
 		elsif ( /^PK\$PEAK: / ) {
 			if ( !/N\/A$/ ) {
+				my $tmpOutStr = "";
+				my $isNa = 0;
 				while ( <IN> ) {
 					s/\r?\n?//g;
+					$isNa = 1 if ( /N\/A/ );
 					last if ( $_ =~ m|^RELATED_RECORD:|o || $_ =~ m|^//|o );
 					s/^ *//;
 					(my $mz, my $val, my $rval) = split;
-					print OUT "INSERT PEAK VALUES ('$Acc', $mz, $val, $rval);\n";
+					$tmpOutStr .= "INSERT PEAK VALUES ('$Acc', $mz, $val, $rval);\n";
 				}
+				print OUT "$tmpOutStr" if ($isNa == 0);
 			}
 			
 			if ( $ionP == 0 ) {

@@ -20,7 +20,7 @@
  *
  * MassBank共通スクリプト
  *
- * ver 1.0.12 2010.12.20
+ * ver 1.0.13 2011.06.02
  *
  ******************************************************************************/
 
@@ -36,15 +36,17 @@ var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		// NS6
  * @param cookiename クッキー名
  * @param keyInstGrp キー名
  * @param keyInst キー名
+ * @param keyMs キー名
  * @param keyIon キー名
  */
-function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyIon) {
+function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon) {
 	// ブラウザのクッキー許可の場合
 	if (window.navigator.cookieEnabled) {
 		
 		// クッキーに設定する値
 		var cookieInstGrp = keyInstGrp + "=";
 		var cookieInst = keyInst + "=";
+		var cookieMs = keyMs + "=";
 		var cookieIon = keyIon + "=";
 		
 		var instGrpVals = document.getElementsByName("inst_grp");
@@ -67,6 +69,17 @@ function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyIon) {
 			cookieInst = cookieInst.substring(0, cookieInst.length - 1);
 		}
 		
+		var msVals = document.getElementsByName("ms");
+		for (var i=0; i<msVals.length; i++) {
+			if (msVals[i].checked) {
+				cookieMs += msVals[i].value + ",";
+			}
+		}
+		
+		if (cookieInst.substring(cookieInst.length - 1) == ",") {
+			cookieInst = cookieInst.substring(0, cookieInst.length - 1);
+		}
+		
 		var ionVals = document.getElementsByName("ion");
 		for (var i=0; i<ionVals.length; i++) {
 			if (ionVals[i].checked) {
@@ -74,7 +87,7 @@ function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyIon) {
 				break;
 			}
 		}
-		var cookieVal = cookieInstGrp + ";" + cookieInst + ";" + cookieIon;
+		var cookieVal = cookieInstGrp + ";" + cookieInst + ";" + cookieMs + ";" + cookieIon;
 		
 		// 有効期限計算
 		var date = new Date();
@@ -125,7 +138,7 @@ function switchClass(elementId, className1, className2) {
  * 同グループのチェックボックスを全てON/OFFにする
  */
 function selBoxGrp(key, num) {
-	isCheck = document.getElementById("inst_grp_" + key).checked;
+	var isCheck = document.getElementById("inst_grp_" + key).checked;
 	for ( i = 0; i < num; i++ ) {
 		id = "inst_" + key + String(i);
 		obj = document.getElementById(id);
@@ -137,7 +150,7 @@ function selBoxGrp(key, num) {
  * 同グループ全てのチェックボックスがONまたはOFFになった場合の制御
  */
 function selBoxInst(key, num) {
-	allOn = true;
+	var allOn = true;
 	for ( i = 0; i < num; i++ ) {
 		id = "inst_" + key + String(i);
 		obj1 = document.getElementById(id);
@@ -153,6 +166,36 @@ function selBoxInst(key, num) {
 	else {
 		obj2.checked = false;
 	}
+}
+
+/**
+ * MS TypeチェックボックスのON/OFF（All）
+ * @param num
+ */
+function selAllMs(num) {
+	var isCheck = document.getElementById("ms_MS0").checked;
+	for ( i=1; i<=num; i++ ) {
+		id = "ms_MS" + String(i);
+		obj = document.getElementById(id);
+		obj.checked = isCheck;
+	}
+}
+
+/**
+ * MS TypeチェックボックスON/OFF
+ * @param num
+ */
+function selMs(num) {
+	var isAllCheck = true;
+	for ( i=1; i<=num; i++ ) {
+		id = "ms_MS" + String(i);
+		obj = document.getElementById(id);
+		if ( !obj.checked ) {
+			isAllCheck = false;
+			break;
+		}
+	}
+	document.getElementById("ms_MS0").checked = isAllCheck;
 }
 
 /**
@@ -191,23 +234,50 @@ function checkFileExtention(path) {
  * 検索ボタン押下時のチェック
  */
 function checkSubmit() {
-	var isCheck = false;
-	var obj = document.form_query["inst"];
-	if ( obj.length > 1 ) {
-		for ( i = 0; i < obj.length; i++ ) {
-			if ( obj[i].checked ) {
-				isCheck = true;
+	// Instrument Type check
+	var isInstCheck = false;
+	var instObj = document.form_query["inst"];
+	if ( instObj.length > 1 ) {
+		for ( i = 0; i < instObj.length; i++ ) {
+			if ( instObj[i].checked ) {
+				isInstCheck = true;
 				break;
 			}
 		}
 	}
 	else {
-		if ( obj.checked ) {
-			isCheck = true;
+		if ( instObj.checked ) {
+			isInstCheck = true;
 		}
 	}
-	if ( !isCheck ) {
+	
+	// MS Type check
+	var isMsCheck = false;
+	var msObj = document.form_query["ms"];
+	if ( msObj.length > 1 ) {
+		for ( i = 0; i < msObj.length; i++ ) {
+			if ( msObj[i].checked ) {
+				isMsCheck = true;
+				break;
+			}
+		}
+	}
+	else {
+		if ( msObj.checked ) {
+			isMsCheck = true;
+		}
+	}
+	
+	if ( !isInstCheck && !isMsCheck ) {
+		alert( "Please select one or more checkboxs of the \"Instrument Type\" and \"MS Type\"." );
+		return false;
+	}
+	else if ( !isInstCheck ) {
 		alert( "Please select one or more checkboxs of the \"Instrument Type\"." );
+		return false;
+	}
+	else if ( !isMsCheck ) {
+		alert( "Please select one or more checkboxs of the \"MS Type\"." );
 		return false;
 	}
 	return true;
@@ -263,7 +333,7 @@ function doWait() {
 	objDiv.innerHTML = [
 		"<table width='" + w + "' height='" + h + "' border='0' cellspacing='0' cellpadding='0' onSelectStart='return false;' onMouseDown='return false;'>",
 		"<tr>",
-		"<td align='center' valign='middle'><b><i><font size='+2'>" + msg + "</font></i></b>&nbsp;&nbsp;<img src='../image/wait.gif' alt=''></td>",
+		"<td align='center' valign='middle'><b><i><font size='+3'>" + msg + "</font></i></b>&nbsp;&nbsp;<img src='../image/wait.gif' alt=''></td>",
 		"</tr>",
 		"</table>"
 	].join("\n");

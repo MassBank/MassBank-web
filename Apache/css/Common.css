@@ -21,7 +21,7 @@
  *
  * MassBank共通スタイルシート
  *
- * ver 1.0.16 2010.11.15
+ * ver 1.0.17 2011.05.27
  *
  ******************************************************************************/
 
@@ -321,37 +321,37 @@ table.form-box {
 }
 
 /**
- * Instrument Typeパラメータ表示テーブル
+ * パラメータ表示テーブル
  */
-table.inst {
+table.cond {
 	border-collapse: collapse;
 }
 
 /**
- * Instrument Typeパラメータ表示スクロールバー
+ * パラメータ表示の見出し
  */
-div.inst-scroll {
-	height:250px;
-	overflow-y: scroll;
-	border-left: 1px silver solid;
-	border-right: 1px silver solid;
-	border-bottom: 1px silver solid;
-}
-
-/**
- * Instrument Typeパラメータ表示の見出し
- */
-td.inst-title {
+td.cond-title {
 	background-color: dimgray;
 	color: white;
 	padding-left: 7px;
 }
 
 /**
- * Instrument Typeパラメータ表示の項目
+ * パラメータ表示の項目
  */
-td.inst-item {
+td.cond-item {
 	padding: 5px;
+	border-left: 1px silver solid;
+	border-right: 1px silver solid;
+	border-bottom: 1px silver solid;
+}
+
+/**
+ * Instrument Typeパラメータ表示スクロールバー
+ */
+div.inst-scroll {
+	height:200px;
+	overflow-y: scroll;
 	border-left: 1px silver solid;
 	border-right: 1px silver solid;
 	border-bottom: 1px silver solid;

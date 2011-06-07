@@ -19,15 +19,17 @@
 #
 #===============================================================================
 #
-# 分析機器情報の取得
+# INSTRUMENT情報とMS情報の取得
 #
-# ver 1.0.2  2008.12.05
+# ver 1.0.4  2011.06.07
 #
 #-------------------------------------------------------------------------------
 use CGI;
 use DBI;
 
 my $query = new CGI;
+my $recVersion = $query->param('ver');					# MassBank Record version
+if ( !defined($recVersion) ) { $recVersion = 1; }
 my $db_name = $query->param('dsn');
 if ( $db_name eq '' ) {
 	$db_name = "MassBank";
@@ -45,11 +47,32 @@ my $SQLDB = "DBI:mysql:$db_name:$host_name";
 my $User = 'bird';
 my $PassWord = 'bird2006';
 my $dbh  = DBI->connect($SQLDB, $User, $PassWord) || exit(0);
-my $sql = "select INSTRUMENT_NO, INSTRUMENT_TYPE, INSTRUMENT_NAME from INSTRUMENT";
+
+# Get instrument information
+if ( $recVersion > 1 ) {
+	print "INSTRUMENT_INFORMATION\n";
+}
+my $sql = "SELECT INSTRUMENT_NO, INSTRUMENT_TYPE, INSTRUMENT_NAME FROM INSTRUMENT";
 my @ans = &MySql( $sql );
 foreach my $rec ( @ans ) {
 	print join("\t", @$rec) ,"\n";
 }
+
+# Get ms information
+if ( $recVersion > 1 ) {
+	print "MS_INFORMATION\n";
+	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
+	@ans = &MySql($sql);
+	$cnt = @ans;
+	if ( $cnt != 0 ) {
+		$sql = "SELECT DISTINCT MS_TYPE FROM RECORD";
+		@ans = &MySql( $sql );
+		foreach my $rec ( @ans ) {
+			print join("\t", @$rec) ,"\n";
+		}
+	}
+}
+
 $dbh->disconnect;
 exit(0);
 

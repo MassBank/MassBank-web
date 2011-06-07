@@ -21,7 +21,7 @@
 #
 # 部分構造検索クライアント
 #
-# ver 1.0.6 2009.01.08
+# ver 1.0.8 2011.05.30
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -44,6 +44,7 @@ my @mz_list = ();
 my $tol = "";
 my $pi_check = 1;
 my @inst_list = ();
+my @ms_list = ();
 my $ion = "1";
 foreach my $key ( @params ) {
 	my $val = $query->param($key);
@@ -62,6 +63,9 @@ foreach my $key ( @params ) {
 		}
 		elsif ( $key eq 'inst') {
 			@inst_list = $query->param($key);
+		}
+		elsif ( $key eq 'ms' ) {
+			@ms_list = $query->param($key);
 		}
 		elsif ( $key eq 'ion' ) {
 			$ion = $val;
@@ -94,6 +98,64 @@ if ( open(F, $BASE_PATH . "SOCKET_PORT") ) {
 	close(F);
 }
 
+#------------------------------------------------
+# DB接続
+#------------------------------------------------
+my $DB = "DBI:mysql:$db_name:$host_name";
+my $User = 'bird';
+my $PassWord = 'bird2006';
+my $dbh = DBI->connect($DB, $User, $PassWord) or die "DB connect error \n";
+
+#------------------------------------------------
+# INSTRUMENT_NO取得
+#------------------------------------------------
+my $inst_no = "";
+my $isFound = true;
+if ( $#inst_list != -1 ) {
+	my @inst_list2 = ();
+	foreach my $inst ( @inst_list ) {
+		push(@inst_list2, "'$inst'");
+	}
+	my $in = join(",", @inst_list2);
+	$sql = "SELECT INSTRUMENT_NO FROM INSTRUMENT WHERE INSTRUMENT_TYPE IN($in)";
+	@rec = &MySql($sql);
+	if ( $#rec == -1 ) {
+		$dbh->disconnect;
+		exit;
+	}
+	else {
+		my @inst_no_list = ();
+		foreach my $item ( @rec ) {
+			push(@inst_no_list, $$item[0]);
+		}
+		$inst_no = join(",", @inst_no_list);
+	}
+}
+
+#------------------------------------------------
+# MS_TYPE取得
+#------------------------------------------------
+my $isMsAll = 0;
+my $ms_type = "";
+foreach $ms (@ms_list) {
+	if ( $ms eq 'all' ) {
+		$isMsAll = 1;
+		last;
+	}
+}
+if ( !$isMsAll ) {
+	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
+	@rec = &MySql($sql);
+	$cnt = @ans;
+	if ( $#rec == -1 ) {
+		$dbh->disconnect;
+		exit;
+	}
+	for ( my $i=0; $i<@ms_list; $i++ ) {
+		$ms_type .= "'@ms_list[$i]',";
+	}
+	chop $ms_type;
+}
 
 #------------------------------------------------
 # molfileデータをテンポラリファイルに保存
@@ -183,22 +245,16 @@ foreach my $file_path ( @qfname_list ) {
 # レスポンスをタブ区切りで分解
 #------------------------------------------------
 if ( $res eq '' ) {
+	$dbh->disconnect;
 	exit;
 }
 # 最後のタブを取り除く
 $res = substr($res, 0, length($res) - 1);
 my @molname_list = split('\t', $res);
 if ( scalar(@molname_list) < 1 ) {
+	$dbh->disconnect;
 	exit;
 }
-
-#------------------------------------------------
-# DB接続
-#------------------------------------------------
-my $DB = "DBI:mysql:$db_name:$host_name";
-my $User = 'bird';
-my $PassWord = 'bird2006';
-my $dbh = DBI->connect($DB, $User, $PassWord) or die "DB connect error \n";
 
 #------------------------------------------------
 # Peak Searchパラメータセット
@@ -209,7 +265,7 @@ for my $i ( 0 .. $mz_num ) {
 	my $mz = $mz_list[$i];
 	my $min = $mz - ($tol + 0.00001);
 	my $max = $mz + ($tol + 0.00001);
-	push(@mz_range, "MZ between $min and $max");
+	push(@mz_range, "MZ BETWEEN $min AND $max");
 }
 
 #------------------------------------------------
@@ -219,36 +275,11 @@ my $sql = "";
 my @rec = ();
 my @id_list = ();
 foreach my $molname ( @molname_list ) {
-	$sql = "select S.ID from MOLFILE M, SPECTRUM S where M.FILE = '$molname' "
-			 . "and M.NAME = substring(S.NAME,1,instr(S.NAME,';')-1)";
+	$sql = "SELECT S.ID FROM MOLFILE M, SPECTRUM S WHERE M.FILE = '$molname' "
+			 . "AND M.NAME = SUBSTRING(S.NAME,1,INSTR(S.NAME,';')-1)";
 	@rec = &MySql($sql);
 	foreach my $item ( @rec ) {
 		push(@id_list, $$item[0]);
-	}
-}
-
-#------------------------------------------------
-# INSTRUMENT_NO取得
-#------------------------------------------------
-my $inst_no = "";
-my $isFound = true;
-if ( $#inst_list != -1 ) {
-	my @inst_list2 = ();
-	foreach my $inst ( @inst_list ) {
-		push(@inst_list2, "'$inst'");
-	}
-	my $in = join(",", @inst_list2);
-	$sql = "select INSTRUMENT_NO from INSTRUMENT where INSTRUMENT_TYPE in($in)";
-	@rec = &MySql($sql);
-	if ( $#rec == -1 ) {
-		$isFound = false;
-	}
-	else {
-		my @inst_no_list = ();
-		foreach my $item ( @rec ) {
-			push(@inst_no_list, $$item[0]);
-		}
-		$inst_no = join(",", @inst_no_list);
 	}
 }
 
@@ -259,9 +290,9 @@ if ( $isFound eq true ) {
 	foreach my $id ( @id_list ) {
 		# Peak Search
 		if ( $mz_num >= 0 ) {
-			$sql = "select count(MZ) from PEAK where ID = '$id'";
+			$sql = "SELECT COUNT(MZ) FROM PEAK WHERE ID = '$id'";
 			foreach my $range ( @mz_range ) {
-				$sql .= " and exists(select MZ from PEAK where ID = '$id' and $range)";
+				$sql .= " AND EXISTS(SELECT MZ FROM PEAK WHERE ID = '$id' AND $range)";
 			}
 			@rec = &MySql($sql);
 			if ( int($rec[0][0]) == 0 ) {
@@ -269,14 +300,17 @@ if ( $isFound eq true ) {
 			}
 		}
 
-		$sql = "select S.NAME, S.ID, S.ION, R.FORMULA, R.EXACT_MASS "
-				 . "from SPECTRUM S, RECORD R where S.ID = '$id' and S.ID = R.ID";
+		$sql = "SELECT S.NAME, S.ID, S.ION, R.FORMULA, R.EXACT_MASS "
+				 . "FROM SPECTRUM S, RECORD R WHERE S.ID = '$id' AND S.ID = R.ID";
 
 		if ( $inst_no ne '' ) {
-			$sql .= " and INSTRUMENT_NO in($inst_no)";
+			$sql .= " AND R.INSTRUMENT_NO IN($inst_no)";
+		}
+		if ( $ms_type ne '' ) {
+			$sql .= " AND R.MS_TYPE IN($ms_type)";
 		}
 		if ( $ion != 0 ) {
-				 $sql .= " and S.ION = $ion";
+				 $sql .= " AND S.ION = $ion";
 		}
 		@rec = &MySql($sql);
 		foreach my $rec ( @rec ) {

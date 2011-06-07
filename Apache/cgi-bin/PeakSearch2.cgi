@@ -21,7 +21,7 @@
 #
 # Peak Search 検索処理
 #
-# ver 3.0.2  2010.11.16
+# ver 3.0.3  2011.05.30
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -45,14 +45,17 @@ foreach $key ( @params ) {
 	elsif ( $key eq 'ion' ) {
 		$where_ion = "";
 		if ( $val eq '1' ) {
-			$where_ion = " and S.ION > 0";
+			$where_ion = " AND S.ION > 0";
 		}
 		elsif ( $val eq '-1' ) {
-			$where_ion = " and S.ION < 0";
+			$where_ion = " AND S.ION < 0";
 		}
 	}
 	elsif ( $key eq 'inst' ) {
 		@inst = $query->param($key);
+	}
+	elsif ( $key eq 'ms' ) {
+		@ms = $query->param($key);
 	}
 	elsif ( $key ne 'check' ) {
 		$Arg{$key} = $val;
@@ -72,12 +75,12 @@ $PassWord = 'bird2006';
 $dbh = DBI->connect($DB, $User, $PassWord) || die "connect error \n";
 
 $heap_tbl_name = 'PEAK_HEAP';
-$sql = "show tables like '$heap_tbl_name'";
+$sql = "SHOW TABLES LIKE '$heap_tbl_name'";
 @ans = &MySql($sql);
 $tbl_name = "PEAK";
 $ans_tbl_name = $ans[0][0];
 if ( lc($ans_tbl_name) eq lc($heap_tbl_name) ) {
-	$sql = "select count(*) from $heap_tbl_name";
+	$sql = "SELECT COUNT(*) FROM $heap_tbl_name";
 	@ans = &MySql($sql);
 	$rec_cnt = $ans[0][0];
 	if ( $rec_cnt > 0 ) {
@@ -89,24 +92,24 @@ if ($#inst < 0) {
 	$dbh->disconnect;
 	exit(0);
 }
-$isAll = 1;
+my $isInstAll = 1;
 foreach $inst (@inst) {
 	if ( $inst ne 'all' ) {
-		$isAll = 0;
+		$isInstAll = 0;
 	}
 	else {
-		$isAll = 1;
+		$isInstAll = 1;
 		last;
 	}
 }
-if ( !$isAll ) {
+if ( !$isInstAll ) {
 	for ( $i = 0; $i < @inst; $i ++ ) {
 		$where_inst .= " INSTRUMENT_TYPE='@inst[$i]'";
 		if ($i != @inst -1) {
 			$where_inst .= " or";
 		}
 	}
-	$sql = "select INSTRUMENT_NO from INSTRUMENT where"
+	$sql = "SELECT INSTRUMENT_NO FROM INSTRUMENT WHERE"
 		 . "$where_inst";
 	@ans = &MySql($sql);
 	$cnt = @ans;
@@ -114,12 +117,36 @@ if ( !$isAll ) {
 		$dbh->disconnect;
 		exit(0);
 	}
+	my $in = "";
 	foreach $item ( @ans ) {
 		$inst_no = $$item[0];
 		$in .= "$inst_no,";
 	}
 	chop $in;
-	$where_inst = " and R.INSTRUMENT_NO in($in)";
+	$where_inst = " AND R.INSTRUMENT_NO IN($in)";
+}
+
+my $isMsAll = 0;
+foreach $ms (@ms) {
+	if ( $ms eq 'all' ) {
+		$isMsAll = 1;
+		last;
+	}
+}
+if ( !$isMsAll ) {
+	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
+	@ans = &MySql($sql);
+	$cnt = @ans;
+	if ( $cnt == 0 ) {
+		$dbh->disconnect;
+		exit(0);
+	}
+	my $in = "";
+	for ( my $i=0; $i<@ms; $i++ ) {
+		$in .= "'@ms[$i]',";
+	}
+	chop $in;
+	$where_ms .= " AND R.MS_TYPE IN($in)";
 }
 
 %res = ();
@@ -133,11 +160,11 @@ for ( $i = 0; $i < $Arg{'num'}; $i ++ ) {
 	$max = $mz + $tol + 0.00001;
 	$val = $Arg{"int$i"} + 0;
 	if ( $type eq 'diff' ) {
-		$sql = "select t1.ID from $tbl_name as t1 left join $tbl_name as t2 on t1.ID = t2.ID "
-			 . "where (t1.MZ between t2.MZ + $min and t2.MZ + $max) and t1.RELATIVE > $val and t2.RELATIVE > $val";
+		$sql = "SELECT t1.ID FROM $tbl_name AS t1 LEFT JOIN $tbl_name AS t2 ON t1.ID = t2.ID "
+			 . "WHERE (t1.MZ BETWEEN t2.MZ + $min AND t2.MZ + $max) AND t1.RELATIVE > $val AND t2.RELATIVE > $val";
 	}
 	else {
-		$sql = "select ID from PEAK where (MZ between $min and $max) and RELATIVE > $val";
+		$sql = "SELECT ID FROM PEAK WHERE (MZ BETWEEN $min AND $max) AND RELATIVE > $val";
 	}
 	@ans = &MySql($sql);
 	if ( $i != 0 ) {
@@ -170,10 +197,11 @@ if ( $cnt == 0 ) {
 %idlist = ();
 %ionlist = ();
 foreach $id ( @id ) {
-	$sql = "select S.NAME, S.ID, S.ION, R.FORMULA, R.EXACT_MASS from SPECTRUM S, RECORD R "
-		 . "where S.ID = '$id' and S.ID = R.ID"
+	$sql = "SELECT S.NAME, S.ID, S.ION, R.FORMULA, R.EXACT_MASS FROM SPECTRUM S, RECORD R "
+		 . "WHERE S.ID = '$id' AND S.ID = R.ID"
 		 . "$where_ion"
-		 . "$where_inst";
+		 . "$where_inst"
+		 . "$where_ms";
 	@rec = &MySql($sql);
 	foreach $rec ( @rec ) {
 		print join("\t", @$rec), "\n";
@@ -181,7 +209,6 @@ foreach $id ( @id ) {
 }
 $dbh->disconnect;
 exit(0);
-
 sub MySql() { local($sql) = @_;
 	local($sth, $n, $i, @ans, @ret);
 	@ret = ();

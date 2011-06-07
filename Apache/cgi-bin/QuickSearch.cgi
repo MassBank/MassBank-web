@@ -21,7 +21,7 @@
 #
 # Quick Search 検索処理
 #
-# ver 3.0.2  2009.07.07
+# ver 3.0.3  2011.05.30
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -45,8 +45,8 @@ $dbh  = DBI->connect($DB, $User, $PassWord) || die "connect error \n";
 
 print "Content-Type: text/plain\n\n";
 
-$query = new CGI;
-@params = $query->param();
+my $query = new CGI;
+my @params = $query->param();
 foreach $key ( @params ) {
 	$val = $query->param($key);
 	if ( $key eq 'id' ) {
@@ -58,12 +58,15 @@ foreach $key ( @params ) {
 	elsif ( $key eq 'inst' ) {
 		@inst = $query->param($key);
 	}
+	elsif ( $key eq 'ms' ) {
+		@ms = $query->param($key);
+	}
 	elsif( $key ne 'check' ) {
 		$Arg{$key} = $val;
 	}
 }
 
-$where_ion = "";
+my $where_ion = "";
 if ( $Arg{'ion'} eq '1' ) {
 	$where_ion = " and ion > 0";
 }
@@ -71,21 +74,22 @@ elsif ( $Arg{'ion'} eq '-1' ) {
 	$where_ion = " and ion < 0";
 }
 
-$isAll = 0;
+my $isInstAll = 0;
 foreach $inst (@inst) {
 	if ( $inst eq 'all' ) {
-		$isAll = 1;
+		$isInstAll = 1;
 		last;
 	}
 }
-if ( !$isAll ) {
-	for ( $i = 0; $i < @inst; $i ++ ) {
+if ( !$isInstAll ) {
+	my $where_inst = "";
+	for ( my $i=0; $i<@inst; $i++ ) {
 		$where_inst .= " INSTRUMENT_TYPE='@inst[$i]'";
 		if ($i != @inst -1) {
-			$where_inst .= " or";
+			$where_inst .= " OR";
 		}
 	}
-	$sql = "select INSTRUMENT_NO from INSTRUMENT where"
+	$sql = "SELECT INSTRUMENT_NO FROM INSTRUMENT WHERE"
 		 . "$where_inst";
 	@ans = &MySql($sql);
 	$cnt = @ans;
@@ -93,19 +97,43 @@ if ( !$isAll ) {
 		$dbh->disconnect;
 		exit(0);
 	}
+	my $in = "";
 	foreach $item ( @ans ) {
 		$inst_no = $$item[0];
 		$in .= "$inst_no,";
 	}
 	chop $in;
 	
-	$where1 .= " R.INSTRUMENT_NO in($in)";
+	$where1 .= " R.INSTRUMENT_NO IN($in)";
+}
+
+my $isMsAll = 0;
+foreach $ms (@ms) {
+	if ( $ms eq 'all' ) {
+		$isMsAll = 1;
+		last;
+	}
+}
+if ( !$isMsAll ) {
+	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
+	@ans = &MySql($sql);
+	$cnt = @ans;
+	if ( $cnt == 0 ) {
+		$dbh->disconnect;
+		exit(0);
+	}
+	my $in = "";
+	for ( my $i=0; $i<@ms; $i++ ) {
+		$in .= "'@ms[$i]',";
+	}
+	chop $in;
+	$where2 .= " R.MS_TYPE IN($in)";
 }
 
 if ( $Arg{'compound'} ne '' ) {
 	$compound = $Arg{'compound'};
 	$compound =~ s/'/''/g;
-	$where2 = " N.NAME like '\%$compound\%'";
+	$where3 = " N.NAME LIKE '\%$compound\%'";
 }
 
 
@@ -114,34 +142,43 @@ if ( $Arg{'mz'} ne '' ) {
 	$mz = $Arg{'mz'} + 0;
 	$mz1 = $mz - $tol;
 	$mz2 = $mz + $tol;
-	if ( $where2 ne '' ) {
-		$where2 .= " $Arg{'op1'}";
+	if ( $where3 ne '' ) {
+		$where3 .= " $Arg{'op1'}";
 	}
-	$where2 .= " R.EXACT_MASS between $mz1 and $mz2";
+	$where3 .= " R.EXACT_MASS BETWEEN $mz1 AND $mz2";
 }
 
 if ( $Arg{'formula'} ne '' ) {
 	$formula = $Arg{'formula'};
 	$formula =~ s/\*/%/g;
-	if ( $where2 ne '' ) {
-		$where2 .= " $Arg{'op2'}";
+	if ( $where3 ne '' ) {
+		$where3 .= " $Arg{'op2'}";
 	}
-	$where2 .= " R.FORMULA like '$formula'"; 
+	$where3 .= " R.FORMULA LIKE '$formula'"; 
 }
 
-$sql = "select distinct R.ID, R.FORMULA, R.EXACT_MASS from RECORD R "
+$sql = "SELECT DISTINCT R.ID, R.FORMULA, R.EXACT_MASS FROM RECORD R "
 	 . "LEFT JOIN CH_NAME N ON R.ID = N.ID";
 if ( $where1 ne '' ) {
-	$sql .= " where ($where1)";
+	$sql .= " WHERE ($where1)";
 }
 if ( $where2 ne '' ) {
 	if ( $where1 eq '' ) {
-		$sql .= " where ";
+		$sql .= " WHERE ";
 	}
 	else {
-		$sql .= " and ";
+		$sql .= " AND ";
 	}
-	$sql .= "($where2)";
+	$sql .= "$where2";
+}
+if ( $where3 ne '' ) {
+	if ( $where1 eq '' && $where2 eq '' ) {
+		$sql .= " WHERE ";
+	}
+	else {
+		$sql .= " AND ";
+	}
+	$sql .= "($where3)";
 }
 
 @ans = &MySql($sql);
@@ -154,7 +191,7 @@ foreach $item ( @ans ) {
 	$id = $$item[0];
 	$formula = $$item[1];
 	$emass= $$item[2];
-	$sql = "select NAME, ID, ION from SPECTRUM where ID = '$id'"
+	$sql = "SELECT NAME, ID, ION FROM SPECTRUM WHERE ID = '$id'"
 		 . "$where_ion";
 	@rec = &MySql($sql);
 	foreach $rec ( @rec ) {

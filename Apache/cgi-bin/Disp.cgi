@@ -21,25 +21,32 @@
 #
 # レコードページ表示
 #
-# ver 3.0.26  2011.03.01
+# ver 3.0.27  2011.05.24
 #
 #-------------------------------------------------------------------------------
 %FMT = (
-'PUBLICATION:',              'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
-'CH\$LINK: CAS',             'http://webbook.nist.gov/cgi/cbook.cgi?ID=%s',
-'CH\$LINK: CAYMAN',          'http://www.caymanchem.com/app/template/Product.vm/catalog/%s',
-'CH\$LINK: CHEBI',           'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
-'CH\$LINK: CHEMPDB',         'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
-'CH\$LINK: CHEMSPIDER',      'http://www.chemspider.com/%s',
-'CH\$LINK: FLAVONOIDVIEWER', 'http://www.metabolome.jp/software/FlavonoidViewer/',
-'CH\$LINK: HMDB',            'http://www.hmdb.ca/metabolites/%s',
-'CH\$LINK: KAPPAVIEW',       'http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=%s',
-'CH\$LINK: KEGG',            'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
-'CH\$LINK: KNAPSACK',        'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
-'CH\$LINK: LIPIDBANK',       'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
-'CH\$LINK: LIPIDMAPS',       'http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=%s',
-'CH\$LINK: NIKKAJI',         'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
-'CH\$LINK: PUBCHEM',         'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
+'PUBLICATION:',                   'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
+'COMMENT: \[MSn\]',               'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
+'COMMENT: \[Merging\]',           'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
+'COMMENT: \[Merged\]',            'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
+'COMMENT: \[Mass spectrometry\]', '',                                        # version 2
+'COMMENT: \[Chromatography\]',    '',                                        # version 2
+'COMMENT: \[Profile\]',           '../DB/profile/%s/%s',                     # version 2
+'COMMENT: \[Mixture\]',           'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
+'CH\$LINK: CAS',                  'http://webbook.nist.gov/cgi/cbook.cgi?ID=%s',
+'CH\$LINK: CAYMAN',               'http://www.caymanchem.com/app/template/Product.vm/catalog/%s',
+'CH\$LINK: CHEBI',                'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
+'CH\$LINK: CHEMPDB',              'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
+'CH\$LINK: CHEMSPIDER',           'http://www.chemspider.com/%s',
+'CH\$LINK: FLAVONOIDVIEWER',      'http://www.metabolome.jp/software/FlavonoidViewer/',
+'CH\$LINK: HMDB',                 'http://www.hmdb.ca/metabolites/%s',
+'CH\$LINK: KAPPAVIEW',            'http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=%s',
+'CH\$LINK: KEGG',                 'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
+'CH\$LINK: KNAPSACK',             'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
+'CH\$LINK: LIPIDBANK',            'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
+'CH\$LINK: LIPIDMAPS',            'http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=%s',
+'CH\$LINK: NIKKAJI',              'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
+'CH\$LINK: PUBCHEM',              'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
 'CH\$LINK: OligosaccharideDataBase', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html%s',
 'CH\$LINK: OligosaccharideDataBase2D', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html',
 'SP\$LINK: NCBI-TAXONOMY', 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%s',
@@ -53,7 +60,7 @@ print "Content-Type: text/html; charset=utf-8\n\n";
 
 $query = new CGI;
 @params = $query->param();
-foreach $key ( @params ) {
+foreach my $key ( @params ) {
 	$val = $query->param($key);
 	$Arg{$key} = $val;
 	if ( $key eq 'type' ) {
@@ -101,17 +108,15 @@ unless ( -f $file_path ) {
 }
 open(F, $file_path);
 
+my $acc = "";
+my $name = "";
+my $version = 1;
 while ( <F> ) {
 	s/\r?\n?//g;
 	push(@Line, $_);
-	if ( /^ACCESSION: / ) { s/^ACCESSION: //; $Acc = $_; }
+	if ( /^ACCESSION: / ) { s/^ACCESSION: //; $acc = $_; }
 	elsif ( /^RECORD_TITLE: / ) { s/^RECORD_TITLE: //; $name = $_; }
-}
-if ( open(F, "$DB/Copyright") ) {
-	while ( <F> ) {
-		s/\r?\n?//g;
-		$copyright .= $_;
-	}
+	elsif ( /^LICENSE: / ) { $version = 2; }
 }
 
 if ( $db_name eq '' ) {
@@ -127,7 +132,7 @@ $SQLDB = "DBI:mysql:$db_name:$host_name";
 $User = 'bird';
 $PassWord = 'bird2006';
 $dbh  = DBI->connect($SQLDB, $User, $PassWord) || &myexit;
-@ans = &MySql("select PRECURSOR_MZ from SPECTRUM where ID = '$Acc'");
+@ans = &MySql("select PRECURSOR_MZ from SPECTRUM where ID = '$acc'");
 $precursor = $ans[0][0];
 $short_name = substr( $name, 0, index($name, ';') );
 $str_merge = "";
@@ -151,7 +156,7 @@ print << "HTML";
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 				<td>
-					<h1>MassBank Record: $Acc $str_merge</h1>
+					<h1>MassBank Record: $acc $str_merge</h1>
 				</td>
 			</tr>
 		</table>
@@ -248,7 +253,7 @@ if ( $mz_num ne '' ) {
 #------------------------
 if ( $qmz ne '' ) {
 	@mzs = split(',', $qmz);
-	$cnt = @mzs;
+	my $cnt = @mzs;
 	for ( $i = 0; $i < $cnt; $i++ ) {
 	 	$mz = $mzs[$i];
 		$min = $mz - 0.3 - 0.00001;
@@ -380,11 +385,12 @@ print << "HTML";
 					<font style="font-size:10pt;" color="dimgray">Mass Spectrum</font>
 HTML
 
-$profile = "../DB/profile/$db_name/$Acc.jpg";
-if ( -e $profile ) {
-	print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"$profile\" target=\"_blank\"><font style=\"font-size:10pt;\">Profile</font></a>";
+if ( $version == 1 ) {
+	$profile = "../DB/profile/$db_name/$acc.jpg";
+	if ( -e $profile ) {
+		print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"$profile\" target=\"_blank\"><font style=\"font-size:10pt;\">Profile</font></a>";
+	}
 }
-
 
 print << "HTML";
 					<br>
@@ -443,22 +449,16 @@ print << "HTML";
 HTML
 
 
-if ( $copyright ne '' ) {
-	print "\t\t<font style=\"font-size:8pt;font-family:Arial;\">$copyright</font>\n";
-}
 print "<hr size=\"1\">\n";
 print "<pre style=\"font-family:Courier New;font-size:10pt\">\n";
 
-@boundary = ( 'CH\$', 'AC\$', 'PK\$' );
-$num = @boundary;
-$step = 0;
-$isRelated = false;
-$isSpBoundary = false;
-$isMsBoundary = false;
-foreach $l ( @Line ) {
-	if ( $step == 0 && $l =~ /^COPYRIGHT/) {
-		$existCopyright = true;
-	}
+my @boundary = ( 'CH\$', 'AC\$', 'PK\$' );
+my $num = @boundary;
+my $step = 0;
+my $isRelated = false;
+my $isSpBoundary = false;
+my $isMsBoundary = false;
+foreach my $l ( @Line ) {
 	if ( $step < $num && $l =~ /^$boundary[$step]/ ) {
 		print "<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">";
 		$step++;
@@ -479,28 +479,36 @@ foreach $l ( @Line ) {
 	}
 	if ( $isRelated eq true ) {
 		if ( substr($l,1,1) ne "*" ) {
-			$val = $l;
-			$val =~ s/^\s*(.*?)\s*$/$1/;	# Trim
-			$pos = index($val,' ');
+			my $tmpVal = $l;
+			$tmpVal =~ s/^\s*(.*?)\s*$/$1/;	# Trim
+			$pos = index($tmpVal,' ');
 			if ( $pos >= 0 ) {
-				$id = substr($val, 0, $pos );
-				$name = substr($val, $pos + 1 );
+				$id = substr($tmpVal, 0, $pos );
+				$name = substr($tmpVal, $pos + 1 );
 				$url = "./Dispatcher.jsp?type=disp&id=$id&site=$src";
 				print "&nbsp;&nbsp;<a href=\"$url\" target=\"_blank\">$id</a>&nbsp;$name\n";
 				next;
 			}
 		}
 	}
-
-	$val = '';
-	$cnt = 0;
-	foreach $key ( keys %FMT ) {
-		if ( $l =~ /^$key/ ) {
-			$l =~ m/$key/g;
-			$val = substr( $l, (pos $l)+1 );
+	
+	my $item_name = '';
+	my $val = '';
+	my @vals = ();
+	my $array_key = '';
+	foreach my $key ( keys %FMT ) {
+		if (  $l =~ /^COMMENT: \[MS[0-9]*\] / && $key eq 'COMMENT: \[MSn\]') {
+			($val = $l) =~ s/^COMMENT: \[MS[0-9]*\] //;
 			@vals = split('\s', $val);
 			$array_key = $key;
-			$item_name = substr( $l, 0, (pos $l) );
+			($item_name = $l) =~ s/^(COMMENT: \[MS[0-9]*\]) .*/$1/;
+			last;
+		}
+		elsif ( $l =~ /^$key/ ) {
+			($val = $l) =~ s/^$key //;
+			@vals = split('\s', $val);
+			$array_key = $key;
+			($item_name = $key) =~ s/\\//g;
 			last;
 		}
 	}
@@ -516,7 +524,21 @@ foreach $l ( @Line ) {
 				$link = "<a href=\"$url\" target=\"_blank\">$pmid</a>";
 				$val =~ s/\[PMID:.*\]/\[PMID: $link\]/o;
 			}
-			print " $val";		
+			print " $val";
+		}
+		elsif ( index($array_key, 'COMMENT:') != -1 ) {
+			$link_id = $vals[0];
+			if ( $array_key ne 'COMMENT: \[Profile\]' ) {
+				$url = sprintf( $FMT{$array_key}, $link_id, $src );
+			}
+			else {
+				$url = sprintf( $FMT{$array_key}, $db_name, $link_id );
+			}
+			if ( $url ne "" ) {
+				$link = "<a href=\"$url\" target=\"_blank\">$link_id</a>";
+				$val =~ s/$link_id/$link/;
+			}
+			print " $val";
 		}
 		elsif ( index($array_key, 'CH\$LINK: OligosaccharideDataBase') == -1 ) {
 			foreach $val ( @vals ) {

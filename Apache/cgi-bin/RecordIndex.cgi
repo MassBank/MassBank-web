@@ -21,7 +21,7 @@
 #
 # レコードリスト別のサマリー情報取得
 #
-# ver 3.0.1  2008.12.05
+# ver 3.0.2  2011.06.02
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -54,7 +54,7 @@ foreach $key ( @params ) {
 	$Arg{$key} = $val;
 }
 
-# IndexType -> Site
+# IndexType -> Contributor
 if ( $Arg{'idxtype'} eq 'site') {
 	$sqlparam = "";
 	$sql = getSql( 1, $sqlparam );
@@ -62,7 +62,7 @@ if ( $Arg{'idxtype'} eq 'site') {
 
 # IndexType -> Instrument Type
 elsif ( $Arg{'idxtype'} eq 'inst' ) {
-	$sql = "select INSTRUMENT_NO from INSTRUMENT where INSTRUMENT_TYPE='$Arg{'srchkey'}'";
+	$sql = "SELECT INSTRUMENT_NO FROM INSTRUMENT WHERE INSTRUMENT_TYPE='$Arg{'srchkey'}'";
 	@ans = &MySql($sql);
 	$cnt = @ans;
 	if ( $cnt == 0 ) {
@@ -74,17 +74,55 @@ elsif ( $Arg{'idxtype'} eq 'inst' ) {
 		$in .= "$inst_no,";
 	}
 	chop $in;
-	$sqlparam = "where R.INSTRUMENT_NO in($in)";
+	$sqlparam = "WHERE R.INSTRUMENT_NO IN($in)";
 	$sql = getSql( 0, $sqlparam );
+}
+
+# IndexType -> MS Type
+elsif ( $Arg{'idxtype'} eq 'ms' ) {
+	if ( $Arg{'srchkey'} ne 'Others' ) {
+		$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
+		@ans = &MySql($sql);
+		$cnt = @ans;
+		if ( $cnt == 0 ) {
+			$dbh->disconnect;
+			exit(0);
+		}
+		$sqlparam .= "WHERE R.MS_TYPE='$Arg{'srchkey'}'";
+		$sql = getSql( 0, $sqlparam );
+	}
+	else {
+		$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
+		@ans = &MySql($sql);
+		$cnt = @ans;
+		if ( $cnt != 0 ) {
+			$sqlparam .= "WHERE R.MS_TYPE=''";
+			$sql = getSql( 0, $sqlparam );
+		}
+		else {
+			$sql = getSql( 0, "" );
+		}
+	}
+}
+
+# IndexType -> Merged Type
+elsif ( $Arg{'idxtype'} eq 'merged' ) {
+	if ( $Arg{'srchkey'} eq 'Normal' ) {
+		$sqlparam = "WHERE INSTR(NAME, 'MERGED') = 0";
+	}
+	elsif ( $Arg{'srchkey'} eq 'Merged' ) {
+		$sqlparam = "WHERE INSTR(NAME, 'MERGED') > 0";
+	}
+	$sql = getSql( 1, $sqlparam );
 }
 
 # IndexType -> Ionization Mode
 elsif ( $Arg{'idxtype'} eq 'ion' ) {
 	if ( $Arg{'srchkey'} eq 'Positive' ) {
-		$sqlparam = "where S.ION > 0";
+		$sqlparam = "WHERE S.ION > 0";
 	}
 	elsif ( $Arg{'srchkey'} eq 'Negative' ) {
-		$sqlparam = "where S.ION < 0";
+		$sqlparam = "WHERE S.ION < 0";
 	}
 	$sql = getSql( 0, $sqlparam );
 }
@@ -93,17 +131,17 @@ elsif ( $Arg{'idxtype'} eq 'ion' ) {
 elsif ( $Arg{'idxtype'} eq 'cmpd' ) {
 	# Condition -> 0-9
 	if ( $Arg{'srchkey'} eq '1-9' ) {
-		$sqlparam = "where NAME regexp '^[0-9]' ";
+		$sqlparam = "WHERE NAME REGEXP '^[0-9]' ";
 		$sql = getSql( 1, $sqlparam );
 	}
 	# Condition -> other
 	elsif ( $Arg{'srchkey'} eq 'Others' ) {
-		$sqlparam = "where NAME regexp '^[^a-z0-9]' ";
+		$sqlparam = "WHERE NAME REGEXP '^[^a-z0-9]' ";
 		$sql = getSql( 1, $sqlparam );
 	}
 	# Condition -> a-z
 	else {
-		$sqlparam = "where NAME like '$Arg{'srchkey'}\%' ";
+		$sqlparam = "WHERE NAME LIKE '$Arg{'srchkey'}\%' ";
 		$sql = getSql( 1, $sqlparam );
 	}
 }
@@ -125,14 +163,14 @@ sub getSql() {
 	local(@tmp) = @_;
 	$sqltype = @tmp[0];
 	$sqlparam = @tmp[1];
-	@sqlstr = ("select Tmp.name, Tmp.id, Tmp.ion, Tmp.formula, Tmp.emass from "
-				 . "( select distinct S.ID as id, R.FORMULA as formula, R.EXACT_MASS as emass, S.NAME as name, S.ION as ion "
-				 . "from SPECTRUM S "
+	@sqlstr = ("SELECT Tmp.name, Tmp.id, Tmp.ion, Tmp.formula, Tmp.emass FROM "
+				 . "( SELECT DISTINCT S.ID AS id, R.FORMULA AS formula, R.EXACT_MASS AS emass, S.NAME AS name, S.ION AS ion "
+				 . "FROM SPECTRUM S "
 				 . "LEFT JOIN RECORD R ON S.ID = R.ID "
 				 . "LEFT JOIN CH_NAME N ON R.ID = N.ID "
-				 . "$sqlparam) as Tmp",
-			   "select S.NAME, S.ID, S.ION, R.FORMULA, R.EXACT_MASS "
-				 . "from SPECTRUM S left join RECORD R on S.ID = R.ID "
+				 . "$sqlparam) AS Tmp",
+				"SELECT S.NAME, S.ID, S.ION, R.FORMULA, R.EXACT_MASS "
+				 . "FROM SPECTRUM S LEFT JOIN RECORD R ON S.ID = R.ID "
 			     . "$sqlparam");
 	return @sqlstr[$sqltype];
 }
