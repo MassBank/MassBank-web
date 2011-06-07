@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.19  2010.10.06
+ * ver 1.0.21  2011.06.01
  *
  ******************************************************************************/
 
@@ -127,6 +127,8 @@
 #database .p_text { padding: 0;  }
 #database .p_link { padding: 5px 0 5px;  line-height: 34px; }
 
+#database .bi { font-weight:bold; font-style:italic; }
+
 /*公開データ============================================== */
 #published p
 { padding: 0 0 30px; padding-left:8px; }
@@ -135,13 +137,13 @@
 #published .p_link { padding: 5px 0 30px; padding-left:8px; line-height: 34px; }
 #published .new { background:#fff5ee; }
 #published th.prefix_ja { width:44px; }
-#published th.analysis_ja { width:165px; }
-#published th.spectra_ja { width:90px; }
-#published th.compound_ja { width:86px; }
+#published th.instms_ja { width:185px; }
+#published th.spectra_ja { width:80px; }
+#published th.compound_ja { width:80px; }
 #published th.prefix_en { width:44px; }
-#published th.analysis_en { width:165px; }
-#published th.spectra_en { width:90px; }
-#published th.compound_en { width:86px; }
+#published th.instms_en { width:185px; }
+#published th.spectra_en { width:80px; }
+#published th.compound_en { width:80px; }
 
 #published td { height:20px; }
 
@@ -199,7 +201,7 @@
 #group p
 { padding: 0 0 30px; padding-left:8px; }
 
-#group .p_link { padding: 5px 0 30px; padding-left:8px; line-height: 24px; }
+#group .p_link { padding: 0 0 30px; padding-left: 26px; line-height: 24px; }
 
 /*利用規定============================================== */
 #regulation p
