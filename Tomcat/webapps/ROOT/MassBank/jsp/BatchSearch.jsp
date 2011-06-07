@@ -22,7 +22,7 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.11 2010.12.24
+ * ver 1.0.12 2011.05.31
  *
  ******************************************************************************/
 %>
@@ -47,7 +47,7 @@
 <meta name="coverage" content="worldwide" />
 <meta name="Targeted Geographic Area" content="worldwide" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 <meta name="description" content="Similarity search of MSn spectra in batch process. To obtain a whole search results for many user's spectra in an e-mail.">
 <meta name="keywords" content="Batch,Similarity,MSn,mail">
 <meta name="revisit_after" content="30 days">
@@ -78,11 +78,13 @@
 	String time = "";
 	String instGrp = "";
 	String instType = "";
+	String msType = "";
 	String ionMode  = "1";
 	
 	boolean isFirst = false;
 	List<String> instGrpList = new ArrayList<String>();
 	List<String> instTypeList = new ArrayList<String>();
+	List<String> msTypeList = new ArrayList<String>();
 	
 	String tempDir = System.getProperty("java.io.tmpdir");
 	
@@ -130,20 +132,29 @@
 			else if ( fItem.getFieldName().equals("inst") ) {
 				instTypeList.add(fItem.getString().trim());
 			}
+			else if ( fItem.getFieldName().equals("ms") ) {
+				msTypeList.add(fItem.getString().trim());
+			}
 			else if ( fItem.getFieldName().equals("ion") ) {
 				ionMode = fItem.getString().trim();
 			}
 		}
-		for ( int i = 0; i < instGrpList.size(); i++ ) {
+		for ( int i=0; i<instGrpList.size(); i++ ) {
 			instGrp += instGrpList.get(i);
 			if ( i < instGrpList.size() - 1 ) {
 				instGrp += ",";
 			}
 		}
-		for ( int i = 0; i < instTypeList.size(); i++ ) {
+		for ( int i=0; i<instTypeList.size(); i++ ) {
 			instType += instTypeList.get(i);
 			if ( i < instTypeList.size() - 1 ) {
 				instType += ",";
+			}
+		}
+		for ( int i=0; i<msTypeList.size(); i++ ) {
+			msType += msTypeList.get(i);
+			if ( i < msTypeList.size() - 1 ) {
+				msType += ",";
 			}
 		}
 		
@@ -183,7 +194,7 @@
 			jobInfo.setTimeStamp( time );
 			jobInfo.setQueryFileName( flName );
 			jobInfo.setQueryFileSize( String.valueOf(fileSize) );
-			jobInfo.setSearchParam( "inst=" + instType + "&ion=" + ionMode );
+			jobInfo.setSearchParam( "inst=" + instType + "&ms=" + msType + "&ion=" + ionMode );
 			jobInfo.setTempName( tempName );
 			
 			// 重複ジョブエントリを有無をチェックする
@@ -247,6 +258,7 @@
 	<jsp:param name="first" value="<%= isFirst %>" />
 	<jsp:param name="inst_grp" value="<%= instGrp %>" />
 	<jsp:param name="inst" value="<%= instType %>" />
+	<jsp:param name="ms" value="<%= msType %>" />
 </jsp:include>
 <%
 		out.println("\t\t\t\t</td>");

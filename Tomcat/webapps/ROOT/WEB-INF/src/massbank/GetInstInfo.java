@@ -18,23 +18,24 @@
  *
  *******************************************************************************
  *
- * INSTRUMENT情報を取得するクラス
+ * INSTRUMENT情報とMS情報を取得するクラス
  *
- * ver 1.0.7 2009.01.08
+ * ver 1.0.9 2011.06.07
  *
  ******************************************************************************/
 package massbank;
 
-import java.io.*;
-import java.util.*;
-import java.net.URL;
-import java.net.URLConnection;
-import massbank.MassBankCommon;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class GetInstInfo {
 	ArrayList<String>[] instNo   = null;
 	ArrayList<String>[] instType = null;
 	ArrayList<String>[] instName = null;
+	ArrayList<String>[] msType = null;
 	private int index = 0;
 
 	/**
@@ -44,31 +45,50 @@ public class GetInstInfo {
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] urlList = conf.getSiteUrl();
 
-		// DBよりINSTRUMENT情報を取得する(CGI実行)
+		// DBからINSTRUMENT情報とMS情報を取得する（For MassBank Record format version 2）
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-		ArrayList<String> resultAll = mbcommon.execMultiDispatcher( serverUrl, typeName, "" );
+		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, "ver=2", true, null );
+		
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];
 		instName = new ArrayList[urlList.length];
+		msType = new ArrayList[urlList.length];
 		for ( int i = 0; i < urlList.length; i++ ) {
-			instNo[i]   = new ArrayList();
-			instType[i] = new ArrayList();
-			instName[i] = new ArrayList();
+			instNo[i]   = new ArrayList<String>();
+			instType[i] = new ArrayList<String>();
+			instName[i] = new ArrayList<String>();
+			msType[i] = new ArrayList<String>();
 		}
+
+		boolean isInst = true;
+		boolean isMs = false;
+		int prevSiteNo = 0;
 		for ( int i = 0; i < resultAll.size(); i++ ) {
-			String line = resultAll.get(i);
+			String line = resultAll.get(i).trim();
+			if ( line.equals("") ) { continue; }
 			String[] item = line.split("\t");
 			int siteNo = Integer.parseInt( item[item.length-1] );
-			instNo[siteNo].add( item[0] );
-			instType[siteNo].add( item[1] );
-			instName[siteNo].add( item[2] );
+			if ( prevSiteNo != siteNo) {
+				prevSiteNo = siteNo;
+				isInst = true; isMs = false;
+			}
+			if ( line.startsWith("INSTRUMENT_INFORMATION") ) { isInst = true; isMs = false; continue; }
+			if ( line.startsWith("MS_INFORMATION") ) { isInst = false; isMs = true; continue; }
+			if ( isInst ) {
+				instNo[siteNo].add( item[0] );
+				instType[siteNo].add( item[1] );
+				instName[siteNo].add( item[2] );
+			}
+			else if ( isMs ) {
+				msType[siteNo].add( item[0] );
+			}
 		}
 	}
 
 	/**
-	 * インデックスをセット
+	 * サイトインデックスをセット
 	 */ 
 	public void setIndex(int index) {
 		this.index = index;
@@ -89,29 +109,21 @@ public class GetInstInfo {
 	}
 
 	/**
-	 * INSTRUMENT_TYPEを重複なしで取得
+	 * INSTRUMENT_TYPEを取得
 	 */
 	public String[] getType() {
 		return (String[])this.instType[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_TYPEを取得
+	 * INSTRUMENT_TYPEを取得（重複なしで全サイト分を取得）
 	 */
 	public String[] getTypeAll() {
-		ArrayList<String> instTypeList = new ArrayList();
-		// 重複がないものを格納
+		ArrayList<String> instTypeList = new ArrayList<String>();
 		for ( int i = 0; i < this.instType.length; i++ ) {
 			for ( int j = 0; j < instType[i].size(); j++ ) {
 				String type = instType[i].get(j);
-				boolean isFind = false;
-				for ( int k = 0; k < instTypeList.size(); k++ ) {
-					if ( instTypeList.get(k).equals(type) ) {
-						isFind = true;
-						break;
-					}
-				}
-				if ( !isFind ) {
+				if ( !instTypeList.contains(type) ) {
 					instTypeList.add( type );
 				}
 			}
@@ -125,19 +137,19 @@ public class GetInstInfo {
 	 * INSTRUMENT_TYPEのグループ情報を取得
 	 */
 	public Map<String, List<String>> getTypeGroup() {
-		final String[] ionization = { "ESI", "EI", "Others" };
+		final String[] baseGroup = { "ESI", "EI", "Others" };
 
 		String[] instTypes = getTypeAll();
-		int num = ionization.length;
+		int num = baseGroup.length;
 		List<String>[] listInstType = new ArrayList[num];
 		for ( int i = 0; i < num; i++ ) {
-			listInstType[i] = new ArrayList();
+			listInstType[i] = new ArrayList<String>();
 		}
 		for ( int j = 0; j < instTypes.length; j++ ) {
 			String val = instTypes[j];
 			boolean isFound = false;
 			for ( int i = 0; i < num; i++ ) {
-				if ( val.indexOf(ionization[i]) >= 0 ) {
+				if ( val.indexOf(baseGroup[i]) >= 0 ) {
 					listInstType[i].add(val);
 					isFound = true;
 					break;
@@ -148,12 +160,37 @@ public class GetInstInfo {
 			}
 		}
 
-		Map<String, List<String>> group = new TreeMap();
+		Map<String, List<String>> group = new TreeMap<String, List<String>>();
 		for ( int i = 0; i < num; i++ ) {
 			if ( listInstType[i].size() > 0 ) {
-				group.put( ionization[i], listInstType[i] );
+				group.put( baseGroup[i], listInstType[i] );
 			}
 		}
 		return group;
+	}
+	
+	/**
+	 * MS_TYPEを取得
+	 */
+	public String[] getMsType() {
+		return (String[])this.msType[this.index].toArray( new String[0] );
+	}
+
+	/**
+	 * MS_TYPEを取得（重複なしで全サイト分を取得）
+	 */
+	public String[] getMsAll() {
+		ArrayList<String> msTypeList = new ArrayList<String>();
+		for ( int i = 0; i < this.msType.length; i++ ) {
+			for ( int j = 0; j < msType[i].size(); j++ ) {
+				String type = msType[i].get(j);
+				if ( !msTypeList.contains(type) ) {
+					msTypeList.add( type );
+				}
+			}
+		}
+		// 名前順でソート
+		Collections.sort( msTypeList );
+		return (String[])msTypeList.toArray( new String[0] );
 	}
 }

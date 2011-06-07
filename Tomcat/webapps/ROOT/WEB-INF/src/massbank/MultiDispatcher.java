@@ -20,20 +20,25 @@
  *
  * CGIをマルチスレッドで起動するサーブレット
  *
- * ver 1.0.13 2009.07.13
+ * ver 1.0.14 2011.05.30
  *
  ******************************************************************************/
 package massbank;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import massbank.MassBankCommon;
-import massbank.GetConfig;
-import massbank.MassBankLog;
-import massbank.CallCgi;
-import massbank.ServerStatus;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("serial")
 public class MultiDispatcher extends HttpServlet {
@@ -76,12 +81,12 @@ public class MultiDispatcher extends HttpServlet {
 				params.put( key, val );
 				type = val;
 			}
-			else if ( !key.equals("inst") ) {
-				// キーがInstrumentType以外の場合はStringパラメータ
+			else if ( !key.equals("inst") && !key.equals("ms") ) {
+				// キーがInstrumentType,MSType以外の場合はStringパラメータ
 				params.put( key, val );
 			}
 			else {
-				// キーがInstrumentTypeの場合はString配列パラメータ
+				// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 				String[] vals = req.getParameterValues( key );
 				params.put( key, vals );
 			}
@@ -239,13 +244,13 @@ public class MultiDispatcher extends HttpServlet {
 				String param = "";
 				for ( Enumeration<String> keys = reqParams.keys(); keys.hasMoreElements(); ) {
 					String key = (String)keys.nextElement();
-					if ( !key.equals("inst") ) {
-						// キーがInstrumentType以外の場合はStringパラメータ
+					if ( !key.equals("inst") && !key.equals("ms") ) {
+						// キーがInstrumentType,MSType以外の場合はStringパラメータ
 						String val = (String)reqParams.get(key);
 						param += key + "=" + val + "&";
 					}
 					else {
-						// キーがInstrumentTypeの場合はString配列パラメータ
+						// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 						String[] vals = (String[])reqParams.get(key);
 						for ( int j = 0; j < vals.length; j++ ) {
 							param += key + "=" + vals[j] + "&";

@@ -22,21 +22,27 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.23 2011.03.04
+ * ver 1.0.25 2011.06.02
  *
  ******************************************************************************/
 %>
 
-<%@ page import="java.io.*" %>
-<%@ page import="java.util.*" %>
+<%@ page import="java.io.BufferedOutputStream" %>
+<%@ page import="java.io.FileOutputStream" %>
+<%@ page import="java.io.IOException" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.TreeMap" %>
 <%@ page import="massbank.MassBankCommon" %>
-<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="java.awt.Color" %>
 <%@ page import="java.awt.Font" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.DecimalFormat" %>
-<%@ page import="java.util.regex.Matcher" %>
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="org.jfree.chart.ChartFactory" %>
 <%@ page import="org.jfree.chart.ChartUtilities" %>
@@ -51,13 +57,13 @@
 <%@ include file="./Common.jsp"%>
 <%!
 	/** インデックス種別 **/
-	private static final String[] indexType = { "site", "inst", "ion", "cmpd" };
+	private static final String[] indexType = { "site", "inst", "ms", "merged", "ion", "cmpd" };
 	/** テーブルヘッダー **/
-	private static final String[] tblName = { "Contributor", "Instrument Type", "Ionization Mode", "Compound Name" };
+	private static final String[] tblName = { "Contributor", "Instrument Type", "MS Type", "Merged Type", "Ion Mode", "Compound Name" };
 	/** 1行に表示する項目数 **/
-	private static final int[] itemNumOfLine = { 3, 3, 2, 6 };
+	private static final int[] itemNumOfLine = { 3, 3, 5, 2, 2, 6 };
 	/** 取得結果のヘッダー **/
-	private static final String[] header = { "INSTRUMENT", "ION", "COMPOUND" };
+	private static final String[] header = { "INSTRUMENT", "MS", "MERGED", "ION", "COMPOUND" };
 %>
 <%
 	ServletContext context = getServletContext();
@@ -84,64 +90,52 @@
 	String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
 	ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, "" );
 	
-	Map<String, Integer>[] countMap = new HashMap[siteNameList.length];
-	ArrayList<String> keyList = new ArrayList();
-	
-	for ( int siteNum = 0; siteNum < siteNameList.length; siteNum++ ) {
-		countMap[siteNum] = new HashMap();
-	}
+	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
+	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();
+	Map<String, Integer> cntMsMap = new TreeMap<String, Integer>();
+	Map<String, Integer> cntMergedMap = new LinkedHashMap<String, Integer>();
+	Map<String, Integer> cntIonMap = new LinkedHashMap<String, Integer>();
+	Map<String, Integer> cntCmpdMap = new LinkedHashMap<String, Integer>();
 	
 	// 取得結果を格納
-	int[] numRows = new int[header.length + 1];
-	numRows[0] = siteNameList.length;
-	for ( int i = 0; i < result.size(); i++ ) {
+	for ( int i=0; i<result.size(); i++ ) {
 		String line = (String)result.get(i);
-		if ( !line.equals("") ) {
-			String[] fields = line.split("\t");
-			int siteNum = Integer.parseInt(fields[fields.length - 1]);
-			String key = fields[0];
-			
-			int count = Integer.parseInt( fields[1] );
-			if ( countMap[siteNum].get( key ) != null ) {
-				count = count + countMap[siteNum].get( key );
-			}
-			countMap[siteNum].put( key, count );
-
-			boolean isFound = false;
-			for ( int j = 0; j < keyList.size(); j++ ) {
-				if ( keyList.get(j).equals(key) ) {
-					isFound = true;
-					break;
-				}
-			}
-			if ( !isFound ) {
-				// キーリスト追加
-				keyList.add( key );
-				
-				// 各項目数カウント
-				for ( int j = 0; j < header.length; j++ ) {
-					if ( key.indexOf( header[j] ) >= 0 ) {
-						numRows[j+1]++;
-						break;
-					}
-				}
-			}
+		if ( line.equals("") ) { continue; }
+		String[] fields = line.split("\t");
+		int siteNo = Integer.parseInt(fields[fields.length - 1]);
+		String key = fields[0].split(":")[0];
+		String val = "";
+		if ( key.equals(indexType[0]) ) {
+			val = siteNameList[siteNo] + "\t" + siteNo;
 		}
-	}
-	ArrayList<String> adjustKeyList = new ArrayList<String>();
-	adjustKeyList.add( "//" );
-	adjustKeyList.add( keyList.get(0) );
-	adjustKeyList.add( "//" );
-	for ( int i = 0; i < header.length; i++ ) {
-		for ( int j = 1; j < keyList.size(); j++ ) {
-			String key = keyList.get(j);
-			pos = key.indexOf(":");
-			String keyHead = key.substring( 0, pos );
-			if ( header[i].equals( keyHead ) ) {
-				adjustKeyList.add( key );
-			}
+		else {
+			val = fields[0].split(":")[1];
 		}
-		adjustKeyList.add( "//" );
+		int count = Integer.parseInt( fields[1] );
+		if ( key.equals("site") ) {			// Contributor
+			if ( !cntSiteMap.containsKey(val) ) { cntSiteMap.put(val, count); }
+			else { cntSiteMap.put(val, cntSiteMap.get(val)+count); }
+		}
+		else if ( key.equals(header[0]) ) {	// Instrument Type
+			if ( !cntInstMap.containsKey(val) ) { cntInstMap.put(val, count); }
+			else { cntInstMap.put(val, cntInstMap.get(val)+count); }
+		}
+		else if ( key.equals(header[1]) ) {	// MS Type
+			if ( !cntMsMap.containsKey(val) ) { cntMsMap.put(val, count); }
+			else { cntMsMap.put(val, cntMsMap.get(val)+count); }
+		}
+		else if ( key.equals(header[2]) ) {	// Spectrum Type
+			if ( !cntMergedMap.containsKey(val) ) { cntMergedMap.put(val, count); }
+			else { cntMergedMap.put(val, cntMergedMap.get(val)+count); }
+		}
+		else if ( key.equals(header[3]) ) {	// Ion Mode
+			if ( !cntIonMap.containsKey(val) ) { cntIonMap.put(val, count); }
+			else { cntIonMap.put(val, cntIonMap.get(val)+count); }
+		}
+		else if ( key.equals(header[4]) ) {	// Compound Name
+			if ( !cntCmpdMap.containsKey(val) ) { cntCmpdMap.put(val, count); }
+			else { cntCmpdMap.put(val, cntCmpdMap.get(val)+count); }
+		}
 	}
 %>
 <html>
@@ -153,7 +147,7 @@
 	<meta name="coverage" content="worldwide" />
 	<meta name="Targeted Geographic Area" content="worldwide" />
 	<meta name="rating" content="general" />
-	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 	<meta name="description" content="Categorized list of spectra. To list up all spectra in a specific category including contributors, instrument types and ionization modes.">
 	<meta name="keywords" content="ESI,EI,LC,IT,GC,TOF,FAB,MALDI,MS,MS/MS,MSn,CI,FI,FD,QqQ">
 	<meta name="revisit_after" content="30 days">
@@ -181,203 +175,258 @@
 
 	<form>
 <%
-	boolean nextLine = false;
 	String url = "./jsp/Result.jsp?";
-	
 	String linkUrl = "";
-	String paramType = MassBankCommon.REQ_TYPE_RCDIDX;
-	String paramIdxType = "";
-	String paramSearchKey = "";
-	
 	String linkName = "";
 	String toolTipName = "";
 	String countStr = "";
 	int siteItemCnt = 0;
 	int instItemCnt = 0;
-	int nameItemCnt = 0;
-	int tblCnt = 0;
+	int msItemCnt = 0;
+	int cmpdItemCnt = 0;
 	
 	double totalSiteNum = 0;
 	double totalInstNum = 0;
+	double totalMsNum = 0;
 	HashMap<String, Integer> siteData = new HashMap<String, Integer>();
 	HashMap<String, Integer> instData = new HashMap<String, Integer>();
+	HashMap<String, Integer> msData = new HashMap<String, Integer>();
 	
 	DecimalFormat numFormat = new DecimalFormat("###,###,###");
 	
-	for ( int i = 0; i < adjustKeyList.size(); i++ ) {
-		String key = adjustKeyList.get(i);
+	String rowspan = "";
+	int row = 0;
+	
+	//----------------------------------------------------------------------
+	// Contributor
+	//----------------------------------------------------------------------
+	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
+	out.println( "<tr valign=\"top\">" );
+	row = (cntSiteMap.size() % itemNumOfLine[0] == 0) ? (cntSiteMap.size() / itemNumOfLine[0]) : (cntSiteMap.size() / itemNumOfLine[0] + 1);
+	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
+	else { rowspan = ""; }
+	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[0] + "</b></td>" );
+	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
+	Set<String> siteKeys = cntSiteMap.keySet();
+	for (Iterator i = siteKeys.iterator(); i.hasNext();) {
+		String val = (String)i.next();
+		int siteNum = Integer.parseInt(val.split("\t")[1]);
+		int count = cntSiteMap.get(val);
 		
-		//----------------------------------------------------------------------
-		// 改テーブルの場合
-		//----------------------------------------------------------------------
-		if ( key.equals("//") ) {
-			// ブロック終了タグ出力
-			if ( i > 0 ) {
-				out.println( "</tr>" );
-				out.println( "</table>" );
-				out.println( "<br>" );
-				tblCnt++;
-			}
-			
-			// ブロック開始タグ出力
-			if ( i < keyList.size() - 1 ) {
-				// セル縦方向連結指定
-				String rowspan = "";
-				int row = numRows[tblCnt] / itemNumOfLine[tblCnt] + 1;
-				if ( row > 1 ) { 
-					rowspan = " rowspan=\"" + String.valueOf(row) + "\"";
-				}
-				out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
-				out.println( "<tr valign=\"top\">" );
-				out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[tblCnt] + "</b></td>" );
-				out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-			}
-			continue;
+		// テーブル行終了・開始
+		if ( siteItemCnt != 0 && siteItemCnt % itemNumOfLine[0] == 0 ) {
+			out.println( "</tr>" );
+			out.println( "<tr>" );
 		}
+		siteItemCnt++;
 		
-		//----------------------------------------------------------------------
-		// siteの場合
-		//----------------------------------------------------------------------
-		int count = 0;
-		if ( key.equals("site") ) {
-			for ( int siteNum = 0; siteNum < siteNameList.length; siteNum++ ) {
-				if ( countMap[siteNum].get( key ) == null ) {
-					continue;
-				}
-				count = countMap[siteNum].get( key );
-				
-				// リンク名、件数
-				linkName = siteNameList[siteNum];
-				toolTipName = siteLongNameList[siteNum];
-				countStr = "(" + numFormat.format(count) + ")";
-				
-				// パラメータ
-				paramIdxType = indexType[0];
-				paramSearchKey = String.valueOf(siteNum);
-				
-				linkUrl = url + "type=" + paramType + "&idxtype="
-						   + paramIdxType + "&srchkey=" + paramSearchKey + "&sortKey=name&sortAction=1&pageNo=1&exec=";
-				
-				// テーブル行終了・開始
-				if ( siteItemCnt != 0 && siteItemCnt % itemNumOfLine[tblCnt] == 0 ) {
-					out.println( "</tr>" );
-					out.println( "<tr>" );
-				}
-				siteItemCnt++;
-				
-				// テーブルデータ
-				out.println( "<td>" );
-				out.println( "<a href=\"" + linkUrl + "\" title=\"" + toolTipName.replaceAll(" ", "&nbsp;") + "\" target=\"_self\">" + linkName.replaceAll(" ", "&nbsp;") + "</a>"
-						   + "&nbsp;&nbsp;" + countStr + "&nbsp;&nbsp;" );
-				out.println( "</td>" );
-				
-				// グラフ用データ収集
-				siteData.put(linkName, count);
-				totalSiteNum += count;
-			}
-		}
-		//----------------------------------------------------------------------
-		// Instrument Type, Ionization Mode, Compound Nameの場合
-		//----------------------------------------------------------------------
-		else {
-			nextLine = false;
-			//---------------------------
-			// Instrument Type
-			//---------------------------
-			if ( key.indexOf( header[0] ) >= 0 ) {
-				// リンク名
-				pos = key.indexOf(":");
-				linkName = key.substring( pos + 1 );
-				
-				// パラメータ
-				paramSearchKey = linkName;
-				paramIdxType = indexType[1];
-				
-				// テーブル改行フラグセット
-				if ( instItemCnt != 0 && instItemCnt % itemNumOfLine[tblCnt] == 0 ) {
-					nextLine = true;
-				}
-				instItemCnt++;
-			}
-			//---------------------------
-			// Ionization Mode
-			//---------------------------
-			else if ( key.indexOf( header[1] ) >= 0 ) {
-				// リンク名
-				pos = key.indexOf(":");
-				linkName = key.substring( pos + 1 );
-				
-				//パラメータ
-				paramSearchKey = linkName;
-				paramIdxType = indexType[2];
-			}
-			//---------------------------
-			// Compound Name
-			//---------------------------
-			else {
-				// リンク名
-				pos = key.indexOf(":");
-				linkName = key.substring( pos + 1 );
-				
-				// パラメータ
-				paramSearchKey = linkName;
-				paramIdxType = indexType[3];
-				
-				// テーブル改行フラグセット
-				if ( nameItemCnt != 0 && nameItemCnt % itemNumOfLine[tblCnt] == 0 ) {
-					nextLine = true;
-				}
-				nameItemCnt++;
-			}
-			
-			// 件数を合算
-			for ( int siteNum = 0; siteNum < siteNameList.length; siteNum++ ) {
-				if ( countMap[siteNum].get( key ) != null ) {
-					count += countMap[siteNum].get( key );
-				}
-			}
-			countStr = "(" + numFormat.format(count) + ")";
-			
-			// リンクURLセット
-			linkUrl = url + "type=" + paramType + "&idxtype="
-					   + paramIdxType + "&srchkey=" + paramSearchKey + "&sortKey=name&sortAction=1&pageNo=1&exec=";
-			
-			// テーブル行終了・開始
-			if ( nextLine ) {
-				out.println( "</tr>" );
-				out.println( "<tr>" );
-			}
-			
-			// テーブルデータ
-			out.println( "<td>" );
-			out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + linkName + "</a>"
-						   + "&nbsp;&nbsp;&nbsp;" + countStr );
-			out.println( "</td>" );
-			
-			// グラフ用データ収集
-			if ( key.indexOf( header[0] ) >= 0 ) {
-				instData.put(linkName, count);
-				totalInstNum += count;
-			}
-		}
+		// テーブルデータ
+		linkName = siteNameList[siteNum];
+		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
+				   + indexType[0] + "&srchkey=" + String.valueOf(siteNum) + "&sortKey=name&sortAction=1&pageNo=1&exec=";
+		toolTipName = siteLongNameList[siteNum];
+		countStr = "(" + numFormat.format(count) + ")";
+		out.println( "<td>" );
+		out.println( "<a href=\"" + linkUrl + "\" title=\"" + toolTipName.replaceAll(" ", "&nbsp;") + "\" target=\"_self\">" + linkName.replaceAll(" ", "&nbsp;") + "</a>"
+				   + "&nbsp;&nbsp;" + countStr + "&nbsp;&nbsp;" );
+		out.println( "</td>" );
+		
+		// グラフ用データ収集
+		siteData.put(linkName, count);
+		totalSiteNum += count;
 	}
+	out.println( "</tr>" );
+	out.println( "</table>" );
+	out.println( "<br>" );
+	
+	
+	//---------------------------
+	// Instrument Type
+	//---------------------------
+	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
+	out.println( "<tr valign=\"top\">" );
+	row = (cntInstMap.size() % itemNumOfLine[1] == 0) ? (cntInstMap.size() / itemNumOfLine[1]) : (cntInstMap.size() / itemNumOfLine[1] + 1);
+	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
+	else { rowspan = ""; }
+	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[1] + "</b></td>" );
+	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
+	Set<String> instKeys = cntInstMap.keySet();
+	for (Iterator i = instKeys.iterator(); i.hasNext();) {
+		String val = (String)i.next();
+		int count = cntInstMap.get(val);
+		
+		// テーブル行終了・開始
+		if ( instItemCnt != 0 && instItemCnt % itemNumOfLine[1] == 0 ) {
+			out.println( "</tr>" );
+			out.println( "<tr>" );
+		}
+		instItemCnt++;
+		
+		// テーブルデータ
+		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
+				   + indexType[1] + "&srchkey=" + val + "&sortKey=name&sortAction=1&pageNo=1&exec=";
+		countStr = "(" + numFormat.format(count) + ")";
+		out.println( "<td>" );
+		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
+		out.println( "</td>" );
+		
+		// グラフ用データ収集
+		instData.put(val, count);
+		totalInstNum += count;
+	}
+	if ( cntInstMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	out.println( "</tr>" );
+	out.println( "</table>" );
+	out.println( "<br>" );
+	
+	//---------------------------
+	// MS Type
+	//---------------------------
+	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
+	out.println( "<tr valign=\"top\">" );
+	row = (cntMsMap.size() % itemNumOfLine[2] == 0) ? (cntMsMap.size() / itemNumOfLine[2]) : (cntMsMap.size() / itemNumOfLine[2] + 1);
+	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
+	else { rowspan = ""; }
+	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[2] + "</b></td>" );
+	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
+	Set<String> msKeys = cntMsMap.keySet();
+	for (Iterator i = msKeys.iterator(); i.hasNext();) {
+		String val = (String)i.next();
+		int count = cntMsMap.get(val);
+		
+		// テーブル行終了・開始
+		if ( msItemCnt != 0 && msItemCnt % itemNumOfLine[2] == 0 ) {
+			out.println( "</tr>" );
+			out.println( "<tr>" );
+		}
+		msItemCnt++;
+		
+		// テーブルデータ
+		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
+				   + indexType[2] + "&srchkey=" + val + "&sortKey=name&sortAction=1&pageNo=1&exec=";
+		countStr = "(" + numFormat.format(count) + ")";
+		out.println( "<td>" );
+		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
+		out.println( "</td>" );
+		
+		// グラフ用データ収集
+		msData.put(val, count);
+		totalMsNum += count;
+	}
+	if ( cntMsMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	out.println( "</tr>" );
+	out.println( "</table>" );
+	out.println( "<br>" );
+	
+	
+	//---------------------------
+	// Merged Type
+	//---------------------------
+	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
+	out.println( "<tr valign=\"top\">" );
+	row = (cntMergedMap.size() % itemNumOfLine[3] == 0) ? (cntMergedMap.size() / itemNumOfLine[3]) : (cntMergedMap.size() / itemNumOfLine[3] + 1);
+	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
+	else { rowspan = ""; }
+	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[3] + "</b></td>" );
+	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
+	Set<String> mergedKeys = cntMergedMap.keySet();
+	for (Iterator i = mergedKeys.iterator(); i.hasNext();) {
+		String val = (String)i.next();
+		int count = cntMergedMap.get(val);
+		
+		// テーブルデータ
+		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
+				   + indexType[3] + "&srchkey=" + val + "&sortKey=name&sortAction=1&pageNo=1&exec=";
+		countStr = "(" + numFormat.format(count) + ")";
+		if ( val.equals("Normal") ) { out.println( "<td width=\"220\">" ); } else { out.println( "<td>" ); }
+		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
+		out.println( "</td>" );
+	}
+	out.println( "</tr>" );
+	out.println( "</table>" );
+	out.println( "<br>" );
+	
+	
+	//---------------------------
+	// Ion Mode
+	//---------------------------
+	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
+	out.println( "<tr valign=\"top\">" );
+	row = (cntIonMap.size() % itemNumOfLine[4] == 0) ? (cntIonMap.size() / itemNumOfLine[4]) : (cntIonMap.size() / itemNumOfLine[4] + 1);
+	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
+	else { rowspan = ""; }
+	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[4] + "</b></td>" );
+	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
+	Set<String> ionKeys = cntIonMap.keySet();
+	for (Iterator i = ionKeys.iterator(); i.hasNext();) {
+		String val = (String)i.next();
+		int count = cntIonMap.get(val);
+		
+		// テーブルデータ
+		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
+				   + indexType[4] + "&srchkey=" + val + "&sortKey=name&sortAction=1&pageNo=1&exec=";
+		countStr = "(" + numFormat.format(count) + ")";
+		if ( val.equals("Positive") ) { out.println( "<td width=\"220\">" ); } else { out.println( "<td>" ); }
+		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
+		out.println( "</td>" );
+	}
+	out.println( "</tr>" );
+	out.println( "</table>" );
+	out.println( "<br>" );
+	
+	
+	//---------------------------
+	// Compound Name
+	//---------------------------
+	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
+	out.println( "<tr valign=\"top\">" );
+	row = (cntCmpdMap.size() % itemNumOfLine[5] == 0) ? (cntCmpdMap.size() / itemNumOfLine[5]) : (cntCmpdMap.size() / itemNumOfLine[5] + 1);
+	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
+	else { rowspan = ""; }
+	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[5] + "</b></td>" );
+	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
+	Set<String> cmpdKeys = cntCmpdMap.keySet();
+	for (Iterator i = cmpdKeys.iterator(); i.hasNext();) {
+		String val = (String)i.next();
+		int count = cntCmpdMap.get(val);
+		
+		// テーブル行終了・開始
+		if ( cmpdItemCnt != 0 && cmpdItemCnt % itemNumOfLine[5] == 0 ) {
+			out.println( "</tr>" );
+			out.println( "<tr>" );
+		}
+		cmpdItemCnt++;
+		
+		// テーブルデータ
+		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
+				   + indexType[5] + "&srchkey=" + val + "&sortKey=name&sortAction=1&pageNo=1&exec=";
+		countStr = "(" + numFormat.format(count) + ")";
+		out.println( "<td>" );
+		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
+		out.println( "</td>" );
+	}
+	out.println( "</tr>" );
+	out.println( "</table>" );
+	out.println( "<br>" );
+	
+	
 	out.println( "<hr size=\"1\">" );
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"12\" cellspacing=\"12\">" );
 	
 	// グラフデータセットオブジェクト
 	DefaultPieDataset siteGraphData = new DefaultPieDataset();
 	DefaultPieDataset instGraphData = new DefaultPieDataset();
+	DefaultPieDataset msGraphData = new DefaultPieDataset();
 	
 	// グラフデータ表示件数
 	final int MAX_DISP_DATA = 10;
-	
-	Set keys = null;
+	Set<String> keys = null;
 	String key = null;
 	int val = 0;
 	BigDecimal percent = null;
-	String lavel = null;
+	String label = null;
 	
-	// Siteグラフデータセット
+	// Contributorグラフデータセット
 	if (totalSiteNum > 0) {
 		keys = siteData.keySet();
 		int siteNum = 0;
@@ -385,9 +434,9 @@
 			key = (String)iterator.next();
 			val = siteData.get(key);
 			percent = new BigDecimal(String.valueOf(val / totalSiteNum * 100));
-			lavel = key + " : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			label = key + " : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
 			siteNum++;
-			siteGraphData.setValue(lavel, val);
+			siteGraphData.setValue(label, val);
 		}
 		siteGraphData.sortByValues(SortOrder.DESCENDING);
 		
@@ -404,8 +453,8 @@
 				siteGraphData.remove(etcKey);
 			}
 			percent = new BigDecimal(String.valueOf(etcVal / totalSiteNum * 100));
-			lavel = "etc. : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
-			siteGraphData.setValue(lavel, etcVal);
+			label = "etc. : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			siteGraphData.setValue(label, etcVal);
 		}
 	}
 	else {
@@ -420,9 +469,9 @@
 			key = (String)iterator.next();
 			val = instData.get(key);
 			percent = new BigDecimal(String.valueOf(val / totalInstNum * 100));
-			lavel = key + " : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			label = key + " : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
 			instNum++;
-			instGraphData.setValue(lavel, val);
+			instGraphData.setValue(label, val);
 		}
 		instGraphData.sortByValues(SortOrder.DESCENDING);
 		
@@ -439,8 +488,8 @@
 				instGraphData.remove(etcKey);
 			}
 			percent = new BigDecimal(String.valueOf(etcVal / totalInstNum * 100));
-			lavel = "etc. : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
-			instGraphData.setValue(lavel, etcVal);
+			label = "etc. : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			instGraphData.setValue(label, etcVal);
 		}
 	}
 	else {
@@ -448,12 +497,49 @@
 	}
 	
 	
+	// MS Typeグラフデータセット
+	if (totalMsNum > 0) {
+		keys = msData.keySet();
+		int msNum = 0;
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			key = (String)iterator.next();
+			val = msData.get(key);
+			percent = new BigDecimal(String.valueOf(val / totalMsNum * 100));
+			label = key + " : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			msNum++;
+			msGraphData.setValue(label, val);
+		}
+		msGraphData.sortByValues(SortOrder.DESCENDING);
+		
+		// グラフデータが多い場合は表示データを省略
+		long etcVal = 0;
+		int msCount = msGraphData.getItemCount();
+		ArrayList<Comparable> etcList = new ArrayList<Comparable>();
+		if ( msCount > MAX_DISP_DATA) {
+			for (int index=MAX_DISP_DATA; index<msCount; index++) {
+				etcList.add(msGraphData.getKey(index));
+			}
+			for (Comparable etcKey:etcList) {
+				etcVal += msGraphData.getValue(etcKey).longValue();
+				msGraphData.remove(etcKey);
+			}
+			percent = new BigDecimal(String.valueOf(etcVal / totalMsNum * 100));
+			label = "etc. : " + percent.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+			msGraphData.setValue(label, etcVal);
+		}
+	}
+	else {
+		msGraphData.setValue("No MS Type Data", 0);
+	}
+	
 	// グラフ一括生成＆出力
 	LinkedHashMap<String, DefaultPieDataset> graphDataMap = new LinkedHashMap<String, DefaultPieDataset>(2);
 	int siteTopNum = (siteGraphData.getItemCount() < MAX_DISP_DATA) ? siteGraphData.getItemCount() : MAX_DISP_DATA;
 	int instTopNum = (instGraphData.getItemCount() < MAX_DISP_DATA) ? instGraphData.getItemCount() : MAX_DISP_DATA;
+	int msTopNum = (msGraphData.getItemCount() < MAX_DISP_DATA) ? msGraphData.getItemCount() : MAX_DISP_DATA;
 	graphDataMap.put("Contributor  top " + siteTopNum, siteGraphData);
 	graphDataMap.put("Instrument Type  top " + instTopNum, instGraphData);
+	graphDataMap.put("MS Type  top " + msTopNum, msGraphData);
 	DefaultPieDataset data = null;
 	String fileName = null;
 	String filePath = null;
@@ -528,7 +614,7 @@
 		BufferedOutputStream outStream = null;
 		try {
 			outStream = new BufferedOutputStream(new FileOutputStream(filePath));
-			ChartUtilities.writeChartAsJPEG(outStream, chart, 900, 400);
+			ChartUtilities.writeChartAsJPEG(outStream, chart, 900, 350);
 		}
 		catch ( IOException ie ) {
 			ie.printStackTrace();

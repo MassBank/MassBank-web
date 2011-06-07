@@ -22,19 +22,28 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.17 2010.12.24
+ * ver 1.0.18 2011.06.02
  *
  ******************************************************************************/
 %>
-<%@ page import="java.io.*" %>
-<%@ page import="java.util.*" %>
+
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.File" %>
+<%@ page import="java.io.FileReader" %>
+<%@ page import="java.io.InputStreamReader" %>
+<%@ page import="java.io.PrintStream" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.net.URL" %>
 <%@ page import="java.lang.Boolean" %>
 <%@ page import="java.net.URLConnection" %>
 <%@ page import="org.apache.commons.fileupload.DiskFileUpload" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
 <%@ page import="org.apache.commons.lang.NumberUtils" %>
-<%@ page import="massbank.admin.AdminCommon" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	private HttpServletRequest req = null;
@@ -118,6 +127,7 @@
 		String ionMode = "1";
 		List<String> instGrpList = new ArrayList<String>();
 		List<String> instTypeList = new ArrayList<String>();
+		List<String> msTypeList = new ArrayList<String>();
 		boolean isInvalidQuery = false;
 		boolean isFirst = true;
 		String isSelectM = "true";
@@ -157,6 +167,9 @@
 					}
 					else if ( key.equals("inst") ) {
 						instTypeList.add(val);
+					}
+					else if ( key.equals("ms") ) {
+						msTypeList.add(val);
 					}
 					else if ( key.equals("ion") ) {
 						ionMode = val;
@@ -235,6 +248,10 @@
 					String[] vals = req.getParameterValues(key);
 					instTypeList = Arrays.asList(vals);
 				}
+				else if ( key.equals("ms") ) {
+					String[] vals = req.getParameterValues(key);
+					msTypeList = Arrays.asList(vals);
+				}
 				else if ( key.equals("ion") ) {
 					ionMode = val;
 				}
@@ -252,11 +269,12 @@
 			molData[Integer.parseInt(updateIndex)] = "@data=" + readMolData;
 		}
 
-		HashMap<String, Object> mapParam = new HashMap();
+		HashMap<String, Object> mapParam = new HashMap<String, Object>();
 		mapParam.put( "tol", tol );
 		mapParam.put( "pi_check", piCheck );
 		mapParam.put( "inst_grp", instGrpList );
 		mapParam.put( "inst", instTypeList );
+		mapParam.put( "ms", msTypeList );
 		mapParam.put( "ion", ionMode );
 		mapParam.put( "molData", molData );
 		mapParam.put( "mz", mz );
@@ -271,13 +289,13 @@
 	/**
 	 * HTMLを取得する
 	 */
-	private String getHtml(
-		HashMap<String, Object> mapParam, boolean isDispM ) throws Exception {
-
+	private String getHtml( HashMap<String, Object> mapParam, boolean isDispM ) throws Exception {
+		
 		String tol = (String)mapParam.get("tol");
 		String piCheck = (String)mapParam.get("pi_check");
 		List<String> instGrpList = (List<String>)mapParam.get("inst_grp");
 		List<String> instTypeList = (List<String>)mapParam.get("inst");
+		List<String> msTypeList = (List<String>)mapParam.get("ms");
 		String ionMode = (String)mapParam.get("ion");
 		String[] molData = (String[])mapParam.get("molData");
 		String[] mz = (String[])mapParam.get("mz");
@@ -287,17 +305,17 @@
 		String reqUrl = (String)mapParam.get("reqUrl");
 		String strIsSelectM = (String)mapParam.get("isSelectM");
 		boolean isSelectM = (new Boolean(strIsSelectM)).booleanValue();
-
+		
 		StringBuffer html = new StringBuffer();
 		if ( isDispM ) {
 			html.append("<div id=\"tbl_queryM\">\n");
 			html.append("\t\t\t<form name=\"form_queryM\" method=\"post\" "
-				+ "action=\"./jsp/Result.jsp\" style=\"display:inline\" onSubmit=\"dispDoWait()\">\n");
+				+ "action=\"./jsp/Result.jsp\" style=\"display:inline\" onSubmit=\"doWait('Searching...')\">\n");
 		}
 		else {
 			html.append("<div id=\"tbl_queryK\">\n");
 			html.append("\t\t<form name=\"form_queryK\" method=\"post\" "
-				+ "action=\"./extend/KnapsackResult.jsp\" style=\"display:inline\" onSubmit=\"dispDoWait()\">\n");
+				+ "action=\"./extend/KnapsackResult.jsp\" style=\"display:inline\" onSubmit=\"doWait('Searching...')\">\n");
 		}
 		html.append("\t\t\t\t<input type=\"hidden\" name=\"type\" value=\"struct\">\n");
 		html.append("\t\t\t\t<table>\n");
@@ -389,32 +407,38 @@
 		html.append("\t\t\t\t\t\t\t\t</td>\n");
 
 		String instGrp = "";
-		for ( int i = 0; i < instGrpList.size(); i++ ) {
+		for ( int i=0; i<instGrpList.size(); i++ ) {
 			instGrp += instGrpList.get(i);
 			if ( i < instGrpList.size() - 1 ) {
 				instGrp += ",";
 			}
 		}
 		String instType = "";
-		for ( int i = 0; i < instTypeList.size(); i++ ) {
+		for ( int i=0; i<instTypeList.size(); i++ ) {
 			instType += instTypeList.get(i);
 			if ( i < instTypeList.size() - 1 ) {
 				instType += ",";
 			}
 		}
-
+		String msType = "";
+		for ( int i=0; i<msTypeList.size(); i++ ) {
+			msType += msTypeList.get(i);
+			if ( i < msTypeList.size() - 1 ) {
+				msType += ",";
+			}
+		}
+		
 		if ( isDispM ) {
 			html.append("\t\t\t\t\t\t\t\t<td valign=\"top\" style=\"padding:2px 15px;\">\n");
 			String strUrl = reqUrl.substring( 0, reqUrl.lastIndexOf("/")+1 ) + "Instrument.jsp";
-			String param = "ion=" + ionMode + "&first=" + isFirst + "&inst_grp=" + instGrp + "&inst=" + instType;
+			String param = "ion=" + ionMode + "&first=" + isFirst + "&inst_grp=" + instGrp + "&inst=" + instType + "&ms=" + msType;
 			URL url = new URL( strUrl );
 			URLConnection con = url.openConnection();
 			con.setDoOutput(true);
-
+			
 			// クッキー情報を渡す
 			Cookie[] allCookies = req.getCookies();
 			if ( allCookies != null ) {
-				Cookie commonCookie = null;
 				for ( int i = 0; i < allCookies.length; i++ ) {
 					if ( allCookies[i].getName().equals("Common") ) {
 						con.setRequestProperty("Cookie", "Common=" + allCookies[i].getValue() );
@@ -434,7 +458,7 @@
 		html.append("\t\t\t\t\t\t\t\t</td>\n");
 		html.append("\t\t\t\t\t\t\t</tr>\n");
 		html.append("\t\t\t\t\t\t</table>\n");
-
+		
 		if ( isDispM ) {
 			html.append("\t\t\t\t\t\t<table>\n");
 			html.append("\t\t\t\t\t\t\t<tr>\n");
@@ -447,7 +471,7 @@
 			html.append("\t\t\t\t\t\t\t\t\t<i>m/z</i>\n");
 			html.append("\t\t\t\t\t\t\t\t</td>\n");
 			html.append("\t\t\t\t\t\t\t\t<td>\n");
-	
+			
 			for ( int i = 0; i < mz.length; i++ ) {
 				String num = String.valueOf(i);
 				html.append( "\t\t\t\t\t\t\t\t\t<input name=\"mz" + num + "\" type=\"text\" size=\"10\" value=\"" + mz[i] + "\">");
@@ -456,7 +480,7 @@
 				}
 				html.append("\n");
 			}
-
+			
 			html.append("\t\t\t\t\t\t\t\t</td>\n");
 			html.append("\t\t\t\t\t\t\t</tr>\n");
 			html.append("\t\t\t\t\t\t\t<tr>\n");
@@ -512,9 +536,9 @@
 <meta name="coverage" content="worldwide" />
 <meta name="Targeted Geographic Area" content="worldwide" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 <meta name="description" content="Search chemical compounds by substructures. Retrieves chemical compounds whose chemical structure contains the substructures specified by users and display their spectra.">
-<meta name="keywords" content="Structure,compound,chemical,">
+<meta name="keywords" content="Structure,compound,chemical">
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="./css/Common.css">
 <link rel="stylesheet" type="text/css" href="./Knapsack/css/jquery-ui-1.7.2.custom.css">
@@ -529,51 +553,6 @@ $(function(){
 	var $tabs = $('#struct_search').tabs();
 	$tabs.tabs('select', <%= tabIndex %>);
 });
-
-function dispDoWait() {
-
-	var objBody = document.body;
-	var objDiv = document.createElement("div");
-	objDiv.setAttribute("id", "wait");
-	
-	// キーイベント無効（SF未対応）
-	if ( document.addEventListener ) {
-		document.addEventListener( 'keydown', function(e){e.preventDefault();}, false);
-	} else if (document.attachEvent) {
-		document.attachEvent("onkeydown", function(){window.event.keyCode=0;return false;});
-	}
-	
-	// スクロール位置保持およびスクロールバー非表示
-	var sLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
-	var sTop = document.documentElement.scrollTop || document.body.scrollTop;
-	objBody.style.overflowY = "hidden";
-	objBody.style.overflowX = "hidden";
-	
-	// ブラウザの表示領域取得
-	var w = "900px";
-	var h = "700px";
-	
-	// divタグエレメント作成および追加
-	with(objDiv.style){
-		backgroundColor = "#FFFFFF";
-		filter = "alpha(opacity=50)";	// 透明度（IE）
-		opacity = 0.8;					// 透明度（FF、SF）
-		position = "absolute";
-		left = sLeft + "px";
-		top = sTop + "px";
-		cursor = "wait";
-		zIndex = 9999;
-		width = 0;
-		height = 0;
-	}
-	objDiv.innerHTML = [
-		"<table width='" + w + "' height='" + h + "' border='0' cellspacing='0' cellpadding='0' onSelectStart='return false;' onMouseDown='return false;'>",
-		"<td align='left' style='padding-top:100px;padding-left:230px'><img src='./image/wait2.gif' alt='' align='absmiddle'><b style='font-size:14pt'>Searching...</b></td>",
-		"</table>"
-	].join("\n");
-	objBody.appendChild(objDiv);
-}
-
 </script>
 <%}%>
 <style type="text/css">

@@ -22,7 +22,7 @@
  *
  * 登録済み構造式一覧
  *
- * ver 1.1.8  2010.11.09
+ * ver 1.1.9  2011.05.17
  *
  ******************************************************************************/
 %>
@@ -122,7 +122,6 @@
 	 * 登録済み構造式一覧表示処理
 	 * @param db DBアクセスオブジェクト
 	 * @param op JspWriter出力バッファ
-	 * @param reqUrl リクエストURL
 	 * @param selDbName DB名
 	 * @param gifPath Gif格納パス
 	 * @param gifSmallPath GifSmall格納パス
@@ -131,7 +130,7 @@
 	 * @return 結果
 	 * @throws IOException
 	 */
-	private boolean dispStructureList( DatabaseAccess db, JspWriter op, String reqUrl, String selDbName, String gifPath, String gifSmallPath, String gifLargePath, String molPath ) throws IOException {
+	private boolean dispStructureList( DatabaseAccess db, JspWriter op, String selDbName, String gifPath, String gifSmallPath, String gifLargePath, String molPath ) throws IOException {
 		TreeMap<String, String> mainList = new TreeMap<String, String>();
 		TreeMap<String, String> subList = new TreeMap<String, String>();
 		HashSet<String> tmpList = new HashSet<String>();
@@ -369,7 +368,7 @@
 		if ( unRelatedNum > 0 ) {
 			strNote = " <span class=\"warnFont\">( " + nf.format(mainList.size() - unRelatedNum) + " compounds used )</span>";
 		}
-		op.println( "<form name=\"formList\" action=\"" + reqUrl + "\" method=\"post\" onSubmit=\"doWait();\">" );
+		op.println( "<form name=\"formList\" action=\"./StructureList.jsp\" method=\"post\" onSubmit=\"doWait();\">" );
 		op.println( "\t<input type=\"submit\" value=\"Delete\" onClick=\"return beforeDelete();\">" );
 		op.println( "\t<div class=\"count baseFont\">" + nf.format(registNum) + " structure / " + nf.format(mainList.size()) + " compounds" + strNote + "&nbsp;</div>" );
 		op.println( "\t<table table width=\"980\" cellspacing=\"1\" cellpadding=\"0\" bgcolor=\"Lavender\">" );
@@ -795,7 +794,6 @@ function popupMolView(url) {
 	//----------------------------------------------------
 	// 各種パラメータ設定
 	//----------------------------------------------------
-	final String reqUrl = request.getRequestURL().toString();
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
 	final String molRootPath = MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
@@ -868,7 +866,7 @@ function popupMolView(url) {
 		//----------------------------------------------------
 		// フォーム表示
 		//----------------------------------------------------
-		out.println( "<form name=\"formMain\" action=\"" + reqUrl + "\" method=\"post\" onSubmit=\"doWait()\">" );
+		out.println( "<form name=\"formMain\" action=\"./StructureList.jsp\" method=\"post\" onSubmit=\"doWait()\">" );
 		out.println( "<input type=\"hidden\" name=\"act\" value=\"get\">" );
 		out.println( "<span class=\"baseFont\">Database :</span>&nbsp;" );
 		out.println( "<select name=\"db\" class=\"db\" onChange=\"selDb()\">" );
@@ -911,7 +909,7 @@ function popupMolView(url) {
 				out.println( msgWarn( "other users are updating. please access later. ") );
 				return;
 			}
-			isResult = dispStructureList( db, out, reqUrl, selDbName, gifPath, gifSmallPath, gifLargePath, molPath );
+			isResult = dispStructureList( db, out, selDbName, gifPath, gifSmallPath, gifLargePath, molPath );
 			if ( !isResult ) {
 				return;
 			}

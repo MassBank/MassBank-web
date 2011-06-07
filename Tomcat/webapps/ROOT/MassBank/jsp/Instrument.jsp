@@ -4,12 +4,12 @@
  *
  * Copyright (C) 2008 JST-BIRD MassBank
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * This program is free software; you can redistribute instIt and/or modify
+ * instIt under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that instIt will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -22,15 +22,18 @@
  *
  * Instrument Typeパラメータ表示
  *
- * ver 1.0.2 2009.12.08
+ * ver 1.0.5 2011.06.06
  *
  ******************************************************************************/
 %>
-<%@ page import="java.util.*" %>
-<%@ page import="java.net.*" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ page import="java.net.URLDecoder" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.GetInstInfo" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%!
 	/** Cookie名 */
 	private final String COOKIE_COMMON = "Common";
@@ -38,6 +41,8 @@
 	private final String COOKIE_INSTGRP = "INSTGRP";
 	/** Cookie情報キー（INSTRUMENT） */
 	private final String COOKIE_INST = "INST";
+	/** Cookie情報キー（INSTRUMENT） */
+	private final String COOKIE_MS = "MS";
 	/** Cookie情報キー（ION） */
 	private final String COOKIE_ION = "ION";
 	
@@ -76,16 +81,19 @@
 	}
 %>
 <%
+	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	GetInstInfo instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	
 	//-------------------------------------------
 	// Instrument Typeを取得
 	//-------------------------------------------
-	String path = request.getRequestURL().toString();
-	int pos = path.indexOf("/jsp");
-	String baseUrl = path.substring( 0, pos+1 );
-	GetConfig conf = new GetConfig(baseUrl);
-	GetInstInfo instInfo = new GetInstInfo(baseUrl);
 	Map<String, List<String>> instGroup = instInfo.getTypeGroup();
-	Iterator it = instGroup.keySet().iterator();
+	Iterator instIt = instGroup.keySet().iterator();
+	
+	//-------------------------------------------
+	// MS Typeを取得
+	//-------------------------------------------
+	String[] msInfo = instInfo.getMsAll();
 	
 	//-------------------------------------------
 	// Cookie情報取得
@@ -115,10 +123,12 @@
 	String ionMode = "";
 	String[] chkInstType = null;
 	String[] chkInstGrp = null;
+	String[] chkMsType = null;
 	if ( commonCookie != null ) {
 		ionMode = getCookie(commonCookie, COOKIE_ION);
 		chkInstType = getCookie(commonCookie, COOKIE_INST).split(",");
 		chkInstGrp = getCookie(commonCookie, COOKIE_INSTGRP).split(",");
+		chkMsType = getCookie(commonCookie, COOKIE_MS).split(",");
 	}
 	else {
 		String tmpIonMode = request.getParameter("ion");
@@ -133,6 +143,10 @@
 		if ( tmpInstGrp != null && !tmpInstGrp.equals("") ) {
 			chkInstGrp = tmpInstGrp.split(",");
 		}
+		String tmpMsType = request.getParameter("ms");
+		if ( tmpMsType != null && !tmpMsType.equals("") ) {
+			chkMsType = tmpMsType.split(",");
+		}
 	}
 	if ( !ionMode.equals("1") && !ionMode.equals("0") && !ionMode.equals("-1") ) {
 		ionMode = "1";
@@ -141,9 +155,9 @@
 	//--------------------------------------------
 	// Instrument Type チェックボックス表示
 	//--------------------------------------------
-	out.println( "\t\t\t\t\t\t<table width=\"340\" class=\"inst\">" );
+	out.println( "\t\t\t\t\t\t<table width=\"340\" class=\"cond\">" );
 	out.println( "\t\t\t\t\t\t\t<tr>" );
-	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"inst-title\">" );
+	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"cond-title\">" );
 	out.println( "\t\t\t\t\t\t\t\t\t<b>Instrument&nbsp;Type</b>" );
 	out.println( "\t\t\t\t\t\t\t\t</td>" );
 	out.println( "\t\t\t\t\t\t\t</tr>" );
@@ -151,13 +165,13 @@
 	
 	out.println( "\t\t\t\t\t\t<div class=\"inst-scroll\">" );
 	out.println( "\t\t\t\t\t\t\t<table width=\"310\">" );
-	while ( it.hasNext() ) {
-		String key = (String)it.next();
-		List<String> list = instGroup.get(key);
+	while ( instIt.hasNext() ) {
+		String key = (String)instIt.next();
+		List<String> grpList = instGroup.get(key);
 		out.println( "\t\t\t\t\t\t\t\t<tr valign=\"top\">" );
 		out.println( "\t\t\t\t\t\t\t\t\t<td width=\"80\" style=\"padding:5px;\">" );
 		out.print( "\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"inst_grp\" id=\"inst_grp_" + key + "\""
-				   + " value=\"" + key + "\" onClick=\"selBoxGrp('" + key + "', " + list.size() + "); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '"+ COOKIE_ION + "');\"" );
+				   + " value=\"" + key + "\" onClick=\"selBoxGrp('" + key + "', " + grpList.size() + "); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "');\"" );
 		if ( isFirst && commonCookie == null ) {
 			if ( key.equals("ESI") ) {
 				out.print( " checked" );
@@ -176,10 +190,10 @@
 		out.print( ">" + key );
 		out.println( "\t\t\t\t\t\t\t\t\t</td>" );
 		out.println( "\t\t\t\t\t\t\t\t\t<td style=\"padding:5px;\">" );
-		for ( int j = 0; j < list.size(); j++ ) {
-				String val = list.get(j);
+		for ( int j = 0; j < grpList.size(); j++ ) {
+				String val = grpList.get(j);
 				out.print( "\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"inst\" id=\"inst_" + key + j + "\""
-					 	 + " value=\"" + val + "\" onClick=\"selBoxInst('" + key + "'," + list.size() + "); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '"+ COOKIE_ION + "');\"" );
+						 + " value=\"" + val + "\" onClick=\"selBoxInst('" + key + "'," + grpList.size() + "); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "');\"" );
 				if ( isFirst && commonCookie == null ) {
 					if ( key.equals("ESI") ) {
 						out.print( " checked" );
@@ -199,7 +213,7 @@
 		}
 		out.println( "\t\t\t\t\t\t\t\t\t</td>" );
 		out.println( "\t\t\t\t\t\t\t\t</tr>" );
-		if ( it.hasNext() ) {
+		if ( instIt.hasNext() ) {
 			out.println( "\t\t\t\t\t\t\t\t<tr>" );
 			out.println( "\t\t\t\t\t\t\t\t\t<td colspan=\"2\"><hr width=\"96%\" size=\"1\" color=\"silver\" align=\"center\"></td>" );
 			out.println( "\t\t\t\t\t\t\t\t</tr>" );
@@ -209,20 +223,73 @@
 	out.println( "\t\t\t\t\t\t</div><br>" );
 	
 	//--------------------------------------------
-	// Ionization Mode ラジオボタン表示
+	// MS Type チェックボックス表示
 	//--------------------------------------------
-	out.println( "\t\t\t\t\t\t<table width=\"340\" class=\"inst\">" );
+	out.println( "\t\t\t\t\t\t<table width=\"340\" class=\"cond\">" );
 	out.println( "\t\t\t\t\t\t\t<tr>" );
-	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"inst-title\">" );
-	out.println( "\t\t\t\t\t\t\t\t\t<b>Ionization&nbsp;Mode</b>" );
+	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"cond-title\">" );
+	out.println( "\t\t\t\t\t\t\t\t\t<b>MS&nbsp;Type</b>" );
 	out.println( "\t\t\t\t\t\t\t\t</td>" );
 	out.println( "\t\t\t\t\t\t\t</tr>" );
 	out.println( "\t\t\t\t\t\t\t<tr>" );
-	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"inst-item\">" );
+	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"cond-item\">" );
+	if ( msInfo.length > 0 ) {
+		String allCheked = "";
+		if ( isFirst && commonCookie == null ) {
+			allCheked = " checked";
+		}
+		else {
+			if ( chkMsType != null ) {
+				for ( int lp = 0; lp < chkMsType.length; lp++ ) {
+					if ( "all".equals(chkMsType[lp]) ) {
+						allCheked = " checked";
+						break;
+					}
+				}
+			}
+		}
+		out.println( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms\" id=\"ms_MS0\" value=\"all\" onClick=\"selAllMs(" + msInfo.length + "); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "');\"" + allCheked + ">All&nbsp;&nbsp;&nbsp;" );
+	}
+	else {
+		out.println( "\t\t\t\t\t\t\t\t\t&nbsp;" );
+	}
+	for ( int i=0; i<msInfo.length; i++ ) {
+		out.print( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms\" id=\"ms_MS" + (i+1) + "\""
+				 + " value=\"" + msInfo[i] + "\" onClick=\"selMs(" + msInfo.length + "); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "');\"" );
+		if ( isFirst && commonCookie == null ) {
+			out.print( " checked" );
+		}
+		else {
+			if ( chkMsType != null ) {
+				for ( int lp = 0; lp < chkMsType.length; lp++ ) {
+					if ( msInfo[i].equals(chkMsType[lp]) || chkMsType[lp].equals("all") ) {
+						out.print( " checked" );
+						break;
+					}
+				}
+			}
+		}
+		out.println( ">" + msInfo[i] + "&nbsp;" );
+	}
+	out.println( "\t\t\t\t\t\t\t\t</td>" );
+	out.println( "\t\t\t\t\t\t\t</tr>" );
+	out.println( "\t\t\t\t\t\t</table><br>" );
+	
+	//--------------------------------------------
+	// Ion Mode ラジオボタン表示
+	//--------------------------------------------
+	out.println( "\t\t\t\t\t\t<table width=\"340\" class=\"cond\">" );
+	out.println( "\t\t\t\t\t\t\t<tr>" );
+	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"cond-title\">" );
+	out.println( "\t\t\t\t\t\t\t\t\t<b>Ion&nbsp;Mode</b>" );
+	out.println( "\t\t\t\t\t\t\t\t</td>" );
+	out.println( "\t\t\t\t\t\t\t</tr>" );
+	out.println( "\t\t\t\t\t\t\t<tr>" );
+	out.println( "\t\t\t\t\t\t\t\t<td colspan=\"2\" class=\"cond-item\">" );
 	String[] ionVal = { "1", "-1", "0" };
 	String[] ionStr = { "Positive&nbsp;&nbsp;", "Negative&nbsp;&nbsp;&nbsp;&nbsp;", "Both" };
 	for ( int i = 0; i < ionVal.length; i++ ) {
-		out.print( "\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"ion\" value=\"" + ionVal[i] + "\" onClick=\"setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '"+ COOKIE_ION + "');\"" );
+		out.print( "\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"ion\" value=\"" + ionVal[i] + "\" onClick=\"setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "');\"" );
 		if ( ionMode.equals(ionVal[i]) ) {
 			out.print( " checked" );
 		}

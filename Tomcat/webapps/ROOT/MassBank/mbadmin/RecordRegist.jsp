@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.13 2011.02.18
+ * ver 1.0.14 2011.05.31
  *
  ******************************************************************************/
 %>
@@ -130,10 +130,11 @@
 	 * @param op JspWriter出力バッファ
 	 * @param dataPath 登録対象レコードパス
 	 * @param registPath 登録先パス
+	 * @param ver レコードフォーマットバージョン
 	 * @return 登録可能ファイル名リスト
 	 * @throws IOException 入出力例外
 	 */
-	private ArrayList<String> checkRecord(DatabaseAccess db, JspWriter op, String dataPath, String registPath) throws IOException {
+	private ArrayList<String> checkRecord(DatabaseAccess db, JspWriter op, String dataPath, String registPath, int ver) throws IOException {
 		
 		final String[] dataList = (new File(dataPath)).list();
 		ArrayList<String> regFileList = new ArrayList<String>();
@@ -147,11 +148,18 @@
 		//----------------------------------------------------
 		// レコードファイル必須項目、必須項目値チェック処理
 		//----------------------------------------------------
-		final String[] requiredList = {
-		    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "COPYRIGHT: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
+		String[] requiredList = new String[]{	// Ver.2
+		    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "LICENSE: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
 		    "CH$EXACT_MASS: ", "CH$SMILES: ", "CH$IUPAC: ", "AC$INSTRUMENT: ", "AC$INSTRUMENT_TYPE: ",
-		    "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: m/z int. rel.int."
+		    "AC$MASS_SPECTROMETRY: MS_TYPE ", "AC$MASS_SPECTROMETRY: ION_MODE ", "PK$NUM_PEAK: ", "PK$PEAK: "
 		};
+		if ( ver == 1 ) {	// Ver.1
+			requiredList = new String[]{
+			    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "COPYRIGHT: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
+			    "CH$EXACT_MASS: ", "CH$SMILES: ", "CH$IUPAC: ", "AC$INSTRUMENT: ", "AC$INSTRUMENT_TYPE: ",
+			    "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: "
+			};
+		}
 		for (int i=0; i<dataList.length; i++) {
 			String name = dataList[i];
 			boolean isStatus = false;
@@ -213,8 +221,11 @@
 				for ( int k=0; k<fileContents.size(); k++ ) {
 					String lineStr = fileContents.get(k);
 					
-					// RELATED_RECORDタグもしくは終了タグ以降は無効（必須項目検出対象としない）
-					if ( lineStr.startsWith("RELATED_RECORD:") || lineStr.startsWith("//") ) {
+					// 終了タグもしくはRELATED_RECORDタグ以降は無効（必須項目検出対象としない）
+					if ( lineStr.startsWith("//") ) {	// Ver.1以降
+						break;
+					}
+					else if( ver == 1 && lineStr.startsWith("RELATED_RECORD:") ) {	// Ver.1
 						break;
 					}
 					// 値（ピーク情報）検出（終了タグまでを全てピーク情報とする）
@@ -228,9 +239,10 @@
 					else if ( lineStr.indexOf(requiredStr) != -1 ) {
 						// 必須項目検出
 						findRequired = true;
-						if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
+						if ( requiredStr.equals("PK$PEAK: ") ) {
 							isPeakMode = true;
 							findValue = true;
+							valStrs.add(lineStr.replace(requiredStr, ""));
 						}
 						else {
 							// 値検出
@@ -261,70 +273,83 @@
 						// 各値チェック
 						//----------------------------------------------------
 						String val = (valStrs.size() > 0) ? valStrs.get(0) : "";
-						// ACESSION
+						// ACESSION（Ver.1以降）
 						if ( requiredStr.equals("ACCESSION: ") ) {
 							if ( !val.equals(name.replace(REC_EXTENSION, "")) ) {
-								op.println( msgWarn( "value of required item&nbsp;&nbsp;[ACCESSION:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal or file name is illegal." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[ACCESSION: ]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal or file name is illegal." ) );
 								break;
 							}
 							if ( val.length() != 8 ) {
-								op.println( msgWarn( "value of required item&nbsp;&nbsp;[ACCESSION:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[ACCESSION: ]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
 								break;
 							}
 							idStr = val;
 						}
-						// PK$NUM_PEAK
+						// PK$NUM_PEAK（Ver.1以降）
 						else if ( requiredStr.equals("PK$NUM_PEAK: ") && !val.equals(DEFAULT_VALUE) ) {
 							try {
 								Integer.parseInt(val);
 							}
 							catch (NumberFormatException e) {
-								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$NUM_PEAK:]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is not numeric." ) );
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is not numeric." ) );
 								break;
 							}
 						}
-						// PK$PEAK: m/z int. rel.int.
-						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
-							String peak = "";
-							String mz = "";
-							String intensity = "";
-							boolean mzDuplication = false;
-							boolean mzNotNumeric = false;
-							boolean intensityNotNumeric = false;
-							boolean invalidFormat = false;
-							HashSet<String> mzSet = new HashSet<String>();
-							for ( int l=0; l<valStrs.size(); l++ ) {
-								peak = valStrs.get(l).trim();
-								if ( peak.indexOf(" ") != -1 ) {
-									mz = peak.split(" ")[0];
-									if ( !mzSet.add(mz) ) {
-										mzDuplication = true;
+						// PK$PEAK:（Ver.1以降）
+						else if ( requiredStr.equals("PK$PEAK: ") ) {
+							if ( valStrs.size() == 0 || !valStrs.get(0).startsWith("m/z int. rel.int.") ) {
+								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$PEAK: ]&nbsp;&nbsp;, the first line is not \"PK$PEAK: m/z int. rel.int.\"." ) );
+							}
+							else {
+								boolean isNa = false;
+								String peak = "";
+								String mz = "";
+								String intensity = "";
+								boolean mzDuplication = false;
+								boolean mzNotNumeric = false;
+								boolean intensityNotNumeric = false;
+								boolean invalidFormat = false;
+								HashSet<String> mzSet = new HashSet<String>();
+								for ( int l=0; l<valStrs.size(); l++ ) {
+									peak = valStrs.get(l).trim();
+									// N/A検出
+									if ( peak.indexOf(DEFAULT_VALUE) != -1 ) {
+										isNa = true;
 										break;
 									}
-									try {
-										Double.parseDouble(mz);
+									if ( l == 0 ) { continue; }	// m/z int. rel.int.が格納されている行のため飛ばす
+									
+									if ( peak.indexOf(" ") != -1 ) {
+										mz = peak.split(" ")[0];
+										if ( !mzSet.add(mz) ) {
+											mzDuplication = true;
+											break;
+										}
+										try {
+											Double.parseDouble(mz);
+										}
+										catch (NumberFormatException e) {
+											mzNotNumeric = true;
+											break;
+										}
+										intensity = peak.split(" ")[1];
+										try {
+											Double.parseDouble(intensity);
+										}
+										catch (NumberFormatException e) {
+											intensityNotNumeric = true;
+											break;
+										}
 									}
-									catch (NumberFormatException e) {
-										mzNotNumeric = true;
-										break;
-									}
-									intensity = peak.split(" ")[1];
-									try {
-										Double.parseDouble(intensity);
-									}
-									catch (NumberFormatException e) {
-										intensityNotNumeric = true;
+									else {
+										invalidFormat = true;
 										break;
 									}
 								}
-								else {
-									invalidFormat = true;
+								if ( mzDuplication || mzNotNumeric || intensityNotNumeric || invalidFormat ) {
+									op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$PEAK: ]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
 									break;
 								}
-							}
-							if ( mzDuplication || mzNotNumeric || intensityNotNumeric || invalidFormat ) {
-								op.println( msgWarn( "value of required item&nbsp;&nbsp;[PK$PEAK: m/z int. rel.int.]&nbsp;&nbsp;of&nbsp;&nbsp;[" + name + "]&nbsp;&nbsp;is illegal." ) );
-								break;
 							}
 						}
 						
@@ -418,11 +443,12 @@
 	 * @param selDbName DB
 	 * @param baseUrl ベースURL
 	 * @param copiedFiles コピー済みファイルパス格納用
+	 * @param ver レコードフォーマットバージョン
 	 * @return 結果
 	 * @throws IOException
 	 */
 	private boolean registRecord(DatabaseAccess db, JspWriter op, GetConfig conf, String hostName, 
-	                             String tmpPath, ArrayList<String> dataFileList, String registPath, String selDbName, String baseUrl, ArrayList<File> copiedFiles) throws IOException {
+	                             String tmpPath, ArrayList<String> dataFileList, String registPath, String selDbName, String baseUrl, ArrayList<File> copiedFiles, int ver) throws IOException {
 		
 		boolean ret = true;
 		final String[] urlList = conf.getSiteUrl();
@@ -464,7 +490,7 @@
 				fname.append( "," );
 			}
 		}
-		final String peakParam = baseParam + "&fname=" + fname.toString();
+		final String peakParam = baseParam + "&fname=" + fname.toString() + "&ver=" + ver;
 		ret = execCgi( cgiPeakUrl, peakParam );
 		if ( !ret ) {
 			Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
@@ -485,7 +511,7 @@
 				pw[i] = new PrintWriter( new BufferedWriter(new FileWriter(filePath)) );
 				pw[i].println( "START TRANSACTION;");
 			}
-			SqlFileGenerator sfg = new SqlFileGenerator( baseUrl, selDbName );
+			SqlFileGenerator sfg = new SqlFileGenerator( baseUrl, selDbName, ver );
 			for ( int i=0; i<dataFileList.size(); i++ ) {
 				String filePath = registPath + File.separator + dataFileList.get(i);
 				sfg.readFile( filePath );
@@ -647,6 +673,7 @@ function selDb() {
 	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	GetConfig conf = new GetConfig(baseUrl);
 	OperationManager om = OperationManager.getInstance();
+	int recVersion = 2;
 	String selDbName = "";
 	FileUpload up = null;
 	boolean isResult = true;
@@ -700,21 +727,26 @@ function selDb() {
 		Collections.sort(dbNames);
 		
 		//----------------------------------------------------
-		// DB選択状態
+		// リクエスト取得
 		//----------------------------------------------------
 		if ( FileUpload.isMultipartContent(request) ) {
 			HashMap<String, String[]> reqParamMap = new HashMap<String, String[]>();
 			reqParamMap = up.getRequestParam();
 			if (reqParamMap != null) {
 				for (Map.Entry<String, String[]> req : reqParamMap.entrySet()) {
-					if ( req.getKey().equals("db") ) {
+					if ( req.getKey().equals("ver") ) {
+						try { recVersion = Integer.parseInt(req.getValue()[0]); } catch (NumberFormatException nfe) {}
+					}
+					else if ( req.getKey().equals("db") ) {
 						selDbName = req.getValue()[0];
-						break;
 					}
 				}
 			}
 		}
 		else {
+			if (request.getParameter("ver") != null ) {
+				try { recVersion = Integer.parseInt(request.getParameter("ver")); } catch (NumberFormatException nfe) {}
+			}
 			selDbName = request.getParameter("db");
 		}
 		if ( selDbName == null || selDbName.equals("") || !dbNames.contains(selDbName) ) {
@@ -740,7 +772,12 @@ function selDb() {
 				out.println( ">" + dbName + "</option>" );
 			}
 		}
-		out.println( "\t</select><br><br>" );
+		out.println( "\t</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "\t<span class=\"baseFont\">Record Version :</span>&nbsp;" );
+		String ver2Chk = (recVersion == 2) ? " checked" : "";
+		String ver1Chk = (recVersion == 1) ? " checked" : "";
+		out.println( "\t<input type=\"radio\" name=\"ver\" value=\"2\"" + ver2Chk + ">2&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"ver\" value=\"1\"" + ver1Chk + ">1&nbsp;<span class=\"note\">(not recommended)</span>");
+		out.println( "\t<br><br>");
 		out.println( "\t<span class=\"baseFont\">Record Archive :</span>&nbsp;" );
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
@@ -874,7 +911,7 @@ function selDb() {
 		//---------------------------------------------
 		// チェック処理
 		//---------------------------------------------
-		ArrayList<String> regFileList = checkRecord(db, out, recDataPath, recPath);
+		ArrayList<String> regFileList = checkRecord(db, out, recDataPath, recPath, recVersion);
 		if ( regFileList.size() == 0 ) {
 			out.println( msgInfo( "0 record registered." ) );
 			return;
@@ -884,7 +921,7 @@ function selDb() {
 		// 登録処理
 		//---------------------------------------------
 		ArrayList<File> copiedFiles = new ArrayList<File>();	// ロールバック（登録ファイル削除）用
-		isResult = registRecord(db, out, conf, dbHostName, tmpPath, regFileList, recPath, selDbName, baseUrl, copiedFiles);
+		isResult = registRecord(db, out, conf, dbHostName, tmpPath, regFileList, recPath, selDbName, baseUrl, copiedFiles, recVersion);
 		if ( !isResult ) {
 			Logger.getLogger("global").severe( "registration failed." + NEW_LINE +
 			                                   "    registration file path : " + tmpPath );

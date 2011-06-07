@@ -22,18 +22,22 @@
  *
  * QPeakResult表示用モジュール
  *
- * ver 1.0.21 2010.12.24
+ * ver 1.0.23 2011.06.06
  *
  ******************************************************************************/
 %>
 
-<%@ page import="java.util.*" %>
+<%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="org.apache.commons.lang.*" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
-<%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -82,7 +86,7 @@
 		}
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
-		ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+		ArrayList<String> result = result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
 		
 		Map<String, String> gifMap = new HashMap<String, String>();
 		Map<String, String> gifSmallMap = new HashMap<String, String>();
@@ -192,27 +196,52 @@
 	//-------------------------------------------
 	// パラメータ取得
 	//-------------------------------------------
+	int siteNo = -1;
+	try { siteNo = Integer.parseInt(String.valueOf(request.getParameter( "site" ))); } catch (NumberFormatException nfe) {}
 	String pPeak = request.getParameter("qpeak");
 	String pNum  = request.getParameter( "num" );
 	String pCutoff= request.getParameter("CUTOFF");
 	String[] pInstGrp = request.getParameterValues("inst_grp");
 	String[] pInstType = request.getParameterValues("inst");
-	String paramInst = "";
+	String[] pMsType = request.getParameterValues("ms");
+	String paramCondition = "";
 	if ( pInstType != null ) {
-		paramInst = "&INST=";
-		for ( int i = 0; i < pInstType.length; i++ ) {
-			paramInst += URLEncoder.encode(pInstType[i], "utf-8");
+		paramCondition = "&INST=";
+		for ( int i=0; i<pInstType.length; i++ ) {
+			paramCondition += URLEncoder.encode(pInstType[i], "utf-8");
 			if ( i < pInstType.length - 1 ) {
-				paramInst += ",";
+				paramCondition += ",";
 			}
 		}
 	}
+	if ( pMsType != null ) {
+		paramCondition += "&MS=";
+		for ( int i=0; i<pMsType.length; i++ ) {
+			paramCondition += URLEncoder.encode(pMsType[i], "utf-8");
+			if ( i < pMsType.length - 1 ) {
+				paramCondition += ",";
+			}
+		}
+	}
+	
 	String pIonMode = request.getParameter("ion");
-	paramInst += "&ION=" + pIonMode;
+	paramCondition += "&ION=" + pIonMode;
 	
 	if ( pPeak == null || pNum == null || pCutoff == null ) {
 		out.println( "<html>" );
 		out.println( "<head>" );
+		out.println( " <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" );
+		out.println( " <meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">" );
+		out.println( " <meta http-equiv=\"Content-Style-Type\" content=\"text/css\">" );
+		out.println( " <meta http-equiv=\"imagetoolbar\" content=\"no\">" );
+		out.println( " <meta name=\"author\" content=\"MassBank\" />" );
+		out.println( " <meta name=\"coverage\" content=\"worldwide\" />" );
+		out.println( " <meta name=\"Targeted Geographic Area\" content=\"worldwide\" />" );
+		out.println( " <meta name=\"rating\" content=\"general\" />" );
+		out.println( " <meta name=\"copyright\" content=\"Copyright (c) 2006 MassBank Project\" />" );
+		out.println( " <meta name=\"description\" content=\"Mass Spectrum Quick Search Results\">" );
+		out.println( " <meta name=\"keywords\" content=\"Results\">" );
+		out.println( " <meta name=\"revisit_after\" content=\"10 days\">" );
 		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
 		out.println( " <script type=\"text/javascript\" src=\"../script/Common.js\"></script>" );
 		out.println( " <script type=\"text/javascript\" src=\"../script/QpeakResult.js\"></script>" );
@@ -361,7 +390,7 @@
 <meta name="coverage" content="worldwide" />
 <meta name="Targeted Geographic Area" content="worldwide" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 <meta name="description" content="Mass Spectrum Quick Search Results">
 <meta name="keywords" content="Results">
 <meta name="revisit_after" content="10 days">
@@ -420,9 +449,7 @@
 		//-------------------------------------------
 		// 設定ファイル内容を取得
 		//-------------------------------------------
-		String path = request.getRequestURL().toString();
-		String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
-		GetConfig conf = new GetConfig(baseUrl);
+		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		String serverUrl = conf.getServerUrl();
 		String[] dbNameList = conf.getDbName();
 		String[] urlList = conf.getSiteUrl();
@@ -459,8 +486,14 @@
 		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=unit"
 				 + "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 				 + "&CUTOFF=" + pCutoff + "&NUM=0&VAL=" + paramPeak.toString();
-		param += paramInst;
-		ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+		param += paramCondition;
+		ArrayList<String> result = null;
+		if ( siteNo == -1 ) {
+			result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+		}
+		else {
+			result = mbcommon.execDispatcher( serverUrl, typeName, param, false, String.valueOf(siteNo) );
+		}
 		
 		out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
 		
@@ -663,6 +696,13 @@
 		for ( int i = 0; i < pInstType.length; i++ ) {
 			out.println( "<input type=\"hidden\" name=\"inst\" value=\"" + pInstType[i] + "\">" );
 		}
+	}
+	if ( pMsType != null ) {
+		for ( int i = 0; i < pMsType.length; i++ ) {
+			out.println( "<input type=\"hidden\" name=\"ms\" value=\"" + pMsType[i] + "\">" );
+		}
+	}
+	if ( pIonMode != null ) {
 		out.println( "<input type=\"hidden\" name=\"ion\" value=\"" + pIonMode + "\">" );
 	}
 %>

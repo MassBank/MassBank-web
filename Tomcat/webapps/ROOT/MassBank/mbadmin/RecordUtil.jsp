@@ -22,7 +22,7 @@
  *
  * レコード情報ユーティリティ
  *
- * ver 1.0.13 2010.11.26
+ * ver 1.0.14 2011.06.03
  *
  ******************************************************************************/
 %>
@@ -195,12 +195,20 @@ function changeSort() {
 		out.println( "<br><br>" );
 		out.println( "<b>Output Directory : </b><br>" );
 		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>" + outPath + "</b></font>" );
+		out.println( "<br><br>" );
+		out.println( "<b>Record Version : </b><br>" );
+		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>1 only</b>&nbsp;<span class=\"note\">(not recommended)</span></font>" );
 		File fileOutDir = new File( outPath );
 		if ( !fileOutDir.exists() ) {
 			// 格納先ディレクトリがない場合
 			out.println( "<br><font color=\"red\" size=\"+1\"><b>Directory does not exist</b></font>");
 			isDirErr = true;
 		}
+	}
+	else if ( act.equals("check") ) {
+		out.println( "<br><br>" );
+		out.println( "<b>Record Version : </b><br>" );
+		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>1 only</b>&nbsp;<span class=\"note\">(not recommended)</span></font>" );
 	}
 	if ( isDirErr ) {
 		// エラー
@@ -485,7 +493,7 @@ function changeSort() {
 					}
 					out.println( "</b></font><br><br>" );
 					out.println( "<font color=\"DarkViolet\"><b>Executing...</b></font><br>" );
-					SqlFileGenerator sfg = new SqlFileGenerator( baseUrl, selDbName );
+					SqlFileGenerator sfg = new SqlFileGenerator( baseUrl, selDbName, 1 );
 					for ( int i = 0; i < paramFileNames.length; i++ ) {
 						out.println( "&nbsp;" + paramFileNames[i] + "&nbsp" );
 						String filePath = dbPath + "/" + paramFileNames[i];

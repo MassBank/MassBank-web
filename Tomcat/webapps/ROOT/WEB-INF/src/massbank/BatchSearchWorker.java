@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.6 2010.12.06
+ * ver 1.0.7 2011.05.30
  *
  ******************************************************************************/
 package massbank;
@@ -63,6 +63,7 @@ public class BatchSearchWorker extends Thread {
 	private String mailAddress;
 	private String fileName;
 	private String inst = "ALL";
+	private String ms = "ALL";
 	private String ion = "1";
 	private String serverUrl = "";
 	private boolean isTerminated = false;
@@ -87,7 +88,10 @@ public class BatchSearchWorker extends Thread {
 				if ( name.equals("inst") ) {
 					this.inst = val;
 				}
-				if ( name.equals("ion") ) {
+				else if ( name.equals("ms") ) {
+					this.ms = val;
+				}
+				else if ( name.equals("ion") ) {
 					this.ion = val;
 				}
 			}
@@ -263,6 +267,7 @@ public class BatchSearchWorker extends Thread {
 			out.println();
 			out.println("Request Date: " + this.time);
 			out.println("# Instrument Type: " + this.inst);
+			out.println("# MS Type: " + this.ms);
 			out.println("# Ion Mode: " + reqIonStr);
 			out.println();
 			out.println();
@@ -378,6 +383,7 @@ public class BatchSearchWorker extends Thread {
 			out.println("<hr>");
 			out.println("<h2>Request Date : " + this.time +"</h2>");
 			out.println("Instrument Type : " + this.inst + "<br>");
+			out.println("MS Type : " + this.ms + "<br>");
 			out.println("Ion Mode : " + reqIonStr + "<br>");
 			out.println("<br><hr>");
 			
@@ -629,6 +635,7 @@ public class BatchSearchWorker extends Thread {
 			out.println("<hr>");
 			out.println("<h3>Request Date : " + this.time +"</h3>");
 			out.println("Instrument Type : " + this.inst + "<br>");
+			out.println("MS Type : " + this.ms + "<br>");
 			out.println("Ion Mode : " + reqIonStr + "<br>");
 			out.println("<br><hr>");
 			out.println("<table border=\"1\" cellspacing=\"0\" cellpadding=\"2\">");
@@ -759,7 +766,7 @@ public class BatchSearchWorker extends Thread {
 	 * 検索実行
 	 */
 	private boolean doSearch(String name, String peakData, int num) {
-		// NAMEタグがない場合は名前をつけてやる
+		// NAMEタグがない場合は名前をつける
 		DecimalFormat df = new DecimalFormat("000000");
 		String compoundName = name;
 		if ( compoundName.equals("") ) {
@@ -807,7 +814,7 @@ public class BatchSearchWorker extends Thread {
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_SEARCH];
 		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=unit"
 	 			+ "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
-	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + inst + "&ION=" + ion + "&API=true";
+	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms + "&ION=" + this.ion + "&API=true";
 		ArrayList result = mbcommon.execMultiDispatcher( this.serverUrl, typeName, param );
 		int hitCnt = result.size();
 		int sendCnt = hitCnt;

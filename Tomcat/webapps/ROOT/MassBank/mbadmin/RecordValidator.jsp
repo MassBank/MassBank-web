@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.15 2011.02.18
+ * ver 1.0.16 2011.05.25
  *
  ******************************************************************************/
 %>
@@ -124,12 +124,14 @@
 	 * @param op JspWriter出力バッファ
 	 * @param dataPath チェック対象レコードパス
 	 * @param registPath 登録先予定パス
+	 * @param ver レコードフォーマットバージョン
 	 * @return チェック結果Map<ファイル名, 画面表示用タブ区切り文字列>
 	 * @throws IOException 入出力例外
 	 */
-	private TreeMap<String, String> validationRecord(DatabaseAccess db, JspWriter op, String dataPath, String registPath) throws IOException {
+	private TreeMap<String, String> validationRecord(DatabaseAccess db, JspWriter op, String dataPath, String registPath, int ver) throws IOException {
 		
 		op.println( msgInfo( "validation archive is&nbsp;&nbsp;[" + UPLOAD_RECORD_NAME + "].") );
+		if ( ver == 1 ) {op.println( msgInfo( "check record format version is&nbsp;&nbsp;[version 1].") ); }
 		
 		final String[] dataList = (new File(dataPath)).list();
 		TreeMap<String, String> validationMap = new TreeMap<String, String>();
@@ -142,11 +144,18 @@
 		//----------------------------------------------------
 		// レコードファイル必須項目、必須項目値チェック処理
 		//----------------------------------------------------
-		final String[] requiredList = {
-		    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "COPYRIGHT: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
+		String[] requiredList = new String[]{	// Ver.2
+		    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "LICENSE: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
 		    "CH$EXACT_MASS: ", "CH$SMILES: ", "CH$IUPAC: ", "AC$INSTRUMENT: ", "AC$INSTRUMENT_TYPE: ",
-		    "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: m/z int. rel.int."
+		    "AC$MASS_SPECTROMETRY: MS_TYPE ", "AC$MASS_SPECTROMETRY: ION_MODE ", "PK$NUM_PEAK: ", "PK$PEAK: "
 		};
+		if ( ver == 1 ) {	// Ver.1
+			requiredList = new String[]{
+			    "ACCESSION: ", "RECORD_TITLE: ", "DATE: ", "AUTHORS: ", "COPYRIGHT: ", "CH$NAME: ", "CH$COMPOUND_CLASS: ", "CH$FORMULA: ",
+			    "CH$EXACT_MASS: ", "CH$SMILES: ", "CH$IUPAC: ", "AC$INSTRUMENT: ", "AC$INSTRUMENT_TYPE: ",
+			    "AC$ANALYTICAL_CONDITION: MODE ", "PK$NUM_PEAK: ", "PK$PEAK: "
+			};
+		}
 		for (int i=0; i<dataList.length; i++) {
 			String name = dataList[i];
 			String status = "";
@@ -182,8 +191,9 @@
 			boolean isInvalidInfo = false;
 			boolean isDoubleByte = false;
 			ArrayList<String> fileContents = new ArrayList<String>();
-			ArrayList<String> workChName =  new ArrayList<String>();	// RECORD_TITLEチェック用にCH$NAMEの値を退避
-			String workAcInstrumentType = "";							// RECORD_TITLEチェック用にAC$INSTRUMENT_TYPEの値を退避
+			ArrayList<String> workChName =  new ArrayList<String>();	// RECORD_TITLEチェック用にCH$NAMEの値を退避（Ver.1以降）
+			String workAcInstrumentType = "";							// RECORD_TITLEチェック用にAC$INSTRUMENT_TYPEの値を退避（Ver.1以降）
+			String workAcMsType = "";									// RECORD_TITLEチェック用にAC$MASS_SPECTROMETRY: MS_TYPEの値を退避（Ver.2）
 			String line = "";
 			BufferedReader br = null;
 			try {
@@ -201,13 +211,17 @@
 					}
 					fileContents.add(line);
 					
-					// CH$NAME退避
+					// CH$NAME退避（Ver.1以降）
 					if ( line.startsWith("CH$NAME: ") ) {
 						workChName.add(line.trim().replaceAll("CH\\$NAME: ", ""));
 					}
-					// AC$INSTRUMENT_TYPE退避
+					// AC$INSTRUMENT_TYPE退避（Ver.1以降）
 					else if ( line.startsWith("AC$INSTRUMENT_TYPE: ") ) {
 						workAcInstrumentType = line.trim().replaceAll("AC\\$INSTRUMENT_TYPE: ", "");
+					}
+					// AC$MASS_SPECTROMETRY: MS_TYPE退避（Ver.2）
+					else if ( ver != 1 && line.startsWith("AC$MASS_SPECTROMETRY: MS_TYPE ") ) {
+						workAcMsType = line.trim().replaceAll("AC\\$MASS_SPECTROMETRY: MS_TYPE ", "");
 					}
 					
 					// 全角文字混入チェック
@@ -259,8 +273,11 @@
 				for ( int k=0; k<fileContents.size(); k++ ) {
 					String lineStr = fileContents.get(k);
 					
-					// RELATED_RECORDタグもしくは終了タグ以降は無効（必須項目検出対象としない）
-					if ( lineStr.startsWith("RELATED_RECORD:") || lineStr.startsWith("//") ) {
+					// 終了タグもしくはRELATED_RECORDタグ以降は無効（必須項目検出対象としない）
+					if ( lineStr.startsWith("//") ) {	// Ver.1以降
+						break;
+					}
+					else if( ver == 1 && lineStr.startsWith("RELATED_RECORD:") ) {	// Ver.1
 						break;
 					}
 					// 値（ピーク情報）検出（終了タグまでを全てピーク情報とする）
@@ -274,9 +291,10 @@
 					else if ( lineStr.indexOf(requiredStr) != -1 ) {
 						// 必須項目検出
 						findRequired = true;
-						if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
+						if ( requiredStr.equals("PK$PEAK: ") ) {
 							isPeakMode = true;
 							findValue = true;
+							valStrs.add(lineStr.replace(requiredStr, ""));
 						}
 						else {
 							// 値検出
@@ -307,7 +325,7 @@
 						// 各値チェック
 						//----------------------------------------------------
 						String val = (valStrs.size() > 0) ? valStrs.get(0) : "";
-						// ACESSION
+						// ACESSION（Ver.1以降）
 						if ( requiredStr.equals("ACCESSION: ") ) {
 							if ( !val.equals(name.replace(REC_EXTENSION, "")) ) {
 								status = STATUS_ERR;
@@ -318,7 +336,7 @@
 								detailsErr.append( "<span class=\"errFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is 8 digits necessary.</span><br />" );
 							}
 						}
-						// RECORD_TITLE
+						// RECORD_TITLE（Ver.1以降）
 						else if ( requiredStr.equals("RECORD_TITLE: ") ) {
 							if ( !val.equals(DEFAULT_VALUE) ) {
 								if ( val.indexOf(";") != -1 ) {
@@ -331,6 +349,10 @@
 										if ( status.equals("") ) status = STATUS_WARN;
 										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "],&nbsp;&nbsp;instrument type is different from&nbsp;&nbsp;[AC$INSTRUMENT_TYPE].</span><br />" );
 									}
+									if ( ver != 1 && !workAcMsType.equals(recTitle[2].trim()) ) {	// Ver.2
+										if ( status.equals("") ) status = STATUS_WARN;
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "],&nbsp;&nbsp;ms type is different from&nbsp;&nbsp;[AC$MASS_SPECTROMETRY: MS_TYPE].</span><br />" );
+									}
 								}
 								else {
 									if ( status.equals("") ) status = STATUS_WARN;
@@ -342,6 +364,9 @@
 									if ( !workAcInstrumentType.equals(DEFAULT_VALUE) ) {
 										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr +"],&nbsp;&nbsp;instrument type is different from&nbsp;&nbsp;[AC$INSTRUMENT_TYPE].</span><br />" );
 									}
+									if ( ver != 1 && !workAcMsType.equals(DEFAULT_VALUE) ) {	// Ver.2
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr +"],&nbsp;&nbsp;ms type is different from&nbsp;&nbsp;[AC$MASS_SPECTROMETRY: MS_TYPE].</span><br />" );
+									}
 								}
 							}
 							else {
@@ -349,9 +374,13 @@
 									if ( status.equals("") ) status = STATUS_WARN;
 									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "],&nbsp;&nbsp;instrument type is different from&nbsp;&nbsp;[AC$INSTRUMENT_TYPE].</span><br />" );
 								}
+								if ( ver != 1 && !workAcMsType.equals(DEFAULT_VALUE) ) {	// Ver.2
+									if ( status.equals("") ) status = STATUS_WARN;
+									detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "],&nbsp;&nbsp;ms type is different from&nbsp;&nbsp;[AC$MASS_SPECTROMETRY: MS_TYPE].</span><br />" );
+								}
 							}
 						}
-						// DATE
+						// DATE（Ver.1以降）
 						else if ( requiredStr.equals("DATE: ") && !val.equals(DEFAULT_VALUE) ) {
 							val = val.replace(".", "/");
 							val = val.replace("-", "/");
@@ -362,16 +391,16 @@
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not date format.</span><br />" );
 							}
 						}
-						// CH$COMPOUND_CLASS
+						// CH$COMPOUND_CLASS（Ver.1以降）
 						else if ( requiredStr.equals("CH$COMPOUND_CLASS: ") && !val.equals(DEFAULT_VALUE) ) {
 							if ( !val.startsWith("Natural Product") && 
-							     !val.startsWith("Non Natural Product") ) {
+							     !val.startsWith("Non-Natural Product") ) {
 								
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not compound class format.</span><br />" );
 							}
 						}
-						// CH$EXACT_MASS
+						// CH$EXACT_MASS（Ver.1以降）
 						else if ( requiredStr.equals("CH$EXACT_MASS: ") && !val.equals(DEFAULT_VALUE) ) {
 							try {
 								Double.parseDouble(val);
@@ -381,7 +410,7 @@
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not numeric.</span><br />" );
 							}
 						}
-						// AC$INSTRUMENT_TYPE
+						// AC$INSTRUMENT_TYPE（Ver.1以降）
 						else if ( requiredStr.equals("AC$INSTRUMENT_TYPE: ") && !val.equals(DEFAULT_VALUE) ) {
 							if ( val.trim().indexOf(" ") != -1 ) {
 								if ( status.equals("") ) status = STATUS_WARN;
@@ -392,14 +421,37 @@
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is space included.</span><br />" );
 							}
 						}
-						// AC$ANALYTICAL_CONDITION: MODE
-						else if ( requiredStr.equals("AC$ANALYTICAL_CONDITION: MODE ") && !val.equals(DEFAULT_VALUE) ) {
+						// AC$MASS_SPECTROMETRY: MS_TYPE（Ver.2）
+						else if ( ver != 1 && requiredStr.equals("AC$MASS_SPECTROMETRY: MS_TYPE ") && !val.equals(DEFAULT_VALUE) ) {
+							boolean isMsType = true;
+							if ( val.startsWith("MS") ) {
+								val = val.replace("MS", "");
+								if ( !val.equals("") ) {
+									try {
+										Integer.parseInt(val);
+									}
+									catch (NumberFormatException e) {
+										isMsType = false;
+									}
+								}
+							}
+							else {
+								isMsType = false;
+							}
+							if ( !isMsType ) {
+								if ( status.equals("") ) status = STATUS_WARN;
+								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not \"MSn\".</span><br />" );
+							}
+						}
+						// AC$MASS_SPECTROMETRY: ION_MODE（Ver.2）、AC$ANALYTICAL_CONDITION: MODE（Ver.1）
+						else if ( (ver != 1 && requiredStr.equals("AC$MASS_SPECTROMETRY: ION_MODE ") && !val.equals(DEFAULT_VALUE)) ||
+								  (ver == 1 && requiredStr.equals("AC$ANALYTICAL_CONDITION: MODE ") && !val.equals(DEFAULT_VALUE)) ) {
 							if ( !val.equals("POSITIVE") && !val.equals("NEGATIVE") ) {
 								if ( status.equals("") ) status = STATUS_WARN;
 								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not \"POSITIVE\" or \"NEGATIVE\".</span><br />" );
 							}
 						}
-						// PK$NUM_PEAK
+						// PK$NUM_PEAK（Ver.1以降）
 						else if ( requiredStr.equals("PK$NUM_PEAK: ") && !val.equals(DEFAULT_VALUE) ) {
 							try {
 								peakNum = Integer.parseInt(val);
@@ -409,67 +461,93 @@
 								detailsErr.append( "<span class=\"errFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not numeric.</span><br />" );
 							}
 						}
-						// PK$PEAK: m/z int. rel.int.
-						else if ( requiredStr.equals("PK$PEAK: m/z int. rel.int.") ) {
-							if ( peakNum != valStrs.size() ) {
-								if ( status.equals("") ) status = STATUS_WARN;
-								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;is mismatch or \"" + DEFAULT_VALUE + "\".</span><br />" );
+						// PK$PEAK:（Ver.1以降）
+						else if ( requiredStr.equals("PK$PEAK: ") ) {
+							if ( valStrs.size() == 0 || !valStrs.get(0).startsWith("m/z int. rel.int.") ) {
+								status = STATUS_ERR;
+								detailsErr.append( "<span class=\"errFont\">value of required item&nbsp;&nbsp;[PK$PEAK: ]&nbsp;&nbsp;, the first line is not \"PK$PEAK: m/z int. rel.int.\".</span><br />" );
 							}
-							if ( valStrs.size() == 0 ) {
-								if ( status.equals("") ) status = STATUS_WARN;
-								detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$PEAK: m/z int. rel.int.]&nbsp;&nbsp;is no value.</span><br />" );
-							}
-							String peak = "";
-							String mz = "";
-							String intensity = "";
-							boolean mzDuplication = false;
-							boolean mzNotNumeric = false;
-							boolean intensityNotNumeric = false;
-							boolean invalidFormat = false;
-							HashSet<String> mzSet = new HashSet<String>();
-							for ( int l=0; l<valStrs.size(); l++ ) {
-								peak = valStrs.get(l).trim();
-								if ( peak.indexOf(" ") != -1 ) {
-									mz = peak.split(" ")[0];
-									if ( !mzSet.add(mz) ) {
-										mzDuplication = true;
+							else {
+								boolean isNa = false;
+								String peak = "";
+								String mz = "";
+								String intensity = "";
+								boolean mzDuplication = false;
+								boolean mzNotNumeric = false;
+								boolean intensityNotNumeric = false;
+								boolean invalidFormat = false;
+								HashSet<String> mzSet = new HashSet<String>();
+								for ( int l=0; l<valStrs.size(); l++ ) {
+									peak = valStrs.get(l).trim();
+									// N/A検出
+									if ( peak.indexOf(DEFAULT_VALUE) != -1 ) {
+										isNa = true;
+										break;
 									}
-									try {
-										Double.parseDouble(mz);
+									if ( l == 0 ) { continue; }	// m/z int. rel.int.が格納されている行のため飛ばす
+									
+									if ( peak.indexOf(" ") != -1 ) {
+										mz = peak.split(" ")[0];
+										if ( !mzSet.add(mz) ) {
+											mzDuplication = true;
+										}
+										try {
+											Double.parseDouble(mz);
+										}
+										catch (NumberFormatException e) {
+											mzNotNumeric = true;
+										}
+										intensity = peak.split(" ")[1];
+										try {
+											Double.parseDouble(intensity);
+										}
+										catch (NumberFormatException e) {
+											intensityNotNumeric = true;
+										}
 									}
-									catch (NumberFormatException e) {
-										mzNotNumeric = true;
+									else {
+										invalidFormat = true;
 									}
-									intensity = peak.split(" ")[1];
-									try {
-										Double.parseDouble(intensity);
+									if ( mzDuplication && mzNotNumeric && intensityNotNumeric && invalidFormat ) {
+										break;
 									}
-									catch (NumberFormatException e) {
-										intensityNotNumeric = true;
+								}
+								if ( isNa ) {// PK$PEAK:がN/Aの場合
+									if ( peakNum != -1 ) {	// PK$NUM_PEAK:もN/Aにする
+										if ( status.equals("") ) status = STATUS_WARN;
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;is mismatch or \"" + DEFAULT_VALUE + "\".</span><br />" );
+									}
+									if ( valStrs.size()-1 > 0 ) {	// PK$PEAK:にはピーク情報を記述しないようにする
+										if ( status.equals("") ) status = STATUS_WARN;
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;is invalid peak information exists.</span><br />" );
 									}
 								}
 								else {
-									invalidFormat = true;
+									if ( mzDuplication ) {
+										status = STATUS_ERR;
+										detailsErr.append( "<span class=\"errFont\">mz value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is duplication.</span><br />" );
+									}
+									if ( mzNotNumeric ) {
+										status = STATUS_ERR;
+										detailsErr.append( "<span class=\"errFont\">mz value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not numeric.</span><br />" );
+									}
+									if ( intensityNotNumeric ) {
+										status = STATUS_ERR;
+										detailsErr.append( "<span class=\"errFont\">intensity value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not numeric.</span><br />" );
+									}
+									if ( invalidFormat ) {
+										status = STATUS_ERR;
+										detailsErr.append( "<span class=\"errFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not peak format.</span><br />" );
+									}
+									if ( valStrs.size()-1 == 0 ) {	// 値がない場合はN/Aを追加するようにする
+										if ( status.equals("") ) status = STATUS_WARN;
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$PEAK: ]&nbsp;&nbsp;is no value.  at that time, please add \"" + DEFAULT_VALUE + "\". </span><br />" );
+									}
+									if ( peakNum != valStrs.size()-1 ) {
+										if ( status.equals("") ) status = STATUS_WARN;
+										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$NUM_PEAK: ]&nbsp;&nbsp;is mismatch or \"" + DEFAULT_VALUE + "\".</span><br />" );
+									}
 								}
-								if ( mzDuplication && mzNotNumeric && intensityNotNumeric && invalidFormat ) {
-									break;
-								}
-							}
-							if ( mzDuplication ) {
-								status = STATUS_ERR;
-								detailsErr.append( "<span class=\"errFont\">mz value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is duplication.</span><br />" );
-							}
-							if ( mzNotNumeric ) {
-								status = STATUS_ERR;
-								detailsErr.append( "<span class=\"errFont\">mz value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not numeric.</span><br />" );
-							}
-							if ( intensityNotNumeric ) {
-								status = STATUS_ERR;
-								detailsErr.append( "<span class=\"errFont\">intensity value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not numeric.</span><br />" );
-							}
-							if ( invalidFormat ) {
-								status = STATUS_ERR;
-								detailsErr.append( "<span class=\"errFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not peak format.</span><br />" );
 							}
 						}
 					}
@@ -642,13 +720,13 @@ function selDb() {
 	// 各種パラメータ取得および設定
 	//---------------------------------------------
 	request.setCharacterEncoding("utf-8");
-	final String reqUrl = request.getRequestURL().toString();
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
 	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
 	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	GetConfig conf = new GetConfig(baseUrl);
+	int recVersion = 2;
 	String selDbName = "";
 	FileUpload up = null;
 	boolean isResult = true;
@@ -701,21 +779,26 @@ function selDb() {
 		Collections.sort(dbNames);
 		
 		//----------------------------------------------------
-		// DB選択状態
+		// リクエスト取得
 		//----------------------------------------------------
 		if ( FileUpload.isMultipartContent(request) ) {
 			HashMap<String, String[]> reqParamMap = new HashMap<String, String[]>();
 			reqParamMap = up.getRequestParam();
 			if (reqParamMap != null) {
 				for (Map.Entry<String, String[]> req : reqParamMap.entrySet()) {
-					if ( req.getKey().equals("db") ) {
+					if ( req.getKey().equals("ver") ) {
+						try { recVersion = Integer.parseInt(req.getValue()[0]); } catch (NumberFormatException nfe) {}
+					}
+					else if ( req.getKey().equals("db") ) {
 						selDbName = req.getValue()[0];
-						break;
 					}
 				}
 			}
 		}
 		else {
+			if (request.getParameter("ver") != null ) {
+				try { recVersion = Integer.parseInt(request.getParameter("ver")); } catch (NumberFormatException nfe) {}
+			}
 			selDbName = request.getParameter("db");
 		}
 		if ( selDbName == null || selDbName.equals("") || !dbNames.contains(selDbName) ) {
@@ -725,7 +808,7 @@ function selDb() {
 		//---------------------------------------------
 		// フォーム表示
 		//---------------------------------------------
-		out.println( "<form name=\"formMain\" action=\"" + reqUrl + "\" enctype=\"multipart/form-data\" method=\"post\" onSubmit=\"doWait()\">" );
+		out.println( "<form name=\"formMain\" action=\"./RecordValidator.jsp\" enctype=\"multipart/form-data\" method=\"post\" onSubmit=\"doWait()\">" );
 		out.println( "\t<span class=\"baseFont\">Database :</span>&nbsp;" );
 		out.println( "\t<select name=\"db\" class=\"db\" onChange=\"selDb();\">" );
 		for ( int i=0; i<dbNames.size(); i++ ) {
@@ -741,7 +824,12 @@ function selDb() {
 				out.println( ">" + dbName + "</option>" );
 			}
 		}
-		out.println( "\t</select><br><br>" );
+		out.println( "\t</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "\t<span class=\"baseFont\">Record Version :</span>&nbsp;" );
+		String ver2Chk = (recVersion == 2) ? " checked" : "";
+		String ver1Chk = (recVersion == 1) ? " checked" : "";
+		out.println( "\t<input type=\"radio\" name=\"ver\" value=\"2\"" + ver2Chk + ">2&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"ver\" value=\"1\"" + ver1Chk + ">1&nbsp;<span class=\"note\">(not recommended)</span>");
+		out.println( "\t<br><br>");
 		out.println( "\t<span class=\"baseFont\">Record Archive :</span>&nbsp;" );
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Validation\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
@@ -835,7 +923,7 @@ function selDb() {
 		//---------------------------------------------
 		// チェック処理
 		//---------------------------------------------
-		TreeMap<String, String> resultMap = validationRecord(db, out, recDataPath, recPath);
+		TreeMap<String, String> resultMap = validationRecord(db, out, recDataPath, recPath, recVersion);
 		if ( resultMap.size() == 0 ) {
 			return;
 		}

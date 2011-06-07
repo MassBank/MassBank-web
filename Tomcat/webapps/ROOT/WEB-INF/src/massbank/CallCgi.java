@@ -18,9 +18,9 @@
  *
  *******************************************************************************
  *
- * CGIï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ÌƒNï¿½ï¿½ï¿½X
+ * CGI‚ğÀs‚·‚éƒXƒŒƒbƒh‚ÌƒNƒ‰ƒX
  *
- * ver 1.0.4 2008.12.05
+ * ver 1.0.6 2011.06.07
  *
  ******************************************************************************/
 package massbank;
@@ -28,11 +28,15 @@ package massbank;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.servlet.ServletContext;
-import massbank.MassBankLog;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.PostMethod;
+
 
 public class CallCgi extends Thread
 {
@@ -44,7 +48,7 @@ public class CallCgi extends Thread
 	private int m_timeout;
 
 	/**
-	 * ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
+	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	 */ 
 	public CallCgi( String url, Hashtable params, int timeout, ServletContext context ) {
 		this.m_url = url;
@@ -58,21 +62,21 @@ public class CallCgi extends Thread
 		String msg = "";
 
 		HttpClient client = new HttpClient();
-		// ï¿½^ï¿½Cï¿½ï¿½ï¿½Aï¿½Eï¿½gï¿½l(msec)ï¿½Zï¿½bï¿½g
+		// ƒ^ƒCƒ€ƒAƒEƒg’l(msec)ƒZƒbƒg
 		client.setTimeout( m_timeout * 1000 );
 		PostMethod method = new PostMethod( this.m_url );
 		String strParam = "";
 		if ( m_params != null && m_params.size() > 0 ) {
 			for ( Enumeration keys = m_params.keys(); keys.hasMoreElements(); ) {
 				String key = (String)keys.nextElement();
-				if ( !key.equals("inst") ) {
-					// ï¿½Lï¿½[ï¿½ï¿½InstrumentTypeï¿½ÈŠOï¿½Ìê‡ï¿½ï¿½Stringï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^
+				if ( !key.equals("inst") && !key.equals("ms") ) {
+					// ƒL[‚ªInstrumentType,MSTypeˆÈŠO‚Ìê‡‚ÍStringƒpƒ‰ƒ[ƒ^
 					String val = (String)m_params.get(key);
 					strParam += key + "=" + val + "&";
 					method.addParameter( key, val );
 				}
 				else {
-					// ï¿½Lï¿½[ï¿½ï¿½InstrumentTypeï¿½Ìê‡ï¿½ï¿½Stringï¿½zï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^
+					// ƒL[‚ªInstrumentType,MSType‚Ìê‡‚ÍString”z—ñƒpƒ‰ƒ[ƒ^
 					String[] vals = (String[])m_params.get(key);
 					for (int i=0; i<vals.length; i++) {
 						strParam += key + "=" + vals[i] + "&";
@@ -84,17 +88,17 @@ public class CallCgi extends Thread
 		}
 
 		try {
-			// ï¿½ï¿½ï¿½s
+			// Às
 			int statusCode = client.executeMethod(method);
-			// ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½Rï¿½[ï¿½hï¿½Ìƒ`ï¿½Fï¿½bï¿½N
+			// ƒXƒe[ƒ^ƒXƒR[ƒh‚Ìƒ`ƒFƒbƒN
 			if ( statusCode != HttpStatus.SC_OK ){
-				// ï¿½Gï¿½ï¿½ï¿½[
+				// ƒGƒ‰[
 				msg = method.getStatusLine().toString() + "\n" + "URL  : " + this.m_url;
 				msg += "\nPARAM : " + strParam;
 				MassBankLog.ErrorLog( progName, msg, m_context );
 				return;
 			}
-			// ï¿½ï¿½ï¿½Xï¿½|ï¿½ï¿½ï¿½Xï¿½æ“¾
+			// ƒŒƒXƒ|ƒ“ƒXæ“¾
 			//this.result = method.getResponseBodyAsString();
 			
 			/**
@@ -109,42 +113,42 @@ public class CallCgi extends Thread
 			StringBuilder sb = new StringBuilder();
 			String line = "";
 			if (is != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
-                while ((line = reader.readLine()) != null) {
-                	reader.mark(2000);
-                	String forward = reader.readLine();
-                	if((line.equals("") || line.equals("\n") || line.equals("OK")) && forward == null)
-                		sb.append(line);				// append last line to StringBuilder
-                	else if(forward != null)
-                		sb.append(line).append("\n");	// append current line with explicit line break
-                	else sb.append(line);
-                	
-                	reader.reset();
-                }
-                reader.close();
-                is.close();
-                
-	            this.result = sb.toString().trim();
-	            if(this.result.endsWith("\n"))			// remove trailing line break
-	            {
-	            	int pos = this.result.lastIndexOf("\n");
-	            	this.result = this.result.substring(0, pos);
-	            }
-	        } else {        
-	        	this.result = "";
-	        }
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
+				while ((line = reader.readLine()) != null) {
+					reader.mark(2000);
+					String forward = reader.readLine();
+					if((line.equals("") || line.equals("\n") || line.equals("OK")) && forward == null)
+						sb.append(line);				// append last line to StringBuilder
+					else if(forward != null)
+						sb.append(line).append("\n");	// append current line with explicit line break
+					else sb.append(line);
+					
+					reader.reset();
+				}
+				reader.close();
+				is.close();
+				
+				this.result = sb.toString().trim();
+				if(this.result.endsWith("\n"))			// remove trailing line break
+				{
+					int pos = this.result.lastIndexOf("\n");
+					this.result = this.result.substring(0, pos);
+				}
+			} else {		
+				this.result = "";
+			}
 			/**
 			 * modification end
 			 */
 		}
 		catch ( Exception e ) {
-			// ï¿½Gï¿½ï¿½ï¿½[
+			// ƒGƒ‰[
 			msg = e.toString() + "\n" + "URL  : " + this.m_url;
 			msg += "\nPARAM : " + strParam;
 			MassBankLog.ErrorLog( progName, msg, m_context );
 		}
 		finally {
-			// ï¿½Rï¿½lï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			// ƒRƒlƒNƒVƒ‡ƒ“‰ğ•ú
 			method.releaseConnection();
 		}
 	}

@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.4 2010.11.09
+ * ver 1.0.5 2011.05.17
  *
  ******************************************************************************/
 %>
@@ -120,14 +120,13 @@
 	 * レコード一覧表示処理
 	 * @param db DBアクセスオブジェクト
 	 * @param op JspWriter出力バッファ
-	 * @param reqUrl リクエストURL
 	 * @param selDbName DB名
 	 * @param recPath レコードファイル格納パス
 	 * @param recUrl レコード格納URL
 	 * @return 結果
 	 * @throws IOException
 	 */ 
-	private boolean dispRecord( DatabaseAccess db, JspWriter op, String reqUrl, String selDbName, String recPath, String recUrl ) throws IOException {
+	private boolean dispRecord( DatabaseAccess db, JspWriter op, String selDbName, String recPath, String recUrl ) throws IOException {
 		
 		ArrayList<String> regInst = new ArrayList<String>();				// DBに存在する装置ID
 		TreeMap<String, String> mainList = new TreeMap<String, String>();	// DBに存在するIDリスト
@@ -300,7 +299,7 @@
 		// テーブルヘッダー部生成
 		//----------------------------------------------------
 		NumberFormat nf = NumberFormat.getNumberInstance();
-		op.println( "<form name=\"formList\" action=\"" + reqUrl + "\" method=\"post\" onSubmit=\"doWait();\">" );
+		op.println( "<form name=\"formList\" action=\"./RecordList.jsp\" method=\"post\" onSubmit=\"doWait();\">" );
 		op.println( "\t<input type=\"submit\" value=\"Delete\" onClick=\"return beforeDelete();\">" );
 		op.println( "\t<div class=\"count baseFont\">" + nf.format(regCnt) + " registered / " + nf.format(mainList.size()) + " records&nbsp;</div>" );
 		op.println( "\t<table table width=\"980\" cellspacing=\"1\" cellpadding=\"0\" bgcolor=\"Lavender\">" );
@@ -752,7 +751,6 @@ function popupRecView(url) {
 	//----------------------------------------------------
 	// 各種パラメータを取得
 	//----------------------------------------------------
-	final String reqUrl = request.getRequestURL().toString();
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
 	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
@@ -808,7 +806,7 @@ function popupRecView(url) {
 		//----------------------------------------------------
 		// フォーム表示
 		//----------------------------------------------------
-		out.println( "<form name=\"formMain\" action=\"" + reqUrl + "\" method=\"post\" onSubmit=\"doWait();\">" );
+		out.println( "<form name=\"formMain\" action=\"./RecordList.jsp\" method=\"post\" onSubmit=\"doWait();\">" );
 		out.println( "<input type=\"hidden\" name=\"act\" value=\"get\">" );
 		out.println( "<span class=\"baseFont\">Database :</span>&nbsp;" );
 		out.println( "<select name=\"db\" class=\"db\" onChange=\"selDb();\">" );
@@ -851,7 +849,7 @@ function popupRecView(url) {
 				out.println( msgWarn( "other users are updating. please access later. ") );
 				return;
 			}
-			isResult = dispRecord( db, out, reqUrl, selDbName, recPath, recUrl );
+			isResult = dispRecord( db, out, selDbName, recPath, recUrl );
 		}
 		//----------------------------------------------------
 		// レコード削除

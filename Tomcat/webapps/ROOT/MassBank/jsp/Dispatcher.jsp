@@ -22,16 +22,18 @@
  *
  * 処理振り分け用モジュール
  *
- * ver 1.0.7 2008.12.05
+ * ver 1.0.8 2011.05.30
  *
  ******************************************************************************/
 %>
 
-<%@ page import="java.util.*,java.io.*" %>
-<%@ page import="org.apache.commons.httpclient.*" %>
-<%@ page import="org.apache.commons.httpclient.methods.*" %>
-<%@ page import="massbank.MassBankCommon" %>
+<%@ page import="org.apache.commons.httpclient.HttpClient" %>
+<%@ page import="org.apache.commons.httpclient.HttpStatus" %>
+<%@ page import="org.apache.commons.httpclient.methods.PostMethod" %>
+<%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.Hashtable" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.MassBankLog" %>
 <%!
 	final int MYSVR_INFO_NUM = 0;
@@ -45,7 +47,6 @@
 	// リクエストパラメータ取得
 	//-------------------------------------------
 	Hashtable<String, Object> params = new Hashtable<String, Object>();
-	String param = "";
 	String type = "";
 	String dbName = "";
 	
@@ -63,12 +64,12 @@
 		else if ( key.equals("dsn") ) {
 			dbName = val;
 		}
-		else if ( !key.equals("inst") ) {
-			// キーがInstrumentType以外の場合はStringパラメータ
+		else if ( !key.equals("inst")  && !key.equals("ms") ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			params.put( key, val );
 		}
 		else {
-			// キーがInstrumentTypeの場合はString配列パラメータ
+			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 			String[] vals = (String[])request.getParameterValues( key );
 			params.put( key, vals );
 		}
@@ -141,14 +142,14 @@
 	String strParam = "";
 	for ( Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
 		String key = (String)keys.nextElement();
-		if ( !key.equals("inst") ) {
-			// キーがInstrumentType以外の場合はStringパラメータ
+		if ( !key.equals("inst") && !key.equals("ms") ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = (String)params.get(key);
 			strParam += key + "=" + val + "&";
 			method.addParameter( key, val );
 		}
 		else {
-			// キーがInstrumentTypeの場合はString配列パラメータ
+			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 			String[] vals = (String[])params.get(key);
 			for (int i=0; i<vals.length; i++) {
 				strParam += key + "=" + vals[i] + "&";

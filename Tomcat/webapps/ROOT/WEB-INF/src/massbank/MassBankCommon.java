@@ -20,15 +20,18 @@
  *
  * MassBank共通クラス(Applet, JSP, Servlet 全てにおいて使用される)
  *
- * ver 1.0.19 2010.04.28
+ * ver 1.0.22 2011.06.06
  *
  ******************************************************************************/
 package massbank;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MassBankCommon {
 	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
@@ -65,6 +68,9 @@ public class MassBankCommon {
 	public static final String REQ_TYPE_GETRECORD = "grecord";
 	public static final String REQ_TYPE_GETMOL    = "gmol";
 	public static final String REQ_TYPE_GETSTRUCT = "gstrct";
+	public static final String REQ_TYPE_ADVSEARCH = "advsearch";
+	public static final String REQ_TYPE_GETCINFO  = "gcinfo";
+
 	
 	// ＜CGIテーブルインデックス＞
 	public static final int CGI_TBL_NUM_TYPE = 0;		// CGI種別指定
@@ -98,6 +104,8 @@ public class MassBankCommon {
 	public static final int CGI_TBL_TYPE_GETRECORD= 24;
 	public static final int CGI_TBL_TYPE_GETMOL   = 25;
 	public static final int CGI_TBL_TYPE_GETSTRUCT= 26;
+	public static final int CGI_TBL_TYPE_ADVSEARCH= 27;
+	public static final int CGI_TBL_TYPE_GETCINFO  = 28;
 	
 
 	// ＜CGIテーブル＞
@@ -109,7 +117,7 @@ public class MassBankCommon {
 		  REQ_TYPE_RCDIDX,   REQ_TYPE_INST,
 		  REQ_TYPE_MOL,      REQ_TYPE_GSDATA,    REQ_TYPE_GDATA3,
 		  REQ_TYPE_GETLIST,  REQ_TYPE_STRUCT,    REQ_TYPE_PEAKADV,  REQ_TYPE_GETRECORD,
-		  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT
+		  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT, REQ_TYPE_ADVSEARCH, REQ_TYPE_GETCINFO
 		} ,
 		{ "PeakSearch2.cgi",   "PeakSearch2.cgi",     "Disp.cgi",         "GetData.cgi",
 		  "GetData2.cgi",      "Search.cgi",          "GetName.cgi",      "GetPeakById.cgi",
@@ -118,33 +126,51 @@ public class MassBankCommon {
 		  "RecordIndex.cgi",   "GetInstInfo.cgi",
 		  "MolfileAPI.cgi",    "GetSpectrumData.cgi", "GetData3.cgi",
 		  "GetRecordList.cgi", "StructureSearch.cgi", "PeakSearchAdv.cgi", "GetRecordInfo.cgi",
-		  "GetMolfile.cgi",    "GetStructure.cgi"
+		  "GetMolfile.cgi",    "GetStructure.cgi",    "AdvancedSearch.cgi", "GetCompoudInfo.cgi"
 		}
 	};
 
 	
 	/**
 	 * サーブレットMultiDispatcherを実行する
-	 * @param baseUrl	ベースURL
+	 * @param serverUrl 	ベースURL
 	 * @param type		リクエスト種別
 	 * @param param	URLパラメータ（リクエスト種別を含まない）
 	 * @return
+	 * @deprecated 非推奨メソッド
+	 * @see execDispatcher(String serverUrl, String type, String param, boolean isMulti, String siteNo)
 	 */
-	public ArrayList execMultiDispatcher( String baseUrl, String type, String param ) {
-		String reqUrl = baseUrl + MULTI_DISPATCHER_NAME;
-		return execDispatcher( reqUrl, type, param );
+	public ArrayList<String> execMultiDispatcher( String serverUrl, String type, String param ) {
+		return execDispatcher( serverUrl, type, param, true, null );
 	}
+	
 	
 	/**
 	 * サーブレットMultiDispatcher または、Dispatcher.jspを実行する
-	 * @param reqUrl	リクエストURL
-	 * @param type		リクエスト種別
-	 * @param param	URLパラメータ（リクエスト種別を含まない）
-	 * @param isMulti	マルチフラグ
-	 * @param siteNo	サイトNo.
+	 * @param serverUrl		サーバーURL
+	 * @param type			リクエスト種別
+	 * @param param			URLパラメータ（リクエスト種別を含まない）
+	 * @param isMulti		マルチフラグ
+	 * @param siteNo		サイトNo.
 	 * @return 
 	 */
-	private ArrayList execDispatcher( String reqUrl, String type, String param) {
+	public ArrayList<String> execDispatcher(
+			String serverUrl,
+			String type,
+			String param,
+			boolean isMulti,
+			String siteNo ) {
+		
+		String reqUrl = "";
+		int site = 0;
+		if ( isMulti ) {
+			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
+		}
+		else {
+			reqUrl = serverUrl + "jsp/" + DISPATCHER_NAME;
+			site = Integer.parseInt(siteNo);
+		}
+		
 		// URLパラメータ生成
 		String reqParam = "type=" + type;
 		if ( !param.equals("") ) {
@@ -162,7 +188,6 @@ public class MassBankCommon {
 			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
 			boolean isStartSpace = true;
 			String line = "";
-			int site = 0;
 			while ( ( line = in.readLine() ) != null ) {
 				// 先頭スペースを読み飛ばすため
 				if ( isStartSpace ) {
@@ -174,7 +199,12 @@ public class MassBankCommon {
 					}
 				}
 				if ( !line.equals("") ) {
-					result.add(line);
+					if ( isMulti ) {
+						result.add(line);
+					}
+					else {
+						result.add(line + "\t" + Integer.toString(site) );
+					}
 				}
 			}
 			in.close();
@@ -188,7 +218,7 @@ public class MassBankCommon {
 
 	/**
 	 * サーブレットMultiDispatcher または、Dispatcher.jspを実行する（検索結果ページ表示用）
-	 * @param serverUrl	サーバーURL
+	 * @param serverUrl		サーバーURL
 	 * @param type			リクエスト種別
 	 * @param reqParam		URLパラメータ（リクエスト種別を含まない）
 	 * @param isMulti		マルチフラグ

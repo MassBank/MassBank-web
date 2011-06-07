@@ -22,7 +22,7 @@
  *
  * Quick Search Page表示用モジュール
  *
- * ver 1.0.12 2010.12.24
+ * ver 1.0.13 2011.05.31
  *
  ******************************************************************************/
 %>
@@ -64,6 +64,7 @@
 	boolean isFirst = true;
 	List instGrpList = new ArrayList<String>();
 	List instTypeList = new ArrayList<String>();
+	List msTypeList = new ArrayList<String>();
 	int paramCnt = 0;
 	Enumeration names = request.getParameterNames();
 	while ( names.hasMoreElements() ) {
@@ -78,6 +79,10 @@
 		else if ( key.equals("inst") ) {
 			String[] vals = request.getParameterValues( key );
 			instTypeList = Arrays.asList(vals);
+		}
+		else if ( key.equals("ms") ) {
+			String[] vals = request.getParameterValues( key );
+			msTypeList = Arrays.asList(vals);
 		}
 		else {
 			String val = request.getParameter( key );
@@ -98,17 +103,24 @@
 	}
 
 	String instGrp = "";
-	for ( int i = 0; i < instGrpList.size(); i++ ) {
+	for ( int i=0; i<instGrpList.size(); i++ ) {
 		instGrp += instGrpList.get(i);
 		if ( i < instGrpList.size() - 1 ) {
 			instGrp += ",";
 		}
 	}
 	String instType = "";
-	for ( int i = 0; i < instTypeList.size(); i++ ) {
+	for ( int i=0; i<instTypeList.size(); i++ ) {
 		instType += instTypeList.get(i);
 		if ( i < instTypeList.size() - 1 ) {
 			instType += ",";
+		}
+	}
+	String msType = "";
+	for ( int i=0; i<msTypeList.size(); i++ ) {
+		msType += msTypeList.get(i);
+		if ( i < msTypeList.size() - 1 ) {
+			msType += ",";
 		}
 	}
 %>
@@ -121,7 +133,7 @@
 	<meta name="coverage" content="worldwide" />
 	<meta name="Targeted Geographic Area" content="worldwide" />
 	<meta name="rating" content="general" />
-	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 	<meta name="description" content="Keyword search of chemical compounds. Retrieves the chemical compound(s) specified by chemical name or molecular formula, and displays its spectra.">
 	<meta name="keywords" content="Quick,Compound,ExactMass,Formula">
 	<meta name="revisit_after" content="30 days">
@@ -272,6 +284,7 @@
 						<jsp:param name="first" value="<%= isFirst %>" />
 						<jsp:param name="inst_grp" value="<%= instGrp %>" />
 						<jsp:param name="inst" value="<%= instType %>" />
+						<jsp:param name="inst" value="<%= msType %>" />
 					</jsp:include>
 				</td>
 			</tr>

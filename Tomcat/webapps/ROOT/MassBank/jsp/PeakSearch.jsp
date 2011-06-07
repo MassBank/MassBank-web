@@ -22,7 +22,7 @@
  *
  * Peak Search Page表示用モジュール
  *
- * ver 1.0.13 2010.12.24
+ * ver 1.0.14 2011.05.31
  *
  ******************************************************************************/
 %>
@@ -55,6 +55,7 @@
 	boolean isFirst = true;
 	List<String> instGrpList = new ArrayList<String>();
 	List<String> instTypeList = new ArrayList<String>();
+	List<String> msTypeList = new ArrayList<String>();
 	Hashtable<String, String> params = new Hashtable<String, String>();
 	int paramCnt = 0;
 	Enumeration names = request.getParameterNames();
@@ -68,6 +69,10 @@
 			instGrpList = Arrays.asList(vals);
 		}
 		else if ( key.equals("inst") ) {
+			String[] vals = request.getParameterValues( key );
+			instTypeList = Arrays.asList(vals);
+		}
+		else if ( key.equals("ms") ) {
 			String[] vals = request.getParameterValues( key );
 			instTypeList = Arrays.asList(vals);
 		}
@@ -107,13 +112,19 @@
 		}
 	}
 	String instType = "";
-	for ( int i = 0; i < instTypeList.size(); i++ ) {
+	for ( int i=0; i<instTypeList.size(); i++ ) {
 		instType += instTypeList.get(i);
 		if ( i < instTypeList.size() - 1 ) {
 			instType += ",";
 		}
 	}
-	
+	String msType = "";
+	for ( int i=0; i<msTypeList.size(); i++ ) {
+		msType += msTypeList.get(i);
+		if ( i < msTypeList.size() - 1 ) {
+			msType += ",";
+		}
+	}
 	
 	//-------------------------------------
 	// ポスト先
@@ -133,7 +144,7 @@
 	<meta name="coverage" content="worldwide" />
 	<meta name="Targeted Geographic Area" content="worldwide" />
 	<meta name="rating" content="general" />
-	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 	<meta name="description" content="Search spectra by the m/z value and molecular formula. Retrieves spectra containing the peaks or neutral losses that users specify by m/z values. Retrieves spectra containing the peaks or neutral losses that users specify by molecular formulae.">
 	<meta name="keywords" content="Peak,m/z,Formula,difference,Product,Ion,Neutral,Loss">
 	<meta name="revisit_after" content="30 days">
@@ -315,6 +326,7 @@
 							<jsp:param name="first" value="<%= isFirst %>" />
 							<jsp:param name="inst_grp" value="<%= instGrp %>" />
 							<jsp:param name="inst" value="<%= instType %>" />
+							<jsp:param name="inst" value="<%= msType %>" />
 						</jsp:include>
 					</td>
 				</tr>

@@ -20,7 +20,7 @@
  *
  * DB登録用のSQLを生成するクラス
  *
- * ver 1.0.13 2010.12.14
+ * ver 1.0.14 2011.06.02
  *
  ******************************************************************************/
 package massbank.admin;
@@ -33,6 +33,7 @@ import java.util.Hashtable;
 
 import massbank.GetConfig;
 import massbank.GetInstInfo;
+import massbank.MassBankEnv;
 
 public class SqlFileGenerator {
 
@@ -41,6 +42,7 @@ public class SqlFileGenerator {
 	private static final int TABLE_CH_LINK    = 2;
 	private static final int TABLE_INSTRUMENT = 3;
 
+	private int ver = 2;
 	private String[] instNo = null;
 	private String[] instName = null;
 	private String[] instType = null;
@@ -52,21 +54,27 @@ public class SqlFileGenerator {
 	private String acc = "";
 	private String nameReco = "";
 	private String valReco  = "";
-	private String nameLink = "";
-	private String valLink  = "";
 	private String acInst   = "";
 	private String acInstType = "";
+	private String acMsType ="";
 	private ArrayList<String> valNames = new ArrayList<String>();
+	private ArrayList<String> valLinkNames = new ArrayList<String>();
+	private ArrayList<String> valLinkIds = new ArrayList<String>();
 	private Hashtable<String, String> existItem = new Hashtable<String, String>();
 
 	/**
 	 * コンストラクタ
 	 * @param baseUrl ベースURL
 	 * @param selDbName DB名
+	 * @param ver レコードフォーマットバージョン
 	 */ 
-	public SqlFileGenerator( String baseUrl, String selDbName) {
+	public SqlFileGenerator( String baseUrl, String selDbName, int ver) {
+		
+		// レコードフォーマットバージョン退避
+		this.ver = ver;
+		
 		// INSTRUMENT情報を取得
-		GetInstInfo instInfo = new GetInstInfo( baseUrl );
+		GetInstInfo instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] dbNameList = conf.getDbName();
 		int dbIndex = 0;
@@ -99,9 +107,9 @@ public class SqlFileGenerator {
 			this.acc = "";
 			this.nameReco = "";
 			this.valReco  = "";
-			this.nameLink = "";
-			this.valLink  = "";
 			this.valNames.clear();
+			this.valLinkNames.clear();
+			this.valLinkIds.clear();
 			String line = "";
 
 			existItem.clear();
@@ -120,9 +128,20 @@ public class SqlFileGenerator {
 					  || name.equals("CH$EXACT_MASS")
 					  || name.equals("CH$SMILES")
 					  || name.equals("CH$IUPAC")
-					  || name.equals("DATE")
-					  || name.equals("AC$INSTRUMENT")
-					  || name.equals("AC$INSTRUMENT_TYPE") ) {
+					  || name.equals("DATE") ) {
+					this.setRecord();
+				}
+				else if ( name.equals("AC$INSTRUMENT") ) {
+					this.acInst = value;
+				}
+				else if ( name.equals("AC$INSTRUMENT_TYPE") ) {
+					this.acInstType = value.trim();
+					if ( ver == 1 ) {
+						this.setRecord();
+					}
+				}
+				else if ( name.equals("AC$MASS_SPECTROMETRY") && value.startsWith("MS_TYPE") && ver != 1 ) {
+					this.acMsType = value.replaceAll("MS_TYPE", "").trim();
 					this.setRecord();
 				}
 				//***********************************************
@@ -158,7 +177,7 @@ public class SqlFileGenerator {
 		case TABLE_CH_NAME:
 			if ( valNames.size() == 0 ) { ret = false; } break;
 		case TABLE_CH_LINK:
-			if ( nameLink.equals("") )  { ret = false; } break;
+			if ( valLinkNames.size() == 0 ) { ret = false; } break;
 		case TABLE_INSTRUMENT:
 			if ( valInst.equals("") )  { ret = false; } break;
 		default: break;
@@ -175,23 +194,27 @@ public class SqlFileGenerator {
 		String sql = "";
 		switch ( type ) {
 		case TABLE_RECORD:
-			sql = "insert into RECORD(ID" + nameReco + ") values('"
+			sql = "INSERT INTO RECORD(ID" + nameReco + ") VALUES('"
 					+ acc + "'" + valReco + ");";
 			break;
 		case TABLE_CH_NAME:
 			for ( int i = 0; i < valNames.size(); i++ ) {
-				sql += "insert into CH_NAME values('" + acc + "', '" + valNames.get(i) + "');";
+				sql += "INSERT INTO CH_NAME VALUES('" + acc + "', '" + valNames.get(i) + "');";
 				if ( i < valNames.size() - 1 ) {
 					sql += "\n";
 				}
 			}
 			break;
 		case TABLE_CH_LINK:
-			sql = "insert into CH_LINK(ID" + nameLink + ") values('"
-					+ acc + "'" + valLink + ");";
+			for ( int i = 0; i < valLinkNames.size(); i++ ) {
+				sql += "INSERT INTO CH_LINK VALUES('" + acc + "', '" + valLinkNames.get(i) + "', '" + valLinkIds.get(i) + "');";
+				if ( i < valLinkNames.size() - 1 ) {
+					sql += "\n";
+				}
+			}
 			break;
 		case TABLE_INSTRUMENT:
-			sql = "insert into INSTRUMENT(INSTRUMENT_NO, INSTRUMENT_TYPE, INSTRUMENT_NAME) values(" + valInst + ");";
+			sql = "INSERT INTO INSTRUMENT(INSTRUMENT_NO, INSTRUMENT_TYPE, INSTRUMENT_NAME) VALUES(" + valInst + ");";
 			break;
 		default:
 			break;
@@ -238,11 +261,9 @@ public class SqlFileGenerator {
 			nameReco += ", " + name;
 			valReco += ", '" + value + "'";
 		}
-		else if ( name.equals("AC$INSTRUMENT") ) {
-			this.acInst = value;
-		}
-		else if ( name.equals("AC$INSTRUMENT_TYPE") ) {
-			this.acInstType = value.trim();
+		else if ( (ver == 1 && name.equals("AC$INSTRUMENT_TYPE"))
+				 || ver != 1 && name.equals("AC$MASS_SPECTROMETRY") && value.startsWith("MS_TYPE") ) {
+			
 			boolean isFound = false;
 			int i = 0;
 			for ( i = 0; i < this.instNo.length; i++ ) {
@@ -278,6 +299,9 @@ public class SqlFileGenerator {
 				valReco += ", " + String.valueOf(instNo);
 			}
 			nameReco += ", INSTRUMENT_NO";
+			
+			nameReco += ", MS_TYPE";
+			valReco += ", '" + this.acMsType + "'";		// レコードフォーマットバージョン1の場合は必ず空とする
 		}
 	}
 
@@ -285,7 +309,7 @@ public class SqlFileGenerator {
 	 * CH_NAMEテーブルSQL文セット
 	 */ 
 	private void setChName() {
-		value = value.replaceAll( "'", "\\\\'" );
+		value = value.trim().replaceAll( "'", "\\\\'" );
 		valNames.add( value );
 	}
 
@@ -293,39 +317,11 @@ public class SqlFileGenerator {
 	 * CH_LINKテーブルSQL文セット
 	 */ 
 	private void setChLink() {
-		int pos = value.indexOf(" ");
+		int pos = value.trim().indexOf(" ");
 		if ( pos > 0 ) {
-			String linkName = value.substring( 0, pos );
-			if ( !(linkName.equals("CAS")
-				|| linkName.equals("CHEBI")
-				|| linkName.equals("CHEMPDB")
-				|| linkName.equals("KEGG")
-				|| linkName.equals("NIKKAJI")
-				|| linkName.equals("PUBCHEM")
-				|| linkName.equals("KNAPSACK")
-				|| linkName.equals("KAPPAVIEW")
-				|| linkName.equals("LIPIDBANK")
-				|| linkName.equals("FLAVONOIDVIEW")
-				|| linkName.equals("KEIO")
-				|| linkName.equals("PRIME")) ) {
-				return;
-			}
-			String linkVal = "";
-			// KIEO ID or PRIME ID
-			if ( linkName.equals("KEIO")
-				|| linkName.equals("PRIME") ) {
-				linkName = "SITE_ID";
-				linkVal = value;
-			}
-			else {
-				linkVal = value.substring( pos + 1 );
-			}
-			// CH$LINKは1サイトに対して1リンクのみ有効
-			// 1つのサイトに対して2つ目以降のCH$LINKは無視する
-			if (nameLink.indexOf(linkName) == -1) {
-				nameLink += ", " + linkName;
-				valLink += ", '" + linkVal + "'";
-			}
+			value = value.trim().replaceAll( "'", "\\\\'" );
+			valLinkNames.add( value.substring( 0, pos ) );
+			valLinkIds.add( value.substring( pos + 1 ) );
 		}
 	}
 

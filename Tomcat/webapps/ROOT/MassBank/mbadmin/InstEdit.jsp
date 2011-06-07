@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.2 2010.11.09
+ * ver 1.0.3 2011.05.25
  *
  ******************************************************************************/
 %>
@@ -552,7 +552,6 @@
 	 * @param db DBアクセスオブジェクト
 	 * @param op JspWriter出力バッファ
 	 * @param msgList メッセージ格納用
-	 * @param reqUrl リクエストURL
 	 * @param selDbName 対象DB
 	 * @param instInfo 現在の装置情報
 	 * @param reqInstNo 選択装置No.
@@ -561,8 +560,8 @@
 	 * @return 表示結果
 	 * @throws IOException 入出力例外
 	 */
-	private boolean dispInstrument( DatabaseAccess db, JspWriter op, ArrayList<String> msgList, String reqUrl, 
-	                                String selDbName, GetInstInfo instInfo, String reqInstNo, String prevInstType, String prevInstName) throws IOException  {
+	private boolean dispInstrument( DatabaseAccess db, JspWriter op, ArrayList<String> msgList, String selDbName, 
+	                                GetInstInfo instInfo, String reqInstNo, String prevInstType, String prevInstName) throws IOException  {
 		
 		OperationManager om = OperationManager.getInstance();
 		boolean isOperation = om.startOparation(om.P_INSTRUMENT, om.TP_VIEW, selDbName);
@@ -654,7 +653,7 @@
 				msgList.add( msgInfo( "no instrument." ) );
 				strDisable = " disabled";
 			}
-			op.println( "<form name=\"formEdit\" method=\"post\" action=\"" + reqUrl + "\" onSubmit=\"doWait();\">" );
+			op.println( "<form name=\"formEdit\" method=\"post\" action=\"./InstEdit.jsp\" onSubmit=\"doWait();\">" );
 			op.println( "<div style=\"width:980; border: 2px Gray solid; padding:15px; background-color:WhiteSmoke;\">" );
 			op.println( "<table width=\"100%\" align=\"center\" cellspacing=\"1\" cellpadding=\"1\">" );
 			op.println( "<tr>" );
@@ -679,7 +678,7 @@
 			op.println( "</tr>");
 			op.println( "<tr>");
 			op.println( "<td colspan=\"3\" align=\"right\" height=\"40px\">" );
-			op.println( "<input type=\"submit\" name=\"btnUpdate\" value=\"Update\" onClick=\"return beforeEdit('mod');\">&nbsp;" );
+			op.println( "<input type=\"submit\" name=\"btnUpdate\" value=\"Update\" onClick=\"return beforeEdit('mod');\" disabled>&nbsp;" );
 			op.println( "<input type=\"submit\" name=\"btnDelete\" value=\"Delete\" onClick=\"return beforeEdit('del');\">" );
 			op.println( "</td>" );
 			op.println( "</tr>" );
@@ -902,7 +901,6 @@ function selNo() {
 	//----------------------------------------------------
 	// 各種パラメータを取得
 	//----------------------------------------------------
-	final String reqUrl = request.getRequestURL().toString();
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
 	final String annotationPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
@@ -950,7 +948,7 @@ function selNo() {
 		//----------------------------------------------------
 		// フォーム表示
 		//----------------------------------------------------
-		out.println( "<form name=\"formMain\" action=\"" + reqUrl + "\" method=\"post\" onSubmit=\"doWait();\">" );
+		out.println( "<form name=\"formMain\" action=\"./InstEdit.jsp\" method=\"post\" onSubmit=\"doWait();\">" );
 		out.println( "<input type=\"hidden\" name=\"act\" value=\"get\">" );
 		out.println( "<span class=\"baseFont\">Database :</span>&nbsp;" );
 		out.println( "<select name=\"db\" class=\"db\" onChange=\"selDb();\">" );
@@ -1010,7 +1008,7 @@ function selNo() {
 			instInfo.setIndex(dbIndex);
 			String prevInstType = (act.equals("mod")) ? reqInstType : null;
 			String prevInstName = (act.equals("mod")) ? reqInstName : null;
-			isResult = dispInstrument( db, out, msgList, reqUrl, selDbName, instInfo, reqInstNo, prevInstType, prevInstName );
+			isResult = dispInstrument( db, out, msgList, selDbName, instInfo, reqInstNo, prevInstType, prevInstName );
 		}
 	}
 	finally {

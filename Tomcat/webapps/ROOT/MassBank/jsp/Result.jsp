@@ -22,11 +22,16 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.29 2010.12.24
+ * ver 2.0.32 2011.06.06
  *
  ******************************************************************************/
 %>
-<%@ page import="java.util.*" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Hashtable" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="massbank.MassBankCommon" %>
@@ -86,7 +91,8 @@
 		}
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
-		ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+		
+		ArrayList<String> result = result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
 		
 		Map<String, String> gifMap = new HashMap<String, String>();
 		Map<String, String> gifSmallMap = new HashMap<String, String>();
@@ -275,13 +281,13 @@
 				continue;
 			}
 		}
-		if ( key.indexOf("inst") == -1 ) {
-			// キーがInstrumentType以外の場合はStringパラメータ
+		if ( key.indexOf("inst") == -1 && key.indexOf("ms") == -1 ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = request.getParameter( key ).trim();
 			reqParams.put( key, val );
 		}
 		else {
-			// キーがInstrumentTypeの場合はString配列パラメータ
+			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 			String[] vals = request.getParameterValues( key );
 			reqParams.put( key, vals );
 		}
@@ -384,10 +390,13 @@
 	// URLパラメータ（検索実行用）生成
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ){
 		String key = (String)keys.nextElement();
-		if ( key.indexOf("inst") == -1 ) {
-			// キーがInstrumentType以外の場合はStringパラメータ
+		if ( key.indexOf("inst") == -1 && key.indexOf("ms") == -1 ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = (String)reqParams.get(key);
-			if ( !val.equals("") ) {
+			if ( key.indexOf("site") != -1 && val.equals("-1") ) {
+				continue;
+			}
+			else if ( !val.equals("") ) {
 				searchParam += key + "=" + URLEncoder.encode(val,"utf-8") + "&";
 			}
 		}
@@ -426,7 +435,7 @@
 	<meta name="coverage" content="worldwide" />
 	<meta name="Targeted Geographic Area" content="worldwide" />
 	<meta name="rating" content="general" />
-	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 	<meta name="description" content="Mass Spectrum Search Results">
 	<meta name="keywords" content="Results">
 	<meta name="revisit_after" content="10 days">
@@ -549,18 +558,18 @@
 		
 		// Instrument Type
 		String[] instrument = (reqParams.get("inst") != null) ? (String[])reqParams.get("inst") : new String[]{};
-		boolean isAll = false;
+		boolean isInstAll = false;
 		out.println( "<table width=\"" + (Integer.parseInt(tableWidth)-160) + "\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
 		out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;Instrument Type:</td>" );
 		for (int i=0; i<instrument.length; i++) {
 			if ( instrument[i].equals("all") ) {
 				out.println( "  <td><b>All</b></td>" );
-				isAll = true;
+				isInstAll = true;
 				break;
 			}
 		}
-		if ( !isAll ) {
+		if ( !isInstAll ) {
 			int instCount = 0;
 			for (int i=0; i<instrument.length; i++) {
 				instCount++;
@@ -585,6 +594,32 @@
 					}
 				}
 			}
+		}
+		out.println( " </tr>" );
+		out.println( "</table>" );
+		
+		// MS Type
+		String[] msType = (reqParams.get("ms") != null) ? (String[])reqParams.get("ms") : new String[]{};
+		boolean isMsAll = false;
+		out.println( "<table width=\"" + (Integer.parseInt(tableWidth)-160) + "\" cellpadding=\"0\" cellspacing=\"0\">" );
+		out.println( " <tr>" );
+		out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;MS Type:</td>" );
+		for (int i=0; i<msType.length; i++) {
+			if ( msType[i].equals("all") ) {
+				out.println( "  <td><b>All</b></td>" );
+				isMsAll = true;
+				break;
+			}
+		}
+		if ( !isMsAll ) {
+			out.print( "  <td>" );
+			for (int i=0; i<msType.length; i++) {
+				out.print( "<b>" + msType[i] + "</b>" );
+				if ( i != (msType.length-1) ) {
+					out.println( " ,&nbsp;&nbsp;&nbsp;" );
+				}
+			}
+			out.println( "  </td>" );
 		}
 		out.println( " </tr>" );
 		out.println( "</table>" );
@@ -632,6 +667,12 @@
 		}
 		else if ( pIdxtype.equals("inst") ) {	// Instrument Type
 			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Instrument Type: <b>" + pSrchkey + "</b></td>" );
+		}
+		else if ( pIdxtype.equals("ms") ) {	// MS Type
+			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;MS Type: <b>" + pSrchkey + "</b></td>" );
+		}
+		else if ( pIdxtype.equals("merged") ) {	// Merged Type
+			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Merged Type: <b>" + pSrchkey + "</b></td>" );
 		}
 		else if ( pIdxtype.equals("ion") ) {	// Ionization Mode
 			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Ionization Mode: <b>" + pSrchkey + "</b></td>" );
@@ -754,43 +795,48 @@
 	//-------------------------------------
 	String typeName = "";
 	ResultList list = null;
+	boolean isMulti = true;
+	int siteNo = -1;
 	
-	// ◇ PeakSearchの場合
-	if ( refPeak ) {
-		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_PEAK];
-		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
-	}
-	// ◇ PeakDifferenceSearchの場合
-	else if ( refPeakDiff ) {
-		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_PDIFF];
-		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
-	}
-	// ◇ QuickSearchの場合
-	else if ( refQuick ) {
-		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_QUICK];
-		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
-	}
 	// ◇ RecordIndexの場合
-	else if ( refRecIndex ) {
+	if ( refRecIndex ) {
+		try { siteNo = Integer.parseInt(String.valueOf(reqParams.get( "srchkey" ))); } catch (NumberFormatException nfe) {}
 		String pIdxtype = ((String)reqParams.get( "idxtype" ) != null) ? (String)reqParams.get( "idxtype" ) : "";
-		String pSrchkey = ((String)reqParams.get( "srchkey" ) != null) ? (String)reqParams.get( "srchkey" ) : "";
-		boolean isSingle = false;
 		if ( pIdxtype.equals("site") ) {
-			isSingle = true;
+			isMulti = false;
 			searchParam = searchParam.replaceAll( "srchkey", "site" );
 		}
 		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_RCDIDX];
-		if ( isSingle ) {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, pSrchkey, conf );
+	}
+	else {
+		try { siteNo = Integer.parseInt(String.valueOf(reqParams.get( "site" ))); } catch (NumberFormatException nfe) {}
+		if ( siteNo != -1 ) {
+			isMulti = false;
 		}
-		else {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
+		// ◇ PeakSearchの場合
+		if ( refPeak ) {
+			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_PEAK];
+		}
+		// ◇ PeakDifferenceSearchの場合
+		else if ( refPeakDiff ) {
+			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_PDIFF];
+		}
+		// ◇ QuickSearchの場合
+		else if ( refQuick ) {
+			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_QUICK];
+		}
+		// ◇ Substructure Searchの場合
+		else if ( refStruct ) {
+			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_STRUCT];
 		}
 	}
-	// ◇ Substructure Searchの場合
-	else if ( refStruct ) {
-		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_STRUCT];
+	
+	// 検索実行
+	if ( isMulti ) {
 		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
+	}
+	else {
+		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
 	}
 	
 	out.println( "<span id=\"menu\"></span>");
@@ -823,13 +869,13 @@
 	//-------------------------------------
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ){
 		String key = (String)keys.nextElement();
-		if ( key.indexOf("inst") == -1 ) {
-			// キーがInstrumentType以外の場合はStringパラメータ
+		if ( key.indexOf("inst") == -1 && key.indexOf("ms") == -1 ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = (String)reqParams.get(key);
 			out.println( "<input type=\"hidden\" name=\"" + key + "\" value=\"" + val + "\">" );
 		}
 		else {
-			// キーがInstrumentTypeの場合はString配列パラメータ
+			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 			String[] vals = (String[])reqParams.get(key);
 			for (int i=0; i<vals.length; i++) {
 				out.println( "<input type=\"hidden\" name=\"" + key + "\" value=\"" + vals[i] + "\">" );
@@ -873,7 +919,7 @@
 		String pageLinkUrl = "";
 		// ◇ RecordIndexの場合
 		if ( refRecIndex ) {
-			pageLinkUrl = path
+			pageLinkUrl = "./Result.jsp"
 								  + "?sortAction=" + reqParams.get( "sortAction" )
 								  + "&exec=page" 
 								  + "&sortKey=" + reqParams.get( "sortKey" )
