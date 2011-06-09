@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.25 2011.06.02
+ * ver 1.0.26 2011.06.09
  *
  ******************************************************************************/
 %>
@@ -38,6 +38,7 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="massbank.MassBankCommon" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="java.awt.Color" %>
 <%@ page import="java.awt.Font" %>
@@ -633,7 +634,7 @@
 		// グラフの表示
 		out.println( "<tr>" );
 		out.println( "<td>" );
-		out.println( "<img src=\"./temp/" + fileName + "\" alt=\"\" border=\"0\">" );
+		out.println( "<img src=\"" + MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp/" + fileName + "\" alt=\"\" border=\"0\">" );
 		out.println( "</td>" );
 		out.println( "</tr>" );
 	}
