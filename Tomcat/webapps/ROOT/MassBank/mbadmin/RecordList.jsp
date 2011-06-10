@@ -22,17 +22,19 @@
  *
  * レコード一覧
  *
- * ver 1.0.5 2011.05.17
+ * ver 1.0.6 2011.06.10
  *
  ******************************************************************************/
 %>
 
 <%@ page import="org.apache.commons.io.FileUtils" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.TreeMap" %>
@@ -149,6 +151,7 @@
 		ResultSet rs = null;
 		ResultSet[] rss = new ResultSet[sqls.length];
 		String execSql = "";
+		StringBuilder idList = new StringBuilder();
 		try {
 			// INSTRUMENTテーブルから登録されている装置IDを取得
 			execSql = sql;
@@ -169,16 +172,21 @@
 					if ( !tableInfo[i][0].equals("SPECTRUM") ) {
 						if ( !mainList.containsKey(id) ) {
 							mainList.put(id, "");
+							idList.append(id + ",");
 						}
 					}
 					else {
 						mainList.put(id, rss[i].getString("NAME"));
+						idList.append(id + ",");
 					}
 					if ( tableInfo[i][0].equals("RECORD") ) {
 						String instNo = rss[i].getString("INSTRUMENT_NO");
 						instList.put(id, instNo);
 					}
 				}
+			}
+			if ( !idList.equals("") ) {
+				StringUtils.strip(idList.toString(), ",");
 			}
 		}
 		catch (SQLException e) {
@@ -195,6 +203,25 @@
 				}
 			}
 			catch (SQLException e) {}
+		}
+		
+		// レコードフォーマットバージョン取得
+		Map<String, String> idVersionMap = new HashMap<String, String>();
+		final String cgiUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "cgi-bin/GetRecordInfo.cgi";
+		final String cgiParam = "dsn=" + selDbName + "&mode=ver&" + idList.toString();
+		String tmpRet = execCgi( cgiUrl, cgiParam );
+		if ( tmpRet == null ) {
+			Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
+			                                   "    url : " + cgiUrl + NEW_LINE +
+			                                   "    param : " + cgiParam );
+		}
+		else {
+			String[] tmpList = tmpRet.split(NEW_LINE);
+			for (int i=0; i<tmpList.length; i++) {
+				if ( tmpList[i].split("\t").length == 2 ) {
+					idVersionMap.put(tmpList[i].split("\t")[0], tmpList[i].split("\t")[1]);
+				}
+			}
 		}
 		
 		// レコードファイルパス内の全ファイルおよびフォルダ名退避
@@ -251,6 +278,15 @@
 						details.append( "<span class=\"warnFont\">unregistered. [<i>" + tableInfo[i][0] + "</i>]</span><br />" );
 					}
 				}
+			}
+			// レコードフォーマットバージョンチェック
+			if ( idVersionMap.containsKey(id) ) {
+				if ( idVersionMap.get(id).equals("1") ) {
+					details.append( "<span class=\"warnFont\">old record version.</span><br />" );
+				}
+			}
+			else {
+				details.append( "<span class=\"warnFont\">unknown record version.</span><br />" );
 			}
 			if (details.length() > 0) {
 				details.delete(details.lastIndexOf("<br />"), details.length());
@@ -497,10 +533,10 @@
 	 * @param strParam CGIに渡すパラメータ
 	 * @return 結果
 	 */
-	private boolean execCgi( String strUrl, String strParam ) {
-		boolean ret = true;
+	private String execCgi( String strUrl, String strParam ) {
 		PrintStream ps = null;
 		BufferedReader in = null;
+		StringBuilder retStr = new StringBuilder();
 		try {
 			URL url = new URL( strUrl );
 			URLConnection con = url.openConnection();
@@ -509,17 +545,13 @@
 			ps.print( strParam );
 			in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
 			String line = "";
-			StringBuilder retStr = new StringBuilder();
 			while ( (line = in.readLine()) != null ) {
 				retStr.append( line + NEW_LINE );
-			}
-			if (retStr.indexOf("OK") == -1) {
-				ret = false;
 			}
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			ret = false;
+			return null;
 		}
 		finally {
 			try {
@@ -529,7 +561,7 @@
 			catch (IOException e) {
 			}
 		}
-		return ret;
+		return retStr.toString();
 	}
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -946,8 +978,8 @@ function popupRecView(url) {
 			//----------------------------------------------------
 			final String cgiUrl = baseUrl + "cgi-bin/CreateHeap.cgi";
 			final String cgiParam = "dsn=" + selDbName;
-			boolean tmpRet = execCgi( cgiUrl, cgiParam );
-			if ( !tmpRet ) {
+			String tmpRet = execCgi( cgiUrl, cgiParam );
+			if ( tmpRet == null || tmpRet.indexOf("OK") == -1 ) {
 				Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
 				                                   "    url : " + cgiUrl + NEW_LINE +
 				                                   "    param : " + cgiParam );
