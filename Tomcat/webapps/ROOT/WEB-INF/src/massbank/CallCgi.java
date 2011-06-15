@@ -20,7 +20,7 @@
  *
  * CGIを実行するスレッドのクラス
  *
- * ver 1.0.6 2011.06.07
+ * ver 1.0.7 2011.06.15
  *
  ******************************************************************************/
 package massbank;
@@ -99,7 +99,7 @@ public class CallCgi extends Thread
 				return;
 			}
 			// レスポンス取得
-			//this.result = method.getResponseBodyAsString();
+//			this.result = method.getResponseBodyAsString();
 			
 			/**
 			 * modification start
@@ -108,6 +108,7 @@ public class CallCgi extends Thread
 			 * Prevents logging of message:
 			 * "Going to buffer response body of large or unknown size. Using getResponseBodyAsStream instead is recommended."
 			 */
+
 			String charset = method.getResponseCharSet();
 			InputStream is = method.getResponseBodyAsStream();
 			StringBuilder sb = new StringBuilder();
@@ -128,7 +129,8 @@ public class CallCgi extends Thread
 				reader.close();
 				is.close();
 				
-				this.result = sb.toString().trim();
+//				this.result = sb.toString().trim();
+				this.result = sb.toString();			// trim() deleted. because the last [\t] and [\n] are removed.
 				if(this.result.endsWith("\n"))			// remove trailing line break
 				{
 					int pos = this.result.lastIndexOf("\n");
@@ -137,6 +139,7 @@ public class CallCgi extends Thread
 			} else {		
 				this.result = "";
 			}
+
 			/**
 			 * modification end
 			 */
