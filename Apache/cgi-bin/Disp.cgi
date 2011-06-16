@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.27  2011.05.24
+# ver 3.0.28  2011.06.16
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -145,10 +145,17 @@ print << "HTML";
 <html lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="MassBank" />
+		<meta name="coverage" content="worldwide" />
+		<meta name="Targeted Geographic Area" content="worldwide" />
+		<meta name="rating" content="general" />
+		<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
+		<meta name="description" content="MassBank Record of $acc">
 		<meta name="keywords" content="$short_name">
 		<meta name="revisit_after" content="30 days">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
+		<link rel="stylesheet" type="text/css" href="../css/Common.css">
 		<script type="text/javascript" src="../script/Common.js"></script>
 		<title>$short_name Mass Spectrum</title>
 	</head>
