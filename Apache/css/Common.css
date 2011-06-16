@@ -21,7 +21,7 @@
  *
  * MassBank共通スタイルシート
  *
- * ver 1.0.17 2011.05.27
+ * ver 1.0.18 2011.06.16
  *
  ******************************************************************************/
 
@@ -143,6 +143,16 @@ a.text2:active {
 	font-size: 16px;
 	line-height: 160%;
 	color: #39405A;
+	text-decoration: none;
+}
+
+/**
+ * フォント説明文
+ */
+.fontNote {
+	font-size: 12px;
+	line-height: 160%;
+	color: #602D1D;
 	text-decoration: none;
 }
 

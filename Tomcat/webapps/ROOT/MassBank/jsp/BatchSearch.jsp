@@ -22,7 +22,7 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.12 2011.05.31
+ * ver 1.0.13 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -63,7 +63,7 @@
 			</td>
 			<td align="right" class="font12px">
 				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=BATCH_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
@@ -239,7 +239,7 @@
 		out.println("\t\t\t\t\t\t\t<td><input type=\"text\" name=\"mail\" size=\"32\" value=\"" + mailAddress + "\"></td>");
 		out.println("\t\t\t\t\t\t</tr>");
 		out.println("\t\t\t\t\t\t<tr style=\"padding-top:10px;\">");
-		out.println("\t\t\t\t\t\t\t<td colspan=\"2\" class=\"font12px\" style=\"text-indent:20px;\">This service will appear as a part of Quick Search Page.</td>");
+		out.println("\t\t\t\t\t\t\t<td colspan=\"2\" class=\"fontNote\"><b>Batch Service conducts a batch spectrum search, and emails you the results.</b><br>Use this in such cases as when you would like to search for a large number of spectra.</td>");
 		out.println("\t\t\t\t\t\t</tr>");
 		out.println("\t\t\t\t\t</table>");
 		out.println("\t\t\t\t\t<br>");

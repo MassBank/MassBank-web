@@ -22,7 +22,7 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.12 2010.12.24
+ * ver 1.0.13 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -480,8 +480,8 @@
 <meta name="coverage" content="worldwide" />
 <meta name="Targeted Geographic Area" content="worldwide" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
-<meta name="description" content="Mass Spectrum Search Results">
+<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
+<meta name="description" content="Peak Search Results">
 <meta name="keywords" content="Results">
 <meta name="revisit_after" content="10 days">
 <link rel="stylesheet" type="text/css" href="../css/Common.css">
@@ -510,7 +510,7 @@ function prevPeakSearchAdv() {
 			<td><h1><%=hTitle%></h1></td>
 			<td align="right" class="font12px">
 				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PEAK_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>

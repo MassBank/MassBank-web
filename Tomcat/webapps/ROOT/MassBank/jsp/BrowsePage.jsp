@@ -22,7 +22,7 @@
  *
  * Browse Page表示用モジュール
  *
- * ver 1.0.13 2010.12.24
+ * ver 1.0.14 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -59,9 +59,9 @@
 		<meta name="coverage" content="worldwide" />
 		<meta name="Targeted Geographic Area" content="worldwide" />
 		<meta name="rating" content="general" />
-		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
-		<meta name="description" content="Hierarchical browsing of all data. To browse the hierarchical tree of all MassBank spectra.">
-		<meta name="keywords" content="Browse,tree">
+		<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
+		<meta name="description" content="In Browse Page, all data are hierarchically displayed for each data provider.  You can go up and down the hierarchy (tree) and find a specific data you want.">
+		<meta name="keywords" content=" Hierarchical,Browse,tree">
 		<meta name="revisit_after" content="30 days">
 		<link rel="stylesheet" type="text/css" href="css/Common.css">
 		<script type="text/javascript" src="./script/Common.js"></script>
@@ -75,7 +75,7 @@
 				</td>
 				<td align="right" class="font12px">
 					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=BROWSE_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				</td>
 			</tr>
 		</table>

@@ -22,7 +22,7 @@
  *
  * Search Page表示用モジュール
  *
- * ver 1.0.14 2010.12.24
+ * ver 1.0.15 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -85,7 +85,7 @@
 		<meta name="coverage" content="worldwide" />
 		<meta name="Targeted Geographic Area" content="worldwide" />
 		<meta name="rating" content="general" />
-		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+		<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 		<meta name="description" content="Search similar spectra on a peak-to-peak basis. Retrieves spectra similar to user’s spectrum in terms of the m/z value. This search is helpful to identify chemical compound by comparing similar spectra on a 3D-display.">
 		<meta name="keywords" content="Search,Similarity,Spectrum">
 		<meta name="revisit_after" content="30 days">
@@ -101,7 +101,7 @@
 				</td>
 				<td align="right" class="font12px">
 					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=SPECTRUM_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				</td>
 			</tr>
 		</table>

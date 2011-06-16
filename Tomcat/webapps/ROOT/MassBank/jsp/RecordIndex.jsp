@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.26 2011.06.09
+ * ver 1.0.27 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -150,7 +150,7 @@
 	<meta name="rating" content="general" />
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 	<meta name="description" content="Categorized list of spectra. To list up all spectra in a specific category including contributors, instrument types and ionization modes.">
-	<meta name="keywords" content="ESI,EI,LC,IT,GC,TOF,FAB,MALDI,MS,MS/MS,MSn,CI,FI,FD,QqQ">
+	<meta name="keywords" content="ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<script type="text/javascript" src="./script/Common.js"></script>
@@ -164,7 +164,7 @@
 			</td>
 			<td align="right" class="font12px">
 				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=INDEX_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>

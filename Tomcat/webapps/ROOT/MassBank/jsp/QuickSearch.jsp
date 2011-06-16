@@ -22,7 +22,7 @@
  *
  * Quick Search Page表示用モジュール
  *
- * ver 1.0.13 2011.05.31
+ * ver 1.0.14 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -150,7 +150,7 @@
 			</td>
 			<td align="right" class="font12px">
 				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=QUICK_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
@@ -237,7 +237,7 @@
 							<td>
 								<b>Peak Data</b><br>
 								<textarea name="qpeak" cols="40" rows="10"><%= peakData %></textarea><br>
-								m/z and relative intensities(0-999), delimited by a space.<br>
+								<i>m/z</i> and relative intensities(0-999), delimited by a space.<br>
 								<input type="button" value="Example1" onClick="insertExample1()">
 								<input type="button" value="Example2" onClick="insertExample2()">
 							</td>

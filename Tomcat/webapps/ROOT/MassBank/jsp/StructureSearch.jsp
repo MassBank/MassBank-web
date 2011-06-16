@@ -22,7 +22,7 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.18 2011.06.02
+ * ver 1.0.19 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -576,7 +576,7 @@ table.form-box-K {
 		</td>
 		<td align="right" class="font12px">
 			<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=STRUCTURE_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		</td>
 	</tr>
 </table>

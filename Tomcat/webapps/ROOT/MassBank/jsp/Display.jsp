@@ -22,7 +22,7 @@
  *
  * スペクトル複数表示用モジュール
  *
- * ver 1.0.13 2010.01.08
+ * ver 1.0.14 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -37,11 +37,11 @@
 	// (1) multi : "Show Spectra"(空以外の文字列） name : なし
 	//       ==> DisplayAllを表示するHTMLを返す
 	//-----------------------------------------------------------------------
-	// ● NistApplet.jar, Browse.jarから呼ばれる場合
+	// ● SearchApplet.jar, Browse2.jarから呼ばれる場合
 	// (3) multi : なし                            name : なし
 	//       ==> DisplayAllを表示するHTMLファイルを作成し、そのファイル名を返す
 	// ----------------------------------------------------------------------
-	// (4) multi : "Show Spectra"(なしでもOK)      name : あり
+	// (4) multi : "Multiple Display"(なしでもOK)      name : あり
 	//       ==> 指定されたHTMLファイル内容を返す
 	//*************************************************************************
 	
@@ -83,8 +83,14 @@
 		html.add( "\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" );
 		html.add( "\t\t<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">" );
 		html.add( "\t\t<meta http-equiv=\"imagetoolbar\" content=\"no\">" );
+		html.add( "\t\t<meta name=\"author\" content=\"MassBank\" />" );
+		html.add( "\t\t<meta name=\"coverage\" content=\"worldwide\" />" );
+		html.add( "\t\t<meta name=\"Targeted Geographic Area\" content=\"worldwide\" />" );
+		html.add( "\t\t<meta name=\"rating\" content=\"general\" />" );
+		html.add( "\t\t<meta name=\"copyright\" content=\"Copyright (c) 2006 MassBank Project\" />" );
 		html.add( "\t\t<meta name=\"description\" content=\"Multiple Display\">" );
 		html.add( "\t\t<meta name=\"keywords\" content=\"Multiple,Display\">" );
+		html.add( "\t\t<meta name=\"revisit_after\" content=\"30 days\">" );
 		html.add( "\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
 		html.add( "\t\t<script type=\"text/javascript\" src=\"../script/Common.js\"></script>" );
 		html.add( "\t\t<title>MassBank | Database | Multiple Display</title>" );
@@ -97,7 +103,7 @@
 		html.add( "\t\t\t\t</td>" );
 		html.add( "\t\t\t\t<td align=\"right\" class=\"font12px\">" );
 		html.add( "\t\t\t\t\t<img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		html.add( "\t\t\t\t\t<img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		html.add( "\t\t\t\t\t<img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + MULTI_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		html.add( "\t\t\t\t</td>" );
 		html.add( "\t\t\t</tr>" );
 		html.add( "\t\t</table>" );

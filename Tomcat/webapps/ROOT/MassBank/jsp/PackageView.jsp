@@ -22,7 +22,7 @@
  *
  * Package View表示用モジュール
  *
- * ver 1.0.11 2010.12.24
+ * ver 1.0.12 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -84,7 +84,7 @@
 		<meta name="coverage" content="worldwide" />
 		<meta name="Targeted Geographic Area" content="worldwide" />
 		<meta name="rating" content="general" />
-		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
+		<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 		<meta name="description" content="3D viewer of user's spectra. To disply and compare user's spectra in an uploaded file.">
 		<meta name="keywords" content="Spectral,3D,Package,View,query">
 		<meta name="revisit_after" content="30 days">
@@ -100,7 +100,7 @@
 				</td>
 				<td align="right" class="font12px">
 					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=BROWSER_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				</td>
 			</tr>
 		</table>

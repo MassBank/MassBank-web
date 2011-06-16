@@ -22,7 +22,7 @@
  *
  * 共通JSP（静的インクルード用）
  *
- * ver 1.0.4 2010.11.08
+ * ver 1.0.5 2011.06.16
  *
  ******************************************************************************/
 %>
@@ -57,12 +57,37 @@
 	//-------------------------------------
 	// 各URL設定
 	//-------------------------------------
-	String SAMPLE_URL = commonRefBaseUrl + "sample/sample.txt";
-	String SAMPLE_ZIP_URL = commonRefBaseUrl + "sample/sample.zip";
 	String MANUAL_URL = commonRefBaseUrl + "manuals/UserManual_ja.pdf";
+	String SPECTRUM_PAGE = "#page=4";
+	String QUICK_PAGE = "#page=8";
+	String PEAK_PAGE = "#page=15";
+	String STRUCTURE_PAGE = "#page=14";
+	String ADVANCED_PAGE = "#page=11";
+	String BROWSER_PAGE = "#page=26";
+	String BATCH_PAGE = "#page=9";
+	String BROWSE_PAGE = "#page=19";
+	String INDEX_PAGE = "#page=18";
+	String MULTI_PAGE = "#page=23";
+	String RESULT_PAGE = "#page=20";
+	String RESULT_PEAK_PAGE = "#page=16";
 	if ( !isJp ) {
 		MANUAL_URL = commonRefBaseUrl + "manuals/UserManual_en.pdf";
+		SPECTRUM_PAGE = "#page=4";
+		QUICK_PAGE = "#page=8";
+		PEAK_PAGE = "#page=15";
+		STRUCTURE_PAGE = "#page=14";
+		ADVANCED_PAGE = "#page=11";
+		BROWSER_PAGE = "#page=26";
+		BATCH_PAGE = "#page=9";
+		BROWSE_PAGE = "19";
+		INDEX_PAGE = "#page=18";
+		MULTI_PAGE = "#page=23";
+		RESULT_PAGE = "#page=20";
+		RESULT_PEAK_PAGE = "#page=16";
 	}
+	
+	String SAMPLE_URL = commonRefBaseUrl + "sample/sample.txt";
+	String SAMPLE_ZIP_URL = commonRefBaseUrl + "sample/sample.zip";
 	String RECDATA_ZIP_URL = commonRefBaseUrl + "sample/recdata.zip";
 	String MOLDATA_ZIP_URL = commonRefBaseUrl + "sample/moldata.zip";
 	String GIFDATA_ZIP_URL = commonRefBaseUrl + "sample/gifdata.zip";
