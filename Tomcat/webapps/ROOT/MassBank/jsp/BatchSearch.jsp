@@ -22,7 +22,7 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.13 2011.06.16
+ * ver 1.0.14 2011.07.20
  *
  ******************************************************************************/
 %>
@@ -35,6 +35,7 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="org.apache.commons.fileupload.DiskFileUpload" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="massbank.JobManager" %>
 <%@ page import="massbank.JobInfo" %>
 <%@ include file="./Common.jsp"%>
@@ -81,7 +82,7 @@
 	String msType = "";
 	String ionMode  = "1";
 	
-	boolean isFirst = false;
+	boolean isFirst = true;
 	List<String> instGrpList = new ArrayList<String>();
 	List<String> instTypeList = new ArrayList<String>();
 	List<String> msTypeList = new ArrayList<String>();
@@ -141,22 +142,19 @@
 		}
 		for ( int i=0; i<instGrpList.size(); i++ ) {
 			instGrp += instGrpList.get(i);
-			if ( i < instGrpList.size() - 1 ) {
-				instGrp += ",";
-			}
+			instGrp += ",";
 		}
+		StringUtils.chop(instGrp);
 		for ( int i=0; i<instTypeList.size(); i++ ) {
 			instType += instTypeList.get(i);
-			if ( i < instTypeList.size() - 1 ) {
-				instType += ",";
-			}
+			instType += ",";
 		}
+		StringUtils.chop(instType);
 		for ( int i=0; i<msTypeList.size(); i++ ) {
 			msType += msTypeList.get(i);
-			if ( i < msTypeList.size() - 1 ) {
-				msType += ",";
-			}
+			msType += ",";
 		}
+		StringUtils.chop(msType);
 		
 		
 		//-------------------------------------
@@ -221,7 +219,7 @@
 	//-------------------------------------
 	// 通常用HTML
 	if (isHtml) {
-		out.println("\t<form name=\"form_query\" action=\"./BatchSearch.html\" enctype=\"multipart/form-data\" method=\"POST\">");
+		out.println("\t<form name=\"form_query\" action=\"./BatchSearch.html\" enctype=\"multipart/form-data\" method=\"POST\" onSubmit=\"doWait('Submitting...')\">");
 		out.println("\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
 		out.println("\t\t\t<tr>");
 		out.println("\t\t\t\t<td valign=\"top\">");

@@ -20,7 +20,7 @@
  *
  * SearchPage クラス
  *
- * ver 1.0.17 2011.03.07
+ * ver 1.0.18 2011.07.12
  *
  ******************************************************************************/
 
@@ -175,18 +175,11 @@ public class SearchPage extends JApplet {
 	private JRadioButton tolUnit1 = new JRadioButton("unit", true);
 	private JRadioButton tolUnit2 = new JRadioButton("ppm");
 
-	private final List<String> defaultInstExcept = 
-		Arrays.asList( new String[]{
-				"EI-MS", 
-				"GC-EI-TOF-MS", 
-				"CI-MS", 
-				"FD-MS", 
-				"FI-MS", 
-				"FAB-CID-EBEB-MS/MS", 
-				"FAB-MS"} );												// 装置種別デフォルト除外リスト
 	private Map<String, List<String>> instGroup;							// 装置種別グループマップ
 	private LinkedHashMap<String, JCheckBox> instCheck;					// 装置種別チェックボックス格納用
 	private HashMap<String, Boolean> isInstCheck;							// 装置種別チェックボックス値格納用
+	private LinkedHashMap<String, JCheckBox> msCheck;						// MS種別チェックボックス格納用
+	private HashMap<String, Boolean> isMsCheck;							// MS種別チェックボックス値格納用
 	private LinkedHashMap<String, JRadioButton> ionRadio;					// イオン種別ラジオボタン格納用
 	private HashMap<String, Boolean> isIonRadio;							// イオン種別ラジオボタン値格納用
 	
@@ -223,6 +216,7 @@ public class SearchPage extends JApplet {
 	private final String COOKIE_TOL = "TOL";			// Cookie情報キー（TOLERANCE）
 	private final String COOKIE_CUTOFF = "CUTOFF"; 	// Cookie情報キー（COOKIE_CUTOFF）
 	private final String COOKIE_INST = "INST";			// Cookie情報キー（INSTRUMENT）
+	private final String COOKIE_MS = "MS";				// Cookie情報キー（MS）
 	private final String COOKIE_ION = "ION";			// Cookie情報キー（ION）
 
 	private final JRadioButton dispSelected = new JRadioButton("selected", true);
@@ -267,6 +261,9 @@ public class SearchPage extends JApplet {
 		// 装置種別情報初期化
 		instInfo = new GetInstInfo(confPath);
 		initInstInfo();
+		
+		// MS種別情報初期化
+		initMsInfo();
 		
 		// イオン種別情報初期化
 		initIonInfo();
@@ -982,27 +979,51 @@ public class SearchPage extends JApplet {
 		else
 			post.append( "TOLUNIT=unit&" );
 		post.append( "INST=" );
-		StringBuffer tmp = new StringBuffer();
-		boolean isAll = true;
+		StringBuffer instTmp = new StringBuffer();
+		boolean isInstAll = true;
 		for (Iterator i=isInstCheck.keySet().iterator(); i.hasNext(); ) {
 			String key = (String)i.next();
 			
 			if ( (isInstCheck.get(key)) ) {
-				if (tmp.length() > 0) {
-					tmp.append( "," );
+				if (instTmp.length() > 0) {
+					instTmp.append( "," );
 				}
-				tmp.append( key );
+				instTmp.append( key );
 			} else {
-				isAll = false;
+				isInstAll = false;
 			}
 		}
-		if (isAll) {
-			if (tmp.length() > 0) {
-				tmp.append( "," );
+		if (isInstAll) {
+			if (instTmp.length() > 0) {
+				instTmp.append( "," );
 			}
-			tmp.append( "ALL" );
+			instTmp.append( "ALL" );
 		}
-		post.append( tmp.toString() + "&" );
+		post.append( instTmp.toString() + "&" );
+		
+		post.append( "MS=" );
+		StringBuffer msTmp = new StringBuffer();
+		boolean isMsAll = true;
+		for (Iterator i=isMsCheck.keySet().iterator(); i.hasNext(); ) {
+			String key = (String)i.next();
+			
+			if ( (isMsCheck.get(key)) ) {
+				if (msTmp.length() > 0) {
+					msTmp.append( "," );
+				}
+				msTmp.append( key );
+			} else {
+				isMsAll = false;
+			}
+		}
+		if (isMsAll) {
+			if (msTmp.length() > 0) {
+				msTmp.append( "," );
+			}
+			msTmp.append( "ALL" );
+		}
+		post.append( msTmp.toString() + "&" );
+		
 		
 		if (isIonRadio.get("Posi")) {
 			post.append( "ION=1&" );
@@ -1026,7 +1047,7 @@ public class SearchPage extends JApplet {
 		this.param = post.toString();
 		this.ps = ps;
 		SwingWorker worker = new SwingWorker() {
-			private ArrayList result = null;
+			private ArrayList<String> result = null;
 
 			public Object construct() {
 				// サーブレット呼び出し-マルチスレッドでCGIを起動
@@ -1181,7 +1202,7 @@ public class SearchPage extends JApplet {
 
 		// サーブレット呼び出し-マルチスレッドでCGIを起動
 		String cgiType = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GNAME];
-		ArrayList result = mbcommon.execMultiDispatcher(baseUrl, cgiType, param);
+		ArrayList<String> result = mbcommon.execMultiDispatcher(baseUrl, cgiType, param);
 		DefaultTableModel dataModel = (DefaultTableModel) querySorter.getTableModel();
 		dataModel.setRowCount(0);
 		if (result == null || result.size() == 0) {
@@ -1410,12 +1431,12 @@ public class SearchPage extends JApplet {
 						chkBox = new JCheckBox(val, false);
 					}
 				} else {
-					if (defaultInstExcept.contains(val)) {	// デフォルト除外リストに存在する場合 
-						chkBox = new JCheckBox(val, false);
-					} else {
+					if ( isDefaultInst(val) ) {	// デフォルト装置種別の場合 
 						chkBox = new JCheckBox(val, true);
 						checked = true;
 						valueSetList.add(val);
+					} else {
+						chkBox = new JCheckBox(val, false);
 					}
 				}
 				
@@ -1447,6 +1468,71 @@ public class SearchPage extends JApplet {
 		// 初回読み込み時にCookie情報が存在しない場合はCookieに設定
 		if (valueGetList.size() == 0) {
 			cm.setCookie(COOKIE_INST, valueSetList);
+		}
+	}
+	
+	/**
+	 * MS種別情報初期化
+	 * データベースから全MS種別情報を取得して対応するチェックボックスを生成
+	 * チェックボックスの選択状態は[Cookie情報]＞[デフォルト]の優先順で選択状態を初期化する
+	 * チェックボックスが1つも選択されない場合は強制的に全て選択した状態で初期化する
+	 */
+	private void initMsInfo() {
+		msCheck = new LinkedHashMap<String, JCheckBox>();
+		isMsCheck = new HashMap<String, Boolean>();
+		
+		// Cookie情報用リストにCookieからMS種別の選択状態を取得
+		ArrayList<String> valueGetList = cm.getCookie(COOKIE_MS);
+		ArrayList<String> valueSetList = new ArrayList<String>();
+		
+		boolean checked = false;
+		
+		List<String> list = Arrays.asList(instInfo.getMsAll());
+		for ( int j=0; j<list.size(); j++ ) {
+			String val = list.get(j);
+		
+			JCheckBox chkBox;
+			
+			// Cookieが存在する場合
+			if (valueGetList.size() != 0) {
+				if (valueGetList.contains(val)) {
+					chkBox = new JCheckBox(val, true);
+					checked = true;
+				} else {
+					chkBox = new JCheckBox(val, false);
+				}
+			} else {
+				chkBox = new JCheckBox(val, true);
+				checked = true;
+				valueSetList.add(val);
+			}
+			
+			msCheck.put(val, chkBox);
+			isMsCheck.put(val, chkBox.isSelected());
+		}
+		
+		// MS種別がデータベースに登録されていない場合
+		if (msCheck.size() == 0 && isMsCheck.size() == 0) {
+			JOptionPane.showMessageDialog(null,
+					"MS Type is not registered in the database.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		// ここまでの処理でMS種別が1つも選択されていない場合は強制的に全て選択する
+		if ( !checked ) {
+			for (Iterator i=msCheck.keySet().iterator(); i.hasNext();) {
+				String key = (String)i.next();
+				((JCheckBox)msCheck.get(key)).setSelected(true);
+				isMsCheck.put(key, true);
+				valueSetList.add(key);
+			}
+		}
+		
+		// 初回読み込み時にCookie情報が存在しない場合はCookieに設定
+		if (valueGetList.size() == 0) {
+			cm.setCookie(COOKIE_MS, valueSetList);
 		}
 	}
 	
@@ -1490,6 +1576,22 @@ public class SearchPage extends JApplet {
 		isIonRadio.put(keyBoth, ionBoth.isSelected());
 	}
 
+	/**
+	 * デフォルト装置種別チェック
+	 * 装置種別に"ESI"、"APPI"、"MALDI"を含むものをデフォルト装置種別とする
+	 * @param inst 装置種別
+	 */
+	private boolean isDefaultInst(String inst) {
+		
+		if ( inst.indexOf("ESI") != -1 ||
+			 inst.indexOf("APPI") != -1 ||
+			 inst.indexOf("MALDI") != -1 ) {
+			
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * アプレットのフレームを取得
 	 */
@@ -1635,18 +1737,18 @@ public class SearchPage extends JApplet {
 			labelPanel = newLabelPanel("Instrument Type", 
 					"&nbsp;Instrument type.&nbsp;", LABEL_SIZE_L, 2);
 			
-			final JCheckBox chkBoxAll = new JCheckBox("All");
-			chkBoxAll.setSelected(isInstAll());
-			final JCheckBox chkBoxDfault = new JCheckBox("Default");
-			chkBoxDfault.setSelected(isInstDefault());
-			keyListenerList.add(chkBoxAll);
-			keyListenerList.add(chkBoxDfault);
+			final JCheckBox chkBoxInstAll = new JCheckBox("All");
+			chkBoxInstAll.setSelected(isInstAll());
+			final JCheckBox chkBoxInstDefault = new JCheckBox("Default");
+			chkBoxInstDefault.setSelected(isInstDefault());
+			keyListenerList.add(chkBoxInstAll);
+			keyListenerList.add(chkBoxInstDefault);
 
 			itemPanel = new JPanel();
 			initItemPanel(itemPanel);
-			itemPanel.add(chkBoxAll, itemPanelGBC(0d, 0d, 0, 0, 1, 1));
+			itemPanel.add(chkBoxInstAll, itemPanelGBC(0d, 0d, 0, 0, 1, 1));
 			itemPanel.add(new JPanel(), itemPanelGBC(0.1d, 0d, 1, 0, 1, 1));
-			itemPanel.add(chkBoxDfault, itemPanelGBC(0d, 0d, 2, 0, 1, 1));
+			itemPanel.add(chkBoxInstDefault, itemPanelGBC(0d, 0d, 2, 0, 1, 1));
 			itemPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 3, 0, GridBagConstraints.REMAINDER, 0));
 			
 			delimPanel = new JPanel();
@@ -1713,9 +1815,45 @@ public class SearchPage extends JApplet {
 			
 			
 			
-			// Ionization Mode
-			labelPanel = newLabelPanel("Ionization Mode", 
-					"&nbsp;Ionization mode.&nbsp;", LABEL_SIZE_L, 3);
+			// MS Type
+			labelPanel = newLabelPanel("MS Type", 
+					"&nbsp;MS type.&nbsp;", LABEL_SIZE_L, 2);
+			
+			JPanel msPanel = new JPanel();
+			msPanel.setLayout(new BoxLayout(msPanel, BoxLayout.X_AXIS));
+			
+			final JCheckBox chkBoxMsAll = new JCheckBox("All");
+			chkBoxMsAll.setSelected(isMsAll());
+			keyListenerList.add(chkBoxMsAll);
+			msPanel.add(chkBoxMsAll);
+			
+			for (Iterator i=msCheck.keySet().iterator(); i.hasNext();) {
+				String key = (String)i.next();
+				
+				JCheckBox chkBox = (JCheckBox)msCheck.get(key);
+				keyListenerList.add(chkBox);
+				msPanel.add(chkBox);
+				msPanel.add(new JLabel(" "));
+			}
+			
+			itemPanel = new JPanel();
+			initItemPanel(itemPanel);
+			itemPanel.add(msPanel, itemPanelGBC(0d, 0d, 0, 0, 1, 1));
+			itemPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 1, 0, GridBagConstraints.REMAINDER, 1));
+
+			delimPanel = new JPanel();
+			initDelimPanel(delimPanel, true);
+			delimPanel.add(labelPanel, delimPanelGBC(0d, 0d, 0, 0, 1, 1));
+			delimPanel.add(itemPanel, delimPanelGBC(0d, 0d, 1, 0, 1, 1));
+			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
+			
+			container.add(delimPanel, mainContainerGBC(0, 4, 1, 1));
+			
+			
+			
+			// Ion Mode
+			labelPanel = newLabelPanel("Ion Mode", 
+					"&nbsp;Ion mode.&nbsp;", LABEL_SIZE_L, 2);
 			
 			JPanel ionPanel = new JPanel();
 			ionPanel.setLayout(new BoxLayout(ionPanel, BoxLayout.X_AXIS));
@@ -1741,7 +1879,7 @@ public class SearchPage extends JApplet {
 			delimPanel.add(itemPanel, delimPanelGBC(0d, 0d, 1, 0, 1, 1));
 			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
 			
-			container.add(delimPanel, mainContainerGBC(0, 4, 1, 1));
+			container.add(delimPanel, mainContainerGBC(0, 5, 1, 1));
 			
 			
 			
@@ -1754,58 +1892,76 @@ public class SearchPage extends JApplet {
 			btnPanel.add(okButton);
 			btnPanel.add(cancelButton);
 			
-			container.add(btnPanel, mainContainerGBC(0, 5, 1, 1));
+			container.add(btnPanel, mainContainerGBC(0, 6, 1, 1));
 			
 			
-			// Allチェックリスナー
-			chkBoxAll.addActionListener(new ActionListener() {
+			// 装置種別Allチェックリスナー
+			chkBoxInstAll.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-						
 					for (Iterator i=instCheck.keySet().iterator(); i.hasNext(); ) {
 						String key = (String)i.next();
-						
-						if (chkBoxAll.isSelected()) {
+						if (chkBoxInstAll.isSelected()) {
 							((JCheckBox)instCheck.get(key)).setSelected(true);
 						} else {
 							((JCheckBox)instCheck.get(key)).setSelected(false);
 						}
 					}
-					chkBoxDfault.setSelected(isInstDefault());
+					chkBoxInstDefault.setSelected(isInstDefault());
 				}
 			});
 			
-			// Defaultチェックリスナー
-			chkBoxDfault.addActionListener(new ActionListener() {
+			// 装置種別Defaultチェックリスナー
+			chkBoxInstDefault.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
 					for (Iterator i=instCheck.keySet().iterator(); i.hasNext(); ) {
 						String key = (String)i.next();
-				
-						if (chkBoxDfault.isSelected()) {
+						if (chkBoxInstDefault.isSelected()) {
 							// Allチェックをはずしてデフォルト選択
-							chkBoxAll.setSelected(false);
-							if (defaultInstExcept.contains(key)) {
-								((JCheckBox)instCheck.get(key)).setSelected(false);
+							chkBoxInstAll.setSelected(false);
+							if ( isDefaultInst(key) ) {
+								((JCheckBox)instCheck.get(key)).setSelected(true);
 							} else {
-								((JCheckBox)instCheck.get(key)).setSelected(true);	
+								((JCheckBox)instCheck.get(key)).setSelected(false);	
 							}
 						} else {
 							((JCheckBox)instCheck.get(key)).setSelected(false);
 						}
 					}
-					chkBoxAll.setSelected(isInstAll());
+					chkBoxInstAll.setSelected(isInstAll());
 				}
 			});
 			
 			// 装置種別チェックリスナー
 			for (Iterator i=instCheck.keySet().iterator(); i.hasNext();) {
 				String key = (String)i.next();
-		
 				((JCheckBox)instCheck.get(key)).addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					
-						chkBoxAll.setSelected(isInstAll());
-						chkBoxDfault.setSelected(isInstDefault());
+						chkBoxInstAll.setSelected(isInstAll());
+						chkBoxInstDefault.setSelected(isInstDefault());
+					}
+				});
+			}
+			
+			// MS種別Allチェックリスナー
+			chkBoxMsAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					for (Iterator i=msCheck.keySet().iterator(); i.hasNext(); ) {
+						String key = (String)i.next();
+						if (chkBoxMsAll.isSelected()) {
+							((JCheckBox)msCheck.get(key)).setSelected(true);
+						} else {
+							((JCheckBox)msCheck.get(key)).setSelected(false);
+						}
+					}
+				}
+			});
+			
+			// MS種別チェックリスナー
+			for (Iterator i=msCheck.keySet().iterator(); i.hasNext();) {
+				String key = (String)i.next();
+				((JCheckBox)msCheck.get(key)).addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						chkBoxMsAll.setSelected(isMsAll());
 					}
 				});
 			}
@@ -1910,6 +2066,22 @@ public class SearchPage extends JApplet {
 						endProc();
 						return;	
 					}
+					if (msCheck.size() == 0) {
+						JOptionPane.showMessageDialog(null,
+								"[MS Type]  MS type is not registered in the database.",
+								"Error",
+								JOptionPane.ERROR_MESSAGE);
+						endProc();
+						return;							
+					}
+					if (!isMsCheck()) {
+						JOptionPane.showMessageDialog(null,
+								"[MS Type]  Select one or more checkbox.",
+								"Warning",
+								JOptionPane.WARNING_MESSAGE);
+						endProc();
+						return;	
+					}
 					
 					
 					// 条件設定に変更があった場合
@@ -1917,12 +2089,14 @@ public class SearchPage extends JApplet {
 							|| isTolChange()
 							|| isCutoffChange()
 							|| isInstChange()
+							|| isMsChange()
 							|| isIonChange()) {
 						
 						preChange(true);
 						tolChange(true);
 						cutoffChange(true);
 						instChange(true);
+						msChange(true);
 						ionChange(true);
 
 						// クエリーの選択状態の更新処理
@@ -1952,6 +2126,7 @@ public class SearchPage extends JApplet {
 					tolChange(false);
 					cutoffChange(false);
 					instChange(false);
+					msChange(false);
 					ionChange(false);
 					
 					dispose();
@@ -1970,6 +2145,7 @@ public class SearchPage extends JApplet {
 							tolChange(false);
 							cutoffChange(false);
 							instChange(false);
+							msChange(false);
 							ionChange(false);
 							
 							dispose();
@@ -2154,14 +2330,12 @@ public class SearchPage extends JApplet {
 			}
 			for (Iterator j=instCheck.keySet().iterator(); j.hasNext(); ) {
 				String key = (String)j.next();
-				
-				// デフォルト除外リストに含まれる場合
-				if (defaultInstExcept.contains(key)) {
-					if ( ((JCheckBox)instCheck.get(key)).isSelected() ) {
+				if ( isDefaultInst(key) ) {	// デフォルト装置種別の場合
+					if ( !((JCheckBox)instCheck.get(key)).isSelected() ) {
 						return false;
 					}
 				} else {
-					if ( !((JCheckBox)instCheck.get(key)).isSelected() ) {
+					if ( ((JCheckBox)instCheck.get(key)).isSelected() ) {
 						return false;
 					}
 				}
@@ -2181,7 +2355,6 @@ public class SearchPage extends JApplet {
 			}
 			for (Iterator j=instCheck.keySet().iterator(); j.hasNext(); ) {
 				String key = (String)j.next();
-				
 				if ( ((JCheckBox)instCheck.get(key)).isSelected() ) {
 					return true;
 				}
@@ -2201,10 +2374,8 @@ public class SearchPage extends JApplet {
 			}
 			for (Iterator i=isInstCheck.keySet().iterator(); i.hasNext(); ) {
 				String key = (String)i.next();
-				
 				boolean before = (boolean)isInstCheck.get(key);
 				boolean after = ((JCheckBox)instCheck.get(key)).isSelected();
-				
 				if (before != after) {
 					return true;
 				}
@@ -2227,10 +2398,8 @@ public class SearchPage extends JApplet {
 			}
 			for (Iterator i=isInstCheck.keySet().iterator(); i.hasNext(); ) {
 				String key = (String)i.next();
-				
 				boolean before = (boolean)isInstCheck.get(key);
 				boolean after = ((JCheckBox)instCheck.get(key)).isSelected();
-				
 				if (before != after) {
 					if (isChange) {
 						isInstCheck.put(key, after);
@@ -2248,7 +2417,101 @@ public class SearchPage extends JApplet {
 				cm.setCookie(COOKIE_INST, valueList);
 			}
 		}
-
+		
+		/**
+		 * MS種別チェックボックス値チェック（All）
+		 * MS種別がAll選択状態かを返却する。
+		 * @return All選択フラグ
+		 */
+		private boolean isMsAll() {
+			
+			if (msCheck.size() == 0) {
+				return false;
+			}
+			for (Iterator j=msCheck.keySet().iterator(); j.hasNext(); ) {
+				String key = (String)j.next();
+				if ( !((JCheckBox)msCheck.get(key)).isSelected() ) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		/**
+		 * MS種別選択チェック
+		 * MS種別が1つでも選択されていた場合はtrueを返却する。
+		 * @return 選択済みフラグ
+		 */
+		private boolean isMsCheck() {
+			
+			if (msCheck.size() == 0) {
+				return false;
+			}
+			for (Iterator j=msCheck.keySet().iterator(); j.hasNext(); ) {
+				String key = (String)j.next();
+				if ( ((JCheckBox)msCheck.get(key)).isSelected() ) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		/**
+		 * MS種別選択値変更確認
+		 * MS種別チェックボックスの値が1つでも変更されていた場合はtrueを返却する。
+		 * @return 変更フラグ
+		 */
+		private boolean isMsChange() {
+			
+			if (isMsCheck.size() == 0) {
+				return false;
+			}
+			for (Iterator i=isMsCheck.keySet().iterator(); i.hasNext(); ) {
+				String key = (String)i.next();
+				boolean before = (boolean)isMsCheck.get(key);
+				boolean after = ((JCheckBox)msCheck.get(key)).isSelected();
+				if (before != after) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		/**
+		 * MS種別選択値変更
+		 * チェックボックスを選択変更した場合に確定もしくはキャンセルする。
+		 * @param isChange 変更フラグ
+		 */
+		private void msChange(boolean isChange) {
+			
+			// Cookie情報用リスト
+			ArrayList<String> valueList = new ArrayList<String>();		
+			
+			if (isMsCheck.size() == 0) {
+				return;
+			}
+			for (Iterator i=isMsCheck.keySet().iterator(); i.hasNext(); ) {
+				String key = (String)i.next();
+				boolean before = (boolean)isMsCheck.get(key);
+				boolean after = ((JCheckBox)msCheck.get(key)).isSelected();
+				if (before != after) {
+					if (isChange) {
+						isMsCheck.put(key, after);
+					}
+					else {
+						((JCheckBox)msCheck.get(key)).setSelected(before);
+					}
+				}
+				if ( ((JCheckBox)msCheck.get(key)).isSelected() ) {
+					valueList.add(key);
+				}
+			}
+			// MS種別選択状態をCookieに設定
+			if (isChange) {
+				cm.setCookie(COOKIE_MS, valueList);
+			}
+		}
+		
 		/**
 		 * イオン種別選択値変更確認
 		 * イオン種別ラジオボタンの値が変更されていた場合はtrueを返却する。

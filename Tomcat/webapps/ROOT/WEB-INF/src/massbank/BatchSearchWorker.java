@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.7 2011.05.30
+ * ver 1.0.8 2011.07.15
  *
  ******************************************************************************/
 package massbank;
@@ -62,8 +62,8 @@ public class BatchSearchWorker extends Thread {
 	private String time;
 	private String mailAddress;
 	private String fileName;
-	private String inst = "ALL";
-	private String ms = "ALL";
+	private String inst = "All";
+	private String ms = "All";
 	private String ion = "1";
 	private String serverUrl = "";
 	private boolean isTerminated = false;
@@ -89,7 +89,12 @@ public class BatchSearchWorker extends Thread {
 					this.inst = val;
 				}
 				else if ( name.equals("ms") ) {
-					this.ms = val;
+					if ( val.indexOf("all") != -1 ) {
+						this.ms = "All";
+					}
+					else {
+						this.ms = val;
+					}
 				}
 				else if ( name.equals("ion") ) {
 					this.ion = val;
@@ -185,7 +190,7 @@ public class BatchSearchWorker extends Thread {
 								+ "The results for your request dated '" + this.time + "' are attached to this e-mail.\n"
 								+ "\n"
 								+ "--\n"
-								+ "MassBank.jp - High Resolution Mass Spectral Database\n"
+								+ "MassBank - High Quality Mass Spectral Database\n"
 								+ "  URL: http://www.massbank.jp/\n"
 								+ "  E-mail: massbank@iab.keio.ac.jp");
 				
@@ -330,12 +335,7 @@ public class BatchSearchWorker extends Thread {
 				out.println();
 				out.println();
 			}
-			out.println("##### END #####");
-			out.println();
-			out.println("**********************************************************");
-			out.println("*  MassBank.jp - High Resolution Mass Spectral Database  *");
-			out.println("*    URL: http://www.massbank.jp/                        *");
-			out.println("**********************************************************");
+			out.println("***** END ********************************");
 			out.println();
 		}
 		catch (Exception e) {
@@ -814,8 +814,8 @@ public class BatchSearchWorker extends Thread {
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_SEARCH];
 		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=unit"
 	 			+ "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
-	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms + "&ION=" + this.ion + "&API=true";
-		ArrayList result = mbcommon.execMultiDispatcher( this.serverUrl, typeName, param );
+	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms.replaceAll("All", "all") + "&ION=" + this.ion + "&API=true";
+		ArrayList<String> result = mbcommon.execMultiDispatcher( this.serverUrl, typeName, param );
 		int hitCnt = result.size();
 		int sendCnt = hitCnt;
 		if ( sendCnt > 20 ) {

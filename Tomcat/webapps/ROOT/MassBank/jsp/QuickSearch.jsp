@@ -22,7 +22,7 @@
  *
  * Quick Search Page表示用モジュール
  *
- * ver 1.0.14 2011.06.16
+ * ver 1.0.15 2011.07.12
  *
  ******************************************************************************/
 %>
@@ -190,14 +190,13 @@
 %>
 					<table border="0" cellpadding="0" cellspacing="15" class="form-box">
 						<tr>
-							<td></td>
-							<td>
+							<td colspan="2">
 								<b>Compound Name</b>&nbsp;
-								<input name="compound" type="text" size="35" value="<%= compound %>">
+								<input name="compound" type="text" size="47" value="<%= compound %>">
 							</td>
 						</tr>
 						<tr>
-							<td>
+							<td>&nbsp;&nbsp;&nbsp;
 								<select name="op1">
 									<option value="and"<% if(op1.equals("and")) out.print(" selected"); %>>AND</option>
 									<option value="or"<%  if(op1.equals("or"))  out.print(" selected"); %>>OR</option>
@@ -206,21 +205,21 @@
 							<td>
 								<b>Exact Mass</b>&nbsp;
 								<input name="mz" type="text" size="10" value="<%= mass %>">
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tolerance</b>&nbsp;
+								&nbsp;&nbsp;&nbsp;<b>Tolerance</b>&nbsp;
 								<input name="tol" type="text" size="6" value="<%= tol %>">
-						</td>
+							</td>
 						</tr>
 						<tr>
-							<td valign="top">
+							<td valign="top">&nbsp;&nbsp;&nbsp;
 								<select name="op2">
 									<option value="and"<% if(op2.equals("and")) out.print(" selected"); %>>AND</option>
 									<option value="or"<%  if(op2.equals("or"))  out.print(" selected"); %>>OR</option>
 								</select>
 							</td>
-								<td>
+							<td>
 								<b>Formula</b>&nbsp;
-								<input name="formula" type="text" size="15" value="<%= formula %>">
-								<br>( e.g. C6H7N5, C5H*N5, C5* )
+								<input name="formula" type="text" size="14" value="<%= formula %>"><br>
+								<b><span class="fontNote">&nbsp;&nbsp;&nbsp;&nbsp;( e.g. C6H7N5, C5H*N5, C5* )</span></b>
 							</td>
 						</tr>
 						<tr>
@@ -237,7 +236,7 @@
 							<td>
 								<b>Peak Data</b><br>
 								<textarea name="qpeak" cols="40" rows="10"><%= peakData %></textarea><br>
-								<i>m/z</i> and relative intensities(0-999), delimited by a space.<br>
+								<b><span class="fontNote">* <i>m/z</i> and relative intensities(0-999), delimited by a space.</span></b><br>
 								<input type="button" value="Example1" onClick="insertExample1()">
 								<input type="button" value="Example2" onClick="insertExample2()">
 							</td>
@@ -284,7 +283,7 @@
 						<jsp:param name="first" value="<%= isFirst %>" />
 						<jsp:param name="inst_grp" value="<%= instGrp %>" />
 						<jsp:param name="inst" value="<%= instType %>" />
-						<jsp:param name="inst" value="<%= msType %>" />
+						<jsp:param name="ms" value="<%= msType %>" />
 					</jsp:include>
 				</td>
 			</tr>

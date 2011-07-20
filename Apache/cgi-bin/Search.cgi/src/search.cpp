@@ -18,8 +18,6 @@
  *
  ******************************************************************************/
 #include <string>
-#include <stdlib.h>
-#include <string.h>
 #include <vector>
 #include <list>
 #include <iostream>
@@ -37,7 +35,7 @@
 using namespace std;
 
 //¢£ ¥Ð¡¼¥¸¥ç¥ó¾ðÊó ¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-const static string VERSION_INFO = "5.0.8 2009.10.30";
+const static string VERSION_INFO = "5.0.9 2011.06.23";
 //¢£ ¥Ð¡¼¥¸¥ç¥ó¾ðÊó ¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 
 MYSQL *hMySql;
@@ -262,23 +260,37 @@ void setScore()
  ********************************************************************/
 bool searchPeak()
 {
-	double fMin;
-	double fMax;
-	char sqlw[1000];
-	char sqlwp[256];
+	string sql;
 
 	//----------------------------------------------------------------
 	// precursor m/z¤Ç¤Î¹Ê¤ê¹þ¤ß¤Ë»ÈÍÑ¤¹¤ë¸¡º÷¾ò·ï¤òÍÑ°Õ¤·¤Æ¤ª¤¯
 	//----------------------------------------------------------------
+	char sqlw1[1024];
 	bool isPre = false;
 	if ( queryParam.precursor > 0 ) {
 		isPre = true;
 		int pre1 = queryParam.precursor - 1;
 		int pre2 = queryParam.precursor + 1;
-		sprintf( sqlwp, " and (S.PRECURSOR_MZ is not null and S.PRECURSOR_MZ between %d and %d)", pre1, pre2 );
+		sprintf( sqlw1, " and (S.PRECURSOR_MZ is not null and S.PRECURSOR_MZ between %d and %d)", pre1, pre2 );
 	}
 
-	string sql;
+	//----------------------------------------------------------------
+	// MS TYPE¤Ç¤Î¹Ê¤ê¹þ¤ß¤Ë»ÈÍÑ¤¹¤ë¸¡º÷¾ò·ï¤òÍÑ°Õ¤·¤Æ¤ª¤¯
+	//----------------------------------------------------------------
+	char sqlw2[1024];
+	bool isMsType = false;
+	if ( !queryParam.mstype.empty()
+	  && queryParam.mstype.find("ALL") == string::npos && queryParam.mstype.find("all") == string::npos ) {
+		// MS_TYPE¥«¥é¥àÍ­Ìµ¥Á¥§¥Ã¥¯
+		sql = "show columns from RECORD like 'MS_TYPE'";
+		long lNumRows = dbExecuteSql( sql.c_str() );
+		if ( lNumRows > 0 ) {
+			isMsType = true;
+			string ms = replace_all(queryParam.mstype, ",", "','");
+			sprintf( sqlw2, " and MS_TYPE in('%s')", ms.c_str() );
+		}
+	}
+
 	//¡ü ¸¡º÷ÂÐ¾ÝALL¤Î¾ì¹ç
 	bool isFilter = false;
 	vector<string> vecTargetId;
@@ -288,10 +300,12 @@ bool searchPeak()
 			sql += queryParam.ion;
 			// precursor m/z¹Ê¤ê¹þ¤ß¾ò·ï¥»¥Ã¥È
 			if ( isPre ) {
-				sql += sqlwp;
+				sql += sqlw1;
+			}
+			if ( isMsType ) {
+				sql += sqlw2;
 			}
 			sql += " order by ID";
-
 //			printf(sql.c_str());
 			long lNumRows = dbExecuteSql( sql.c_str() );
 
@@ -365,7 +379,10 @@ bool searchPeak()
 		}
 		// precursor m/z¹Ê¤ê¹þ¤ß¾ò·ï¥»¥Ã¥È
 		if ( isPre ) {
-			sql += sqlwp;
+			sql += sqlw1;
+		}
+		if ( isMsType ) {
+			sql += sqlw2;
 		}
 
 		sql += " order by ID";
@@ -393,6 +410,9 @@ bool searchPeak()
 	//---------------------------------------------------
 	// ¥Ô¡¼¥¯ÃÍ¼èÆÀ
 	//---------------------------------------------------
+	double fMin;
+	double fMax;
+	char sqlw[1000];
 	for ( unsigned int i = 0; i < queryMz.size(); i++ ) {
 		string strMz = queryMz.at(i);
 		double fMz = atof( strMz.c_str() );
@@ -603,6 +623,7 @@ void setQueryParam()
 	queryParam.norm      = PARAM_NORM_SQRT;
 	queryParam.tolUnit   = "unit";
 	queryParam.precursor = 0;
+	queryParam.mstype = "";
 
 	if ( !mapReqParam["START"].empty() ) {
 		val = atoi( mapReqParam["START"].c_str() );
@@ -678,6 +699,11 @@ void setQueryParam()
 		val = atoi( mapReqParam["PRE"].c_str() );
 		if ( val > 0 ) 	queryParam.precursor = val;
 	}
+
+	if ( !mapReqParam["MS"].empty() ) {
+		queryParam.mstype = mapReqParam["MS"];
+	}
+
 }
 
 /********************************************************************
@@ -865,4 +891,22 @@ int strncmpi(const char *a1, const char *a2, unsigned size) {
 		size--;
 	}
 	return 0;
+}
+
+/********************************************************************
+ * Ê¸»úÎó¤ÎÃÖ´¹
+ ********************************************************************/
+string replace_all(const string & source, const string & pattern, const string & placement) {
+	string result;
+	string::size_type pos_before = 0;
+	string::size_type pos = 0;
+	string::size_type len = pattern.size();
+	while ((pos = source.find(pattern, pos)) != string::npos) {
+		result.append(source, pos_before, pos - pos_before);
+		result.append(placement);
+		pos += len;
+		pos_before = pos;
+	}
+	result.append(source, pos_before, source.size() - pos_before);
+	return result;
 }

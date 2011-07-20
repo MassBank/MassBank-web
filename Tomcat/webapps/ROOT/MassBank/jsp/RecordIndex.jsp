@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.27 2011.06.16
+ * ver 1.0.28 2011.07.13
  *
  ******************************************************************************/
 %>
@@ -150,7 +150,7 @@
 	<meta name="rating" content="general" />
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 	<meta name="description" content="Categorized list of spectra. To list up all spectra in a specific category including contributors, instrument types and ionization modes.">
-	<meta name="keywords" content="ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative">
+	<meta name="keywords" content="ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<script type="text/javascript" src="./script/Common.js"></script>
@@ -236,6 +236,7 @@
 		siteData.put(linkName, count);
 		totalSiteNum += count;
 	}
+	if ( cntSiteMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -343,6 +344,7 @@
 		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
 		out.println( "</td>" );
 	}
+	if ( cntMergedMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -371,6 +373,7 @@
 		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
 		out.println( "</td>" );
 	}
+	if ( cntIonMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -406,6 +409,7 @@
 		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
 		out.println( "</td>" );
 	}
+	if ( cntCmpdMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -556,7 +560,7 @@
 		JFreeChart chart = ChartFactory.createPieChart(key, data, true, true, false);
 		
 		// グラフ全体背景色設定
-		chart.setBackgroundPaint(new Color(240,255,255));
+		chart.setBackgroundPaint(new Color(242,246,255));
 		
 		// グラフ全体境界線設定
 		chart.setBorderVisible(true);

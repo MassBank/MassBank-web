@@ -44,6 +44,7 @@ struct QUERY_PARAM {
 	string	instType;
 	string	ion;
 	int precursor;
+	string	mstype;
 };
 
 struct HIT_PEAK {
@@ -73,3 +74,4 @@ static vector<string> split( string, string );
 static int urlDecode( char *s, int len );
 bool existHeapTable( string );
 int strncmpi(const char *, const char *, unsigned);
+string replace_all(const string &, const string &, const string &);

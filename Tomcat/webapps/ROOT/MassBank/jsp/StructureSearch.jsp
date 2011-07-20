@@ -22,7 +22,7 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.19 2011.06.16
+ * ver 1.0.20 2011.07.12
  *
  ******************************************************************************/
 %>
@@ -288,6 +288,8 @@
 
 	/**
 	 * HTMLを取得する
+	 * @param mapParam
+	 * @param isDispM
 	 */
 	private String getHtml( HashMap<String, Object> mapParam, boolean isDispM ) throws Exception {
 		
@@ -370,7 +372,7 @@
 			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n" );
 
 			if ( i % 2 == 0 ) {
-				html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td width=\"30\" style=\"padding:0px;\">AND</td>\n" );
+				html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td width=\"24\" style=\"padding:0px;\" align=\"center\"><span class=\"logic\">AND</span></td>\n" );
 			}
 
 			if ( i % 2 != 0 ) {
@@ -382,8 +384,8 @@
 		html.append("\t\t\t\t\t\t\t\t\t\t\t</td>\n" );
 		html.append("\t\t\t\t\t\t\t\t\t\t</tr>\n" );
 		html.append("\t\t\t\t\t\t\t\t\t\t<tr>\n" );
-		html.append("\t\t\t\t\t\t\t\t\t\t\t<td style=\"padding:10px;\"><font class=\"font12px\">Comparison of pi-electron for each atom</font>&nbsp;" );
-
+		html.append("\t\t\t\t\t\t\t\t\t\t\t<td style=\"padding:0px 20px 0px 20px;\"><b>Comparison of pi-electron for each atom</b><br><div align=\"right\">\n" );
+		
 		String[] piCheckName = { "number in query = number in target", "number in query <= number in target", "none" };
 		String[] piChekNum = { "2", "1", "0" };
 		html.append( "\t\t\t\t\t\t\t\t\t\t\t\t<select name=\"pi_check\">" );
@@ -395,12 +397,12 @@
 			html.append( ">" + piCheckName[i] + "\n" );
 		}
 		html.append("\t\t\t\t\t\t\t\t\t\t\t\t</select><br>\n");
-		html.append("&nbsp;<font class=\"font12px\">* Double and triple bound is translated to pi-electrons of the bonded atoms.</font><br>\n");
+		html.append("<b><span class=\"fontNote\">* Double and triple bound is translated to pi-electrons of the bonded atoms.</span></b></div><br>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t\t</td>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t</tr>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t\t<td align=\"right\">");
-		html.append("\t\t\t\t\t\t\t\t\t\t\t\t<font class=\"font10px\">Copyright 2008 by K. Tanaka and S. Kanaya, NAIST, Japan&nbsp;&nbsp;</font>\n");
+		html.append("\t\t\t\t\t\t\t\t\t\t\t\t<span style=\"color:#666; font-family:Verdana, Arial, Trebuchet MS; font-size:10px; font-style:italic; margin:0;\">Copyright &copy; 2008 K. Tanaka and S. Kanaya, NAIST, Japan&nbsp;&nbsp;</span>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t\t</td>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
 		html.append("\t\t\t\t\t\t\t\t\t</table>\n");
@@ -489,7 +491,7 @@
 			html.append("\t\t\t\t\t\t\t\t\t<input name=\"tol\" type=\"text\" size=\"10\" value=\"" + tol + "\">\n");
 			html.append("\t\t\t\t\t\t\t\t</td>\n");
 			html.append("\t\t\t\t\t\t\t</tr>\n");
-			html.append("\t\t\t\t\t\t</table>\n");
+			html.append("\t\t\t\t\t\t</table><br>\n");
 		}
 		else {
 			html.append("\t\t\t\t\t\t<br>\n");
@@ -562,8 +564,8 @@ table.form-box-M {
 	border:1px silver solid;
 }
 table.form-box-K {
-	background-color:LightCyan;
-	border:1px silver solid;
+	background-color:#EEEDDE;
+	border:1px #CCC99A solid;
 }
 -->
 </style>
