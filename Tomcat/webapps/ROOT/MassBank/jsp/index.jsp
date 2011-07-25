@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.14 2010.12.20
+ * ver 2.0.16 2011.07.22
  *
  ******************************************************************************/
 %>
@@ -167,20 +167,20 @@
 <meta name="Targeted Geographic Area" content="japan" />
 <meta name="classification" content="general,computers,internet,miscellaneous" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
-<meta name="description" content="MassBank は日本質量分析学会の公式データベースです。MassBank は JST-BIRD プロジェクトとして開発しています。マススペクトルを測定した研究者がインターネットで公開する分散型データベースです。" />
-<meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, resolution, spectral, database, 慶應義塾大学, 先端生命, 研究所" />
+<meta name="copyright" content="Copyright &copy; 2006 MassBank Project" />
+<meta name="description" content="MassBank は、研究者がマススペクトルを共有することを目的とした、世界で最初の public database です。これらのマススペクトルは、メタボローム解析をはじめとする生物科学研究において、質量分析で検出した化合物の同定や推定に利用することができます。" />
+<meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, resolution, spectral, database" />
 <meta name="revisit_after" content="10 days">
 <meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
 <script type="text/javascript" src="./script/Common.js"></script>
-<title>MassBank | High Resolution Mass Spectral Database</title>
+<title>MassBank | High Quality Mass Spectral Database</title>
 </head>
 
 <body id="home">
 
 <!--ここから▼ヘッダー-->
-<div id="header"><h1 class="hide_text"><a href="./index.html?lang=ja" name="pagetop" id="pagetop">MassBank | High Resolution Mass Spectral Database</a></h1></div>
+<div id="header"><h1 class="hide_text"><a href="./index.html?lang=ja" name="pagetop" id="pagetop">MassBank | High Quality Mass Spectral Database</a></h1></div>
 <!--ここまで▲ヘッダー-->
 
 
@@ -234,6 +234,7 @@
 </ul>
 </div><!--div class="massdb_bg"-->
 <p class="p_dbsammary separate">
+MassBank は、<a href="http://biosciencedbc.jp/" target="_blank">NBDC-JST</a> によるライフサイエンスデータベース統合化推進プログラムの支援を受けています（2011－2013）。<br />
 MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本質量分析学会</a> の公式データベースです。<br />
 MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/jms.1777" target="_blank">DOI</a>) を引用してください。
 </p>
@@ -314,20 +315,20 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <meta name="Targeted Geographic Area" content="worldwide" />
 <meta name="classification" content="general,computers,internet,miscellaneous" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
-<meta name="description" content="The Mass Spectorometry Society of Japan officially supports MassBank. MassBank is supported by JST-BIRD project. MassBank is a distributed database on the internet in order to open a spectrum to the public by a researcher who measured it." />
-<meta name="keywords" content="MassBank, massbank, resolution, mass, spectral, database, Keio" />
+<meta name="copyright" content="Copyright &copy; 2006 MassBank Project" />
+<meta name="description" content="MassBank is the first public repository of mass spectral data for sharing them among scientific research community. MassBank data are useful for the chemical identification and structure elucidation of chemical comounds detected by mass spectrometry." />
+<meta name="keywords" content="MassBank, massbank, resolution, mass, spectral, database" />
 <meta name="revisit_after" content="10 days">
 <meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
 <script type="text/javascript" src="./script/Common.js"></script>
-<title>MassBank | High Resolution Mass Spectral Database</title>
+<title>MassBank | High Quality Mass Spectral Database</title>
 </head>
 
 <body id="home">
 
 <!--st▼header-->
-<div id="header"><h1 class="h1_en hide_text"><a href="./index.html?lang=en" name="pagetop" id="pagetop">MassBank | High Resolution Mass Spectral Database</a></h1></div>
+<div id="header"><h1 class="h1_en hide_text"><a href="./index.html?lang=en" name="pagetop" id="pagetop">MassBank | High Quality Mass Spectral Database</a></h1></div>
 <!--ed▲header-->
 
 
@@ -381,6 +382,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 </ul>
 </div><!--div class="massdb_bg"-->
 <p class="p_dbsammary separate">
+MassBank is financially suported from <a href="http://biosciencedbc.jp/?lng=en" target="_blank">National Bioscience Database Center, Japan Science and Technology Agency</a> (2011-2013).<br />
 <a href="http://www.mssj.jp/index.html" target="_blank">The Mass Spectorometry Society of Japan</a> officially supports MassBank.<br />
 Please cite the article (<a href="http://dx.doi.org/10.1002/jms.1777" target="_blank">DOI</a>) when using MassBank.
 </p>
