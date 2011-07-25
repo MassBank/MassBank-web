@@ -20,7 +20,7 @@
  *
  * 分子式入力の補完を行うスクリプト
  *
- * ver 1.0.1 2010.09.09
+ * ver 1.0.3 2011.07.22
  *
  ******************************************************************************/
 $(function(){
@@ -123,24 +123,24 @@ $.fn.FormulaSuggest = function(options){
 		var prevVal;
 		var fname = "ion_mass.json";
 		var bgcolor = "navy";
-		if ( document.forms[0].type[2].checked ) {
+		if ( document.forms[0].searchof[0].checked ) {
 			fname = "ion_mass.json";
 			bgcolor = "navy";
 		}
-		else if ( document.forms[0].type[3].checked ) {
+		else if ( document.forms[0].searchof[1].checked ) {
 			fname = "nloss_mass.json";
 			bgcolor = "darkgreen";
 		}
 		
 		// 検索種別ラジオボタン変更時
-		$('input[name="type"]:radio').change(function(){
+		$('input[name="searchof"]:radio').change(function(){
 			$(elmApId).empty();
 			$(elmApId).hide();
-			if ( $('input[name="type"]:checked').val() == "product" ) {
+			if ( $('input[name="searchof"]:checked').val() == "peak" ) {
 				fname = "ion_mass.json";
 				bgcolor = "navy";
 			}
-			else if ( $('input[name="type"]:checked').val() == "neutral" ) {
+			else if ( $('input[name="searchof"]:checked').val() == "diff" ) {
 				fname = "nloss_mass.json";
 				bgcolor = "darkgreen";
 			}
@@ -150,16 +150,20 @@ $.fn.FormulaSuggest = function(options){
 				allList = jdata;
 			});
 		});
+		$('input[name="searchby"]:radio').change(function(){
+			$(elmApId).empty();
+			$(elmApId).hide();
+		});
 		
 		// 検索種別ラベルクリック時
 		$('span[name="typeLbl"]').click(function(){
 			$(elmApId).empty();
 			$(elmApId).hide();
-			if ( $('input[name="type"]:checked').val() == "product" ) {
+			if ( $('input[name="searchof"]:checked').val() == "peak" ) {
 				fname = "ion_mass.json";
 				bgcolor = "navy";
 			}
-			else if ( $('input[name="type"]:checked').val() == "neutral" ) {
+			else if ( $('input[name="searchof"]:checked').val() == "diff" ) {
 				fname = "nloss_mass.json";
 				bgcolor = "darkgreen";
 			}
