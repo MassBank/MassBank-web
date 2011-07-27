@@ -21,7 +21,7 @@
 #
 # Quick Search 検索処理
 #
-# ver 3.0.3  2011.05.30
+# ver 3.0.4  2011.07.27
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -138,10 +138,11 @@ if ( $Arg{'compound'} ne '' ) {
 
 
 $tol = $Arg{'tol'} + 0;
+$tol = - $tol if ( $tol < 0 );
 if ( $Arg{'mz'} ne '' ) {
 	$mz = $Arg{'mz'} + 0;
-	$mz1 = $mz - $tol;
-	$mz2 = $mz + $tol;
+	$mz1 = $mz - $tol - 0.00001;
+	$mz2 = $mz + $tol + 0.00001;
 	if ( $where3 ne '' ) {
 		$where3 .= " $Arg{'op1'}";
 	}
