@@ -20,7 +20,7 @@
  *
  * Multiple Spectra Display アプレット
  *
- * ver 2.0.10 2010.01.08
+ * ver 2.0.11 2011.07.28
  *
  ******************************************************************************/
 
@@ -829,12 +829,20 @@ public class DisplayAll extends JApplet
 		String site;
 
 		public NameButton(String name, String id, String site) {
-			super("<html>" + id + ":&nbsp;&nbsp;<a href=\"\">" + name + "</a></html>");
+			JLabel idLabel = new JLabel(id + ":");
+			idLabel.setPreferredSize(new Dimension(68, 16));
+			add(idLabel);
+			JLabel nameLabel = new JLabel(name);
+			nameLabel.setPreferredSize(new Dimension(600, 16));
+			nameLabel.setForeground(Color.BLUE);
+			add(nameLabel);
+			
 			acc = id;
 			this.site = site;
 			this.addActionListener(this);
 			setPreferredSize(new Dimension(770, getPreferredSize().height));
 			setHorizontalAlignment(SwingConstants.LEFT);
+			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		}
 
 		public void actionPerformed(ActionEvent ae) {
@@ -991,6 +999,8 @@ public class DisplayAll extends JApplet
 			JPanel childPane1 = new JPanel();
 			JPanel childPane2 = new JPanel();
 			childPane2.setBackground(Color.WHITE);
+			childPane2.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			childPane2.setMaximumSize(new Dimension(200, parentPane.getMaximumSize().height));
 			childPane1.add(pane1);
 			childPane1.add(plotPane[i]);
 
@@ -1003,22 +1013,36 @@ public class DisplayAll extends JApplet
 			parentPane.add(childPane1);
 
 			//●パネル右上: FORMULAとEXACT MASSを表示
-			String html = "<html><div style=\"margin-left:10px;\">";
-			String formula = info[i].getFormula();
-			if ( !formula.equals("") ) {
-				html += "Formula: <font color=green>" + formula + "</font>";
-			}
+			JLabel formuraLabel1 = new JLabel("    Formula: ");
+			formuraLabel1.setOpaque(true);
+			formuraLabel1.setBackground(Color.WHITE);
+			formuraLabel1.setPreferredSize( new Dimension(84, 17) );
+			childPane2.add(formuraLabel1);
+			
+			JLabel formuraLabel2 = new JLabel(info[i].getFormula());
+			formuraLabel2.setOpaque(true);
+			formuraLabel2.setForeground(new Color(57, 127, 0));
+			formuraLabel2.setBackground(Color.WHITE);
+			formuraLabel2.setPreferredSize( new Dimension(116, 17) );
+			childPane2.add(formuraLabel2);
+			
+			JLabel emassLabel1 = new JLabel("    Exact Mass: ");
+			emassLabel1.setOpaque(true);
+			emassLabel1.setBackground(Color.WHITE);
+			emassLabel1.setPreferredSize( new Dimension(84, 17) );
+			childPane2.add(emassLabel1);
+			
+			JLabel emassLabel2 = new JLabel();
+			emassLabel2.setOpaque(true);
+			emassLabel2.setForeground(new Color(57, 127, 0));
+			emassLabel2.setBackground(Color.WHITE);
+			emassLabel2.setPreferredSize( new Dimension(116, 17) );
 			String emass = info[i].getExactMass();
 			if ( !emass.equals("") && !emass.equals("0") ) {
-				html += "<br>Exact Mass: <font color=green>" + emass + "</font>";
+				emassLabel2.setText(emass);
 			}
-			html += "</div></html>";
-			JLabel lbl2 = new JLabel(html);
-			lbl2.setPreferredSize( new Dimension(200, 30) );
-			lbl2.setBackground(Color.WHITE);
-			lbl2.setOpaque(true);
-			childPane2.add(lbl2);
-
+			childPane2.add(emassLabel2);
+			
 			//●パネル右中: Mol構造表示パネルをセット
 			JPanel pane3 = null;
 			String[] items = title.split(";");
