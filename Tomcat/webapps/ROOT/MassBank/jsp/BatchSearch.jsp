@@ -22,7 +22,7 @@
  *
  * BatchSearch表示用モジュール
  *
- * ver 1.0.14 2011.07.20
+ * ver 1.0.16 2011.08.02
  *
  ******************************************************************************/
 %>
@@ -144,17 +144,17 @@
 			instGrp += instGrpList.get(i);
 			instGrp += ",";
 		}
-		StringUtils.chop(instGrp);
+		instGrp = StringUtils.chop(instGrp);
 		for ( int i=0; i<instTypeList.size(); i++ ) {
 			instType += instTypeList.get(i);
 			instType += ",";
 		}
-		StringUtils.chop(instType);
+		instType = StringUtils.chop(instType);
 		for ( int i=0; i<msTypeList.size(); i++ ) {
 			msType += msTypeList.get(i);
 			msType += ",";
 		}
-		StringUtils.chop(msType);
+		msType = StringUtils.chop(msType);
 		
 		
 		//-------------------------------------
@@ -244,7 +244,7 @@
 		out.println("\t\t\t\t\t<table>");
 		out.println("\t\t\t\t\t\t<tr>");
 		out.println("\t\t\t\t\t\t\t<td>");
-		out.println("\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Submit\" class=\"search\" onClick=\"return checkFileExtention(form_query.file.value) && checkSubmit();\">");
+		out.println("\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Submit\" class=\"search\" onClick=\"return checkFileExtention(form_query.file.value) && checkSubmit(0);\">");
 		out.println("\t\t\t\t\t\t\t</td>");
 		out.println("\t\t\t\t\t\t</tr>");
 		out.println("\t\t\t\t\t</table>");

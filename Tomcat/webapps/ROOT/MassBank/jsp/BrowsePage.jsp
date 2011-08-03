@@ -22,13 +22,10 @@
  *
  * Browse Page表示用モジュール
  *
- * ver 1.0.14 2011.06.16
+ * ver 1.0.15 2011.07.22
  *
  ******************************************************************************/
 %>
-<%@ page import="java.io.*" %>
-<%@ page import="java.util.*" %>
-<%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.ServerStatus" %>
 <%@ include file="./Common.jsp"%>
@@ -40,15 +37,9 @@
 	//-------------------------------------------
 	// 環境設定ファイルからURLリストを取得
 	//-------------------------------------------
-	String path = request.getRequestURL().toString();
-	int pos = path.indexOf("/jsp");
-	String baseUrl = path.substring( 0, pos+1 ) ;
-	GetConfig conf = new GetConfig(baseUrl);
-	
-	// サイト名取得
-	String [] siteLongName = conf.getSiteLongName();
-	// BrowseMode取得
-	String [] browseMode = conf.getBrowseMode();
+	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	String [] siteLongName = conf.getSiteLongName();	// サイト名取得
+	String [] browseMode = conf.getBrowseMode();		// BrowseMode取得
 %>
 <html>
 	<head>
@@ -86,15 +77,15 @@
 		<jsp:include page="../pserver/ServerInfo.jsp" />
 
 		<form method="post" action="BrowsePage.html" name="form1" class="formStyle">
-			<table border="0" cellpadding="5" cellspacing="0" class="boxA">
+			<table border="0" cellpadding="5" cellspacing="8" class="form-box">
 				<tr>
 
 					<td>
-						<table border="0" cellpadding="1" cellspacing="6" height="600" width="250">
+						<table border="0" cellpadding="1" cellspacing="6" height="600">
 <%
 	String[] urlList    = conf.getSiteUrl();
 	String[] dbNameList = conf.getDbName();
-	ServerStatus svrStatus = new ServerStatus(baseUrl);
+	ServerStatus svrStatus = new ServerStatus(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 	for ( int i = 0; i < siteLongName.length; i++ ) {
 		// 連携サーバ障害有無チェック(サーバ監視が行われていなければ無条件にTrueが返ってくる)
 		if ( !svrStatus.isServerActive(urlList[i], dbNameList[i]) ) {

@@ -22,7 +22,7 @@
  *
  * 処理振り分け用モジュール
  *
- * ver 1.0.8 2011.05.30
+ * ver 1.0.9 2011.07.25
  *
  ******************************************************************************/
 %>
@@ -64,7 +64,7 @@
 		else if ( key.equals("dsn") ) {
 			dbName = val;
 		}
-		else if ( !key.equals("inst")  && !key.equals("ms") ) {
+		else if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			params.put( key, val );
 		}
@@ -142,7 +142,7 @@
 	String strParam = "";
 	for ( Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
 		String key = (String)keys.nextElement();
-		if ( !key.equals("inst") && !key.equals("ms") ) {
+		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = (String)params.get(key);
 			strParam += key + "=" + val + "&";

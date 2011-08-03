@@ -20,7 +20,7 @@
  *
  * CGIを実行するスレッドのクラス
  *
- * ver 1.0.7 2011.06.15
+ * ver 1.0.8 2011.07.25
  *
  ******************************************************************************/
 package massbank;
@@ -69,7 +69,7 @@ public class CallCgi extends Thread
 		if ( m_params != null && m_params.size() > 0 ) {
 			for ( Enumeration keys = m_params.keys(); keys.hasMoreElements(); ) {
 				String key = (String)keys.nextElement();
-				if ( !key.equals("inst") && !key.equals("ms") ) {
+				if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 					// キーがInstrumentType,MSType以外の場合はStringパラメータ
 					String val = (String)m_params.get(key);
 					strParam += key + "=" + val + "&";

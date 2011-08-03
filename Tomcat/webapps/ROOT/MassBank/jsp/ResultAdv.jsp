@@ -22,16 +22,25 @@
  *
  * Peak Search Advanced 検索結果を表示する
  *
- * ver 1.0.13 2011.06.16
+ * ver 1.0.16 2011.08.02
  *
  ******************************************************************************/
 %>
-<%@ page import="java.util.*" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Hashtable" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.TreeMap" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="org.apache.commons.lang.NumberUtils" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="massbank.MassBankCommon" %>
+<%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.ResultList" %>
 <%@ page import="massbank.ResultRecord" %>
@@ -43,7 +52,7 @@
 	
 	// 検索結果テーブル列幅
 	private static final String[] width = { "28", "28", "422", "142", "102", "122", "100" };
-
+	
 	// イメージファイルURL
 	private final String minuspng = "../image/minus.png";
 	private final String pluspng = "../image/plus.png";
@@ -53,7 +62,7 @@
 	private final String strucOffGif = "../image/strucOff.gif";
 	private final String strucOverGif = "../image/strucOver.gif";
 	private final String strucOnGif = "../image/strucOn.gif";
-
+	
 	/**
 	 *
 	 */ 
@@ -62,7 +71,7 @@
 		String str1 = "";
 		String str2 = "";
 		String str3 = "";
-
+		
 		if ( isTop ) {
 			str1 = "pageLinkTop";
 			str2 = "top";
@@ -73,7 +82,7 @@
 		}
 		html.append( "<table width=\"" + tableWidth + "\" height=\"30\" cellpadding=\"2\" cellspacing=\"0\" class=\"" + str1 + "\">\n" );
 		html.append( " <tr align=\"center\" valign=\"" + str2 + "\">\n" );
-
+		
 		for ( int i = pageIndex[0]; i <= pageIndex[1]; i++ ) {
 			if ( i == pageIndex[0] ) {
 				if ( pageNo == 1 ) {
@@ -90,7 +99,7 @@
 				}
 				html.append( "  <td width=\"8\">&nbsp;</td>\n" );
 			}
-
+			
 			if ( i == pageNo ) {
 				html.append( "  <td width=\"16\"><i><b>" + i + "</b></i></td>\n" );
 			}
@@ -98,7 +107,7 @@
 				html.append( "  <td width=\"16\">"
 					+ "<a href=\"\" class=\"pageLink\" onClick=\"return changePage(''," + i + ")\">" + i + "</a></td>\n" );
 			}
-
+			
 			if ( i == pageIndex[1] ) {
 				html.append( "  <td width=\"8\">&nbsp;</td>\n" );
 				if ( pageNo == totalPage ) {
@@ -113,10 +122,10 @@
 				}
 			}
 		}
-
+		
 		html.append( "  <td align=\"left\">&nbsp;&nbsp;&nbsp;( Total <i><b>" + totalPage + "</b></i> Page )</td>\n" );
 		html.append( "  <td class=\"font12px\" align=\"right\" valign=\"bottom\">\n" );
-
+		
 		if ( isTop ) {
 			str1 = "resultsEnd";
 			str2 = "Results End";
@@ -127,35 +136,32 @@
 			str2 = "Results Top";
 			str3 = "&#9650;";
 		}
-
+		
 		html.append( "   <a class=\"moveDispLink\" href=\"#" + str1 + "\">&nbsp;&nbsp;"
 				+ "<span class=\"font10px2\">" + str3 + "&nbsp;</span>" + str2 + "</a>\n" );
 		html.append( "  </td>\n" );
 		html.append( " </tr>\n" );
 		html.append( "</table>\n");
-
+		
 		return html.toString();
 	}
-
+	
 	/**
 	 * 分子式の元素記号を並び替える
 	 */
 	private String swapFormula(String formula) {
-
 		// 元素記号の順番 C, H 以降はアルファベット順
 		String[] aromSequece = new String[]{
 			"C", "H", "Cl", "F", "I", "N", "O", "P", "S", "Si"
 		};
 		HashMap<String, Integer> atomList = getAtomList(formula);
-	
+		
 		String swapFormula = "";
 		Set keys = atomList.keySet();
 		for ( int i = 0; i < aromSequece.length; i++ ) {
 			for ( Iterator iterator = keys.iterator(); iterator.hasNext(); ) {
-
 				String atom = (String)iterator.next();
 				int num = atomList.get(atom);
-
 				if ( atom.equals(aromSequece[i]) )  {
 					swapFormula += atom;
 					// 個数が1個の場合、個数は書かない
@@ -168,12 +174,11 @@
 		}
 		return swapFormula;
 	}
-
+	
 	/**
 	 * 分子式を元素記号と個数に分解する
 	 */
 	private HashMap<String, Integer> getAtomList(String formula) {
-
 		HashMap<String, Integer> atomList = new HashMap();
 		int startPos = 0;
 		int endPos = formula.length();
@@ -185,7 +190,7 @@
 			if ( pos == endPos || (!NumberUtils.isNumber(chr) && chr.equals(chr.toUpperCase())) ) {
 				// 元素記号 + 個数を切り出す
 				String item = formula.substring( startPos, pos );
-
+				
 				// 元素記号と個数を分解
 				boolean isFound = false;
 				int i;
@@ -207,13 +212,12 @@
 				}
 				// 値格納
 				atomList.put(atom, num);
-
 				startPos = pos;
 			}
 		}
 		return atomList;
 	}
-
+	
 	/**
 	 * 構造式情報を一括取得する
 	 * @param list
@@ -375,7 +379,6 @@
 		out.println( "<b>Search Parameters :</b><br>" );
 		out.println( "<div class=\"divSpacer9px\"></div>" );
 		out.println( "<hr size=\"1\">" );
-
 		out.println( "<table width=\"900\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
 		out.println( "  <td>" );
@@ -400,7 +403,7 @@
 		title = "Peak Search Results (Peak Differences by Molecular Formula)";
 		hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:DarkGreen\">(Peak Differences by Molecular Formula)</span>";
 	}
-
+	
 	//-------------------------------------
 	// リクエストパラメータ取得
 	//-------------------------------------
@@ -418,15 +421,23 @@
 				continue;
 			}
 		}
-		String val = request.getParameter( key ).trim();
-		if ( !val.equals("") ) {
-			reqParams.put( key, val );
-			if ( key.equals("type") ) {
-				stype = val;
+		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
+			String val = request.getParameter( key ).trim();
+			if ( !val.equals("") ) {
+				reqParams.put( key, val );
+				if ( key.equals("type") ) {
+					stype = val;
+				}
+				else if ( key.indexOf("formula") == 0 ) {
+					mapFormula.put( key, val );
+				}
 			}
-			else if ( key.indexOf("formula") == 0 ) {
-				mapFormula.put( key, val );
-			}
+		}
+		else {
+			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
+			String[] vals = request.getParameterValues( key );
+			reqParams.put( key, vals );
 		}
 	}
 	// パラメータリセット
@@ -441,28 +452,39 @@
 	if ( reqParams.get("sortAction") == null ) {
 		reqParams.put("sortAction", String.valueOf(ResultList.SORT_ACTION_ASC));
 	}
-
+	
 	//-------------------------------------
 	// リクエストパラメータ加工、及びURLパラメータ生成
 	//-------------------------------------
 	String searchParam = "";
-	
-	// 検索実行用パラメータセット
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ) {
 		String key = (String)keys.nextElement();
-		if ( !key.equals("type") && key.indexOf("formula") == -1 ) {
-			String val = (String)reqParams.get(key);
-			searchParam += key + "=" + val + "&";
+		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
+			if ( !key.equals("type") && key.indexOf("formula") == -1 ) {
+				String val = (String)reqParams.get(key);
+				searchParam += key + "=" + val + "&";
+			}
+		}
+		else {
+			String[] vals = null;
+			try {
+				vals = (String[])reqParams.get(key);
+			}
+			catch (ClassCastException cce) {
+				vals = new String[]{ (String)reqParams.get(key) };
+			}
+			for ( int i=0; i<vals.length; i++ ) {
+				searchParam += key + "=" + URLEncoder.encode(vals[i], "utf-8") + "&";
+			}
 		}
 	}
-	searchParam = searchParam.substring( 0, searchParam.length() -1 );
-
+	searchParam = StringUtils.chop(searchParam);
+	
 	//-------------------------------------------
 	// 設定ファイルから各種情報を取得
 	//-------------------------------------------
-	String path = request.getRequestURL().toString();
-	String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
-	GetConfig conf = new GetConfig(baseUrl);
+	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 	String serverUrl = conf.getServerUrl();
 	String[] dbNameList = conf.getDbName();
 	String[] urlList = conf.getSiteUrl();
@@ -492,16 +514,6 @@
 <script type="text/javascript" src="../script/ResultMenu.js"></script>
 <script type="text/javascript" src="../script/jquery.js"></script>
 <script type="text/javascript" src="../script/StructurePreview.js"></script>
-<script>
-<!--
-function prevPeakSearchAdv() {
-	document.resultForm.action = "../PeakSearch.html";
-	document.resultForm.target = "_self";
-	document.resultForm.submit();
-	return false;
-}
--->
-</script>
 <title><%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -514,8 +526,8 @@ function prevPeakSearchAdv() {
 			</td>
 		</tr>
 	</table>
-<iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
-<hr size="1">
+	<iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+	<hr size="1">
 <%
 	//--------------------------------------------------------
 	// 検索パラメータ表示
@@ -539,7 +551,7 @@ function prevPeakSearchAdv() {
 	else {
 		logic = "<b class=\"logic\">" + mode.toUpperCase() + "</b>";
 	}
-
+	
 	//--------------------------------------------------------
 	// 入力された分子式が重複していないかをチェック
 	// (Product Ion検索のみ)
@@ -562,7 +574,7 @@ function prevPeakSearchAdv() {
 			listFormula.add(formula);
 		}
 	}
-
+	
 	//--------------------------------------------------------
 	// Advanced用パラメータをセット
 	//--------------------------------------------------------
@@ -578,10 +590,9 @@ function prevPeakSearchAdv() {
 		listSwapFormula.add( swapFormula(listFormula.get(i)) );
 	}
 	advParam += StringUtils.join(listSwapFormula.toArray(), ",") + "&mode=" + mode;
-
-
+	
 	out.println( "<b>Query :</b><br>");
-	out.println( "<table border=\"0\" cellpadding=\"0\" cellspacing=\"3\" style=\"margin:8px\">" );
+	out.println( "<table border=\"0\" cellpadding=\"0\" cellspacing=\"3\" style=\"margin:3px 8px 5px 8px\">" );
 	out.println( " <tr>" );
 	for ( int i = 0; i < listFormula.size(); i++ ) {
 		out.println( "  <td align=\"center\" width=\"100\" class=\"" + style + "\">" + str + String.valueOf(i+1) + "</td>" );
@@ -592,16 +603,123 @@ function prevPeakSearchAdv() {
 	out.println( " </tr>" );
 	out.println( " <tr>" );
 	for ( int i = 0; i < listFormula.size(); i++ ) {
-		out.println( "<td align=\"center\">" + listFormula.get(i) + "</td>" );
+		out.println( "  <td align=\"center\">" + listFormula.get(i) + "</td>" );
 		if ( i < listFormula.size() - 1 ) {
 			out.println( "  <td width=\"30\" align=\"center\">" + logic + "</td>" );
 		}
 	}
 	out.println( " </tr>" );
 	out.println( "</table>" );
-	out.println( "<br><a href=\"\" class=\"pageLink\" onClick=\"return prevPeakSearchAdv()\">Edit / Resubmit Query</a>" );
+	
+	// Instrument Type
+	String[] instrument = null;
+	try {
+		instrument = (reqParams.get("inst_adv") != null) ? (String[])reqParams.get("inst_adv") : new String[]{};
+	}
+	catch (ClassCastException cce) {
+		instrument = new String[]{ (String)reqParams.get("inst_adv") };
+	}
+	boolean isInstAll = false;
+	out.println( "<table width=\"" + (Integer.parseInt(tableWidth)-160) + "\" cellpadding=\"0\" cellspacing=\"0\">" );
+	out.println( " <tr>" );
+	out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;Instrument Type:</td>" );
+	for (int i=0; i<instrument.length; i++) {
+		if ( instrument[i].equals("all") ) {
+			out.println( "  <td><b>All</b></td>" );
+			isInstAll = true;
+			break;
+		}
+	}
+	if ( !isInstAll ) {
+		int instCount = 0;
+		for (int i=0; i<instrument.length; i++) {
+			instCount++;
+			out.print( "  <td width=\"201\"><b>" + instrument[i] + "</b>" );
+			if ( i != (instrument.length-1) ) {
+				if ( (instCount % 3) != 0 ) {
+					out.println( " , </td>" );
+				}
+				else {
+					out.println( "</td>" );
+					out.println( " </tr>" );
+					out.println( " <tr>" );
+					out.println( "  <td width=\"132\"></td>" );
+				}
+			}
+			else {
+				if ( instCount < 3 ) {
+					out.println( "</td><td>&nbsp;</td>" );
+				}
+				else {
+					out.println( "</td>" );
+				}
+			}
+		}
+	}
+	out.println( " </tr>" );
+	out.println( "</table>" );
+	
+	// MS Type
+	String[] msType = null;
+	try {
+		msType = (reqParams.get("ms_adv") != null) ? (String[])reqParams.get("ms_adv") : new String[]{};
+	}
+	catch (ClassCastException cce) {
+		msType = new String[]{ (String)reqParams.get("ms_adv") };
+	}
+	boolean isMsAll = false;
+	out.println( "<table width=\"" + (Integer.parseInt(tableWidth)-160) + "\" cellpadding=\"0\" cellspacing=\"0\">" );
+	out.println( " <tr>" );
+	out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;MS Type:</td>" );
+	for (int i=0; i<msType.length; i++) {
+		if ( msType[i].equals("all") ) {
+			out.println( "  <td><b>All</b></td>" );
+			isMsAll = true;
+			break;
+		}
+	}
+	if ( !isMsAll ) {
+		out.print( "  <td>" );
+		for (int i=0; i<msType.length; i++) {
+			out.print( "<b>" + msType[i] + "</b>" );
+			if ( i != (msType.length-1) ) {
+				out.println( " ,&nbsp;&nbsp;&nbsp;" );
+			}
+		}
+		out.println( "  </td>" );
+	}
+	out.println( " </tr>" );
+	out.println( "</table>" );
+	
+	// Ion Mode
+	String pIon = ((String)reqParams.get( "ion_adv" ) != null) ? (String)reqParams.get( "ion_adv" ) : "0";
+	String ionMode = "";
+	switch (Integer.parseInt(pIon)) {
+		case 0:
+			ionMode = "Both";
+			break;
+		case 1:
+			ionMode = "Positive";
+			break;
+		case -1:
+			ionMode = "Negative";
+			break;
+		default:
+			ionMode = "Both";
+			break;
+	}
+	out.println( "<table width=\"" + tableWidth + "\" cellpadding=\"0\" cellspacing=\"0\">" );
+	out.println( " <tr>" );
+	out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;Ion Mode:</td>" );
+	out.println( "  <td><b>" + ionMode + "</b></td>" );
+	out.println( "  <td align=\"right\">" );
+	out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return prevPeakSearchAdv()\">Edit / Resubmit Query</a>" );
+	out.println( "  </td>" );
+	out.println( " </tr>" );
+	out.println( "</table>" );
+	
 	out.println( "<hr size=\"1\">" );
-
+	
 	//--------------------------------------------------------
 	// パラメータセット
 	//--------------------------------------------------------
@@ -613,7 +731,7 @@ function prevPeakSearchAdv() {
 		paramFormula += "&formula" + (i+1) + "=" + swapFormula(listFormula.get(i));
 	}
 	searchParam = "type=" + typeName + "&stype=" + stype + "&" + paramFormula + "&" + searchParam;
-
+	
 	//--------------------------------------------------------
 	// 検索実行
 	//--------------------------------------------------------
@@ -637,8 +755,25 @@ function prevPeakSearchAdv() {
 	//--------------------------------------------------------
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ){
 		String key = (String)keys.nextElement();
-		String val = (String)reqParams.get(key);
-		out.println( "<input type=\"hidden\" name=\"" + key + "\" value=\"" + val + "\">" );
+		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
+			// キーがInstrumentType,MSType以外の場合はStringパラメータ
+			String val = (String)reqParams.get(key);
+			out.println( "<input type=\"hidden\" name=\"" + key + "\" value=\"" + val + "\">" );
+		}
+		else {
+			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
+			String[] vals = null;
+			try {
+				vals = (String[])reqParams.get(key);
+			}
+			catch (ClassCastException cce) {
+				vals = new String[]{ (String)reqParams.get(key) };
+			}
+			String valStr = "";
+			for (int i=0; i<vals.length; i++) {
+				out.println( "<input type=\"hidden\" name=\"" + key + "\" value=\"" + vals[i] + "\">" );
+			}
+		}
 	}
 	
 	

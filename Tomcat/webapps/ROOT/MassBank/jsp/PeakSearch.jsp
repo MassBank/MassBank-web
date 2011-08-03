@@ -22,7 +22,7 @@
  *
  * Peak Search Page表示用モジュール
  *
- * ver 1.0.15 2011.06.16
+ * ver 1.0.17 2011.08.02
  *
  ******************************************************************************/
 %>
@@ -34,7 +34,7 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="massbank.admin.AdminCommon" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ include file="./Common.jsp"%>
 <%
 	AdminCommon admin = new AdminCommon();
@@ -50,12 +50,16 @@
 	String relInte  = "100";
 	String tol  = "0.3";
 	String ionMode  = "1";
+	String ionModeAdv = "1";
 	String mode = "and";
 	Map inputFormula= new HashMap();
 	boolean isFirst = true;
 	List<String> instGrpList = new ArrayList<String>();
 	List<String> instTypeList = new ArrayList<String>();
 	List<String> msTypeList = new ArrayList<String>();
+	List<String> instGrpListAdv = new ArrayList<String>();
+	List<String> instTypeListAdv = new ArrayList<String>();
+	List<String> msTypeListAdv = new ArrayList<String>();
 	Hashtable<String, String> params = new Hashtable<String, String>();
 	int paramCnt = 0;
 	Enumeration names = request.getParameterNames();
@@ -74,17 +78,30 @@
 		}
 		else if ( key.equals("ms") ) {
 			String[] vals = request.getParameterValues( key );
-			instTypeList = Arrays.asList(vals);
+			msTypeList = Arrays.asList(vals);
+		}
+		else if ( key.equals("inst_grp_adv") ) {
+			String[] vals = request.getParameterValues( key );
+			instGrpListAdv = Arrays.asList(vals);
+		}
+		else if ( key.equals("inst_adv") ) {
+			String[] vals = request.getParameterValues( key );
+			instTypeListAdv = Arrays.asList(vals);
+		}
+		else if ( key.equals("ms_adv") ) {
+			String[] vals = request.getParameterValues( key );
+			msTypeListAdv = Arrays.asList(vals);
 		}
 		else {
 			String val = request.getParameter( key );
-			if ( key.equals("searchof") )			searchOf = val;
-			else if ( key.equals("searchby") )		searchBy = val;
-			else if ( key.equals("mode") )			mode     = val;
+			if ( key.equals("searchof") )			searchOf   = val;
+			else if ( key.equals("searchby") )		searchBy   = val;
+			else if ( key.equals("mode") )			mode       = val;
 			else if ( key.indexOf("formula") >= 0 )	inputFormula.put( key, val );
-			else if ( key.equals("int") )			relInte  = val;
-			else if ( key.equals("tol") )			tol      = val;
-			else if ( key.equals("ion") )			ionMode  = val;
+			else if ( key.equals("int") )			relInte    = val;
+			else if ( key.equals("tol") )			tol        = val;
+			else if ( key.equals("ion") )			ionMode    = val;
+			else if ( key.equals("ion_adv") )		ionModeAdv = val;
 			else if ( key.indexOf("mz") >= 0 || key.indexOf("op") >= 0 ) {
 				params.put( key, val );
 			}
@@ -107,24 +124,40 @@
 	String instGrp = "";
 	for ( int i = 0; i < instGrpList.size(); i++ ) {
 		instGrp += instGrpList.get(i);
-		if ( i < instGrpList.size() - 1 ) {
-			instGrp += ",";
-		}
+		instGrp += ",";
 	}
+	instGrp = StringUtils.chop(instGrp);
 	String instType = "";
 	for ( int i=0; i<instTypeList.size(); i++ ) {
 		instType += instTypeList.get(i);
-		if ( i < instTypeList.size() - 1 ) {
-			instType += ",";
-		}
+		instType += ",";
 	}
+	instType = StringUtils.chop(instType);
 	String msType = "";
 	for ( int i=0; i<msTypeList.size(); i++ ) {
 		msType += msTypeList.get(i);
-		if ( i < msTypeList.size() - 1 ) {
-			msType += ",";
-		}
+		msType += ",";
 	}
+	msType = StringUtils.chop(msType);
+	
+	String instGrpAdv = "";
+	for ( int i = 0; i < instGrpListAdv.size(); i++ ) {
+		instGrpAdv += instGrpListAdv.get(i);
+		instGrpAdv += ",";
+	}
+	instGrpAdv = StringUtils.chop(instGrpAdv);
+	String instTypeAdv = "";
+	for ( int i=0; i<instTypeListAdv.size(); i++ ) {
+		instTypeAdv += instTypeListAdv.get(i);
+		instTypeAdv += ",";
+	}
+	instTypeAdv = StringUtils.chop(instTypeAdv);
+	String msTypeAdv = "";
+	for ( int i=0; i<msTypeListAdv.size(); i++ ) {
+		msTypeAdv += msTypeListAdv.get(i);
+		msTypeAdv += ",";
+	}
+	msTypeAdv = StringUtils.chop(msTypeAdv);
 	
 	//-------------------------------------
 	// ポスト先
@@ -177,7 +210,7 @@
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
 	<jsp:include page="../pserver/ServerInfo.jsp" />
 
-	<form name="form_query" method="post" action="<%=formAction%>" style="display:inline">
+	<form name="form_query" method="post" action="<%=formAction%>" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0">
 			<tr>
 				<td width="90"><b>Search of</b></td>
@@ -306,7 +339,7 @@
 						<table>
 							<tr>
 								<td>
-									<input type="submit" value="Search" onclick="return checkSubmit();" class="search" tabindex="19">
+									<input type="submit" value="Search" onclick="return checkSubmit(0);" class="search" tabindex="19">
 									<input type="hidden" name="op1" value="<%=lblLogic.toLowerCase()%>">
 									<input type="hidden" name="op2" value="<%=lblLogic.toLowerCase()%>">
 									<input type="hidden" name="op3" value="<%=lblLogic.toLowerCase()%>">
@@ -322,11 +355,11 @@
 					</td>
 					<td style="padding:0px 15px;" valign="top">
 						<jsp:include page="Instrument.jsp" flush="true">
-							<jsp:param name="ion" value="<%= ionMode %>" />
 							<jsp:param name="first" value="<%= isFirst %>" />
 							<jsp:param name="inst_grp" value="<%= instGrp %>" />
 							<jsp:param name="inst" value="<%= instType %>" />
-							<jsp:param name="inst" value="<%= msType %>" />
+							<jsp:param name="ms" value="<%= msType %>" />
+							<jsp:param name="ion" value="<%= ionMode %>" />
 						</jsp:include>
 					</td>
 				</tr>
@@ -342,9 +375,13 @@
 		out.println( "\t\t<div id=\"advance\" class=\"hidObj\">" );
 	}
 %>
-			<div class="boxA" style="width:720px">
-				<br>
-				<table border="0" cellpadding="0" cellspacing="3" style="margin:8px">
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td valign="top">
+					<table border="0" cellpadding="0" cellspacing="15" class="form-box">
+						<tr>
+							<td>
+								<table border="0" cellpadding="0" cellspacing="0">
 <%
 	String style = "bgProduct";
 	String str = "Ion&nbsp;";
@@ -360,42 +397,42 @@
 		condition = "<img src=\"./image/arrow_neutral.gif\">";
 	}
 
-	out.println("\t\t\t\t\t<tr>");
+	out.println("\t\t\t\t\t\t\t\t\t\t<tr><br>");
 	for ( int i = 1; i <= NUM_FORMULA_ADV; i++ ) {
-		out.println( "\t\t\t\t\t\t<td align=\"center\" width=\"110\" id=\"advanceType" + i +"\" class=\"" + style + "\">"
+		out.println( "\t\t\t\t\t\t\t\t\t\t\t<td align=\"center\" width=\"100\" id=\"advanceType" + i +"\" class=\"" + style + "\">"
 					+ str + String.valueOf(i) + "</td>" );
 		if ( i < NUM_FORMULA_ADV ) {
-			out.println( "\t\t\t\t\t\t<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>" );
+			out.println( "\t\t\t\t\t\t\t\t\t\t\t<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>" );
 		}
 	}
-	out.println("\t\t\t\t\t</tr>");
+	out.println("\t\t\t\t\t\t\t\t\t\t</tr>");
 
-	out.println("\t\t\t\t\t<tr>");
+	out.println("\t\t\t\t\t\t\t\t\t\t<tr>");
 	for ( int i = 1; i <= NUM_FORMULA_ADV; i++ ) {
-		out.println( "\t\t\t\t\t\t<td align=\"center\">Formula</td>" );
+		out.println( "\t\t\t\t\t\t\t\t\t\t\t<td align=\"center\">Formula</td>" );
 		if ( i < NUM_FORMULA_ADV ) {
-			out.println( "\t\t\t\t\t\t<td></td>" );
+			out.println( "\t\t\t\t\t\t\t\t\t\t\t<td></td>" );
 		}
 	}
-	out.println("\t\t\t\t\t</tr>");
+	out.println("\t\t\t\t\t\t\t\t\t\t</tr>");
 
-	out.println("\t\t\t\t\t<tr>");
+	out.println("\t\t\t\t\t\t\t\t\t\t<tr>");
 	for ( int i = 1; i <= NUM_FORMULA_ADV; i++ ) {
 		String key = "formula" + String.valueOf(i);
 		String val = "";
 		if ( inputFormula.containsKey(key) ) {
 			val = (String)inputFormula.get(key);
 		}
-		out.println( "\t\t\t\t\t\t<td align=\"center\">" );
-		out.println( "\t\t\t\t\t\t\t<input id=\"" + key + "\" class=\"FormulaSuggest\" name=\"" + key + "\" type=\"text\" size=\"12\" value=\"" + val + "\" autocomplete=\"off\">" );
-		out.println( "\t\t\t\t\t\t</td>" );
+		out.println( "\t\t\t\t\t\t\t\t\t\t\t<td align=\"center\">" );
+		out.println( "\t\t\t\t\t\t\t\t\t\t\t\t<input id=\"" + key + "\" class=\"FormulaSuggest\" name=\"" + key + "\" type=\"text\" size=\"12\" value=\"" + val + "\" autocomplete=\"off\">" );
+		out.println( "\t\t\t\t\t\t\t\t\t\t\t</td>" );
 		if ( i < NUM_FORMULA_ADV ) {
-			out.println( "\t\t\t\t\t\t<td id=\"cond" + String.valueOf(i) + "\" width=\"26\" align=\"center\">" + condition + "</td>");
+			out.println( "\t\t\t\t\t\t\t\t\t\t\t<td id=\"cond" + String.valueOf(i) + "\" width=\"26\" align=\"center\">" + condition + "</td>");
 		}
 	}
-	out.println("\t\t\t\t\t</tr>");
-	out.println("\t\t\t\t\t<tr height=\"50\">");
-	out.println("\t\t\t\t\t\t<td colspan=\"7\">");
+	out.println("\t\t\t\t\t\t\t\t\t\t</tr>");
+	out.println("\t\t\t\t\t\t\t\t\t\t<tr height=\"50\">");
+	out.println("\t\t\t\t\t\t\t\t\t\t\t<td colspan=\"7\">");
 	
 	String[] valMode = new String[]{ "and", "or" };
 	String[] strMode = new String[]{ "AND", "OR" };
@@ -404,30 +441,50 @@
 		strMode = new String[]{ "AND", "SEQUENCE" };
 	}
 	for ( int i = 0; i < valMode.length; i++ ) {
-		out.print( "\t\t\t\t\t\t\t<input type=\"radio\" name=\"mode\" value=\"" + valMode[i] + "\" onClick=\"chageMode(this.value)\"" );
+		out.print( "\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"mode\" value=\"" + valMode[i] + "\" onClick=\"chageMode(this.value)\"" );
 		if ( mode.equals(valMode[i]) ) {
 			out.print(" checked");
 		}
 		out.println( "><b><span id=\"modeTxt" + i + "\">" + strMode[i] + "</span></b>&nbsp;&nbsp;&nbsp;" );
 	}
-	out.println("\t\t\t\t\t\t</td>");
-	out.println("\t\t\t\t\t\t<td colspan=\"4\" align=\"right\">");
-	out.println("\t\t\t\t\t\t\t<input type=\"button\" name=\"reset\" value=\"Reset\" onClick=\"resetForm()\">");
-	out.println("\t\t\t\t\t\t</td>");
-	out.println("\t\t\t\t\t</tr>");
+	out.println("\t\t\t\t\t\t\t\t\t\t\t</td>");
+	out.println("\t\t\t\t\t\t\t\t\t\t\t<td colspan=\"4\" align=\"right\">");
+	out.println("\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"button\" name=\"reset\" value=\"Reset\" onClick=\"resetForm()\">");
+	out.println("\t\t\t\t\t\t\t\t\t\t\t</td>");
+	out.println("\t\t\t\t\t\t\t\t\t\t</tr>");
 %>
-				</table>
-				<table border="0" cellpadding="10" cellspacing="0">
-					<tr>
-						<td><font class="font12px">* The targets of Peak Search Advanced are only Keio and Riken data.</font></td>
-					</tr>
-				</table>
-			</div>
-			<br>
-			<input type="hidden" name="type" value="<%=type%>">
-			<input type="submit" value="Search" class="search">
+										<tr><td>&nbsp;</td></tr>
+										<tr>
+											<td colspan="9"><b><span class="fontNote">* The targets of Peak Search Advanced are only Keio and Riken data.</span></b></td>
+										</tr>
+										<tr><td>&nbsp;</td></tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+						<br>
+						<table>
+							<tr>
+								<td  valign="top">
+									<input type="submit" value="Search" onclick="return checkSubmit(1);" class="search">
+									<input type="hidden" name="type" value="<%=type%>">
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td style="padding:0px 15px;" valign="top" rowspan="2">
+						<jsp:include page="Instrument.jsp" flush="true">
+							<jsp:param name="first" value="<%=isFirst%>" />
+							<jsp:param name="padv" value="true" />
+							<jsp:param name="inst_grp_adv" value="<%=instGrpAdv%>" />
+							<jsp:param name="inst_adv" value="<%=instTypeAdv%>" />
+							<jsp:param name="ms_adv" value="<%=msTypeAdv%>" />
+							<jsp:param name="ion_adv" value="<%=ionModeAdv%>" />
+						</jsp:include>
+					</td>
+				</tr>
+			</table>
 		</div>
-
 		<div id="loaded"></div>
 	</form>
 	<br>

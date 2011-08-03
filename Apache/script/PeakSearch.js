@@ -20,7 +20,7 @@
  *
  * PeakSearch用スクリプト
  *
- * ver 1.0.9 2010.11.15
+ * ver 1.0.10 2011.08.02
  *
  ******************************************************************************/
 
@@ -50,8 +50,12 @@ function loadCheck(searchof, searchby) {
  * 初期フォーカス設定
  */
 function initFocus() {
-	// フォーカス可能であればフォーカスを当てる
-	try { document.forms[0].mz0.focus(); } catch(e) {}
+	var f1 = document.forms[0];
+	try {
+		if (f1.searchby[0].checked) {
+			f1.mz0.focus();
+		}
+	} catch(e) {}
 	return;
 }
 
@@ -66,7 +70,6 @@ function changeSearchType(searchof, searchby) {
 	}
 	
 	var elementLd = null;
-	var elementMz = null;
 	var elementSt = null;
 	var elementAd = null;
 	if (ns4) {											//NS4
@@ -136,11 +139,16 @@ function changeSearchType(searchof, searchby) {
 		}
 	}
 	else {
+		var elementCondInstTitle = document.getElementById( "condInstTitleAdv" );
+		var elementCondMsTitle = document.getElementById( "condMsTitleAdv" );
+		var elementCondIonTitle = document.getElementById( "condIonTitleAdv" );
 		elementSt.className = "hidObj";
 		elementAd.className = "showObj";
 		f1.action = "./jsp/ResultAdv.jsp";
-		resetForm();
 		if ( isOfPeak ) {
+			elementCondInstTitle.className = "cond-title-product";
+			elementCondMsTitle.className = "cond-title-product";
+			elementCondIonTitle.className = "cond-title-product";
 			f1.type.value = "product";
 			changeAdvance("product", "and");
 			color1 = "Navy";
@@ -149,6 +157,9 @@ function changeSearchType(searchof, searchby) {
 			color4 = "Navy";
 		}
 		else {
+			elementCondInstTitle.className = "cond-title-neutral";
+			elementCondMsTitle.className = "cond-title-neutral";
+			elementCondIonTitle.className = "cond-title-neutral";
 			f1.type.value = "neutral";
 			changeAdvance("neutral", "and");
 			color1 = "White";
@@ -473,7 +484,6 @@ function resetForm() {
 		else if (f1.searchof[1].checked) {
 			reqType = "diff";
 		}
-		initFocus();
 	}
 	else if (f1.searchby[1].checked) {
 		for ( i=1; i<6; i++ ) {
@@ -489,4 +499,5 @@ function resetForm() {
 		f1.mode[1].checked = false;
 		changeAdvance(reqType, "and");
 	}
+	initFocus();
 }

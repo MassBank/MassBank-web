@@ -20,7 +20,7 @@
  *
  * ResultPage用スクリプト
  *
- * ver 1.0.12 2009.09.07
+ * ver 1.0.13 2011.07.22
  *
  ******************************************************************************/
 
@@ -28,7 +28,7 @@
  * Show Spectraボタンクリック
  */
 function clickShowSpectra() {
-		document.resultForm.multi.click();
+	document.resultForm.multi.click();
 }
 
 /**
@@ -711,10 +711,20 @@ function parameterResetting(type) {
 }
 
 /**
- * 部分構造検索パラメータ入力画面に戻る
+ * SubstructureSearchパラメータ入力画面に戻る
  */
 function prevStructSearch() {
 	document.resultForm.action = "../StructureSearch.html";
+	document.resultForm.target = "_self";
+	document.resultForm.submit();
+	return false;
+}
+
+/**
+ * PeakSearchパラメータ入力画面に戻る
+ */
+function prevPeakSearchAdv() {
+	document.resultForm.action = "../PeakSearch.html";
 	document.resultForm.target = "_self";
 	document.resultForm.submit();
 	return false;

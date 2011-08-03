@@ -22,7 +22,7 @@
  *
  * 検索結果ページ表示用モジュール
  *
- * ver 2.0.33 2011.06.16
+ * ver 2.0.36 2011.08.02
  *
  ******************************************************************************/
 %>
@@ -92,7 +92,7 @@
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
 		
-		ArrayList<String> result = result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+		ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
 		
 		Map<String, String> gifMap = new HashMap<String, String>();
 		Map<String, String> gifSmallMap = new HashMap<String, String>();
@@ -281,7 +281,7 @@
 				continue;
 			}
 		}
-		if ( key.indexOf("inst") == -1 && key.indexOf("ms") == -1 ) {
+		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = request.getParameter( key ).trim();
 			reqParams.put( key, val );
@@ -390,7 +390,7 @@
 	// URLパラメータ（検索実行用）生成
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ){
 		String key = (String)keys.nextElement();
-		if ( key.indexOf("inst") == -1 && key.indexOf("ms") == -1 ) {
+		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = (String)reqParams.get(key);
 			if ( key.indexOf("site") != -1 && val.equals("-1") ) {
@@ -401,13 +401,19 @@
 			}
 		}
 		else {
-			String[] vals = (String[])reqParams.get(key);
+			String[] vals = null;
+			try {
+				vals = (String[])reqParams.get(key);
+			}
+			catch (ClassCastException cce) {
+				vals = new String[]{ (String)reqParams.get(key) };
+			}
 			for ( int i=0; i<vals.length; i++ ) {
 				searchParam += key + "=" + URLEncoder.encode(vals[i], "utf-8") + "&";
 			}
 		}
 	}
-	searchParam = searchParam.substring( 0, searchParam.length() -1 );
+	searchParam = StringUtils.chop(searchParam);
 	
 	
 	//-------------------------------------------
@@ -500,7 +506,8 @@
 				out.print( "&nbsp;&nbsp;<b>" + mzArray.get(i) + "</b>" );
 				out.print( "&nbsp;&nbsp;&nbsp;&nbsp;Rel.Int:&nbsp;&nbsp;<b>" + valArray.get(i) + "</b>" );
 				out.print( "&nbsp;&nbsp;&nbsp;&nbsp;Tol.(unit):&nbsp;&nbsp;<b>" + tolArray.get(i) + "</b>" );
-				out.println( "<td>" );
+				out.println( "</td>" );
+				out.println( "</tr>" );
 				if ( i == (mzArray.size()-1) ) {
 					out.println( "</table>" );
 				}
@@ -557,7 +564,13 @@
 		out.println( "<div class=\"divSpacer9px\"></div>" );
 		
 		// Instrument Type
-		String[] instrument = (reqParams.get("inst") != null) ? (String[])reqParams.get("inst") : new String[]{};
+		String[] instrument = null;
+		try {
+			instrument = (reqParams.get("inst") != null) ? (String[])reqParams.get("inst") : new String[]{};
+		}
+		catch (ClassCastException cce) {
+			instrument = new String[]{ (String)reqParams.get("inst") };
+		}
 		boolean isInstAll = false;
 		out.println( "<table width=\"" + (Integer.parseInt(tableWidth)-160) + "\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
@@ -599,7 +612,13 @@
 		out.println( "</table>" );
 		
 		// MS Type
-		String[] msType = (reqParams.get("ms") != null) ? (String[])reqParams.get("ms") : new String[]{};
+		String[] msType = null;
+		try {
+			msType = (reqParams.get("ms") != null) ? (String[])reqParams.get("ms") : new String[]{};
+		}
+		catch (ClassCastException cce) {
+			msType = new String[]{ (String)reqParams.get("ms") };
+		}
 		boolean isMsAll = false;
 		out.println( "<table width=\"" + (Integer.parseInt(tableWidth)-160) + "\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
@@ -624,7 +643,7 @@
 		out.println( " </tr>" );
 		out.println( "</table>" );
 		
-		// Ionization Mode
+		// Ion Mode
 		String pIon = ((String)reqParams.get( "ion" ) != null) ? (String)reqParams.get( "ion" ) : "0";
 		String ionMode = "";
 		switch (Integer.parseInt(pIon)) {
@@ -643,7 +662,7 @@
 		}
 		out.println( "<table width=\"" + tableWidth + "\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
-		out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;Ionization Mode:</td>" );
+		out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;Ion Mode:</td>" );
 		out.println( "  <td><b>" + ionMode + "</b></td>" );
 		out.println( "  <td align=\"right\">" );
 		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Edit / Resubmit Query</a>" );
@@ -674,8 +693,8 @@
 		else if ( pIdxtype.equals("merged") ) {	// Merged Type
 			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Merged Type: <b>" + pSrchkey + "</b></td>" );
 		}
-		else if ( pIdxtype.equals("ion") ) {	// Ionization Mode
-			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Ionization Mode: <b>" + pSrchkey + "</b></td>" );
+		else if ( pIdxtype.equals("ion") ) {	// Ion Mode
+			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Ion Mode: <b>" + pSrchkey + "</b></td>" );
 		}
 		else if ( pIdxtype.equals("cmpd") ) {	// Compound Name
 			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Compound Name: <b>" + pSrchkey + "</b></td>" );
@@ -706,7 +725,6 @@
 						existMoldata = false;
 						break;
 					}
-
 					
 					out.println( "<td>" );
 					out.println( "<b>Query" + String.valueOf(n+1) + "</b><br>" );
@@ -869,14 +887,20 @@
 	//-------------------------------------
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ){
 		String key = (String)keys.nextElement();
-		if ( key.indexOf("inst") == -1 && key.indexOf("ms") == -1 ) {
+		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = (String)reqParams.get(key);
 			out.println( "<input type=\"hidden\" name=\"" + key + "\" value=\"" + val + "\">" );
 		}
 		else {
 			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
-			String[] vals = (String[])reqParams.get(key);
+			String[] vals = null;
+			try {
+				vals = (String[])reqParams.get(key);
+			}
+			catch (ClassCastException cce) {
+				vals = new String[]{ (String)reqParams.get(key) };
+			}
 			for (int i=0; i<vals.length; i++) {
 				out.println( "<input type=\"hidden\" name=\"" + key + "\" value=\"" + vals[i] + "\">" );
 			}

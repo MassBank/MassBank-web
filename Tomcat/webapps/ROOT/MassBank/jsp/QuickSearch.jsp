@@ -22,7 +22,7 @@
  *
  * Quick Search Page表示用モジュール
  *
- * ver 1.0.15 2011.07.12
+ * ver 1.0.16 2011.07.22
  *
  ******************************************************************************/
 %>
@@ -160,7 +160,7 @@
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
 	<jsp:include page="../pserver/ServerInfo.jsp" />
 
-	<form name="change" method="post" action="QuickSearch.html" style="display:inline">
+	<form name="change" method="post" action="QuickSearch.html" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td width="180">
@@ -181,7 +181,7 @@
 			</tr>
 		</table>
 	</form>
-	<form name="form_query" method="post" action="jsp/<% out.print(postJspName); %>" style="display:inline">
+	<form name="form_query" method="post" action="jsp/<% out.print(postJspName); %>" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
@@ -266,7 +266,7 @@
 					<table>
 						<tr>
 							<td>
-								<input type="submit" value="Search" onclick="<% if(!isKeyword){out.print("beforeSubmit(); ");} %>return checkSubmit();" class="search">
+								<input type="submit" value="Search" onclick="<% if(!isKeyword){out.print("beforeSubmit(); ");} %>return checkSubmit(0);" class="search">
 								<input type="hidden" name="type" value="quick">
 								<input type="hidden" name="searchType" value="<% if(isKeyword){out.print("keyword");}else{out.print("peak");}%>">
 								<input type="hidden" name="sortKey" value="name">

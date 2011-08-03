@@ -20,7 +20,7 @@
  *
  * MassBank共通スクリプト
  *
- * ver 1.0.13 2011.06.02
+ * ver 1.0.14 2011.07.22
  *
  ******************************************************************************/
 
@@ -38,8 +38,14 @@ var ns6 = (document.getElementById&&!document.all) ? 1 : 0;		// NS6
  * @param keyInst キー名
  * @param keyMs キー名
  * @param keyIon キー名
+ * @param isAdv PeakSearchAdvancedフラグ
  */
-function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon) {
+function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon, isAdv) {
+	var addStr = "";
+	if ( isAdv == 1 ) {
+		addStr = "_adv";
+	}
+	
 	// ブラウザのクッキー許可の場合
 	if (window.navigator.cookieEnabled) {
 		
@@ -49,7 +55,7 @@ function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon)
 		var cookieMs = keyMs + "=";
 		var cookieIon = keyIon + "=";
 		
-		var instGrpVals = document.getElementsByName("inst_grp");
+		var instGrpVals = document.getElementsByName("inst_grp" + addStr);
 		for (var i=0; i<instGrpVals.length; i++) {
 			if (instGrpVals[i].checked) {
 				cookieInstGrp += instGrpVals[i].value + ",";
@@ -59,7 +65,7 @@ function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon)
 			cookieInstGrp = cookieInstGrp.substring(0, cookieInstGrp.length - 1);
 		}
 		
-		var instVals = document.getElementsByName("inst");
+		var instVals = document.getElementsByName("inst" + addStr);
 		for (var i=0; i<instVals.length; i++) {
 			if (instVals[i].checked) {
 				cookieInst += instVals[i].value + ",";
@@ -69,7 +75,7 @@ function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon)
 			cookieInst = cookieInst.substring(0, cookieInst.length - 1);
 		}
 		
-		var msVals = document.getElementsByName("ms");
+		var msVals = document.getElementsByName("ms" + addStr);
 		for (var i=0; i<msVals.length; i++) {
 			if (msVals[i].checked) {
 				cookieMs += msVals[i].value + ",";
@@ -80,7 +86,7 @@ function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon)
 			cookieInst = cookieInst.substring(0, cookieInst.length - 1);
 		}
 		
-		var ionVals = document.getElementsByName("ion");
+		var ionVals = document.getElementsByName("ion" + addStr);
 		for (var i=0; i<ionVals.length; i++) {
 			if (ionVals[i].checked) {
 				cookieIon += ionVals[i].value;
@@ -136,11 +142,18 @@ function switchClass(elementId, className1, className2) {
 
 /**
  * 同グループのチェックボックスを全てON/OFFにする
+ * @param key
+ * @param num
+ * @param isAdv PeakSearchAdvancedフラグ
  */
-function selBoxGrp(key, num) {
-	var isCheck = document.getElementById("inst_grp_" + key).checked;
+function selBoxGrp(key, num, isAdv) {
+	var addStr = "";
+	if ( isAdv == 1 ) {
+		addStr = "adv_";
+	}
+	var isCheck = document.getElementById("inst_grp_" + addStr + key).checked;
 	for ( i = 0; i < num; i++ ) {
-		id = "inst_" + key + String(i);
+		id = "inst_" + addStr + key + String(i);
 		obj = document.getElementById(id);
 		obj.checked = isCheck;
 	}
@@ -148,18 +161,25 @@ function selBoxGrp(key, num) {
 
 /**
  * 同グループ全てのチェックボックスがONまたはOFFになった場合の制御
+ * @param key
+ * @param num
+ * @param isAdv PeakSearchAdvancedフラグ
  */
-function selBoxInst(key, num) {
+function selBoxInst(key, num, isAdv) {
+	var addStr = "";
+	if ( isAdv == 1 ) {
+		addStr = "adv_";
+	}
 	var allOn = true;
 	for ( i = 0; i < num; i++ ) {
-		id = "inst_" + key + String(i);
+		id = "inst_" + addStr + key + String(i);
 		obj1 = document.getElementById(id);
 		if ( !obj1.checked ) {
 			allOn = false;
 			break;
 		}
 	}
-	obj2 = document.getElementById("inst_grp_" + key);
+	obj2 = document.getElementById("inst_grp_" + addStr + key);
 	if ( allOn ) {
 		obj2.checked = true;
 	}
@@ -171,11 +191,16 @@ function selBoxInst(key, num) {
 /**
  * MS TypeチェックボックスのON/OFF（All）
  * @param num
+ * @param isAdv PeakSearchAdvancedフラグ
  */
-function selAllMs(num) {
-	var isCheck = document.getElementById("ms_MS0").checked;
+function selAllMs(num, isAdv) {
+	var addStr = "";
+	if ( isAdv == 1 ) {
+		addStr = "adv_";
+	}
+	var isCheck = document.getElementById("ms_" + addStr + "MS0").checked;
 	for ( i=1; i<=num; i++ ) {
-		id = "ms_MS" + String(i);
+		id = "ms_" + addStr + "MS" + String(i);
 		obj = document.getElementById(id);
 		obj.checked = isCheck;
 	}
@@ -184,18 +209,23 @@ function selAllMs(num) {
 /**
  * MS TypeチェックボックスON/OFF
  * @param num
+ * @param isAdv PeakSearchAdvancedフラグ
  */
-function selMs(num) {
+function selMs(num, isAdv) {
+	var addStr = "";
+	if ( isAdv == 1 ) {
+		addStr = "adv_";
+	}
 	var isAllCheck = true;
 	for ( i=1; i<=num; i++ ) {
-		id = "ms_MS" + String(i);
+		id = "ms_" + addStr + "MS" + String(i);
 		obj = document.getElementById(id);
 		if ( !obj.checked ) {
 			isAllCheck = false;
 			break;
 		}
 	}
-	document.getElementById("ms_MS0").checked = isAllCheck;
+	document.getElementById("ms_" + addStr + "MS0").checked = isAllCheck;
 }
 
 /**
@@ -232,11 +262,17 @@ function checkFileExtention(path) {
 
 /*
  * 検索ボタン押下時のチェック
+  * @param isAdv PeakSearchAdvancedフラグ
  */
-function checkSubmit() {
+function checkSubmit( isAdv ) {
+	var addStr = "";
+	if ( isAdv == 1 ) {
+		addStr = "_adv";
+	}
+	
 	// Instrument Type check
 	var isInstCheck = false;
-	var instObj = document.form_query["inst"];
+	var instObj = document.form_query["inst" + addStr];
 	if ( instObj.length > 1 ) {
 		for ( i = 0; i < instObj.length; i++ ) {
 			if ( instObj[i].checked ) {
@@ -253,7 +289,7 @@ function checkSubmit() {
 	
 	// MS Type check
 	var isMsCheck = false;
-	var msObj = document.form_query["ms"];
+	var msObj = document.form_query["ms" + addStr];
 	if ( msObj.length > 1 ) {
 		for ( i = 0; i < msObj.length; i++ ) {
 			if ( msObj[i].checked ) {
@@ -317,6 +353,13 @@ function doWait() {
 	var w = document.body.clientWidth + "px";
 	var h = document.body.clientHeight + "px";
 	
+	// イメージファイル相対パス取得
+	var relPath = "./";
+	var url = location.href;
+	if ( url.indexOf("/jsp") != -1 || url.indexOf("/mbadmin") != -1 || url.indexOf("/extend") != -1 ) {
+		relPath = "../";
+	}
+	
 	// divタグエレメント作成および追加
 	with(objDiv.style){
 		backgroundColor = "#FFFFFF";
@@ -333,7 +376,7 @@ function doWait() {
 	objDiv.innerHTML = [
 		"<table width='" + w + "' height='" + h + "' border='0' cellspacing='0' cellpadding='0' onSelectStart='return false;' onMouseDown='return false;'>",
 		"<tr>",
-		"<td align='center' valign='middle'><b><i><font size='+3'>" + msg + "</font></i></b>&nbsp;&nbsp;<img src='../image/wait.gif' alt=''></td>",
+		"<td align='center' valign='middle'><b><i><font size='+3'>" + msg + "</font></i></b>&nbsp;&nbsp;<img src='" + relPath + "image/wait.gif' alt=''></td>",
 		"</tr>",
 		"</table>"
 	].join("\n");

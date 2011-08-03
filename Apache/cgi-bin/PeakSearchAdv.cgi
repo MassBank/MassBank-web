@@ -21,7 +21,7 @@
 #
 # Peak Search Advanced
 #
-# ver 1.0.0  2009.05.27
+# ver 1.0.2 2011.07.25
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -35,6 +35,11 @@ my @formula_list = ();
 my $type = "";
 my $mode = "";
 my $db_name = "";
+my $where_inst = "";
+my $where_ms = "";
+my $where_ion = "";
+my @inst = ();
+my @ms = ();
 foreach $key ( @params ) {
 	my $val = trim( $query->param($key) );
 	my $pos = index($key, 'formula');
@@ -51,7 +56,27 @@ foreach $key ( @params ) {
 	elsif ( $key eq 'dsn' ) {
 		$db_name = $val;
 	}
+	elsif ( $key eq 'ion_adv' ) {
+		$where_ion = "";
+		if ( $val eq '1' ) {
+			$where_ion = " AND s.ION > 0";
+		}
+		elsif ( $val eq '-1' ) {
+			$where_ion = " AND s.ION < 0";
+		}
+	}
+	elsif ( $key eq 'inst_adv' ) {
+		@inst = $query->param($key);
+	}
+	elsif ( $key eq 'ms_adv' ) {
+		@ms = $query->param($key);
+	}
 }
+
+if ($#inst < 0 || $#ms < 0) {
+	exit(0);
+}
+
 if ( $db_name eq '' ) {
 	$db_name = "MassBank";
 }
@@ -66,26 +91,92 @@ $User = 'bird';
 $PassWord = 'bird2006';
 $dbh = DBI->connect($DB, $User, $PassWord) || die "connect error \n";
 
+# Instrument Type condition
+my $isInstAll = 1;
+foreach my $inst (@inst) {
+	if ( $inst ne 'all' ) {
+		$isInstAll = 0;
+	}
+	else {
+		$isInstAll = 1;
+		last;
+	}
+}
+if ( !$isInstAll ) {
+	for ( $i = 0; $i < @inst; $i ++ ) {
+		$where_inst .= " INSTRUMENT_TYPE='@inst[$i]'";
+		if ($i != @inst -1) {
+			$where_inst .= " or";
+		}
+	}
+	$sql = "SELECT INSTRUMENT_NO FROM INSTRUMENT WHERE"
+		 . "$where_inst";
+	@ans = &MySql($sql);
+	$cnt = @ans;
+	if ( $cnt == 0 ) {
+		$dbh->disconnect;
+		exit(0);
+	}
+	my $in = "";
+	foreach $item ( @ans ) {
+		$inst_no = $$item[0];
+		$in .= "$inst_no,";
+	}
+	chop $in;
+	$where_inst = " AND r.INSTRUMENT_NO IN($in)";
+}
+
+# MS Type condition
+my $isMsAll = 0;
+foreach $ms (@ms) {
+	if ( $ms eq 'all' ) {
+		$isMsAll = 1;
+		last;
+	}
+}
+if ( !$isMsAll ) {
+	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
+	@ans = &MySql($sql);
+	$cnt = @ans;
+	if ( $cnt == 0 ) {
+		$dbh->disconnect;
+		exit(0);
+	}
+	my $in = "";
+	for ( my $i=0; $i<@ms; $i++ ) {
+		$in .= "'@ms[$i]',";
+	}
+	chop $in;
+	$where_ms .= " AND r.MS_TYPE IN($in)";
+}
+
 my $where = "";
 #------------------------------------------------
 # Product Ion
 #------------------------------------------------
 my $outer_in = "";
 if ( $type eq "product" ) {
+	$sql = "SHOW TABLES LIKE 'PRODUCT_ION'";
+	@ans = &MySql($sql);
+	$cnt = @ans;
+	if ( $cnt == 0 ) {
+		$dbh->disconnect;
+		exit(0);
+	}
 	#--------------------------------------------
 	# AND
 	#--------------------------------------------
 	if ( $mode eq 'and' ) {
-		$sql = "select * from ";
+		$sql = "SELECT * FROM ";
 		my $num = @formula_list - 1;
 		for my $i ( 0 .. $num ) {
 			if ( $formula_list[$i] ne '' ) {
-				$sql .= "(select ID from PRODUCT_ION where FORMULA='$formula_list[$i]' group by ID) as t$i";
+				$sql .= "(SELECT ID FROM PRODUCT_ION WHERE FORMULA='$formula_list[$i]') AS t$i";
 			}
 			if ( $i > 0 ) {
 				$where .= "t" . ($i - 1) . ".ID=t" . $i . ".ID";
 				if ( $i < $num ) {
-					$where .= " and ";
+					$where .= " AND ";
 				}
 			}
 			if ( $i < $num ) {
@@ -93,9 +184,8 @@ if ( $type eq "product" ) {
 			}
 		}
 		if ( $where ne '' ) {
-			$sql .= " where $where";
+			$sql .= " WHERE $where";
 		}
-#		print STDERR "$sql\n";
 		@rec = &MySql($sql);
 		$num = @rec - 1;
 		for my $i ( 0 .. $num ) {
@@ -118,7 +208,7 @@ if ( $type eq "product" ) {
 				$in .= ", ";
 			}
 		}
-		$outer_in = "select ID FROM PRODUCT_ION where FORMULA in($in)";
+		$outer_in = "SELECT ID FROM PRODUCT_ION WHERE FORMULA IN($in)";
 	}
 }
 #------------------------------------------------
@@ -129,6 +219,13 @@ elsif ( $type eq "neutral" ) {
 	# SEQUENCE
 	#--------------------------------------------
 	if ( $mode eq 'seq' ) {
+		$sql = "SHOW TABLES LIKE 'NEUTRAL_LOSS_PATH'";
+		@ans = &MySql($sql);
+		$cnt = @ans;
+		if ( $cnt == 0 ) {
+			$dbh->disconnect;
+			exit(0);
+		}
 		my $like = "";
 		foreach my $formula ( @formula_list ){
 			if ( $formula ne '' ) {
@@ -136,22 +233,29 @@ elsif ( $type eq "neutral" ) {
 			}
 		}
 		$like .= "%";
-		$where = "PATH like '$like'";
-		$outer_in = "select distinct ID from NEUTRAL_LOSS_PATH where $where";
+		$where = "PATH LIKE '$like'";
+		$outer_in = "SELECT DISTINCT ID FROM NEUTRAL_LOSS_PATH WHERE $where";
 	}
 	#--------------------------------------------
 	# AND
 	#--------------------------------------------
 	elsif ( $mode eq 'and' ) {
+		$sql = "SHOW TABLES LIKE 'PRE_PRO'";
+		@ans = &MySql($sql);
+		$cnt = @ans;
+		if ( $cnt == 0 ) {
+			$dbh->disconnect;
+			exit(0);
+		}
 		my @sql_formula_list = ();
-		@formula_list = sort(grep {!$count{$_}++} @formula_list);		#d•¡íœ
+		@formula_list = sort(grep {!$count{$_}++} @formula_list);		#é‡è¤‡å‰Šé™¤
 		for my $i ( 0 .. $#formula_list ) {
 			push(@sql_formula_list, "'" . $formula_list[$i] . "'");
 		}
 		$concat_formula = join(",", @formula_list );
 		$in = join(",", @sql_formula_list );
-		$sql = "select ID,NEUTRAL_LOSS from PRE_PRO where NEUTRAL_LOSS in($in) "
-			 . "group by ID,NEUTRAL_LOSS order by ID,NEUTRAL_LOSS";
+		$sql = "SELECT ID, NEUTRAL_LOSS FROM PRE_PRO WHERE NEUTRAL_LOSS IN($in) "
+			 . "GROUP BY ID, NEUTRAL_LOSS ORDER BY ID, NEUTRAL_LOSS";
 		my %concat_nloss = ();
 		my @item = &MySql($sql);
 		if ( scalar(@item) > 0 ) {
@@ -173,12 +277,11 @@ elsif ( $type eq "neutral" ) {
 }
 
 if ( $outer_in ne "" ) {
-	$sql = "select NAME, S.ID, ION, FORMULA, EXACT_MASS from SPECTRUM S, RECORD R "
-		 . "where S.ID in($outer_in) and S.ID=R.ID";
-#	if ( $db_name eq 'Keio' ) {
-#		$sql .= " and S.ID=K.ID";
-#	}
-#	print STDERR "$sql\n";
+	$sql = "SELECT s.NAME, s.ID, s.ION, r.FORMULA, r.EXACT_MASS FROM SPECTRUM s, RECORD r "
+		 . "WHERE s.ID IN($outer_in) AND s.ID = r.ID"
+		 . "$where_ion"
+		 . "$where_inst"
+		 . "$where_ms";
 	@rec = &MySql($sql);
 	foreach $rec ( @rec ) {
 		print join("\t", @$rec), "\n";

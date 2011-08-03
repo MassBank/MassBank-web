@@ -81,7 +81,7 @@ public class MultiDispatcher extends HttpServlet {
 				params.put( key, val );
 				type = val;
 			}
-			else if ( !key.equals("inst") && !key.equals("ms") ) {
+			else if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 				// キーがInstrumentType,MSType以外の場合はStringパラメータ
 				params.put( key, val );
 			}
@@ -244,7 +244,7 @@ public class MultiDispatcher extends HttpServlet {
 				String param = "";
 				for ( Enumeration<String> keys = reqParams.keys(); keys.hasMoreElements(); ) {
 					String key = (String)keys.nextElement();
-					if ( !key.equals("inst") && !key.equals("ms") ) {
+					if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
 						// キーがInstrumentType,MSType以外の場合はStringパラメータ
 						String val = (String)reqParams.get(key);
 						param += key + "=" + val + "&";

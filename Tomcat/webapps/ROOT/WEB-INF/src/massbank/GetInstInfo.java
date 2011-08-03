@@ -20,7 +20,7 @@
  *
  * INSTRUMENT情報とMS情報を取得するクラス
  *
- * ver 1.0.9 2011.06.07
+ * ver 1.0.10 2011.07.22
  *
  ******************************************************************************/
 package massbank;
@@ -40,16 +40,44 @@ public class GetInstInfo {
 
 	/**
 	 * コンストラクタ
+	 * レコードフォーマットバージョン2の
+	 * INSTRUMENT情報とMS情報を取得するコンストラクタ
+	 * @param baseUrl ベースURL
 	 */
 	public GetInstInfo( String baseUrl ) {
+		String urlParam = "ver=2";
+		getInformation(baseUrl, urlParam);
+	}
+
+	/**
+	 * コンストラクタ
+	 * レコードフォーマットバージョンとPeakSearchAdvancedフラグを指定して
+	 * INSTRUMENT情報とMS情報を取得するコンストラクタ
+	 * @param baseUrl ベースURL
+	 * @param formatVer MassBankレコードフォーマットバージョン
+	 * @param isPeakAdv PeakSearchAdvancedフラグ
+	 */
+	public GetInstInfo( String baseUrl, int formatVer, boolean isPeakAdv ) {
+		String urlParam = "ver=" + formatVer;
+		if ( isPeakAdv ) {
+			urlParam += "&padv=1";
+		}
+		getInformation(baseUrl, urlParam);
+	}
+	
+	/**
+	 * 装置種別、MS種別情報取得
+	 * @param baseUrl ベースURL
+	 * @param urlParam CGI実行時のパラメータ
+	 */
+	private void getInformation( String baseUrl, String urlParam ) {
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] urlList = conf.getSiteUrl();
 
-		// DBからINSTRUMENT情報とMS情報を取得する（For MassBank Record format version 2）
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, "ver=2", true, null );
+		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
 		
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];
@@ -86,7 +114,7 @@ public class GetInstInfo {
 			}
 		}
 	}
-
+	
 	/**
 	 * サイトインデックスをセット
 	 */ 

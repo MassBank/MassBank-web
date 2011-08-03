@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Package: massbank
-Implementation-Version: 1.0.35 2011.07.15
+Implementation-Version: 1.0.37 2011.07.25
 Implementation-Vendor: JST-BIRD MassBank

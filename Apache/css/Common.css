@@ -21,7 +21,7 @@
  *
  * MassBank共通スタイルシート
  *
- * ver 1.0.18 2011.06.16
+ * ver 1.0.19 2011.08.02
  *
  ******************************************************************************/
 
@@ -152,7 +152,7 @@ a.text2:active {
 .fontNote {
 	font-size: 12px;
 	line-height: 160%;
-	color: #602D1D;
+	color: #D14836;
 	text-decoration: none;
 }
 
@@ -285,18 +285,6 @@ a.text2:active {
 }
 
 /**
- * Browse Page、Peak Searchで使用
- */
-.boxA {
-	width: 600px;
-	border: 1px silver solid;
-	padding: 8px;
-	margin-top: 0px;
-	margin-bottom: 10px;
-	background-color: WhiteSmoke;
-}
-
-/**
  * 上付き文字用スタイル
  */
 .strSuper {
@@ -341,6 +329,7 @@ table.cond {
  * パラメータ表示の見出し
  */
 td.cond-title {
+	border: 1px silver solid;
 	background-color: dimgray;
 	color: white;
 	padding-left: 7px;
@@ -368,10 +357,36 @@ div.inst-scroll {
 }
 
 /**
+ * パラメータ表示の見出し（PeakSearchAdvanceProduct用）
+ */
+td.cond-title-product {
+	border: 1px silver solid;
+	background-color: Navy;
+	color: white;
+	padding-left: 7px;
+}
+
+/**
+ * パラメータ表示の見出し（PeakSearchAdvanceNeutral用）
+ */
+td.cond-title-neutral {
+	border: 1px silver solid;
+	background-color: DarkGreen;
+	color: white;
+	padding-left: 7px;
+}
+
+/**
  * 検索ボタン
  */
 input.search {
-	background:PaleGoldenrod;
+	background:#3079ED;
+	color:white;
+	font-weight:bold;
+	font-size:14px;
+	text-align:center;
+	width:80px;
+	height:27px;
 }
 
 /**
