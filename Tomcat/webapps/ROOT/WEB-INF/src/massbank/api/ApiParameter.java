@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2009 JST-BIRD MassBank
+ * Copyright (C) 2010 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *
  * [WEB-API] パラメータ処理クラス
  *
- * ver 1.0.0 2009.08.19
+ * ver 1.0.3 2011.08.08
  *
  ******************************************************************************/
 package massbank.api;
@@ -35,13 +35,13 @@ import org.apache.commons.lang.NumberUtils;
 public class ApiParameter {
 	private String type = "";
 	private String param = "";
-	private Map mapParam = null;
+	private Map<String,Object> mapParam = null;
 	private ArrayList<String> errDetails = null;
 
 	/**
 	 * コンストラクタ
 	 */
-	public ApiParameter(String type, Map mapParam) {
+	public ApiParameter(String type, Map<String,Object> mapParam) {
 		this.type = type;
 		this.mapParam = mapParam;
 		this.errDetails = new ArrayList<String>();
@@ -88,7 +88,7 @@ public class ApiParameter {
 	 */
 	public String getCgiParamId( String[] ids ) {
 		// IDの重複を排除し、ソートする
-		TreeSet tree = new TreeSet();
+		TreeSet<String> tree = new TreeSet<String>();
 		for ( int i = 0; i < ids.length; i ++ ) {
 			tree.add(ids[i]);
 		}
@@ -160,7 +160,7 @@ public class ApiParameter {
 		//---------------------------------------
 		String cutoff = (String)mapParam.get("cutoff");
 		if ( cutoff.equals("") ) {
-			cutoff = "5";
+			cutoff = "50";
 		}
 		else if ( NumberUtils.isNumber(cutoff) ) {
 			int val = Integer.parseInt(cutoff);
@@ -258,6 +258,96 @@ public class ApiParameter {
 	 */
 	private void checkSearchCommon() {
 		//---------------------------------------
+		// instrumentTypes
+		//---------------------------------------
+		String[] instrumentTypes = (String[])mapParam.get("instrumentTypes");
+		boolean isInstAll = false;
+		for ( int i = 0; i < instrumentTypes.length; i++ ) {
+			String inst = instrumentTypes[i].toUpperCase();
+			if ( inst.equals("ALL") ) {
+				isInstAll = true;
+				break;
+			}
+		}
+		if ( isInstAll ) {
+			if ( type.equals("searchSpectrum") ) {
+				param += "&INST=ALL";
+			}
+			else if ( type.equals("execBatchJob") ) {
+				param += "&inst=ALL";
+			}
+			else {
+				param += "&inst=all";
+			}
+		}
+		else {
+			if ( type.equals("searchSpectrum") ) {
+				param += "&INST=";
+				for ( int i = 0; i < instrumentTypes.length; i++ ) {
+					param += instrumentTypes[i] + ",";
+				}
+				param = param.substring( 0, param.length() - 1 );
+			}
+			else if ( type.equals("searchPeak") ) {
+				for ( int i = 0; i < instrumentTypes.length; i++ ) {
+					param += "&inst=" + instrumentTypes[i];
+				}
+			}
+			else if ( type.equals("execBatchJob") ) {
+				param += "&inst=";
+				for ( int i = 0; i < instrumentTypes.length; i++ ) {
+					param += instrumentTypes[i] + ",";
+				}
+				param = param.substring( 0, param.length() - 1 );
+			}
+		}
+
+		//---------------------------------------
+		// massTypes
+		//---------------------------------------
+		String[] massTypes = (String[])mapParam.get("massTypes");
+		boolean isMsAll = false;
+		for ( int i = 0; i < massTypes.length; i++ ) {
+			String ms = massTypes[i].toUpperCase();
+			if ( ms.equals("ALL") ) {
+				isMsAll = true;
+				break;
+			}
+		}
+		if ( isMsAll ) {
+			if ( type.equals("searchSpectrum") ) {
+				param += "&MS=ALL";
+			}
+			else if ( type.equals("execBatchJob") ) {
+				param += "&ms=all";
+			}
+			else {
+				param += "&ms=all";
+			}
+		}
+		else {
+			if ( type.equals("searchSpectrum") ) {
+				param += "&MS=";
+				for ( int i = 0; i < massTypes.length; i++ ) {
+					param += massTypes[i] + ",";
+				}
+				param = param.substring( 0, param.length() - 1 );
+			}
+			else if ( type.equals("searchPeak") ) {
+				for ( int i = 0; i < massTypes.length; i++ ) {
+					param += "&ms=" + massTypes[i];
+				}
+			}
+			else if ( type.equals("execBatchJob") ) {
+				param += "&ms=";
+				for ( int i = 0; i < massTypes.length; i++ ) {
+					param += massTypes[i] + ",";
+				}
+				param = param.substring( 0, param.length() - 1 );
+			}
+		}
+		
+		//---------------------------------------
 		// ionMode
 		//---------------------------------------
 		String ionMode = (String)mapParam.get("ionMode");
@@ -278,43 +368,8 @@ public class ApiParameter {
 		if ( type.equals("searchSpectrum") ) {
 			param += "&ION=" + ion;
 		}
-		else if ( type.equals("searchPeak") ) {
-			param += "&ion=" + ion;
-		}
-
-		//---------------------------------------
-		// instrumentTypes
-		//---------------------------------------
-		String[] instrumentTypes = (String[])mapParam.get("instrumentTypes");
-		boolean isAll = false;
-		for ( int i = 0; i < instrumentTypes.length; i++ ) {
-			String inst = instrumentTypes[i].toUpperCase();
-			if ( inst.equals("ALL") ) {
-				isAll = true;
-				break;
-			}
-		}
-		if ( isAll ) {
-			if ( type.equals("searchSpectrum") ) {
-				param += "&INST=ALL";
-			}
-			else if ( type.equals("searchPeak") ) {
-				param += "&inst=all";
-			}
-		}
 		else {
-			if ( type.equals("searchSpectrum") ) {
-				param += "&INST=";
-				for ( int i = 0; i < instrumentTypes.length; i++ ) {
-					param += instrumentTypes[i] + ",";
-				}
-				param = param.substring( 0, param.length() - 1 );
-			}
-			else if ( type.equals("searchPeak") ) {
-				for ( int i = 0; i < instrumentTypes.length; i++ ) {
-					param += "&inst=" + instrumentTypes[i];
-				}
-			}
+			param += "&ion=" + ion;
 		}
 	}
 }

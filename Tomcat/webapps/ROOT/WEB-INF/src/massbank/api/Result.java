@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2009 JST-BIRD MassBank
+ * Copyright (C) 2010 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *
  * [WEB-API] 検索結果詳細格納データクラス
  *
- * ver 1.0.0 2009.08.19
+ * ver 1.0.1 2010.04.15
  *
  ******************************************************************************/
 package massbank.api;
@@ -71,7 +71,11 @@ public class Result {
 	 * スコアをセットする
 	 */
 	public void setScore(String val) {
-		this.score = val;
+		this.score = "0";
+		int pos = val.indexOf(".");
+		if ( pos > 0 ) {
+			this.score += val.substring(pos);
+		}
 	}
 
 	//--  getterメソッド ----------------------------------

@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2009 JST-BIRD MassBank
+ * Copyright (C) 2010 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *
  * [WEB-API] MultiDispatcher サーブレットを呼び出すクラス
  *
- * ver 1.0.1 2009.08.12
+ * ver 1.0.2 2010.04.19
  *
  ******************************************************************************/
 package massbank.api;
@@ -30,6 +30,7 @@ import java.util.Collections;
 import org.apache.axis2.AxisFault;
 import massbank.MassBankCommon;
 import massbank.GetConfig;
+import massbank.StartupExecModule;
 
 
 public class DispatchInvoker {
@@ -41,7 +42,7 @@ public class DispatchInvoker {
 	 * コンストラクタ
 	 */
 	public DispatchInvoker() {
-		GetConfig conf = new GetConfig(MassBankAPI.BASE_URL);
+		GetConfig conf = new GetConfig(StartupExecModule.BASE_URL);
 		this.serverUrl = conf.getServerUrl();
 	}
 
@@ -68,7 +69,7 @@ public class DispatchInvoker {
 	 */
 	public SearchResult getSearchResult( int maxNumResults ) {
 		ArrayList<String> ret = this.response;
-		Collections.sort(ret);	// ソートする
+//		Collections.sort(ret);	// ソートする
 		SearchResult result = new SearchResult();
 		int hitCnt = ret.size();
 		if ( hitCnt > 0 ) {
@@ -82,7 +83,6 @@ public class DispatchInvoker {
 				String name     = "";
 				String formula  = "";
 				String emass    = "";
-				String hitScore = "";
 				String score    = "";
 
 				if ( this.typeName.equals(MassBankCommon.REQ_TYPE_SEARCH) ) {
@@ -90,14 +90,7 @@ public class DispatchInvoker {
 					name     = fields[1];
 					formula  = fields[2];
 					emass    = fields[3];
-					hitScore = fields[4];
-					int pos = hitScore.indexOf(".");
-					if ( pos > 0 ) {
-						score = "0" + hitScore.substring(pos);
-					}
-					else {
-						score = "0";
-					}
+					score    = fields[4];
 				}
 				else {
 					name     = fields[0];
