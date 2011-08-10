@@ -20,7 +20,7 @@
  *
  * SearchPage クラス
  *
- * ver 1.0.18 2011.07.12
+ * ver 1.0.19 2011.08.10
  *
  ******************************************************************************/
 
@@ -438,8 +438,7 @@ public class SearchPage extends JApplet {
 					return null;
 				} else {
 					int nameCol = getColumnModel().getColumnIndex(COL_LABEL_NAME);
-					return "<html><body bgcolor=\"#FFD700\"><b>&nbsp;"
-							+ getValueAt(row, nameCol) + "&nbsp;</b></body></html>";
+					return " " + getValueAt(row, nameCol) + " ";
 				}
 			}
 			@Override
@@ -1655,8 +1654,7 @@ public class SearchPage extends JApplet {
 			
 			
 			// Precursor m/z
-			labelPanel = newLabelPanel("Precursor <i>m/z</i>", 
-					"&nbsp;Precursor <i>m/z</i>.&nbsp;", LABEL_SIZE_L, 2);
+			labelPanel = newLabelPanel("Precursor m/z", " Precursor m/z. ", LABEL_SIZE_L, 2);
 			
 			preField = new JTextField(((PRECURSOR < 0) ? "" : String.valueOf(PRECURSOR)), 5);
 			preField.setHorizontalAlignment(JTextField.RIGHT);
@@ -1678,8 +1676,7 @@ public class SearchPage extends JApplet {
 			
 			
 			// Tolerance
-			labelPanel = newLabelPanel("Tolerance", 
-					"&nbsp;Tolerance of <i>m/z</i>.&nbsp;", LABEL_SIZE_L, 2);
+			labelPanel = newLabelPanel("Tolerance", " Tolerance of m/z. ", LABEL_SIZE_L, 2);
 			
 			JPanel tolPanel = new JPanel();
 			tolPanel.setLayout(new BoxLayout(tolPanel, BoxLayout.X_AXIS));
@@ -1711,8 +1708,7 @@ public class SearchPage extends JApplet {
 			
 			
 			// Cutoff Thresholds
-			labelPanel = newLabelPanel("Cutoff Threshold", 
-					"&nbsp;Cutoff threshold of intensities.&nbsp;", LABEL_SIZE_L, 2);
+			labelPanel = newLabelPanel("Cutoff Threshold", " Cutoff threshold of intensities. ", LABEL_SIZE_L, 2);
 			
 			cutoffField = new JTextField(String.valueOf(CUTOFF_THRESHOLD), 5);
 			cutoffField.setHorizontalAlignment(JTextField.RIGHT);
@@ -1734,8 +1730,7 @@ public class SearchPage extends JApplet {
 			
 			
 			// Instrument Type
-			labelPanel = newLabelPanel("Instrument Type", 
-					"&nbsp;Instrument type.&nbsp;", LABEL_SIZE_L, 2);
+			labelPanel = newLabelPanel("Instrument Type", " Instrument type. ", LABEL_SIZE_L, 2);
 			
 			final JCheckBox chkBoxInstAll = new JCheckBox("All");
 			chkBoxInstAll.setSelected(isInstAll());
@@ -1816,8 +1811,7 @@ public class SearchPage extends JApplet {
 			
 			
 			// MS Type
-			labelPanel = newLabelPanel("MS Type", 
-					"&nbsp;MS type.&nbsp;", LABEL_SIZE_L, 2);
+			labelPanel = newLabelPanel("MS Type", " MS type. ", LABEL_SIZE_L, 2);
 			
 			JPanel msPanel = new JPanel();
 			msPanel.setLayout(new BoxLayout(msPanel, BoxLayout.X_AXIS));
@@ -1852,8 +1846,7 @@ public class SearchPage extends JApplet {
 			
 			
 			// Ion Mode
-			labelPanel = newLabelPanel("Ion Mode", 
-					"&nbsp;Ion mode.&nbsp;", LABEL_SIZE_L, 2);
+			labelPanel = newLabelPanel("Ion Mode", " Ion mode. ", LABEL_SIZE_L, 2);
 			
 			JPanel ionPanel = new JPanel();
 			ionPanel.setLayout(new BoxLayout(ionPanel, BoxLayout.X_AXIS));
@@ -2661,12 +2654,11 @@ public class SearchPage extends JApplet {
 		 * @return ラベルをラッピングしたパネル
 		 */
 		private JPanel newLabelPanel(String label, String tooltip, int size, int labelIndent) {
-			
 			// ラベル生成
 			for (int i=0; i<labelIndent; i++) {
-				label = "&nbsp;" + label;
+				label = " " + label;
 			}
-			JLabel l = new JLabel("<html>" + label + "</html>");
+			JLabel l = new JLabel(label);
 			
 			switch (size) {
 				case LABEL_SIZE_L:
@@ -2686,7 +2678,7 @@ public class SearchPage extends JApplet {
 			}
 			
 			if (tooltip != null) {
-				l.setToolTipText("<html>" + tooltip + "</html>");
+				l.setToolTipText(tooltip);
 			}
 			
 			

@@ -20,7 +20,7 @@
  *
  * PackageView クラス
  *
- * ver 1.0.4 2009.12.16
+ * ver 1.0.5 2011.08.10
  *
  ******************************************************************************/
 
@@ -155,7 +155,8 @@ public class PackageViewPanel extends JPanel {
 	private boolean isTolUnit = true;						// Tolerance単位(unit)
 	private boolean isTolPpm = false;						// Tolerance単位(ppm)
 	
-	private JLabel statusLbl = null;						// ステータスラベル
+	private JLabel statusKeyLbl = null;					// ステータスラベル(キー)
+	private JLabel statusValLbl = null;					// ステータスラベル(値)
 	
 	private final Color[] colorTable = new Color[]{
 			new Color(51, 102, 153),	// #336699
@@ -345,7 +346,16 @@ public class PackageViewPanel extends JPanel {
 		gbl.setConstraints(btnPane, gbc);
 		
 		// ステータスラベル
-		statusLbl = new JLabel("<html></html>");
+		statusKeyLbl = new JLabel(" ");
+		gbc = new GridBagConstraints();						// レイアウト制約初期化
+		gbc.fill = GridBagConstraints.HORIZONTAL;			// 水平サイズの変更のみを許可
+		gbc.weightx = 0;									// 余分の水平スペースを分配しない
+		gbc.weighty = 0;									// 余分の垂直スペースを分配しない
+		gbc.gridheight = GridBagConstraints.REMAINDER;		// 行最後のコンポーネントに指定
+		gbc.insets = new Insets(4, 4, 4, 4);				// 外側パディング指定
+		gbl.setConstraints(statusKeyLbl, gbc);
+		statusValLbl = new JLabel(" ");
+		statusValLbl.setForeground(new Color(0, 139, 139));
 		gbc = new GridBagConstraints();						// レイアウト制約初期化
 		gbc.fill = GridBagConstraints.HORIZONTAL;			// 水平サイズの変更のみを許可
 		gbc.weightx = 1;									// 余分の水平スペースを分配
@@ -353,14 +363,15 @@ public class PackageViewPanel extends JPanel {
 		gbc.gridwidth = GridBagConstraints.REMAINDER;		// 列最後のコンポーネントに指定
 		gbc.gridheight = GridBagConstraints.REMAINDER;		// 行最後のコンポーネントに指定
 		gbc.insets = new Insets(4, 4, 4, 4);				// 外側パディング指定
-		gbl.setConstraints(statusLbl, gbc);
+		gbl.setConstraints(statusValLbl, gbc);
 		
 		// 表示パネル追加
 		JPanel dispPanel = new JPanel();
 		dispPanel.setLayout(gbl);
 		dispPanel.add(plotPane);
 		dispPanel.add(btnPane);
-		dispPanel.add(statusLbl);	
+		dispPanel.add(statusKeyLbl);
+		dispPanel.add(statusValLbl);
 		add(dispPanel);
 		
 		// レコードリストペイン追加
@@ -957,12 +968,14 @@ public class PackageViewPanel extends JPanel {
 				StringBuffer sb = new StringBuffer();
 				Iterator<Double> ite = specData.getSelectedPeakList().iterator();
 				while (ite.hasNext()) {
-					sb.append(String.valueOf(ite.next()) + ",&nbsp;&nbsp;");
+					sb.append(String.valueOf(ite.next()) + ",  ");
 				}
-				statusLbl.setText("<html>Selected <i>m/z</i> : <font color=\"#008B8B\">" + sb.toString().substring(0, sb.length()-13) + "</font></html>");
+				statusKeyLbl.setText("Selected m/z :");
+				statusValLbl.setText(sb.toString().substring(0, sb.length()-3));
 			}
 			else {
-				statusLbl.setText("<html></html>");
+				statusKeyLbl.setText(" ");
+				statusValLbl.setText(" ");
 			}
 		}
 		
@@ -1995,7 +2008,7 @@ public class PackageViewPanel extends JPanel {
 							else {
 								JOptionPane.showMessageDialog(
 										SpectrumPlotPane.this,
-										"<html>&nbsp;<i>m/z</i> of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected.&nbsp;</html>",
+										" m/z of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected. ",
 										"Warning",
 										JOptionPane.WARNING_MESSAGE);
 							}
@@ -3238,7 +3251,7 @@ public class PackageViewPanel extends JPanel {
 			// Tolerance
 			title = new JLabel("・Tolerance");
 			ex = new JLabel("Help");
-			ex.setToolTipText("<html>&nbsp;Tolerance of <i>m/z</i>.&nbsp;</html>");
+			ex.setToolTipText(" Tolerance of m/z. ");
 			ex.setBorder(border);
 			JPanel tolerancePanel = new JPanel();
 			tolerancePanel.setLayout(new BoxLayout(tolerancePanel, BoxLayout.X_AXIS));
@@ -3261,7 +3274,7 @@ public class PackageViewPanel extends JPanel {
 			// Cutoff threshold
 			title = new JLabel("・Cutoff threshold");
 			ex = new JLabel("Help");
-			ex.setToolTipText("<html>&nbsp;Cutoff threshold of intensities.&nbsp;</html>");
+			ex.setToolTipText(" Cutoff threshold of intensities. ");
 			ex.setBorder(border);
 			final JTextField cutoffField = new JTextField(String.valueOf(CUTOFF), 7);
 			keyListenerList.add(cutoffField);

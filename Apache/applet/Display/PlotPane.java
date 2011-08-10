@@ -20,7 +20,7 @@
  *
  * スペクトル表示パネルクラス
  *
- * ver 1.0.1 2009.12.07
+ * ver 1.0.2 2011.08.10
  *
  ******************************************************************************/
 import java.awt.Color;
@@ -1072,7 +1072,7 @@ public class PlotPane extends JPanel implements MouseListener, MouseMotionListen
 							peaks1.setSelectPeakFlag(index, true);
 						} else {
 							JOptionPane.showMessageDialog(PlotPane.this,
-									"<html>&nbsp;<i>m/z</i> of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected.&nbsp;</html>",
+									" m/z of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected. ",
 									"Warning",
 									JOptionPane.WARNING_MESSAGE);
 							cursorPoint = new Point();

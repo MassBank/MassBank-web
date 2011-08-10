@@ -20,7 +20,7 @@
  *
  * スペクトル一括表示 クラス
  *
- * ver 1.0.6 2009.12.14
+ * ver 1.0.7 2011.08.10
  *
  ******************************************************************************/
 
@@ -135,7 +135,8 @@ public class PackageViewPanel extends JPanel {
 	private JButton topAngleBtn = null;					// オートアングルボタン(top)
 	private JButton sideAngleBtn = null;					// オートアングルボタン(side)
 
-	private JLabel statusLbl = null;						// ステータスラベル
+	private JLabel statusKeyLbl = null;						// ステータスラベル(キー)
+	private JLabel statusValLbl = null;						// ステータスラベル(値)
 	
 	private final Color[] colorTable = new Color[]{
 			new Color(51, 102, 153),	// #336699
@@ -384,7 +385,16 @@ public class PackageViewPanel extends JPanel {
 		gbl.setConstraints(btnPane, gbc);
 		
 		// ステータスラベル
-		statusLbl = new JLabel("<html></html>");
+		statusKeyLbl = new JLabel(" ");
+		gbc = new GridBagConstraints();						// レイアウト制約初期化
+		gbc.fill = GridBagConstraints.HORIZONTAL;			// 水平サイズの変更のみを許可
+		gbc.weightx = 0;									// 余分の水平スペースを分配しない
+		gbc.weighty = 0;									// 余分の垂直スペースを分配しない
+		gbc.gridheight = GridBagConstraints.REMAINDER;		// 行最後のコンポーネントに指定
+		gbc.insets = new Insets(4, 4, 4, 4);				// 外側パディング指定
+		gbl.setConstraints(statusKeyLbl, gbc);
+		statusValLbl = new JLabel(" ");
+		statusValLbl.setForeground(new Color(0, 139, 139));
 		gbc = new GridBagConstraints();						// レイアウト制約初期化
 		gbc.fill = GridBagConstraints.HORIZONTAL;			// 水平サイズの変更のみを許可
 		gbc.weightx = 1;									// 余分の水平スペースを分配
@@ -392,14 +402,15 @@ public class PackageViewPanel extends JPanel {
 		gbc.gridwidth = GridBagConstraints.REMAINDER;		// 列最後のコンポーネントに指定
 		gbc.gridheight = GridBagConstraints.REMAINDER;		// 行最後のコンポーネントに指定
 		gbc.insets = new Insets(4, 4, 4, 4);				// 外側パディング指定
-		gbl.setConstraints(statusLbl, gbc);
+		gbl.setConstraints(statusValLbl, gbc);
 		
 		// 表示パネル追加
 		JPanel dispPanel = new JPanel();
 		dispPanel.setLayout(gbl);
 		dispPanel.add(plotPane);
 		dispPanel.add(btnPane);
-		dispPanel.add(statusLbl);	
+		dispPanel.add(statusKeyLbl);
+		dispPanel.add(statusValLbl);	
 		add(dispPanel);
 		
 		// レコードリストペイン追加
@@ -960,12 +971,14 @@ public class PackageViewPanel extends JPanel {
 				StringBuffer sb = new StringBuffer();
 				Iterator<Double> ite = specData.getSelectedPeakList().iterator();
 				while (ite.hasNext()) {
-					sb.append(String.valueOf(ite.next()) + ",&nbsp;&nbsp;");
+					sb.append(String.valueOf(ite.next()) + ",  ");
 				}
-				statusLbl.setText("<html>Selected <i>m/z</i> : <font color=\"#008B8B\">" + sb.toString().substring(0, sb.length()-13) + "</font></html>");
+				statusKeyLbl.setText("Selected m/z :");
+				statusValLbl.setText(sb.toString().substring(0, sb.length()-3));
 			}
 			else {
-				statusLbl.setText("<html></html>");
+				statusKeyLbl.setText(" ");
+				statusValLbl.setText(" ");
 			}
 		}
 		
@@ -2001,7 +2014,7 @@ public class PackageViewPanel extends JPanel {
 							else {
 								JOptionPane.showMessageDialog(
 										SpectrumPlotPane.this,
-										"<html>&nbsp;<i>m/z</i> of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected.&nbsp;</html>",
+										" m/z of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected.&nbsp;",
 										"Warning",
 										JOptionPane.WARNING_MESSAGE);
 							}

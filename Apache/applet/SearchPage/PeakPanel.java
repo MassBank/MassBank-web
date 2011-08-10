@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2008 JST-BIRD MassBank
+ * Copyright (C) 2010 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *
  * ピークパネル クラス
  *
- * ver 1.0.8 2010.09.16
+ * ver 1.0.10 2011.08.10
  *
  ******************************************************************************/
 
@@ -58,8 +58,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-
 import massbank.MassBankCommon;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 /**
  * ピークパネル クラス
@@ -127,6 +128,11 @@ public class PeakPanel extends JPanel {
 	private JToggleButton mzHitDisp = null;
 
 	private static boolean isInitRate = false;	// 初期倍率フラグ(true:未拡大、false:拡大中)
+
+	public BufferedImage structImgM = null;
+	public BufferedImage structImgS = null;
+	public String formula = "";
+	public String emass = "";
 
 	/**
 	 * コンストラクタ
@@ -338,6 +344,37 @@ public class PeakPanel extends JPanel {
 			g.setColor(Color.white);
 			g.fillRect(0, 0, width, height);
 
+			if ( !head2tail && peaks1 != null) {
+				boolean isSizeM = false;
+				// 構造式の画像を表示する
+				if ( structImgM != null && height > structImgM.getHeight() ) {
+					g.drawImage(structImgM, (width - structImgM.getWidth()), 0, null);
+					isSizeM = true;
+				}
+				else if ( structImgS != null && height > structImgS.getHeight() ) {
+					g.drawImage(structImgS, (width - structImgS.getWidth()), 5, null);
+					isSizeM = false;
+				}
+
+				// FORMULA, EXACT MASSを表示する
+				if ( !formula.equals("") ) {
+					String info = formula + " (" + emass + ")";
+					int xPos = 0;
+					int fontSize = 0;
+					if ( isSizeM ) {
+						xPos = width - info.length() * 7;
+						fontSize = 12;
+					}
+					else {
+						xPos = width - info.length() * 6;
+						fontSize = 10;
+					}
+					g.setFont(new Font("SansSerif",Font.BOLD,fontSize));
+					g.setColor(new Color(0x008000));
+					g.drawString(info, xPos - 2, 12);
+				}
+			}
+
 			g.setFont(g.getFont().deriveFont(9.0f));
 			g.setColor(Color.lightGray);
 			if (!head2tail) {
@@ -395,11 +432,8 @@ public class PeakPanel extends JPanel {
 
 			// クエリ用パネル、検索結果用パネル
 			if (!head2tail) {
-				
 				int start, end;
-				
 				if (peaks1 != null) {
-					
 					int its, x, y, w, h;
 					double mz;
 					boolean isOnPeak;		// カーソルピーク上フラグ
@@ -997,7 +1031,7 @@ public class PeakPanel extends JPanel {
 								peaks1.setSelectPeakFlag(index, true);
 							} else {
 								JOptionPane.showMessageDialog(PeakPanel.this,
-										"<html>&nbsp;<i>m/z</i> of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected.&nbsp;</html>",
+										" m/z of " + MassBankCommon.PEAK_SEARCH_PARAM_NUM + " peak or more cannot be selected. ",
 										"Warning",
 										JOptionPane.WARNING_MESSAGE);
 								cursorPoint = new Point();
@@ -1686,4 +1720,41 @@ public class PeakPanel extends JPanel {
 		}
 		return massStr;
 	}
+
+	/**
+	 * 構造式画像の読み込み
+	 * @param gifMUrl 通常画像のURL
+	 * @param gifSUrl 小さい画像のUR
+	 */
+	public void loadStructGif(String gifMUrl, String gifSUrl) {
+		try {
+			if ( !gifMUrl.equals("") ) {
+				this.structImgM = ImageIO.read(new URL(gifMUrl));
+			}
+			else {
+				this.structImgM = null;
+			}
+			if ( !gifSUrl.equals("") ) {
+				this.structImgS = ImageIO.read(new URL(gifSUrl));
+			}
+			else {
+				this.structImgS = null;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 化合物情報のセット
+	 * @param formula 分子式
+	 * @param emass 精密質量
+	 */
+	public void setCompoundInfo(String formula, String emass) {
+		this.formula = formula;
+		this.emass = emass;
+	}
 }
+
+

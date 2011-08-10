@@ -20,7 +20,7 @@
  *
  * PackageView ƒNƒ‰ƒX
  *
- * ver 1.0.7 2009.12.16
+ * ver 1.0.8 2011.08.10
  *
  ******************************************************************************/
 
@@ -380,7 +380,7 @@ public class PackageView extends JApplet {
 		public HeaderPane() {
 
 			JLabel title = new JLabel();
-			title.setText("<html>&nbsp;Spectral Browser&nbsp;&nbsp;&nbsp;&nbsp;<i>ver. 1.06</i></html>");
+			title.setText(" Spectral Browser    ver. 1.07 ");
 			title.setPreferredSize(new Dimension(0, 18));
 			
 			GridBagLayout gbl = new GridBagLayout();
@@ -410,7 +410,7 @@ public class PackageView extends JApplet {
 		public FooterPane() {
 			
 			JLabel copyRighit = new JLabel();
-			copyRighit.setText("<html>Copyright (C) since 2006-2009 JST-BIRD MassBank&nbsp;<html>");
+			copyRighit.setText("Copyright (C) 2006 MassBank Project");
 			copyRighit.setPreferredSize(new Dimension(0, 16));
 			copyRighit.setHorizontalAlignment(SwingConstants.RIGHT);
 			
