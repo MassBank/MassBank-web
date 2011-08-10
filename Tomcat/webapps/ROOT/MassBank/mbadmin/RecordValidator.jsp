@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.16 2011.05.25
+ * ver 1.0.17 2011.08.10
  *
  ******************************************************************************/
 %>
@@ -255,8 +255,8 @@
 			}
 			if ( isDoubleByte ) {
 				// 全角文字が混入している場合
-				if ( status.equals("") ) status = STATUS_WARN;
-				detailsWarn.append( "<span class=\"warnFont\">double-byte character included.</span><br />" );
+				if ( status.equals("") ) status = STATUS_ERR;
+				detailsErr.append( "<span class=\"errFont\">double-byte character included.</span><br />" );
 			}
 			
 			//----------------------------------------------------
@@ -539,7 +539,7 @@
 										status = STATUS_ERR;
 										detailsErr.append( "<span class=\"errFont\">value of required item&nbsp;&nbsp;[" + requiredStr + "]&nbsp;&nbsp;is not peak format.</span><br />" );
 									}
-									if ( valStrs.size()-1 == 0 ) {	// 値がない場合はN/Aを追加するようにする
+									if ( peakNum != 0 && valStrs.size()-1 == 0 ) {	// 値がない場合はN/Aを追加するようにする（PK$NUM_PEAK:が0の場合は記述なしでも可）
 										if ( status.equals("") ) status = STATUS_WARN;
 										detailsWarn.append( "<span class=\"warnFont\">value of required item&nbsp;&nbsp;[PK$PEAK: ]&nbsp;&nbsp;is no value.  at that time, please add \"" + DEFAULT_VALUE + "\". </span><br />" );
 									}

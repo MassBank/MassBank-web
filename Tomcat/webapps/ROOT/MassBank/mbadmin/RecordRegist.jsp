@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.14 2011.05.31
+ * ver 1.0.15 2011.08.10
  *
  ******************************************************************************/
 %>
@@ -183,6 +183,7 @@
 			}
 			
 			// 読み込み
+			boolean isDoubleByte = false;
 			ArrayList<String> fileContents = new ArrayList<String>();
 			String line = "";
 			BufferedReader br = null;
@@ -190,6 +191,14 @@
 					br = new BufferedReader(new FileReader(file));
 					while ((line = br.readLine()) != null) {
 						fileContents.add(line);
+						
+						// 全角文字混入チェック
+						if ( !isDoubleByte ) {
+							byte[] bytes = line.getBytes("MS932");
+							if ( bytes.length != line.length() ) {
+								isDoubleByte = true;
+							}
+						}
 					}
 			}
 			catch (IOException e) {
@@ -205,6 +214,11 @@
 				}
 				catch (IOException e) {
 				}
+			}
+			if ( isDoubleByte ) {
+				// 全角文字が混入している場合
+				op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is double-byte character included." ) );
+				continue;
 			}
 			
 			//----------------------------------------------------
