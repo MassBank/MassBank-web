@@ -22,17 +22,32 @@
  *
  * 化合物名リスト作成処理
  *
- * ver 1.0.2 2009.02.02
+ * ver 1.0.3 2011.08.18
  *
  ******************************************************************************/
 %>
-
-<%@ page import="java.net.*, java.io.*, java.util.*" %>
-<%@ page import="org.apache.poi.hssf.usermodel.*" %>
-<%@ page import="org.apache.poi.hssf.util.*" %>
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.FileOutputStream" %>
+<%@ page import="java.io.InputStreamReader" %>
+<%@ page import="java.io.PrintStream" %>
+<%@ page import="java.net.URL" %>
+<%@ page import="java.net.URLConnection" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFCell" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFCellStyle" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFClientAnchor" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFComment" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFFont" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFPatriarch" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFRichTextString" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFRow" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFSheet" %>
+<%@ page import="org.apache.poi.hssf.usermodel.HSSFWorkbook" %>
+<%@ page import="org.apache.poi.hssf.util.HSSFColor" %>
+<%@ page import="org.apache.poi.hssf.util.Region" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankCommon" %>
-<%@ page import="massbank.admin.AdminCommon" %>
+<%@ page import="massbank.MassBankEnv" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
 <head>
@@ -47,15 +62,11 @@
 <%
 	// ベースUrl, JSP名をセット
 	String reqUrl = request.getRequestURL().toString();
-	String find = "mbadmin/";
-	int pos1 = reqUrl.indexOf( find );
-	String baseUrl = reqUrl.substring( 0, pos1  );
-	String jspName = reqUrl.substring( pos1 + find.length() );
+	String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	String jspName = reqUrl.substring( reqUrl.lastIndexOf("/")+1 );
 	
 	// 環境設定ファイルからURLリスト、DB名リストを取得
 	GetConfig conf = new GetConfig(baseUrl);
-	String[] urlList = conf.getSiteUrl();
-	String[] siteNameList = conf.getSiteName();
 	String[] dbNameList = conf.getDbName();
 	String serverUrl = conf.getServerUrl();
 	
@@ -82,7 +93,7 @@
 		psm.print( param );
 		BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
 		String line = "";
-		ArrayList<String> list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		while ( ( line = in.readLine() ) != null ) {
 			list.add( line );
 		}
@@ -129,7 +140,7 @@
 			for ( short col = 0; col < item.length - 1; col++ ) {
 				HSSFCell cell = hsRow.createCell(col);
 				String val = item[col];
-				cell.setCellValue(val);
+				cell.setCellValue(new HSSFRichTextString(val));
 			}
 			
 			// Recored IDをセット
@@ -147,7 +158,7 @@
 				String id = idList[n].substring( 0, pos );
 				String recordName = idList[n].substring( pos + 6 );
 				
-				cell.setCellValue(id);
+				cell.setCellValue(new HSSFRichTextString(id));
 				if ( isColReSize ) {
 					sheet.autoSizeColumn(col2);
 				}
@@ -173,7 +184,7 @@
 		String[] headline = { "Compound Name", "Formula", "Recored ID" };
 		for ( short col = 0; col < headline.length; col++ ){
 				HSSFCell cell = hsRow.createCell(col);
-				cell.setCellValue(headline[col]);
+				cell.setCellValue(new HSSFRichTextString(headline[col]));
 				cell.setCellStyle(style1);
 				sheet.autoSizeColumn(col);
 		}
@@ -181,19 +192,13 @@
 		sheet.addMergedRegion( new Region(0,(short)(headline.length-1), 0,(short)(colspan+1)) );
 		
 		//** 保存
-		String outPath = System.getProperty("catalina.home") + "/webapps/ROOT/";
-		int pos = baseUrl.lastIndexOf("MassBank");
-		if ( pos >= 0 ) {
-			outPath += baseUrl.substring(pos);
-		}
-		outPath += "temp/";
-		String fileName = siteNameList[siteNum].replace("Univ.","").trim().toLowerCase();
-		String xslPath = outPath + fileName + "_list.xls";
-		FileOutputStream fso = new FileOutputStream(xslPath);
+		String outPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + dbNameList[siteNum] + "_list.xls";
+		FileOutputStream fso = new FileOutputStream(outPath);
 		wb.write(fso);
 		fso.close();
 		
-		out.println( "<font color=\"blue\"><b>Generate " + xslPath + "</b></font><br><br>" );
+		String downloadUrl = baseUrl + "temp/" + dbNameList[siteNum] + "_list.xls";
+		out.println( "<b>Download :</b>&nbsp;<a href=\"" + downloadUrl + "\" target=\"_blank\">" + downloadUrl + "</a><br><br>" );
 	}
 
 %>
@@ -206,7 +211,7 @@
 		if ( i == siteNum ) {
 			out.print( " selected" );
 		}
-		out.println( ">" + siteNameList[i] );
+		out.println( ">" + dbNameList[i] );
 	}
 %>
 </select>
