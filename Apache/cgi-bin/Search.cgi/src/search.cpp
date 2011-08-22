@@ -30,6 +30,10 @@
 #include <windows.h>
 #endif
 #include <mysql.h>
+/** added C std lib manually */
+#include <cstdlib>
+/** added C string lib manually */
+#include <string.h>
 #include "search.h"
 
 using namespace std;
