@@ -60,7 +60,6 @@ public class JobManager {
 			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
 		}
 		this.connectUrl = "jdbc:mysql://" + dbHostName + "/" + DB_NAME;
-
 		// DBê⁄ë±
 		connectDB();
 	}

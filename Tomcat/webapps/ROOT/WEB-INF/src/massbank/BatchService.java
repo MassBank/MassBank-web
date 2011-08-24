@@ -20,11 +20,13 @@
  *
  * バッチ検索サービス
  *
- * ver 1.0.5 2010.12.06
+ * ver 1.0.6 2011.08.23
  *
  ******************************************************************************/
 package massbank;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -42,6 +44,13 @@ public class BatchService extends HttpServlet {
 	 * サービス初期処理を行う
 	 */
 	public void init() throws ServletException {
+		try {
+			if (InetAddress.getLocalHost().getHostName().equals("sv21")) { 
+				return;
+			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 		// 定期的にジョブを監視
 		mon = new JobMonitor();
 		this.mon.start();
