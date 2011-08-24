@@ -21,7 +21,7 @@
 #
 # Peak Search Advanced
 #
-# ver 1.0.2 2011.07.25
+# ver 1.0.3 2011.08.24
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -73,10 +73,6 @@ foreach $key ( @params ) {
 	}
 }
 
-if ($#inst < 0 || $#ms < 0) {
-	exit(0);
-}
-
 if ( $db_name eq '' ) {
 	$db_name = "MassBank";
 }
@@ -92,15 +88,17 @@ $PassWord = 'bird2006';
 $dbh = DBI->connect($DB, $User, $PassWord) || die "connect error \n";
 
 # Instrument Type condition
-my $isInstAll = 1;
-foreach my $inst (@inst) {
-	if ( $inst ne 'all' ) {
-		$isInstAll = 0;
+my $isInstAll = 0;
+if ( $#inst >= 0 ) {
+	foreach my $inst (@inst) {
+		if ( $inst eq 'all' ) {
+			$isInstAll = 1;
+			last;
+		}
 	}
-	else {
-		$isInstAll = 1;
-		last;
-	}
+}
+else {
+	$isInstAll = 1;
 }
 if ( !$isInstAll ) {
 	for ( $i = 0; $i < @inst; $i ++ ) {
@@ -128,11 +126,16 @@ if ( !$isInstAll ) {
 
 # MS Type condition
 my $isMsAll = 0;
-foreach $ms (@ms) {
-	if ( $ms eq 'all' ) {
-		$isMsAll = 1;
-		last;
+if ( $#ms >= 0 ) {
+	foreach $ms (@ms) {
+		if ( $ms eq 'all' ) {
+			$isMsAll = 1;
+			last;
+		}
 	}
+}
+else {
+	$isMsAll = 1;
 }
 if ( !$isMsAll ) {
 	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";

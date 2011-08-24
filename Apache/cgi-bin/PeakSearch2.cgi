@@ -21,7 +21,7 @@
 #
 # Peak Search 検索処理
 #
-# ver 3.0.3  2011.05.30
+# ver 3.0.4  2011.08.24
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -29,8 +29,12 @@ use CGI;
 
 print "Content-Type: text/plain\n\n";
 
-$query = new CGI;
-@params = $query->param();
+my $query = new CGI;
+my @params = $query->param();
+my $type = "";
+my $db_name = "";
+my @inst = ();
+my @ms = ();
 foreach $key ( @params ) {
 	$val = $query->param($key);
 	if ( $key eq 'id' ) {
@@ -88,19 +92,17 @@ if ( lc($ans_tbl_name) eq lc($heap_tbl_name) ) {
 	}
 }
 
-if ($#inst < 0) {
-	$dbh->disconnect;
-	exit(0);
+my $isInstAll = 0;
+if ( $#inst >= 0 ) {
+	foreach $inst (@inst) {
+		if ( $inst eq 'all' ) {
+			$isInstAll = 1;
+			last;
+		}
+	}
 }
-my $isInstAll = 1;
-foreach $inst (@inst) {
-	if ( $inst ne 'all' ) {
-		$isInstAll = 0;
-	}
-	else {
-		$isInstAll = 1;
-		last;
-	}
+else {
+	$isInstAll = 1;
 }
 if ( !$isInstAll ) {
 	for ( $i = 0; $i < @inst; $i ++ ) {
@@ -127,11 +129,16 @@ if ( !$isInstAll ) {
 }
 
 my $isMsAll = 0;
-foreach $ms (@ms) {
-	if ( $ms eq 'all' ) {
-		$isMsAll = 1;
-		last;
+if ( $#ms >= 0 ) {
+	foreach $ms (@ms) {
+		if ( $ms eq 'all' ) {
+			$isMsAll = 1;
+			last;
+		}
 	}
+}
+else {
+	$isMsAll = 1;
 }
 if ( !$isMsAll ) {
 	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";

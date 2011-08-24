@@ -21,7 +21,7 @@
 #
 # Quick Search 検索処理
 #
-# ver 3.0.4  2011.07.27
+# ver 3.0.5  2011.08.24
 #
 #-------------------------------------------------------------------------------
 use DBI;
@@ -47,6 +47,8 @@ print "Content-Type: text/plain\n\n";
 
 my $query = new CGI;
 my @params = $query->param();
+my @inst = ();
+my @ms = ();
 foreach $key ( @params ) {
 	$val = $query->param($key);
 	if ( $key eq 'id' ) {
@@ -75,11 +77,16 @@ elsif ( $Arg{'ion'} eq '-1' ) {
 }
 
 my $isInstAll = 0;
-foreach $inst (@inst) {
-	if ( $inst eq 'all' ) {
-		$isInstAll = 1;
-		last;
+if ( $#inst >= 0 ) {
+	foreach $inst (@inst) {
+		if ( $inst eq 'all' ) {
+			$isInstAll = 1;
+			last;
+		}
 	}
+}
+else {
+	$isInstAll = 1;
 }
 if ( !$isInstAll ) {
 	my $where_inst = "";
@@ -108,11 +115,16 @@ if ( !$isInstAll ) {
 }
 
 my $isMsAll = 0;
-foreach $ms (@ms) {
-	if ( $ms eq 'all' ) {
-		$isMsAll = 1;
-		last;
+if ( $#ms >= 0 ) {
+	foreach $ms (@ms) {
+		if ( $ms eq 'all' ) {
+			$isMsAll = 1;
+			last;
+		}
 	}
+}
+else {
+	$isMsAll = 1;
 }
 if ( !$isMsAll ) {
 	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";

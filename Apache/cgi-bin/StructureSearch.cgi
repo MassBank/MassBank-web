@@ -21,7 +21,7 @@
 #
 # 部分構造検索クライアント
 #
-# ver 1.0.8 2011.05.30
+# ver 1.0.9 2011.08.24
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -137,11 +137,16 @@ if ( $#inst_list != -1 ) {
 #------------------------------------------------
 my $isMsAll = 0;
 my $ms_type = "";
-foreach $ms (@ms_list) {
-	if ( $ms eq 'all' ) {
-		$isMsAll = 1;
-		last;
+if ( $#ms_list >= 0 ) {
+	foreach $ms (@ms_list) {
+		if ( $ms eq 'all' ) {
+			$isMsAll = 1;
+			last;
+		}
 	}
+}
+else {
+	$isMsAll = 1;
 }
 if ( !$isMsAll ) {
 	$sql = "SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'";
