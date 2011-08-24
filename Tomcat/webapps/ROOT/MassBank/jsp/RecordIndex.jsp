@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.28 2011.07.13
+ * ver 1.0.29 2011.08.24
  *
  ******************************************************************************/
 %>
@@ -89,7 +89,7 @@
 	//-------------------------------------
 	MassBankCommon mbcommon = new MassBankCommon();
 	String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
-	ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, "" );
+	ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();

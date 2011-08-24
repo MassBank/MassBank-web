@@ -21,19 +21,20 @@
 #
 # RecordIndexページ用件数カウントCGI
 #
-# ver 3.0.3  2011.06.02
+# ver 3.0.4  2011.08.24
 #
 #-------------------------------------------------------------------------------
 use DBI;
 use CGI;
 
 my $query = new CGI;
+my $category_all = $query->param('allcat') + 0;
 my $db_name = $query->param('dsn');
-	if ( $db_name eq '' ) {
-		$db_name = "MassBank";
-	}
-open(F, "DB_HOST_NAME");
+if ( $db_name eq '' ) {
+	$db_name = "MassBank";
+}
 my $host_name = "";
+open(F, "DB_HOST_NAME");
 while ( <F> ) {
 	chomp;
 	$host_name .= $_;
@@ -62,30 +63,34 @@ foreach my $item ( @ans ) {
 }
 
 # MS Type =================================================================
-$head = "MS:";
-@ans = &MySql("SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'");
-$cnt = @ans;
-if ( $cnt != 0 ) {
-	@ans = &MySql("SELECT DISTINCT MS_TYPE FROM RECORD ORDER BY MS_TYPE");
-	foreach my $item ( @ans ) {
-		$val = "$$item[0]";
-		$sqlparam = "WHERE R.MS_TYPE = '$val' ";
-		if ( $val ne '' ) {
-			outCount( $head, $val, 0, $sqlparam );
-		}
-		else {
-			outCount( $head, "Others", 0, $sqlparam );
+if ( $category_all ) {
+	$head = "MS:";
+	@ans = &MySql("SHOW FIELDS FROM RECORD LIKE 'MS_TYPE'");
+	$cnt = @ans;
+	if ( $cnt != 0 ) {
+		@ans = &MySql("SELECT DISTINCT MS_TYPE FROM RECORD ORDER BY MS_TYPE");
+		foreach my $item ( @ans ) {
+			$val = "$$item[0]";
+			$sqlparam = "WHERE R.MS_TYPE = '$val' ";
+			if ( $val ne '' ) {
+				outCount( $head, $val, 0, $sqlparam );
+			}
+			else {
+				outCount( $head, "Others", 0, $sqlparam );
+			}
 		}
 	}
-}
-else {
-	outCount( $head, "Others", 0, "" );
+	else {
+		outCount( $head, "Others", 0, "" );
+	}
 }
 
 # Merged Type ===========================================================
-$head = "MERGED:";
-outCount( $head, "Normal", 1, "WHERE INSTR(NAME, 'MERGED') = 0" );
-outCount( $head, "Merged", 1, "WHERE INSTR(NAME, 'MERGED') > 0" );
+if ( $category_all ) {
+	$head = "MERGED:";
+	outCount( $head, "Normal", 1, "WHERE INSTR(NAME, 'MERGED') = 0" );
+	outCount( $head, "Merged", 1, "WHERE INSTR(NAME, 'MERGED') > 0" );
+}
 
 # Ion & Compound Name =====================================================
 $sqltype = 1;
