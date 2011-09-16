@@ -20,7 +20,7 @@
  *
  * [WEB-API] メインクラス
  *
- * ver 1.0.3 2011.08.08
+ * ver 1.0.4 2011.09.16
  *
  ******************************************************************************/
 package massbank.api;
@@ -193,9 +193,14 @@ public class MassBankAPI {
 				continue;
 			}
 			else if ( item.indexOf("PK$PEAK") >= 0 ){
-				isPeakLine = true;
+				if ( item.indexOf("N/A") == -1 ) {	// 旧フォーマット対応
+					isPeakLine = true;
+				}
 			}
 			else {
+				if ( item.indexOf("N/A") >= 0 ) {	// 新フォーマット対応
+					isPeakLine = false;
+				}
 				if ( isPeakLine ) {
 					item = item.trim();
 					String[] peakVals = item.split(" ");
