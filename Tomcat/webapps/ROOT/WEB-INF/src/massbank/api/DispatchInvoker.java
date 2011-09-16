@@ -20,17 +20,16 @@
  *
  * [WEB-API] MultiDispatcher サーブレットを呼び出すクラス
  *
- * ver 1.0.2 2010.04.19
+ * ver 1.0.3 2011.09.16
  *
  ******************************************************************************/
 package massbank.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import org.apache.axis2.AxisFault;
-import massbank.MassBankCommon;
+
 import massbank.GetConfig;
-import massbank.StartupExecModule;
+import massbank.MassBankCommon;
+import massbank.MassBankEnv;
 
 
 public class DispatchInvoker {
@@ -42,7 +41,7 @@ public class DispatchInvoker {
 	 * コンストラクタ
 	 */
 	public DispatchInvoker() {
-		GetConfig conf = new GetConfig(StartupExecModule.BASE_URL);
+		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		this.serverUrl = conf.getServerUrl();
 	}
 
@@ -52,7 +51,7 @@ public class DispatchInvoker {
 	public void invoke( String typeName, String param ) {
 		MassBankCommon mbcommon = new MassBankCommon();
 //		System.out.println( "typeName:" + typeName  + "/" + param  + "/" + this.serverUrl );
-		this.response = mbcommon.execMultiDispatcher( this.serverUrl, typeName, param );
+		this.response = mbcommon.execDispatcher( this.serverUrl, typeName, param, true, null );
 		this.typeName = typeName;
 	}
 
