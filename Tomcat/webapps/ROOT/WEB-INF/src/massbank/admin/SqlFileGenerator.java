@@ -20,7 +20,7 @@
  *
  * DB登録用のSQLを生成するクラス
  *
- * ver 1.0.14 2011.06.02
+ * ver 1.0.15 2011.10.04
  *
  ******************************************************************************/
 package massbank.admin;
@@ -137,6 +137,7 @@ public class SqlFileGenerator {
 				else if ( name.equals("AC$INSTRUMENT_TYPE") ) {
 					this.acInstType = value.trim();
 					if ( ver == 1 ) {
+						this.acMsType = "N/A";	// フォーマットバージョンが1の場合はMS_TYPEが必須項目ではないため必ずN/Aとする
 						this.setRecord();
 					}
 				}
@@ -301,7 +302,7 @@ public class SqlFileGenerator {
 			nameReco += ", INSTRUMENT_NO";
 			
 			nameReco += ", MS_TYPE";
-			valReco += ", '" + this.acMsType + "'";		// レコードフォーマットバージョン1の場合は必ず空とする
+			valReco += ", '" + this.acMsType + "'";	
 		}
 	}
 
