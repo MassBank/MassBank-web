@@ -20,7 +20,7 @@
  *
  * MassBank共通クラス(Applet, JSP, Servlet 全てにおいて使用される)
  *
- * ver 1.0.22 2011.06.06
+ * ver 1.0.23 2011.09.21
  *
  ******************************************************************************/
 package massbank;
@@ -70,7 +70,7 @@ public class MassBankCommon {
 	public static final String REQ_TYPE_GETSTRUCT = "gstrct";
 	public static final String REQ_TYPE_ADVSEARCH = "advsearch";
 	public static final String REQ_TYPE_GETCINFO  = "gcinfo";
-
+	public static final String REQ_TYPE_GETFORMULA = "gform";
 	
 	// ＜CGIテーブルインデックス＞
 	public static final int CGI_TBL_NUM_TYPE = 0;		// CGI種別指定
@@ -106,6 +106,7 @@ public class MassBankCommon {
 	public static final int CGI_TBL_TYPE_GETSTRUCT= 26;
 	public static final int CGI_TBL_TYPE_ADVSEARCH= 27;
 	public static final int CGI_TBL_TYPE_GETCINFO  = 28;
+	public static final int CGI_TBL_TYPE_GETFORMULA = 29;
 	
 
 	// ＜CGIテーブル＞
@@ -117,7 +118,8 @@ public class MassBankCommon {
 		  REQ_TYPE_RCDIDX,   REQ_TYPE_INST,
 		  REQ_TYPE_MOL,      REQ_TYPE_GSDATA,    REQ_TYPE_GDATA3,
 		  REQ_TYPE_GETLIST,  REQ_TYPE_STRUCT,    REQ_TYPE_PEAKADV,  REQ_TYPE_GETRECORD,
-		  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT, REQ_TYPE_ADVSEARCH, REQ_TYPE_GETCINFO
+		  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT, REQ_TYPE_ADVSEARCH, REQ_TYPE_GETCINFO,
+		  REQ_TYPE_GETFORMULA
 		} ,
 		{ "PeakSearch2.cgi",   "PeakSearch2.cgi",     "Disp.cgi",         "GetData.cgi",
 		  "GetData2.cgi",      "Search.cgi",          "GetName.cgi",      "GetPeakById.cgi",
@@ -126,7 +128,8 @@ public class MassBankCommon {
 		  "RecordIndex.cgi",   "GetInstInfo.cgi",
 		  "MolfileAPI.cgi",    "GetSpectrumData.cgi", "GetData3.cgi",
 		  "GetRecordList.cgi", "StructureSearch.cgi", "PeakSearchAdv.cgi", "GetRecordInfo.cgi",
-		  "GetMolfile.cgi",    "GetStructure.cgi",    "AdvancedSearch.cgi", "GetCompoudInfo.cgi"
+		  "GetMolfile.cgi",    "GetStructure.cgi",    "AdvancedSearch.cgi", "GetCompoudInfo.cgi",
+		  "GetFormula.cgi"
 		}
 	};
 
