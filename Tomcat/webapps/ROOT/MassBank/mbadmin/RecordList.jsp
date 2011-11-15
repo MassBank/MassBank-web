@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.6 2011.06.10
+ * ver 1.0.7 2011.11.15
  *
  ******************************************************************************/
 %>
@@ -208,7 +208,7 @@
 		// レコードフォーマットバージョン取得
 		Map<String, String> idVersionMap = new HashMap<String, String>();
 		final String cgiUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "cgi-bin/GetRecordInfo.cgi";
-		final String cgiParam = "dsn=" + selDbName + "&mode=ver&" + idList.toString();
+		final String cgiParam = "dsn=" + selDbName + "&mode=ver&ids=" + idList.toString();
 		String tmpRet = execCgi( cgiUrl, cgiParam );
 		if ( tmpRet == null ) {
 			Logger.getLogger("global").severe( "cgi execute failed." + NEW_LINE +
