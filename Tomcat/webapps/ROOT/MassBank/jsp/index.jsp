@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.16 2011.07.22
+ * ver 2.0.17 2011.12.06
  *
  ******************************************************************************/
 %>
@@ -169,7 +169,7 @@
 <meta name="rating" content="general" />
 <meta name="copyright" content="Copyright &copy; 2006 MassBank Project" />
 <meta name="description" content="MassBank は、研究者がマススペクトルを共有することを目的とした、世界で最初の public database です。これらのマススペクトルは、メタボローム解析をはじめとする生物科学研究において、質量分析で検出した化合物の同定や推定に利用することができます。" />
-<meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, resolution, spectral, database" />
+<meta name="keywords" content="MassBank, massbank, マスバンク, データベース, マススペクトル, Quality, spectral, database" />
 <meta name="revisit_after" content="10 days">
 <meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
@@ -224,7 +224,7 @@
 <li id="home_btn2"><a href="./QuickSearch.html" title="Quick Search">Quick Search</a></li>
 <li id="home_btn3"><a href="./PeakSearch.html" title="Peak Search">Peak Search</a></li>
 <li id="home_btn4"><a href="./StructureSearch.html" title="Substructure Search">Substructure Search</a></li>
-<li id="home_btn5"><a href="./AdvancedSearch.html" title="Advanced Search">Advanced Search</a></li>
+<li id="home_btn5"><a href="./MetaboIdentif.html" title="Metabolite Identification">Metabolite Identification</a></li>
 </ul>
 <ul id="line2" class="hide_text">
 <li id="home_btn6"><a href="./PackageView.html" title="Spectral Browser">Spectral Browser</a></li>
@@ -317,7 +317,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <meta name="rating" content="general" />
 <meta name="copyright" content="Copyright &copy; 2006 MassBank Project" />
 <meta name="description" content="MassBank is the first public repository of mass spectral data for sharing them among scientific research community. MassBank data are useful for the chemical identification and structure elucidation of chemical comounds detected by mass spectrometry." />
-<meta name="keywords" content="MassBank, massbank, resolution, mass, spectral, database" />
+<meta name="keywords" content="MassBank, massbank, Quality, mass, spectral, database" />
 <meta name="revisit_after" content="10 days">
 <meta name="google-site-verification" content="gNuKmu49uDWeEwk8Y545khNlKbOHgijB8hW31fdMoDw" />
 <link rel="stylesheet" href="./css/import.css" type="text/css" media="all" />
@@ -372,7 +372,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <li id="home_btn2"><a href="./QuickSearch.html" title="Quick Search">Quick Search</a></li>
 <li id="home_btn3"><a href="./PeakSearch.html" title="Peak Search">Peak Search</a></li>
 <li id="home_btn4"><a href="./StructureSearch.html" title="Substructure Search">Substructure Search</a></li>
-<li id="home_btn5"><a href="./AdvancedSearch.html" title="Advanced Search">Advanced Search</a></li>
+<li id="home_btn5"><a href="./MetaboIdentif.html" title="Metabolite Identification">Metabolite Identification</a></li>
 </ul>
 <ul id="line2" class="hide_text">
 <li id="home_btn6"><a href="./PackageView.html" title="Spectral Browser">Spectral Browser</a></li>

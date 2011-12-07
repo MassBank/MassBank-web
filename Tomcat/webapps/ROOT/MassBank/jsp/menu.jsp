@@ -22,7 +22,7 @@
  *
  * MassBank メニュー
  *
- * ver 1.0.1 2010.12.24
+ * ver 1.0.2 2011.12.06
  *
  ******************************************************************************/
 %>
@@ -71,7 +71,7 @@
 <%
 	if ( isAdvanced ) {
 %>
-<a href="./AdvancedSearch.html" target="_parent" title="Advanced Search">Advanced</a>
+<a href="./MetaboIdentif.html" target="_parent" title="Metabolite Identification">Identification</a>
 |
 <%
 	}
