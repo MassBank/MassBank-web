@@ -20,7 +20,7 @@
  *
  * MassBank ä¬ã´ïœêîä«óùÉNÉâÉX
  *
- * ver 1.0.3 2011.08.23
+ * ver 1.0.4 2011.12.15
  *
  ******************************************************************************/
 package massbank;
@@ -293,7 +293,7 @@ public class MassBankEnv extends HttpServlet {
 		if ( VAL_TOMCAT_DOCROOT_PATH.indexOf("api") != -1 ) {
 			VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.replaceAll("webapps/api/", "webapps/ROOT/");
 			if ( isWindows ) {
-				VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.replaceAll("webapps\\api\\", "webapps\\ROOT\\");
+				VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.replaceAll("webapps\\\\api\\\\", "webapps\\\\ROOT\\\\");
 			}
 		}
 		
