@@ -22,7 +22,7 @@
  *
  * 共通JSP（静的インクルード用）
  *
- * ver 1.0.5 2011.06.16
+ * ver 1.0.6 2011.12.15
  *
  ******************************************************************************/
 %>
@@ -63,6 +63,7 @@
 	String PEAK_PAGE = "#page=15";
 	String STRUCTURE_PAGE = "#page=14";
 	String ADVANCED_PAGE = "#page=11";
+	String IDENTIFICATION_PAGE = "";
 	String BROWSER_PAGE = "#page=26";
 	String BATCH_PAGE = "#page=9";
 	String BROWSE_PAGE = "#page=19";
@@ -74,16 +75,17 @@
 		MANUAL_URL = commonRefBaseUrl + "manuals/UserManual_en.pdf";
 		SPECTRUM_PAGE = "#page=4";
 		QUICK_PAGE = "#page=8";
-		PEAK_PAGE = "#page=15";
-		STRUCTURE_PAGE = "#page=14";
-		ADVANCED_PAGE = "#page=11";
-		BROWSER_PAGE = "#page=26";
+		PEAK_PAGE = "#page=13";
+		STRUCTURE_PAGE = "#page=12";
+		ADVANCED_PAGE = "";
+		IDENTIFICATION_PAGE = "#page=16";
+		BROWSER_PAGE = "#page=28";
 		BATCH_PAGE = "#page=9";
-		BROWSE_PAGE = "19";
-		INDEX_PAGE = "#page=18";
+		BROWSE_PAGE = "#page=21";
+		INDEX_PAGE = "#page=22";
 		MULTI_PAGE = "#page=23";
 		RESULT_PAGE = "#page=20";
-		RESULT_PEAK_PAGE = "#page=16";
+		RESULT_PEAK_PAGE = "";
 	}
 	
 	String SAMPLE_URL = commonRefBaseUrl + "sample/sample.txt";
