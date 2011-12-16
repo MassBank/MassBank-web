@@ -22,7 +22,7 @@
  *
  * Browse Page表示用モジュール
  *
- * ver 1.0.15 2011.07.22
+ * ver 1.0.16 2011.12.16
  *
  ******************************************************************************/
 %>
@@ -38,7 +38,8 @@
 	// 環境設定ファイルからURLリストを取得
 	//-------------------------------------------
 	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
-	String [] siteLongName = conf.getSiteLongName();	// サイト名取得
+	String [] siteName = conf.getSiteName();			// サイト名取得
+	String [] siteLongName = conf.getSiteLongName();	// ロングサイト名取得
 	String [] browseMode = conf.getBrowseMode();		// BrowseMode取得
 %>
 <html>
@@ -86,7 +87,7 @@
 	String[] urlList    = conf.getSiteUrl();
 	String[] dbNameList = conf.getDbName();
 	ServerStatus svrStatus = new ServerStatus(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
-	for ( int i = 0; i < siteLongName.length; i++ ) {
+	for ( int i = 0; i < siteName.length; i++ ) {
 		// 連携サーバ障害有無チェック(サーバ監視が行われていなければ無条件にTrueが返ってくる)
 		if ( !svrStatus.isServerActive(urlList[i], dbNameList[i]) ) {
 			continue;
@@ -102,13 +103,13 @@
 		out.print( ">" );
 		out.println( "</td>" );
 		
-		if (i+1 != siteLongName.length) {
+		if (i+1 != siteName.length) {
 			out.print( "\t\t\t\t\t\t\t\t<td align=\"left\" valign=\"top\" height=\"26\">" );
 		}
 		else {
 			out.print( "\t\t\t\t\t\t\t\t<td align=\"left\" valign=\"top\" height=\"\">" );
 		}
-		out.print( "<b>" + siteLongName[i] + "</b>" );
+		out.print( "<span title=\"" + siteLongName[i] + "\"><b>" + siteName[i] + "</b></span>" );
 		out.println( "</td>" );
 		out.println( "\t\t\t\t\t\t\t</tr>" );
 	}
