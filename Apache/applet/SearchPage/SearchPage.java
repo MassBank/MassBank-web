@@ -20,7 +20,7 @@
  *
  * SearchPage クラス
  *
- * ver 1.0.19 2011.08.10
+ * ver 1.0.20 2011.12.16
  *
  ******************************************************************************/
 
@@ -1653,30 +1653,8 @@ public class SearchPage extends JApplet {
 			JPanel itemPanel;
 			
 			
-			// Precursor m/z
-			labelPanel = newLabelPanel("Precursor m/z", " Precursor m/z. ", LABEL_SIZE_L, 2);
-			
-			preField = new JTextField(((PRECURSOR < 0) ? "" : String.valueOf(PRECURSOR)), 5);
-			preField.setHorizontalAlignment(JTextField.RIGHT);
-			keyListenerList.add(preField);
-			
-			itemPanel = new JPanel();
-			initItemPanel(itemPanel);
-			itemPanel.add(wrappTextPanel(preField), itemPanelGBC(0d, 0d, 0, 0, 1, 1));
-			itemPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
-			
-			delimPanel = new JPanel();
-			initDelimPanel(delimPanel, true);
-			delimPanel.add(labelPanel, delimPanelGBC(0d, 0d, 0, 0, 1, 1));
-			delimPanel.add(itemPanel, delimPanelGBC(0d, 0d, 1, 0, 1, 1));
-			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
-			
-			container.add(delimPanel, mainContainerGBC(0, 0, 1, 1));
-			
-			
-			
 			// Tolerance
-			labelPanel = newLabelPanel("Tolerance", " Tolerance of m/z. ", LABEL_SIZE_L, 2);
+			labelPanel = newLabelPanel("Tolerance of m/z", " Tolerance of m/z. ", LABEL_SIZE_L, 2);
 			
 			JPanel tolPanel = new JPanel();
 			tolPanel.setLayout(new BoxLayout(tolPanel, BoxLayout.X_AXIS));
@@ -1703,7 +1681,7 @@ public class SearchPage extends JApplet {
 			delimPanel.add(itemPanel, delimPanelGBC(0d, 0d, 1, 0, 1, 1));
 			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
 			
-			container.add(delimPanel, mainContainerGBC(0, 1, 1, 1));
+			container.add(delimPanel, mainContainerGBC(0, 0, 1, 1));
 			
 			
 			
@@ -1725,7 +1703,7 @@ public class SearchPage extends JApplet {
 			delimPanel.add(itemPanel, delimPanelGBC(0d, 0d, 1, 0, 1, 1));
 			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
 			
-			container.add(delimPanel, mainContainerGBC(0, 2, 1, 1));
+			container.add(delimPanel, mainContainerGBC(0, 1, 1, 1));
 			
 			
 			
@@ -1806,7 +1784,7 @@ public class SearchPage extends JApplet {
 			delimPanel.add(scroll, delimPanelGBC(0d, 0d, 1, 1, 1, 1));
 			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, GridBagConstraints.REMAINDER));
 			
-			container.add(delimPanel, mainContainerGBC(0, 3, 1, 1));
+			container.add(delimPanel, mainContainerGBC(0, 2, 1, 1));
 			
 			
 			
@@ -1841,7 +1819,7 @@ public class SearchPage extends JApplet {
 			delimPanel.add(itemPanel, delimPanelGBC(0d, 0d, 1, 0, 1, 1));
 			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
 			
-			container.add(delimPanel, mainContainerGBC(0, 4, 1, 1));
+			container.add(delimPanel, mainContainerGBC(0, 3, 1, 1));
 			
 			
 			
@@ -1866,6 +1844,28 @@ public class SearchPage extends JApplet {
 			itemPanel.add(ionPanel, itemPanelGBC(0d, 0d, 0, 0, 1, 1));
 			itemPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 1, 0, GridBagConstraints.REMAINDER, 1));
 
+			delimPanel = new JPanel();
+			initDelimPanel(delimPanel, true);
+			delimPanel.add(labelPanel, delimPanelGBC(0d, 0d, 0, 0, 1, 1));
+			delimPanel.add(itemPanel, delimPanelGBC(0d, 0d, 1, 0, 1, 1));
+			delimPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
+			
+			container.add(delimPanel, mainContainerGBC(0, 4, 1, 1));
+			
+			
+			
+			// Precursor m/z
+			labelPanel = newLabelPanel("Precursor m/z", " Precursor m/z. ", LABEL_SIZE_L, 2);
+			
+			preField = new JTextField(((PRECURSOR < 0) ? "" : String.valueOf(PRECURSOR)), 5);
+			preField.setHorizontalAlignment(JTextField.RIGHT);
+			keyListenerList.add(preField);
+			
+			itemPanel = new JPanel();
+			initItemPanel(itemPanel);
+			itemPanel.add(wrappTextPanel(preField), itemPanelGBC(0d, 0d, 0, 0, 1, 1));
+			itemPanel.add(new JPanel(), itemPanelGBC(1d, 0d, 2, 0, GridBagConstraints.REMAINDER, 1));
+			
 			delimPanel = new JPanel();
 			initDelimPanel(delimPanel, true);
 			delimPanel.add(labelPanel, delimPanelGBC(0d, 0d, 0, 0, 1, 1));
@@ -1983,28 +1983,6 @@ public class SearchPage extends JApplet {
 					
 					// 入力チェック
 					try {
-						preField.setText(preField.getText().trim());
-						if (!preField.getText().equals("")) {
-							int num = Integer.parseInt(preField.getText());
-							if (num < 1) {
-								JOptionPane.showMessageDialog(null,
-										"[Precursor m/z]  Value must be an integer of 1 or more.",
-										"Warning",
-										JOptionPane.WARNING_MESSAGE);
-								endProc();
-								return;								
-							}
-						}
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(null,
-								"[Precursor m/z]  Value must be an integer of 1 or more.",
-								"Warning",
-								JOptionPane.WARNING_MESSAGE);
-						endProc();
-						return;
-					}
-					
-					try {
 						tolField.setText(tolField.getText().trim());
 						float num = Float.parseFloat(tolField.getText());
 						if (num < 0) {
@@ -2023,7 +2001,6 @@ public class SearchPage extends JApplet {
 						endProc();
 						return;
 					}
-					
 					try {
 						cutoffField.setText(cutoffField.getText().trim());
 						int num = Integer.parseInt(cutoffField.getText());
@@ -2074,6 +2051,27 @@ public class SearchPage extends JApplet {
 								JOptionPane.WARNING_MESSAGE);
 						endProc();
 						return;	
+					}
+					try {
+						preField.setText(preField.getText().trim());
+						if (!preField.getText().equals("")) {
+							int num = Integer.parseInt(preField.getText());
+							if (num < 1) {
+								JOptionPane.showMessageDialog(null,
+										"[Precursor m/z]  Value must be an integer of 1 or more.",
+										"Warning",
+										JOptionPane.WARNING_MESSAGE);
+								endProc();
+								return;								
+							}
+						}
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null,
+								"[Precursor m/z]  Value must be an integer of 1 or more.",
+								"Warning",
+								JOptionPane.WARNING_MESSAGE);
+						endProc();
+						return;
 					}
 					
 					
@@ -2163,49 +2161,6 @@ public class SearchPage extends JApplet {
 					cancelButton.doClick();
 				}
 			});
-		}
-		
-		/**
-		 * Precursor m/z値変更確認
-		 * Precursor m/z値が変更されていた場合はtrueを返却する。
-		 * @return 変更フラグ
-		 */
-		private boolean isPreChange() {
-			
-			if (preField.getText().equals("")) {
-				if (PRECURSOR != -1) {
-					return true;
-				}
-			}
-			else if (Integer.parseInt(preField.getText()) != PRECURSOR) {
-				return true;
-			}
-			return false;
-		}
-		
-		/**
-		 * Precursor m/z値変更
-		 * Precursor m/z値を変更した場合に確定もしくはキャンセルする。
-		 * @param isChange 変更フラグ
-		 */
-		private void preChange(boolean isChange) {
-			
-			if (isChange) {
-				
-//				// Cookie情報用リスト
-//				ArrayList<String> valueList = new ArrayList<String>();
-				
-				if (preField.getText().equals("")) {
-					PRECURSOR = -1;
-				}
-				else {
-					PRECURSOR = Integer.parseInt(preField.getText());
-				}
-//				valueList.add(String.valueOf(PRECURSOR));
-				
-//				// Precursor m/z値をCookieに設定
-//				cm.setCookie(COOKIE_PRE, valueList);
-			}
 		}
 		
 		/**
@@ -2556,6 +2511,49 @@ public class SearchPage extends JApplet {
 			// イオン種別選択状態をCookieに設定
 			if (isChange) {
 				cm.setCookie(COOKIE_ION, valueList);
+			}
+		}
+		
+		/**
+		 * Precursor m/z値変更確認
+		 * Precursor m/z値が変更されていた場合はtrueを返却する。
+		 * @return 変更フラグ
+		 */
+		private boolean isPreChange() {
+			
+			if (preField.getText().equals("")) {
+				if (PRECURSOR != -1) {
+					return true;
+				}
+			}
+			else if (Integer.parseInt(preField.getText()) != PRECURSOR) {
+				return true;
+			}
+			return false;
+		}
+		
+		/**
+		 * Precursor m/z値変更
+		 * Precursor m/z値を変更した場合に確定もしくはキャンセルする。
+		 * @param isChange 変更フラグ
+		 */
+		private void preChange(boolean isChange) {
+			
+			if (isChange) {
+				
+//				// Cookie情報用リスト
+//				ArrayList<String> valueList = new ArrayList<String>();
+				
+				if (preField.getText().equals("")) {
+					PRECURSOR = -1;
+				}
+				else {
+					PRECURSOR = Integer.parseInt(preField.getText());
+				}
+//				valueList.add(String.valueOf(PRECURSOR));
+				
+//				// Precursor m/z値をCookieに設定
+//				cm.setCookie(COOKIE_PRE, valueList);
 			}
 		}
 		

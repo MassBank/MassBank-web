@@ -20,7 +20,7 @@
  *
  * CookieèÓïÒä«óù ÉNÉâÉX
  *
- * ver 1.0.4 2010.03.25
+ * ver 1.0.5 2011.12.16
  *
  ******************************************************************************/
 
@@ -189,6 +189,9 @@ public class CookieManager {
 					tmpAllCookie = (String)doc.eval("cookie");
 				}
 				catch (JSException jse) {				
+				}
+				if (tmpAllCookie == null) {
+					return values;
 				}
 			}
 			String[] allCookie = tmpAllCookie.split(";");
