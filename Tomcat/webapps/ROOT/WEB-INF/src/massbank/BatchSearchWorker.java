@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.8 2011.07.15
+ * ver 1.0.9 2011.12.26
  *
  ******************************************************************************/
 package massbank;
@@ -189,10 +189,10 @@ public class BatchSearchWorker extends Thread {
 								+ "\n"
 								+ "The results for your request dated '" + this.time + "' are attached to this e-mail.\n"
 								+ "\n"
-								+ "--\n"
+								+ "----------------------------------------------\n"
 								+ "MassBank - High Quality Mass Spectral Database\n"
-								+ "  URL: http://www.massbank.jp/\n"
-								+ "  E-mail: massbank@iab.keio.ac.jp");
+								+ "  URL: " + serverUrl + "\n"
+								+ "  E-mail: " + MassBankEnv.get(MassBankEnv.KEY_BATCH_FROM));
 				
 				
 				// 添付ファイル生成一時ディレクトリ
@@ -379,7 +379,7 @@ public class BatchSearchWorker extends Thread {
 			out.println("<html>");
 			out.println("<head><title>MassBank Batch Service Results</title></head>");
 			out.println("<body>");
-			out.println("<h1><a href=\"http://www.massbank.jp/\" target=\"_blank\">MassBank</a> Batch Service Results</h1>");
+			out.println("<h1><a href=\"" + serverUrl + "\" target=\"_blank\">MassBank</a> Batch Service Results</h1>");
 			out.println("<hr>");
 			out.println("<h2>Request Date : " + this.time +"</h2>");
 			out.println("Instrument Type : " + this.inst + "<br>");
@@ -500,116 +500,124 @@ public class BatchSearchWorker extends Thread {
 				}
 			}
 
-			//(2) KEGG ID, Map IDをDBから取得
-			String where = "where MASSBANK in(";
-			Iterator it = top1IdList.iterator();
-			while ( it.hasNext() ) {
-				String id = (String)it.next();
-				where += "'" + id + "',";
+			//※ http://www.massbank.jp/ がサーバの場合のみKEGGに関する処理を行う
+			HashMap<String, ArrayList> massbank2mapList = new HashMap<String, ArrayList>();	//(2)用
+			HashMap<String, String> massbank2keggList = new HashMap<String, String>();		//(2)用
+			HashMap<String, ArrayList> map2keggList = new HashMap<String, ArrayList>();		//(3)用
+			ArrayList<String> mapNameList = new ArrayList<String>();						//(4)用
+			boolean isKeggReturn = true;
+			if (serverUrl.indexOf("www.massbank.jp") == -1) {
+				isKeggReturn = false;
 			}
-			where = where.substring(0, where.length()-1);
-			where += ")";
-			String sql = "select MASSBANK, t1.KEGG, MAP from "
-					   + "(SELECT MASSBANK,KEGG FROM OTHER_DB_IDS " + where + ") t1, PATHWAY_CPDS t2"
-					   + " where t1.KEGG=t2.KEGG order by MAP,MASSBANK";
+			if ( isKeggReturn ) {
 
-			HashMap<String, ArrayList> massbank2mapList = new HashMap<String, ArrayList>();
-			HashMap<String, String> massbank2keggList = new HashMap<String, String>();
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				String connectUrl = "jdbc:mysql://localhost/MassBank_General";
-				Connection con = DriverManager.getConnection(connectUrl, "bird", "bird2006");
-				Statement stmt = con.createStatement();
-				ResultSet rs = stmt.executeQuery(sql);
-				String prevId = "";
-				ArrayList<String> list = null;
-				while ( rs.next() ) {
-					String id   = rs.getString(1);
-					String kegg = rs.getString(2);
-					String map  = rs.getString(3);
-					if ( !id.equals(prevId) ) {
-						if ( !prevId.equals("") ) {
-							massbank2mapList.put(prevId, list);
+				//(2) KEGG ID, Map IDをDBから取得
+				String where = "where MASSBANK in(";
+				Iterator it = top1IdList.iterator();
+				while ( it.hasNext() ) {
+					String id = (String)it.next();
+					where += "'" + id + "',";
+				}
+				where = where.substring(0, where.length()-1);
+				where += ")";
+				String sql = "select MASSBANK, t1.KEGG, MAP from "
+						   + "(SELECT MASSBANK,KEGG FROM OTHER_DB_IDS " + where + ") t1, PATHWAY_CPDS t2"
+						   + " where t1.KEGG=t2.KEGG order by MAP,MASSBANK";
+	
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+					String connectUrl = "jdbc:mysql://localhost/MassBank_General";
+					Connection con = DriverManager.getConnection(connectUrl, "bird", "bird2006");
+					Statement stmt = con.createStatement();
+					ResultSet rs = stmt.executeQuery(sql);
+					String prevId = "";
+					ArrayList<String> list = new ArrayList<String>();
+					while ( rs.next() ) {
+						String id   = rs.getString(1);
+						String kegg = rs.getString(2);
+						String map  = rs.getString(3);
+						if ( !id.equals(prevId) ) {
+							if ( !prevId.equals("") ) {
+								massbank2mapList.put(prevId, list);
+							}
+							list = new ArrayList<String>();
+							massbank2keggList.put(id, kegg);
 						}
-						list = new ArrayList<String>();
-						massbank2keggList.put(id, kegg);
+						list.add(map);
+						prevId = id;
 					}
-					list.add(map);
-					prevId = id;
+					massbank2mapList.put(prevId, list);
+	
+					rs.close();
+					stmt.close();
+					con.close();
 				}
-				massbank2mapList.put(prevId, list);
-
-				rs.close();
-				stmt.close();
-				con.close();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			//(3) Pathway Map色付けリスト作成
-			HashMap<String, ArrayList> map2keggList = new HashMap<String, ArrayList>();
-			it = massbank2mapList.keySet().iterator();
-			while ( it.hasNext()) {
-				String id = (String)it.next();
-				String kegg = (String)massbank2keggList.get(id);
-
-				ArrayList<String> list1 = massbank2mapList.get(id);
-				for ( int i = 0; i < list1.size(); i++ ) {
-					String map = list1.get(i);
-					ArrayList<String> list2 = null;
-					if ( map2keggList.containsKey(map) ) {
-						list2 = map2keggList.get(map);
-						list2.add(kegg);
-					}
-					else {
-						list2 = new ArrayList<String>();
-						list2.add(kegg);
-						map2keggList.put(map, list2);
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				//(3) Pathway Map色付けリスト作成
+				it = massbank2mapList.keySet().iterator();
+				while ( it.hasNext()) {
+					String id = (String)it.next();
+					String kegg = (String)massbank2keggList.get(id);
+	
+					ArrayList<String> list1 = massbank2mapList.get(id);
+					for ( int i = 0; i < list1.size(); i++ ) {
+						String map = list1.get(i);
+						ArrayList<String> list2 = null;
+						if ( map2keggList.containsKey(map) ) {
+							list2 = map2keggList.get(map);
+							list2.add(kegg);
+						}
+						else {
+							list2 = new ArrayList<String>();
+							list2.add(kegg);
+							map2keggList.put(map, list2);
+						}
 					}
 				}
+	
+				//(4) SOAPでPathway Map色付けメソッド実行
+				it = map2keggList.keySet().iterator();
+				List<Callable<HashMap<String, String>>> tasks = new ArrayList();
+				while ( it.hasNext() ) {
+					String map = (String)it.next();
+					mapNameList.add(map);
+					ArrayList<String> list = map2keggList.get(map);
+					String[] cpds = list.toArray(new String[]{});
+					Callable<HashMap<String, String>> task = new ColorPathway(map, cpds);
+					tasks.add(task);
+				}
+				Collections.sort(mapNameList);
+	
+					// スレッドプール10個まで
+				ExecutorService exsv = Executors.newFixedThreadPool(10);
+				List<Future<HashMap<String, String>>> results = exsv.invokeAll(tasks);
+	
+					// Pathway mapの画像格納場所
+				String saveRootPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + "pathway";
+				File rootDir = new File(saveRootPath);
+				if ( !rootDir.exists() ) {
+					rootDir.mkdir();
+				}
+//				String savePath = saveRootPath + File.separator + this.jobId;
+//				File newDir = new File(savePath);
+//				if ( !newDir.exists() ) {
+//					newDir.mkdir();
+//				}
+
+				//(6) Pathway mapのURLを取得
+				for ( Future<HashMap<String, String>> future: results ) {
+					HashMap<String, String> res = future.get();
+					it = res.keySet().iterator();
+					String map = (String)it.next();
+					String mapUrl = res.get(map);
+					String filePath = saveRootPath + File.separator + this.jobId + "_" + map + ".png";
+					FileUtil.downloadFile(mapUrl, filePath);
+				}
 			}
-
-			//(4) SOAPでPathway Map色付けメソッド実行
-			ArrayList<String> mapNameList = new ArrayList<String>();
-			it = map2keggList.keySet().iterator();
-			List<Callable<HashMap<String, String>>> tasks = new ArrayList();
-			while ( it.hasNext() ) {
-				String map = (String)it.next();
-				mapNameList.add(map);
-				ArrayList<String> list = map2keggList.get(map);
-				String[] cpds = list.toArray(new String[]{});
-				Callable<HashMap<String, String>> task = new ColorPathway(map, cpds);
-				tasks.add(task);
-			}
-			Collections.sort(mapNameList);
-
-				// スレッドプール10個まで
-			ExecutorService exsv = Executors.newFixedThreadPool(10);
-			List<Future<HashMap<String, String>>> results = exsv.invokeAll(tasks);
-
-				// Pathway mapの画像格納場所
-			String saveRootPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + "pathway";
-			File rootDir = new File(saveRootPath);
-			if ( !rootDir.exists() ) {
-				rootDir.mkdir();
-			}
-//			String savePath = saveRootPath + File.separator + this.jobId;
-//			File newDir = new File(savePath);
-//			if ( !newDir.exists() ) {
-//				newDir.mkdir();
-//			}
-
-			//(6) Pathway mapのURLを取得
-			for ( Future<HashMap<String, String>> future: results ) {
-				HashMap<String, String> res = future.get();
-				it = res.keySet().iterator();
-				String map = (String)it.next();
-				String mapUrl = res.get(map);
-				String filePath = saveRootPath + File.separator + this.jobId + "_" + map + ".png";
-				FileUtil.downloadFile(mapUrl, filePath);
-			}
-
+			
 			//(7) 結果出力
 			out = new PrintWriter(new BufferedWriter(new FileWriter(htmlFile)));
 				// ヘッダー出力
@@ -637,10 +645,22 @@ public class BatchSearchWorker extends Thread {
 			out.println("Instrument Type : " + this.inst + "<br>");
 			out.println("MS Type : " + this.ms + "<br>");
 			out.println("Ion Mode : " + reqIonStr + "<br>");
-			out.println("<br><hr>");
+			out.println("<br>");
+			out.println("<hr>");
 			out.println("<table border=\"1\" cellspacing=\"0\" cellpadding=\"2\">");
 			String cols = String.valueOf(mapNameList.size());
-			out.println("<tr><th bgcolor=\"LavenderBlush\" rowspan=\"2\">No.</th><th bgcolor=\"LavenderBlush\" rowspan=\"2\">Query&nbsp;Name</th><th bgcolor=\"LightCyan\" rowspan=\"2\">Score</th><th bgcolor=\"LightCyan\" rowspan=\"2\">MassBank&nbsp;ID</th><th bgcolor=\"LightCyan\" rowspan=\"2\">Record&nbsp;Title</th><th bgcolor=\"LightCyan\" rowspan=\"2\">Formula</th><th bgcolor=\"LightYellow\" rowspan=\"2\">KEGG&nbsp;ID</th><th bgcolor=\"LightYellow\" colspan=\"" + cols + "\">Colored&nbsp;Pathway&nbsp;Maps</th></tr>");
+			out.println("<tr>");
+			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"2\">No.</th>");
+			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"2\">Query&nbsp;Name</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Score</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">MassBank&nbsp;ID</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Record&nbsp;Title</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Formula</th>");
+			if ( isKeggReturn ) {
+				out.println("<th bgcolor=\"LightYellow\" rowspan=\"2\">KEGG&nbsp;ID</th>");
+				out.println("<th bgcolor=\"LightYellow\" colspan=\"" + cols + "\">Colored&nbsp;Pathway&nbsp;Maps</th>");
+			}
+			out.println("</tr>");
 			out.print("<tr bgcolor=\"moccasin\">");
 			for ( int i = 0; i < mapNameList.size(); i++ ) {
 				out.print("<th>MAP" + String.valueOf(i+1) + "</th>");
@@ -658,11 +678,21 @@ public class BatchSearchWorker extends Thread {
 
 				line = top1LineList.get(i);
 				if ( line.equals("0") ) {
-					cols = String.valueOf(mapNameList.size()+5);
+					if ( isKeggReturn ) {
+						cols = String.valueOf(mapNameList.size()+5);
+					}
+					else {
+						cols = String.valueOf(4);
+					}
 					out.println("<td colspan=\"" + cols + "\">No Hit Record</td>");
 				}
 				else if ( line.equals("Invalid") ) {
-					cols = String.valueOf(mapNameList.size()+5);
+					if ( isKeggReturn ) {
+						cols = String.valueOf(mapNameList.size()+5);
+					}
+					else {
+						cols = String.valueOf(4);
+					}
 					out.println("<td colspan=\"" + cols + "\">Invalid Query</td>");
 				}
 				else {
@@ -681,50 +711,52 @@ public class BatchSearchWorker extends Thread {
 						// Formula
 					out.println("<td nowrap>" + formula + "</td>");
 						// KEGG ID & Link
-					String keggLink = "&nbsp;&nbsp;-";
-					if ( massbank2keggList.containsKey(id) ) {
-						String keggUrl = "http://www.genome.jp/dbget-bin/www_bget?";
-						String kegg = massbank2keggList.get(id);
-						switch (kegg.charAt(0)) {
-						case 'C':
-							keggUrl += "cpd:" + kegg;
-							break;
-						case 'D':
-							keggUrl += "dr:" + kegg;
-							break;
-						case 'G':
-							keggUrl += "gl:" + kegg;
-							break;
+					if ( isKeggReturn ) {
+						String keggLink = "&nbsp;&nbsp;-";
+						if ( massbank2keggList.containsKey(id) ) {
+							String keggUrl = "http://www.genome.jp/dbget-bin/www_bget?";
+							String kegg = massbank2keggList.get(id);
+							switch (kegg.charAt(0)) {
+							case 'C':
+								keggUrl += "cpd:" + kegg;
+								break;
+							case 'D':
+								keggUrl += "dr:" + kegg;
+								break;
+							case 'G':
+								keggUrl += "gl:" + kegg;
+								break;
+							}
+							keggLink = "<a href=\"" + keggUrl + "\" target=\"_blank\">" + kegg + "</a>";
 						}
-						keggLink = "<a href=\"" + keggUrl + "\" target=\"_blank\">" + kegg + "</a>";
-					}
-					out.println("<td>" + keggLink + "</td>");
-						// Pathway Map Link
-					if ( massbank2mapList.containsKey(id) ) {
-						ArrayList<String> list = massbank2mapList.get(id);
-						for ( int l1 = mapNameList.size() - 1; l1 >= 0; l1-- ) {
-							boolean isFound = false;
-							String map = "";
-							for ( int l2 = list.size() - 1; l2 >= 0; l2-- ) {
-								map = list.get(l2);
-								if ( map.equals( mapNameList.get(l1) ) ) {
-									isFound = true;
-									break;
+						out.println("<td>" + keggLink + "</td>");
+							// Pathway Map Link
+						if ( massbank2mapList.containsKey(id) ) {
+							ArrayList<String> list = massbank2mapList.get(id);
+							for ( int l1 = mapNameList.size() - 1; l1 >= 0; l1-- ) {
+								boolean isFound = false;
+								String map = "";
+								for ( int l2 = list.size() - 1; l2 >= 0; l2-- ) {
+									map = list.get(l2);
+									if ( map.equals( mapNameList.get(l1) ) ) {
+										isFound = true;
+										break;
+									}
+								}
+								if ( isFound ) {
+									ArrayList<String> list2 = map2keggList.get(map);
+									String mapUrl = serverUrl + "temp/pathway/" + this.jobId + "_" + map + ".png";
+									out.println("<td nowrap><a href=\"" + mapUrl + "\" target=\"_blank\">map:" + map + "(" + list2.size() + ")</a></td>");
+								}
+								else {
+									out.println("<td>&nbsp;&nbsp;-</td>");
 								}
 							}
-							if ( isFound ) {
-								ArrayList<String> list2 = map2keggList.get(map);
-								String mapUrl = serverUrl + "temp/pathway/" + this.jobId + "_" + map + ".png";
-								out.println("<td nowrap><a href=\"" + mapUrl + "\" target=\"_blank\">map:" + map + "(" + list2.size() + ")</a></td>");
-							}
-							else {
+						}
+						else {
+							for ( int l1 = mapNameList.size() - 1; l1 >= 0; l1-- ) {
 								out.println("<td>&nbsp;&nbsp;-</td>");
 							}
-						}
-					}
-					else {
-						for ( int l1 = mapNameList.size() - 1; l1 >= 0; l1-- ) {
-							out.println("<td>&nbsp;&nbsp;-</td>");
 						}
 					}
 				}

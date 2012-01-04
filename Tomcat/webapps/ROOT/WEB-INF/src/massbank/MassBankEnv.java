@@ -20,12 +20,13 @@
  *
  * MassBank 環境変数管理クラス
  *
- * ver 1.0.4 2011.12.15
+ * ver 1.0.5 2012.01.04
  *
  ******************************************************************************/
 package massbank;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -295,8 +296,11 @@ public class MassBankEnv extends HttpServlet {
 			if ( isWindows ) {
 				VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.replaceAll("webapps\\\\api\\\\", "webapps\\\\ROOT\\\\");
 			}
+			if ( !(new File(VAL_TOMCAT_DOCROOT_PATH + VAL_SUB_PATH)).exists() ) {
+				VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.substring(0, VAL_TOMCAT_DOCROOT_PATH.indexOf("ROOT"));
+			}
 		}
-		
+	
 		// VAL_TOMCAT_TEMP_PATH
 		if ( !VAL_TOMCAT_DOCROOT_PATH.equals("") ) {
 			VAL_TOMCAT_TEMP_PATH = VAL_TOMCAT_DOCROOT_PATH.substring(0, VAL_TOMCAT_DOCROOT_PATH.indexOf("webapps")) + "temp/";
@@ -692,40 +696,41 @@ public class MassBankEnv extends HttpServlet {
 	 * MassBank 環境変数一覧のログ出力
 	 */
 	private void envListLog(){
+		final String ls = System.getProperty("line.separator");
 		StringBuilder sb = new StringBuilder();
-		sb.append("MassBank environment variable list.").append("\n");
-		sb.append("-------------------------------------------------------------------------").append("\n");
-		sb.append(KEY_LOCAL_URL).append("=").append(VAL_LOCAL_URL).append("\n");
-		sb.append(KEY_BASE_URL).append("=").append(VAL_BASE_URL).append("\n");
-		sb.append(KEY_SUB_URL).append("=").append(VAL_SUB_URL).append("\n");
-		sb.append(KEY_SUB_PATH).append("=").append(VAL_SUB_PATH).append("\n");
-		sb.append(KEY_APACHE_DOCROOT_PATH).append("=").append(VAL_APACHE_DOCROOT_PATH).append("\n");
-		sb.append(KEY_APACHE_APPROOT_PATH).append("=").append(VAL_APACHE_APPROOT_PATH).append("\n");
-		sb.append(KEY_TOMCAT_DOCROOT_PATH).append("=").append(VAL_TOMCAT_DOCROOT_PATH).append("\n");
-		sb.append(KEY_TOMCAT_TEMP_PATH).append("=").append(VAL_TOMCAT_TEMP_PATH).append("\n");
-		sb.append(KEY_TOMCAT_APPROOT_PATH).append("=").append(VAL_TOMCAT_APPROOT_PATH).append("\n");
-		sb.append(KEY_TOMCAT_APPJSP_PATH).append("=").append(VAL_TOMCAT_APPJSP_PATH).append("\n");
-		sb.append(KEY_TOMCAT_APPADMIN_PATH).append("=").append(VAL_TOMCAT_APPADMIN_PATH).append("\n");
-		sb.append(KEY_TOMCAT_APPEXT_PATH).append("=").append(VAL_TOMCAT_APPEXT_PATH).append("\n");
-		sb.append(KEY_TOMCAT_APPPSERV_PATH).append("=").append(VAL_TOMCAT_APPPSERV_PATH).append("\n");
-		sb.append(KEY_TOMCAT_APPTEMP_PATH).append("=").append(VAL_TOMCAT_APPTEMP_PATH).append("\n");
-		sb.append(KEY_MASSBANK_CONF_URL).append("=").append(VAL_MASSBANK_CONF_URL).append("\n");
-		sb.append(KEY_MASSBANK_CONF_PATH).append("=").append(VAL_MASSBANK_CONF_PATH).append("\n");
-		sb.append(KEY_ADMIN_CONF_URL).append("=").append(VAL_ADMIN_CONF_URL).append("\n");
-		sb.append(KEY_ADMIN_CONF_PATH).append("=").append(VAL_ADMIN_CONF_PATH).append("\n");
-		sb.append(KEY_DATAROOT_PATH).append("=").append(VAL_DATAROOT_PATH).append("\n");
-		sb.append(KEY_ANNOTATION_PATH).append("=").append(VAL_ANNOTATION_PATH).append("\n");
-		sb.append(KEY_MOLFILE_PATH).append("=").append(VAL_MOLFILE_PATH).append("\n");
-		sb.append(KEY_PROFILE_PATH).append("=").append(VAL_PROFILE_PATH).append("\n");
-		sb.append(KEY_GIF_PATH).append("=").append(VAL_GIF_PATH).append("\n");
-		sb.append(KEY_GIF_SMALL_PATH).append("=").append(VAL_GIF_SMALL_PATH).append("\n");
-		sb.append(KEY_GIF_LARGE_PATH).append("=").append(VAL_GIF_LARGE_PATH).append("\n");
-		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append("\n");
-		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append("\n");
-		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append("\n");
-		sb.append(KEY_BATCH_SMTP).append("=").append(VAL_BATCH_SMTP).append("\n");
-		sb.append(KEY_BATCH_NAME).append("=").append(VAL_BATCH_NAME).append("\n");
-		sb.append(KEY_BATCH_FROM).append("=").append(VAL_BATCH_FROM).append("\n");
+		sb.append("MassBank environment variable list.").append(ls);
+		sb.append("-------------------------------------------------------------------------").append(ls);
+		sb.append(KEY_LOCAL_URL).append("=").append(VAL_LOCAL_URL).append(ls);
+		sb.append(KEY_BASE_URL).append("=").append(VAL_BASE_URL).append(ls);
+		sb.append(KEY_SUB_URL).append("=").append(VAL_SUB_URL).append(ls);
+		sb.append(KEY_SUB_PATH).append("=").append(VAL_SUB_PATH).append(ls);
+		sb.append(KEY_APACHE_DOCROOT_PATH).append("=").append(VAL_APACHE_DOCROOT_PATH).append(ls);
+		sb.append(KEY_APACHE_APPROOT_PATH).append("=").append(VAL_APACHE_APPROOT_PATH).append(ls);
+		sb.append(KEY_TOMCAT_DOCROOT_PATH).append("=").append(VAL_TOMCAT_DOCROOT_PATH).append(ls);
+		sb.append(KEY_TOMCAT_TEMP_PATH).append("=").append(VAL_TOMCAT_TEMP_PATH).append(ls);
+		sb.append(KEY_TOMCAT_APPROOT_PATH).append("=").append(VAL_TOMCAT_APPROOT_PATH).append(ls);
+		sb.append(KEY_TOMCAT_APPJSP_PATH).append("=").append(VAL_TOMCAT_APPJSP_PATH).append(ls);
+		sb.append(KEY_TOMCAT_APPADMIN_PATH).append("=").append(VAL_TOMCAT_APPADMIN_PATH).append(ls);
+		sb.append(KEY_TOMCAT_APPEXT_PATH).append("=").append(VAL_TOMCAT_APPEXT_PATH).append(ls);
+		sb.append(KEY_TOMCAT_APPPSERV_PATH).append("=").append(VAL_TOMCAT_APPPSERV_PATH).append(ls);
+		sb.append(KEY_TOMCAT_APPTEMP_PATH).append("=").append(VAL_TOMCAT_APPTEMP_PATH).append(ls);
+		sb.append(KEY_MASSBANK_CONF_URL).append("=").append(VAL_MASSBANK_CONF_URL).append(ls);
+		sb.append(KEY_MASSBANK_CONF_PATH).append("=").append(VAL_MASSBANK_CONF_PATH).append(ls);
+		sb.append(KEY_ADMIN_CONF_URL).append("=").append(VAL_ADMIN_CONF_URL).append(ls);
+		sb.append(KEY_ADMIN_CONF_PATH).append("=").append(VAL_ADMIN_CONF_PATH).append(ls);
+		sb.append(KEY_DATAROOT_PATH).append("=").append(VAL_DATAROOT_PATH).append(ls);
+		sb.append(KEY_ANNOTATION_PATH).append("=").append(VAL_ANNOTATION_PATH).append(ls);
+		sb.append(KEY_MOLFILE_PATH).append("=").append(VAL_MOLFILE_PATH).append(ls);
+		sb.append(KEY_PROFILE_PATH).append("=").append(VAL_PROFILE_PATH).append(ls);
+		sb.append(KEY_GIF_PATH).append("=").append(VAL_GIF_PATH).append(ls);
+		sb.append(KEY_GIF_SMALL_PATH).append("=").append(VAL_GIF_SMALL_PATH).append(ls);
+		sb.append(KEY_GIF_LARGE_PATH).append("=").append(VAL_GIF_LARGE_PATH).append(ls);
+		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append(ls);
+		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append(ls);
+		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append(ls);
+		sb.append(KEY_BATCH_SMTP).append("=").append(VAL_BATCH_SMTP).append(ls);
+		sb.append(KEY_BATCH_NAME).append("=").append(VAL_BATCH_NAME).append(ls);
+		sb.append(KEY_BATCH_FROM).append("=").append(VAL_BATCH_FROM).append(ls);
 		sb.append("-------------------------------------------------------------------------");
 		Logger.getLogger("global").info(sb.toString());
 	}
