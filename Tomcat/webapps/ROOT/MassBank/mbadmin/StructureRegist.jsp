@@ -22,7 +22,7 @@
  *
  * 構造式登録
  *
- * ver 1.1.9 2011.03.01
+ * ver 1.1.11 2012.01.13
  *
  ******************************************************************************/
 %>
@@ -68,26 +68,20 @@
 	/** 改行文字列 */
 	private final String NEW_LINE = System.getProperty("line.separator");
 	
-	/** アップロードMolfile名（チェック用） */
-	private final String UPLOAD_MOLFILE_NAME = "moldata.zip";
+	/** アップロードMolfile名（ZIP） */
+	private final String UPLOAD_MOLFILE_ZIP = "moldata.zip";
 	
-	/** アップロードGif名（チェック用） */
-	private final String UPLOAD_GIFFILE_NAME = "gifdata.zip";
+	/** アップロードMolfile名（MSBK） */
+	private final String UPLOAD_MOLFILE_MSBK = "moldata.msbk";
 	
 	/** Molfileデータディレクトリ名 */
 	private final String MOLDATA_DIR_NAME = "moldata";
-	
-	/** Gifデータディレクトリ名 */
-	private final String GIFDATA_DIR_NAME = "gifdata";
 	
 	/** list.tsvファイル名 */
 	private final String LIST_FILE_NAME = "list.tsv";
 	
 	/** Molfile拡張子 */
 	private final String MOL_EXTENSION = ".mol";
-	
-	/** Gif拡張子 */
-	private final String GIF_EXTENSION = ".gif";
 	
 	/**
 	 * HTML表示用メッセージテンプレート（情報）
@@ -368,9 +362,6 @@
 				if ( isMolRegist ) {
 					registFileName = new File(regPath + File.separator + id + MOL_EXTENSION);
 				}
-				else {
-					registFileName = new File(regPath + File.separator + id + GIF_EXTENSION);
-				}
 				FileUtils.copyFile(masterFileName, registFileName);
 				copiedFiles.add(registFileName);
 				nextId++;
@@ -519,7 +510,6 @@ function selDb() {
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
 	final String molRootPath = MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
-	final String gifRootPath = MassBankEnv.get(MassBankEnv.KEY_GIF_PATH);
 	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
 	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath();
@@ -609,7 +599,6 @@ function selDb() {
 		// 構造式パス設定
 		//----------------------------------------------------
 		final String molPath = (new File(molRootPath + "/" + selDbName)).getPath();
-		final String gifPath = (new File(gifRootPath + "/" + selDbName)).getPath();
 		
 		//---------------------------------------------
 		// フォーム表示
@@ -635,7 +624,7 @@ function selDb() {
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + MOLDATA_ZIP_URL + "\">moldata.zip</a>.</span><br>" );
+		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + MOLDATA_ZIP_URL + "\">" + UPLOAD_MOLFILE_ZIP + "</a> or " + UPLOAD_MOLFILE_MSBK + ".</span><br>" );
 		out.println( "</form>" );
 		out.println( "<hr><br>" );
 		if ( !FileUpload.isMultipartContent(request) ) {
@@ -671,8 +660,8 @@ function selDb() {
 				out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp;upload failed.") );
 				isResult = false;
 			}
-			else if ( !upFileName.equals(UPLOAD_MOLFILE_NAME) && !upFileName.equals(UPLOAD_GIFFILE_NAME) ) {
-				out.println( msgErr( "please select&nbsp;&nbsp;[" + UPLOAD_MOLFILE_NAME + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_GIFFILE_NAME + "].") );
+			else if ( !upFileName.equals(UPLOAD_MOLFILE_ZIP) && !upFileName.equals(UPLOAD_MOLFILE_MSBK) ) {
+				out.println( msgErr( "please select&nbsp;&nbsp;[" + UPLOAD_MOLFILE_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_MOLFILE_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
 			}
@@ -692,7 +681,7 @@ function selDb() {
 		final String upFilePath = (new File(tmpPath + "/" + upFileName)).getPath();
 		isResult = FileUtil.unZip(upFilePath, tmpPath);
 		if ( !isResult ) {
-			out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp; unzip failed. possibility of time-out.") );
+			out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp; extraction failed. possibility of time-out.") );
 			return;
 		}
 		
@@ -700,41 +689,21 @@ function selDb() {
 		// アップロードファイル格納ディレクトリ存在確認
 		//---------------------------------------------
 		File tmpMolDir = new File(molPath);
-		File tmpGifDir = new File(gifPath);
 		if ( !tmpMolDir.isDirectory() ) {
 			tmpMolDir.mkdirs();
-		}
-		if ( !tmpGifDir.isDirectory() ) {
-			tmpGifDir.mkdirs();
 		}
 		
 		//---------------------------------------------
 		// アップロードファイル名を元に各パスを設定
 		//---------------------------------------------
 		final String molDataPath = (new File(tmpPath + "/" + MOLDATA_DIR_NAME)).getPath();
-		final String gifDataPath = (new File(tmpPath + "/" + GIFDATA_DIR_NAME)).getPath();
-		String listTsvPath = "";
-		String dataPath = "";
-		String structurePath = "";
-		String dataDir = "";
-		if ( upFileName.equals(UPLOAD_MOLFILE_NAME) ) {
-			listTsvPath = (new File(molDataPath + "/" + LIST_FILE_NAME)).getPath();
-			dataPath = molDataPath;
-			structurePath = molPath;
-			dataDir = MOLDATA_DIR_NAME;
-		}
-		else if ( upFileName.equals(UPLOAD_GIFFILE_NAME) ) {
-			listTsvPath = (new File(gifDataPath + "/" + LIST_FILE_NAME)).getPath();
-			dataPath = gifDataPath;
-			structurePath = gifPath;
-			dataDir = GIFDATA_DIR_NAME;
-		}
+		String listTsvPath = (new File(molDataPath + "/" + LIST_FILE_NAME)).getPath();
 		
 		//---------------------------------------------
 		// 解凍ファイルチェック処理
 		//---------------------------------------------
 		// dataディレクトリ存在チェック
-		if ( (new File( dataPath )).isDirectory() ) {
+		if ( (new File( molDataPath )).isDirectory() ) {
 			// list.tsvファイル存在チェック
 			if ( !(new File( listTsvPath )).isFile() ) {
 				out.println( msgErr( "[" + LIST_FILE_NAME + "]&nbsp;&nbsp; not included in the up-loading file.") );
@@ -745,13 +714,10 @@ function selDb() {
 				isResult = false;
 			}
 			// ファイル拡張子チェック
-			for ( String fileName : (new File(dataPath)).list() ) {
+			for ( String fileName : (new File(molDataPath)).list() ) {
 				String extType = "";
-				if ( upFileName.equals(UPLOAD_MOLFILE_NAME) ) {
+				if ( upFileName.equals(UPLOAD_MOLFILE_ZIP) || upFileName.equals(UPLOAD_MOLFILE_MSBK) ) {
 					extType = MOL_EXTENSION;
-				}
-				else if ( upFileName.equals(UPLOAD_GIFFILE_NAME) ) {
-					extType = GIF_EXTENSION;
 				}
 				
 				if ( fileName.lastIndexOf(".") == -1 ) {
@@ -771,7 +737,7 @@ function selDb() {
 			}
 		}
 		else {
-			out.println( msgErr( "[" + dataDir + "]&nbsp;&nbsp; directory not exists in upload file.") );
+			out.println( msgErr( "[" + MOLDATA_DIR_NAME + "]&nbsp;&nbsp; directory not exists in upload file.") );
 			isResult = false;
 		}
 		if ( !isResult ) {
@@ -800,7 +766,7 @@ function selDb() {
 		//---------------------------------------------
 		// 構造式登録処理（list.tsv読み込みおよびチェック）
 		//---------------------------------------------
-		TreeMap<String, String> list = check(db, out, listTsvPath, dataPath);
+		TreeMap<String, String> list = check(db, out, listTsvPath, molDataPath);
 		if (list.size() == 0) {
 			return;
 		}
@@ -815,13 +781,13 @@ function selDb() {
 		//---------------------------------------------
 		// 構造式登録処理（登録）
 		//---------------------------------------------
-		isResult = regist(db, out, list, dataPath, structurePath, registInfo, cgiUrl, cgiParam);
+		isResult = regist(db, out, list, molDataPath, molPath, registInfo, cgiUrl, cgiParam);
 		if ( !isResult ) {
 			Logger.getLogger("global").severe( "registration failed." + NEW_LINE +
 			                                   "    registration file path : " + tmpPath );
 			out.println( msgErr( "registration failed. refer to&nbsp;&nbsp;[" + tmpPath + "]." ) );
 			
-			if ( dataPath.indexOf(MOLDATA_DIR_NAME) != -1 ) {
+			if ( molDataPath.indexOf(MOLDATA_DIR_NAME) != -1 ) {
 				out.println( msgInfo( "0 molfile registered.") );
 			}
 			else {

@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.15 2011.08.10
+ * ver 1.0.17 2012.01.13
  *
  ******************************************************************************/
 %>
@@ -66,8 +66,11 @@
 	/** 改行文字列 */
 	private final String NEW_LINE = System.getProperty("line.separator");
 	
-	/** アップロードMolfile名（チェック用） */
-	private final String UPLOAD_RECORD_NAME = "recdata.zip";
+	/** アップロードレコードファイル名（ZIP） */
+	private final String UPLOAD_RECDATA_ZIP = "recdata.zip";
+	
+	/** アップロードレコードファイル名（MSBK） */
+	private final String UPLOAD_RECDATA_MSBK = "recdata.msbk";
 	
 	/** レコードデータディレクトリ名 */
 	private final String RECDATA_DIR_NAME = "recdata";
@@ -796,7 +799,7 @@ function selDb() {
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + RECDATA_ZIP_URL + "\">recdata.zip</a>.</span><br>" );
+		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + RECDATA_ZIP_URL + "\">" + UPLOAD_RECDATA_ZIP + "</a> or " + UPLOAD_RECDATA_MSBK + ".</span><br>" );
 		out.println( "</form>" );
 		out.println( "<hr><br>" );
 		if ( !FileUpload.isMultipartContent(request) ) {
@@ -832,8 +835,8 @@ function selDb() {
 				out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp;upload failed.") );
 				isResult = false;
 			}
-			else if ( !upFileName.equals(UPLOAD_RECORD_NAME) ) {
-				out.println( msgErr( "prease select&nbsp;&nbsp;[" + UPLOAD_RECORD_NAME + "].") );
+			else if ( !upFileName.equals(UPLOAD_RECDATA_ZIP) && !upFileName.equals(UPLOAD_RECDATA_MSBK) ) {
+				out.println( msgErr( "prease select&nbsp;&nbsp;[" + UPLOAD_RECDATA_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_RECDATA_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
 			}
@@ -853,7 +856,7 @@ function selDb() {
 		final String upFilePath = (new File(tmpPath + File.separator + upFileName)).getPath();
 		isResult = FileUtil.unZip(upFilePath, tmpPath);
 		if ( !isResult ) {
-			out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp; unzip failed. possibility of time-out.") );
+			out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp; extraction failed. possibility of time-out.") );
 			return;
 		}
 		
