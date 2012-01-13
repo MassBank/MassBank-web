@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.9 2011.12.26
+ * ver 1.0.10 2012.01.13
  *
  ******************************************************************************/
 package massbank;
@@ -53,7 +53,7 @@ import java.util.concurrent.Future;
 import massbank.admin.FileUtil;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.RandomStringUtils;
 
 
@@ -350,112 +350,112 @@ public class BatchSearchWorker extends Thread {
 		}
 	}
 	
-	/**
-	 * 添付ファイル生成（HTML形式）
-	 * @param resultFile 結果ファイル
-	 * @param htmlFile 添付用HTMLファイル
-	 */
-	private void createHtmlFile(File resultFile, File htmlFile) {
-		NumberFormat nf = NumberFormat.getNumberInstance();
-		LineNumberReader in = null;
-		PrintWriter out = null;
-		try {
-			in = new LineNumberReader(new FileReader(resultFile));
-			out = new PrintWriter(new BufferedWriter(new FileWriter(htmlFile)));
-			
-			// ヘッダー出力
-			String reqIonStr = "Both";
-			try {
-				if (Integer.parseInt(this.ion) > 0) {
-					reqIonStr = "Positive";
-				}
-				else if(Integer.parseInt(this.ion) < 0) {
-					reqIonStr = "Negative";
-				}
-			}
-			catch (NumberFormatException nfe) {
-				nfe.printStackTrace();
-			}
-			out.println("<html>");
-			out.println("<head><title>MassBank Batch Service Results</title></head>");
-			out.println("<body>");
-			out.println("<h1><a href=\"" + serverUrl + "\" target=\"_blank\">MassBank</a> Batch Service Results</h1>");
-			out.println("<hr>");
-			out.println("<h2>Request Date : " + this.time +"</h2>");
-			out.println("Instrument Type : " + this.inst + "<br>");
-			out.println("MS Type : " + this.ms + "<br>");
-			out.println("Ion Mode : " + reqIonStr + "<br>");
-			out.println("<br><hr>");
-			
-			// 結果出力
-			String line;
-			long queryCnt = 0;
-			boolean readName = false;
-			boolean readHit = false;
-			boolean readNum = false;
-			while ( ( line = in.readLine() ) != null ) {
-				line = line.trim();
-				if (!readName) {
-					queryCnt++;
-					out.println("<h2>Query " + nf.format(queryCnt) + "</h2><br>");
-					out.println("Name: " + line + "<br>");
-					readName = true;
-				}
-				else if (!readHit) {
-					int num = Integer.parseInt(line);
-					if ( num == -1 ) {
-						out.println("<font color=\"red\">[ERROR] Invalid query</font><br>");
-						break;
-					}
-					out.println("Hit: " + nf.format(num) + "<br>");
-					readHit = true;
-				}
-				else if (!readNum) {
-					out.println("<table border=\"1\">");
-					out.println("<tr><td colspan=\"6\">Top " + line + " List</td></tr>");
-					out.println("<tr><th>Accession</th><th>Title</th><th>Formula</th><th>Mass</th><th>Score</th><th>Hit</th></tr>");
-					readNum = true;
-				}
-				else {
-					if (!line.equals("")) {
-						String[] data = formatLine(line);
-						String acc = data[0];
-						String title = data[1];
-						String formula = data[2];
-						String emass = data[3];
-						String score = data[4];
-						String hit = data[5];
-						
-						out.println("<tr>");
-						out.println("<td><a href=\"" + serverUrl + "jsp/FwdRecord.jsp?id=" + acc + "\" target=\"_blank\">" + acc + "</td>");
-						out.println("<td>" + title + "</td>");
-						out.println("<td>" + formula + "</td>");
-						out.println("<td>" + emass + "</td>");
-						out.println("<td>" + score + "</td>");
-						out.println("<td align=\"right\">" + hit + "</td>");
-						out.println("</tr>");
-					}
-					else {
-						out.println("</table>");
-						out.println("<hr>");
-						readName = false;
-						readHit = false;
-						readNum = false;
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			try { if (in != null) { in.close(); } } catch (IOException e) {}
-			if (out != null) {
-				out.flush();
-				out.close();
-			}
-		}
-	}
+//	/**
+//	 * 添付ファイル生成（HTML形式）
+//	 * @param resultFile 結果ファイル
+//	 * @param htmlFile 添付用HTMLファイル
+//	 */
+//	private void createHtmlFile(File resultFile, File htmlFile) {
+//		NumberFormat nf = NumberFormat.getNumberInstance();
+//		LineNumberReader in = null;
+//		PrintWriter out = null;
+//		try {
+//			in = new LineNumberReader(new FileReader(resultFile));
+//			out = new PrintWriter(new BufferedWriter(new FileWriter(htmlFile)));
+//			
+//			// ヘッダー出力
+//			String reqIonStr = "Both";
+//			try {
+//				if (Integer.parseInt(this.ion) > 0) {
+//					reqIonStr = "Positive";
+//				}
+//				else if(Integer.parseInt(this.ion) < 0) {
+//					reqIonStr = "Negative";
+//				}
+//			}
+//			catch (NumberFormatException nfe) {
+//				nfe.printStackTrace();
+//			}
+//			out.println("<html>");
+//			out.println("<head><title>MassBank Batch Service Results</title></head>");
+//			out.println("<body>");
+//			out.println("<h1><a href=\"" + serverUrl + "\" target=\"_blank\">MassBank</a> Batch Service Results</h1>");
+//			out.println("<hr>");
+//			out.println("<h2>Request Date : " + this.time +"</h2>");
+//			out.println("Instrument Type : " + this.inst + "<br>");
+//			out.println("MS Type : " + this.ms + "<br>");
+//			out.println("Ion Mode : " + reqIonStr + "<br>");
+//			out.println("<br><hr>");
+//			
+//			// 結果出力
+//			String line;
+//			long queryCnt = 0;
+//			boolean readName = false;
+//			boolean readHit = false;
+//			boolean readNum = false;
+//			while ( ( line = in.readLine() ) != null ) {
+//				line = line.trim();
+//				if (!readName) {
+//					queryCnt++;
+//					out.println("<h2>Query " + nf.format(queryCnt) + "</h2><br>");
+//					out.println("Name: " + line + "<br>");
+//					readName = true;
+//				}
+//				else if (!readHit) {
+//					int num = Integer.parseInt(line);
+//					if ( num == -1 ) {
+//						out.println("<font color=\"red\">[ERROR] Invalid query</font><br>");
+//						break;
+//					}
+//					out.println("Hit: " + nf.format(num) + "<br>");
+//					readHit = true;
+//				}
+//				else if (!readNum) {
+//					out.println("<table border=\"1\">");
+//					out.println("<tr><td colspan=\"6\">Top " + line + " List</td></tr>");
+//					out.println("<tr><th>Accession</th><th>Title</th><th>Formula</th><th>Mass</th><th>Score</th><th>Hit</th></tr>");
+//					readNum = true;
+//				}
+//				else {
+//					if (!line.equals("")) {
+//						String[] data = formatLine(line);
+//						String acc = data[0];
+//						String title = data[1];
+//						String formula = data[2];
+//						String emass = data[3];
+//						String score = data[4];
+//						String hit = data[5];
+//						
+//						out.println("<tr>");
+//						out.println("<td><a href=\"" + serverUrl + "jsp/FwdRecord.jsp?id=" + acc + "\" target=\"_blank\">" + acc + "</td>");
+//						out.println("<td>" + title + "</td>");
+//						out.println("<td>" + formula + "</td>");
+//						out.println("<td>" + emass + "</td>");
+//						out.println("<td>" + score + "</td>");
+//						out.println("<td align=\"right\">" + hit + "</td>");
+//						out.println("</tr>");
+//					}
+//					else {
+//						out.println("</table>");
+//						out.println("<hr>");
+//						readName = false;
+//						readHit = false;
+//						readNum = false;
+//					}
+//				}
+//			}
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		finally {
+//			try { if (in != null) { in.close(); } } catch (IOException e) {}
+//			if (out != null) {
+//				out.flush();
+//				out.close();
+//			}
+//		}
+//	}
 
 	/**
 	 * サマリファイル生成（HTML形式）
@@ -524,6 +524,7 @@ public class BatchSearchWorker extends Thread {
 						   + "(SELECT MASSBANK,KEGG FROM OTHER_DB_IDS " + where + ") t1, PATHWAY_CPDS t2"
 						   + " where t1.KEGG=t2.KEGG order by MAP,MASSBANK";
 	
+				ArrayList<String> mapList = null;
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
 					String connectUrl = "jdbc:mysql://localhost/MassBank_General";
@@ -531,22 +532,21 @@ public class BatchSearchWorker extends Thread {
 					Statement stmt = con.createStatement();
 					ResultSet rs = stmt.executeQuery(sql);
 					String prevId = "";
-					ArrayList<String> list = new ArrayList<String>();
 					while ( rs.next() ) {
 						String id   = rs.getString(1);
 						String kegg = rs.getString(2);
 						String map  = rs.getString(3);
 						if ( !id.equals(prevId) ) {
 							if ( !prevId.equals("") ) {
-								massbank2mapList.put(prevId, list);
+								massbank2mapList.put(prevId, mapList);
 							}
-							list = new ArrayList<String>();
+							mapList = new ArrayList<String>();
 							massbank2keggList.put(id, kegg);
 						}
-						list.add(map);
+						mapList.add(map);
 						prevId = id;
 					}
-					massbank2mapList.put(prevId, list);
+					massbank2mapList.put(prevId, mapList);
 	
 					rs.close();
 					stmt.close();
@@ -556,65 +556,68 @@ public class BatchSearchWorker extends Thread {
 					e.printStackTrace();
 				}
 				
-				//(3) Pathway Map色付けリスト作成
-				it = massbank2mapList.keySet().iterator();
-				while ( it.hasNext()) {
-					String id = (String)it.next();
-					String kegg = (String)massbank2keggList.get(id);
-	
-					ArrayList<String> list1 = massbank2mapList.get(id);
-					for ( int i = 0; i < list1.size(); i++ ) {
-						String map = list1.get(i);
-						ArrayList<String> list2 = null;
-						if ( map2keggList.containsKey(map) ) {
-							list2 = map2keggList.get(map);
-							list2.add(kegg);
-						}
-						else {
-							list2 = new ArrayList<String>();
-							list2.add(kegg);
-							map2keggList.put(map, list2);
+				if (mapList != null) {
+					
+					//(3) Pathway Map色付けリスト作成
+					it = massbank2mapList.keySet().iterator();
+					while ( it.hasNext()) {
+						String id = (String)it.next();
+						String kegg = (String)massbank2keggList.get(id);
+		
+						ArrayList<String> list1 = massbank2mapList.get(id);
+						for ( int i = 0; i < list1.size(); i++ ) {
+							String map = list1.get(i);
+							ArrayList<String> list2 = null;
+							if ( map2keggList.containsKey(map) ) {
+								list2 = map2keggList.get(map);
+								list2.add(kegg);
+							}
+							else {
+								list2 = new ArrayList<String>();
+								list2.add(kegg);
+								map2keggList.put(map, list2);
+							}
 						}
 					}
-				}
+		
+					//(4) SOAPでPathway Map色付けメソッド実行
+					it = map2keggList.keySet().iterator();
+					List<Callable<HashMap<String, String>>> tasks = new ArrayList();
+					while ( it.hasNext() ) {
+						String map = (String)it.next();
+						mapNameList.add(map);
+						ArrayList<String> list = map2keggList.get(map);
+						String[] cpds = list.toArray(new String[]{});
+						Callable<HashMap<String, String>> task = new ColorPathway(map, cpds);
+						tasks.add(task);
+					}
+					Collections.sort(mapNameList);
+		
+						// スレッドプール10個まで
+					ExecutorService exsv = Executors.newFixedThreadPool(10);
+					List<Future<HashMap<String, String>>> results = exsv.invokeAll(tasks);
+		
+						// Pathway mapの画像格納場所
+					String saveRootPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + "pathway";
+					File rootDir = new File(saveRootPath);
+					if ( !rootDir.exists() ) {
+						rootDir.mkdir();
+					}
+//					String savePath = saveRootPath + File.separator + this.jobId;
+//					File newDir = new File(savePath);
+//					if ( !newDir.exists() ) {
+//						newDir.mkdir();
+//					}
 	
-				//(4) SOAPでPathway Map色付けメソッド実行
-				it = map2keggList.keySet().iterator();
-				List<Callable<HashMap<String, String>>> tasks = new ArrayList();
-				while ( it.hasNext() ) {
-					String map = (String)it.next();
-					mapNameList.add(map);
-					ArrayList<String> list = map2keggList.get(map);
-					String[] cpds = list.toArray(new String[]{});
-					Callable<HashMap<String, String>> task = new ColorPathway(map, cpds);
-					tasks.add(task);
-				}
-				Collections.sort(mapNameList);
-	
-					// スレッドプール10個まで
-				ExecutorService exsv = Executors.newFixedThreadPool(10);
-				List<Future<HashMap<String, String>>> results = exsv.invokeAll(tasks);
-	
-					// Pathway mapの画像格納場所
-				String saveRootPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + "pathway";
-				File rootDir = new File(saveRootPath);
-				if ( !rootDir.exists() ) {
-					rootDir.mkdir();
-				}
-//				String savePath = saveRootPath + File.separator + this.jobId;
-//				File newDir = new File(savePath);
-//				if ( !newDir.exists() ) {
-//					newDir.mkdir();
-//				}
-
-				//(6) Pathway mapのURLを取得
-				for ( Future<HashMap<String, String>> future: results ) {
-					HashMap<String, String> res = future.get();
-					it = res.keySet().iterator();
-					String map = (String)it.next();
-					String mapUrl = res.get(map);
-					String filePath = saveRootPath + File.separator + this.jobId + "_" + map + ".png";
-					FileUtil.downloadFile(mapUrl, filePath);
+					//(6) Pathway mapのURLを取得
+					for ( Future<HashMap<String, String>> future: results ) {
+						HashMap<String, String> res = future.get();
+						it = res.keySet().iterator();
+						String map = (String)it.next();
+						String mapUrl = res.get(map);
+						String filePath = saveRootPath + File.separator + this.jobId + "_" + map + ".png";
+						FileUtil.downloadFile(mapUrl, filePath);
+					}
 				}
 			}
 			
@@ -633,7 +636,7 @@ public class BatchSearchWorker extends Thread {
 			catch (NumberFormatException nfe) {
 				nfe.printStackTrace();
 			}
-			String title = "Summary Of Batch Service Results";
+			String title = "Summary of Batch Service Results";
 			out.println("<html>");
 			out.println("<head>");
 			out.println("<title>" + title + "</title>");
@@ -847,7 +850,7 @@ public class BatchSearchWorker extends Thread {
 		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=unit"
 	 			+ "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms.replaceAll("All", "all") + "&ION=" + this.ion + "&API=true";
-		ArrayList<String> result = mbcommon.execMultiDispatcher( this.serverUrl, typeName, param );
+		ArrayList<String> result = mbcommon.execDispatcher( this.serverUrl, typeName, param, true, null );
 		int hitCnt = result.size();
 		int sendCnt = hitCnt;
 		if ( sendCnt > 20 ) {
