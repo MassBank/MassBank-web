@@ -72,7 +72,10 @@
 	private final String UPLOAD_MOLFILE_ZIP = "moldata.zip";
 	
 	/** アップロードMolfile名（MSBK） */
-	private final String UPLOAD_MOLFILE_MSBK = "moldata.msbk";
+	private final String UPLOAD_MOLFILE_MSBK = "*.msbk";
+	
+	/** msbkファイル拡張子 */
+	private final String MSBK_EXTENSION = ".msbk";
 	
 	/** Molfileデータディレクトリ名 */
 	private final String MOLDATA_DIR_NAME = "moldata";
@@ -624,7 +627,7 @@ function selDb() {
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + MOLDATA_ZIP_URL + "\">" + UPLOAD_MOLFILE_ZIP + "</a> or " + UPLOAD_MOLFILE_MSBK + ".</span><br>" );
+		out.println( "\t&nbsp;<span class=\"note\">* please specify your [<a href=\"" + MOLDATA_ZIP_URL + "\">" + UPLOAD_MOLFILE_ZIP + "</a>] or [" + UPLOAD_MOLFILE_MSBK + "].</span><br>" );
 		out.println( "</form>" );
 		out.println( "<hr><br>" );
 		if ( !FileUpload.isMultipartContent(request) ) {
@@ -660,7 +663,7 @@ function selDb() {
 				out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp;upload failed.") );
 				isResult = false;
 			}
-			else if ( !upFileName.equals(UPLOAD_MOLFILE_ZIP) && !upFileName.equals(UPLOAD_MOLFILE_MSBK) ) {
+			else if ( !upFileName.equals(UPLOAD_MOLFILE_ZIP) && !upFileName.endsWith(MSBK_EXTENSION) ) {
 				out.println( msgErr( "please select&nbsp;&nbsp;[" + UPLOAD_MOLFILE_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_MOLFILE_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
@@ -716,7 +719,7 @@ function selDb() {
 			// ファイル拡張子チェック
 			for ( String fileName : (new File(molDataPath)).list() ) {
 				String extType = "";
-				if ( upFileName.equals(UPLOAD_MOLFILE_ZIP) || upFileName.equals(UPLOAD_MOLFILE_MSBK) ) {
+				if ( upFileName.equals(UPLOAD_MOLFILE_ZIP) || upFileName.endsWith(MSBK_EXTENSION) ) {
 					extType = MOL_EXTENSION;
 				}
 				
@@ -737,7 +740,12 @@ function selDb() {
 			}
 		}
 		else {
-			out.println( msgErr( "[" + MOLDATA_DIR_NAME + "]&nbsp;&nbsp; directory not exists in upload file.") );
+			if ( upFileName.equals(UPLOAD_MOLFILE_ZIP) ) {
+				out.println( msgErr( "[" + MOLDATA_DIR_NAME + "]&nbsp;&nbsp; directory is not included in the up-loading file.") );
+			}
+			else if ( upFileName.endsWith(MSBK_EXTENSION) ) {
+				out.println( msgErr( "The uploaded file is not molfile data.") );
+			}
 			isResult = false;
 		}
 		if ( !isResult ) {

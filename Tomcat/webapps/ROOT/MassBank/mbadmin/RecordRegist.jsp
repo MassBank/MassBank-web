@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.17 2012.01.13
+ * ver 1.0.18 2012.01.25
  *
  ******************************************************************************/
 %>
@@ -70,7 +70,10 @@
 	private final String UPLOAD_RECDATA_ZIP = "recdata.zip";
 	
 	/** アップロードレコードファイル名（MSBK） */
-	private final String UPLOAD_RECDATA_MSBK = "recdata.msbk";
+	private final String UPLOAD_RECDATA_MSBK = "*.msbk";
+	
+	/** msbkファイル拡張子 */
+	private final String MSBK_EXTENSION = ".msbk";
 	
 	/** レコードデータディレクトリ名 */
 	private final String RECDATA_DIR_NAME = "recdata";
@@ -799,7 +802,7 @@ function selDb() {
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "\t&nbsp;<span class=\"note\">* please specify your <a href=\"" + RECDATA_ZIP_URL + "\">" + UPLOAD_RECDATA_ZIP + "</a> or " + UPLOAD_RECDATA_MSBK + ".</span><br>" );
+		out.println( "\t&nbsp;<span class=\"note\">* please specify your [<a href=\"" + RECDATA_ZIP_URL + "\">" + UPLOAD_RECDATA_ZIP + "</a>] or [" + UPLOAD_RECDATA_MSBK + "].</span><br>" );
 		out.println( "</form>" );
 		out.println( "<hr><br>" );
 		if ( !FileUpload.isMultipartContent(request) ) {
@@ -835,7 +838,7 @@ function selDb() {
 				out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp;upload failed.") );
 				isResult = false;
 			}
-			else if ( !upFileName.equals(UPLOAD_RECDATA_ZIP) && !upFileName.equals(UPLOAD_RECDATA_MSBK) ) {
+			else if ( !upFileName.equals(UPLOAD_RECDATA_ZIP) && !upFileName.endsWith(MSBK_EXTENSION) ) {
 				out.println( msgErr( "prease select&nbsp;&nbsp;[" + UPLOAD_RECDATA_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_RECDATA_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
@@ -893,7 +896,12 @@ function selDb() {
 			}
 		}
 		else {
-			out.println( msgErr( "[" + RECDATA_DIR_NAME + "]&nbsp;&nbsp; directory is not included in the up-loading file.") );
+			if ( upFileName.equals(UPLOAD_RECDATA_ZIP) ) {
+				out.println( msgErr( "[" + RECDATA_DIR_NAME + "]&nbsp;&nbsp; directory is not included in the up-loading file.") );
+			}
+			else if ( upFileName.endsWith(MSBK_EXTENSION) ) {
+				out.println( msgErr( "The uploaded file is not record data.") );
+			}
 			isResult = false;
 		}
 		if ( !isResult ) {
