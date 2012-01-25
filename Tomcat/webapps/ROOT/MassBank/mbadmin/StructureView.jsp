@@ -22,7 +22,7 @@
  *
  * 構造式表示用モジュール
  *
- * ver 1.0.1 2010.10.01
+ * ver 1.0.2 2012.01.25
  *
  ******************************************************************************/
 %>
@@ -41,10 +41,10 @@
 	 * @param dbName
 	 * @param name
 	 * @param serverUrl
-	 * @param dbNameList
+	 * @param targetSiteNo
 	 * @return List<String> 画像URLを格納したLIST
 	 */
-	private List<String> getStructure(String dbName, String name, String serverUrl, String[] dbNameList) {
+	private List<String> getStructure(String dbName, String name, String serverUrl, int targetSiteNo) {
 		List<String> resultList = new ArrayList<String>(4);
 		
 		String param = "";
@@ -59,14 +59,6 @@
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
 		ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
-		
-		int targetSiteNo = -1;
-		for(int i=0; i<dbNameList.length; i++) {
-			if (dbNameList[i].equals(dbName)) {
-				targetSiteNo = i;
-				break;
-			}
-		}
 		
 		String gifUrl = "";
 		String gifSmallUrl = "";
@@ -93,19 +85,19 @@
 			else if ( line.indexOf("---GIF:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF:", "");
 				if ( !gifFile.equals("") ) {
-					gifUrl = serverUrl + "DB/gif/" + dbNameList[targetSiteNo] + "/" + gifFile;
+					gifUrl = serverUrl + "DB/gif/" + dbName + "/" + gifFile;
 				}
 			}
 			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_SMALL:", "");
 				if ( !gifFile.equals("") ) {
-					gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[targetSiteNo] + "/" + gifFile;
+					gifSmallUrl = serverUrl + "DB/gif_small/" + dbName + "/" + gifFile;
 				}
 			}
 			else if ( line.indexOf("---GIF_LARGE:") != -1 ) {
 				String gifFile = line.replaceAll("---GIF_LARGE:", "");
 				if ( !gifFile.equals("") ) {
-					gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[targetSiteNo] + "/" + gifFile;
+					gifLargeUrl = serverUrl + "DB/gif_large/" + dbName + "/" + gifFile;
 				}
 			}
 			else {
@@ -161,12 +153,19 @@
 		<tr>
 			<td>
 <%
+	int targetSiteNo = -1;
+	for(int i=0; i<dbNameList.length; i++) {
+		if (dbNameList[i].equals(reqDbName)) {
+			targetSiteNo = i;
+			break;
+		}
+	}
+	
 	// 化学構造式表示情報を取得する
-	List<String> structureResult = getStructure(reqDbName, reqCompoundName, serverUrl, dbNameList);
+	List<String> structureResult = getStructure(dbNameList[targetSiteNo], reqCompoundName, serverUrl, targetSiteNo);
 	String gifUrl = structureResult.get(0);
 	String gifSmallUrl = structureResult.get(1);
 	String gifLargeUrl = structureResult.get(2);
-	String molData = structureResult.get(3);
 	
 	// 表示処理
 	if ( !gifUrl.equals("") ) {
@@ -183,7 +182,8 @@
 	}
 	else {
 		out.println( "\t\t\t\t<applet code=\"MolView.class\" archive=\"../applet/MolView.jar\" width=\"200\" height=\"200\">" );
-		out.println( "\t\t\t\t\t<param name=\"moldata\" value=\"" + molData + "\">" );
+		out.println( "\t\t\t\t\t<param name=\"site\" value=\"" + targetSiteNo + "\">" );
+		out.println( "\t\t\t\t\t<param name=\"compound_name\" value=\"" + reqCompoundName + "\">" );
 		out.println( "\t\t\t\t</applet>" );
 	}
 %>
