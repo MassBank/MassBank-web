@@ -22,7 +22,7 @@
  *
  * 構造式登録
  *
- * ver 1.1.11 2012.01.13
+ * ver 1.1.12 2012.02.14
  *
  ******************************************************************************/
 %>
@@ -70,6 +70,9 @@
 	
 	/** アップロードMolfile名（ZIP） */
 	private final String UPLOAD_MOLFILE_ZIP = "moldata.zip";
+	
+	/** zipファイル拡張子 */
+	private final String ZIP_EXTENSION = ".zip";
 	
 	/** アップロードMolfile名（MSBK） */
 	private final String UPLOAD_MOLFILE_MSBK = "*.msbk";
@@ -663,7 +666,7 @@ function selDb() {
 				out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp;upload failed.") );
 				isResult = false;
 			}
-			else if ( !upFileName.equals(UPLOAD_MOLFILE_ZIP) && !upFileName.endsWith(MSBK_EXTENSION) ) {
+			else if ( !upFileName.endsWith(ZIP_EXTENSION) && !upFileName.endsWith(MSBK_EXTENSION) ) {
 				out.println( msgErr( "please select&nbsp;&nbsp;[" + UPLOAD_MOLFILE_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_MOLFILE_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
@@ -719,7 +722,7 @@ function selDb() {
 			// ファイル拡張子チェック
 			for ( String fileName : (new File(molDataPath)).list() ) {
 				String extType = "";
-				if ( upFileName.equals(UPLOAD_MOLFILE_ZIP) || upFileName.endsWith(MSBK_EXTENSION) ) {
+				if ( upFileName.endsWith(ZIP_EXTENSION) || upFileName.endsWith(MSBK_EXTENSION) ) {
 					extType = MOL_EXTENSION;
 				}
 				
@@ -740,7 +743,7 @@ function selDb() {
 			}
 		}
 		else {
-			if ( upFileName.equals(UPLOAD_MOLFILE_ZIP) ) {
+			if ( upFileName.endsWith(ZIP_EXTENSION) ) {
 				out.println( msgErr( "[" + MOLDATA_DIR_NAME + "]&nbsp;&nbsp; directory is not included in the up-loading file.") );
 			}
 			else if ( upFileName.endsWith(MSBK_EXTENSION) ) {

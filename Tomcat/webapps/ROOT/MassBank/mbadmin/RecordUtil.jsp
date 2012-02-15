@@ -22,7 +22,7 @@
  *
  * レコード情報ユーティリティ
  *
- * ver 1.0.14 2011.06.03
+ * ver 1.0.15 2012.02.13
  *
  ******************************************************************************/
 %>
@@ -197,7 +197,7 @@ function changeSort() {
 		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>" + outPath + "</b></font>" );
 		out.println( "<br><br>" );
 		out.println( "<b>Record Version : </b><br>" );
-		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>1 only</b>&nbsp;<span class=\"note\">(not recommended)</span></font>" );
+		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>1 only</b>&nbsp;<span class=\"note\">(old record version)</span></font>" );
 		File fileOutDir = new File( outPath );
 		if ( !fileOutDir.exists() ) {
 			// 格納先ディレクトリがない場合
@@ -208,7 +208,7 @@ function changeSort() {
 	else if ( act.equals("check") ) {
 		out.println( "<br><br>" );
 		out.println( "<b>Record Version : </b><br>" );
-		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>1 only</b>&nbsp;<span class=\"note\">(not recommended)</span></font>" );
+		out.println( "&nbsp;&nbsp;<font color=\"DarkGoldenrod\"><b>1 only</b>&nbsp;<span class=\"note\">(old record version)</span></font>" );
 	}
 	if ( isDirErr ) {
 		// エラー

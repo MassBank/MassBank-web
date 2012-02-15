@@ -21,7 +21,7 @@
  *
  * ヘッダ・フッタ・ナビゲーション・リンクルールなどの共通パーツCSS
  *
- * ver 1.0.5 2010.01.27
+ * ver 1.0.6 2012.02.02
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@ p {padding-bottom:15px; line-height: 22px; }
 /*各種見出し設定============================================== */
 .h1_ja { background:url(../img/h.gif) no-repeat; width:695px; height:50px; }
 .h1_en { background:url(../img/h_en.gif) no-repeat; width:695px; height:50px; }
-h2 { background:#f2f2f2 url(../img/h2.gif) no-repeat 10px 5px; padding:0 0 0 25px; margin:15px 0; font-size:16px; line-height: 35px; }
+h2 { background:#f2f2f2 url(../img/h2.gif) no-repeat 10px 5px; padding:0 0 0 25px; margin:15px 0; font-size:16px; color:#333; line-height: 35px; }
 h3 { background:#fcfcfc url(../img/h3.gif) no-repeat 0 5px; width:660px; position: relative; left: 15px; padding:0 0 0 15px; margin:10px 0; font-size:14px; line-height: 35px; border-bottom: 1px #ccc solid; }
 h4 { background-color:#fdfdfd; width:650px; padding:0 0 0 10px; position:relative; left:30px; margin:10px 0; font-size:14px; line-height: 35px; border-bottom: 1px #ccc solid; }
 

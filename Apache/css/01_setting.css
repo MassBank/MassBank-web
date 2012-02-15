@@ -21,13 +21,13 @@
  *
  * 全体のセッティングとブラウザ差異の吸収 CSS
  *
- * ver 1.0.0 2009.05.28
+ * ver 1.0.1 2012.02.02
  *
  ******************************************************************************/
 
 /*CSS SET UP============================================== */
 
-* { color:#666; font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Osaka", "メイリオ", "Meiryo", "Verdana", "Arial", "Trebuchet MS", "MS Gothic", "ＭＳ ゴシック", sans-serif; background-repeat:no-repeat; font-size:normal; font-style:normal; text-decoration:none; font-weight:normal; }
+* { color:#4d4d4d; font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Osaka", "メイリオ", "Meiryo", "Verdana", "Arial", "Trebuchet MS", "MS Gothic", "ＭＳ ゴシック", sans-serif; background-repeat:no-repeat; font-size:normal; font-style:normal; text-decoration:none; font-weight:normal; }
 
 body, div, h1, h2, h3, p, hr, ul, ol, li, dl, dt, dd, table, th, td, thead, tbody, tfoot, form, fieldset, legend, isindex, embed, object, pre
 { margin:0; padding:0; border:0; }

@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.22  2012.01.16
+ * ver 1.0.23  2012.02.02
  *
  ******************************************************************************/
 
@@ -162,13 +162,20 @@
 
 #download .p_exp { padding-bottom:5px; padding-left:10px; }
 #download .p_text { padding-bottom:5px; padding-left:30px; }
-#download .p_link { padding: 0px 0 20px; padding-left:60px; line-height:34px; position:relative; margin-right:7px; z-index:0; }
+#download .p_link { padding: 0px 0 10px; padding-left:60px; line-height:34px; position:relative; margin-right:7px; z-index:0; }
 
 #download .ver { font-weight:bold; font-style:italic; }
 #download .memo { padding-left:20px; color:#f60; font-size:11px; text-indent:10px; line-height:24px; }
 
 #download .latest { color: #f60; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
 #download .old { color: #999; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
+
+#download .h_over { background-color:#e5edff; cursor:pointer; }
+#download .d_exp1 { background:url(../img/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+#download .d_exp2 { background:url(../img/exp2_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+
+#download .show { display:; }
+#download .hid { display:none; }
 
 /*マニュアル============================================== */
 #manual p

@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.18 2012.01.25
+ * ver 1.0.19 2012.02.13
  *
  ******************************************************************************/
 %>
@@ -68,6 +68,9 @@
 	
 	/** アップロードレコードファイル名（ZIP） */
 	private final String UPLOAD_RECDATA_ZIP = "recdata.zip";
+	
+	/** zipファイル拡張子 */
+	private final String ZIP_EXTENSION = ".zip";
 	
 	/** アップロードレコードファイル名（MSBK） */
 	private final String UPLOAD_RECDATA_MSBK = "*.msbk";
@@ -191,21 +194,27 @@
 			// 読み込み
 			boolean isDoubleByte = false;
 			ArrayList<String> fileContents = new ArrayList<String>();
+			boolean existLicense = false;								// LICENSEタグ存在チェック用（Ver.1）
 			String line = "";
 			BufferedReader br = null;
 			try {
-					br = new BufferedReader(new FileReader(file));
-					while ((line = br.readLine()) != null) {
-						fileContents.add(line);
-						
-						// 全角文字混入チェック
-						if ( !isDoubleByte ) {
-							byte[] bytes = line.getBytes("MS932");
-							if ( bytes.length != line.length() ) {
-								isDoubleByte = true;
-							}
+				br = new BufferedReader(new FileReader(file));
+				while ((line = br.readLine()) != null) {
+					fileContents.add(line);
+					
+					// LICENSE退避（Ver.1）
+					if ( line.startsWith("LICENSE: ") ) {
+						existLicense = true;
+					}
+					
+					// 全角文字混入チェック
+					if ( !isDoubleByte ) {
+						byte[] bytes = line.getBytes("MS932");
+						if ( bytes.length != line.length() ) {
+							isDoubleByte = true;
 						}
 					}
+				}
 			}
 			catch (IOException e) {
 				Logger.getLogger("global").severe( "file read failed." + NEW_LINE +
@@ -226,7 +235,12 @@
 				op.println( msgWarn( "[" + name + "]&nbsp;&nbsp;is double-byte character included." ) );
 				continue;
 			}
-			
+			if ( ver == 1 && existLicense ) {
+				// LICENSEタグが存在する場合（Ver.1）
+				op.println( msgWarn("[LICENSE: ]&nbsp;&nbsp;tag can not be used in record format &nbsp;&nbsp;[version 1].") );
+				continue;
+			}
+			 
 			//----------------------------------------------------
 			// 必須項目に対するメインチェック処理
 			//----------------------------------------------------
@@ -796,7 +810,7 @@ function selDb() {
 		out.println( "\t<span class=\"baseFont\">Record Version :</span>&nbsp;" );
 		String ver2Chk = (recVersion == 2) ? " checked" : "";
 		String ver1Chk = (recVersion == 1) ? " checked" : "";
-		out.println( "\t<input type=\"radio\" name=\"ver\" value=\"2\"" + ver2Chk + ">2&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"ver\" value=\"1\"" + ver1Chk + ">1&nbsp;<span class=\"note\">(not recommended)</span>");
+		out.println( "\t<input type=\"radio\" name=\"ver\" value=\"2\"" + ver2Chk + ">2&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"ver\" value=\"1\"" + ver1Chk + ">1&nbsp;<span class=\"note\">(old record version)</span>");
 		out.println( "\t<br><br>");
 		out.println( "\t<span class=\"baseFont\">Record Archive :</span>&nbsp;" );
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Registration\"><br>" );
@@ -838,7 +852,7 @@ function selDb() {
 				out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp;upload failed.") );
 				isResult = false;
 			}
-			else if ( !upFileName.equals(UPLOAD_RECDATA_ZIP) && !upFileName.endsWith(MSBK_EXTENSION) ) {
+			else if ( !upFileName.endsWith(ZIP_EXTENSION) && !upFileName.endsWith(MSBK_EXTENSION) ) {
 				out.println( msgErr( "prease select&nbsp;&nbsp;[" + UPLOAD_RECDATA_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_RECDATA_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
@@ -896,7 +910,7 @@ function selDb() {
 			}
 		}
 		else {
-			if ( upFileName.equals(UPLOAD_RECDATA_ZIP) ) {
+			if ( upFileName.endsWith(ZIP_EXTENSION) ) {
 				out.println( msgErr( "[" + RECDATA_DIR_NAME + "]&nbsp;&nbsp; directory is not included in the up-loading file.") );
 			}
 			else if ( upFileName.endsWith(MSBK_EXTENSION) ) {

@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.20 2012.01.25
+ * ver 1.0.21 2012.02.13
  *
  ******************************************************************************/
 %>
@@ -63,6 +63,9 @@
 	
 	/** アップロードレコードファイル名（ZIP） */
 	private final String UPLOAD_RECDATA_ZIP = "recdata.zip";
+	
+	/** zipファイル拡張子 */
+	private final String ZIP_EXTENSION = ".zip";
 	
 	/** アップロードレコードファイル名（MSBK） */
 	private final String UPLOAD_RECDATA_MSBK = "*.msbk";
@@ -197,6 +200,7 @@
 			boolean isInvalidInfo = false;
 			boolean isDoubleByte = false;
 			ArrayList<String> fileContents = new ArrayList<String>();
+			boolean existLicense = false;								// LICENSEタグ存在チェック用（Ver.1）
 			ArrayList<String> workChName =  new ArrayList<String>();	// RECORD_TITLEチェック用にCH$NAMEの値を退避（Ver.1以降）
 			String workAcInstrumentType = "";							// RECORD_TITLEチェック用にAC$INSTRUMENT_TYPEの値を退避（Ver.1以降）
 			String workAcMsType = "";									// RECORD_TITLEチェック用にAC$MASS_SPECTROMETRY: MS_TYPEの値を退避（Ver.2）
@@ -217,8 +221,12 @@
 					}
 					fileContents.add(line);
 					
+					// LICENSE退避（Ver.1）
+					if ( line.startsWith("LICENSE: ") ) {
+						existLicense = true;
+					}
 					// CH$NAME退避（Ver.1以降）
-					if ( line.startsWith("CH$NAME: ") ) {
+					else if ( line.startsWith("CH$NAME: ") ) {
 						workChName.add(line.trim().replaceAll("CH\\$NAME: ", ""));
 					}
 					// AC$INSTRUMENT_TYPE退避（Ver.1以降）
@@ -263,6 +271,11 @@
 				// 全角文字が混入している場合
 				if ( status.equals("") ) status = STATUS_ERR;
 				detailsErr.append( "<span class=\"errFont\">double-byte character included.</span><br />" );
+			}
+			if ( ver == 1 && existLicense ) {
+				// LICENSEタグが存在する場合（Ver.1）
+				if ( status.equals("") ) status = STATUS_ERR;
+				detailsErr.append( "<span class=\"errFont\">[LICENSE: ]&nbsp;&nbsp;tag can not be used in record format &nbsp;&nbsp;[version 1].</span><br />" );
 			}
 			
 			//----------------------------------------------------
@@ -834,7 +847,7 @@ function selDb() {
 		out.println( "\t<span class=\"baseFont\">Record Version :</span>&nbsp;" );
 		String ver2Chk = (recVersion == 2) ? " checked" : "";
 		String ver1Chk = (recVersion == 1) ? " checked" : "";
-		out.println( "\t<input type=\"radio\" name=\"ver\" value=\"2\"" + ver2Chk + ">2&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"ver\" value=\"1\"" + ver1Chk + ">1&nbsp;<span class=\"note\">(not recommended)</span>");
+		out.println( "\t<input type=\"radio\" name=\"ver\" value=\"2\"" + ver2Chk + ">2&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"ver\" value=\"1\"" + ver1Chk + ">1&nbsp;<span class=\"note\">(old record version)</span>");
 		out.println( "\t<br><br>");
 		out.println( "\t<span class=\"baseFont\">Record Archive :</span>&nbsp;" );
 		out.println( "\t<input type=\"file\" name=\"file\" size=\"70\">&nbsp;<input type=\"submit\" value=\"Validation\"><br>" );
@@ -871,7 +884,7 @@ function selDb() {
 				out.println( msgErr( "[" + upFileName + "]&nbsp;&nbsp;upload failed.") );
 				isResult = false;
 			}
-			else if ( !upFileName.equals(UPLOAD_RECDATA_ZIP) && !upFileName.endsWith(MSBK_EXTENSION) ) {
+			else if ( !upFileName.endsWith(ZIP_EXTENSION) && !upFileName.endsWith(MSBK_EXTENSION) ) {
 				out.println( msgErr( "please select&nbsp;&nbsp;[" + UPLOAD_RECDATA_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_RECDATA_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
@@ -911,7 +924,7 @@ function selDb() {
 		// dataディレクトリ存在チェック
 		final String recDataPath = (new File(tmpPath + File.separator + RECDATA_DIR_NAME)).getPath() + File.separator;
 		if ( !(new File( recDataPath )).isDirectory() ) {
-			if ( upFileName.equals(UPLOAD_RECDATA_ZIP) ) {
+			if ( upFileName.endsWith(ZIP_EXTENSION) ) {
 				out.println( msgErr( "[" + RECDATA_DIR_NAME + "]&nbsp;&nbsp; directory is not included in the up-loading file.") );
 			}
 			else if ( upFileName.endsWith(MSBK_EXTENSION) ) {

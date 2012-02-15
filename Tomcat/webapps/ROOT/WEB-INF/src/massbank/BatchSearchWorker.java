@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.10 2012.01.13
+ * ver 1.0.11 2012.02.15
  *
  ******************************************************************************/
 package massbank;
@@ -820,6 +820,7 @@ public class BatchSearchWorker extends Thread {
 		for ( int i = 0; i < vals.length; i++) {
 			String pair = vals[i].trim();
 			pair = pair.replaceAll(" +", ",");
+			pair = pair.replaceAll("\t+", ",");
 			String[] items = pair.split(",");
 			if ( items.length < 2 || 
 				 !NumberUtils.isNumber(items[0]) || !NumberUtils.isNumber(items[1]) ) {
