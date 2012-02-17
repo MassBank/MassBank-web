@@ -22,7 +22,7 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.20 2011.07.12
+ * ver 1.0.21 2012.02.17
  *
  ******************************************************************************/
 %>
@@ -543,13 +543,15 @@
 <meta name="keywords" content="Structure,compound,chemical">
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="./css/Common.css">
+<%if ( isKnapsack ) {%>
 <link rel="stylesheet" type="text/css" href="./Knapsack/css/jquery-ui-1.7.2.custom.css">
+<%}%>
 <title>MassBank | Database | Substructure Search</title>
 <script type="text/javascript" src="./script/Common.js"></script>
 <script type="text/javascript" src="./script/StructSearch.js"></script>
 <script type="text/javascript" src="./script/jquery.js"></script>
-<script type="text/javascript" src="./Knapsack/script/jquery-ui-1.7.2.custom.min.js"></script>
 <%if ( isKnapsack ) {%>
+<script type="text/javascript" src="./Knapsack/script/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript">
 $(function(){
 	var $tabs = $('#struct_search').tabs();
