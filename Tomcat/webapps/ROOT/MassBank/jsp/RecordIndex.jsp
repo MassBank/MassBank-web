@@ -22,7 +22,7 @@
  *
  * Record Index Page表示用モジュール
  *
- * ver 1.0.29 2011.08.24
+ * ver 1.0.30 2012.02.20
  *
  ******************************************************************************/
 %>
@@ -42,8 +42,10 @@
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="java.awt.Color" %>
 <%@ page import="java.awt.Font" %>
+<%@ page import="java.lang.NoClassDefFoundError" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.DecimalFormat" %>
+<%@ page import="java.util.logging.Logger" %>
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="org.jfree.chart.ChartFactory" %>
 <%@ page import="org.jfree.chart.ChartUtilities" %>
@@ -538,109 +540,118 @@
 	}
 	
 	// グラフ一括生成＆出力
-	LinkedHashMap<String, DefaultPieDataset> graphDataMap = new LinkedHashMap<String, DefaultPieDataset>(2);
-	int siteTopNum = (siteGraphData.getItemCount() < MAX_DISP_DATA) ? siteGraphData.getItemCount() : MAX_DISP_DATA;
-	int instTopNum = (instGraphData.getItemCount() < MAX_DISP_DATA) ? instGraphData.getItemCount() : MAX_DISP_DATA;
-	int msTopNum = (msGraphData.getItemCount() < MAX_DISP_DATA) ? msGraphData.getItemCount() : MAX_DISP_DATA;
-	graphDataMap.put("Contributor  top " + siteTopNum, siteGraphData);
-	graphDataMap.put("Instrument Type  top " + instTopNum, instGraphData);
-	graphDataMap.put("MS Type  top " + msTopNum, msGraphData);
-	DefaultPieDataset data = null;
-	String fileName = null;
-	String filePath = null;
-	
-	keys = graphDataMap.keySet();
-	for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-		key = (String)iterator.next();
+	try {
+		LinkedHashMap<String, DefaultPieDataset> graphDataMap = new LinkedHashMap<String, DefaultPieDataset>(2);
+		int siteTopNum = (siteGraphData.getItemCount() < MAX_DISP_DATA) ? siteGraphData.getItemCount() : MAX_DISP_DATA;
+		int instTopNum = (instGraphData.getItemCount() < MAX_DISP_DATA) ? instGraphData.getItemCount() : MAX_DISP_DATA;
+		int msTopNum = (msGraphData.getItemCount() < MAX_DISP_DATA) ? msGraphData.getItemCount() : MAX_DISP_DATA;
+		graphDataMap.put("Contributor  top " + siteTopNum, siteGraphData);
+		graphDataMap.put("Instrument Type  top " + instTopNum, instGraphData);
+		graphDataMap.put("MS Type  top " + msTopNum, msGraphData);
+		DefaultPieDataset data = null;
+		String fileName = null;
+		String filePath = null;
 		
-		// グラフ用データ取得
-		data = graphDataMap.get(key);
-		
-		// JFreeChartオブジェクト生成
-		JFreeChart chart = ChartFactory.createPieChart(key, data, true, true, false);
-		
-		// グラフ全体背景色設定
-		chart.setBackgroundPaint(new Color(242,246,255));
-		
-		// グラフ全体境界線設定
-		chart.setBorderVisible(true);
-		
-		// グラフエリアパディング設定
-		chart.setPadding(new RectangleInsets(10,10,10,10));
-		
-		// グラフタイトルフォント設定
-		chart.getTitle().setFont(new Font("Arial", Font.BOLD, 22));
-		
-		// 凡例の表示位置設定
-		LegendTitle legend = chart.getLegend();
-		legend.setPosition(RectangleEdge.RIGHT);
-		
-		// 凡例パディング設定
-		legend.setPadding(10,10,10,10);
-		
-		// 凡例マージン設定
-		legend.setMargin(0,10,0,5);
-		
-		// 凡例表示位置上寄せ
-		legend.setVerticalAlignment(VerticalAlignment.TOP);
-		
-		// グラフの描画領域を取得
-		PiePlot plot = (PiePlot)chart.getPlot();
-		
-		// グラフの楕円表示を許可する
-		plot.setCircular(true);
-		
-		// グラフ境界線色設定
-		plot.setBaseSectionOutlinePaint(Color.BLACK);
-		
-		// グラフラベル背景色設定
-		plot.setLabelBackgroundPaint(new Color(240,255,255));
-		
-		// グラフラベルフォント設定
-		plot.setLabelFont(new Font("Arial", Font.PLAIN, 12));
-		
-		// グラフラベル幅設定
-		plot.setMaximumLabelWidth(0.3);
-		
-		// グラフラベル間距離設定
-		plot.setLabelGap(0.05);
-		
-		// グラフ背景色透明度設定
-//		plot.setBackgroundAlpha(0.9f);
-		
-		// グラフ前景色透明度設定
-		plot.setForegroundAlpha(0.9f);
-		
-		// グラフのファイル出力
-		fileName = "massbank_" + key + "_Graph.jpg";
-		fileName = Pattern.compile("[ ]*top[ ]*[0-9]*").matcher(fileName).replaceAll("");
-		
-		filePath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPTEMP_PATH ) + fileName;
-		BufferedOutputStream outStream = null;
-		try {
-			outStream = new BufferedOutputStream(new FileOutputStream(filePath));
-			ChartUtilities.writeChartAsJPEG(outStream, chart, 900, 350);
-		}
-		catch ( IOException ie ) {
-			ie.printStackTrace();
-		}
-		finally {
-			if ( outStream != null ) {
-				try {
-					outStream.flush();
-					outStream.close();
-				} catch (IOException ie) {
-					ie.printStackTrace();
+		keys = graphDataMap.keySet();
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			key = (String)iterator.next();
+			
+			// グラフ用データ取得
+			data = graphDataMap.get(key);
+			
+			// JFreeChartオブジェクト生成
+			JFreeChart chart = ChartFactory.createPieChart(key, data, true, true, false);
+			
+			// グラフ全体背景色設定
+			chart.setBackgroundPaint(new Color(242,246,255));
+			
+			// グラフ全体境界線設定
+			chart.setBorderVisible(true);
+			
+			// グラフエリアパディング設定
+			chart.setPadding(new RectangleInsets(10,10,10,10));
+			
+			// グラフタイトルフォント設定
+			chart.getTitle().setFont(new Font("Arial", Font.BOLD, 22));
+			
+			// 凡例の表示位置設定
+			LegendTitle legend = chart.getLegend();
+			legend.setPosition(RectangleEdge.RIGHT);
+			
+			// 凡例パディング設定
+			legend.setPadding(10,10,10,10);
+			
+			// 凡例マージン設定
+			legend.setMargin(0,10,0,5);
+			
+			// 凡例表示位置上寄せ
+			legend.setVerticalAlignment(VerticalAlignment.TOP);
+			
+			// グラフの描画領域を取得
+			PiePlot plot = (PiePlot)chart.getPlot();
+			
+			// グラフの楕円表示を許可する
+			plot.setCircular(true);
+			
+			// グラフ境界線色設定
+			plot.setBaseSectionOutlinePaint(Color.BLACK);
+			
+			// グラフラベル背景色設定
+			plot.setLabelBackgroundPaint(new Color(240,255,255));
+			
+			// グラフラベルフォント設定
+			plot.setLabelFont(new Font("Arial", Font.PLAIN, 12));
+			
+			// グラフラベル幅設定
+			plot.setMaximumLabelWidth(0.3);
+			
+			// グラフラベル間距離設定
+			plot.setLabelGap(0.05);
+			
+			// グラフ背景色透明度設定
+//			plot.setBackgroundAlpha(0.9f);
+			
+			// グラフ前景色透明度設定
+			plot.setForegroundAlpha(0.9f);
+			
+			// グラフのファイル出力
+			fileName = "massbank_" + key + "_Graph.jpg";
+			fileName = Pattern.compile("[ ]*top[ ]*[0-9]*").matcher(fileName).replaceAll("");
+			
+			filePath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPTEMP_PATH ) + fileName;
+			BufferedOutputStream outStream = null;
+			try {
+				outStream = new BufferedOutputStream(new FileOutputStream(filePath));
+				ChartUtilities.writeChartAsJPEG(outStream, chart, 900, 350);
+			}
+			catch ( IOException ie ) {
+				ie.printStackTrace();
+			}
+			finally {
+				if ( outStream != null ) {
+					try {
+						outStream.flush();
+						outStream.close();
+					} catch (IOException ie) {
+						ie.printStackTrace();
+					}
 				}
 			}
+			
+			// グラフの表示
+			out.println( "<tr>" );
+			out.println( "<td>" );
+			out.println( "<img src=\"" + MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp/" + fileName + "\" alt=\"\" border=\"0\">" );
+			out.println( "</td>" );
+			out.println( "</tr>" );
 		}
-		
-		// グラフの表示
-		out.println( "<tr>" );
-		out.println( "<td>" );
-		out.println( "<img src=\"" + MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp/" + fileName + "\" alt=\"\" border=\"0\">" );
-		out.println( "</td>" );
-		out.println( "</tr>" );
+	}
+	catch ( NoClassDefFoundError nc ) {	// for linux...(a transitional program)
+		// "java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11GraphicsEnvironment" by ChartFactory.createPieChart
+		// Linuxでグラフを描画しようとした際に上記のエラーが発生する環境ではグラフを表示しない（暫定対処）
+		out.println( "<tr><td>Graph can not be rendered by the influence of environment on the server....</td></tr>" );
+		Logger.getLogger("global").warning("Graph can not be rendered by the influence of environment on the server....");
+		nc.printStackTrace();
 	}
 	out.println( "</table>" );
 %>
