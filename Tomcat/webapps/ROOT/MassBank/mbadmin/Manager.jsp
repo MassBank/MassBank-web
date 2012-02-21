@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.14 2011.06.04
+ * ver 1.0.15 2012.02.21
  *
  ******************************************************************************/
 %>
@@ -652,7 +652,7 @@ function beforeAdd(judgeBase, judgeHost, judgeIp) {
 		if ( urlVal.indexOf("localhost") == -1 &&
 		     urlVal.indexOf("127.0.0.1") == -1 &&
 		     (judgeBase != "" && urlVal.indexOf(judgeBase) == -1) &&
-		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) == -1 || urlVal.indexOf("https://"+judgeHost) == -1)) &&
+		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) == -1 && urlVal.indexOf("https://"+judgeHost) == -1)) &&
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) == -1) ) {
 			
 			alert("URL on the external cannot be specified.");
@@ -695,7 +695,7 @@ function beforeEdit(judgeBase, judgeHost, judgeIp) {
 		if ( urlVal.indexOf("localhost") == -1 &&
 		     urlVal.indexOf("127.0.0.1") == -1 &&
 		     (judgeBase != "" && urlVal.indexOf(judgeBase) == -1) &&
-		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) == -1 || urlVal.indexOf("https://"+judgeHost) == -1)) &&
+		     (judgeHost != "" && (urlVal.indexOf("http://"+judgeHost) == -1 && urlVal.indexOf("https://"+judgeHost) == -1)) &&
 		     (judgeIp != "" && urlVal.indexOf(judgeIp) == -1) ) {
 			
 			alert("URL on the external cannot be specified.");
