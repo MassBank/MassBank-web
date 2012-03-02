@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.23  2012.02.02
+ * ver 1.0.25  2012.02.20
  *
  ******************************************************************************/
 
@@ -165,7 +165,9 @@
 #download .p_link { padding: 0px 0 10px; padding-left:60px; line-height:34px; position:relative; margin-right:7px; z-index:0; }
 
 #download .ver { font-weight:bold; font-style:italic; }
-#download .memo { padding-left:20px; color:#f60; font-size:11px; text-indent:10px; line-height:24px; }
+#download .memo_latest { padding-left:20px; color:#f60; font-size:11px; text-indent:10px; line-height:24px; }
+#download .memo_old { padding-left:20px; color:#999; font-size:11px; text-indent:10px; line-height:24px; }
+#download .note { color: #DC143C; }
 
 #download .latest { color: #f60; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
 #download .old { color: #999; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }

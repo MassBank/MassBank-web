@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2008 JST-BIRD MassBank
+ * Copyright (C) 2012 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.11 2012.02.15
+ * ver 1.0.12 2012.02.20
  *
  ******************************************************************************/
 package massbank;
@@ -201,22 +201,24 @@ public class BatchSearchWorker extends Thread {
 					attacheDir = new File(tempDir + "batch_" + RandomStringUtils.randomAlphanumeric(9));
 				}
 				attacheDir.mkdir();
-				
+
 				// 添付ファイル生成（テキスト形式）
-				File textFile = new File(attacheDir.getPath() + "/results.txt");
+				String dirPath = attacheDir.getPath();
+				String textFilePath = dirPath + "/results.txt";
+				String textZipPath  = dirPath + "/results.zip";
+				File textFile = new File(textFilePath);
 				textFile.createNewFile();
 				createTextFile(f2, textFile);
-
-				// 添付ファイル生成（HTML形式）
-//				File htmlFile = new File(attacheDir.getPath() + "/MassBankResults.html");
-//				htmlFile.createNewFile();
-//				createHtmlFile(f2, htmlFile);
+				FileUtil.makeZip(textZipPath, textFilePath);
 
 				// サマリ作成
-				File summaryFile = new File(attacheDir.getPath() + "/summary.html");
+				String summaryFilePath = dirPath + "/summary.html";
+				String summaryZipPath  = dirPath + "/summary.zip";
+				File summaryFile = new File(summaryFilePath);
 				summaryFile.createNewFile();
 				createSummary(f2, summaryFile);
-				info.setFiles(new File[]{ summaryFile, textFile });
+				FileUtil.makeZip(summaryZipPath, summaryFilePath);
+				info.setFiles(new File[]{ new File(summaryZipPath), new File(textZipPath) });
 
 				// メール送信
 				SendMail.send(info);
@@ -656,6 +658,7 @@ public class BatchSearchWorker extends Thread {
 			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"2\">No.</th>");
 			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"2\">Query&nbsp;Name</th>");
 			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Score</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Hit</th>");
 			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">MassBank&nbsp;ID</th>");
 			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Record&nbsp;Title</th>");
 			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Formula</th>");
@@ -704,13 +707,34 @@ public class BatchSearchWorker extends Thread {
 					String recTitle = data[1];
 					String formula  = data[2];
 					String score    = data[4];
+					String hit      = data[5];
+
+					boolean isHiScore = false;
+					if ( Integer.parseInt(hit) >= 3 && Double.parseDouble(score) >= 0.8 ) {
+						isHiScore = true;
+					}
 
 						// Score
-					out.println("<td>" + score + "</td>");
+					if ( isHiScore ) {
+						out.println("<td><b>" + score + "</b></td>");
+					}
+					else {
+						out.println("<td>" + score + "</td>");
+					}
+
+						// hit peak
+					if ( isHiScore ) {
+						out.println("<td align=\"right\"><b>" + hit + "</b></td>");
+					}
+					else {
+						out.println("<td align=\"right\">" + hit + "</td>");
+					}
+
 						// MassBank ID & Link
 					out.println("<td><a href=\"" + serverUrl +"jsp/FwdRecord.jsp?id=" + id + "\" target=\"_blank\">" + id + "</td>");
 						// Record Title
-					out.println("<td nowrap>" + recTitle + "</td>");
+					out.println("<td>" + recTitle + "</td>");
+
 						// Formula
 					out.println("<td nowrap>" + formula + "</td>");
 						// KEGG ID & Link

@@ -1,6 +1,6 @@
 /*******************************************************************************
  *
- * Copyright (C) 2008 JST-BIRD MassBank
+ * Copyright (C) 2012 JST-BIRD MassBank
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *
  * ファイル操作ユーティリティクラス
  *
- * ver 1.0.4 2009.11.20
+ * ver 1.0.5 2012.02.20
  *
  ******************************************************************************/
 package massbank.admin;
@@ -35,6 +35,17 @@ public class FileUtil {
 	
 	/** OS名 */
 	private static String OS_NAME = System.getProperty("os.name");
+
+	/**
+	 * ZIP形式の圧縮ファイルを作成する
+	 * @param zipFilePath ZIPファイルのパス
+	 * @param filePath 圧縮元ファイル
+	 * @return true:成功 / false:失敗
+	 */
+	public static boolean makeZip(String zipFilePath, String filePath) {
+		String[] cmd = new String[]{ "zip", "-oqj", zipFilePath, filePath };
+		return command( cmd, true );
+	}
 	
 	/**
 	 * アーカイブを解凍する（ZIP形式）
