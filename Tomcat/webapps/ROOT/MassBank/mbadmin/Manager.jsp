@@ -22,7 +22,7 @@
  *
  * データベース管理画面
  *
- * ver 1.0.15 2012.02.21
+ * ver 1.0.16 2012.07.26
  *
  ******************************************************************************/
 %>
@@ -349,7 +349,7 @@
 			}
 			// DB名が既に登録されている場合
 			else if ( dbList[i].toUpperCase().equals(dbName.toUpperCase()) ) {
-				String urlType = getUrlType(judgeBase, judgeHost, judgeIp, urlList[i]);
+				String urlType = getUrlType(judgeBase, judgeHost, judgeIp, urlStr);
 				// 既に登録されているDB名が内部サイトの場合
 				if ( !urlType.equals(URL_TYPE_EXTERNAL) ) {
 					ret = true;
