@@ -463,7 +463,6 @@ function initLoad() {
 		
 		// ボタン有効無効化
 		if ( noList.length == 0 ) {
-			objForm.btnUpdate.disabled = true;
 			objForm.btnDelete.disabled = true;
 		}
 		else {
