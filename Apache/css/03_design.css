@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.25  2012.02.20
+ * ver 1.0.32  2012.09.21
  *
  ******************************************************************************/
 
@@ -86,8 +86,22 @@
 /*データベースサービスサマリー設定*/
 #home .p_dbsammary { padding-bottom:30px; }
 
+/*お知らせ設定*/
+#home_notice { background:#ffe5e5; border:1px #f66 solid; line-height:22px; color:#f44; padding:0px 10px 10px 10px; !important; margin:5px 0 20px; }
+#home_notice .title { padding-top:10px; font-weight:bold; color:#f44; line-height:28px; }
+#home_notice .contents { padding-left:10px; color:#f44; }
+
+#home_notice2 { background:#ffefe0; border:1px #ff6633 solid; line-height:22px; color:#ff3300; padding:0px 10px 10px 10px; !important; margin:5px 0 20px; }
+#home_notice2 .title { padding-top:10px; font-weight:bold; color:#ff3300; line-height:28px; }
+#home_notice2 .contents { padding-left:10px; color:#ff3300; }
+
 /*点線*/
 #home .separate { border-bottom: 1px #ccc solid; }
+
+/*Mass++動画リンク*/
+#home_masspp { margin-top:50px; padding-top:10px; line-height:20px; border-top: 1px #ccc solid; }
+#home_masspp .title { margin-bottom:3px; }
+#home_masspp .img_line { border:solid 1px #4d4d4d; }
 
 /*ニュース============================================== */
 #news p
@@ -133,6 +147,12 @@
 #published p
 { padding: 0 0 30px; padding-left:8px; }
 
+#published table{ width:100%; line-height: 20px; margin-bottom:5px; }
+#published tr { background:#e5f1f4; }
+#published th { padding:0.3em 0.6em; border:2px solid #fff; vertical-align:middle; text-align:center;  background:#328aa4; color:#fff; font-weight:bold; }
+#published td { padding:0.3em 0.6em; border:2px solid #fff; vertical-align:middle; text-align:left; }
+
+#published .text_right { text-align:right; }
 #published .p_num { padding-bottom:10px; }
 #published .p_link { padding: 5px 0 30px; padding-left:8px; line-height: 34px; }
 #published .new { background:#fff5ee; }
@@ -145,16 +165,17 @@
 #published th.spectra_en { width:80px; }
 #published th.compound_en { width:80px; }
 
-#published td { height:20px; }
-
 /*ドキュメント============================================== */
 #document p
 { padding: 0 0 30px; }
 
 #document .ul_list { padding-left:32px; padding-bottom:5px; line-height: 20px; position:relative; margin-right:7px; z-index:0; }
+#document .ul_list li { background:url(); padding:4px 4px 4px 0px; }
+#document .ul_list li a { font-weight: bold; }
 #document .p_text { padding-bottom:35px; padding-left:70px; }
 #document .p_ref { padding: 0 0 30px; padding-left:8px; }
-#document .doc { position: absolute; left: 0; width: 100%; text-align: right; z-index:999; }
+/*#document .doc { position: absolute; left: 0; width: 100%; text-align: right; z-index:999; }*/
+#document .spr, .spr:link, .spr:visited, spr:hover, spr:active { color:inherit; }
 
 /*ダウンロード============================================== */
 #download p
@@ -182,15 +203,26 @@
 /*マニュアル============================================== */
 #manual p
 { padding: 0 0 30px; padding-left:8px; }
+
+#manual table{ width:100%; line-height: 20px; margin-bottom:5px; }
+#manual tr { background:#FEECE1; }
+#manual th { padding:0.9em 0em; text-align:center; border:2px solid #fff; vertical-align:middle; background:#DF7163; color:#fff; font-weight:bold; width:33%; }
+#manual td { padding:0.9em 0em; text-align:center; border:2px solid #fff; vertical-align:middle; }
+
+#manual .p_exp { padding-bottom:5px; padding-left:10px; }
 #manual .p_text { padding-bottom:20px; padding-left:35px; }
 #manual .p_link { padding: 5px 0 0px; padding-left:15px; line-height: 34px; position:relative; margin-right:7px; z-index:0; }
 
-#manual .memo { padding-left:20px; color:#f60; font-size:11px; text-indent:10px; line-height:24px; }
+#manual .memo_latest { padding-left:20px; color:#f60; font-size:11px; text-indent:10px; line-height:24px; }
+#manual .memo_old { padding-left:20px; color:#999; font-size:11px; text-indent:10px; line-height:24px; }
 
 #manual .latest { color: #f60; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
+#manual .latest_table { color:#f60; }
 #manual .old { color: #999; position:absolute; left:0; width:100%; text-align:right; z-index:-1; }
+#manual .old_table { color:#999; }
 
-#manual .cod { color: #999; }
+#manual .bullet_pdf_table { background:#FEECE1 url(../img/bullet_pdf.gif) no-repeat 2px center; padding:4px 4px 4px 20px; }
+#manual a:hover.bullet_pdf_table { background:#E5EDFF url(../img/bullet_pdf.gif) no-repeat 2px center; }
 
 /*MassBankについて============================================== */
 #about p
