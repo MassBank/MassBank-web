@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+GetAnotInfo.pl
 #-------------------------------------------------------------------------------
 #
 # Copyright (C) 2008 JST-BIRD MassBank
@@ -21,7 +21,7 @@
 #
 # [Admin Tool] TREE.sqlファイル生成
 #
-# ver 3.0.1  2008.12.05
+# ver 3.0.2  2012.09.24
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -38,10 +38,11 @@ my $cdir = getcwd();
 my $subdir     = $cdir . "/GenTree/";
 my $prog1      = $subdir . "GetAnotInfo.pl";
 my $prog2      = $subdir . "GenTreeSQL.pl";
-my $fname_conf = $subdir . "MassBank_tree.conf";
+#my $fname_conf = $subdir . "MassBank_tree.conf";
 my $fname_info = $out_dir. $db_name . "_TREE.info";
 my $fname_sql  = $out_dir. $db_name . "_TREE.sql";
-my $cmd1 = "perl \"$prog1\" \"$fname_conf\" \"$src_dir\" > \"$fname_info\"";
+#my $cmd1 = "perl \"$prog1\" \"$fname_conf\" \"$src_dir\" > \"$fname_info\"";
+my $cmd1 = "perl \"$prog1\" \"$src_dir\" > \"$fname_info\"";
 my $cmd2 = "perl \"$prog2\" \"MassBank / $name\" \"$fname_info\" > \"$fname_sql\"";
 `$cmd1`;
 `$cmd2`;

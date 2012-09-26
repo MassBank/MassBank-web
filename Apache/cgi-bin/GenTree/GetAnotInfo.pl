@@ -20,105 +20,102 @@
 #
 # [Admin Tool] TREE.sqlファイル生成 - 中間ファイル作成処理
 #
-# ver 1.0.13  2011.05.31
+# ver 1.0.14  2012.09.25
 #
 #-------------------------------------------------------------------------------
-my $conf = $ARGV[0];
 
-require $conf || die "configuration file error\n";
+my $src_dir = $ARGV[0];
 
-my $src_dir = $ARGV[1];
-
-for $tag ( 0 .. $#Tag ) {
-	@tag = @{$Tag[$tag]};
-	@info = ();
-	opendir(dIR, $src_dir);
-	while ( $file = readdir(dIR) ) {
-		next if ( $file =~ /^\./ || $file !~ /\.txt$/ );
-		local(@data) = ();
-		my $version = 1;
-		my $acc = '';
-		my $title = '';
-		my $instrument = '';
-		my $mw = '';
-		my $formula = '';
-		my $name = '';
-		my $ion_ptype = '';
-		my $ion_itype = '';
-		my $ion_mode = '';
-		my $mstype = '';
-		my $ce = '';
-		my $rt = '';
-		my $mt = '';
-		my $sc = '';
-		my $pmz = '';
-		open(fILE, "$src_dir/$file");
-		while ( <fILE> ) {
-			s/\r?\n?//g;
-			
-			# massbank.confの$GetProc()を呼び出さずに直接レコードの値を取得する
-			if ( /^ACCESSION: (.*)$/ )                                 { $acc = $1; }
-			if ( /^RECORD_TITLE: (.*)$/ )                              { $title = $1; }
-			if ( /^LISENCE:/ )                                         { $version = 2; }
-			if ( /^CH\$EXACT_MASS: (.*)$/ )                            { $mw = $1; }
-			if ( /^CH\$FORMULA: (.*)$/ )                               { $formula = $1; }
-			if ( /^AC\$INSTRUMENT_TYPE: (.*)$/ )                       { $instrument = $1; }
-			if ( $version != 1 ) {
-				if ( /^AC\$MASS_SPECTROMETRY: MS_TYPE (.*)$/ )          { $mstype = $1; }
-				if ( /^AC\$MASS_SPECTROMETRY: ION_MODE (.*)$/ )         { $ion_mode = $1; }
-				if ( /^AC\$MASS_SPECTROMETRY: COLLISION_ENERGY (.*)$/ ) { $ce = $1; }
-				if ( /^AC\$CHROMATOGRAPHY: MIGRATION_TIME (.*)$/ )      { $mt = $1; }
-				if ( /^AC\$CHROMATOGRAPHY: RETENTION_TIME (.*)$/ )      { $rt = $1; }
-				if ( /^AC\$CHROMATOGRAPHY: SAMPLING_CONE (.*)$/ )       { $sc = $1; }
-			}
-			else {
-				if ( /^AC\$ANALYTICAL_CONDITION: MS_TYPE (.*)$/ )          { $mstype = $1; }
-				if ( /^AC\$ANALYTICAL_CONDITION: MODE (.*)$/ )             { $ion_mode = $1; }
-				if ( /^AC\$ANALYTICAL_CONDITION: COLLISION_ENERGY (.*)$/ ) { $ce = $1; }
-				if ( /^AC\$ANALYTICAL_CONDITION: MIGRATION_TIME (.*)$/ )   { $mt = $1; }
-				if ( /^AC\$ANALYTICAL_CONDITION: RETENTION_TIME (.*)$/ )   { $rt = $1; }
-				if ( /^AC\$ANALYTICAL_CONDITION: SAMPLING_CONE (.*)$/ )    { $sc = $1; }
-			}
-			if ( /^MS\$FOCUSED_ION: PRECURSOR_TYPE (.*)$/ )            { $ion_ptype = $1; }
-			if ( /^MS\$FOCUSED_ION: PRECURSOR_M\/Z (.*)$/ )            { $pmz = $1; }
-			if ( /^MS\$FOCUSED_ION: ION_TYPE (.*)$/ )                  { $ion_itype = $1; }
+@info = ();
+opendir(dIR, $src_dir);
+while ( $file = readdir(dIR) ) {
+	next if ( $file =~ /^\./ || $file !~ /\.txt$/ );
+	local(@data) = ();
+	my $version = 1;
+	my $acc = '';
+	my $title = '';
+	my $instrument = '';
+	my $mw = '';
+	my $formula = '';
+	my $name = '';
+	my $ion_ptype = '';
+	my $ion_itype = '';
+	my $ion_mode = '';
+	my $mstype = '';
+	my $ce = '';
+	my $rt = '';
+	my $mt = '';
+	my $sc = '';
+	my $pmz = '';
+	open(fILE, "$src_dir/$file");
+	while ( <fILE> ) {
+		s/\r?\n?//g;
+		
+		# get value of MassBank record
+		if ( /^ACCESSION: (.*)$/ )                                 { $acc = $1; }
+		if ( /^RECORD_TITLE: (.*)$/ )                              { $title = $1; }
+		if ( /^LICENSE:/ )                                         { $version = 2; }
+		if ( /^CH\$EXACT_MASS: (.*)$/ )                            { $mw = $1; }
+		if ( /^CH\$FORMULA: (.*)$/ )                               { $formula = $1; }
+		if ( /^AC\$INSTRUMENT_TYPE: (.*)$/ )                       { $instrument = $1; }
+		if ( $version != 1 ) {
+			if ( /^AC\$MASS_SPECTROMETRY: MS_TYPE (.*)$/ )          { $mstype = $1; }
+			if ( /^AC\$MASS_SPECTROMETRY: ION_MODE (.*)$/ )         { $ion_mode = $1; }
+			if ( /^AC\$MASS_SPECTROMETRY: COLLISION_ENERGY (.*)$/ ) { $ce = $1; }
+			if ( /^AC\$CHROMATOGRAPHY: MIGRATION_TIME (.*)$/ )      { $mt = $1; }
+			if ( /^AC\$CHROMATOGRAPHY: RETENTION_TIME (.*)$/ )      { $rt = $1; }
+			if ( /^AC\$CHROMATOGRAPHY: SAMPLING_CONE (.*)$/ )       { $sc = $1; }
 		}
-		close(fILE);
-		
-		# edit value
-		($name) = ($title =~ /^([^;]*);/);
-		$mw = int($mw + 0.5) if( $mw > 0 );
-		
-		# set tree value
-		$data[0] = $instrument;
-		$data[1] = $mw;
-		$data[2] = $formula;
-		$data[3] = $name;
-		$data[4] = $ion_itype;
-		$data[4] = $ion_ptype if ($data[4] eq '');
-		$data[4] = $ion_mode if ($data[4] eq '');
-		$data[5] = $mstype if ($mstype ne '');
-		$data[5] .= "  /  $pmz" if ($pmz ne '');
-		$data[5] .= "  /  $ce" if ($ce ne '');
-		$data[5] .= "  /  $rt" if ($ce eq '' && $rt ne '');
-		$data[5] .= "  /  $mt" if ($ce eq '' && $rt eq '' && $mt ne '');
-		$data[5] .= "  /  $sc" if ($ce eq '' && $rt eq '' && $mt eq '' && $sc ne '');
-		for $j ( 0 .. $#data ) {
-			if ( $data[$j] eq '' ) { $data[$j] = '---'; }
+		else {
+			if ( /^AC\$ANALYTICAL_CONDITION: MS_TYPE (.*)$/ )          { $mstype = $1; }
+			if ( /^AC\$ANALYTICAL_CONDITION: MODE (.*)$/ )             { $ion_mode = $1; }
+			if ( /^AC\$ANALYTICAL_CONDITION: COLLISION_ENERGY (.*)$/ ) { $ce = $1; }
+			if ( /^AC\$ANALYTICAL_CONDITION: MIGRATION_TIME (.*)$/ )   { $mt = $1; }
+			if ( /^AC\$ANALYTICAL_CONDITION: RETENTION_TIME (.*)$/ )   { $rt = $1; }
+			if ( /^AC\$ANALYTICAL_CONDITION: SAMPLING_CONE (.*)$/ )    { $sc = $1; }
 		}
-		
-		push(@data, $acc);
-		push(@info, [ @data ]);
+		if ( /^MS\$FOCUSED_ION: PRECURSOR_TYPE (.*)$/ )            { $ion_ptype = $1; }
+		if ( /^MS\$FOCUSED_ION: PRECURSOR_M\/Z (.*)$/ )            { $pmz = $1; }
+		if ( /^MS\$FOCUSED_ION: ION_TYPE (.*)$/ )                  { $ion_itype = $1; }
 	}
-	closedir(dIR);
-	foreach $info ( sort mySort @info ) {
-		local(@out) = @$info;
-		foreach $i ( 0 .. $#out ) {
-			$eval = sprintf('$out[$i] = %s($i, $out[$i])', $OutProc[$tag]);
-			eval($eval);
-		}
-		print join("\t", @out), "\n";
+	close(fILE);
+	
+	# edit value
+	($name) = ($title =~ /^([^;]*);/);
+	$mw = int($mw + 0.5) if( $mw > 0 );
+	
+	# set tree value
+	# $data[0] : INSTRUMENT_TYPE
+	# $data[1] : EXACT_MASS
+	# $data[2] : FORMULA
+	# $data[2] : RECORD_TITLE[0]
+	# $data[4] : ION_TYPE or PRECURSOR_TYPE or ION_MODE
+	# $data[5] : (PRECURSOR_M/Z or COLLISION_ENERGY or RETENTION_TIME or MIGRATION_TIME or SAMPLING_CONE) or (ACCESSION)
+	$data[0] = $instrument;
+	$data[1] = "MW ".$mw;
+	$data[2] = $formula;
+	$data[3] = $name;
+	$data[4] = $ion_itype;
+	$data[4] = $ion_ptype if ($data[4] eq '');
+	$data[4] = $ion_mode if ($data[4] eq '');
+	$data[5] = $mstype if ($mstype ne '');
+	$data[5] .= "  /  $pmz" if ($pmz ne '');
+	$data[5] .= "  /  CE:$ce" if ($ce ne '');
+	$data[5] .= "  /  RT:$rt" if ($ce eq '' && $rt ne '');
+	$data[5] .= "  /  MT:$mt" if ($ce eq '' && $rt eq '' && $mt ne '');
+	$data[5] .= "  /  SC:$sc" if ($ce eq '' && $rt eq '' && $mt eq '' && $sc ne '');
+	$data[5] = $acc if ($data[5] eq '');
+	for $j ( 0 .. $#data ) {
+		if ( $data[$j] eq '' ) { $data[$j] = '---'; }
 	}
+	
+	push(@data, $acc);
+	push(@info, [ @data ]);
+}
+closedir(dIR);
+foreach $info ( sort mySort @info ) {
+	local(@out) = @$info;
+	print join("\t", @out), "\n";
 }
 exit(0);
 

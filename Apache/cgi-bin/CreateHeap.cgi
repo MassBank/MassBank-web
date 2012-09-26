@@ -21,7 +21,7 @@
 #
 # ヒープテーブル作成
 #
-# ver 3.0.5  2011.03.03
+# ver 3.0.6  2012.09.24
 #
 #-------------------------------------------------------------------------------
 use CGI;
@@ -106,6 +106,9 @@ while ( <F> ) {
 	$host_name .= $_;
 }
 
+# MySQLバージョン取得
+($mysqlVer) = (`mysql --version` =~ /Distrib ([^\.]*\.[^\.]*)/);
+
 # ヒープテーブル作成SQL実行
 my $tbl_name = 'PEAK_HEAP';
 foreach my $db_name (@db_names) {
@@ -136,8 +139,14 @@ foreach my $db_name (@db_names) {
 	
 	$sql = "DROP TABLE IF EXISTS $tbl_name";
 	mysql_execute($sql);
-	$sql = "CREATE TABLE $tbl_name(INDEX(ID),INDEX(MZ),INDEX(RELATIVE)) "
-	     . "TYPE=HEAP SELECT ID,MZ,RELATIVE FROM PEAK";
+	if ( $mysqlVer >= 5.2 || $mysqlVer eq "" ) {	# MySQL5.2からは"TYPE="構文が使用できない
+		$sql = "CREATE TABLE $tbl_name(INDEX(ID),INDEX(MZ),INDEX(RELATIVE)) "
+		     . "ENGINE=HEAP SELECT ID,MZ,RELATIVE FROM PEAK";
+	}
+	else {
+		$sql = "CREATE TABLE $tbl_name(INDEX(ID),INDEX(MZ),INDEX(RELATIVE)) "
+		     . "TYPE=HEAP SELECT ID,MZ,RELATIVE FROM PEAK";
+	}
 	mysql_execute($sql);
 	print " CREATE TABLE $tbl_name --OK\n";
 	
