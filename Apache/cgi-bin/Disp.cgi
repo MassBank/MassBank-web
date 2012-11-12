@@ -21,10 +21,11 @@
 #
 # レコードページ表示
 #
-# ver 3.0.28  2011.06.16
+# ver 3.0.29  2012.11.12
 #
 #-------------------------------------------------------------------------------
 %FMT = (
+'LICENSE:',                       'http://creativecommons.org/licenses/',
 'PUBLICATION:',                   'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
 'COMMENT: \[MSn\]',               'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
 'COMMENT: \[Merging\]',           'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
@@ -524,7 +525,19 @@ foreach my $l ( @Line ) {
 	}
 	else {
 		print "$item_name";
-		if ( $array_key eq 'PUBLICATION:' ) {
+		if ( $array_key eq 'LICENSE:' ) {
+			($cc) = ($val =~ m/(CC [^ ]*)/o);
+			if ( $cc ne '' ) {
+				$url = $FMT{$array_key};
+				if ( index($ENV{'HTTP_ACCEPT_LANGUAGE'}, 'ja') != -1 ) {
+					$url =~ s/\.org/\.jp/o;
+				}
+				$val =~ s/$cc//o;
+				$val = "<a href=\"$url\" target=\"_blank\">$cc$val</a>";
+			}
+			print " $val";
+		}
+		elsif ( $array_key eq 'PUBLICATION:' ) {
 			($pmid) = ($val =~ m/\[PMID:\s(.*)\]/o);
 			if ( $pmid ne '' ) {
 				$url = sprintf( $FMT{$array_key}, $pmid );
