@@ -21,7 +21,7 @@
  *
  * ヘッダ・フッタ・ナビゲーション・リンクルールなどの共通パーツCSS
  *
- * ver 1.0.6 2012.02.02
+ * ver 1.0.9 2012.11.13
  *
  ******************************************************************************/
 
@@ -50,12 +50,6 @@ body { margin:0 auto; background:#cee6f2 url(../img/bg_repeat.gif) repeat-y top 
 .fr { float:right; }
 .fl { float:left; }
 
-/*テーブル設定*/
-table{ width:100%; line-height: 20px; margin-bottom:5px; }
-tr{ background:#e5f1f4; }
-th, td { padding:0.3em 0.6em; border:2px solid #fff; vertical-align:middle; }
-th{ text-align:center;  background:#328aa4; color:#fff; font-weight:bold;}
-td{ text-align:left; }
 
 /*リンク表現============================================== */
 a, img { border:0; }
@@ -88,6 +82,10 @@ a:hover.bullet_ppt { background:#e5edff url(../img/bullet_ppt.gif) no-repeat 2px
 a:hover.bullet_home { background: url(../img/bullet_home.gif) no-repeat 2px center; }
 #main li { background:url(../img/bullet_list.gif) no-repeat left 12px; padding:4px 4px 4px 10px;}
 
+/*メールリンク*/
+.contact_link { padding:2px 0px 0px 17px; background:url(../img/contact_link.gif) no-repeat 1px center; }
+a:link.contact_link, a:visited.contact_link { color:#4d4d4d; text-decoration:none; }
+a:hover.contact_link, a:active.contact_link { color:#65ab31; text-decoration:none; }
 
 /*テキスト・英語表記フォント============================================== */
 .e10, .e12, .e14, .e16 { font-family:Verdana, Arial, Trebuchet MS; }
@@ -103,6 +101,7 @@ hr { height:1em; }
 p {padding-bottom:15px; line-height: 22px; }
 
 .spr { vertical-align:super; font-size:9px; }
+.spr_w { vertical-align:super; font-size:9px; color:white; }
 
 /*ヘッダー部分設定============================================== */
 #header { width:100%; height:100px; background:url(../img/bg_header_2nd.jpg) no-repeat top center; }
@@ -123,8 +122,8 @@ p {padding-bottom:15px; line-height: 22px; }
 /*各種見出し設定============================================== */
 .h1_ja { background:url(../img/h.gif) no-repeat; width:695px; height:50px; }
 .h1_en { background:url(../img/h_en.gif) no-repeat; width:695px; height:50px; }
-h2 { background:#f2f2f2 url(../img/h2.gif) no-repeat 10px 5px; padding:0 0 0 25px; margin:15px 0; font-size:16px; color:#333; line-height: 35px; }
-h3 { background:#fcfcfc url(../img/h3.gif) no-repeat 0 5px; width:660px; position: relative; left: 15px; padding:0 0 0 15px; margin:10px 0; font-size:14px; line-height: 35px; border-bottom: 1px #ccc solid; }
+h2 { background:#ededed url(../img/h2.gif) no-repeat 10px 5px; padding:0 0 0 25px; margin:15px 0; font-size:16px; color:#333; line-height: 35px; }
+h3 { background:#f7f7f7 url(../img/h3.gif) no-repeat 0 5px; width:660px; position: relative; left: 15px; padding:0 0 0 15px; margin:10px 0; font-size:14px; line-height: 35px; border-bottom: 1px #bbb solid; }
 h4 { background-color:#fdfdfd; width:650px; padding:0 0 0 10px; position:relative; left:30px; margin:10px 0; font-size:14px; line-height: 35px; border-bottom: 1px #ccc solid; }
 
 /*body idによるh1アイコン自動表示*/
