@@ -22,7 +22,7 @@
  *
  * File Uploader
  *
- * ver 1.0.5 2011.11.09
+ * ver 1.0.6 2012.11.22
  *
  ******************************************************************************/
 %>
@@ -110,7 +110,7 @@ function beforeDelete() {
 		return false;
 	}
 	
-	if ( confirm("are you sure?") ) {
+	if ( confirm("Are you sure?") ) {
 		objForm.act.value = "del";
 		return true;
 	}

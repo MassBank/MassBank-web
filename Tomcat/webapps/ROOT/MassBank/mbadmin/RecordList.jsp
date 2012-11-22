@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.7 2011.11.15
+ * ver 1.0.10 2012.11.22
  *
  ******************************************************************************/
 %>
@@ -37,6 +37,7 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.Map.Entry" %>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.logging.Logger" %>
 <%@ page import="java.io.BufferedReader" %>
@@ -56,6 +57,9 @@
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
+<%@ page import="massbank.svn.MSDBUpdater" %>
+<%@ page import="massbank.svn.SVNRegisterUtil" %>
+<%@ page import="massbank.svn.RegistrationCommitter" %>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -406,6 +410,9 @@
 		}
 		
 		op.println( "\t</table>" );
+		if ( RegistrationCommitter.isActive ) {
+			op.println( "\t<br><input type=\"submit\" value=\"Update the MassBank SVN\" onClick=\"document.formList.act.value='svn';return true;\">" );
+		}
 		op.println( "\t<input type=\"hidden\" name=\"act\" value=\"\">" );
 		op.println( "\t<input type=\"hidden\" name=\"db\" value=\"" + selDbName + "\">" );
 		op.println( "</form>" );
@@ -445,10 +452,21 @@
 		sqlParam.setLength( sqlParam.length() - 1 );	// 最後のカンマを削除
 		
 		//----------------------------------------------------
-		// 各テーブルからの削除処理
+		// 各テーブルからの削除処理（TREEテーブルのID退避も行う）
 		//----------------------------------------------------
+		ResultSet rs = null;
+		Map<String, String> treeIdMap = new HashMap<String, String>();
 		String sql = "";
 		try {
+			// TREEテーブル登録済みID退避
+			sql = "SELECT DISTINCT ID FROM TREE WHERE ID IS NOT NULL ORDER BY ID;";
+			rs = db.executeQuery(sql);
+			while ( rs.next() ) {
+				String idStr = rs.getString("ID");
+				String fileName = idStr + ".txt";
+				treeIdMap.put(idStr, fileName);
+			}
+			
 			sql = "START TRANSACTION;";
 			db.executeUpdate( sql );
 			for ( String[] info : tableInfo ) {
@@ -468,6 +486,12 @@
 			op.println( msgErr( "database access error." ) );
 			return -1;
 		}
+		finally {
+			try {
+				if ( rs != null ) { rs.close(); }
+			}
+			catch (SQLException e) {}
+		}
 		
 		//----------------------------------------------------
 		// TREEテーブル再構築処理
@@ -483,8 +507,23 @@
 				break;
 			}
 		}
+		
+		// 再構築用レコードファイルリスト生成
+		for ( String recId : recIds ) {
+			treeIdMap.remove(recId);
+		}
+		StringBuilder flist = new StringBuilder();
+		int cnt = 0;
+		for(Entry<String, String> entry : treeIdMap.entrySet()) {
+			flist.append(entry.getValue());
+			cnt++;
+			if ( cnt < treeIdMap.size() ) {
+				flist.append( "," );
+			}
+		}
+		
 		String cgiUrl = urlList[GetConfig.MYSVR_INFO_NUM] + "cgi-bin/GenTreeSql.cgi";
-		String param = "src_dir=" + recPath + "&out_dir=" + tmpPath + "&db=" + selDbName + "&name=" + siteName;
+		String param = "src_dir=" + recPath + "&out_dir=" + tmpPath + "&db=" + selDbName + "&name=" + siteName + "&flist=" + flist.toString();
 		
 		// SQLファイル生成
 		BufferedReader in = null;
@@ -614,7 +653,7 @@ function beforeDelete() {
 		return false;
 	}
 	
-	if ( confirm("are you sure?") ) {
+	if ( confirm("Are you sure?") ) {
 		objForm.act.value = "del";
 		return true;
 	}
@@ -804,6 +843,9 @@ function popupRecView(url) {
 		File[] dbDirs = (new File( dbRootPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
+				if ( dbDir.getName().indexOf(MSDBUpdater.BACKUP_IDENTIFIER) != -1 ) {
+					continue;
+				}
 				if ( dbDir.isDirectory() ) {
 					int pos = dbDir.getName().lastIndexOf("\\");
 					String dbDirName = dbDir.getName().substring( pos + 1 );
@@ -924,8 +966,9 @@ function popupRecView(url) {
 			File destFile = null;
 			try {
 				for ( String recId : recIds ) {
-					srcFile = new File(recPath + File.separator + recId + ".txt");
-					destFile = new File(backupPath + recId + ".txt");
+					String fileName = recId + ".txt";
+					srcFile = new File(recPath + File.separator + fileName);
+					destFile = new File(backupPath + fileName);
 					if ( srcFile.isFile() ) {
 						FileUtils.copyFile(srcFile, destFile);
 					}
@@ -984,6 +1027,17 @@ function popupRecView(url) {
 				                                   "    url : " + cgiUrl + NEW_LINE +
 				                                   "    param : " + cgiParam );
 			}
+
+			//---------------------------------------------
+			// SVN削除処理
+			//---------------------------------------------
+			if ( RegistrationCommitter.isActive ) {
+				SVNRegisterUtil.updateRecords(selDbName);
+			}
+		}
+		else if ( act.equals("svn") && RegistrationCommitter.isActive ) {
+			SVNRegisterUtil.updateRecords(selDbName);
+			out.println( msgInfo( "Done." ) );
 		}
 	}
 	finally {
