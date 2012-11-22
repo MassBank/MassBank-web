@@ -21,7 +21,7 @@
 #
 # レコードページ表示
 #
-# ver 3.0.29  2012.11.12
+# ver 3.0.30  2012.11.22
 #
 #-------------------------------------------------------------------------------
 %FMT = (
@@ -533,7 +533,16 @@ foreach my $l ( @Line ) {
 					$url =~ s/\.org/\.jp/o;
 				}
 				$val =~ s/$cc//o;
-				$val = "<a href=\"$url\" target=\"_blank\">$cc$val</a>";
+				$val =~ s/^\s*(.*?)\s*$/$1/;
+				$val = "<a href=\"$url\" target=\"_blank\">$cc</a>".($val ne "" ? " $val" : "");
+			}
+			else {
+				($otherLink) = ($val =~ m/(http:\/\/[^ ]*)/);
+				if ( $otherLink ne '' ) {
+				$val =~ s/$otherLink//o;
+				$val =~ s/^\s*(.*?)\s*$/$1/;
+				$val = "<a href=\"$otherLink\" target=\"_blank\">$otherLink</a>".($val ne "" ? " $val" : "");
+				}
 			}
 			print " $val";
 		}
