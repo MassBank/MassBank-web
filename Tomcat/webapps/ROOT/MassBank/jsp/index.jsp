@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.17 2011.12.06
+ * ver 2.0.26 2012.12.05
  *
  ******************************************************************************/
 %>
@@ -122,7 +122,7 @@
 						readFlag = true;
 					}
 					if ( readFlag ) {
-						if ( line.indexOf("<a ") != -1 ) {
+						if ( line.startsWith("<a ") ) {
 							newLine = line.replaceAll("\"../", "\"./");
 							newLine = newLine.substring(0, newLine.indexOf("</a>")+4);
 							eventDetail += 1;
@@ -213,8 +213,21 @@
 	}
 %>
 </p>
-<div id="home_news" class="text_right separate"><a href="./ja/news.html" class="bullet_link">過去のニュース</a></div>
+<div id="home_news" class="text_right"><a href="./ja/news.html" class="bullet_link">過去のニュース</a></div>
 <!--ここまで▲ニュース-->
+
+<!--ここから▼お知らせ-->
+<!--
+<p id="home_notice2" class="clr">
+<span class="title clr">&lt;&lt;データ公開・マススペクトルデータベース構築マニュアルに関するお知らせ&gt;&gt;</span>
+<span class="contents clr">
+MassBank システムインストーラ 1.8、レコード編集ツール 2.1、Mass++ 2.1 を使用してマススペクトルデータベースを構築するための、新しい <a href="./ja/manual.html">マニュアル</a> を公開しました。
+</span>
+</p>
+-->
+<!--ここまで▲お知らせ-->
+
+<div class="separate"></div>
 
 <!--ここから▼データベースサービス　ショートカットボタン一覧-->
 <h2 id="h_home_massdb" class="hide_text">データベースサービス</h2>
@@ -224,7 +237,7 @@
 <li id="home_btn2"><a href="./QuickSearch.html" title="Quick Search">Quick Search</a></li>
 <li id="home_btn3"><a href="./PeakSearch.html" title="Peak Search">Peak Search</a></li>
 <li id="home_btn4"><a href="./StructureSearch.html" title="Substructure Search">Substructure Search</a></li>
-<li id="home_btn5"><a href="./MetaboIdentif.html" title="Metabolite Identification">Metabolite Identification</a></li>
+<li id="home_btn5"><a href="./MetaboPrediction.html" title="Metabolite Prediction">Metabolite Prediction</a></li>
 </ul>
 <ul id="line2" class="hide_text">
 <li id="home_btn6"><a href="./PackageView.html" title="Spectral Browser">Spectral Browser</a></li>
@@ -265,7 +278,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <ul id="navi_global" class="hide_text clr">
 <li id="navi_g01" ><a href="./ja/database.html" title="データベースサービス">データベースサービス</a></li>
 <li id="navi_g02" ><a href="./ja/statistics.html" title="公開データ">公開データ</a></li>
-<li id="navi_g03" ><a href="./ja/document.html" title="ドキュメント">ドキュメント</a></li>
+<li id="navi_g03" ><a href="./ja/publication.html" title="パブリケーション">パブリケーション</a></li>
 <li id="navi_g04" ><a href="./ja/download.html" title="ダウンロード">ダウンロード</a></li>
 <li id="navi_g05" ><a href="./ja/manual.html" title="マニュアル">マニュアル</a></li>
 <li id="navi_g06" ><a href="./ja/about.html" title="MassBankについて">MassBankについて</a></li>
@@ -280,6 +293,17 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <li id="navi_f04" ><a href="./index.html?lang=en" title="English Site">English Site</a></li>
 </ul>
 <!--ここまで▲左カラム機能ナビ-->
+
+
+
+<!--ここから▼Mass++動画リンク-->
+<p id="home_masspp">
+<span class="title clr">How to Use Mass++: Identification&nbsp;and MassBank Search</span>
+<a href="http://www.youtube.com/embed/XhNdD82Eo78" target="_blank"><img src="./img/how-to-use-mass++.jpg" width="223" height="167" class="img_line"></a><br />
+<a href="http://www.first-ms3d.jp/achievement/software" target="_blank">What&#x27;s Mass++ ?</a>
+</p>
+<!--ここまで▲Mass++動画リンク-->
+
 </div>
 <!--ここまで▲左カラムナビゲーション-->
 
@@ -315,7 +339,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <meta name="Targeted Geographic Area" content="worldwide" />
 <meta name="classification" content="general,computers,internet,miscellaneous" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright &copy; 2006 MassBank Project" />
+<meta name="copyright" content="Copyright &copy; MassBank Project" />
 <meta name="description" content="MassBank is the first public repository of mass spectral data for sharing them among scientific research community. MassBank data are useful for the chemical identification and structure elucidation of chemical comounds detected by mass spectrometry." />
 <meta name="keywords" content="MassBank, massbank, Quality, mass, spectral, database" />
 <meta name="revisit_after" content="10 days">
@@ -361,8 +385,22 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 	}
 %>
 </p>
-<div id="home_news" class="text_right separate"><a href="./en/news.html" class="bullet_link">All news</a></div>
+<div id="home_news" class="text_right"><a href="./en/news.html" class="bullet_link">All news</a></div>
 <!--ed▲news-->
+
+<!--st▼notice-->
+<!--
+<p id="home_notice" class="clr">
+<span class="title clr">&lt;&lt;News on Record Editor&gt;&gt;</span>
+<span class="contents clr">
+We have just released a new version of <a href="./en/download.html">Record Editor</a> with enhanced MassBank record editing!
+All the reported problems in the previous version are fixed in the new editor.
+</span>
+</p>
+-->
+<!--ed▲notice-->
+
+<div class="separate"></div>
 
 <!--st▼mass spectrum database shortcut button list-->
 <h2 id="h_home_massdb_en" class="hide_text">Database Service</h2>
@@ -372,7 +410,7 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <li id="home_btn2"><a href="./QuickSearch.html" title="Quick Search">Quick Search</a></li>
 <li id="home_btn3"><a href="./PeakSearch.html" title="Peak Search">Peak Search</a></li>
 <li id="home_btn4"><a href="./StructureSearch.html" title="Substructure Search">Substructure Search</a></li>
-<li id="home_btn5"><a href="./MetaboIdentif.html" title="Metabolite Identification">Metabolite Identification</a></li>
+<li id="home_btn5"><a href="./MetaboPrediction.html" title="Metabolite Prediction">Metabolite Prediction</a></li>
 </ul>
 <ul id="line2" class="hide_text">
 <li id="home_btn6"><a href="./PackageView.html" title="Spectral Browser">Spectral Browser</a></li>
@@ -401,7 +439,7 @@ Please cite the article (<a href="http://dx.doi.org/10.1002/jms.1777" target="_b
 	}
 %>
 </p>
-<div id="home_event" class="text_right"><a href="./en/event.html" class="bullet_link">All related event</a></div>
+<div id="home_event" class="text_right"><a href="./en/event.html" class="bullet_link">All related events</a></div>
 <!--ed▲event-->
 
 </div><!--div id="main" class="fr clr"-->
@@ -413,7 +451,7 @@ Please cite the article (<a href="http://dx.doi.org/10.1002/jms.1777" target="_b
 <ul id="navi_global_en" class="hide_text clr">
 <li id="navi_g01_en" ><a href="./en/database.html" title="Database Service">Database Service</a></li>
 <li id="navi_g02_en" ><a href="./en/statistics.html" title="Statistics">Statistics </a></li>
-<li id="navi_g03_en" ><a href="./en/document.html" title="Document">Document</a></li>
+<li id="navi_g03_en" ><a href="./en/publication.html" title="Publications">Publications</a></li>
 <li id="navi_g04_en" ><a href="./en/download.html" title="Download">Download</a></li>
 <li id="navi_g05_en" ><a href="./en/manual.html" title="Manual">Manual</a></li>
 <li id="navi_g06_en" ><a href="./en/about.html" title="About MassBank">About MassBank</a></li>
@@ -428,6 +466,15 @@ Please cite the article (<a href="http://dx.doi.org/10.1002/jms.1777" target="_b
 <li id="navi_f04_en" ><a href="./index.html?lang=ja" title="Japanese Site">Japanese Site</a></li>
 </ul>
 <!--ed▲left column function navi-->
+
+<!--st▼Mass++ link-->
+<p id="home_masspp" class="clr">
+<span class="title clr">How to Use Mass++: Identification&nbsp;and MassBank Search</span>
+<a href="http://www.youtube.com/embed/XhNdD82Eo78" target="_blank"><img src="./img/how-to-use-mass++.jpg" width="223" height="167" class="img_line"></a><br />
+<a href="http://www.first-ms3d.jp/achievement/software" target="_blank">What&#x27;s Mass++ ?</a>
+</p>
+<!--ed▲Mass++ link-->
+
 </div>
 <!--ed▲left column navi-->
 

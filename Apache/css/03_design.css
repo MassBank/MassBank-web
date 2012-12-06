@@ -21,7 +21,7 @@
  *
  * ページごとのデザインに関わるCSS
  *
- * ver 1.0.32  2012.09.21
+ * ver 1.0.34 2012.12.06
  *
  ******************************************************************************/
 
@@ -118,9 +118,10 @@
 #news .hid { display:none; }
 
 /*イベント============================================== */
-#event .p_event { line-height: 2em; padding:10px 0px 15px 30px; }
+#event .p_event { line-height: 2em; padding:10px 0px 10px 30px; }
 #event .s_item { padding-left:20px; width:400px; }
-#event .s_value { padding-left:20px; }
+#event .p_photo { padding:0 0 0 50px; margin:0px; display:inline-block; }
+#event .i_photo { margin-right:10px; width:90px; }
 
 #event .anniversary { color: #f60; font-weight: bold; }
 #event .note { color: #DC143C; }
@@ -165,17 +166,17 @@
 #published th.spectra_en { width:80px; }
 #published th.compound_en { width:80px; }
 
-/*ドキュメント============================================== */
-#document p
+/*パブリケーション============================================== */
+#publication p
 { padding: 0 0 30px; }
 
-#document .ul_list { padding-left:32px; padding-bottom:5px; line-height: 20px; position:relative; margin-right:7px; z-index:0; }
-#document .ul_list li { background:url(); padding:4px 4px 4px 0px; }
-#document .ul_list li a { font-weight: bold; }
-#document .p_text { padding-bottom:35px; padding-left:70px; }
-#document .p_ref { padding: 0 0 30px; padding-left:8px; }
-/*#document .doc { position: absolute; left: 0; width: 100%; text-align: right; z-index:999; }*/
-#document .spr, .spr:link, .spr:visited, spr:hover, spr:active { color:inherit; }
+#publication .ul_list { padding-left:20px; padding-bottom:5px; line-height: 20px; position:relative; margin-right:7px; z-index:0; }
+#publication .ul_list li { background:url(); padding:4px 4px 4px 0px; }
+#publication .ul_list li a { font-weight: bold; }
+#publication .p_text { padding-bottom:35px; padding-left:58px; }
+#publication .p_ref { padding: 0 0 30px; padding-left:20px; }
+/*#publication .doc { position: absolute; left: 0; width: 100%; text-align: right; z-index:999; }*/
+#publication .spr, .spr:link, .spr:visited, spr:hover, spr:active { color:inherit; }
 
 /*ダウンロード============================================== */
 #download p
@@ -245,6 +246,7 @@
 #group p
 { padding: 0 0 30px; padding-left:8px; }
 
+#group .p_text { padding-bottom:5px; padding-left:10px; }
 #group .p_link { padding: 0 0 30px; padding-left: 26px; line-height: 24px; }
 
 /*利用規定============================================== */
