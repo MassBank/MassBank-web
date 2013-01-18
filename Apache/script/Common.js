@@ -20,7 +20,7 @@
  *
  * MassBank共通スクリプト
  *
- * ver 1.0.14 2011.07.22
+ * ver 1.0.15 2013.01.18
  *
  ******************************************************************************/
 
@@ -81,9 +81,8 @@ function setCookie(isCookieConf, cookieName, keyInstGrp, keyInst, keyMs, keyIon,
 				cookieMs += msVals[i].value + ",";
 			}
 		}
-		
-		if (cookieInst.substring(cookieInst.length - 1) == ",") {
-			cookieInst = cookieInst.substring(0, cookieInst.length - 1);
+		if (cookieMs.substring(cookieMs.length - 1) == ",") {
+			cookieMs = cookieMs.substring(0, cookieMs.length - 1);
 		}
 		
 		var ionVals = document.getElementsByName("ion" + addStr);
