@@ -36,7 +36,7 @@
 
 #home li { background:none; padding:0; }
 
-#headline { width:695px;}
+#headline { width:695px; padding-bottom:0; }
 #headline .anniversary { color: #f60; font-weight: bold; }
 #headline .note { color: #DC143C; }
 #headline .s_item { padding-left:20px; }
@@ -87,7 +87,7 @@
 #home .p_dbsammary { padding-bottom:30px; }
 
 /*お知らせ設定*/
-#home_notice { background:#ffe5e5; border:1px #f66 solid; line-height:22px; color:#f44; padding:0px 10px 10px 10px; !important; margin:5px 0 20px; }
+#home_notice { background:#ffe5e5; border:1px #f66 solid; line-height:22px; color:#f44; padding:0px 10px 10px 10px; !important; margin:10px 0 20px; }
 #home_notice .title { padding-top:10px; font-weight:bold; color:#f44; line-height:28px; }
 #home_notice .contents { padding-left:10px; color:#f44; }
 

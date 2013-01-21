@@ -22,7 +22,7 @@
  *
  * トップページ表示用モジュール
  *
- * ver 2.0.26 2012.12.05
+ * ver 2.0.27 2013.01.21
  *
  ******************************************************************************/
 %>
@@ -217,14 +217,13 @@
 <!--ここまで▲ニュース-->
 
 <!--ここから▼お知らせ-->
-<!--
 <p id="home_notice2" class="clr">
-<span class="title clr">&lt;&lt;データ公開・マススペクトルデータベース構築マニュアルに関するお知らせ&gt;&gt;</span>
+<span class="title clr">&lt;&lt;ユーザーの皆様へのお知らせ&gt;&gt;</span>
 <span class="contents clr">
-MassBank システムインストーラ 1.8、レコード編集ツール 2.1、Mass++ 2.1 を使用してマススペクトルデータベースを構築するための、新しい <a href="./ja/manual.html">マニュアル</a> を公開しました。
+EU のミラーサイト "NORMAN MassBank" <a href="http://www.massbank.eu/MassBank/" target="_blank">http:&#47;&#47;www.massbank.eu&#47;MassBank&#47;</a> が利用できるようになりました。
+MassBank.jp と同様に NORMAN MassBank からでも常に最新データにアクセスすることができます。
 </span>
 </p>
--->
 <!--ここまで▲お知らせ-->
 
 <div class="separate"></div>
@@ -389,15 +388,13 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <!--ed▲news-->
 
 <!--st▼notice-->
-<!--
-<p id="home_notice" class="clr">
-<span class="title clr">&lt;&lt;News on Record Editor&gt;&gt;</span>
+<p id="home_notice2" class="clr">
+<span class="title clr">&lt;&lt;Announcement to European MassBank users&gt;&gt;</span>
 <span class="contents clr">
-We have just released a new version of <a href="./en/download.html">Record Editor</a> with enhanced MassBank record editing!
-All the reported problems in the previous version are fixed in the new editor.
+EU mirror site "NORMAN MassBank" <a href="http://www.massbank.eu/MassBank/" target="_blank">http:&#47;&#47;www.massbank.eu&#47;MassBank&#47;</a> is available now.<br />
+From NORMAN MassBank as well as MassBank.jp, users are accessible to all the latest MassBank data whichever distributed data servers are available or not.
 </span>
 </p>
--->
 <!--ed▲notice-->
 
 <div class="separate"></div>

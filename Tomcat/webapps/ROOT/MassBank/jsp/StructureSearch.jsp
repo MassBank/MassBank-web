@@ -22,7 +22,7 @@
  *
  * 部分構造検索クエリ表示用モジュール
  *
- * ver 1.0.21 2012.02.17
+ * ver 1.0.22 2013.01.18
  *
  ******************************************************************************/
 %>
@@ -125,6 +125,10 @@
 		String tol = "0.3";
 		String piCheck = "2";
 		String ionMode = "1";
+		String kingdom = "";
+		String family = "";
+		String species = "";
+		String op = "and";
 		List<String> instGrpList = new ArrayList<String>();
 		List<String> instTypeList = new ArrayList<String>();
 		List<String> msTypeList = new ArrayList<String>();
@@ -176,6 +180,18 @@
 					}
 					else if ( key.equals("isSelectM") ) {
 						isSelectM = val;
+					}
+					else if ( key.equals("kingdom") ) {
+						kingdom = val;
+					}
+					else if ( key.equals("family") ) {
+						family = val;
+					}
+					else if ( key.equals("species") ) {
+						species = val;
+					}
+					else if ( key.equals("op") ) {
+						op = val;
 					}
 					else {
 						setAryParams( key, val, molData, mz );
@@ -258,6 +274,18 @@
 				else if ( key.equals("isSelectM") ) {
 					isSelectM = val;
 				}
+				else if ( key.equals("kingdom") ) {
+					kingdom = val;
+				}
+				else if ( key.equals("family") ) {
+					family = val;
+				}
+				else if ( key.equals("species") ) {
+					species = val;
+				}
+				else if ( key.equals("op") ) {
+					op = val;
+				}
 				else {
 					setAryParams( key, val, molData, mz );
 				}
@@ -283,13 +311,17 @@
 		mapParam.put( "updateIndex", updateIndex );
 		mapParam.put( "reqUrl", req.getRequestURL().toString() );
 		mapParam.put( "isSelectM", isSelectM );
+		mapParam.put( "kingdom", kingdom );
+		mapParam.put( "family", family );
+		mapParam.put( "species", species );
+		mapParam.put( "op", op );
 		return mapParam;
 	}
 
 	/**
 	 * HTMLを取得する
 	 * @param mapParam
-	 * @param isDispM
+	 * @param isDispM MassBank検索フラグ
 	 */
 	private String getHtml( HashMap<String, Object> mapParam, boolean isDispM ) throws Exception {
 		
@@ -306,6 +338,10 @@
 		boolean isFirst = ((Boolean)mapParam.get("isFirst")).booleanValue();
 		String reqUrl = (String)mapParam.get("reqUrl");
 		String strIsSelectM = (String)mapParam.get("isSelectM");
+		String strKingdom = (String)mapParam.get("kingdom");
+		String strFamily = (String)mapParam.get("family");
+		String strSpecies = (String)mapParam.get("species");
+		String strOp = (String)mapParam.get("op");
 		boolean isSelectM = (new Boolean(strIsSelectM)).booleanValue();
 		
 		StringBuffer html = new StringBuffer();
@@ -316,13 +352,13 @@
 		}
 		else {
 			html.append("<div id=\"tbl_queryK\">\n");
-			html.append("\t\t<form name=\"form_queryK\" method=\"post\" "
+			html.append("\t\t\t<form name=\"form_queryK\" method=\"post\" "
 				+ "action=\"./extend/KnapsackResult.jsp\" style=\"display:inline\" onSubmit=\"doWait('Searching...')\">\n");
 		}
 		html.append("\t\t\t\t<input type=\"hidden\" name=\"type\" value=\"struct\">\n");
 		html.append("\t\t\t\t<table>\n");
 		html.append("\t\t\t\t\t<tr>\n");
-		html.append("\t\t\t\t\t\t<td>\n");
+		html.append("\t\t\t\t\t\t<td valign=\"top\">\n");
 		if ( isDispM ) {
 			html.append("\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"form-box-M\">\n");
 		}
@@ -330,7 +366,7 @@
 			html.append("\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"form-box-K\">\n");
 		}
 		html.append("\t\t\t\t\t\t\t\t<tr>\n");
-		html.append("\t\t\t\t\t\t\t\t\t<td bgcolor=\"dimgray\"><font color=\"white\"><b>&nbsp;Substructure</b></font></td>\n");
+		html.append("\t\t\t\t\t\t\t\t\t<td bgcolor=\"#696969\"><font color=\"white\"><b>&nbsp;Substructure</b></font></td>\n");
 		html.append("\t\t\t\t\t\t\t\t</tr>\n");
 		html.append("\t\t\t\t\t\t\t\t<tr>\n");
 		html.append("\t\t\t\t\t\t\t\t\t<td>\n");
@@ -350,12 +386,12 @@
 			String number = String.valueOf(i);
 			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td>\n" );
 			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>Query" + String.valueOf(i+1)  + "</b><br>\n");
-			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<applet name=\"" +  appletName + "\" code=\"JME.class\" archive=\"./applet/JME.jar\" width=\"200\" height=\"145\">\n");
+			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<applet name=\"" +  appletName + "\" code=\"JME.class\" archive=\"./applet/JME.jar\" width=\"200\" height=\"155\">\n");
 			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<param name=\"options\" value=\"depict,border\">\n");
 			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</applet><br>\n");
-			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"button\" value=\"Edit\" onClick=\"toEditor(" + isDispM + ", " + number + ");\">\n");
-			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"button\" value=\"Molfile\" onClick=\"readMolfile(" + isDispM + ", " + number + ");\">\n");
-			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"button\" value=\"Clear\" onClick=\"clearQuery(" + isDispM + ", " + number + ");\"><br>\n");
+			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"button\" value=\"Edit\" onClick=\"toEditor(" + isDispM + ", " + number + ");\" onkeypress=\"toEditor(" + isDispM + ", " + number + ");\">\n");
+			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"button\" value=\"Molfile\" onClick=\"readMolfile(" + isDispM + ", " + number + ");\" onkeypress=\"readMolfile(" + isDispM + ", " + number + ");\">\n");
+			html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"button\" value=\"Clear\" onClick=\"clearQuery(" + isDispM + ", " + number + ");\" onkeypress=\"clearQuery(" + isDispM + ", " + number + ");\"><br>\n");
 			if ( isDispM == isSelectM ) {
 				html.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"moldata" + number + "\" value=\"" + molData[i] + "\">\n");
 			}
@@ -386,7 +422,7 @@
 		html.append("\t\t\t\t\t\t\t\t\t\t<tr>\n" );
 		html.append("\t\t\t\t\t\t\t\t\t\t\t<td style=\"padding:0px 20px 0px 20px;\"><b>Comparison of pi-electron for each atom</b><br><div align=\"right\">\n" );
 		
-		String[] piCheckName = { "number in query = number in target", "number in query <= number in target", "none" };
+		String[] piCheckName = { "number in query = number in target", "number in query &lt;= number in target", "none" };
 		String[] piChekNum = { "2", "1", "0" };
 		html.append( "\t\t\t\t\t\t\t\t\t\t\t\t<select name=\"pi_check\">" );
 		for ( int i = 0; i < piCheckName.length; i++ ) {
@@ -401,12 +437,11 @@
 		html.append("\t\t\t\t\t\t\t\t\t\t\t</td>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t</tr>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
-		html.append("\t\t\t\t\t\t\t\t\t\t\t<td align=\"right\">");
-		html.append("\t\t\t\t\t\t\t\t\t\t\t\t<span style=\"color:#666; font-family:Verdana, Arial, Trebuchet MS; font-size:10px; font-style:italic; margin:0;\">Copyright &copy; 2008 K. Tanaka and S. Kanaya, NAIST, Japan&nbsp;&nbsp;</span>\n");
+		html.append("\t\t\t\t\t\t\t\t\t\t\t<td align=\"right\">\n");
+		html.append("\t\t\t\t\t\t\t\t\t\t\t\t<span style=\"color:#a9a9a9; font-family:Verdana, Arial, Trebuchet MS; font-size:10px; font-style:italic; margin:0;\">Copyright &copy; 2008 K. Tanaka and S. Kanaya, NAIST, Japan&nbsp;&nbsp;</span>\n");
 		html.append("\t\t\t\t\t\t\t\t\t\t\t</td>\n");
-		html.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
+		html.append("\t\t\t\t\t\t\t\t\t\t</tr>\n");
 		html.append("\t\t\t\t\t\t\t\t\t</table>\n");
-		html.append("\t\t\t\t\t\t\t\t</td>\n");
 
 		String instGrp = "";
 		for ( int i=0; i<instGrpList.size(); i++ ) {
@@ -431,7 +466,8 @@
 		}
 		
 		if ( isDispM ) {
-			html.append("\t\t\t\t\t\t\t\t<td valign=\"top\" style=\"padding:2px 15px;\">\n");
+			html.append("\t\t\t\t\t\t</td>\n");
+			html.append("\t\t\t\t\t\t<td valign=\"top\" style=\"padding:2px 12px;\">\n");
 			String strUrl = reqUrl.substring( 0, reqUrl.lastIndexOf("/")+1 ) + "Instrument.jsp";
 			String param = "ion=" + ionMode + "&first=" + isFirst + "&inst_grp=" + instGrp + "&inst=" + instType + "&ms=" + msType;
 			URL url = new URL( strUrl );
@@ -457,55 +493,73 @@
 			}
 			in.close();
 		}
-		html.append("\t\t\t\t\t\t\t\t</td>\n");
-		html.append("\t\t\t\t\t\t\t</tr>\n");
-		html.append("\t\t\t\t\t\t</table>\n");
+		html.append("\t\t\t\t\t\t</td>\n");
+		html.append("\t\t\t\t\t</tr>\n");
+		html.append("\t\t\t\t</table>\n");
 		
+		// 任意条件フォーム
+		html.append("\t\t\t\t<div style=\"padding-top:10px; padding-left:2px; width:509px;\">\n");
 		if ( isDispM ) {
-			html.append("\t\t\t\t\t\t<table>\n");
-			html.append("\t\t\t\t\t\t\t<tr>\n");
-			html.append("\t\t\t\t\t\t\t\t<td colspan=\"2\" style=\"padding-left:5px;\">\n");
-			html.append("\t\t\t\t\t\t\t\t<b>Peak Search&nbsp;&nbsp;(Option)</b>\n");
-			html.append("\t\t\t\t\t\t\t\t</td>\n");
-			html.append("\t\t\t\t\t\t\t</tr>\n");
-			html.append("\t\t\t\t\t\t\t<tr>\n");
-			html.append("\t\t\t\t\t\t\t\t<td width=\"150\" style=\"padding-left:15px;\">\n");
-			html.append("\t\t\t\t\t\t\t\t\t<i>m/z</i>\n");
-			html.append("\t\t\t\t\t\t\t\t</td>\n");
-			html.append("\t\t\t\t\t\t\t\t<td>\n");
-			
+			html.append("\t\t\t\t\t<fieldset style=\"padding:0 0 20px 20px; border:1px #C0C0C0 solid;\">\n");
+			html.append("\t\t\t\t\t<legend><b>Optional conditions</b></legend>\n");
+			html.append("\t\t\t\t\t<span style=\"width:144px; display:inline-block;\"><i>m/z</i></span>\n");
 			for ( int i = 0; i < mz.length; i++ ) {
 				String num = String.valueOf(i);
-				html.append( "\t\t\t\t\t\t\t\t\t<input name=\"mz" + num + "\" type=\"text\" size=\"10\" value=\"" + mz[i] + "\">");
+				html.append( "\t\t\t\t\t<input type=\"text\" name=\"mz" + num + "\" size=\"10\" value=\"" + mz[i] + "\" style=\"display:inline-block; margin-top:10px;\">");
 				if ( i < mz.length - 1 ) {
 					html.append("&nbsp;,&nbsp;");
 				}
 				html.append("\n");
 			}
-			
-			html.append("\t\t\t\t\t\t\t\t</td>\n");
-			html.append("\t\t\t\t\t\t\t</tr>\n");
-			html.append("\t\t\t\t\t\t\t<tr>\n");
-			html.append("\t\t\t\t\t\t\t\t<td style=\"padding-left:15px;\">Tolerance of <i>m/z</i></td>\n");
-			html.append("\t\t\t\t\t\t\t\t<td>\n");
-			html.append("\t\t\t\t\t\t\t\t\t<input name=\"tol\" type=\"text\" size=\"10\" value=\"" + tol + "\">\n");
-			html.append("\t\t\t\t\t\t\t\t</td>\n");
-			html.append("\t\t\t\t\t\t\t</tr>\n");
-			html.append("\t\t\t\t\t\t</table><br>\n");
+			html.append("\t\t\t\t\t</span>\n" );
+			html.append("\t\t\t\t\t<br />\n" );
+			html.append("\t\t\t\t\t<span style=\"width:144px; display:inline-block; font-style:italic;\">Tolerance of <i>m/z</i></span>\n");
+			html.append("\t\t\t\t\t<input type=\"text\" name=\"tol\" size=\"10\" value=\"" + tol + "\" style=\"display:inline-block; margin-top:10px;\">\n");
+			html.append("\t\t\t\t\t</span>\n" );
+			html.append("\t\t\t\t\t<br />\n" );
+			html.append("\t\t\t\t\t</fieldset>\n");
 		}
 		else {
-			html.append("\t\t\t\t\t\t<br>\n");
+			final String[] logicList = { "and", "or" };
+			String op = logicList[0];
+			if ( mapParam.containsKey("op") ) {
+				op = (String)mapParam.get("op");
+			}
+			String lblLogic = op.toUpperCase();
+			html.append("\t\t\t\t\t<fieldset style=\"padding:0 0 20px 20px; border:1px #CCC99A solid; background-color:white;\">\n");
+			html.append("\t\t\t\t\t<legend><b>Optional conditions</b></legend>\n");
+			html.append("\t\t\t\t\t<span style=\"width:80px; display:inline-block;\">Kingdom</span>\n");
+			html.append("\t\t\t\t\t<input type=\"text\" name=\"kingdom\" size=\"38\" value=\"" + strKingdom + "\" style=\"display:inline-block; margin-top:10px;\">\n");
+			html.append("\t\t\t\t\t<span style=\"width:38px; display:inline-block;\">\n");
+			html.append("\t\t\t\t\t\t<select name=\"op\" class=\"classLogics\">\n");
+			html.append("\t\t\t\t\t\t\t<option value=\"" + logicList[0] + "\"" + ((op.equals(logicList[0])) ? " selected=\"selected\"" : "" ) + ">" + logicList[0].toUpperCase() + "</option>\n");
+			html.append("\t\t\t\t\t\t\t<option value=\"" + logicList[1] + "\"" + ((op.equals(logicList[1])) ? " selected=\"selected\"" : "" ) + ">" + logicList[1].toUpperCase() + "</option>\n");
+			html.append("\t\t\t\t\t\t</select>\n" );
+			html.append("\t\t\t\t\t</span>\n" );
+			html.append("\t\t\t\t\t<br />\n" );
+			html.append("\t\t\t\t\t<span style=\"width:80px; display:inline-block;\">Family</span>\n");
+			html.append("\t\t\t\t\t<input type=\"text\" name=\"family\" size=\"38\" value=\"" + strFamily + "\" style=\"display:inline-block; margin-top:10px;\">\n");
+			html.append("\t\t\t\t\t<span id=\"logicLabel2\" class=\"logic\" style=\"width:56px; display:inline-block; text-indent:5px;\">" + lblLogic + "</span>\n");
+			html.append("\t\t\t\t\t<br />\n" );
+			html.append("\t\t\t\t\t<span style=\"width:80px; display:inline-block;\">Species</span>\n");
+			html.append("\t\t\t\t\t<input type=\"text\" name=\"species\" size=\"38\" value=\"" + strSpecies + "\" style=\"display:inline-block; margin-top:10px;\">\n");
+			html.append("\t\t\t\t\t<span id=\"logicLabel3\" class=\"logic\" style=\"width:56px; display:inline-block; text-indent:5px;\">" + lblLogic + "</span>\n");
+			html.append("\t\t\t\t\t<input type=\"button\" value=\"Clear\" onClick=\"resetForm();\" onkeypress=\"resetForm();\">\n");
+			html.append("\t\t\t\t\t<br />\n" );
+			html.append("\t\t\t\t\t</fieldset>\n");
 		}
-		html.append("\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" onclick=\"return checkSubmitForStruct();\" class=\"search\">\n");
+		html.append("\t\t\t\t</div>\n");
+		html.append("\t\t\t\t<br>\n");
+		html.append("\t\t\t\t<input type=\"submit\" value=\"Search\" onclick=\"return checkSubmitForStruct();\" onkeypress=\"return checkSubmitForStruct();\" class=\"search\">\n");
 
 		if ( isDispM ) {
-			html.append("\t\t\t\t\t\t<input type=\"hidden\" name=\"isSelectM\" value=\"true\">\n");
+			html.append("\t\t\t\t<input type=\"hidden\" name=\"isSelectM\" value=\"true\">\n");
 		}
 		else {
-			html.append("\t\t\t\t\t\t<input type=\"hidden\" name=\"isSelectM\" value=\"false\">\n");
+			html.append("\t\t\t\t<input type=\"hidden\" name=\"isSelectM\" value=\"false\">\n");
 		}
-		html.append("\t\t\t\t\t</form>\n");
-		html.append("\t\t\t\t</div>\n");
+		html.append("\t\t\t</form>\n");
+		html.append("\t\t</div>\n");
 		return html.toString();
 	}
 %>
@@ -534,11 +588,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
+<META HTTP-EQUIV="Content-Script-Type" content="text/javascript"> 
 <meta name="author" content="MassBank" />
 <meta name="coverage" content="worldwide" />
 <meta name="Targeted Geographic Area" content="worldwide" />
 <meta name="rating" content="general" />
-<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
+<meta name="copyright" content="Copyright (c) MassBank Project" />
 <meta name="description" content="Search chemical compounds by substructures. Retrieves chemical compounds whose chemical structure contains the substructures specified by users and display their spectra.">
 <meta name="keywords" content="Structure,compound,chemical">
 <meta name="revisit_after" content="30 days">
@@ -548,8 +603,8 @@
 <%}%>
 <title>MassBank | Database | Substructure Search</title>
 <script type="text/javascript" src="./script/Common.js"></script>
-<script type="text/javascript" src="./script/StructSearch.js"></script>
 <script type="text/javascript" src="./script/jquery.js"></script>
+<script type="text/javascript" src="./script/StructSearch.js"></script>
 <%if ( isKnapsack ) {%>
 <script type="text/javascript" src="./Knapsack/script/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript">
@@ -563,11 +618,15 @@ $(function(){
 <!--
 table.form-box-M {
 	background-color:WhiteSmoke;
-	border:1px silver solid;
+	border:1px #C0C0C0 solid;
+	width:506px;
+	height:374px;
 }
 table.form-box-K {
 	background-color:#EEEDDE;
 	border:1px #CCC99A solid;
+	width:506px;
+	height:374px;
 }
 -->
 </style>
@@ -579,8 +638,8 @@ table.form-box-K {
 			<h1>Substructure Search</h1>
 		</td>
 		<td align="right" class="font12px">
-			<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=STRUCTURE_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<img src="./img/bullet_link.gif" width="10" height="10" alt="">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<img src="./img/bullet_link.gif" width="10" height="10" alt="">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=STRUCTURE_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		</td>
 	</tr>
 </table>
@@ -593,11 +652,11 @@ table.form-box-K {
 		<li><a href="#knapsack" onmouseout="changeTab(false);">Search KNApSAcK</a></li>
 	</ul>
 
-	<div id="massbank">
+	<div id="massbank" style="border:1px #c5dbec solid;">
 		<jsp:include page="../pserver/ServerInfo.jsp" />
 		<%= getHtml(mapParam, true) %>
 	</div>
-	<div id="knapsack">
+	<div id="knapsack" style="border:1px #c5dbec solid;">
 		<%= getHtml(mapParam, false) %>
 	</div>
 </div>
