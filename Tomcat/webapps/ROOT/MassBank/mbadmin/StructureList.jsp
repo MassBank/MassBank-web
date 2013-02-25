@@ -22,16 +22,19 @@
  *
  * 登録済み構造式一覧
  *
- * ver 1.1.11  2012.11.22
+ * ver 1.1.13  2013.02.20
  *
  ******************************************************************************/
 %>
 
 <%@ page import="org.apache.commons.io.FileUtils" %>
 <%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.BufferedWriter" %>
 <%@ page import="java.io.File" %>
+<%@ page import="java.io.FileWriter" %>
 <%@ page import="java.io.InputStreamReader" %>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.io.PrintWriter" %>
 <%@ page import="java.io.PrintStream" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
 <%@ page import="java.net.URL" %>
@@ -69,6 +72,9 @@
 	
 	/** 改行文字列 */
 	private final String NEW_LINE = System.getProperty("line.separator");
+	
+	/** list.tsvファイル名 */
+	private final String LIST_FILE_NAME = "list.tsv";
 	
 	/** Molfile拡張子 */
 	private final String MOL_EXTENSION = ".mol";
@@ -219,7 +225,7 @@
 				}
 				else {
 					stateStr = "-";
-					detailStr = "structure data unregistered.";
+					detailStr = "Unregistered structure.";
 				}
 				
 				// 表示情報退避
@@ -233,7 +239,7 @@
 				String idStr = e.getValue();
 				String fileStr = " ";
 				String stateStr = STATUS_WARN;
-				String detailStr = "<span class=\"warnFont\">registered, but orphan compound.</span>";
+				String detailStr = "<span class=\"warnFont\">Orphan chemical compound.</span>";
 				String gifFile = "";
 				String molFile = "";
 				if ( !mainList.containsKey(compound) ) {
@@ -515,6 +521,56 @@
 					e.printStackTrace();
 					op.println( msgErr( "database access error." ) );
 					return false;
+				}
+			}
+			
+			//----------------------------------------------------
+			// list.tsv更新
+			//----------------------------------------------------
+			File listTsvFile = new File(molPath + File.separator + LIST_FILE_NAME);
+			
+			// 削除
+			if ( listTsvFile.isFile() ) { listTsvFile.delete(); }
+			
+			// 出力用情報保持
+			String sql = "";
+			ResultSet rs = null;
+			TreeMap<String, String> listTsv = null;
+			try {
+				listTsv = new TreeMap<String, String>();
+				sql = "SELECT NAME, FILE FROM MOLFILE;";
+				rs = db.executeQuery( sql );
+				while ( rs.next() ) {
+					listTsv.put(rs.getString("NAME"), rs.getString("FILE") + MOL_EXTENSION);
+				}
+			}
+			catch (SQLException e) {
+				Logger.getLogger("global").severe( "SQL : " + sql );
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					if ( rs != null ) { rs.close(); }
+				}
+				catch (SQLException e) {}
+			}
+			
+			// 出力
+			if ( listTsv.size() > 0 ) {
+				PrintWriter pw = null;
+				try {
+					pw = new PrintWriter(new BufferedWriter(new FileWriter(listTsvFile, false)));
+					for(Map.Entry<String, String> e : listTsv.entrySet()) {
+						pw.println(e.getKey() + "\t" + e.getValue());
+					}
+					pw.close();
+				}
+				catch (IOException e) {
+					Logger.getLogger("global").severe( "\"" + listTsvFile + "\" output failed." );
+					e.printStackTrace();
+				}
+				finally {
+					if (pw != null) { pw.close(); }
 				}
 			}
 			
@@ -893,7 +949,7 @@ function popupMolView(url) {
 			}
 		}
 		out.println( "</select>" );
-		out.println( "<input type=\"submit\" value=\"Get\" onClick=\"return checkDb();\">" );
+		out.println( "<input type=\"submit\" value=\"Get a list\" onClick=\"return checkDb();\">" );
 		out.println( "</form>" );
 		out.println( "<hr><br>" );
 		
