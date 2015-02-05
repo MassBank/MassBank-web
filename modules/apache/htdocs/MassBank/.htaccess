@@ -1,0 +1,13 @@
+RewriteEngine on
+RewriteRule ^$ jsp/index.jsp
+RewriteRule ^index.html$ jsp/index.jsp
+RewriteRule ^menu.html$ jsp/menu.jsp
+RewriteRule ^SearchPage.html$ jsp/SearchPage.jsp
+RewriteRule ^BrowsePage.html$ jsp/BrowsePage.jsp
+RewriteRule ^QuickSearch.html$ jsp/QuickSearch.jsp
+RewriteRule ^PeakSearch.html$ jsp/PeakSearch.jsp
+RewriteRule ^PackageView.html$ jsp/PackageView.jsp
+RewriteRule ^RecordIndex.html$ jsp/RecordIndex.jsp
+RewriteRule ^StructureSearch.html$ jsp/StructureSearch.jsp
+RewriteRule ^MassCalc.html$ jsp/MassCalc.jsp
+RewriteRule ^api(.*)$ ../api$1

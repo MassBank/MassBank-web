@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# chkconfig: 345 80 15
+# description: Xvfb
+
+. /etc/init.d/functions
+
+case "$1" in
+  start)
+    export DISPLAY=:5.0
+    echo "Starting the xvfb service."
+    /usr/X11R6/bin/Xvfb :5 -screen 0 1024x768x8 > /dev/null 2>&1 &
+    echo
+    ;;
+  stop)
+    echo "Stopping the xvfb service."
+    killproc Xvfb
+    echo
+    ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+exit 0

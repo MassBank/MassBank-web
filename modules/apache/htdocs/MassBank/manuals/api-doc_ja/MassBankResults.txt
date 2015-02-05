@@ -1,0 +1,101 @@
+***** MassBank Batch Service Results *****
+
+Request Date: 2010/04/21 17:16:25 JST
+# Instrument Type: ALL
+# Ion Mode: Positive
+
+
+### Query 1 ###
+# Name: Sample1
+# Hit: 50
+
+Top 20 List
+Accession	Title	Formula	Mass	Score	Hit
+
+KO007434	Glucosaminate; MS/MS; QqTOF; CE:30 V; [M+H]+	C6H13NO6	195.07429	0.3327	2
+KO008793	Zalcitabine; MS/MS; QqTOF; CE:30 V; [M+H]+	C9H13N3O3	211.09569	0.3296	2
+KO002907	N-Formylmethionine; MS/MS; QqQ; CE:40 V; [M+H]+	C6H11NO3S	177.04596	0.3149	2
+KO004274	Zalcitabine; MS/MS; QqQ; CE:40 V; [M+H]+	C9H13N3O3	211.09569	0.3102	2
+KO008794	Zalcitabine; MS/MS; QqTOF; CE:40 V; [M+H]+	C9H13N3O3	211.09569	0.2969	2
+KO007003	Cytosine arabinoside; MS/MS; QqTOF; CE:50 V; [M+H]+	C9H13N3O5	243.08552	0.2686	2
+KO003007	Glucosaminate; MS/MS; QqQ; CE:40 V; [M+H]+	C6H13NO6	195.07429	0.2633	2
+KO003346	4-Methyl-5-thiazoleethanol; MS/MS; QqQ; CE:50 V; [M+H]+	C6H9NOS	143.04048	0.2630	2
+KO004275	Zalcitabine; MS/MS; QqQ; CE:50 V; [M+H]+	C9H13N3O3	211.09569	0.2378	2
+KO003006	Glucosaminate; MS/MS; QqQ; CE:30 V; [M+H]+	C6H13NO6	195.07429	0.2332	2
+KO008795	Zalcitabine; MS/MS; QqTOF; CE:50 V; [M+H]+	C9H13N3O3	211.09569	0.2242	2
+KO003345	4-Methyl-5-thiazoleethanol; MS/MS; QqQ; CE:40 V; [M+H]+	C6H9NOS	143.04048	0.2050	2
+KO003656	Octopine; MS/MS; QqQ; CE:50 V; [M+H]+	C9H18N4O4	246.13281	0.1597	2
+KO008530	Specitinomycin; MS/MS; QqTOF; CE:50 V; [M+H]+	C14H24N2O7	332.15835	0.1512	2
+KO007433	Glucosaminate; MS/MS; QqTOF; CE:20 V; [M+H]+	C6H13NO6	195.07429	0.1441	2
+KO003698	Pantothenate; MS/MS; QqQ; CE:40 V; [M+H]+	C9H17NO5	219.11067	0.1408	2
+KO008260	Propylthiouracil; MS/MS; QqTOF; CE:40 V; [M+H]+	C7H10N2OS	170.05138	0.1274	2
+KO002798	Daminozide; MS/MS; QqQ; CE:30 V; [M+H]+	C6H12N2O3	160.08479	0.1251	2
+KO008185	Pantothenate; MS/MS; QqTOF; CE:40 V; [M+H]+	C9H17NO5	219.11067	0.1208	2
+KO003005	Glucosaminate; MS/MS; QqQ; CE:20 V; [M+H]+	C6H13NO6	195.07429	0.1166	2
+
+
+### Query 2 ###
+# Name: Sample2
+# Hit: 65
+
+Top 20 List
+Accession	Title	Formula	Mass	Score	Hit
+
+KO002405	(Aminomethyl)phosphonate; MS/MS; QqQ; CE:30 V; [M+H]+	CH6NO3P	111.00853	0.9918	2
+KO002404	(Aminomethyl)phosphonate; MS/MS; QqQ; CE:20 V; [M+H]+	CH6NO3P	111.00853	0.6767	2
+KO008101	Nornicotine; MS/MS; QqTOF; CE:50 V; [M+H]+	C9H12N2	148.10005	0.5308	2
+KO006552	Anabasine; MS/MS; QqTOF; CE:40 V; [M+H]+	C10H14N2	162.1157	0.3947	2
+KO006553	Anabasine; MS/MS; QqTOF; CE:50 V; [M+H]+	C10H14N2	162.1157	0.3793	2
+KO006551	Anabasine; MS/MS; QqTOF; CE:30 V; [M+H]+	C10H14N2	162.1157	0.3574	2
+KO007801	4-Methyl-5-thiazoleethanol; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H9NOS	143.04048	0.2455	2
+KO006517	2-Aminoethylphosphonate; MS/MS; QqTOF; CE:40 V; [M+H]+	C2H8NO3P	125.02418	0.1810	2
+KO008256	Pseudopelletierine; MS/MS; QqTOF; CE:50 V; [M+H]+	C9H15NO	153.11536	0.1781	2
+KO007576	5-Hydroxylysine; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H14N2O3	162.10044	0.1712	2
+KO007446	Galactosamine 1-phosphate; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H14NO8P	259.0457	0.1680	2
+KO007425	Glucosamine; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H13NO5	179.07937	0.1631	2
+KO008690	Thiamine; MS/MS; QqTOF; CE:50 V; [M+H]+	C12H17N4OS	265.11231	0.1595	2
+KO007575	5-Hydroxylysine; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H14N2O3	162.10044	0.1480	2
+KO006518	2-Aminoethylphosphonate; MS/MS; QqTOF; CE:50 V; [M+H]+	C2H8NO3P	125.02418	0.1480	2
+KO007426	Glucosamine; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H13NO5	179.07937	0.1417	2
+KO007445	Galactosamine 1-phosphate; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H14NO8P	259.0457	0.1417	2
+KO007580	Histidinol; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H11N3O	141.09021	0.1399	2
+KO002997	Glucosamine; MS/MS; QqQ; CE:40 V; [M+H]+	C6H13NO5	179.07937	0.1345	2
+KO007581	Histidinol; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H11N3O	141.09021	0.1279	2
+
+
+### Query 3 ###
+# Name: Sample3
+# Hit: 61
+
+Top 20 List
+Accession	Title	Formula	Mass	Score	Hit
+
+KO007425	Glucosamine; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H13NO5	179.07937	0.3198	3
+KO002997	Glucosamine; MS/MS; QqQ; CE:40 V; [M+H]+	C6H13NO5	179.07937	0.3160	3
+KO007426	Glucosamine; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H13NO5	179.07937	0.2900	3
+KO002987	Galactosamine; MS/MS; QqQ; CE:40 V; [M+H]+	C6H13NO5	179.07937	0.2652	3
+KO007424	Glucosamine; MS/MS; QqTOF; CE:30 V; [M+H]+	C6H13NO5	179.07937	0.2615	3
+KO003018	Galactosamine 1-phosphate; MS/MS; QqQ; CE:50 V; [M+H]+	C6H14NO8P	259.0457	0.2495	3
+KO002996	Glucosamine; MS/MS; QqQ; CE:30 V; [M+H]+	C6H13NO5	179.07937	0.2371	3
+KO003142	Histidinol; MS/MS; QqQ; CE:50 V; [M+H]+	C6H11N3O	141.09021	0.2365	3
+KO007415	Galactosamine; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H13NO5	179.07937	0.2337	3
+KO007945	Mannosamine; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H13NO5	179.07937	0.2302	3
+KO007446	Galactosamine 1-phosphate; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H14NO8P	259.0457	0.2232	3
+KO003484	Mannosamine; MS/MS; QqQ; CE:30 V; [M+H]+	C6H13NO5	179.07937	0.2221	3
+KO007580	Histidinol; MS/MS; QqTOF; CE:40 V; [M+H]+	C6H11N3O	141.09021	0.2181	3
+KO003141	Histidinol; MS/MS; QqQ; CE:40 V; [M+H]+	C6H11N3O	141.09021	0.2173	3
+KO007416	Galactosamine; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H13NO5	179.07937	0.2165	3
+KO007801	4-Methyl-5-thiazoleethanol; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H9NOS	143.04048	0.2141	3
+KO007414	Galactosamine; MS/MS; QqTOF; CE:30 V; [M+H]+	C6H13NO5	179.07937	0.2109	3
+KO007581	Histidinol; MS/MS; QqTOF; CE:50 V; [M+H]+	C6H11N3O	141.09021	0.2104	3
+KO007579	Histidinol; MS/MS; QqTOF; CE:30 V; [M+H]+	C6H11N3O	141.09021	0.2053	3
+KO007944	Mannosamine; MS/MS; QqTOF; CE:30 V; [M+H]+	C6H13NO5	179.07937	0.1950	3
+
+
+##### END #####
+
+**********************************************************
+*  MassBank.jp - High Resolution Mass Spectral Database  *
+*    URL: http://www.massbank.jp/                        *
+**********************************************************
+
