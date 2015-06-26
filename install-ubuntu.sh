@@ -23,7 +23,7 @@ INST_SQL_PATH=$INST_ROOT_PATH/sql/init.sql
 # Apache Path
 APACHE_HTDOCS_PATH=/var/www/html
 APACHE_ERROR_PATH=/var/www/error
-APACHE_CONF_PATH=/etc/apache2/conf
+APACHE_CONF_PATH=/etc/apache2/
 APACHE_MODULE_PATH=/usr/lib/httpd/modules
 
 # Tomcat Path
@@ -49,8 +49,14 @@ cp -fp $INST_ERROR_PATH/50?.html $APACHE_ERROR_PATH
 #cp -rip $INST_CONF_PATH/* $APACHE_CONF_PATH
 
 cp -p $INST_CONF_PATH/.htpasswd $APACHE_CONF_PATH
+cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
+a2ensite 010-a2site-massbank
+
 #cp -ip $INST_MODULE_PATH/mod_jk.so $APACHE_MODULE_PATH
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
+cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
+
+
 #cp -ip $INST_ROOT_PATH/StartupScript/tomcat /etc/init.d
 cp -p $INST_ROOT_PATH/StartupScript/xvfb /etc/init.d
 mv $APACHE_ERROR_PATH/noindex.html $APACHE_ERROR_PATH/noindex.html.bak
@@ -87,11 +93,11 @@ echo ">> create database (root authority)"
 cat >~/.my.cnf <<EOF
 [client]
 user=root
-password="bird2015"
+password="bird2006"
 
 [mysql]
 user=root
-password="bird2015"
+password="bird2006"
 EOF
 
 mysql --user=root  < $INST_SQL_PATH
