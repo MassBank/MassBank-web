@@ -63,7 +63,7 @@ struct RES_SCORE {
 bool dbConnect();
 long dbExecuteSql( const char * );
 void dbClose();
-void dbError( char * );
+void dbError( const char * );
 bool getReqParam();
 void setQueryParam();
 void setQueryPeak();
