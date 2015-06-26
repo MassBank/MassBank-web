@@ -39,7 +39,7 @@ service apache2 stop
 
 echo
 echo ">> file copy"
-cp -rp $INST_HTDOCS_PATH/* $APACHE_HTDOCS_PATH
+cp -rp $INST_HTDOCS_PATH/. $APACHE_HTDOCS_PATH
 cp -fp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
 
 mkdir -p $APACHE_ERROR_PATH
@@ -51,6 +51,9 @@ cp -fp $INST_ERROR_PATH/50?.html $APACHE_ERROR_PATH
 cp -p $INST_CONF_PATH/.htpasswd $APACHE_CONF_PATH
 cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
 a2ensite 010-a2site-massbank
+a2enmod rewrite
+a2enmod authz_groupfile
+a2enmod cgid
 
 #cp -ip $INST_MODULE_PATH/mod_jk.so $APACHE_MODULE_PATH
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
@@ -79,6 +82,12 @@ mkdir -p $DEST_TOMCAT_PATH/temp
 chmod a+w $DEST_TOMCAT_PATH/temp
 #chmod u+x /etc/init.d/tomcat
 chmod u+x /etc/init.d/xvfb
+
+## Configure Tomcat if not already done
+if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' $DEST_TOMCAT_PATH/conf/server.xml ; then 
+sed -i -e 's#<!-- Define an AJP 1.3 Connector on port 8009 -->#<!-- Define an AJP 1.3 Connector on port 8009 -->\n<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />#' $DEST_TOMCAT_PATH/conf/server.xml    
+fi 
+
 
 echo
 echo ">> service start"
