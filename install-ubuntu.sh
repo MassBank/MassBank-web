@@ -91,6 +91,7 @@ mkdir -p $DEST_TOMCAT_PATH/temp
 chmod a+w $DEST_TOMCAT_PATH/temp
 
 chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
+chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
 
 #chmod u+x /etc/init.d/tomcat
 chmod u+x /etc/init.d/xvfb

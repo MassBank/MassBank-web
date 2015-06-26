@@ -1,5 +1,9 @@
 # install a MassBank Dev machine
 
+# support the precompiled struct_server
+sudo dpkg --add-architecture i386
+apt-get install -y libgcc1:i386 libstdc++6:i386
+
 # Freshen package index
 apt-get update
 
@@ -16,10 +20,11 @@ locale-gen en_US.UTF-8 de_DE.UTF-8
 dpkg-reconfigure locales
 
 # virtual X
-apt-get install -y xvfb
+apt-get install -y xvfb openjdk-7-jre
+
 
 # install Apache
-apt-get install -y apache2
+apt-get install -y apache2 unzip
 
 a2enmod rewrite #enable mod-rewrite
 cat > /etc/apache2/sites-available/000-default.conf << EOF
