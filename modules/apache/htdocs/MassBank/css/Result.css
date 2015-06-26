@@ -1,0 +1,168 @@
+@charset "UTF-8";
+/*******************************************************************************
+ *
+ * Copyright (C) 2008 JST-BIRD MassBank
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *******************************************************************************
+ *
+ * リザルトページ用スタイルシート
+ *
+ * ver 1.0.4 2010.08.18
+ *
+ ******************************************************************************/
+
+a.noLinkImg {
+	text-decoration:none;
+}
+a.noLinkImg:link {
+	color: #000000;
+	font-weight: bolder;
+}
+a.noLinkImg:visited {
+	color:#000000;
+	font-weight: bolder;
+}
+a.noLinkImg:hover {
+	color:#000000;
+	font-weight: bolder;
+}
+a.noLinkImg:active {
+	color:#000000;
+	font-weight: bolder;
+}
+
+th.listLayout1 {
+	border:1px #696969 solid;
+	border-collapse:collapse;
+	empty-cells:show;
+	font-size: 11pt;
+}
+th.listLayout2 {
+	border-top:1px #696969 solid;
+	border-bottom:1px #696969 solid;
+	border-collapse:collapse;
+	empty-cells:show;
+	font-size: 11pt;
+}
+th.listLayout3 {
+	border-top:1px #696969 solid;
+	border-bottom:1px #696969 solid;
+	border-right:1px #696969 solid;
+	border-collapse:collapse;
+	empty-cells:show;
+	font-size: 11pt;
+}
+
+table.pTreeLayout {
+	border-left:1px DimGray solid;
+	border-right:1px DimGray solid;
+	border-top:1px silver solid;
+	font-size: 11pt;
+}
+
+table.cTreeLayout {
+	border-left:1px DimGray solid;
+	border-right:1px DimGray solid;
+	font-size: 10pt;
+}
+td.treeLayout1 {
+	border-top:0px;
+	border-bottom:0px;
+	border-left:0px DimGray solid;
+	border-right:1px DimGray solid;
+}
+td.treeLayout2 {
+	border-top:0px;
+	border-bottom:0px;
+	border-left:0px DimGray solid;
+	border-right:0px DimGray solid;
+}
+
+table.treeLayoutSpacer {
+	border-right:1px DimGray solid;
+}
+table.treeLayoutSpacer td {
+	border-left:1px DimGray solid;
+	border-right:0px DimGray solid;
+	font-size: 5pt;
+}
+
+table.treeLayoutEnd {
+	border-right:1px DimGray solid;
+	border-bottom:1px DimGray solid;
+}
+table.treeLayoutEnd td {
+	border-left:1px DimGray solid;
+	font-size: 8pt;
+}
+
+/**
+ * ページリンク（上部）テーブル用
+ */
+table.pageLinkTop {
+	margin: 24px 0px 0px 0px;
+}
+
+/**
+ * ページリンク（下部）テーブル用
+ */
+table.pageLinkBottom {
+	margin: 0px 0px 0px 0px;
+}
+
+/**
+ * ページリンク用
+ */
+a.pageLink:link {
+	color: #3300CC;
+}
+a.pageLink:visited {
+	color: #3300CC;
+}
+a.pageLink:hover {
+	color: #800080;
+}
+a.pageLink:active {
+	color: #800080;
+}
+
+/**
+ * 表示位置移動用リンク
+ */
+a.moveDispLink:link {
+	color: #3300CC;
+	text-decoration: none;
+}
+a.moveDispLink:visited {
+	color: #3300CC;
+	text-decoration: none;
+}
+a.moveDispLink:hover {
+	color: #800080;
+	text-decoration: none;
+}
+a.moveDispLink:active {
+	color: #800080;
+	text-decoration: none;
+}
+
+/**
+ * 画像リンクボーダー
+ */
+img {
+	border:none; text-decoration:none;
+}

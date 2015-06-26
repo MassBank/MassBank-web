@@ -1,0 +1,37 @@
+#/bin/sh
+#
+# Startup script for the tomcat
+#
+# chkconfig: 345 99 15
+# description: Tomcat
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+export JAVA_HOME=/usr/java/jre1.6.0_31
+export CATALINA_HOME=/usr/local/tomcat
+export PATH=$JAVA_HOME/bin:$PATH
+export JAVA_OPTS=-Duser.language=en
+export DISPLAY=:5.0
+
+case "$1" in
+  'start')
+    if [ -f $CATALINA_HOME/bin/startup.sh ]; then
+    echo "Starting the tomcat service "
+    $CATALINA_HOME/bin/startup.sh
+    fi
+    ;;
+  'stop')
+    echo "Stopping the tomcat service."
+    $CATALINA_HOME/bin/shutdown.sh
+    ;;
+  'restart')
+    $0 stop
+    $0 start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    ;;
+esac
+exit 0 
+
