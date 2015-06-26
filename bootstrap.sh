@@ -70,7 +70,7 @@ apt-get install -y nano joe
 apt-get install -y lynx
 
 # Compiler to install Search.cgi
-apt-get install build-essential libmysqlclient-dev
+apt-get install -y build-essential libmysqlclient-dev
 
 # download latest version of MassBank
 git clone https://github.com/MassBank/MassBank-web
@@ -80,3 +80,5 @@ git clone https://github.com/MassBank/MassBank-web
 # restart Apache
 service apache2 restart
 
+cd MassBank-web
+bash ./install-ubuntu.sh
