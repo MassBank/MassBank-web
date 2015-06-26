@@ -30,6 +30,7 @@ APACHE_MODULE_PATH=/usr/lib/httpd/modules
 #DEST_TOMCAT_PATH=/usr/local
 DEST_TOMCAT_PATH=/var/lib/tomcat7
 
+
 echo
 echo ">> service stop"
 
@@ -59,6 +60,11 @@ a2enmod cgid
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
 cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
 
+echo 
+echo "Compile Search.cgi"
+(cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
+cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
+
 
 #cp -ip $INST_ROOT_PATH/StartupScript/tomcat /etc/init.d
 cp -p $INST_ROOT_PATH/StartupScript/xvfb /etc/init.d
@@ -72,6 +78,7 @@ chmod a+x $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*/*.pl
 chmod 755 $APACHE_HTDOCS_PATH/MassBank/script/*.pl
 chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct.dat
 chmod 755 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct_server
+
 
 mkdir -p $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
 chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
