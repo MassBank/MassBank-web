@@ -69,6 +69,9 @@ apt-get install -y nano joe
 # install lynx
 apt-get install -y lynx
 
+# Compiler to install Search.cgi
+apt-get install build-essential libmysqlclient-dev
+
 # download latest version of MassBank
 git clone https://github.com/MassBank/MassBank-web
 
