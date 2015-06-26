@@ -58,7 +58,7 @@ apt-get install -y mysql-server mysql-client libdbd-mysql-perl
 #ln -fs /vagrant /var/www
 
 # install tomcat
-apt-get install -y tomcat7
+apt-get install -y tomcat7 libapache2-mod-jk
 
 # install GIT
 apt-get install -y git-core

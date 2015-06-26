@@ -49,12 +49,14 @@ cp -fp $INST_ERROR_PATH/50?.html $APACHE_ERROR_PATH
 
 #cp -rip $INST_CONF_PATH/* $APACHE_CONF_PATH
 
-cp -p $INST_CONF_PATH/.htpasswd $APACHE_CONF_PATH
-cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
-a2ensite 010-a2site-massbank
 a2enmod rewrite
 a2enmod authz_groupfile
 a2enmod cgid
+a2enmod jk
+
+cp -p $INST_CONF_PATH/.htpasswd $APACHE_CONF_PATH
+cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
+a2ensite 010-a2site-massbank
 
 #cp -ip $INST_MODULE_PATH/mod_jk.so $APACHE_MODULE_PATH
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
