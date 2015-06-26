@@ -70,7 +70,7 @@ cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bi
 
 #cp -ip $INST_ROOT_PATH/StartupScript/tomcat /etc/init.d
 cp -p $INST_ROOT_PATH/StartupScript/xvfb /etc/init.d
-mv $APACHE_ERROR_PATH/noindex.html $APACHE_ERROR_PATH/noindex.html.bak
+#mv $APACHE_ERROR_PATH/noindex.html $APACHE_ERROR_PATH/noindex.html.bak
 cp -fp $INST_ERROR_PATH/403.html $APACHE_ERROR_PATH/noindex.html
 
 echo
@@ -89,6 +89,9 @@ chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch
 #chmod u+x $DEST_TOMCAT_PATH/tomcat/bin/*.sh
 mkdir -p $DEST_TOMCAT_PATH/temp
 chmod a+w $DEST_TOMCAT_PATH/temp
+
+chown -r tomcat7.tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
+
 #chmod u+x /etc/init.d/tomcat
 chmod u+x /etc/init.d/xvfb
 
