@@ -44,7 +44,7 @@ Execute the these two steps:
 $ echo "export VAGRANT_DEFAULT_PROVIDER=virtualbox" >> ~/.zshr
 $ source ~/.zshrc
 `````
-
+The vagrant version from the repository (Version 1.7.2) does NOT support Virtualbox Version 5
 
 
 
