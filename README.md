@@ -25,7 +25,25 @@ vagrant ssh
 ````
 
 
+## Fedora 22 Workstation
 
+Install vagrant
+
+````
+sudo dnf install vagrant
+````
+According to [this](https://unix.stackexchange.com/questions/194691/use-virtualbox-provider-by-default-on-fedora-21) StackExchange post, Fedora is not using VirtualBox as a default provider.
+When geting the follwoing error:
+
+````
+The provider 'libvirt' could not be found, but was requested to
+back the machine 'default'. Please use a provider that exists.
+````
+Execute the these two steps:
+````
+$ echo "export VAGRANT_DEFAULT_PROVIDER=virtualbox" >> ~/.zshr
+$ source ~/.zshrc
+`````
 
 
 
