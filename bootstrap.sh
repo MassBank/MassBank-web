@@ -22,7 +22,6 @@ dpkg-reconfigure locales
 # virtual X
 apt-get install -y xvfb openjdk-7-jre
 
-
 # install Apache
 apt-get install -y apache2 unzip
 
@@ -85,6 +84,10 @@ git clone https://github.com/MassBank/MassBank-web
 
 # restart Apache
 service apache2 restart
+
+## Create unique passwords
+echo $(cat /dev/urandom |  tr -dc _A-Z-a-z-0-9 | head -c${1:-16}) 
+
 
 cd MassBank-web
 bash ./install-ubuntu.sh
