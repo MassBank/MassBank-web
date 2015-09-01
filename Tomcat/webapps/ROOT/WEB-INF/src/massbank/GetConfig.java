@@ -20,7 +20,7 @@
  *
  * 環境設定ファイルの情報を取得するクラス
  *
- * ver 1.0.6 2008.12.18
+ * ver 1.0.7 2012.09.06
  *
  ******************************************************************************/
 package massbank;
@@ -74,6 +74,13 @@ public class GetConfig {
 	 */ 
 	public String[] getDbName() {
 		return getSetting("DB");
+	}
+
+	/**
+	 * セカンダリDB名を取得する
+	 */ 
+	public String[] getSecondaryDBName() {
+		return getSetting("SecondaryDB");
 	}
 
 	/**

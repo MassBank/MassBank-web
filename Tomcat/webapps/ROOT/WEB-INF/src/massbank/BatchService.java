@@ -20,7 +20,7 @@
  *
  * バッチ検索サービス
  *
- * ver 1.0.6 2011.08.23
+ * ver 1.0.7 2012.09.07
  *
  ******************************************************************************/
 package massbank;
@@ -63,10 +63,11 @@ public class BatchService extends HttpServlet {
 	 * サービス終了処理を行う
 	 */
 	public void destroy() {
-		// JobMonitorスレッドに割り込む
-		this.mon.interrupt();
 		// 終了状態セット
 		this.mon.setTerminate();
+
+		// JobMonitorスレッドに割り込む
+		this.mon.interrupt();
 
 		// JobMonitorスレッドが終了するのを待つ
 		do {

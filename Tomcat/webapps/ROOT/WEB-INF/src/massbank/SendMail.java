@@ -20,7 +20,7 @@
  *
  * メール送信共通クラス
  *
- * ver 1.0.0 2010.04.05
+ * ver 1.0.1 2013.11.11
  *
  ******************************************************************************/
 package massbank;
@@ -40,12 +40,20 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+
 
 /**
  * メール送信共通クラス
  */
 public class SendMail {
-	
+
+	private static String host = "";
+	private static String port = "";
+	private static String user = "";
+	private static String pass = "";
+
 	/**
 	 * メール送信関数
 	 * @param info メール送信情報オブジェクト
@@ -58,13 +66,56 @@ public class SendMail {
 			Logger.global.severe( "The mail sending failed.");
 			return false;
 		}
-		
+
+		String[] smtpItems = info.getSmtp().split(",");
+		if ( smtpItems.length >= 1 ) {
+			host = smtpItems[0].trim();
+		}
+		if ( smtpItems.length >= 2 ) {
+			port = smtpItems[1].trim();
+		}
+		if ( smtpItems.length >= 3 ) {
+			user = smtpItems[2].trim();
+		}
+		if ( smtpItems.length >= 4 ) {
+			pass = smtpItems[3].trim();
+		}
+		if ( port.equals("") ) {
+			port = "25";
+		}
+		System.out.println( host + "/" + port + "/" + user + "/" + pass);
+
 		try {
 			// SMTPサーバーのアドレスを設定
-			Properties props = System.getProperties();
-			props.put("mail.smtp.host", info.getSmtp());
-			
-			Session session = Session.getDefaultInstance(props, null);
+			Properties props = new Properties();
+			props.put("mail.smtp.host", host);
+			props.put("mail.smtp.port", port);
+
+			if ( port.equals("465") || port.equals("587") ) {
+				props.put("mail.smtp.ssl.trust", host);
+				if ( port.equals("465") ) {
+					props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+					props.put("mail.smtp.socketFactory.fallback", "false");
+				}
+				else if ( port.equals("587") ) {
+					props.put("mail.smtp.starttls.enable", "true");
+				}
+			}
+			Session session = null;
+			if ( user.equals("") || pass.equals("") ) {
+				props.put("mail.smtp.auth", "false");
+				session = Session.getDefaultInstance(props, null);
+			}
+			else {
+				props.put("mail.smtp.auth", "true");
+				session = Session.getInstance(props, new Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(user, pass);
+						}
+					}
+				);
+			}
+
 			MimeMessage mimeMsg = new MimeMessage(session);
 
 			// 送信元メールアドレスと送信者名を設定
