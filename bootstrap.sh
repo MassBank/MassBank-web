@@ -66,6 +66,17 @@ apt-get install -y mysql-server mysql-client libdbd-mysql-perl
 # install tomcat
 apt-get install -y tomcat7 libapache2-mod-jk
 
+cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
+# configure jk-status
+worker.list=jk-status
+worker.jk-status.type=status
+worker.jk-status.read_only=true
+# configure jk-manager
+worker.list=jk-manager
+worker.jk-manager.type=status
+EOF
+
+
 # install GIT
 apt-get install -y git-core
 
