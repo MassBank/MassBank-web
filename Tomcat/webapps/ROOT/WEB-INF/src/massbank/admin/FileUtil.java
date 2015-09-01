@@ -245,7 +245,9 @@ public class FileUtil {
 		}
 			// 終了コード取得
 		if ( res.getStatus() != 0 ) {
-			return false;
+			if ( err.indexOf("Using a password on the command line interface can be insecure") == -1 ) {
+				return false;
+			}
 		}
 		return true;
 	}
