@@ -104,6 +104,6 @@ echo $(cat /dev/urandom |  tr -dc _A-Z-a-z-0-9 | head -c${1:-16})
 cd MassBank-web
 
 ## During development: change into temporary branch
-git checkout updateFromCVS
+#git checkout updateFromCVS
 
 bash ./install-ubuntu.sh
