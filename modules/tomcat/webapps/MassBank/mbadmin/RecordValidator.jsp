@@ -22,7 +22,7 @@
  *
  * レコードチェック
  *
- * ver 1.0.21 2012.02.13
+ * ver 1.0.22 2012.08.24
  *
  ******************************************************************************/
 %>
@@ -53,6 +53,7 @@
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.svn.MSDBUpdater" %>
 <%@ include file="../jsp/Common.jsp"%>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
@@ -779,6 +780,9 @@ function selDb() {
 		File[] dbDirs = (new File( dbRootPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
+				if ( dbDir.getName().indexOf(MSDBUpdater.BACKUP_IDENTIFIER) != -1 ) {
+					continue;
+				}
 				if ( dbDir.isDirectory() ) {
 					int pos = dbDir.getName().lastIndexOf("\\");
 					String dbDirName = dbDir.getName().substring( pos + 1 );

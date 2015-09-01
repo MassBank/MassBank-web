@@ -22,7 +22,7 @@
  *
  * レコード登録
  *
- * ver 1.0.19 2012.02.13
+ * ver 1.0.20 2012.08.24
  *
  ******************************************************************************/
 %>
@@ -58,6 +58,9 @@
 <%@ page import="massbank.admin.SqlFileGenerator" %>
 <%@ page import="massbank.FileUpload" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.svn.MSDBUpdater" %>
+<%@ page import="massbank.svn.SVNRegisterUtil" %>
+<%@ page import="massbank.svn.RegistrationCommitter" %>
 <%@ include file="../jsp/Common.jsp"%>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
@@ -742,6 +745,9 @@ function selDb() {
 		File[] dbDirs = (new File( dbRootPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
+				if ( dbDir.getName().indexOf(MSDBUpdater.BACKUP_IDENTIFIER) != -1 ) {
+					continue;
+				}
 				if ( dbDir.isDirectory() ) {
 					int pos = dbDir.getName().lastIndexOf("\\");
 					String dbDirName = dbDir.getName().substring( pos + 1 );
@@ -991,6 +997,13 @@ function selDb() {
 				out.println( msgErr( "rollback failed." ) );
 			}
 			return;
+		}
+
+		//---------------------------------------------
+		// SVN登録処理
+		//---------------------------------------------
+		if ( RegistrationCommitter.isActive ) {
+			SVNRegisterUtil.updateRecords(selDbName);
 		}
 	}
 	finally {

@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.7 2011.11.15
+ * ver 1.0.8 2012.09.05
  *
  ******************************************************************************/
 %>
@@ -56,6 +56,9 @@
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
+<%@ page import="massbank.svn.MSDBUpdater" %>
+<%@ page import="massbank.svn.SVNRegisterUtil" %>
+<%@ page import="massbank.svn.RegistrationCommitter" %>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -406,6 +409,9 @@
 		}
 		
 		op.println( "\t</table>" );
+		if ( RegistrationCommitter.isActive ) {
+			op.println( "\t<br><input type=\"submit\" value=\"Update the MassBank SVN\" onClick=\"document.formList.act.value='svn';return true;\">" );
+		}
 		op.println( "\t<input type=\"hidden\" name=\"act\" value=\"\">" );
 		op.println( "\t<input type=\"hidden\" name=\"db\" value=\"" + selDbName + "\">" );
 		op.println( "</form>" );
@@ -804,6 +810,9 @@ function popupRecView(url) {
 		File[] dbDirs = (new File( dbRootPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
+				if ( dbDir.getName().indexOf(MSDBUpdater.BACKUP_IDENTIFIER) != -1 ) {
+					continue;
+				}
 				if ( dbDir.isDirectory() ) {
 					int pos = dbDir.getName().lastIndexOf("\\");
 					String dbDirName = dbDir.getName().substring( pos + 1 );
@@ -924,8 +933,9 @@ function popupRecView(url) {
 			File destFile = null;
 			try {
 				for ( String recId : recIds ) {
-					srcFile = new File(recPath + File.separator + recId + ".txt");
-					destFile = new File(backupPath + recId + ".txt");
+					String fileName = recId + ".txt";
+					srcFile = new File(recPath + File.separator + fileName);
+					destFile = new File(backupPath + fileName);
 					if ( srcFile.isFile() ) {
 						FileUtils.copyFile(srcFile, destFile);
 					}
@@ -984,6 +994,17 @@ function popupRecView(url) {
 				                                   "    url : " + cgiUrl + NEW_LINE +
 				                                   "    param : " + cgiParam );
 			}
+
+			//---------------------------------------------
+			// SVN削除処理
+			//---------------------------------------------
+			if ( RegistrationCommitter.isActive ) {
+				SVNRegisterUtil.updateRecords(selDbName);
+			}
+		}
+		else if ( act.equals("svn") && RegistrationCommitter.isActive ) {
+			SVNRegisterUtil.updateRecords(selDbName);
+			out.println( msgInfo( "Done." ) );
 		}
 	}
 	finally {

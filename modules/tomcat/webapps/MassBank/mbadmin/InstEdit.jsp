@@ -22,7 +22,7 @@
  *
  * レコード一覧
  *
- * ver 1.0.3 2011.05.25
+ * ver 1.0.4 2012.08.24
  *
  ******************************************************************************/
 %>
@@ -56,6 +56,7 @@
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
 <%@ page import="org.apache.commons.io.FileUtils" %>
+<%@ page import="massbank.svn.MSDBUpdater" %>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -922,6 +923,9 @@ function selNo() {
 		File[] dbDirs = (new File( annotationPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
+				if ( dbDir.getName().indexOf(MSDBUpdater.BACKUP_IDENTIFIER) != -1 ) {
+					continue;
+				}
 				if ( dbDir.isDirectory() ) {
 					int pos = dbDir.getName().lastIndexOf("\\");
 					String dbDirName = dbDir.getName().substring( pos + 1 );

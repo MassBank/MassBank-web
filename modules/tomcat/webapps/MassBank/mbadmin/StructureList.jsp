@@ -22,7 +22,7 @@
  *
  * 登録済み構造式一覧
  *
- * ver 1.1.9  2011.05.17
+ * ver 1.1.10  2012.09.05
  *
  ******************************************************************************/
 %>
@@ -60,6 +60,9 @@
 <%@ page import="massbank.admin.OperationManager" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.Sanitizer" %>
+<%@ page import="massbank.svn.MSDBUpdater" %>
+<%@ page import="massbank.svn.SVNRegisterUtil" %>
+<%@ page import="massbank.svn.RegistrationCommitter" %>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -456,6 +459,9 @@
 		}
 		
 		op.println( "\t\t</table>" );
+		if ( RegistrationCommitter.isActive ) {
+			op.println( "\t<br><input type=\"submit\" value=\"Update the MassBank SVN\" onClick=\"document.formList.act.value='svn';\">" );
+		}
 		op.println( "\t<input type=\"hidden\" name=\"act\" value=\"\">" );
 		op.println( "\t<input type=\"hidden\" name=\"db\" value=\"" + selDbName + "\">" );
 		op.println( "</form>" );
@@ -821,6 +827,9 @@ function popupMolView(url) {
 		File[] dbDirs = (new File( dbRootPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
+				if ( dbDir.getName().indexOf(MSDBUpdater.BACKUP_IDENTIFIER) != -1 ) {
+					continue;
+				}
 				if ( dbDir.isDirectory() ) {
 					int pos = dbDir.getName().lastIndexOf("\\");
 					String dbDirName = dbDir.getName().substring( pos + 1 );
@@ -1034,6 +1043,17 @@ function popupMolView(url) {
 				                                   "    param : " + cgiParam );
 				out.println( msgWarn( "Substructure Search update failed.(inconsistent)") );
 			}
+
+			//---------------------------------------------
+			// SVN削除処理
+			//---------------------------------------------
+			if ( RegistrationCommitter.isActive ) {
+				SVNRegisterUtil.updateMolfiles(selDbName);
+			}
+		}
+		else if ( act.equals("svn") && RegistrationCommitter.isActive  ) {
+			SVNRegisterUtil.updateMolfiles(selDbName);
+			out.println( msgInfo( "Done." ) );
 		}
 	}
 	finally {

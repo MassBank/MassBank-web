@@ -22,7 +22,7 @@
  *
  * 構造式登録
  *
- * ver 1.1.12 2012.02.14
+ * ver 1.1.13 2012.08.24
  *
  ******************************************************************************/
 %>
@@ -60,6 +60,9 @@
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.Sanitizer" %>
+<%@ page import="massbank.svn.MSDBUpdater" %>
+<%@ page import="massbank.svn.SVNRegisterUtil" %>
+<%@ page import="massbank.svn.RegistrationCommitter" %>
 <%@ include file="../jsp/Common.jsp"%>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
@@ -329,8 +332,8 @@
 	 * @throws IOException
 	 */
 	private boolean regist(DatabaseAccess db, JspWriter op, 
-	                       TreeMap<String, String> list, String dataPath, String regPath, String[] registInfo, String cgiUrl, String cgiParam) throws IOException {
-		
+			TreeMap<String, String> list, String dataPath, String regPath,
+			String[] registInfo, String cgiUrl, String cgiParam) throws IOException {
 		boolean isSuccess = true;
 		DecimalFormat idFormat = null;
 		if (registInfo[0].length() == 3) {
@@ -556,6 +559,9 @@ function selDb() {
 		File[] dbDirs = (new File( dbRootPath )).listFiles();
 		if ( dbDirs != null ) {
 			for ( File dbDir : dbDirs ) {
+				if ( dbDir.getName().indexOf(MSDBUpdater.BACKUP_IDENTIFIER) != -1 ) {
+					continue;
+				}
 				if ( dbDir.isDirectory() ) {
 					int pos = dbDir.getName().lastIndexOf("\\");
 					String dbDirName = dbDir.getName().substring( pos + 1 );
@@ -770,7 +776,7 @@ function selDb() {
 		// 構造式登録処理（初期化）
 		//---------------------------------------------
 		String[] registInfo = initRegist(db, out);
-		if (registInfo == null ) {
+		if (registInfo == null) {
 			return;
 		}
 		
@@ -805,6 +811,13 @@ function selDb() {
 				out.println( msgInfo( "0 gif registered.") );
 			}
 			isTmpRemove = false;
+		}
+
+		//---------------------------------------------
+		// SVN登録処理
+		//---------------------------------------------
+		if ( RegistrationCommitter.isActive ) {
+			SVNRegisterUtil.updateMolfiles(selDbName);
 		}
 	}
 	finally {
