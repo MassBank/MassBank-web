@@ -1,4 +1,5 @@
 # install a MassBank Dev machine
+export DEBIAN_FRONTEND=noninteractive
 
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
