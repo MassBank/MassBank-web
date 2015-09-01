@@ -3,7 +3,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
-apt-get install -y libgcc1:i386 libstdc++6:i386
+apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
 # Freshen package index
 apt-get update
@@ -24,7 +24,7 @@ dpkg-reconfigure locales
 apt-get install -y xvfb openjdk-7-jre
 
 # install Apache
-apt-get install -y apache2 unzip
+apt-get install -y apache2 unzip apache2-utils
 
 a2enmod rewrite #enable mod-rewrite
 cat > /etc/apache2/sites-available/000-default.conf << EOF
@@ -91,4 +91,8 @@ echo $(cat /dev/urandom |  tr -dc _A-Z-a-z-0-9 | head -c${1:-16})
 
 
 cd MassBank-web
+
+## During development: change into temporary branch
+git checkout updateFromCVS
+
 bash ./install-ubuntu.sh
