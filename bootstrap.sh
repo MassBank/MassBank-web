@@ -26,6 +26,46 @@ apt-get install -y xvfb openjdk-7-jre
 # install Apache
 apt-get install -y apache2 unzip apache2-utils
 
+##
+## Install SVN Server
+##
+
+apt-get install subversion subversion-tools libapache2-svn
+
+groupadd subversion
+useradd subversion -g subversion
+usermod -G subversion www-data 
+usermod -G subversion tomcat7
+
+mkdir /home/subversion
+chown subversion.subversion /home/subversion 
+chmod g+w /home/subversion 
+
+su -s /bin/sh -c "svnadmin create /home/subversion/BackupData" subversion 
+su -s /bin/sh -c "svnadmin create /home/subversion/OpenData" subversion 
+
+echo "bird2005" | htpasswd -ci /etc/subversion/passwd massbank_rw 
+echo "bird2006" | htpasswd -i /etc/subversion/passwd massbank_ro 
+
+cat >/etc/apache2/mods-available/dav_svn.conf  <<EOF
+<Location /SVN>
+   DAV svn
+   SVNParentPath /home/subversion
+   SVNListParentPath On
+   AuthType Basic
+   AuthName "Subversion Repository"
+   AuthUserFile /etc/subversion/passwd
+   <LimitExcept GET PROPFIND OPTIONS REPORT>
+     Require valid-user
+   </LimitExcept>
+</Location>
+EOF
+
+
+##
+## Add more configuration
+##
+
 a2enmod rewrite #enable mod-rewrite
 cat > /etc/apache2/sites-available/000-default.conf << EOF
 <VirtualHost *:80>
