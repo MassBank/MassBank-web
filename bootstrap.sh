@@ -3,7 +3,6 @@ export DEBIAN_FRONTEND=noninteractive
 
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
-apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
 # Freshen package index
 apt-get update
@@ -20,6 +19,9 @@ export LC_ALL=en_US.UTF-8
 locale-gen en_US.UTF-8 de_DE.UTF-8
 dpkg-reconfigure locales
 
+# Add basic libraries for i386 binaries like Search.cgi
+apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
+
 # virtual X
 apt-get install -y xvfb openjdk-7-jre
 
@@ -30,7 +32,7 @@ apt-get install -y apache2 unzip apache2-utils
 ## Install SVN Server
 ##
 
-apt-get install subversion subversion-tools libapache2-svn
+apt-get install -y subversion subversion-tools libapache2-svn
 
 groupadd subversion
 useradd subversion -g subversion
