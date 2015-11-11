@@ -137,8 +137,8 @@ mysql --user=root  < $INST_SQL_PATH
 echo
 echo ">> retrieving massbank.jp page and specifications"
 
-sudo wget -quiet www.massbank.jp/index.html?lang=en -O /var/lib/tomcat7/webapps/MassBank/jsp/index.jsp
-sudo wget -quiet -i ./imglist -P /var/www/html/MassBank/img
+sudo wget -q www.massbank.jp/index.html?lang=en -O /var/lib/tomcat7/webapps/MassBank/jsp/index.jsp
+sudo wget -q -i ./imglist -P /var/www/html/MassBank/img
 
 echo
 echo
