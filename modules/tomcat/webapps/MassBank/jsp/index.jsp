@@ -44,7 +44,7 @@
 <meta name="description" content="Mass Spectral DataBase">
 <meta name="keywords" content="Mass,Spectral,Database,MassBank">
 <meta name="revisit_after" content="10 days">
-<title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
+<title>MassBank | <%=siteLongName%> Mass Spectral DataBase Yeah</title>
 <link rel="stylesheet" type="text/css" href="css/Common.css">
 <link rel="stylesheet" type="text/css" href="css/Personal.css">
 </head>
