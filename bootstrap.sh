@@ -90,7 +90,7 @@ apt-get install -y lynx
 apt-get install -y build-essential libmysqlclient-dev
 
 # download latest version of MassBank
-git clone https://github.com/MassBank/MassBank-web
+git clone https://github.com/ermueller/MassBank-web
 
 # Compile and Copy MassBank components
 
