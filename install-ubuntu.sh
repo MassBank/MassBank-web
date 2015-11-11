@@ -134,8 +134,11 @@ mysql --user=root  < $INST_SQL_PATH
 #chkconfig httpd on
 #chkconfig tomcat on
 
-sudo wget www.massbank.jp/index.html?lang=en -O /var/lib/tomcat7/webapps/MassBank/jsp/index.jsp
-sudo wget -i ./imglist -P /var/www/html/MassBank/img
+echo
+echo ">> retrieving massbank.jp page and specifications"
+
+sudo wget -quiet www.massbank.jp/index.html?lang=en -O /var/lib/tomcat7/webapps/MassBank/jsp/index.jsp
+sudo wget -quiet -i ./imglist -P /var/www/html/MassBank/img
 
 echo
 echo
