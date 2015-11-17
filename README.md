@@ -18,7 +18,7 @@ to http://192.168.35.18/MassBank/ You can also ssh into
 the virtual machine without password:
 
 ````
-git clone https://github.com/MassBank/MassBank-web
+git clone https://github.com/ermueller/MassBank-web
 cd MassBank-web 
 vagrant up
 vagrant ssh
