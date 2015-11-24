@@ -61,16 +61,16 @@ Clone the repo by right mouse click and click to "Git clone" to your favorite fo
 Source: https://github.com/MassBank/MassBank-web
 
 Start a commandline window and change to the folder with the repo:
-
+````
 cd MassBank-web
 vagrant up
-
+````
 Now the the virtual machineshould be available in the Oracle VM VirtualBox manager
 
 Type to connect to the VM
-
+````
 vagrant ssh
-
+````
 You may also use your favorite terminal software such as Putty. You will find the private key to connect to the VM under
 MassBank-web\.vagrant\machines\default\virtualbox
 
