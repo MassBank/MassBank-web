@@ -51,7 +51,8 @@
 'CH\$LINK: OligosaccharideDataBase', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html%s',
 'CH\$LINK: OligosaccharideDataBase2D', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html',
 'SP\$LINK: NCBI-TAXONOMY', 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%s',
-'MS\$RELATED_MS: PREVIOUS_SPECTRUM', 'Dispatcher.jsp?type=disp&id=%s'
+'MS\$RELATED_MS: PREVIOUS_SPECTRUM', 'Dispatcher.jsp?type=disp&id=%s',
+'MS\$RELATED_MS: SPLASH', 'https://www.google.com/search?q=&quot;%s&quot;'
 );
 
 use CGI;
