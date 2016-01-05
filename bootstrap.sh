@@ -1,12 +1,13 @@
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
 
+# Freshen package index
+apt-get update
+
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
 apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
-# Freshen package index
-apt-get update
 
 # Set timezone
 echo "Europe/Berlin" | tee /etc/timezone
