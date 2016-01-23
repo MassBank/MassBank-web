@@ -34,13 +34,14 @@
 'COMMENT: \[Chromatography\]',    '',                                        # version 2
 'COMMENT: \[Profile\]',           '../DB/profile/%s/%s',                     # version 2
 'COMMENT: \[Mixture\]',           'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
-'CH\$LINK: CAS',                  'http://webbook.nist.gov/cgi/cbook.cgi?ID=%s',
+'CH\$LINK: CAS',                  'https://www.chemspider.com/Search.aspx?q=%s',
 'CH\$LINK: CAYMAN',               'http://www.caymanchem.com/app/template/Product.vm/catalog/%s',
 'CH\$LINK: CHEBI',                'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
 'CH\$LINK: CHEMPDB',              'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
 'CH\$LINK: CHEMSPIDER',           'http://www.chemspider.com/%s',
 'CH\$LINK: FLAVONOIDVIEWER',      'http://www.metabolome.jp/software/FlavonoidViewer/',
 'CH\$LINK: HMDB',                 'http://www.hmdb.ca/metabolites/%s',
+'CH\$LINK: INCHIKEY',		  'https://www.chemspider.com/Search.aspx?q=%s',
 'CH\$LINK: KAPPAVIEW',            'http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=%s',
 'CH\$LINK: KEGG',                 'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
 'CH\$LINK: KNAPSACK',             'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
