@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
 
@@ -95,7 +97,7 @@ apt-get install -y build-essential libmysqlclient-dev
 apt-get install -y mc xterm mysql-admin mysql-workbench
 
 # download latest version of MassBank
-git clone https://github.com/tsufz/MassBank-web
+git clone https://github.com/ermueller/MassBank-web
 
 # Compile and Copy MassBank components
 
@@ -112,3 +114,5 @@ cd MassBank-web
 #git checkout updateFromCVS
 
 bash ./install-ubuntu.sh
+mv robots.txt /var/www/html/
+sed '$i*/5 *   * * *   root    bash /vagrant/sitemap.sh' /etc/crontab
