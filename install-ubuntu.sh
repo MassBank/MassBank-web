@@ -54,7 +54,9 @@ a2enmod authz_groupfile
 a2enmod cgid
 a2enmod jk
 
-cp -p $INST_CONF_PATH/.htpasswd $APACHE_CONF_PATH
+## mbadmin password
+htpasswd -c $INST_CONF_PATH/.htpasswd -c -p massbank bird2006
+
 cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
 a2ensite 010-a2site-massbank
 

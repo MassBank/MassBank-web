@@ -18,7 +18,7 @@ to http://192.168.35.18/MassBank/ You can also ssh into
 the virtual machine without password:
 
 ````
-git clone https://github.com/ermueller/MassBank-web
+git clone https://github.com/MassBank/MassBank-web
 cd MassBank-web 
 vagrant up
 vagrant ssh
@@ -47,5 +47,37 @@ $ source ~/.zshrc
 The vagrant version from the repository (Version 1.7.2) does NOT support Virtualbox Version 5
 
 
+## Windows 7 64 bit
+Install Virtualbox for Windows
+https://www.virtualbox.org/wiki/Downloads
 
+Install Vagrant for Windows
+https://www.vagrantup.com/downloads.html
+
+Install the Tortoise Git client
+https://tortoisegit.org/download/
+
+Clone the repo by right mouse click and click to "Git clone" to your favorite folder 
+Source: https://github.com/MassBank/MassBank-web
+
+Start a commandline window and change to the folder with the repo:
+````
+cd MassBank-web
+vagrant up
+````
+Now the the virtual machineshould be available in the Oracle VM VirtualBox manager
+
+Type to connect to the VM
+````
+vagrant ssh
+````
+You may also use your favorite terminal software such as Putty. You will find the private key to connect to the VM under
+MassBank-web\.vagrant\machines\default\virtualbox
+
+## Transfer to VMWare ESX cluster or VMWare workstation
+Start the Oracle VM VirtualBox manager and export the appliance to the Open Virtualisation Format (ova file).
+Use the expert mode for individual settings (e.g. the name of the machine) and select the tickbox to create a manifest file.
+If the tickbox is checked, the integrity of the appliance will be checked during the import.
+
+Import the ova file to your VMWare environment and change the settings if necessary.
 

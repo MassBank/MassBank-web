@@ -9,8 +9,9 @@ apt-get upgrade
 
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
-apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
+
+apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
 # Set timezone
 echo "Europe/Berlin" | tee /etc/timezone
