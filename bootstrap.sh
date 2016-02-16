@@ -115,4 +115,4 @@ cd MassBank-web
 
 bash ./install-ubuntu.sh
 mv robots.txt /var/www/html/
-sed '$i*/5 *   * * *   root    bash /vagrant/sitemap.sh' /etc/crontab > /etc/crontab
+IFS='<';echo $(sed '$i*/5 *   * * *   root    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
