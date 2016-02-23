@@ -2,21 +2,29 @@
 
 # Create sitemap index file with information that stays constant
 TDATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-CONFFILE='/var/www/html/MassBank/massbank.conf'
+CONFFILE='/var/www/MassBank/massbank.conf'
 BASESITEURL=$(grep "FrontServer *URL" $CONFFILE | awk -F\" '{print $(NF-1)}')
+#BASESITEURL='http://massbank.eu/MassBank/'
 cd /tmp
 sudo echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap-DB$TDATE.xml
 sudo echo '' >> sitemap-DB$TDATE.xml
 sudo echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap-DB$TDATE.xml
 sudo echo '' >> sitemap-DB$TDATE.xml
 
+sudo echo '<sitemap>' >> sitemap-DB$TDATE.xml
+sudo echo '' >> sitemap-DB$TDATE.xml
+	sudo echo '<loc>http://massbank.eu/MassBank/sitemap.xml</loc>' >> sitemap-DB$TDATE.xml
+	sudo echo '' >> sitemap-DB$TDATE.xml
+	sudo echo '<lastmod>'"$TDATE"'</lastmod>' >> sitemap-DB$TDATE.xml
+	sudo echo '' >> sitemap-DB$TDATE.xml
+sudo echo '</sitemap>' >> sitemap-DB$TDATE.xml
+sudo echo '' >> sitemap-DB$TDATE.xml
 
-
-DBLIST=(/var/www/html/MassBank/DB/annotation/*)
+DBLIST=(/var/www/MassBank/DB/annotation/*)
 for DB in "${DBLIST[@]}"
 do
     DBBASENAME=$(basename $DB)
-    #echo "Processing DB $DBBASENAME"
+    echo "Processing DB $DBBASENAME"
     SITEMAPFILENAME="$BASESITEURL$DBBASENAME.xml"
     FILENAME="$DBBASENAME"'.xml'
     # Create sitemap entry in index
@@ -55,10 +63,11 @@ done
 sudo echo '</sitemapindex>' >> sitemap-DB$TDATE.xml
 
 # Now move all the things to where they're supposed to be
-sudo mv sitemap-DB$TDATE.xml /var/www/html/MassBank/sitemapindex.xml
+sudo mv sitemap-DB$TDATE.xml /var/www/MassBank/sitemapindex.xml
+sudo chown tomcat.tomcat *.xml
 for DB in "${DBLIST[@]}"
 do
     DBBASENAME=$(basename $DB)
     FILENAME="$DBBASENAME"'.xml'
-    sudo mv $FILENAME /var/www/html/MassBank/$FILENAME
+    sudo mv $FILENAME /var/www/MassBank/$FILENAME
 done
