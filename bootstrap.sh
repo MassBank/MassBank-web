@@ -1,11 +1,15 @@
+#!/bin/bash
+
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
+
+# Freshen package index
+apt-get update
+apt-get upgrade
 
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
 
-# Freshen package index
-apt-get update
 
 apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
@@ -90,8 +94,11 @@ apt-get install -y lynx
 # Compiler to install Search.cgi
 apt-get install -y build-essential libmysqlclient-dev
 
+# Install European MassBank specific tools
+apt-get install -y mc xterm mysql-admin mysql-workbench
+
 # download latest version of MassBank
-git clone https://github.com/MassBank/MassBank-web
+git clone https://github.com/ermueller/MassBank-web
 
 # Compile and Copy MassBank components
 
@@ -108,3 +115,5 @@ cd MassBank-web
 #git checkout updateFromCVS
 
 bash ./install-ubuntu.sh
+mv robots.txt /var/www/html/
+IFS='<';echo $(sed '$i0 0   * * *   root    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
