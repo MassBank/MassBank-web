@@ -23,9 +23,9 @@ getInfoFixKey <- function(Directory,csvname, babel_dir){
 		wantedmat <- matrix(0,length(Files),(25))
         colnames(wantedmat) <- c("ACCESSION","LICENSE","AUTHORS","RESEARCH_GROUP","NAME","FORMULA","EXACT_MASS","IUPAC","INCHIKEY","SMILES","CSID","INSTRUMENT","INSTRUMENT_TYPE","MS_TYPE","IONIZATION","ION_MODE","FRAGMENTATION_MODE","COLL_E","RESOLUTION","BASE_PEAK","PRECURSOR_MZ","PRECURSOR_TYPE","SPLASH","EULINK","JPLINK")
 		for(i in 1:length(Files)){
-            if((i %% 1000) == 0){
-                print(i)
-            }
+            # if((i %% 1000) == 0){
+                # print(i)
+            # }
             fileConnection <- file(normalizePath(Files[i]))
 			record <- readLines(fileConnection)
 			close(fileConnection)
