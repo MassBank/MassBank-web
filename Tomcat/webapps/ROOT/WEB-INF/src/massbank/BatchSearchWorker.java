@@ -20,7 +20,7 @@
  *
  * バッチ検索処理クラス
  *
- * ver 1.0.12 2012.02.20
+ * ver 1.0.2 2013.09.04
  *
  ******************************************************************************/
 package massbank;
@@ -507,10 +507,10 @@ public class BatchSearchWorker extends Thread {
 			HashMap<String, String> massbank2keggList = new HashMap<String, String>();		//(2)用
 			HashMap<String, ArrayList> map2keggList = new HashMap<String, ArrayList>();		//(3)用
 			ArrayList<String> mapNameList = new ArrayList<String>();						//(4)用
-			boolean isKeggReturn = true;
-			if (serverUrl.indexOf("www.massbank.jp") == -1) {
-				isKeggReturn = false;
-			}
+			boolean isKeggReturn = false;
+//			if (serverUrl.indexOf("www.massbank.jp") == -1) {
+//				isKeggReturn = false;
+//			}
 			if ( isKeggReturn ) {
 
 				//(2) KEGG ID, Map IDをDBから取得
@@ -655,13 +655,14 @@ public class BatchSearchWorker extends Thread {
 			out.println("<table border=\"1\" cellspacing=\"0\" cellpadding=\"2\">");
 			String cols = String.valueOf(mapNameList.size());
 			out.println("<tr>");
-			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"2\">No.</th>");
-			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"2\">Query&nbsp;Name</th>");
-			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Score</th>");
-			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Hit</th>");
-			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">MassBank&nbsp;ID</th>");
-			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Record&nbsp;Title</th>");
-			out.println("<th bgcolor=\"LightCyan\" rowspan=\"2\">Formula</th>");
+			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"1\">No.</th>");
+			out.println("<th bgcolor=\"LavenderBlush\" rowspan=\"1\">Query&nbsp;Name</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"1\">Score</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"1\">Hit</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"1\">MassBank&nbsp;ID</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"1\">Record&nbsp;Title</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"1\">Formula</th>");
+			out.println("<th bgcolor=\"LightCyan\" rowspan=\"1\">Exact Mass</th>");
 			if ( isKeggReturn ) {
 				out.println("<th bgcolor=\"LightYellow\" rowspan=\"2\">KEGG&nbsp;ID</th>");
 				out.println("<th bgcolor=\"LightYellow\" colspan=\"" + cols + "\">Colored&nbsp;Pathway&nbsp;Maps</th>");
@@ -688,7 +689,7 @@ public class BatchSearchWorker extends Thread {
 						cols = String.valueOf(mapNameList.size()+5);
 					}
 					else {
-						cols = String.valueOf(4);
+						cols = String.valueOf(6);
 					}
 					out.println("<td colspan=\"" + cols + "\">No Hit Record</td>");
 				}
@@ -706,6 +707,7 @@ public class BatchSearchWorker extends Thread {
 					String id       = data[0];
 					String recTitle = data[1];
 					String formula  = data[2];
+					String emass    = data[3];
 					String score    = data[4];
 					String hit      = data[5];
 
@@ -737,6 +739,10 @@ public class BatchSearchWorker extends Thread {
 
 						// Formula
 					out.println("<td nowrap>" + formula + "</td>");
+
+						// Exact Mass
+					out.println("<td nowrap>" + emass + "</td>");
+
 						// KEGG ID & Link
 					if ( isKeggReturn ) {
 						String keggLink = "&nbsp;&nbsp;-";
@@ -875,6 +881,12 @@ public class BatchSearchWorker extends Thread {
 		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=unit"
 	 			+ "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms.replaceAll("All", "all") + "&ION=" + this.ion + "&API=true";
+/* 2013.09.04 戻す */
+//		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=ppm"
+//	 			+ "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=100"
+//	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms.replaceAll("All", "all") + "&ION=" + this.ion + "&API=true";
+/* 2013.09.04 戻す */
+
 		ArrayList<String> result = mbcommon.execDispatcher( this.serverUrl, typeName, param, true, null );
 		int hitCnt = result.size();
 		int sendCnt = hitCnt;

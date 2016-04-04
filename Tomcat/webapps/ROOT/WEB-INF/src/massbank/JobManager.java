@@ -20,7 +20,7 @@
  *
  * ジョブ管理クラス
  *
- * ver 1.0.2 2010.11.22
+ * ver 1.0.2 2013.10.28
  *
  ******************************************************************************/
 package massbank;
@@ -231,12 +231,12 @@ public class JobManager {
 				return false;
 			}
 
-			// 同一IPアドレスで既に実行されているジョブがあるか
-			if ( ipAddress.equals(newJobInfo.getIpAddr()) ) {
-				if ( ++cnt >= 3 ) {
-					return false;
-				}
-			}
+		// 同一IPアドレスで既に実行されているジョブがあるか
+//			if ( ipAddress.equals(newJobInfo.getIpAddr()) ) {
+//				if ( ++cnt >= 3 ) {
+//					return false;
+//				}
+//			}
 		}
 		return true;
 	}

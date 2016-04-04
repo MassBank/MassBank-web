@@ -588,9 +588,12 @@ bool getReqParam()
 			return false;
 		}
 		else {
-			int iLen = atoi( strLen.c_str() );
+			unsigned int iLen = atoi( strLen.c_str() );
 			char buf[iLen+1];
-			fread( &buf, 1, iLen, stdin );
+			if (fread( &buf, 1, iLen, stdin ) != iLen ) {
+			  dbError( "POST CONTENT_LENGTH " );
+			  return false;
+			}
 			urlDecode( buf, iLen );
 			strParam = buf;
 		}
@@ -813,7 +816,7 @@ void dbClose()
 /********************************************************************
  * DBエラー出力
  ********************************************************************/
-void dbError( char *msg )
+void dbError( const char *msg )
 {
 	printf( "[DB ERROR] %s %d %s\n",
 			msg, mysql_errno(hMySql), mysql_error(hMySql) );

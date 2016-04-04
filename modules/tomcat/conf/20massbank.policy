@@ -1,0 +1,46 @@
+// ========== WEB APPLICATION PERMISSIONS =====================================
+
+grant codeBase "file:/var/lib/tomcat7/webapps/MassBank/WEB-INF/lib/commons-httpclient-2.0-final.jar" {
+   permission java.net.SocketPermission "localhost:8080", "resolve";
+  // permission java.net.SocketPermission "massbank.ipb-sub.ipb-halle.de:8080", "resolve";
+   permission java.util.PropertyPermission "apache.commons.httpclient.cookiespec", "read";
+   permission java.util.PropertyPermission "file.encoding", "read";
+   permission java.util.PropertyPermission "httpclient.authentication.preemptive", "read";
+   permission java.util.PropertyPermission "httpclient.useragent", "read";
+   permission java.net.SocketPermission "192.168.*:8080", "connect,resolve";
+};
+
+grant codeBase "file:/var/lib/tomcat7/webapps/MassBank/WEB-INF/lib/massbank.jar" {
+   // Access the tomcat on Port 8080
+   permission java.net.SocketPermission "localhost:8080", "connect,resolve";
+   permission java.util.PropertyPermission "elementAttributeLimit", "read";
+   permission java.util.PropertyPermission "entityExpansionLimit", "read";
+   permission java.util.PropertyPermission "maxOccurLimit", "read";
+   permission java.util.PropertyPermission "httpclient.authentication.preemptive", "read";
+};
+
+grant codeBase "file:/${catalina.home}/bin/tomcat-juli.jar" {
+   permission java.lang.RuntimePermission "accessClassInPackage.sun.util.logging.resources";
+   permission java.util.PropertyPermission "user.timezone", "write";
+};
+
+grant codeBase "file:${catalina.home}/work/Catalina/localhost/MassBank/" {
+   permission java.lang.RuntimePermission "accessClassInPackage.sun.util.logging.resources";
+   permission java.util.PropertyPermission "user.timezone", "write";
+   permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.loader";
+   permission java.net.SocketPermission "localhost:8080", "connect,resolve";
+   permission java.util.PropertyPermission "apache.commons.httpclient.cookiespec", "read";
+   permission java.util.PropertyPermission "elementAttributeLimit", "read";
+   permission java.util.PropertyPermission "entityExpansionLimit", "read";
+   permission java.util.PropertyPermission "file.encoding", "read";
+   permission java.util.PropertyPermission "httpclient.authentication.preemptive", "read";
+   permission java.util.PropertyPermission "httpclient.useragent", "read";
+   permission java.util.PropertyPermission "maxOccurLimit", "read";
+
+   permission java.util.PropertyPermission "java.io.tmpdir", "read";
+   permission java.io.FilePermission "/var/www/html/MassBank/DB/annotation", "read,write";
+
+   permission java.io.FilePermission "/usr/share/tomcat7/temp", "read,write";
+   permission java.io.FilePermission "/var/lib/tomcat7/webapps/MassBank/jsp", "read";
+
+};

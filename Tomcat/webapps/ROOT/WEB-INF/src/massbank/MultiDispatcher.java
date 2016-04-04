@@ -20,7 +20,7 @@
  *
  * CGIをマルチスレッドで起動するサーブレット
  *
- * ver 1.0.14 2011.05.30
+ * ver 1.0.16 2012.10.10
  *
  ******************************************************************************/
 package massbank;
@@ -33,12 +33,12 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import massbank.svn.SVNUtils;
 
 @SuppressWarnings("serial")
 public class MultiDispatcher extends HttpServlet {
@@ -149,7 +149,8 @@ public class MultiDispatcher extends HttpServlet {
 		private String[] urlList = null;
 		private String[] dbNameList = null;
 		private Hashtable<String, Object> params = null;
-		
+		private String frontServerUrl = "";
+
 		/**
 		 * コンストラクタ
 		 * @param context
@@ -165,6 +166,7 @@ public class MultiDispatcher extends HttpServlet {
 			this.context = context;
 			this.isTrace = isTrace;
 			this.timeout = conf.getTimeout();
+			this.frontServerUrl = conf.getServerUrl();
 			this.urlList = conf.getSiteUrl();
 			this.dbNameList = conf.getDbName();
 			this.svrStatus = svrStatus;
@@ -208,7 +210,15 @@ public class MultiDispatcher extends HttpServlet {
 				// 連携サーバがアクティブではない場合はスキップする
 				// サーバ監視が行われていなければ無条件にTrueが返ってくる
 				if ( !svrStatus.isServerActive(url, dbName) ) {
-					continue;
+					String backupDbName = svrStatus.get2ndDbName(url, dbName);
+					if ( backupDbName.equals("") || !SVNUtils.checkDBExists(backupDbName) ) {
+						continue;
+					}
+					else {
+						url = frontServerUrl;
+						dbName = backupDbName;
+						System.out.println(url + ":" + dbName);
+					}
 				}
 
 				String reqUrl = url;
@@ -314,7 +324,9 @@ public class MultiDispatcher extends HttpServlet {
 					}
 
 					// Site No 付加
-					result.add( lines[j] + "\t" + this.reqInfoList.get(i).getSiteNo() );
+					if ( lines[j].split("\t").length > 1 ) {
+						result.add( lines[j] + "\t" + this.reqInfoList.get(i).getSiteNo() );
+					}
 				}
 			}
 

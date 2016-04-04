@@ -20,7 +20,7 @@
  *
  * 連携サーバの状態を管理するクラス
  *
- * ver 1.0.0 2009.01.26
+ * ver 1.0.2 2012.11.01
  *
  ******************************************************************************/
 package massbank;
@@ -39,6 +39,7 @@ import java.util.logging.*;
 import java.text.DecimalFormat;
 import massbank.GetConfig;
 import massbank.ServerStatusInfo;
+import massbank.svn.SVNUtils;
 
 public class ServerStatus {
 	private Properties proper = new Properties();
@@ -58,25 +59,35 @@ public class ServerStatus {
 
 	private DecimalFormat decFormat = new DecimalFormat("00");
 
-	private String baseUrl = "";
-
+	/**
+	 * デフォルトコンストラクタ
+	 */
+	public ServerStatus() {
+		// 管理ファイルのパスをセット
+		this.filePath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPPSERV_PATH) + PROF_FILE_NAME;
+		setBaseInfo();
+	}
+	
 	/**
 	 * コンストラクタ
-	 * @param baseUrl ベースURL 
+	 * @param baseUrl ベースURL
+	 * @deprecated 非推奨コンストラクタ
+	 * @see ServerStatus#ServerStatus()
 	 */
 	public ServerStatus(String baseUrl) {
-		// 管理ファイルのパスをセット
-		int pos1 = baseUrl.indexOf( "/", (new String("http://")).length() );
-		int pos2 = baseUrl.lastIndexOf( "/" );
-		String subDir = "";
-		if ( pos2 > pos1 ) {
-			subDir = baseUrl.substring( pos1 + 1, pos2 );
-		}
-		String path = System.getProperty("catalina.home") + "/webapps/ROOT/";
-		this.filePath = path + subDir + "/pserver/" + PROF_FILE_NAME;
-
-		this.baseUrl = baseUrl;
-		setBaseInfo();
+//		int pos1 = baseUrl.indexOf( "/", (new String("http://")).length() );
+//		int pos2 = baseUrl.lastIndexOf( "/" );
+//		String subDir = "";
+//		if ( pos2 > pos1 ) {
+//			subDir = baseUrl.substring( pos1 + 1, pos2 );
+//		}
+//		String path = System.getProperty("catalina.home") + "/webapps/ROOT/";
+//		this.filePath = path + subDir + "/pserver/" + PROF_FILE_NAME;
+//
+//		this.baseUrl = baseUrl;
+//		setBaseInfo();
+		// 管理ファイルのパスセットはデフォルトコンストラクタで行うことにする
+		this();
 	}
 
 	/**
@@ -84,11 +95,13 @@ public class ServerStatus {
 	 */
 	public void setBaseInfo() {
 		// 設定ファイル読込み
-		GetConfig conf = new GetConfig(this.baseUrl);
+		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		// URLリストを取得
 		String[] urls = conf.getSiteUrl();
 		// DB名リストを取得
 		String[] dbNames = conf.getDbName();
+		// セカンダリDB名リストを取得
+		String[] db2Names = conf.getSecondaryDBName();
 		// サーバ名リストを取得
 		String[] svrNames = conf.getSiteName();
 		// フロントサーバURLを取得
@@ -100,12 +113,14 @@ public class ServerStatus {
 		List<String> svrNameList = new ArrayList();
 		List<String> urlList = new ArrayList();
 		List<String> dbNameList = new ArrayList();
+		List<String> db2NameList = new ArrayList();
 		for ( int i = 0; i < urls.length; i++ ) {
 			// ミドルサーバまたは、フロントサーバと同一URLの場合は対象外
 			if ( i != GetConfig.MYSVR_INFO_NUM && !urls[i].equals(serverUrl) ) {
 				svrNameList.add(svrNames[i]);
 				urlList.add(urls[i]);
 				dbNameList.add(dbNames[i]);
+				db2NameList.add(db2Names[i]);
 			}
 		}
 
@@ -117,8 +132,9 @@ public class ServerStatus {
 				String svrName = svrNameList.get(i);	// サーバ名
 				String url = urlList.get(i);			// URL
 				String dbName = dbNameList.get(i);		// DB名
+				String db2Name = db2NameList.get(i);	// セカンダリDB名
 				// ステータスは未セット
-				this.statusList[i] = new ServerStatusInfo( svrName, url, dbName );
+				this.statusList[i] = new ServerStatusInfo( svrName, url, dbName, db2Name );
 			}
 		}
 	}
@@ -383,5 +399,21 @@ public class ServerStatus {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * 
+	 */
+	public String get2ndDbName(String url, String dbName) {
+		ServerStatusInfo[] info = getStatusInfo();
+		if ( info == null ) {
+			return "";
+		}
+		for ( int i = 0; i < info.length; i++ ) {
+			if ( url.equals( info[i].getUrl() ) && dbName.equals( info[i].getDbName() ) ) {
+				return info[i].get2ndDbName();
+			}
+		}
+		return "";
 	}
 }

@@ -82,7 +82,7 @@
 	    {"RECORD", "true"},
 	    {"PEAK", "false"},
 	    {"CH_NAME", "false"},
-	    {"CH_LINK", "fasle"},
+	    {"CH_LINK", "false"},
 	    {"TREE", "false"}
 	};
 	
