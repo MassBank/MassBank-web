@@ -96,9 +96,10 @@ apt-get install -y build-essential libmysqlclient-dev
 
 # Install European MassBank specific tools
 apt-get install -y mc xterm mysql-administrator mysql-workbench
+apt-get install subversion
 
 # download latest version of MassBank
-git clone https://github.com/tsufz/MassBank-web/MassBank-web
+git clone https://github.com/tsufz/MassBank-web
 
 # Compile and Copy MassBank components
 
