@@ -3,6 +3,9 @@
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
 
+# get universe apt-get repo
+sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe"
+
 # Freshen package index
 apt-get update
 apt-get upgrade
@@ -115,6 +118,11 @@ cd MassBank-web
 ## During development: change into temporary branch
 #git checkout updateFromCVS
 
+sudo apt-get install -y r-base-core
+sudo apt-get install -y openbabel
+
 bash ./install-ubuntu.sh
-mv robots.txt /var/www/html/
+sudo mv robots.txt /var/www/html/
+sudo mv stats.css /var/www/html/
 IFS='<';echo $(sed '$i0 0   * * *   root    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   root    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
