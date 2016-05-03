@@ -154,7 +154,7 @@
 			out.println( "\t\t\t\t</table>" );
 		}
 		else {
-			out.println( "\t\t\t\t<applet code=\"MolVie.class\" archive=\"" + baseUrl + "applet/MolView.jar\" width=\"200\" height=\"200\">" );
+			out.println( "\t\t\t\t<applet code=\"MolView.class\" archive=\"" + baseUrl + "applet/MolView.jar\" width=\"200\" height=\"200\">" );
 			out.println( "\t\t\t\t\t<param name=\"site\" value=\"" + molInfoSite + "\">" );
 			out.println( "\t\t\t\t\t<param name=\"compound_name\" value=\"" + compoundName + "\">" );
 			out.println( "\t\t\t\t</applet>" );
