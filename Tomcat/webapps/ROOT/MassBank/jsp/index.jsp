@@ -391,8 +391,8 @@ MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/j
 <p id="home_notice2" class="clr">
 <span class="title clr">&lt;&lt;Announcement to European MassBank users&gt;&gt;</span>
 <span class="contents clr">
-EU mirror site "NORMAN MassBank" <a href="http://www.massbank.eu/MassBank/" target="_blank">http:&#47;&#47;www.massbank.eu&#47;MassBank&#47;</a> is available now.<br />
-From NORMAN MassBank as well as MassBank.jp, users are accessible to all the latest MassBank data whichever distributed data servers are available or not.
+EU mirror site "European MassBank (NORMAN MassBank)" <a href="http://www.massbank.eu/MassBank/" target="_blank">http:&#47;&#47;www.massbank.eu&#47;MassBank&#47;</a> is available now.<br />
+From European MassBank (NORMAN MassBank) as well as MassBank.jp, users are accessible to all the latest MassBank data whichever distributed data servers are available or not.
 </span>
 </p>
 <!--ed▲notice-->
