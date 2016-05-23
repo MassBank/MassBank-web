@@ -81,4 +81,3 @@ If the tickbox is checked, the integrity of the appliance will be checked during
 
 Import the ova file to your VMWare environment and change the settings if necessary.
 
-
