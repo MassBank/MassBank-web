@@ -118,11 +118,12 @@ cd MassBank-web
 ## During development: change into temporary branch
 #git checkout updateFromCVS
 
+# Install the statistics environment
 sudo apt-get install -y r-base-core
 sudo apt-get install -y openbabel
 
 bash ./install-ubuntu.sh
 sudo mv robots.txt /var/www/html/
-sudo mv stats.css /var/www/html/
-IFS='<';echo $(sed '$i0 0   * * *   root    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
-IFS='<';echo $(sed '$i0 0   * * *   root    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
+sudo mv stats.css /var/www/html/MassBank/css
+IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
