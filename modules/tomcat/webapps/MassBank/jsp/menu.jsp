@@ -90,6 +90,8 @@
 |
 <a href="./RecordIndex.html" target="_parent" title="Record Index">Index</a>
 |
+<a href="./Statistics.html" target="_parent" title="Record and Compounds Index">Statistics</a>
+|
 &nbsp;&nbsp;&nbsp;MassBank ID:&nbsp;<input name="id" type="text" size="10" value="" maxlength="8">&nbsp;<input type="submit" value=" Go ">
 					</td>
 				</tr>
