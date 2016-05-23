@@ -2,10 +2,10 @@
 path <- "/var/www/html/MassBank/DB/annotation/"
 
 # Source the script
-source("/vagrant/getInfo_and_InChIKeys_extended.R")
+source("/MassBank_scripts/getInfo_and_InChIKeys_extended.R")
 
 # Run the script and generate a csv
-getInfoFixKey(path, "/var/www/html/MassBank/statistics.csv","/usr/bin")
+getInfoFixKey(path, "/var/www/html/MassBank/Statistics.csv","/usr/bin")
 
 # Read csv, get prefixes of the accessions, and split the dataframe
 statCsv <- read.csv("/var/www/html/MassBank/statistics.csv")
@@ -28,7 +28,7 @@ HTMLheader <- '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <meta name="rating" content="general" />
     <meta name="description" content="MassBank is the first public repository of mass spectral data for sharing them among scientific research community. MassBank data are useful for the chemical identification and structure elucidation of chemical comounds detected by mass spectrometry." />
     <meta name="keywords" content="Statistics, MassBank, resolution, mass, spectral, database" />
-    <link rel="stylesheet" href="../stats.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="./css/stats.css" type="text/css" media="all" />
     <title>massbank.eu | Statistics</title>
     </head>
     
@@ -85,6 +85,6 @@ for(i in 1:length(splitStats)){
 }
 
 tableLines <- c(tableLines,HTMLend)
-fileConn <- file("/var/www/html/MassBank/statistics.html","w")
+fileConn <- file("/var/www/html/MassBank/Statistics.html","w")
 writeLines(tableLines,fileConn)
 close(fileConn)
