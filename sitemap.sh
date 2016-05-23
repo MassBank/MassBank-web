@@ -65,7 +65,7 @@ sudo echo '</sitemapindex>' >> sitemap-DB$TDATE.xml
 
 # Now move all the things to where they're supposed to be
 sudo mv sitemap-DB$TDATE.xml /var/www/html/MassBank/sitemapindex.xml
-sudo chown tomcat.tomcat *.xml
+sudo chown www-data.www-data *.xml
 for DB in "${DBLIST[@]}"
 do
     DBBASENAME=$(basename $DB)
