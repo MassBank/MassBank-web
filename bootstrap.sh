@@ -13,7 +13,6 @@ apt-get upgrade
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
 
-
 apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
 # Set timezone
@@ -98,10 +97,10 @@ apt-get install -y lynx
 apt-get install -y build-essential libmysqlclient-dev
 
 # Install European MassBank specific tools
-apt-get install -y mc xterm mysql-admin mysql-workbench
+apt-get install -y mc xterm mysql-workbench
 
 # download latest version of MassBank
-git clone https://github.com/ermueller/MassBank-web
+git clone https://github.com/tsufz/MassBank-web
 
 # Compile and Copy MassBank components
 
@@ -121,7 +120,7 @@ sudo apt-get install -y r-base-core
 sudo apt-get install -y openbabel
 
 bash ./install-ubuntu.sh
-sudo mv robots.txt /var/www/html/
-sudo mv stats.css /var/www/html/
-IFS='<';echo $(sed '$i0 0   * * *   root    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
-IFS='<';echo $(sed '$i0 0   * * *   root    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
+#sudo mv robots.txt /var/www/html/
+#sudo mv stats.css /var/www/html/
+IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
