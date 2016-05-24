@@ -71,8 +71,8 @@
 <%
 	if ( isAdvanced ) {
 %>
-<a href="./AdvancedSearch.html" target="_parent" title="Advanced Search">Advanced</a>
-|
+<!-- <a href="./AdvancedSearch.html" target="_parent" title="Advanced Search">Advanced</a>
+| -->
 <%
 	}
 %>
@@ -81,7 +81,7 @@
 <%
 	if ( isBatch ) {
 %>
-<a href="./BatchSearch.html" target="_parent" title="Batch Service">Batch</a>
+<a href="http://www.massbank.jp/BatchSearch.html" target="_blank" title="Batch Service at MassBank Japan">Batch</a>
 |
 <%
 	}
@@ -89,6 +89,8 @@
 <a href="./BrowsePage.html" target="_parent" title="Browse Page">Browse</a>
 |
 <a href="./RecordIndex.html" target="_parent" title="Record Index">Index</a>
+|
+<a href="./Statistics.html" target="_parent" title="Record and Compounds Statistics">Statistics</a>
 |
 &nbsp;&nbsp;&nbsp;MassBank ID:&nbsp;<input name="id" type="text" size="10" value="" maxlength="8">&nbsp;<input type="submit" value=" Go ">
 					</td>
