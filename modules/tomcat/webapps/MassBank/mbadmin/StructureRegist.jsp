@@ -22,18 +22,21 @@
  *
  * 構造式登録
  *
- * ver 1.1.13 2012.08.24
+ * ver 1.1.14 2013.02.20
  *
  ******************************************************************************/
 %>
 
 <%@ page import="org.apache.commons.io.FileUtils" %>
 <%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.BufferedWriter" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.io.FileReader" %>
+<%@ page import="java.io.FileWriter" %>
 <%@ page import="java.io.InputStreamReader" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.io.LineNumberReader" %>
+<%@ page import="java.io.PrintWriter" %>
 <%@ page import="java.io.PrintStream" %>
 <%@ page import="java.net.URL" %>
 <%@ page import="java.net.URLConnection" %>
@@ -353,6 +356,8 @@
 		int nextId = startId;
 		boolean isMolRegist = (dataPath.indexOf(MOLDATA_DIR_NAME) != -1);
 		ArrayList<File> copiedFiles = new ArrayList<File>();
+		ResultSet rs = null;
+		TreeMap<String, String> listTsv = null;
 		
 		// 登録処理
 		try {
@@ -376,6 +381,14 @@
 				nextId++;
 			}
 			db.executeUpdate("COMMIT;");
+			
+			// list.tsv 出力用情報保持
+			listTsv = new TreeMap<String, String>();
+			sql = "SELECT NAME, FILE FROM MOLFILE;";
+			rs = db.executeQuery( sql );
+			while ( rs.next() ) {
+				listTsv.put(rs.getString("NAME"), rs.getString("FILE") + MOL_EXTENSION);
+			}
 		}
 		catch (SQLException e) {
 			try { db.executeUpdate("COMMIT;"); } catch (SQLException ee) {}
@@ -388,9 +401,33 @@
 			e.printStackTrace();
 			isSuccess = false;
 		}
+		finally {
+			try {
+				if ( rs != null ) { rs.close(); }
+			}
+			catch (SQLException e) {}
+		}
 		
 		if ( isSuccess ) {
 			// 正常登録処理
+			
+			// list.tsv 出力処理
+			File listTsvFile = new File(regPath + File.separator + LIST_FILE_NAME);
+			PrintWriter pw = null;
+			try {
+				pw = new PrintWriter(new BufferedWriter(new FileWriter(listTsvFile, false)));
+				for(Map.Entry<String, String> e : listTsv.entrySet()) {
+					pw.println(e.getKey() + "\t" + e.getValue());
+				}
+				pw.close();
+			}
+			catch (IOException e) {
+				Logger.getLogger("global").severe( "\"" + listTsvFile + "\" output failed." );
+				e.printStackTrace();
+			}
+			finally {
+				if (pw != null) { pw.close(); }
+			}
 			
 			// StructureSearch 登録処理
 			boolean tmpRet = execCgi( cgiUrl, cgiParam );

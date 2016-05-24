@@ -43,7 +43,7 @@
 <meta http-equiv="imagetoolbar" content="no">
 <meta name="description" content="Mass Spectral DataBase">
 <meta name="keywords" content="Mass,Spectral,Database,MassBank">
-<meta name="revisit_after" content="10 days">
+<meta name="revisit_after" content="10 seconds">
 <title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
 <link rel="stylesheet" type="text/css" href="css/Common.css">
 <link rel="stylesheet" type="text/css" href="css/Personal.css">
@@ -170,7 +170,7 @@
 											</tr>
 											<tr>
 												<td height="100" colspan="6">
-													<li><a href="./mbadmin/">MassBank Administration Tool</a></li><br /><br />
+													<!-- <li><a href="./mbadmin/">MassBank Administration Tool</a></li><br /><br /> -->
 													<li><a href="./api/services/MassBankAPI?wsdl" target="_blank">WEB-API WSDL</a></li>
 												</td>
 											</tr>

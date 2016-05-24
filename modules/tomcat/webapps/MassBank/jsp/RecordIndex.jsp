@@ -150,10 +150,10 @@
 	<meta name="coverage" content="worldwide" />
 	<meta name="Targeted Geographic Area" content="worldwide" />
 	<meta name="rating" content="general" />
-	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
 	<meta name="description" content="Categorized list of spectra. To list up all spectra in a specific category including contributors, instrument types and ionization modes.">
-	<meta name="keywords" content="ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative">
-	<meta name="revisit_after" content="30 days">
+	<meta name="keywords" content="APCI,ITFT,QFT, ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative">
+	<meta name="revisit_after" content="10 seconds">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<script type="text/javascript" src="./script/Common.js"></script>
 	<title>MassBank | Database | Record Index</title>
