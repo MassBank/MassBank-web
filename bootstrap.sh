@@ -122,5 +122,5 @@ sudo apt-get install -y openbabel
 bash ./install-ubuntu.sh
 #sudo mv robots.txt /var/www/html/
 #sudo mv stats.css /var/www/html/
-IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
-IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   tomcat7    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   tomcat7    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
