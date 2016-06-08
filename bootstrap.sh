@@ -3,6 +3,9 @@
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
 
+# Freshen package index
+apt-get update
+
 # get universe apt-get repo
 sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe"
 
@@ -11,8 +14,7 @@ sudo dpkg --add-architecture i386
 
 apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
-# Freshen package index
-apt-get update
+# Upgrade to recent versions
 apt-get upgrade
 
 # Set timezone
