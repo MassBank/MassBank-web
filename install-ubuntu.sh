@@ -61,7 +61,7 @@ cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
 a2ensite 010-a2site-massbank
 
 #cp -ip $INST_MODULE_PATH/mod_jk.so $APACHE_MODULE_PATH
-cp -rp $INST_TOMCAT_PATH/* $DEST_TOMCAT_PATH/*
+cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
 #cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
 
 echo 

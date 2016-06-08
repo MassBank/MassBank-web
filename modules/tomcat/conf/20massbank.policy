@@ -40,7 +40,7 @@ grant codeBase "file:${catalina.home}/work/Catalina/localhost/MassBank/" {
    permission java.util.PropertyPermission "java.io.tmpdir", "read";
    permission java.io.FilePermission "/var/www/html/MassBank/DB/annotation", "read,write";
 
-   permission java.io.FilePermission "/usr/share/tomcat7/temp", "read,write";
+   permission java.io.FilePermission "/var/lib/tomcat7/temp", "read,write";
    permission java.io.FilePermission "/var/lib/tomcat7/webapps/MassBank/jsp", "read";
 
 };

@@ -89,7 +89,7 @@ $params = array(
 );
 
 <font color="green">// call method</font>
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 <font color="blue">try {</font>
 	$res = $soap-><b>searchSpectrum</b>( $params );
 <font color="blue">}
@@ -133,7 +133,7 @@ $params = array(
 );
 
 
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 try {
 	$res = $soap->searchSpectrum( $params );
 }

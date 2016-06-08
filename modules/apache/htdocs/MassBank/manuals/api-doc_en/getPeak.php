@@ -29,7 +29,7 @@ $ids = array("PR020001", "PR020002", "PR020003", "FU000001" );
 $params = array("ids" => $ids );
 
 <font color="green">// call method</font>
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 <font color="blue">try {</font>
 	$res = $soap-><b>getPeak</b>( $params );
 <font color="blue">}
@@ -62,7 +62,7 @@ $ids = array("PR020001", "PR020002", "PR020003", "FU000001" );
 $params = array("ids" => $ids );
 
 // call method
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 try {
 	$res = $soap->getPeak( $params );
 }

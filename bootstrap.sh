@@ -6,14 +6,14 @@ export DEBIAN_FRONTEND=noninteractive
 # get universe apt-get repo
 sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe"
 
-# Freshen package index
-apt-get update
-apt-get upgrade
-
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
 
 apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
+
+# Freshen package index
+apt-get update
+apt-get upgrade
 
 # Set timezone
 echo "Europe/Berlin" | tee /etc/timezone
@@ -28,7 +28,7 @@ locale-gen en_US.UTF-8 de_DE.UTF-8
 dpkg-reconfigure locales
 
 # virtual X
-apt-get install -y xvfb openjdk-7-jre
+apt-get install -y xvfb openjdk-7-jre-headless
 
 # install Apache
 apt-get install -y apache2 unzip apache2-utils
@@ -49,6 +49,17 @@ EOF
 
 cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
+EOF
+
+cat >> /etc/apache2/workers.properties <<EOF
+workers.tomcat_home=/var/lib/tomcat7
+workers.java_home=/usr/lib/jvm/java-7-openjdk-amd64
+ps=/
+worker.list=worker1
+worker.worker1.port=8009
+worker.worker1.host=localhost
+worker.worker1.type=ajp13
+worker.worker1.lbfactor=1
 EOF
 
 # enable required apache modules
@@ -74,6 +85,16 @@ apt-get install -y mysql-server mysql-client libdbd-mysql-perl
 apt-get install -y tomcat7 libapache2-mod-jk
 
 cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
+
+workers.tomcat_home=/var/lib/tomcat7
+workers.java_home=/usr/lib/jvm/java-7-openjdk-amd64
+ps=/
+worker.list=worker1
+worker.worker1.port=8009
+worker.worker1.host=localhost
+worker.worker1.type=ajp13
+worker.worker1.lbfactor=1
+
 # configure jk-status
 worker.list=jk-status
 worker.jk-status.type=status

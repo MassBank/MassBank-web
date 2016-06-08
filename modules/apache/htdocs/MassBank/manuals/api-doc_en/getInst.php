@@ -22,7 +22,7 @@ PHP Sample Code<br>
 <div class="src">
 <pre>
 // call method
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 $res = $soap-><b>getInstrumentTypes</b>();
 
 // display obtained data
@@ -37,7 +37,7 @@ Obtained Data (the above code is excecuted actually)<br>
 <div class="res1">
 <?php
 // call method
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 $res = $soap->getInstrumentTypes();
 
 // display obtained data

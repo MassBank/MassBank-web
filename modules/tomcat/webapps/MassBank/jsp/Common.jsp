@@ -40,7 +40,7 @@
 	//-------------------------------------
 	// 参照先ベースURL
 	//-------------------------------------
-	String commonRefBaseUrl = "http://www.massbank.jp/";
+	String commonRefBaseUrl = "http://massbank.eu/";
 	if ( !isPortal ) {
 		commonRefBaseUrl = commonBaseUrl;
 	}

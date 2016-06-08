@@ -28,7 +28,7 @@ $ids = array("KOX00001", "KOX00002", "TY000040", "FU000001" );
 $params = array("ids" => $ids );
 
 <font color="green">// call method</font>
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 <font color="blue">try {</font>
 	$res = $soap-><b>getRecordInfo</b>( $params );
 <font color="blue">}
@@ -56,7 +56,7 @@ $ids = array("KOX00001", "KOX00002", "TY000040", "FU000001" );
 $params = array("ids" => $ids );
 
 // call method
-$soap = new SoapClient('http://www.massbank.jp/api/services/MassBankAPI?wsdl');
+$soap = new SoapClient('http://massbank.eu/api/services/MassBankAPI?wsdl');
 $res = $soap->getRecordInfo( $params );
 
 // display obtained data
