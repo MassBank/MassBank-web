@@ -53,17 +53,6 @@ cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
 EOF
 
-cat >> /etc/apache2/workers.properties <<EOF
-workers.tomcat_home=/var/lib/tomcat7
-workers.java_home=/usr/lib/jvm/java-7-openjdk-amd64
-ps=/
-worker.list=worker1
-worker.worker1.port=8009
-worker.worker1.host=localhost
-worker.worker1.type=ajp13
-worker.worker1.lbfactor=1
-EOF
-
 # enable required apache modules
 a2enmod rewrite
 a2enmod cgi
@@ -85,27 +74,6 @@ apt-get install -y mysql-server mysql-client libdbd-mysql-perl
 
 # install tomcat
 apt-get install -y tomcat7 libapache2-mod-jk
-
-cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
-
-workers.tomcat_home=/var/lib/tomcat7
-workers.java_home=/usr/lib/jvm/java-7-openjdk-amd64
-ps=/
-worker.list=worker1
-worker.worker1.port=8009
-worker.worker1.host=localhost
-worker.worker1.type=ajp13
-worker.worker1.lbfactor=1
-
-# configure jk-status
-worker.list=jk-status
-worker.jk-status.type=status
-worker.jk-status.read_only=true
-# configure jk-manager
-worker.list=jk-manager
-worker.jk-manager.type=status
-EOF
-
 
 # install GIT
 apt-get install -y git-core
