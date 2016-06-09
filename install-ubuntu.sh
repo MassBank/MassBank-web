@@ -65,12 +65,12 @@ a2enmod jk
 #cp -rp $INST_TOMCAT_PATH/webapps/* $INST_TOMCAT_PATH/webapps/
 
 ## Deployment of tomcat webapps
-cp -ip $INST_TOMCAT_PATH/webapps/MassBank/. $INST_TOMCAT_PATH/webapps/
-cp -ip $INST_TOMCAT_PATH/webapps/api/. $INST_TOMCAT_PATH/webapps/
+cp -p $INST_TOMCAT_PATH/webapps/MassBank/ $INST_TOMCAT_PATH/webapps/
+cp -p $INST_TOMCAT_PATH/webapps/api/ $INST_TOMCAT_PATH/webapps/
 ln -s $INST_TOMCAT_PATH/common /usr/share/tomcat7
 ln -s $INST_TOMCAT_PATH/server /usr/share/tomcat7
 ln -s $INST_TOMCAT_PATH/shared /usr/share/tomcat7
-cp -ip $INST_TOMCAT_PATH/tomcat/conf/20massbank.policy $INST_TOMCAT_PATH/conf/
+cp -p $INST_TOMCAT_PATH/tomcat/conf/20massbank.policy $INST_TOMCAT_PATH/conf/
 
 echo 
 echo "Compile Search.cgi"
