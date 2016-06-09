@@ -55,16 +55,22 @@ a2enmod cgid
 a2enmod jk
 
 ## mbadmin password
-# htpasswd -c $INST_CONF_PATH/.htpasswd massbank bird2006
-cp -p $INST_CONF_PATH/.htpasswd $APACHE_CONF_PATH/.htpasswd
+# htpasswd -c $INST_CONF_PATH/.htpasswd -b massbank bird2006
 
 ## Deployed by bootstraph.sh
 #cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
 # a2ensite 010-a2site-massbank
 
 #cp -ip $INST_MODULE_PATH/mod_jk.so $APACHE_MODULE_PATH
-cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
-#cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
+#cp -rp $INST_TOMCAT_PATH/webapps/* $INST_TOMCAT_PATH/webapps/
+
+## Deployment of tomcat webapps
+cp -ip $INST_TOMCAT_PATH/webapps/MassBank/. $INST_TOMCAT_PATH/webapps/
+cp -ip $INST_TOMCAT_PATH/webapps/api/. $INST_TOMCAT_PATH/webapps/
+ln -s $INST_TOMCAT_PATH/common /usr/share/tomcat7
+ln -s $INST_TOMCAT_PATH/server /usr/share/tomcat7
+ln -s $INST_TOMCAT_PATH/shared /usr/share/tomcat7
+cp -ip $INST_TOMCAT_PATH/tomcat/conf/20massbank.policy $INST_TOMCAT_PATH/conf/
 
 echo 
 echo "Compile Search.cgi"
@@ -96,9 +102,9 @@ chmod a+w $DEST_TOMCAT_PATH/temp
 
 chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/
 chown -R www-data.www-data $APACHE_HTDOCS_PATH/MassBank/
-chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
 chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
+chown -R tomcat7.tomcat7 /usr/share/tomcat7
 
 #chmod u+x /etc/init.d/tomcat
 chmod u+x /etc/init.d/xvfb
