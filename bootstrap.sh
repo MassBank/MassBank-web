@@ -52,7 +52,6 @@ EOF
 ## Configure Deny / Allow before public deployment
 
 cat > /etc/apache2/sites-available/010-a2site-massbank.conf << EOF
-
 #***************************************************
 # For MassBank
 #***************************************************
@@ -78,7 +77,7 @@ ScriptAlias /MassBank/cgi-bin/ "/var/www/html/MassBank/cgi-bin/"
     AuthType Basic
     AuthName "MassBank Administration Tool"
     AuthUserFile /etc/apache2/.htpasswd
-    AuthGroupFile /dev/null
+    # AuthGroupFile /dev/null
     require valid-user
     # Deny from all
     # Allow from 127.0.0.1
