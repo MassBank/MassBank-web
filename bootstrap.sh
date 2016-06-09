@@ -119,6 +119,7 @@ JkMount /MassBank/ServerMonitor tomcat
 JkMount /MassBank/ServerMonitor/* tomcat
 JkMount /MassBank/pserver tomcat
 JkMount /MassBank/pserver/* tomcat
+EOF
 
 cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
