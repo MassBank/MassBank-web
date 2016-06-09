@@ -9,10 +9,12 @@ sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)
 # support the precompiled struct_server
 sudo dpkg --add-architecture i386
 
-apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
-
 # Freshen package index
 apt-get update
+apt-get upgrade
+
+# Install the 32bit packages
+apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
 # Set timezone
 echo "Europe/Berlin" | tee /etc/timezone
@@ -87,7 +89,6 @@ ScriptAlias /MassBank/cgi-bin/ "/var/www/html/MassBank/cgi-bin/"
     Order allow,deny
     Allow from all
 </Directory>
-EOF	
 
 #***************************************************
 # Tomcat Connection
