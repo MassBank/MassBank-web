@@ -55,10 +55,12 @@ a2enmod cgid
 a2enmod jk
 
 ## mbadmin password
-htpasswd $INST_CONF_PATH/.htpasswd -c massbank bird2006
+# htpasswd -c $INST_CONF_PATH/.htpasswd massbank bird2006
+cp -p $INST_CONF_PATH/.htpasswd $APACHE_CONF_PATH/.htpasswd
 
-cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
-a2ensite 010-a2site-massbank
+## Deployed by bootstraph.sh
+#cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
+# a2ensite 010-a2site-massbank
 
 #cp -ip $INST_MODULE_PATH/mod_jk.so $APACHE_MODULE_PATH
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
@@ -93,10 +95,10 @@ mkdir -p $DEST_TOMCAT_PATH/temp
 chmod a+w $DEST_TOMCAT_PATH/temp
 
 chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/
-chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/
-#chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
-#chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
-#chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
+chown -R www-data.www-data $APACHE_HTDOCS_PATH/MassBank/
+chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
+chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
+chown tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
 
 #chmod u+x /etc/init.d/tomcat
 chmod u+x /etc/init.d/xvfb
