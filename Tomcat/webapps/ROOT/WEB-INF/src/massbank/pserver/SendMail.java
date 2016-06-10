@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒ[ƒ‹‘—MƒNƒ‰ƒX
+ * ãƒ¡ãƒ¼ãƒ«é€ä¿¡ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2009.02.04
  *
@@ -39,28 +39,28 @@ public class SendMail {
 		try {
 			Properties props = System.getProperties();
 
-			// SMTPƒT[ƒo[‚ÌƒAƒhƒŒƒX‚ğİ’è
+			// SMTPã‚µãƒ¼ãƒãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’è¨­å®š
 			props.put( "mail.smtp.host", "mail.iab.keio.ac.jp" );
 
 			Session session = Session.getDefaultInstance( props, null );
 			MimeMessage mimeMsg = new MimeMessage(session);
 
-			// ‘—MŒ³ƒ[ƒ‹ƒAƒhƒŒƒX‚Æ‘—MÒ–¼‚ğİ’è
+			// é€ä¿¡å…ƒãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨é€ä¿¡è€…åã‚’è¨­å®š
 			mimeMsg.setFrom( new InternetAddress("massbank@iab.keio.ac.jp", "MassBank Administrator", "iso-2022-jp") );
 
-			// ‘—Mæƒ[ƒ‹ƒAƒhƒŒƒX‚ğİ’è
+			// é€ä¿¡å…ˆãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’è¨­å®š
 			mimeMsg.setRecipients( Message.RecipientType.TO, "massbank@iab.keio.ac.jp" );
 
-			// ƒ[ƒ‹‚Ìƒ^ƒCƒgƒ‹‚ğİ’è
+			// ãƒ¡ãƒ¼ãƒ«ã®ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
 			mimeMsg.setSubject( subject, "iso-2022-jp" );
 
-			// ƒ[ƒ‹‚Ì“à—e‚ğİ’è
+			// ãƒ¡ãƒ¼ãƒ«ã®å†…å®¹ã‚’è¨­å®š
 			mimeMsg.setText( contents, "iso-2022-jp" );
 
-			// ‘—M“ú•t‚ğİ’è
+			// é€ä¿¡æ—¥ä»˜ã‚’è¨­å®š
 			mimeMsg.setSentDate( new Date() );
 
-			// ‘—M
+			// é€ä¿¡
 			Transport.send( mimeMsg );
 		}
 		catch (Exception e) {

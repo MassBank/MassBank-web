@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ŠÂ‹«İ’èƒtƒ@ƒCƒ‹‚Ìî•ñ‚ğæ“¾‚·‚éƒNƒ‰ƒX
+ * ç’°å¢ƒè¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.7 2012.09.06
  *
@@ -33,21 +33,21 @@ public class GetConfig {
 	private Element m_root;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */ 
 	public GetConfig( String baseUrl ) {
 		String url =  baseUrl + "massbank.conf";
 		try {
-			// ƒhƒLƒ…ƒƒ“ƒgƒrƒ‹ƒ_[ƒtƒ@ƒNƒgƒŠ‚ğ¶¬
+			// ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆãƒ“ãƒ«ãƒ€ãƒ¼ãƒ•ã‚¡ã‚¯ãƒˆãƒªã‚’ç”Ÿæˆ
 			DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
 
-			// ƒhƒLƒ…ƒƒ“ƒgƒrƒ‹ƒ_[‚ğ¶¬
+			// ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆãƒ“ãƒ«ãƒ€ãƒ¼ã‚’ç”Ÿæˆ
 			DocumentBuilder builder = dbfactory.newDocumentBuilder();
 
-			// ƒp[ƒX‚ğÀs‚µ‚ÄDocumentƒIƒuƒWƒFƒNƒg‚ğæ“¾
+			// ãƒ‘ãƒ¼ã‚¹ã‚’å®Ÿè¡Œã—ã¦Documentã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
 			Document doc = builder.parse( url );
 
-			// ƒ‹[ƒg—v‘f‚ğæ“¾
+			// ãƒ«ãƒ¼ãƒˆè¦ç´ ã‚’å–å¾—
 			m_root = doc.getDocumentElement();
 		}
 		catch ( Exception e ) {
@@ -56,35 +56,35 @@ public class GetConfig {
 	}
 
 	/**
-	 * ƒTƒCƒg‚Ìƒtƒ‹–¼Ì‚ğæ“¾‚·‚é
+	 * ã‚µã‚¤ãƒˆã®ãƒ•ãƒ«åç§°ã‚’å–å¾—ã™ã‚‹
 	 */ 
 	public String[] getSiteLongName() {
 		return  getSetting("LongName");
 	}
 
 	/**
-	 * BrowseƒAƒvƒŒƒbƒg‚Ì“®ìƒ‚[ƒh‚ğæ“¾‚·‚é
+	 * Browseã‚¢ãƒ—ãƒ¬ãƒƒãƒˆã®å‹•ä½œãƒ¢ãƒ¼ãƒ‰ã‚’å–å¾—ã™ã‚‹
 	 */ 
 	public String[] getBrowseMode() {
 		return getSetting("BrowseMode");
 	}
 
 	/**
-	 * DB–¼‚ğæ“¾‚·‚é
+	 * DBåã‚’å–å¾—ã™ã‚‹
 	 */ 
 	public String[] getDbName() {
 		return getSetting("DB");
 	}
 
 	/**
-	 * ƒZƒJƒ“ƒ_ƒŠDB–¼‚ğæ“¾‚·‚é
+	 * ã‚»ã‚«ãƒ³ãƒ€ãƒªDBåã‚’å–å¾—ã™ã‚‹
 	 */ 
 	public String[] getSecondaryDBName() {
 		return getSetting("SecondaryDB");
 	}
 
 	/**
-	 * ƒT[ƒo[URL‚ğæ“¾‚·‚é
+	 * ã‚µãƒ¼ãƒãƒ¼URLã‚’å–å¾—ã™ã‚‹
 	 */ 
 	public String getServerUrl() {
 		String url = this.getServerSetting("FrontServer");
@@ -92,24 +92,24 @@ public class GetConfig {
 	}
 
 	/**
-	 * ƒTƒCƒgURL‚ğæ“¾‚·‚é
+	 * ã‚µã‚¤ãƒˆURLã‚’å–å¾—ã™ã‚‹
 	 */ 
 	public String[] getSiteUrl() {
 		return getSetting("URL");
 	}
 	
 	/**
-	 * ƒTƒCƒg–¼Ì‚ğæ“¾‚·‚é
+	 * ã‚µã‚¤ãƒˆåç§°ã‚’å–å¾—ã™ã‚‹
 	 */ 
 	public String[] getSiteName() {
 		return getSetting("Name");
 	}
 
 	/**
-	 * ƒ^ƒCƒ€ƒAƒEƒg’læ“¾‚·‚é
+	 * ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤å–å¾—ã™ã‚‹
 	 */ 
 	public int getTimeout() {
-		// ƒfƒtƒHƒ‹ƒg
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 		int val = 120;
 		String ret = getValByTagName( "Timeout" );
 		if ( !ret.equals("") ) {
@@ -119,10 +119,10 @@ public class GetConfig {
 	}
 
 	/**
-	 * ƒgƒŒ[ƒXƒƒOo—Í—LŒø‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
+	 * ãƒˆãƒ¬ãƒ¼ã‚¹ãƒ­ã‚°å‡ºåŠ›æœ‰åŠ¹ã‹ã©ã†ã‹ã‚’åˆ¤å®šã™ã‚‹
 	 */ 
 	public boolean isTraceEnable() {
-		// ƒfƒtƒHƒ‹ƒg
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 		boolean val = false;
 		String ret = getValByTagName( "TraceLog" );
 		if ( ret.equals("true") ) {
@@ -132,24 +132,24 @@ public class GetConfig {
 	}
 
 	/**
-	 * ƒy[ƒWƒŠƒ“ƒN•\¦”æ“¾
+	 * ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯è¡¨ç¤ºæ•°å–å¾—
 	 */ 
 	public String getDispLinkNum() {
 		return getValByTagName( "LinkNum" );
 	}
 	
 	/**
-	 * eƒm[ƒh•\¦”æ“¾‚·‚é
+	 * è¦ªãƒãƒ¼ãƒ‰è¡¨ç¤ºæ•°å–å¾—ã™ã‚‹
 	 */ 
 	public String getDispNodeNum() {
 		return getValByTagName( "NodeNum" );
 	}
 	
 	/**
-	 * Cookie—LŒøƒtƒ‰ƒO
+	 * Cookieæœ‰åŠ¹ãƒ•ãƒ©ã‚°
 	 */ 
 	public boolean isCookie() {
-		// ƒfƒtƒHƒ‹ƒg
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 		boolean val = false;
 		String ret = getValByTagName( "Cookie" );
 		if ( ret.equals("true") ) {
@@ -159,10 +159,10 @@ public class GetConfig {
 	}
 	
 	/**
-	 * ƒT[ƒoŠÄ‹‚Ìƒ|[ƒŠƒ“ƒOüŠú‚ğæ“¾‚·‚é
+	 * ã‚µãƒ¼ãƒç›£è¦–ã®ãƒãƒ¼ãƒªãƒ³ã‚°å‘¨æœŸã‚’å–å¾—ã™ã‚‹
 	 */
 	public int getPollInterval() {
-		// ƒfƒtƒHƒ‹ƒg30•ª
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ30åˆ†
 		int val = 30;
 		String ret = getValByTagName( "PollingInterval" );
 		if ( !ret.equals("") ) {
@@ -199,7 +199,7 @@ public class GetConfig {
 	}
 	
 	/**
-	 * ©ƒT[ƒo[‚Ìİ’è‚ğæ“¾‚·‚é
+	 * è‡ªã‚µãƒ¼ãƒãƒ¼ã®è¨­å®šã‚’å–å¾—ã™ã‚‹
 	 */
 	private String getServerSetting(String tagName) {
 		String val = "";
@@ -233,7 +233,7 @@ public class GetConfig {
 	}
 
 	/**
-	 * ˜AŒgƒTƒCƒg‚Ìİ’è‚ğæ“¾‚·‚é
+	 * é€£æºã‚µã‚¤ãƒˆã®è¨­å®šã‚’å–å¾—ã™ã‚‹
 	 */
 	private String[] getRelatedSetting(String tagName) {
 		String[] vals = null;
@@ -269,7 +269,7 @@ public class GetConfig {
 	}
 
 	/**
-	 * w’è‚³‚ê‚½ƒ^ƒO‚Ì’l‚ğæ“¾
+	 * æŒ‡å®šã•ã‚ŒãŸã‚¿ã‚°ã®å€¤ã‚’å–å¾—
 	 */ 
 	private String getValByTagName( String tagName ) {
 		String val = "";

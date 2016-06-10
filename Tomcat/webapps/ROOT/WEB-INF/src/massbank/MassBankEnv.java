@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * MassBank ŠÂ‹«•Ï”ŠÇ—ƒNƒ‰ƒX
+ * MassBank ç’°å¢ƒå¤‰æ•°ç®¡ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.5 2012.01.04
  *
@@ -44,34 +44,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * MassBank ŠÂ‹«•Ï”ŠÇ—ƒNƒ‰ƒX
+ * MassBank ç’°å¢ƒå¤‰æ•°ç®¡ç†ã‚¯ãƒ©ã‚¹
  * 
- * ƒT[ƒuƒŒƒbƒg‚Ì‰Šú‰»‚Å MassBank ‚Åg—p‚·‚é•Ï”‚ğ‰Šú‰»‚µA
- * MassBank ŠÂ‹«•Ï”‚ğ JavaAJSPACGI ‚È‚Ç‚ÌƒvƒƒOƒ‰ƒ€‚©‚çæ“¾‚Å‚«‚é‹@”\‚ğ’ñ‹Ÿ‚·‚éB
- * ‚È‚¨AApache ‚ª‹N“®‚µ‚Ä‚¢‚È‚¢‚Ææ“¾‚Å‚«‚È‚¢’l‚ÉŠÖ‚µ‚Ä‚ÍƒŠƒgƒ‰ƒC‚ğ‚İ‚éBiVAL_BASE_URLAVAL_APACHE_DOCROOT_PATHj
+ * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆã®åˆæœŸåŒ–ã§ MassBank ã§ä½¿ç”¨ã™ã‚‹å¤‰æ•°ã‚’åˆæœŸåŒ–ã—ã€
+ * MassBank ç’°å¢ƒå¤‰æ•°ã‚’ Javaã€JSPã€CGI ãªã©ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‹ã‚‰å–å¾—ã§ãã‚‹æ©Ÿèƒ½ã‚’æä¾›ã™ã‚‹ã€‚
+ * ãªãŠã€Apache ãŒèµ·å‹•ã—ã¦ã„ãªã„ã¨å–å¾—ã§ããªã„å€¤ã«é–¢ã—ã¦ã¯ãƒªãƒˆãƒ©ã‚¤ã‚’è©¦ã¿ã‚‹ã€‚ï¼ˆVAL_BASE_URLã€VAL_APACHE_DOCROOT_PATHï¼‰
  * 
- * web.xml ‚É•K—v‚ÈƒT[ƒuƒŒƒbƒg‰Šúƒpƒ‰ƒ[ƒ^‚ÍˆÈ‰º‚Ì‚Æ‚¨‚è
- *   localUrl ... •K{iƒT[ƒuƒŒƒbƒg‚ª massbank.conf ‚ğæ“¾‚µ‚½‚è CGI ‚ğÀs‚·‚é‚½‚ß‚Ì URLj
- *   retryCnt ... ”CˆÓiApache ‚ª‹N“®‚µ‚Ä‚¢‚È‚¢ê‡‚É’l‚Ìæ“¾‚ğ‚İ‚é‰ñ”j
- *   retryTime .. ”CˆÓiApache ‚ª‹N“®‚µ‚Ä‚¢‚È‚¢ê‡‚É’l‚Ìæ“¾‚ğ‚İ‚éƒ~ƒŠ•bŠÔŠuj
+ * web.xml ã«å¿…è¦ãªã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆåˆæœŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã¯ä»¥ä¸‹ã®ã¨ãŠã‚Š
+ *   localUrl ... å¿…é ˆï¼ˆã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆãŒ massbank.conf ã‚’å–å¾—ã—ãŸã‚Š CGI ã‚’å®Ÿè¡Œã™ã‚‹ãŸã‚ã® URLï¼‰
+ *   retryCnt ... ä»»æ„ï¼ˆApache ãŒèµ·å‹•ã—ã¦ã„ãªã„å ´åˆã«å€¤ã®å–å¾—ã‚’è©¦ã¿ã‚‹å›æ•°ï¼‰
+ *   retryTime .. ä»»æ„ï¼ˆApache ãŒèµ·å‹•ã—ã¦ã„ãªã„å ´åˆã«å€¤ã®å–å¾—ã‚’è©¦ã¿ã‚‹ãƒŸãƒªç§’é–“éš”ï¼‰
  *   
- * Še’l‚Ìæ“¾•û–@‚ÍˆÈ‰º‚Ì‚Æ‚¨‚è
- *   JavaAJSP
+ * å„å€¤ã®å–å¾—æ–¹æ³•ã¯ä»¥ä¸‹ã®ã¨ãŠã‚Š
+ *   Javaã€JSP
  *     MassBankEnv.get(String key)
  *     MassBankEnv.get()
  *   CGI
- *     http://[ƒzƒXƒg–¼]/MassBank/MassBankEnv?key=[ƒL[]
- *     http://[ƒzƒXƒg–¼]/MassBank/MassBankEnv
- *     ¦ã‹LƒŠƒNƒGƒXƒg‚Ö‚ÌƒŒƒXƒ|ƒ“ƒX‚Æ‚µ‚Äæ“¾‚·‚é
+ *     http://[ãƒ›ã‚¹ãƒˆå]/MassBank/MassBankEnv?key=[ã‚­ãƒ¼]
+ *     http://[ãƒ›ã‚¹ãƒˆå]/MassBank/MassBankEnv
+ *     â€»ä¸Šè¨˜ãƒªã‚¯ã‚¨ã‚¹ãƒˆã¸ã®ãƒ¬ã‚¹ãƒãƒ³ã‚¹ã¨ã—ã¦å–å¾—ã™ã‚‹
  *     
- * ‚½‚¾‚µAVAL_BASE_URLAVAL_MASSBANK_CONF_URLAVAL_ADMIN_CONF_URL ‚Ì’l‚ÉŠÖ‚µ‚Ä‚ÍA
- * AdminTool ‚Ì DatabaseManager ‚Å 0 ”Ô–Ú‚Ì URL ‚ª•ÏX‚³‚ê‚½ê‡‚É‚ÍXV‚³‚ê‚é
+ * ãŸã ã—ã€VAL_BASE_URLã€VAL_MASSBANK_CONF_URLã€VAL_ADMIN_CONF_URL ã®å€¤ã«é–¢ã—ã¦ã¯ã€
+ * AdminTool ã® DatabaseManager ã§ 0 ç•ªç›®ã® URL ãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆã«ã¯æ›´æ–°ã•ã‚Œã‚‹
  */
 public class MassBankEnv extends HttpServlet {
 
-	// MassBank ŠÂ‹«•Ï”iŒÅ’è’ljæ“¾ƒL[
+	// MassBank ç’°å¢ƒå¤‰æ•°ï¼ˆå›ºå®šå€¤ï¼‰å–å¾—ã‚­ãƒ¼
 	public static final String KEY_LOCAL_URL				= "url.local";				// ex. "http://localhost/MassBank/"
-	public static final String KEY_BASE_URL				= "url.base";				// ex. "http://[ƒzƒXƒg–¼]/MassBank/"
+	public static final String KEY_BASE_URL				= "url.base";				// ex. "http://[ãƒ›ã‚¹ãƒˆå]/MassBank/"
 	public static final String KEY_SUB_URL				= "url.sub";				// ex. "MassBank/"
 	public static final String KEY_SUB_PATH				= "path.sub";				// ex. "MassBank/"
 	public static final String KEY_APACHE_DOCROOT_PATH	= "path.apache.root";		// ex. "/var/www/html/"
@@ -84,9 +84,9 @@ public class MassBankEnv extends HttpServlet {
 	public static final String KEY_TOMCAT_APPEXT_PATH		= "path.tomcat.app.extend";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/extend/"
 	public static final String KEY_TOMCAT_APPPSERV_PATH	= "path.tomcat.app.pserver";// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/pserver/"
 	public static final String KEY_TOMCAT_APPTEMP_PATH	= "path.tomcat.app.temp";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/temp/"
-	public static final String KEY_MASSBANK_CONF_URL		= "url.massbank_conf";		// ex. "http://[ƒzƒXƒg–¼]/MassBank/massbank.conf"
+	public static final String KEY_MASSBANK_CONF_URL		= "url.massbank_conf";		// ex. "http://[ãƒ›ã‚¹ãƒˆå]/MassBank/massbank.conf"
 	public static final String KEY_MASSBANK_CONF_PATH		= "path.massbank_conf";		// ex. "/var/www/html/MassBank/massbank.conf"
-	public static final String KEY_ADMIN_CONF_URL			= "url.admin_conf";			// ex. "http://[ƒzƒXƒg–¼]/MassBank/mbadmin/admin.conf"
+	public static final String KEY_ADMIN_CONF_URL			= "url.admin_conf";			// ex. "http://[ãƒ›ã‚¹ãƒˆå]/MassBank/mbadmin/admin.conf"
 	public static final String KEY_ADMIN_CONF_PATH		= "path.admin_conf";		// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/mbadmin/admin.conf"
 	public static final String KEY_DATAROOT_PATH			= "path.data_root";			// ex. "/var/www/html/MassBank/DB/"
 	public static final String KEY_ANNOTATION_PATH		= "path.annotation";		// ex. "/var/www/html/MassBank/DB/annotation/"
@@ -95,17 +95,17 @@ public class MassBankEnv extends HttpServlet {
 	public static final String KEY_GIF_PATH				= "path.gif";				// ex. "/var/www/html/MassBank/DB/gif/"
 	public static final String KEY_GIF_SMALL_PATH			= "path.gif.small";			// ex. "/var/www/html/MassBank/DB/gif_small/"
 	public static final String KEY_GIF_LARGE_PATH			= "path.gif.large";			// ex. "/var/www/html/MassBank/DB/gif_large/"
-	// MassBank ŠÂ‹«•Ï”i‰Â•Ï’ljæ“¾ƒL[
-	public static final String KEY_PRIMARY_SERVER_URL		= "url.pserver";			// ex. "[ƒT[ƒoŠÄ‹—pURL]"
-	public static final String KEY_DB_HOST_NAME			= "db.host_name";			// ex. "[DBƒAƒNƒZƒX—pƒzƒXƒg–¼]"
-	public static final String KEY_DB_MASTER_NAME			= "db.master_name";			// ex. "[ƒ[ƒhƒoƒ‰ƒ“ƒX—pƒ}ƒXƒ^DB–¼]"
-	public static final String KEY_BATCH_SMTP				= "mail.batch.smtp";		// ex. "[BatchService—pƒ[ƒ‹SMTPƒT[ƒo–¼]"
-	public static final String KEY_BATCH_NAME				= "mail.batch.name";		// ex. "[BatchService—pƒ[ƒ‹‘—MÒ–¼]"
-	public static final String KEY_BATCH_FROM				= "mail.batch.from";		// ex. "[BatchService—pƒ[ƒ‹‘—MƒAƒhƒŒƒX]"
+	// MassBank ç’°å¢ƒå¤‰æ•°ï¼ˆå¯å¤‰å€¤ï¼‰å–å¾—ã‚­ãƒ¼
+	public static final String KEY_PRIMARY_SERVER_URL		= "url.pserver";			// ex. "[ã‚µãƒ¼ãƒç›£è¦–ç”¨URL]"
+	public static final String KEY_DB_HOST_NAME			= "db.host_name";			// ex. "[DBã‚¢ã‚¯ã‚»ã‚¹ç”¨ãƒ›ã‚¹ãƒˆå]"
+	public static final String KEY_DB_MASTER_NAME			= "db.master_name";			// ex. "[ãƒ­ãƒ¼ãƒ‰ãƒãƒ©ãƒ³ã‚¹ç”¨ãƒã‚¹ã‚¿DBå]"
+	public static final String KEY_BATCH_SMTP				= "mail.batch.smtp";		// ex. "[BatchServiceç”¨ãƒ¡ãƒ¼ãƒ«SMTPã‚µãƒ¼ãƒå]"
+	public static final String KEY_BATCH_NAME				= "mail.batch.name";		// ex. "[BatchServiceç”¨ãƒ¡ãƒ¼ãƒ«é€ä¿¡è€…å]"
+	public static final String KEY_BATCH_FROM				= "mail.batch.from";		// ex. "[BatchServiceç”¨ãƒ¡ãƒ¼ãƒ«é€ä¿¡ã‚¢ãƒ‰ãƒ¬ã‚¹]"
 	
-	// MassBank ŠÂ‹«•Ï”iŒÅ’è’lj	
+	// MassBank ç’°å¢ƒå¤‰æ•°ï¼ˆå›ºå®šå€¤ï¼‰	
 	private static String VAL_LOCAL_URL				= "";	// ex. "http://localhost/MassBank/"
-	private static String VAL_BASE_URL					= "";	// ex. "http://[ƒzƒXƒg–¼]/MassBank/"
+	private static String VAL_BASE_URL					= "";	// ex. "http://[ãƒ›ã‚¹ãƒˆå]/MassBank/"
 	private static String VAL_SUB_URL					= "";	// ex. "MassBank/"
 	private static String VAL_SUB_PATH					= "";	// ex. "MassBank/"
 	private static String VAL_APACHE_DOCROOT_PATH		= "";	// ex. "/var/www/html/"
@@ -118,9 +118,9 @@ public class MassBankEnv extends HttpServlet {
 	private static String VAL_TOMCAT_APPEXT_PATH		= "";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/extend/"
 	private static String VAL_TOMCAT_APPPSERV_PATH		= "";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/pserver/"
 	private static String VAL_TOMCAT_APPTEMP_PATH		= "";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/temp/"
-	private static String VAL_MASSBANK_CONF_URL		= "";	// ex. "http://[ƒzƒXƒg–¼]/MassBank/massbank.conf"
+	private static String VAL_MASSBANK_CONF_URL		= "";	// ex. "http://[ãƒ›ã‚¹ãƒˆå]/MassBank/massbank.conf"
 	private static String VAL_MASSBANK_CONF_PATH		= "";	// ex. "/var/www/html/MassBank/massbank.conf"
-	private static String VAL_ADMIN_CONF_URL			= "";	// ex. "http://[ƒzƒXƒg–¼]/MassBank/mbadmin/admin.conf"
+	private static String VAL_ADMIN_CONF_URL			= "";	// ex. "http://[ãƒ›ã‚¹ãƒˆå]/MassBank/mbadmin/admin.conf"
 	private static String VAL_ADMIN_CONF_PATH			= "";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/mbadmin/admin.conf"
 	private static String VAL_DATAROOT_PATH			= "";	// ex. "/var/www/html/MassBank/DB/"
 	private static String VAL_ANNOTATION_PATH			= "";	// ex. "/var/www/html/MassBank/DB/annotation/"
@@ -129,31 +129,31 @@ public class MassBankEnv extends HttpServlet {
 	private static String VAL_GIF_PATH					= "";	// ex. "/var/www/html/MassBank/DB/gif/"
 	private static String VAL_GIF_SMALL_PATH			= "";	// ex. "/var/www/html/MassBank/DB/gif_small/"
 	private static String VAL_GIF_LARGE_PATH			= "";	// ex. "/var/www/html/MassBank/DB/gif_large/"
-	// MassBank ŠÂ‹«•Ï”i‰Â•Ï’lj
-	private static String VAL_PRIMARY_SERVER_URL		= "http://www.massbank.jp/";	// ex. "[ƒT[ƒoŠÄ‹—pURL]"
-	private static String VAL_DB_HOST_NAME				= "localhost";					// ex. "[DBƒAƒNƒZƒX—pƒzƒXƒg–¼]"
-	private static String VAL_DB_MASTER_NAME			= "";	// ex. "[ƒ[ƒhƒoƒ‰ƒ“ƒX—pƒ}ƒXƒ^DB–¼]"
-	private static String VAL_BATCH_SMTP				= "";	// ex. "[BatchService—pƒ[ƒ‹SMTPƒT[ƒo–¼]"
-	private static String VAL_BATCH_NAME				= "";	// ex. "[BatchService—pƒ[ƒ‹‘—MÒ–¼]"
-	private static String VAL_BATCH_FROM				= "";	// ex. "[BatchService—pƒ[ƒ‹‘—MƒAƒhƒŒƒX]"
+	// MassBank ç’°å¢ƒå¤‰æ•°ï¼ˆå¯å¤‰å€¤ï¼‰
+	private static String VAL_PRIMARY_SERVER_URL		= "http://www.massbank.jp/";	// ex. "[ã‚µãƒ¼ãƒç›£è¦–ç”¨URL]"
+	private static String VAL_DB_HOST_NAME				= "localhost";					// ex. "[DBã‚¢ã‚¯ã‚»ã‚¹ç”¨ãƒ›ã‚¹ãƒˆå]"
+	private static String VAL_DB_MASTER_NAME			= "";	// ex. "[ãƒ­ãƒ¼ãƒ‰ãƒãƒ©ãƒ³ã‚¹ç”¨ãƒã‚¹ã‚¿DBå]"
+	private static String VAL_BATCH_SMTP				= "";	// ex. "[BatchServiceç”¨ãƒ¡ãƒ¼ãƒ«SMTPã‚µãƒ¼ãƒå]"
+	private static String VAL_BATCH_NAME				= "";	// ex. "[BatchServiceç”¨ãƒ¡ãƒ¼ãƒ«é€ä¿¡è€…å]"
+	private static String VAL_BATCH_FROM				= "";	// ex. "[BatchServiceç”¨ãƒ¡ãƒ¼ãƒ«é€ä¿¡ã‚¢ãƒ‰ãƒ¬ã‚¹]"
 	
-	// Apache Ú‘±ƒŠƒgƒ‰ƒC‰ñ”
+	// Apache æ¥ç¶šãƒªãƒˆãƒ©ã‚¤å›æ•°
 	private static int APACHE_CONNECT_RETRY_CNT = 15;
-	// Apache Ú‘±ƒŠƒgƒ‰ƒCŠÔŠuiƒ~ƒŠ•bj
+	// Apache æ¥ç¶šãƒªãƒˆãƒ©ã‚¤é–“éš”ï¼ˆãƒŸãƒªç§’ï¼‰
 	private static long APACHE_CONNECT_RETRY_TIME = 2000L;
 	
 	/**
-	 * ƒT[ƒrƒX‰Šúˆ—‚ğs‚¤
+	 * ã‚µãƒ¼ãƒ“ã‚¹åˆæœŸå‡¦ç†ã‚’è¡Œã†
 	 */
 	public void init() throws ServletException {
 		
-		// OS”»’è
+		// OSåˆ¤å®š
 		boolean isWindows = false;
 		if ( System.getProperty("os.name").indexOf("Windows") != -1 ) {
 			isWindows = true;
 		}
 		
-		// ‰Šúƒpƒ‰ƒ[ƒ^æ“¾
+		// åˆæœŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å–å¾—
 		String tmpRetryCnt = getInitParameter("retryCnt");
 		if ( tmpRetryCnt != null && !tmpRetryCnt.equals("") ) {
 			APACHE_CONNECT_RETRY_CNT = Integer.parseInt(tmpRetryCnt);
@@ -196,7 +196,7 @@ public class MassBankEnv extends HttpServlet {
 		
 		// VAL_BASE_URL
 		String tmpBaseUrl = "";
-		for (int cnt=0; cnt<=APACHE_CONNECT_RETRY_CNT; cnt++) {			// Apache ’â~‚ÍƒŠƒgƒ‰ƒC
+		for (int cnt=0; cnt<=APACHE_CONNECT_RETRY_CNT; cnt++) {			// Apache åœæ­¢æ™‚ã¯ãƒªãƒˆãƒ©ã‚¤
 			if ( cnt > 0 ) {
 				Logger.getLogger("global").info("Waiting for a start of Apache... " + cnt + "/" + APACHE_CONNECT_RETRY_CNT + "\n");
 				try {
@@ -229,7 +229,7 @@ public class MassBankEnv extends HttpServlet {
 		try {
 			URL url = new URL(VAL_LOCAL_URL + "cgi-bin/GetDocRoot.cgi");
 			URLConnection con = null;
-			for (int cnt=0; cnt<=APACHE_CONNECT_RETRY_CNT; cnt++) {		// Apache ’â~‚ÍƒŠƒgƒ‰ƒC
+			for (int cnt=0; cnt<=APACHE_CONNECT_RETRY_CNT; cnt++) {		// Apache åœæ­¢æ™‚ã¯ãƒªãƒˆãƒ©ã‚¤
 				if ( cnt > 0 ) {
 					Logger.getLogger("global").info("Waiting for a start of Apache... " + cnt + "/" + APACHE_CONNECT_RETRY_CNT + "\n");
 					try {
@@ -463,21 +463,21 @@ public class MassBankEnv extends HttpServlet {
 		// VAL_BATCH_FROM
 		VAL_BATCH_FROM = getAdminConf(VAL_ADMIN_CONF_PATH, "mail_batch_from");
 		
-		// ƒƒOo—Í
+		// ãƒ­ã‚°å‡ºåŠ›
 		envListLog();
 	}
 	
 	/**
-	 * ƒT[ƒuƒŒƒbƒgƒT[ƒrƒXˆ—
-	 * ƒT[ƒuƒŒƒbƒg‚ğŒÄ‚Ño‚·Û‚ÌƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^‚Éukey=[MassBank ŠÂ‹«•Ï”–¼]v‚ğ
-	 * •t‰Á‚µ‚ÄŒÄ‚Ño‚·‚±‚Æ‚ÅAMassBank ŠÂ‹«•Ï”‚ğæ“¾‚Å‚«‚é
+	 * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆã‚µãƒ¼ãƒ“ã‚¹å‡¦ç†
+	 * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆã‚’å‘¼ã³å‡ºã™éš›ã®ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«ã€Œkey=[MassBank ç’°å¢ƒå¤‰æ•°å]ã€ã‚’
+	 * ä»˜åŠ ã—ã¦å‘¼ã³å‡ºã™ã“ã¨ã§ã€MassBank ç’°å¢ƒå¤‰æ•°ã‚’å–å¾—ã§ãã‚‹
 	 * @param req HttpServletRequest
 	 * @param res HttpServletResponse
 	 */
 	public void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		PrintWriter out = res.getWriter();
 		
-		// MassBank ŠÂ‹«•Ï”—pƒL[æ“¾
+		// MassBank ç’°å¢ƒå¤‰æ•°ç”¨ã‚­ãƒ¼å–å¾—
 		String key = req.getParameter("key");
 		if ( key == null || key.equals("") ) {
 			out.println( get() );
@@ -488,9 +488,9 @@ public class MassBankEnv extends HttpServlet {
 	}
 	
 	/**
-	 * MassBank ŠÂ‹«•Ï”æ“¾
-	 * @param key ƒL[
-	 * @return ’l
+	 * MassBank ç’°å¢ƒå¤‰æ•°å–å¾—
+	 * @param key ã‚­ãƒ¼
+	 * @return å€¤
 	 */
 	public static String get(String key) {
 		
@@ -597,10 +597,10 @@ public class MassBankEnv extends HttpServlet {
 	}
 	
 	/**
-	 * ‘S‚Ä‚Ì MassBank ŠÂ‹«•Ï”æ“¾
-	 * [ƒL[]=[’l]‚Ì‰üs‹æØ‚è‚Å‘S‚Ä‚Ì MassBank ŠÂ‹«•Ï”‚ğæ“¾‚·‚é
-	 * @param key ƒL[
-	 * @return ’l
+	 * å…¨ã¦ã® MassBank ç’°å¢ƒå¤‰æ•°å–å¾—
+	 * [ã‚­ãƒ¼]=[å€¤]ã®æ”¹è¡ŒåŒºåˆ‡ã‚Šã§å…¨ã¦ã® MassBank ç’°å¢ƒå¤‰æ•°ã‚’å–å¾—ã™ã‚‹
+	 * @param key ã‚­ãƒ¼
+	 * @return å€¤
 	 */
 	public static String get() {
 		StringBuilder sb = new StringBuilder();
@@ -641,25 +641,25 @@ public class MassBankEnv extends HttpServlet {
 	}
 	
 	/**
-	 * BaseUrl ‚Ì’lİ’è
-	 * AdminTool ‚Ì DatabaseManager ‚Å0”Ô–Ú‚ÌURL‚ª•ÏX‚³‚ê‚½ê‡‚Ì‚İŒÄ‚Î‚ê‚é
-	 * @param url V‚µ‚¢ BaseUrl
+	 * BaseUrl ã®å€¤è¨­å®š
+	 * AdminTool ã® DatabaseManager ã§0ç•ªç›®ã®URLãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆã®ã¿å‘¼ã°ã‚Œã‚‹
+	 * @param url æ–°ã—ã„ BaseUrl
 	 */
 	public static void setBaseUrl(String url) {
 		VAL_BASE_URL = url;
 		VAL_MASSBANK_CONF_URL = VAL_BASE_URL + "massbank.conf";
 		VAL_ADMIN_CONF_URL = VAL_BASE_URL + "mbadmin/admin.conf";
 		
-		// ƒƒOo—Í
+		// ãƒ­ã‚°å‡ºåŠ›
 		(new MassBankEnv()).envListLog();
 	}
 	
 	/**
-	 * admin.conf‚É’è‹`‚³‚ê‚½’l‚ğæ“¾‚·‚é
-	 * ‚ ‚¦‚Äˆø”‚ÅadminConfPath‚ğó‚¯æ‚é
-	 * @param adminConfPath admin.confƒpƒX
-	 * @param key ƒL[–¼
-	 * @return ’l
+	 * admin.confã«å®šç¾©ã•ã‚ŒãŸå€¤ã‚’å–å¾—ã™ã‚‹
+	 * ã‚ãˆã¦å¼•æ•°ã§adminConfPathã‚’å—ã‘å–ã‚‹
+	 * @param adminConfPath admin.confãƒ‘ã‚¹
+	 * @param key ã‚­ãƒ¼å
+	 * @return å€¤
 	 */
 	private String getAdminConf( String adminConfPath, String key ) {
 		String val = "";
@@ -668,7 +668,7 @@ public class MassBankEnv extends HttpServlet {
 			br = new BufferedReader( new FileReader( adminConfPath ) );
 			String line = "";
 			while ( ( line = br.readLine() ) != null ) {
-				// "#" ‚Ån‚Ü‚és‚ÍƒRƒƒ“ƒgs‚Æ‚·‚é
+				// "#" ã§å§‹ã¾ã‚‹è¡Œã¯ã‚³ãƒ¡ãƒ³ãƒˆè¡Œã¨ã™ã‚‹
 				if (line.startsWith("#") || line.equals("")) {
 					continue;
 				}
@@ -693,7 +693,7 @@ public class MassBankEnv extends HttpServlet {
 	}
 	
 	/**
-	 * MassBank ŠÂ‹«•Ï”ˆê——‚ÌƒƒOo—Í
+	 * MassBank ç’°å¢ƒå¤‰æ•°ä¸€è¦§ã®ãƒ­ã‚°å‡ºåŠ›
 	 */
 	private void envListLog(){
 		final String ls = System.getProperty("line.separator");

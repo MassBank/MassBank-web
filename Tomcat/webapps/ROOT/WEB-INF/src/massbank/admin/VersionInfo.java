@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒo[ƒWƒ‡ƒ“î•ñƒf[ƒ^ƒNƒ‰ƒX
+ * ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.2 2008.12.05
  *
@@ -27,18 +27,18 @@ package massbank.admin;
 
 /**
  * 
- * ƒo[ƒWƒ‡ƒ“î•ñƒf[ƒ^ƒNƒ‰ƒX
+ * ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * @ver 1.0.0 2007.12.14
  * @ver 1.0.1 2008.01.22
  */
 public class VersionInfo {
-	// ”z—ñ”Ô†
+	// é…åˆ—ç•ªå·
 	public static final int NAME    = 0;
 	public static final int VERSION = 1;
 	public static final int DATE    = 2;
 	public static final int STATUS  = 3;
-	// ƒXƒe[ƒ^ƒXNO
+	// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹NO
 	public static final int STATUS_NON = 0;
 	public static final int STATUS_OLD = 1;
 	public static final int STATUS_NEW = 2;
@@ -54,8 +54,8 @@ public class VersionInfo {
 	}
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param items Ši”[‚·‚éî•ñ
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param items æ ¼ç´ã™ã‚‹æƒ…å ±
 	 */
 	public VersionInfo(String[] items) {
 		this.name = items[NAME];
@@ -64,10 +64,10 @@ public class VersionInfo {
 	}
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param name ƒtƒ@ƒCƒ‹–¼
-	 * @param ver  ƒo[ƒWƒ‡ƒ“
-	 * @param name “ú•t
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param name ãƒ•ã‚¡ã‚¤ãƒ«å
+	 * @param ver  ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+	 * @param name æ—¥ä»˜
 	 */
 	public VersionInfo(String name, String ver, String date) {
 		this.name = name;
@@ -76,34 +76,34 @@ public class VersionInfo {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹–¼î•ñƒZƒbƒg
+	 * ãƒ•ã‚¡ã‚¤ãƒ«åæƒ…å ±ã‚»ãƒƒãƒˆ
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹–¼î•ñæ“¾
+	 * ãƒ•ã‚¡ã‚¤ãƒ«åæƒ…å ±å–å¾—
 	 */
 	public String getName() {
 		return this.name;
 	}
 	/**
-	 * ƒo[ƒWƒ‡ƒ“î•ñæ“¾
+	 * ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±å–å¾—
 	 */
 	public String getVersion() {
 		return this.ver;
 	}
 
 	/**
-	 * “ú•tî•ñæ“¾
+	 * æ—¥ä»˜æƒ…å ±å–å¾—
 	 */
 	public String getDate() {
 		return this.date;
 	}
 
 	/**
-	 * ƒXƒe[ƒ^ƒXæ“¾
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹å–å¾—
 	 */
 	public String getStatus() {
 		String ret = "";
@@ -118,14 +118,14 @@ public class VersionInfo {
 	}
 
 	/**
-	 * ƒXƒe[ƒ^ƒXƒZƒbƒg
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚»ãƒƒãƒˆ
 	 */
 	public void setStatus(int status) {
 		this.status = status;
 	}
 
 	/**
-	 * XV—L–³”»’è
+	 * æ›´æ–°æœ‰ç„¡åˆ¤å®š
 	 */
 	public boolean isUpdate() {
 		if ( this.status == STATUS_NON ) {

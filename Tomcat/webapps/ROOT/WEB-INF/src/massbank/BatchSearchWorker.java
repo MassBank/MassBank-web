@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒoƒbƒ`ŒŸõˆ—ƒNƒ‰ƒX
+ * ãƒãƒƒãƒæ¤œç´¢å‡¦ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.2 2013.09.04
  *
@@ -70,7 +70,7 @@ public class BatchSearchWorker extends Thread {
 	PrintWriter writer = null;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @param jobInfo
 	 */
 	public BatchSearchWorker(JobInfo jobInfo) {
@@ -106,7 +106,7 @@ public class BatchSearchWorker extends Thread {
 	public void run() {
 		File attacheDir = null;
 		try {
-			// w’è‚³‚ê‚½ƒWƒ‡ƒu‚Ìó‘Ô‚ğ"Rinning"‚É‚·‚é
+			// æŒ‡å®šã•ã‚ŒãŸã‚¸ãƒ§ãƒ–ã®çŠ¶æ…‹ã‚’"Rinning"ã«ã™ã‚‹
 			JobManager jobMgr = new JobManager();
 			jobMgr.setRunning(this.jobId);
 
@@ -132,11 +132,11 @@ public class BatchSearchWorker extends Thread {
 			while ( ( line = in.readLine() ) != null ) {
 				line = line.trim();
 
-				// ƒRƒƒ“ƒgs‚ÍƒXƒLƒbƒv‚·‚é
+				// ã‚³ãƒ¡ãƒ³ãƒˆè¡Œã¯ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 				if ( line.startsWith("//") ) {
 					continue;
 				}
-				// NAMEƒ^ƒO
+				// NAMEã‚¿ã‚°
 				else if ( line.matches("^Name:.*") ) {
 					name = line.replaceFirst("^Name: *", "").trim();
 				}
@@ -164,10 +164,10 @@ public class BatchSearchWorker extends Thread {
 				peaks.add(peak);
 			}
 
-			// ŒŸõˆ—
+			// æ¤œç´¢å‡¦ç†
 			for ( int i = 0; i < names.size(); i++) {
 				boolean ret = doSearch( names.get(i), peaks.get(i), i );
-				// ƒXƒŒƒbƒhI—¹
+				// ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†
 				if ( isTerminated ) {
 					break;
 				}
@@ -181,7 +181,7 @@ public class BatchSearchWorker extends Thread {
 			}
 
 			if ( !this.mailAddress.equals("") ) {
-				// ƒ[ƒ‹‘—Mî•ñ¶¬
+				// ãƒ¡ãƒ¼ãƒ«é€ä¿¡æƒ…å ±ç”Ÿæˆ
 				SendMailInfo info = new SendMailInfo(MassBankEnv.get(MassBankEnv.KEY_BATCH_SMTP), MassBankEnv.get(MassBankEnv.KEY_BATCH_FROM), this.mailAddress);
 				info.setFromName(MassBankEnv.get(MassBankEnv.KEY_BATCH_NAME));
 				info.setSubject("MassBank Batch Service Results");
@@ -195,14 +195,14 @@ public class BatchSearchWorker extends Thread {
 								+ "  E-mail: " + MassBankEnv.get(MassBankEnv.KEY_BATCH_FROM));
 				
 				
-				// “Y•tƒtƒ@ƒCƒ‹¶¬ˆêƒfƒBƒŒƒNƒgƒŠ
+				// æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆä¸€æ™‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
 				attacheDir = new File(tempDir + "batch_" + RandomStringUtils.randomAlphanumeric(9));
 				while (attacheDir.exists()) {
 					attacheDir = new File(tempDir + "batch_" + RandomStringUtils.randomAlphanumeric(9));
 				}
 				attacheDir.mkdir();
 
-				// “Y•tƒtƒ@ƒCƒ‹¶¬iƒeƒLƒXƒgŒ`®j
+				// æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ï¼‰
 				String dirPath = attacheDir.getPath();
 				String textFilePath = dirPath + "/results.txt";
 				String textZipPath  = dirPath + "/results.zip";
@@ -211,7 +211,7 @@ public class BatchSearchWorker extends Thread {
 				createTextFile(f2, textFile);
 				FileUtil.makeZip(textZipPath, textFilePath);
 
-				// ƒTƒ}ƒŠì¬
+				// ã‚µãƒãƒªä½œæˆ
 				String summaryFilePath = dirPath + "/summary.html";
 				String summaryZipPath  = dirPath + "/summary.zip";
 				File summaryFile = new File(summaryFilePath);
@@ -220,17 +220,17 @@ public class BatchSearchWorker extends Thread {
 				FileUtil.makeZip(summaryZipPath, summaryFilePath);
 				info.setFiles(new File[]{ new File(summaryZipPath), new File(textZipPath) });
 
-				// ƒ[ƒ‹‘—M
+				// ãƒ¡ãƒ¼ãƒ«é€ä¿¡
 				SendMail.send(info);
 			}
 
-			// ŒŸõŒ‹‰Ê‚ğƒZƒbƒg
+			// æ¤œç´¢çµæœã‚’ã‚»ãƒƒãƒˆ
 			jobMgr.setResult(this.jobId, resultFilePath);
 
-			// w’è‚³‚ê‚½ƒWƒ‡ƒu‚Ìó‘Ô‚ğ"Completed"‚É‚·‚é
+			// æŒ‡å®šã•ã‚ŒãŸã‚¸ãƒ§ãƒ–ã®çŠ¶æ…‹ã‚’"Completed"ã«ã™ã‚‹
 			jobMgr.setCompleted(this.jobId);
 
-			// ƒNƒGƒŠƒtƒ@ƒCƒ‹‚ÆŒŸõŒ‹‰Êƒtƒ@ƒCƒ‹‚ğíœ
+			// ã‚¯ã‚¨ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã¨æ¤œç´¢çµæœãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤
 			f1.delete();
 			f2.delete();
 		}
@@ -245,9 +245,9 @@ public class BatchSearchWorker extends Thread {
 	}
 	
 	/**
-	 * “Y•tƒtƒ@ƒCƒ‹¶¬iƒeƒLƒXƒgŒ`®j
-	 * @param resultFile Œ‹‰Êƒtƒ@ƒCƒ‹
-	 * @param textFile “Y•t—pƒeƒLƒXƒgƒtƒ@ƒCƒ‹
+	 * æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ï¼‰
+	 * @param resultFile çµæœãƒ•ã‚¡ã‚¤ãƒ«
+	 * @param textFile æ·»ä»˜ç”¨ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«
 	 */
 	private void createTextFile(File resultFile, File textFile) {
 		NumberFormat nf = NumberFormat.getNumberInstance();
@@ -257,7 +257,7 @@ public class BatchSearchWorker extends Thread {
 			in = new LineNumberReader(new FileReader(resultFile));
 			out = new PrintWriter(new BufferedWriter(new FileWriter(textFile)));
 			
-			// ƒwƒbƒ_[o—Í
+			// ãƒ˜ãƒƒãƒ€ãƒ¼å‡ºåŠ›
 			String reqIonStr = "Both";
 			try {
 				if (Integer.parseInt(this.ion) > 0) {
@@ -279,7 +279,7 @@ public class BatchSearchWorker extends Thread {
 			out.println();
 			out.println();
 			
-			// Œ‹‰Êo—Í
+			// çµæœå‡ºåŠ›
 			String line;
 			long queryCnt = 0;
 			boolean readName = false;
@@ -353,9 +353,9 @@ public class BatchSearchWorker extends Thread {
 	}
 	
 //	/**
-//	 * “Y•tƒtƒ@ƒCƒ‹¶¬iHTMLŒ`®j
-//	 * @param resultFile Œ‹‰Êƒtƒ@ƒCƒ‹
-//	 * @param htmlFile “Y•t—pHTMLƒtƒ@ƒCƒ‹
+//	 * æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆHTMLå½¢å¼ï¼‰
+//	 * @param resultFile çµæœãƒ•ã‚¡ã‚¤ãƒ«
+//	 * @param htmlFile æ·»ä»˜ç”¨HTMLãƒ•ã‚¡ã‚¤ãƒ«
 //	 */
 //	private void createHtmlFile(File resultFile, File htmlFile) {
 //		NumberFormat nf = NumberFormat.getNumberInstance();
@@ -365,7 +365,7 @@ public class BatchSearchWorker extends Thread {
 //			in = new LineNumberReader(new FileReader(resultFile));
 //			out = new PrintWriter(new BufferedWriter(new FileWriter(htmlFile)));
 //			
-//			// ƒwƒbƒ_[o—Í
+//			// ãƒ˜ãƒƒãƒ€ãƒ¼å‡ºåŠ›
 //			String reqIonStr = "Both";
 //			try {
 //				if (Integer.parseInt(this.ion) > 0) {
@@ -389,7 +389,7 @@ public class BatchSearchWorker extends Thread {
 //			out.println("Ion Mode : " + reqIonStr + "<br>");
 //			out.println("<br><hr>");
 //			
-//			// Œ‹‰Êo—Í
+//			// çµæœå‡ºåŠ›
 //			String line;
 //			long queryCnt = 0;
 //			boolean readName = false;
@@ -460,15 +460,15 @@ public class BatchSearchWorker extends Thread {
 //	}
 
 	/**
-	 * ƒTƒ}ƒŠƒtƒ@ƒCƒ‹¶¬iHTMLŒ`®j
-	 * @param resultFile Œ‹‰Êƒtƒ@ƒCƒ‹
-	 * @param htmlFile “Y•t—pHTMLƒtƒ@ƒCƒ‹
+	 * ã‚µãƒãƒªãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆHTMLå½¢å¼ï¼‰
+	 * @param resultFile çµæœãƒ•ã‚¡ã‚¤ãƒ«
+	 * @param htmlFile æ·»ä»˜ç”¨HTMLãƒ•ã‚¡ã‚¤ãƒ«
 	 */
 	private void createSummary(File resultFile, File htmlFile) {
 		LineNumberReader in = null;
 		PrintWriter out = null;
 		try {
-			//(1) Œ‹‰Êƒtƒ@ƒCƒ‹‚Ì“Ç‚İ
+			//(1) çµæœãƒ•ã‚¡ã‚¤ãƒ«ã®èª­è¾¼ã¿
 			String line;
 			int cnt = 0;
 			ArrayList<String> nameList = new ArrayList<String>();
@@ -502,18 +502,18 @@ public class BatchSearchWorker extends Thread {
 				}
 			}
 
-			//¦ http://www.massbank.jp/ ‚ªƒT[ƒo‚Ìê‡‚Ì‚İKEGG‚ÉŠÖ‚·‚éˆ—‚ğs‚¤
-			HashMap<String, ArrayList> massbank2mapList = new HashMap<String, ArrayList>();	//(2)—p
-			HashMap<String, String> massbank2keggList = new HashMap<String, String>();		//(2)—p
-			HashMap<String, ArrayList> map2keggList = new HashMap<String, ArrayList>();		//(3)—p
-			ArrayList<String> mapNameList = new ArrayList<String>();						//(4)—p
+			//â€» http://www.massbank.jp/ ãŒã‚µãƒ¼ãƒã®å ´åˆã®ã¿KEGGã«é–¢ã™ã‚‹å‡¦ç†ã‚’è¡Œã†
+			HashMap<String, ArrayList> massbank2mapList = new HashMap<String, ArrayList>();	//(2)ç”¨
+			HashMap<String, String> massbank2keggList = new HashMap<String, String>();		//(2)ç”¨
+			HashMap<String, ArrayList> map2keggList = new HashMap<String, ArrayList>();		//(3)ç”¨
+			ArrayList<String> mapNameList = new ArrayList<String>();						//(4)ç”¨
 			boolean isKeggReturn = false;
 //			if (serverUrl.indexOf("www.massbank.jp") == -1) {
 //				isKeggReturn = false;
 //			}
 			if ( isKeggReturn ) {
 
-				//(2) KEGG ID, Map ID‚ğDB‚©‚çæ“¾
+				//(2) KEGG ID, Map IDã‚’DBã‹ã‚‰å–å¾—
 				String where = "where MASSBANK in(";
 				Iterator it = top1IdList.iterator();
 				while ( it.hasNext() ) {
@@ -560,7 +560,7 @@ public class BatchSearchWorker extends Thread {
 				
 				if (mapList != null) {
 					
-					//(3) Pathway MapF•t‚¯ƒŠƒXƒgì¬
+					//(3) Pathway Mapè‰²ä»˜ã‘ãƒªã‚¹ãƒˆä½œæˆ
 					it = massbank2mapList.keySet().iterator();
 					while ( it.hasNext()) {
 						String id = (String)it.next();
@@ -582,7 +582,7 @@ public class BatchSearchWorker extends Thread {
 						}
 					}
 		
-					//(4) SOAP‚ÅPathway MapF•t‚¯ƒƒ\ƒbƒhÀs
+					//(4) SOAPã§Pathway Mapè‰²ä»˜ã‘ãƒ¡ã‚½ãƒƒãƒ‰å®Ÿè¡Œ
 					it = map2keggList.keySet().iterator();
 					List<Callable<HashMap<String, String>>> tasks = new ArrayList();
 					while ( it.hasNext() ) {
@@ -595,11 +595,11 @@ public class BatchSearchWorker extends Thread {
 					}
 					Collections.sort(mapNameList);
 		
-						// ƒXƒŒƒbƒhƒv[ƒ‹10ŒÂ‚Ü‚Å
+						// ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ—ãƒ¼ãƒ«10å€‹ã¾ã§
 					ExecutorService exsv = Executors.newFixedThreadPool(10);
 					List<Future<HashMap<String, String>>> results = exsv.invokeAll(tasks);
 		
-						// Pathway map‚Ì‰æ‘œŠi”[êŠ
+						// Pathway mapã®ç”»åƒæ ¼ç´å ´æ‰€
 					String saveRootPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + "pathway";
 					File rootDir = new File(saveRootPath);
 					if ( !rootDir.exists() ) {
@@ -611,7 +611,7 @@ public class BatchSearchWorker extends Thread {
 //						newDir.mkdir();
 //					}
 	
-					//(6) Pathway map‚ÌURL‚ğæ“¾
+					//(6) Pathway mapã®URLã‚’å–å¾—
 					for ( Future<HashMap<String, String>> future: results ) {
 						HashMap<String, String> res = future.get();
 						it = res.keySet().iterator();
@@ -623,9 +623,9 @@ public class BatchSearchWorker extends Thread {
 				}
 			}
 			
-			//(7) Œ‹‰Êo—Í
+			//(7) çµæœå‡ºåŠ›
 			out = new PrintWriter(new BufferedWriter(new FileWriter(htmlFile)));
-				// ƒwƒbƒ_[o—Í
+				// ãƒ˜ãƒƒãƒ€ãƒ¼å‡ºåŠ›
 			String reqIonStr = "Both";
 			try {
 				if (Integer.parseInt(this.ion) > 0) {
@@ -810,11 +810,11 @@ public class BatchSearchWorker extends Thread {
 	}
 	
 	/**
-	 * ŒŸõŒ‹‰Ês‚ÌƒtƒH[ƒ}ƒbƒg
-	 * AccessionATitleAFormulaAIonAScoreAHit ‚Ì‡‚É
-	 * “KØ‚ÈƒtƒH[ƒ}ƒbƒg‚É•ÏŠ·‚µ‚½’l‚ğ”z—ñ‚ÉŠi”[‚µ‚Ä•Ô‹p‚·‚é
-	 * @param line ƒtƒH[ƒ}ƒbƒg‘ÎÛ
-	 * @return ƒtƒH[ƒ}ƒbƒgŒã‚Ì’l‚ğŠi”[‚µ‚½”z—ñ
+	 * æ¤œç´¢çµæœè¡Œã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+	 * Accessionã€Titleã€Formulaã€Ionã€Scoreã€Hit ã®é †ã«
+	 * é©åˆ‡ãªãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«å¤‰æ›ã—ãŸå€¤ã‚’é…åˆ—ã«æ ¼ç´ã—ã¦è¿”å´ã™ã‚‹
+	 * @param line ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå¯¾è±¡
+	 * @return ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå¾Œã®å€¤ã‚’æ ¼ç´ã—ãŸé…åˆ—
 	 */
 	private String[] formatLine(String line) {
 		String[] splitLine = line.split("\t");
@@ -828,10 +828,10 @@ public class BatchSearchWorker extends Thread {
 	}
 	
 	/**
-	 * ŒŸõÀs
+	 * æ¤œç´¢å®Ÿè¡Œ
 	 */
 	private boolean doSearch(String name, String peakData, int num) {
-		// NAMEƒ^ƒO‚ª‚È‚¢ê‡‚Í–¼‘O‚ğ‚Â‚¯‚é
+		// NAMEã‚¿ã‚°ãŒãªã„å ´åˆã¯åå‰ã‚’ã¤ã‘ã‚‹
 		DecimalFormat df = new DecimalFormat("000000");
 		String compoundName = name;
 		if ( compoundName.equals("") ) {
@@ -842,7 +842,7 @@ public class BatchSearchWorker extends Thread {
 		}
 
 
-		// ‹­“xÅ‘å’l‚ğ‹‚ß‚é
+		// å¼·åº¦æœ€å¤§å€¤ã‚’æ±‚ã‚ã‚‹
 		double max = 0;
 		String[] vals = peakData.split(";");
 		ArrayList<String> mzList = new ArrayList<String>();
@@ -867,7 +867,7 @@ public class BatchSearchWorker extends Thread {
 			inteList.add(dblInte);
 		}
 
-		// ‘Š‘Î‹­“x‚É•ÏŠ·‚µ‚½’l‚ğƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
+		// ç›¸å¯¾å¼·åº¦ã«å¤‰æ›ã—ãŸå€¤ã‚’ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		String paramPeak = "";
 		for (int i = 0; i < mzList.size(); i++) {
 			String mz = mzList.get(i);
@@ -881,11 +881,11 @@ public class BatchSearchWorker extends Thread {
 		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=unit"
 	 			+ "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms.replaceAll("All", "all") + "&ION=" + this.ion + "&API=true";
-/* 2013.09.04 –ß‚· */
+/* 2013.09.04 æˆ»ã™ */
 //		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=ppm"
 //	 			+ "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=100"
 //	 			+ "&CUTOFF=5" + "&NUM=0&VAL=" + paramPeak + "&INST=" + this.inst + "&MS=" + this.ms.replaceAll("All", "all") + "&ION=" + this.ion + "&API=true";
-/* 2013.09.04 –ß‚· */
+/* 2013.09.04 æˆ»ã™ */
 
 		ArrayList<String> result = mbcommon.execDispatcher( this.serverUrl, typeName, param, true, null );
 		int hitCnt = result.size();
@@ -908,7 +908,7 @@ public class BatchSearchWorker extends Thread {
 	}
 
 	/**
-	 * I—¹ƒOƒ‰ƒOƒZƒbƒg
+	 * çµ‚äº†ã‚°ãƒ©ã‚°ã‚»ãƒƒãƒˆ
 	 */
 	public void setTerminate() {
 		isTerminated = true;

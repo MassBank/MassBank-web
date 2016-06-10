@@ -18,9 +18,9 @@
  *
  *******************************************************************************
  *
- * ŒŸõŒ‹‰ÊƒŒƒR[ƒhî•ñˆêŠ‡ŠÇ—ƒNƒ‰ƒX
- * ŒŸõ‚Éƒqƒbƒg‚µ‚½ƒXƒyƒNƒgƒ‹‚Ìî•ñiResultRecordƒNƒ‰ƒXj‚ğˆêŠ‡‚Å•Û‚·‚éƒf[ƒ^ƒNƒ‰ƒX
- * Resultƒy[ƒW‚É•\¦‚·‚é‘S‚Ä‚Ìî•ñ‚ğ•Û‚·‚éƒNƒ‰ƒX
+ * æ¤œç´¢çµæœãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±ä¸€æ‹¬ç®¡ç†ã‚¯ãƒ©ã‚¹
+ * æ¤œç´¢ã«ãƒ’ãƒƒãƒˆã—ãŸã‚¹ãƒšã‚¯ãƒˆãƒ«ã®æƒ…å ±ï¼ˆResultRecordã‚¯ãƒ©ã‚¹ï¼‰ã‚’ä¸€æ‹¬ã§ä¿æŒã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
+ * Resultãƒšãƒ¼ã‚¸ã«è¡¨ç¤ºã™ã‚‹å…¨ã¦ã®æƒ…å ±ã‚’ä¿æŒã™ã‚‹ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.3 2008.12.17
  *
@@ -34,49 +34,49 @@ import java.util.HashMap;
 
 public class ResultList {
 	
-	/** ƒ\[ƒgƒAƒNƒVƒ‡ƒ“i¸‡j */
-	public static final int SORT_ACTION_ASC = 1;			// ƒfƒtƒHƒ‹ƒg
+	/** ã‚½ãƒ¼ãƒˆã‚¢ã‚¯ã‚·ãƒ§ãƒ³ï¼ˆæ˜‡é †ï¼‰ */
+	public static final int SORT_ACTION_ASC = 1;			// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 	
-	/** ƒ\[ƒgƒAƒNƒVƒ‡ƒ“i~‡j */
+	/** ã‚½ãƒ¼ãƒˆã‚¢ã‚¯ã‚·ãƒ§ãƒ³ï¼ˆé™é †ï¼‰ */
 	public static final int SORT_ACTION_DESC = -1;
 	
-	/** ƒ\[ƒgƒL[i‰»‡•¨–¼j */
-	public static final String SORT_KEY_NAME = "name";	// ƒfƒtƒHƒ‹ƒg
+	/** ã‚½ãƒ¼ãƒˆã‚­ãƒ¼ï¼ˆåŒ–åˆç‰©åï¼‰ */
+	public static final String SORT_KEY_NAME = "name";	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 	
-	/** ƒ\[ƒgƒL[i‘g¬®j */
+	/** ã‚½ãƒ¼ãƒˆã‚­ãƒ¼ï¼ˆçµ„æˆå¼ï¼‰ */
 	public static final String SORT_KEY_FORMULA = "formula";
 	
-	/** ƒ\[ƒgƒL[i¸–§¿—Êj */
+	/** ã‚½ãƒ¼ãƒˆã‚­ãƒ¼ï¼ˆç²¾å¯†è³ªé‡ï¼‰ */
 	public static final String SORT_KEY_EMASS = "emass";
 	
-	/** ƒ\[ƒgƒL[iIDj */
+	/** ã‚½ãƒ¼ãƒˆã‚­ãƒ¼ï¼ˆIDï¼‰ */
 	public static final String SORT_KEY_ID = "id";
 	
-	/** •\¦‚·‚éÅ‘åƒy[ƒWƒŠƒ“ƒN” */
+	/** è¡¨ç¤ºã™ã‚‹æœ€å¤§ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯æ•° */
 	private final int DISP_LINK_NUM;
 	
-	/** 1ƒy[ƒW•Ó‚è‚Ì•\¦eƒm[ƒh” */
+	/** 1ãƒšãƒ¼ã‚¸è¾ºã‚Šã®è¡¨ç¤ºè¦ªãƒãƒ¼ãƒ‰æ•° */
 	private final int DISP_NODE_NUM;
 	
-	/** ƒŒƒR[ƒhƒŠƒXƒg */
+	/** ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒªã‚¹ãƒˆ */
 	private ArrayList<ResultRecord> list = new ArrayList<ResultRecord>();
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^iİ’èƒtƒ@ƒCƒ‹î•ñ–¢g—pj
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆè¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±æœªä½¿ç”¨ï¼‰
 	 * @deprecated replaced by {@link #ResultList(GetConfig conf)}
 	 */
 	public ResultList() {
-		this.DISP_LINK_NUM = 10;							// ƒfƒtƒHƒ‹ƒg
-		this.DISP_NODE_NUM = 25;							// ƒfƒtƒHƒ‹ƒg
+		this.DISP_LINK_NUM = 10;							// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+		this.DISP_NODE_NUM = 25;							// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 	}
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^iİ’èƒtƒ@ƒCƒ‹î•ñg—pj
-	 * @param conf İ’èƒtƒ@ƒCƒ‹î•ñƒIƒuƒWƒFƒNƒg
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆè¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±ä½¿ç”¨ï¼‰
+	 * @param conf è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	 */
 	public ResultList(GetConfig conf) {
-		// ƒy[ƒWƒŠƒ“ƒN•\¦”
-		int linkNum = 10;									// ƒfƒtƒHƒ‹ƒg
+		// ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯è¡¨ç¤ºæ•°
+		int linkNum = 10;									// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 		try {
 			if ( Integer.parseInt(conf.getDispLinkNum()) > 0 ) {
 				linkNum =  Integer.parseInt(conf.getDispLinkNum());
@@ -85,8 +85,8 @@ public class ResultList {
 		catch (NumberFormatException e) {
 		}
 		
-		// eƒm[ƒh•\¦”
-		int nodeNum = 25;									// ƒfƒtƒHƒ‹ƒg
+		// è¦ªãƒãƒ¼ãƒ‰è¡¨ç¤ºæ•°
+		int nodeNum = 25;									// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 		try {
 			if ( Integer.parseInt(conf.getDispNodeNum()) > 0 ) {
 				nodeNum =  Integer.parseInt(conf.getDispNodeNum());
@@ -100,69 +100,69 @@ public class ResultList {
 	}
 
 	/**
-	 * ƒŒƒR[ƒhƒŠƒXƒgæ“¾
-	 * @return ƒŒƒR[ƒhƒŠƒXƒg
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒªã‚¹ãƒˆå–å¾—
+	 * @return ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒªã‚¹ãƒˆ
 	 */
 	public ArrayList<ResultRecord> getList() {
 		return list;
 	}
 
 	/**
-	 * ƒŒƒR[ƒhæ“¾
-	 * @param index ƒCƒ“ƒfƒbƒNƒX
-	 * @return Œ‹‰Êî•ñˆêŠ‡ŠÇ—ƒŠƒXƒg
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰å–å¾—
+	 * @param index ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	 * @return çµæœæƒ…å ±ä¸€æ‹¬ç®¡ç†ãƒªã‚¹ãƒˆ
 	 */
 	public ResultRecord getRecord(int index) {
 		return list.get(index);
 	}
 	
 	/**
-	 * ƒŒƒR[ƒh’Ç‰Á
-	 * @param record Œ‹‰Êî•ñƒŒƒR[ƒh
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰è¿½åŠ 
+	 * @param record çµæœæƒ…å ±ãƒ¬ã‚³ãƒ¼ãƒ‰
 	 */
 	public void addRecord(ResultRecord record) {
 		this.list.add(record);
 	}
 	
 	/**
-	 * ƒŒƒR[ƒhƒŠƒXƒgƒ\[ƒg(ƒ\[ƒgƒL[w’è)
-	 * @param sortKey ƒ\[ƒgƒL[
-	 * @param sortAction ƒ\[ƒgƒAƒNƒVƒ‡ƒ“
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒªã‚¹ãƒˆã‚½ãƒ¼ãƒˆ(ã‚½ãƒ¼ãƒˆã‚­ãƒ¼æŒ‡å®š)
+	 * @param sortKey ã‚½ãƒ¼ãƒˆã‚­ãƒ¼
+	 * @param sortAction ã‚½ãƒ¼ãƒˆã‚¢ã‚¯ã‚·ãƒ§ãƒ³
 	 */
 	public void sortList(String sortKey, int sortAction) {
 		Collections.sort(list, new ListComparator(sortKey, sortAction));
 	}
 	
 	/**
-	 * ƒŒƒR[ƒh”æ“¾
-	 * @return ƒŒƒR[ƒh”
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰æ•°å–å¾—
+	 * @return ãƒ¬ã‚³ãƒ¼ãƒ‰æ•°
 	 */
 	public int getResultNum() {
 		return list.size();
 	}
 	
 	/**
-	 * 1ƒy[ƒW‚É•\¦‚·‚éƒŒƒR[ƒhƒCƒ“ƒfƒbƒNƒXæ“¾
-	 * @param pageNo •\¦‚·‚éƒy[ƒW
-	 * @return •\¦ŠJn‚ÆI—¹‚ÌƒCƒ“ƒfƒbƒNƒX‚ğŠi”[‚µ‚½”z—ñ
+	 * 1ãƒšãƒ¼ã‚¸ã«è¡¨ç¤ºã™ã‚‹ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å–å¾—
+	 * @param pageNo è¡¨ç¤ºã™ã‚‹ãƒšãƒ¼ã‚¸
+	 * @return è¡¨ç¤ºé–‹å§‹ã¨çµ‚äº†ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ ¼ç´ã—ãŸé…åˆ—
 	 */
 	public int[] getDispRecordIndex(int pageNo) {
 		int[] index = new int[]{-1, -1};
 		HashMap<Integer, String> pNodeMap = new HashMap<Integer, String>();
-		int pageCount = 1;				// ƒy[ƒW”ƒJƒEƒ“ƒ^
-		int pNodeCount = 0;				// 1ƒy[ƒW•Ó‚è‚Ìeƒm[ƒhƒJƒEƒ“ƒ^
-		int startIndex = -1;			// 1ƒy[ƒW‚É•\¦‚·‚éƒŒƒR[ƒh‚ÌŠJnƒCƒ“ƒfƒbƒNƒX
-		int endIndex = -1;				// 1ƒy[ƒW‚É•\¦‚·‚éƒŒƒR[ƒh‚ÌI—¹ƒCƒ“ƒfƒbƒNƒX
-		boolean isNextPage = false;	// Ÿƒy[ƒWƒtƒ‰ƒO
+		int pageCount = 1;				// ãƒšãƒ¼ã‚¸æ•°ã‚«ã‚¦ãƒ³ã‚¿
+		int pNodeCount = 0;				// 1ãƒšãƒ¼ã‚¸è¾ºã‚Šã®è¦ªãƒãƒ¼ãƒ‰ã‚«ã‚¦ãƒ³ã‚¿
+		int startIndex = -1;			// 1ãƒšãƒ¼ã‚¸ã«è¡¨ç¤ºã™ã‚‹ãƒ¬ã‚³ãƒ¼ãƒ‰ã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		int endIndex = -1;				// 1ãƒšãƒ¼ã‚¸ã«è¡¨ç¤ºã™ã‚‹ãƒ¬ã‚³ãƒ¼ãƒ‰ã®çµ‚äº†ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		boolean isNextPage = false;	// æ¬¡ãƒšãƒ¼ã‚¸ãƒ•ãƒ©ã‚°
 		for (int i=0; i<list.size(); i++) {
 			
-			// ŠJnƒCƒ“ƒfƒbƒNƒXİ’è
+			// é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹è¨­å®š
 			if (pageNo == pageCount && startIndex == -1) {
 				startIndex = i;
 			}
 			
 			if ( (i+1) == list.size() ) {
-				// Œ»İ‚ÌƒŒƒR[ƒh‚ªÅIƒŒƒR[ƒh‚Ìê‡
+				// ç¾åœ¨ã®ãƒ¬ã‚³ãƒ¼ãƒ‰ãŒæœ€çµ‚ãƒ¬ã‚³ãƒ¼ãƒ‰ã®å ´åˆ
 				if ( !pNodeMap.containsKey(list.get(i).getNodeGroup()) ) {
 					pNodeMap.put(list.get(i).getNodeGroup(), list.get(i).getName());
 					pNodeCount++;
@@ -170,7 +170,7 @@ public class ResultList {
 				isNextPage = true;
 			}
 			else if ( pNodeCount < this.DISP_NODE_NUM ) {
-				// eƒm[ƒh”‚ª•\¦eƒm[ƒh”‚É’B‚µ‚Ä‚¢‚È‚¢ê‡
+				// è¦ªãƒãƒ¼ãƒ‰æ•°ãŒè¡¨ç¤ºè¦ªãƒãƒ¼ãƒ‰æ•°ã«é”ã—ã¦ã„ãªã„å ´åˆ
 				if ( !pNodeMap.containsKey(list.get(i).getNodeGroup()) ) {
 					pNodeMap.put(list.get(i).getNodeGroup(), list.get(i).getName());
 					pNodeCount++;
@@ -182,16 +182,16 @@ public class ResultList {
 				}
 			}
 			else {
-				// eƒm[ƒh”‚ª•\¦eƒm[ƒh‚É’B‚µ‚½ê‡
+				// è¦ªãƒãƒ¼ãƒ‰æ•°ãŒè¡¨ç¤ºè¦ªãƒãƒ¼ãƒ‰ã«é”ã—ãŸå ´åˆ
 				if ( !pNodeMap.containsKey(list.get(i+1).getNodeGroup()) ) {
 					isNextPage = true;
 				}
 			}
 			
-			// Ÿƒy[ƒWˆÚsˆ—
+			// æ¬¡ãƒšãƒ¼ã‚¸ç§»è¡Œå‡¦ç†
 			if ( isNextPage ) {
 				
-				// I—¹ƒCƒ“ƒfƒbƒNƒXİ’è
+				// çµ‚äº†ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹è¨­å®š
 				if (pageCount == pageNo) {
 					endIndex = i;
 					break;
@@ -208,8 +208,8 @@ public class ResultList {
 	}
 	
 	/**
-	 * ‘ƒy[ƒW”æ“¾
-	 * @return ‘ƒy[ƒW”
+	 * ç·ãƒšãƒ¼ã‚¸æ•°å–å¾—
+	 * @return ç·ãƒšãƒ¼ã‚¸æ•°
 	 */
 	public int getTotalPageNum() {
 		int num = (int)Math.ceil(((double)getCompoundNum() / this.DISP_NODE_NUM));
@@ -217,13 +217,13 @@ public class ResultList {
 	}
 
 	/**
-	 * ‰»‡•¨”æ“¾
-	 * @return ‰»‡•¨”
+	 * åŒ–åˆç‰©æ•°å–å¾—
+	 * @return åŒ–åˆç‰©æ•°
 	 */
 	public int getCompoundNum() {
 		HashMap<Integer, String> nodeCount = new HashMap<Integer, String>();
 		for (int i=0; i<list.size(); i++) {
-			// eƒm[ƒhî•ñ•Û
+			// è¦ªãƒãƒ¼ãƒ‰æƒ…å ±ä¿æŒ
 			if (!nodeCount.containsKey(list.get(i).getNodeGroup())) {
 				nodeCount.put(list.get(i).getNodeGroup(), list.get(i).getName());
 			}
@@ -233,22 +233,22 @@ public class ResultList {
 	
 	
 	/**
-	 * •\¦‚·‚éƒy[ƒWƒŠƒ“ƒNæ“¾
-	 * @param totalPage ‘ƒy[ƒW”
-	 * @param pageNo Œ»İ‚Ìƒy[ƒW
-	 * @return •\¦ŠJn‚ÆI—¹‚Ìƒy[ƒW‚ğŠi”[‚µ‚½”z—ñ
+	 * è¡¨ç¤ºã™ã‚‹ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯å–å¾—
+	 * @param totalPage ç·ãƒšãƒ¼ã‚¸æ•°
+	 * @param pageNo ç¾åœ¨ã®ãƒšãƒ¼ã‚¸
+	 * @return è¡¨ç¤ºé–‹å§‹ã¨çµ‚äº†ã®ãƒšãƒ¼ã‚¸ã‚’æ ¼ç´ã—ãŸé…åˆ—
 	 */
 	public int[] getDispPageIndex(int totalPage, int pageNo) {
 		int[] index = new int[2];
-		// í‚ÉÅ‘åƒy[ƒWƒŠƒ“ƒN”‚ğ•\¦‚·‚é‚æ‚¤‚É‚·‚é
+		// å¸¸ã«æœ€å¤§ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯æ•°ã‚’è¡¨ç¤ºã™ã‚‹ã‚ˆã†ã«ã™ã‚‹
 		index[0] = Math.max(1, pageNo - (int)Math.floor(this.DISP_LINK_NUM / 2.0));
 		index[1] = Math.min(totalPage, pageNo + (int)Math.ceil(this.DISP_LINK_NUM / 2.0) - 1);
 		
-		// •\¦ƒy[ƒW‚ÌI—¹‚ªÅ‘åƒy[ƒWƒŠƒ“ƒN”‚æ‚è¬‚³‚¢ê‡
+		// è¡¨ç¤ºãƒšãƒ¼ã‚¸ã®çµ‚äº†ãŒæœ€å¤§ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯æ•°ã‚ˆã‚Šå°ã•ã„å ´åˆ
 		if (index[1] < this.DISP_LINK_NUM) {
 			index[1] = Math.min(totalPage, this.DISP_LINK_NUM);
 		}
-		// •\¦ƒy[ƒW”‚ªÅ‘åƒy[ƒWƒŠƒ“ƒN”‚æ‚è¬‚³‚¢ê‡
+		// è¡¨ç¤ºãƒšãƒ¼ã‚¸æ•°ãŒæœ€å¤§ãƒšãƒ¼ã‚¸ãƒªãƒ³ã‚¯æ•°ã‚ˆã‚Šå°ã•ã„å ´åˆ
 		if ((index[1] - index[0] + 1) < this.DISP_LINK_NUM) {
 			index[0] = Math.max(1, (index[1] - this.DISP_LINK_NUM + 1));
 		}
@@ -256,16 +256,16 @@ public class ResultList {
 	}
 	
 	/**
-	 * 1ƒy[ƒW‚É•\¦‚·‚éeƒm[ƒh‚²‚Æ‚Ìqƒm[ƒh”æ“¾
-	 * @param dispIndex •\¦ŠJn‚ÆI—¹‚ÌƒCƒ“ƒfƒbƒNƒX‚ğŠi”[‚µ‚½”z—ñ
-	 * @return 1ƒy[ƒW‚É•\¦‚·‚éeƒm[ƒh–ˆ‚Ìqƒm[ƒh”ƒ}ƒbƒv
+	 * 1ãƒšãƒ¼ã‚¸ã«è¡¨ç¤ºã™ã‚‹è¦ªãƒãƒ¼ãƒ‰ã”ã¨ã®å­ãƒãƒ¼ãƒ‰æ•°å–å¾—
+	 * @param dispIndex è¡¨ç¤ºé–‹å§‹ã¨çµ‚äº†ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ ¼ç´ã—ãŸé…åˆ—
+	 * @return 1ãƒšãƒ¼ã‚¸ã«è¡¨ç¤ºã™ã‚‹è¦ªãƒãƒ¼ãƒ‰æ¯ã®å­ãƒãƒ¼ãƒ‰æ•°ãƒãƒƒãƒ—
 	 */
 	public HashMap<Integer, Integer> getDispParentNodeMap(int startIndex, int endIndex) {
 		HashMap<Integer, Integer> nodeMap = new HashMap<Integer, Integer>();
 		int nodeCnt = 0;
 		for (int i=startIndex; i<list.size(); i++) {
 			
-			// eƒm[ƒhî•ñ•Û
+			// è¦ªãƒãƒ¼ãƒ‰æƒ…å ±ä¿æŒ
 			if (!nodeMap.containsKey(list.get(i).getNodeGroup())) {
 				nodeCnt = 1;
 				nodeMap.put(Integer.valueOf(list.get(i).getNodeGroup()), Integer.valueOf(nodeCnt));
@@ -284,21 +284,21 @@ public class ResultList {
 	}
 	
 	/**
-	 * ƒŒƒR[ƒhƒŠƒXƒgƒ\[ƒg—pƒRƒ“ƒpƒŒ[ƒ^
-	 * ResultList‚ÌƒCƒ“ƒi[ƒNƒ‰ƒXB
-	 * ResultRecord‚ğŠi”[‚µ‚½ƒŠƒXƒg‚Ìƒ\[ƒg‚ğs‚¤B
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒªã‚¹ãƒˆã‚½ãƒ¼ãƒˆç”¨ã‚³ãƒ³ãƒ‘ãƒ¬ãƒ¼ã‚¿
+	 * ResultListã®ã‚¤ãƒ³ãƒŠãƒ¼ã‚¯ãƒ©ã‚¹ã€‚
+	 * ResultRecordã‚’æ ¼ç´ã—ãŸãƒªã‚¹ãƒˆã®ã‚½ãƒ¼ãƒˆã‚’è¡Œã†ã€‚
 	 */
 	class ListComparator implements Comparator<Object> {
 		
-		/** ƒ\[ƒgƒL[ */
+		/** ã‚½ãƒ¼ãƒˆã‚­ãƒ¼ */
 		private String sortKey;
 		
-		/** ƒ\[ƒgƒAƒNƒVƒ‡ƒ“ */
+		/** ã‚½ãƒ¼ãƒˆã‚¢ã‚¯ã‚·ãƒ§ãƒ³ */
 		private int sortAction;
 		
 		/**
-		 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-		 * @param sortKey ƒ\[ƒgƒL[
+		 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+		 * @param sortKey ã‚½ãƒ¼ãƒˆã‚­ãƒ¼
 		 */
 		public ListComparator(String sortKey, int sortAction) {
 			this.sortKey = sortKey;
@@ -311,8 +311,8 @@ public class ResultList {
 			
 			int ret = 0;
 			
-			// ƒ\[ƒgˆ—
-			if (sortKey == SORT_KEY_NAME) {				// Nameƒ\[ƒg
+			// ã‚½ãƒ¼ãƒˆå‡¦ç†
+			if (sortKey == SORT_KEY_NAME) {				// Nameã‚½ãƒ¼ãƒˆ
 				if (!e1.getSortName().equals(e2.getSortName())) {
 					switch (sortAction) {
 						case SORT_ACTION_ASC:
@@ -334,7 +334,7 @@ public class ResultList {
 					}
 				}
 			}
-			else if (sortKey == SORT_KEY_FORMULA) {		// Formulaƒ\[ƒg
+			else if (sortKey == SORT_KEY_FORMULA) {		// Formulaã‚½ãƒ¼ãƒˆ
 				if (!e1.getSortFormula().equals(e2.getSortFormula())) {
 					switch (sortAction) {
 						case SORT_ACTION_ASC:
@@ -354,7 +354,7 @@ public class ResultList {
 					}
 				}
 			}
-			else if (sortKey == SORT_KEY_EMASS) {		// ExactMassƒ\[ƒg
+			else if (sortKey == SORT_KEY_EMASS) {		// ExactMassã‚½ãƒ¼ãƒˆ
 				if (e1.getSortEmass() != e2.getSortEmass()) {
 					switch (sortAction) {
 						case SORT_ACTION_ASC:
@@ -374,7 +374,7 @@ public class ResultList {
 					}
 				}
 			}
-			else if (sortKey == SORT_KEY_ID) {			// IDƒ\[ƒg
+			else if (sortKey == SORT_KEY_ID) {			// IDã‚½ãƒ¼ãƒˆ
 				if (!e1.getSortName().equals(e2.getSortName())) {
 					ret = (e1.getSortName()).compareTo(e2.getSortName());
 				}

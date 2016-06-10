@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * DBƒAƒNƒZƒXƒNƒ‰ƒXiJDBCj
+ * DBã‚¢ã‚¯ã‚»ã‚¹ã‚¯ãƒ©ã‚¹ï¼ˆJDBCï¼‰
  *
  * ver 1.0.0 2009.02.02
  *
@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * DBƒAƒNƒZƒXƒNƒ‰ƒXiJDBCj
+ * DBã‚¢ã‚¯ã‚»ã‚¹ã‚¯ãƒ©ã‚¹ï¼ˆJDBCï¼‰
  */
 public class DatabaseAccess {
 
@@ -45,9 +45,9 @@ public class DatabaseAccess {
 	private Statement stmt;
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param hostName ƒzƒXƒg–¼
-	 * @param dbName DB–¼
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param hostName ãƒ›ã‚¹ãƒˆå
+	 * @param dbName DBå
 	 */
 	public DatabaseAccess(String hostName, String dbName) {
 		if (hostName == null || hostName.equals("")) {
@@ -63,8 +63,8 @@ public class DatabaseAccess {
 	}
 
 	/**
-	 * ƒf[ƒ^ƒx[ƒX‚Ö‚ÌÚ‘±
-	 * @return Œ‹‰Ê
+	 * ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã¸ã®æ¥ç¶š
+	 * @return çµæœ
 	 */
 	public synchronized boolean open() {
 		boolean ret = true;
@@ -85,8 +85,8 @@ public class DatabaseAccess {
 	}
 
 	/**
-	 * ƒf[ƒ^ƒx[ƒX‚©‚çØ’f
-	 * @return Œ‹‰Ê
+	 * ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‹ã‚‰åˆ‡æ–­
+	 * @return çµæœ
 	 */
 	public synchronized boolean close() {
 		boolean ret = true;
@@ -110,9 +110,9 @@ public class DatabaseAccess {
 	}
 	
 	/**
-	 * w’è‚³‚ê‚½SQL•¶iQÆŒnj‚ğÀs
-	 * @param SQL•¶
-	 * @return Œ‹‰ÊƒZƒbƒg
+	 * æŒ‡å®šã•ã‚ŒãŸSQLæ–‡ï¼ˆå‚ç…§ç³»ï¼‰ã‚’å®Ÿè¡Œ
+	 * @param SQLæ–‡
+	 * @return çµæœã‚»ãƒƒãƒˆ
 	 * @throws SQLException
 	 */
 	public ResultSet executeQuery(String sql) throws SQLException { 
@@ -120,9 +120,9 @@ public class DatabaseAccess {
 	}
 	
 	/**
-	 * w’è‚³‚ê‚½SQL•¶iXVŒnj‚ğÀs
-	 * @param SQL•¶
-	 * @return s”i‰½‚à•Ô‚³‚È‚¢ê‡‚Í0j
+	 * æŒ‡å®šã•ã‚ŒãŸSQLæ–‡ï¼ˆæ›´æ–°ç³»ï¼‰ã‚’å®Ÿè¡Œ
+	 * @param SQLæ–‡
+	 * @return è¡Œæ•°ï¼ˆä½•ã‚‚è¿”ã•ãªã„å ´åˆã¯0ï¼‰
 	 * @throws SQLException
 	 */
 	public int executeUpdate(String sql) throws SQLException { 

@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] ƒWƒ‡ƒuƒXƒe[ƒ^ƒXƒf[ƒ^ƒNƒ‰ƒX
+ * [WEB-API] ã‚¸ãƒ§ãƒ–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2010.04.15
  *
@@ -34,13 +34,13 @@ public class JobStatus {
 	private String reqDate = "";
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public JobStatus() {
 	}
 
 	/**
-	 * ƒXƒe[ƒ^ƒX‚ğƒZƒbƒg‚·‚é
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setStatus(String val) {
 		this.status = val;
@@ -56,7 +56,7 @@ public class JobStatus {
 	}
 
 	/**
-	 * ƒWƒ‡ƒuó•t“ú‚ğƒZƒbƒg‚·‚é
+	 * ã‚¸ãƒ§ãƒ–å—ä»˜æ—¥æ™‚ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setRequestDate(String val) {
 		this.reqDate = val;
@@ -64,21 +64,21 @@ public class JobStatus {
 
 
 	/**
-	 * ƒXƒe[ƒ^ƒX‚ğæ“¾‚·‚é
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getStatus() {
 		return this.status;
 	}
 
 	/**
-	 * ƒXƒe[ƒ^ƒXƒR[ƒh‚ğæ“¾‚·‚é
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚³ãƒ¼ãƒ‰ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getStatusCode() {
 		return String.valueOf(this.statusCode);
 	}
 
 	/**
-	 * ƒWƒ‡ƒuó•t“ú‚ğƒZƒbƒg‚·‚é
+	 * ã‚¸ãƒ§ãƒ–å—ä»˜æ—¥æ™‚ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public String getRequestDate() {
 		return this.reqDate;

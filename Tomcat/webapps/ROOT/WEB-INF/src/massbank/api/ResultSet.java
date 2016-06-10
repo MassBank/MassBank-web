@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] Œ‹‰ÊƒZƒbƒgƒf[ƒ^ƒNƒ‰ƒX
+ * [WEB-API] çµæœã‚»ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2010.04.15
  *
@@ -34,42 +34,42 @@ public class ResultSet {
 	private ArrayList<Result> list = null;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public ResultSet() {
 		this.list = new ArrayList<Result>();
 	}
 
 	/**
-	 * ƒNƒGƒŠ–¼‚ğƒZƒbƒg‚·‚é
+	 * ã‚¯ã‚¨ãƒªåã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setQueryName(String val) {
 		this.qname = val;
 	}
 
 	/**
-	 * ŒŸõŒ‹‰Êî•ñ‚ğ’Ç‰Á‚·‚é
+	 * æ¤œç´¢çµæœæƒ…å ±ã‚’è¿½åŠ ã™ã‚‹
 	 */
 	public void addInfo(Result val) {
 		this.list.add(val);
 	}
 
 	/**
-	 * ƒqƒbƒg‚µ‚½ƒŒƒR[ƒh‚ÌŒ”‚ğƒZƒbƒg‚·‚é
+	 * ãƒ’ãƒƒãƒˆã—ãŸãƒ¬ã‚³ãƒ¼ãƒ‰ã®ä»¶æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setNumResults(int val) {
 		this.num = val;
 	}
 
 	/**
-	 * ƒNƒGƒŠ–¼‚ğæ“¾‚·‚é
+	 * ã‚¯ã‚¨ãƒªåã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getQueryName() {
 		return this.qname;
 	}
 
 	/**
-	 * ƒqƒbƒg‚µ‚½ƒŒƒR[ƒh‚ÌŒ”‚ğæ“¾‚·‚é
+	 * ãƒ’ãƒƒãƒˆã—ãŸãƒ¬ã‚³ãƒ¼ãƒ‰ã®ä»¶æ•°ã‚’å–å¾—ã™ã‚‹
 	 */
 	public int getNumResults() {
 		if ( this.num == -1 ) {
@@ -81,7 +81,7 @@ public class ResultSet {
 	}
 
 	/*
-	 * ŒŸõŒ‹‰Êî•ñ‚ğ‚ğæ“¾‚·‚é
+	 * æ¤œç´¢çµæœæƒ…å ±ã‚’ã‚’å–å¾—ã™ã‚‹
 	 */
 	public Result[] getResults() {
 		Result[] ret = new Result[this.list.size()];

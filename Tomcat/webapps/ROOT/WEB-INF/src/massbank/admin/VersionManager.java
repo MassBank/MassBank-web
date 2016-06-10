@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒo[ƒWƒ‡ƒ“î•ñŠÇ—ƒNƒ‰ƒX
+ * ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ç®¡ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.5 2010.11.26
  *
@@ -49,18 +49,18 @@ import org.apache.commons.lang.math.NumberUtils;
 
 public class VersionManager {
 
-	// ƒRƒ“ƒ|[ƒlƒ“ƒg–¼(•\¦‡)
+	// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆå(è¡¨ç¤ºé †)
 	public static final String[] COMPONENT_NAMES = {
 		"Applet", "Common Lib", "JSP", "CGI", "Java Script",
 		"CSS", "Admin Tool"
 	};
-	// ƒRƒ“ƒ|[ƒlƒ“ƒg‚ÌƒfƒBƒŒƒNƒgƒŠ(•\¦‡)
+	// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª(è¡¨ç¤ºé †)
 	public static final String[] COMPONENT_DIR = {
 		"applet", "WEB-INF/lib", "jsp", "cgi-bin", "script",
 		"css", "mbadmin"
 	};
 
-	// ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ìƒo[ƒWƒ‡ƒ“Ši”[‡
+	// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ ¼ç´é †
 	private static final int COMPONENT_APPLET    = 0;
 	private static final int COMPONENT_LIB       = 1;
 	private static final int COMPONENT_JSP       = 2;
@@ -69,113 +69,113 @@ public class VersionManager {
 	private static final int COMPONENT_CSS       = 5;
 	private static final int COMPONENT_ADMIN     = 6;
 
-	// JavaScript, CSSƒtƒ@ƒCƒ‹‚ÌƒfƒBƒŒƒNƒgƒŠ
+	// JavaScript, CSSãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
 	private static final String OTHER_DIR[] = {
 		"script", "css"
 	};
-	// JavaScript, CSSƒtƒ@ƒCƒ‹‚ÌŠg’£q
+	// JavaScript, CSSãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­
 	private static final String OTHER_EXTENSION[] = {
 		".js", ".css"
 	};
-	// JavaScript, CSSƒtƒ@ƒCƒ‹‚ÌŠi”[‡
+	// JavaScript, CSSãƒ•ã‚¡ã‚¤ãƒ«ã®æ ¼ç´é †
 	private static final int OTHER_ARRAY_NUM[] = {
 		COMPONENT_SCRIPT, COMPONENT_CSS
 	};
-	// Admin Tool‚ÌƒfƒBƒŒƒNƒgƒŠ
+	// Admin Toolã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
 	private static final String ADMIN_DIR[] = {
 		"", "css/"
 	};
-	// Admin Tool‚ÌŠg’£q
+	// Admin Toolã®æ‹¡å¼µå­
 	private static final String ADMIN_EXTENSION_REGEX[] = {
 		".*\\.(jsp|html)$", ".*\\.css$"
 	};
-	// XVœŠOƒtƒ@ƒCƒ‹
+	// æ›´æ–°é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«
 	private static final String EXCLUSION_LIST[][] = {
 		{ "JSP", "index.jsp" },
 		{ "JSP", "BatchSearch.jsp" },
 		{ "CGI", "BatchSender.cgi" }
 	};
-	// Common Lib XVœŠOƒtƒ@ƒCƒ‹
+	// Common Lib æ›´æ–°é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«
 	private static final String EXCLUSION_COM_LIB[] = {
 		"catalina-root.jar"
 	};
-	// ƒA[ƒJƒCƒu–¼
+	// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–å
 	private static String ARCHIVE_NAME = "update";
 
-	// JSP–¼
+	// JSPå
 	private String jspName = "";
-	// Apache‚ÌMassBanƒpƒX
+	// Apacheã®MassBanãƒ‘ã‚¹
 	private String massBankPath = "";
-	// Tomcat‚ÌROOTƒpƒX
+	// Tomcatã®ROOTãƒ‘ã‚¹
 	private String webRootPath = "";
-	// Tomcat‚ÌMassBankƒpƒX
+	// Tomcatã®MassBankãƒ‘ã‚¹
 	private String tomcatMbPath = "";
-	// CGIƒwƒbƒ_[
+	// CGIãƒ˜ãƒƒãƒ€ãƒ¼
 	private String cgiHeader = "";
-	// ƒvƒ‰ƒCƒ}ƒŠƒT[ƒoURL
+	// ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒURL
 	private String priServerUrl = "";
-	// ©ƒT[ƒoURL
+	// è‡ªã‚µãƒ¼ãƒURL
 	private String myServerUrl = "";
-	// ƒo[ƒWƒ‡ƒ“î•ñŠi”[”z—ñ
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±æ ¼ç´é…åˆ—
 	private List<VersionInfo>[] verInfoMyServer = null;
 	private List<VersionInfo>[] verInfoPriServer = null;
 
-	// XV‘ÎÛƒtƒ@ƒCƒ‹‚ÌƒJƒEƒ“ƒg
+	// æ›´æ–°å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚«ã‚¦ãƒ³ãƒˆ
 	private int oldCnt = 0;
 	private int addCnt = 0;
 	private int newCnt = 0;
 	private int delCnt = 0;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public VersionManager(String reqUrl, String realPath) {
-		// JSPƒtƒ@ƒCƒ‹–¼‚ğƒZƒbƒg
+		// JSPãƒ•ã‚¡ã‚¤ãƒ«åã‚’ã‚»ãƒƒãƒˆ
 		this.jspName = reqUrl.substring( reqUrl.lastIndexOf("/") + 1 );
-		// ƒx[ƒXURLƒZƒbƒg
+		// ãƒ™ãƒ¼ã‚¹URLã‚»ãƒƒãƒˆ
 		String baseUrl = MassBankEnv.get( MassBankEnv.KEY_BASE_URL );
 
-		// İ’èƒtƒ@ƒCƒ‹“Ç‚İ
+		// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
 		GetConfig conf = new GetConfig(baseUrl);
-		// URLƒŠƒXƒgæ“¾
+		// URLãƒªã‚¹ãƒˆå–å¾—
 		String[] urlList = conf.getSiteUrl();
 		this.myServerUrl = urlList[GetConfig.MYSVR_INFO_NUM];
 
-		// ƒvƒ‰ƒCƒ}ƒŠƒT[ƒoURLæ“¾
+		// ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒURLå–å¾—
 		this.priServerUrl = MassBankEnv.get( MassBankEnv.KEY_PRIMARY_SERVER_URL );
-		// Apache‚ÌMassBanƒpƒXæ“¾
+		// Apacheã®MassBanãƒ‘ã‚¹å–å¾—
 		this.massBankPath = MassBankEnv.get( MassBankEnv.KEY_APACHE_APPROOT_PATH);
-		// Tomcat‚ÌROOTƒpƒX‚ğƒZƒbƒg
+		// Tomcatã®ROOTãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 		this.webRootPath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_DOCROOT_PATH );
-		// Tomcat‚ÌMassBankƒpƒX‚ğƒZƒbƒg
+		// Tomcatã®MassBankãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 		this.tomcatMbPath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPROOT_PATH );
-		// CGIƒwƒbƒ_[æ“¾
+		// CGIãƒ˜ãƒƒãƒ€ãƒ¼å–å¾—
 		AdminCommon admin = new AdminCommon();
 		this.cgiHeader = admin.getCgiHeader();
 	}
 
 
 	/**
-	 * ƒAƒbƒvƒf[ƒgˆ—‚ğÀs‚·‚é
-	 * @return true:³í / false:ˆÙí
+	 * ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆå‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @return true:æ­£å¸¸ / false:ç•°å¸¸
 	 */
 	public boolean doUpdate(List copyFiles, List removeFiles) {
-		// ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚É‘Î‚µƒA[ƒJƒCƒuì¬‚ğw¦‚·‚é
+		// ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã«å¯¾ã—ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ä½œæˆã‚’æŒ‡ç¤ºã™ã‚‹
 		if ( !reqMakeArchive() ) {
 			return false;
 		}
 		boolean isOK = false;
 		
-		// ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚©‚çƒA[ƒJƒCƒu‚ğƒ_ƒEƒ“ƒ[ƒh‚·‚é
+		// ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã‹ã‚‰ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
 		String archiveName = ARCHIVE_NAME + ".tgz";
 		String srcUrl = priServerUrl + "temp/" + archiveName;
 		String archivePath = tomcatMbPath + archiveName;
 		FileUtil.downloadFile(srcUrl, archivePath);
 
-		// ƒA[ƒJƒCƒu‚ğ‰ğ“€‚·‚é
+		// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’è§£å‡ã™ã‚‹
 		boolean isPh1 = FileUtil.uncompress(archivePath, tomcatMbPath);
 
-		// XV‘ÎÛƒtƒ@ƒCƒ‹‚ğƒRƒs[‚·‚é
+		// æ›´æ–°å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
 		boolean isPh2 = true;
 		for ( int i = 0; i < copyFiles.size(); i++ ) {
 			String relativePath = (String)copyFiles.get(i);
@@ -190,7 +190,7 @@ public class VersionManager {
 			}
 		}
 
-		// XV‘ÎÛƒtƒ@ƒCƒ‹‚ğíœ‚·‚é
+		// æ›´æ–°å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã™ã‚‹
 		boolean isPh3 = true;
 		if ( isPh2 ) {
 			for ( int i = 0; i < removeFiles.size(); i++ ) {
@@ -207,7 +207,7 @@ public class VersionManager {
 			isPh3 = false;
 		}
 
-		// ƒA[ƒJƒCƒuíœ
+		// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–å‰Šé™¤
 		FileUtil.removeDir(tomcatMbPath + "update");
 		FileUtil.removeFile(archivePath);
 		if ( isPh3 ) {
@@ -217,8 +217,8 @@ public class VersionManager {
 	}
 
 	/**
-	 * ƒA[ƒJƒCƒuì¬ˆ—‚ğÀs‚·‚é
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ä½œæˆå‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public boolean doArchive() {
 		String shellPath = "/MassBank/script/archiver.sh";
@@ -226,31 +226,31 @@ public class VersionManager {
 	}
 
 	/**
-	 * ƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒNˆ—‚ğÀs‚·‚é
-	 * @param verInfoMyServer  ©ƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñƒŠƒXƒg
-	 * @return true:³í / false:ˆÙí(ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚ÉÚ‘±‚Å‚«‚È‚¢ê‡)
+	 * ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãƒã‚§ãƒƒã‚¯å‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param verInfoMyServer  è‡ªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒªã‚¹ãƒˆ
+	 * @return true:æ­£å¸¸ / false:ç•°å¸¸(ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã«æ¥ç¶šã§ããªã„å ´åˆ)
 	 */
 	public boolean doCheckVersion(List<VersionInfo>[] verInfoMyServer) {
-		// ©ƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğİ’è‚·‚é
+		// è‡ªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’è¨­å®šã™ã‚‹
 		this.verInfoMyServer = verInfoMyServer;
-		// ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾
+		// ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—
 		this.verInfoPriServer = getVerPriServer();
 		if ( verInfoPriServer == null ) {
 			return false;
 		}
-		// ƒo[ƒWƒ‡ƒ“î•ñƒXƒe[ƒ^ƒX‚ğİ’è
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¨­å®š
 		setVerStaus();
 		return true;
 	}
 
 	/**
-	 * ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñæ“¾ˆ—‚ğÀs‚·‚é
-	 * @param verInfoServer ƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñƒŠƒXƒg
-	 * @return ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñi•¶š—ñj
+	 * ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±å–å¾—å‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param verInfoServer ã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒªã‚¹ãƒˆ
+	 * @return ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ï¼ˆæ–‡å­—åˆ—ï¼‰
 	 */
 	public String doGetVerPServer(List<VersionInfo>[] verInfoServer) {
 		StringBuffer res = new StringBuffer();
-		// ƒo[ƒWƒ‡ƒ“î•ñ‚ğƒ^ƒu‹æØ‚è‚ÌŒ`®‚Å•Ô‚·
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’ã‚¿ãƒ–åŒºåˆ‡ã‚Šã®å½¢å¼ã§è¿”ã™
 		for ( int i = 0; i < COMPONENT_NAMES.length; i++ ) {
 			for ( int j = 0; j < verInfoServer[i].size(); j++ ) {
 				VersionInfo verInfo = (VersionInfo)verInfoServer[i].get(j);
@@ -263,41 +263,41 @@ public class VersionManager {
 	}
 
 	/**
-	 * ©ƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñƒŠƒXƒg‚ğæ“¾‚·‚é
-	 * @return ©ƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñƒŠƒXƒg
+	 * è‡ªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
+	 * @return è‡ªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒªã‚¹ãƒˆ
 	 */
 	public List<VersionInfo>[] getVerMyServer() {
 		List<VersionInfo>[] verInfoMyServer = new ArrayList[COMPONENT_NAMES.length];
 
-		// Appletƒo[ƒWƒ‡ƒ“æ“¾
+		// Appletãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		verInfoMyServer[COMPONENT_APPLET] = getVerApplet();
 
-		// Common Libƒo[ƒWƒ‡ƒ“æ“¾
+		// Common Libãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		verInfoMyServer[COMPONENT_LIB] = getVerComLib();
 
-		// JSPƒo[ƒWƒ‡ƒ“æ“¾
+		// JSPãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		String jspPath = tomcatMbPath + COMPONENT_DIR[COMPONENT_JSP] + "/";
 		String extension = "jsp";
 		verInfoMyServer[COMPONENT_JSP] = getVerOther( jspPath, extension );
 
-		// CGIƒo[ƒWƒ‡ƒ“æ“¾
+		// CGIãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		verInfoMyServer[COMPONENT_CGI] = getVerCgi();
 
-		// CSS, Scriptƒo[ƒWƒ‡ƒ“æ“¾
+		// CSS, Scriptãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		for ( int i = 0; i < OTHER_DIR.length; i++ ) {
 			String otherPath = massBankPath + OTHER_DIR[i] + "/";
 			verInfoMyServer[OTHER_ARRAY_NUM[i]] = getVerOther( otherPath, OTHER_EXTENSION[i] );
 		}
 
-		// Admin Tool ƒo[ƒWƒ‡ƒ“æ“¾
+		// Admin Tool ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		verInfoMyServer[COMPONENT_ADMIN] = getVerAdminTool();
 
 		return verInfoMyServer;
 	}
 
 	/**
-	 * XV—L–³‚ğ”»’è‚·‚é
-	 * @return true:XV‚ ‚è / false:XV‚È‚µ
+	 * æ›´æ–°æœ‰ç„¡ã‚’åˆ¤å®šã™ã‚‹
+	 * @return true:æ›´æ–°ã‚ã‚Š / false:æ›´æ–°ãªã—
 	 */
 	public boolean isUpdate() {
 		if ( oldCnt + addCnt + newCnt + delCnt == 0 ) {
@@ -307,33 +307,33 @@ public class VersionManager {
 	}
 
 	/**
-	 * ƒXƒe[ƒ^ƒX"OLD"‚ÌƒJƒEƒ“ƒg‚ğæ“¾
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹"OLD"ã®ã‚«ã‚¦ãƒ³ãƒˆã‚’å–å¾—
 	 */
 	public int getOldCnt() {
 		return oldCnt;
 	}
 	/**
-	 * ƒXƒe[ƒ^ƒX"ADD"‚ÌƒJƒEƒ“ƒg‚ğæ“¾
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹"ADD"ã®ã‚«ã‚¦ãƒ³ãƒˆã‚’å–å¾—
 	 */
 	public int getAddCnt() {
 		return addCnt;
 	}
 	/**
-	 * ƒXƒe[ƒ^ƒX"NEW"‚ÌƒJƒEƒ“ƒg‚ğæ“¾
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹"NEW"ã®ã‚«ã‚¦ãƒ³ãƒˆã‚’å–å¾—
 	 */
 	public int getNewCnt() {
 		return newCnt;
 	}
 	/**
-	 * ƒXƒe[ƒ^ƒX"DEL"‚ÌƒJƒEƒ“ƒg‚ğæ“¾
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹"DEL"ã®ã‚«ã‚¦ãƒ³ãƒˆã‚’å–å¾—
 	 */
 	public int getDelCnt() {
 		return delCnt;
 	}
 
 	/**
-	 * ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚É‘Î‚µƒA[ƒJƒCƒuì¬‚ğw¦‚·‚é
-	 * @return true:³í / false:ˆÙí
+	 * ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã«å¯¾ã—ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ä½œæˆã‚’æŒ‡ç¤ºã™ã‚‹
+	 * @return true:æ­£å¸¸ / false:ç•°å¸¸
 	 */
 	private boolean reqMakeArchive() {
 		String res = "";
@@ -361,9 +361,9 @@ public class VersionManager {
 	}
 
 	/**
-	 * ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @return ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚Ìƒo[ƒWƒ‡ƒ“î•ñƒŠƒXƒg
-	 *         (ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚ÉÚ‘±‚Å‚«‚È‚¢ê‡‚Ínull)
+	 * ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @return ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒªã‚¹ãƒˆ
+	 *         (ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã«æ¥ç¶šã§ããªã„å ´åˆã¯null)
 	 */
 	private List<VersionInfo>[] getVerPriServer() {
 		List<VersionInfo>[] verInfoPriServer = new ArrayList[COMPONENT_NAMES.length];
@@ -390,7 +390,7 @@ public class VersionManager {
 				String ver       = items[2];
 				String date      = items[3];
 
-				// œŠOƒtƒ@ƒCƒ‹‚ÍƒŠƒXƒg‚É’Ç‰Á‚µ‚È‚¢
+				// é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«ã¯ãƒªã‚¹ãƒˆã«è¿½åŠ ã—ãªã„
 				boolean isExclusion = false;
 				for ( int j = 0; j < EXCLUSION_LIST.length; j++ ) {
 					if ( compoName.equals(EXCLUSION_LIST[j][0])
@@ -402,7 +402,7 @@ public class VersionManager {
 				if ( isExclusion ) {
 					continue;
 				}
-				// ƒo[ƒWƒ‡ƒ“î•ñŠi”[
+				// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±æ ¼ç´
 				for ( int j = 0; j < COMPONENT_NAMES.length; j++ ) {
 					VersionInfo verInfo = new VersionInfo(name, ver, date);
 					if ( compoName.equals(COMPONENT_NAMES[j]) ) {
@@ -420,7 +420,7 @@ public class VersionManager {
 	}
 
 	/**
-	 * ƒo[ƒWƒ‡ƒ“î•ñ‚ÌƒXƒe[ƒ^ƒX‚ğİ’è‚·‚é
+	 * ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¨­å®šã™ã‚‹
 	 */
 	private void setVerStaus() {
 		int oldCnt = 0;
@@ -430,16 +430,16 @@ public class VersionManager {
 
 		for ( int i = 0; i < COMPONENT_NAMES.length; i++ ) {
 			//-------------------------------------------------------------
-			// ©ƒT[ƒo‘¤‚Ìƒtƒ@ƒCƒ‹‚ªƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‚É‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN
+			// è‡ªã‚µãƒ¼ãƒå´ã®ãƒ•ã‚¡ã‚¤ãƒ«ãŒãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒã«å­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 			//-------------------------------------------------------------
 			for ( int l1 = 0; l1 < verInfoMyServer[i].size(); l1++ ) {
 				boolean isFound = false;
 				VersionInfo verInfo1 = (VersionInfo)verInfoMyServer[i].get(l1);
 				VersionInfo verInfo2 = null;
-				// ©ƒT[ƒo‘¤‚Ìƒtƒ@ƒCƒ‹–¼
+				// è‡ªã‚µãƒ¼ãƒå´ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 				String name1 = verInfo1.getName();
 
-				// œŠOƒtƒ@ƒCƒ‹‚Íƒ`ƒFƒbƒN‘ÎÛŠO‚É‚·‚é
+				// é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«ã¯ãƒã‚§ãƒƒã‚¯å¯¾è±¡å¤–ã«ã™ã‚‹
 				boolean isExclusion = false;
 				for ( int j = 0; j < EXCLUSION_LIST.length; j++ ) {
 					if ( COMPONENT_NAMES[i].equals(EXCLUSION_LIST[j][0] )
@@ -451,7 +451,7 @@ public class VersionManager {
 				if ( isExclusion ) {
 					continue;
 				}
-				// ‘¶İƒ`ƒFƒbƒN
+				// å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 				for ( int l2 = 0; l2 < verInfoPriServer[i].size(); l2++ ) {
 					verInfo2 = (VersionInfo)verInfoPriServer[i].get(l2);
 					String name2 = verInfo2.getName();
@@ -461,34 +461,34 @@ public class VersionManager {
 					}
 				}
 
-				//== ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚Á‚½ê‡ ==
+				//== ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆ ==
 				if ( isFound ) {
-					// ƒo[ƒWƒ‡ƒ“î•ñ‚Ì“ú•t
+					// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã®æ—¥ä»˜
 					String date1 = verInfo1.getDate();
 					String date2 = verInfo2.getDate();
-					// “ú•t‚ª‚È‚¢‚à‚Ì‚Í0‹l‚ß‚É‚·‚é
+					// æ—¥ä»˜ãŒãªã„ã‚‚ã®ã¯0è©°ã‚ã«ã™ã‚‹
 					if ( date1.equals("-") ) {
 						date1 = "00.00.00";
 					}
 					if ( date2.equals("-") ) {
 						date2 = "00.00.00";
 					}
-					// ƒsƒŠƒIƒh‹æØ‚è‚Å“ú•t‚ğ•ªŠ„
+					// ãƒ”ãƒªã‚ªãƒ‰åŒºåˆ‡ã‚Šã§æ—¥ä»˜ã‚’åˆ†å‰²
 					String[] vals1 = date1.split("\\.");
 					String[] vals2 = date2.split("\\.");
 
-					// ”NŒ“ú‚ğƒsƒŠƒIƒh‚È‚µ‚Å˜AŒ‹
+					// å¹´æœˆæ—¥ã‚’ãƒ”ãƒªã‚ªãƒ‰ãªã—ã§é€£çµ
 					String convDate1 = "";
 					String convDate2 = "";
 
 					for ( int k = 0; k < vals1.length; k++ ) {
-						// ”N‚ª2Œ…ˆÈã‚Ìê‡‚Í2Œ…‚É‚·‚é
+						// å¹´ãŒ2æ¡ä»¥ä¸Šã®å ´åˆã¯2æ¡ã«ã™ã‚‹
 
 						if ( k == 0 ) {
 							vals1[k] = vals1[k].substring(vals1[k].length() - 2);
 							vals2[k] = vals2[k].substring(vals2[k].length() - 2);
 						}
-						// ”NŒ“ú1Œ…‚Ìê‡‚ÍA0‹l‚ß2Œ…‚É‚·‚é
+						// å¹´æœˆæ—¥1æ¡ã®å ´åˆã¯ã€0è©°ã‚2æ¡ã«ã™ã‚‹
 						convDate1 += "00".substring(vals1[k].length()) + vals1[k];
 						convDate2 += "00".substring(vals2[k].length()) + vals2[k];
 					}
@@ -496,12 +496,12 @@ public class VersionManager {
 					int iDate2 = Integer.parseInt(convDate2);
 					int status = 0;
 					if ( iDate1 < iDate2 ) {
-						//** ƒXƒe[ƒ^ƒXƒZƒbƒguŒÃ‚¢v
+						//** ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚»ãƒƒãƒˆã€Œå¤ã„ã€
 						status = VersionInfo.STATUS_OLD;
 						oldCnt++;
 					}
 					else if ( iDate1 > iDate2 ) {
-						//** ƒXƒe[ƒ^ƒXƒZƒbƒguV‚µ‚¢v
+						//** ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚»ãƒƒãƒˆã€Œæ–°ã—ã„ã€
 						status = VersionInfo.STATUS_NEW;
 						newCnt++;
 					}
@@ -510,24 +510,24 @@ public class VersionManager {
 					}
 					verInfo1.setStatus(status);
 				}
-				//== ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡ ==  ©ƒT[ƒo‚Ì‚İ‘¶İ
+				//== ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆ ==  è‡ªã‚µãƒ¼ãƒã®ã¿å­˜åœ¨
 				else {
-					//** ƒXƒe[ƒ^ƒXƒZƒbƒguíœv
+					//** ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚»ãƒƒãƒˆã€Œå‰Šé™¤ã€
 					verInfo1.setStatus(VersionInfo.STATUS_DEL);
 					delCnt++;
 				}
 			}
 			//-------------------------------------------------------------
-			// ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‘¤‚É‚Ì‚İ‘¶İ‚·‚éƒtƒ@ƒCƒ‹‚ğƒ`ƒFƒbƒN
+			// ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒå´ã«ã®ã¿å­˜åœ¨ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒã‚§ãƒƒã‚¯
 			//-------------------------------------------------------------
 			for ( int l1 = 0; l1 < verInfoPriServer[i].size(); l1++ ) {
 				VersionInfo verInfo1 = (VersionInfo)verInfoPriServer[i].get(l1);
 				VersionInfo verInfo2 = null;
-				// ƒvƒ‰ƒCƒ}ƒŠƒT[ƒo‘¤‚Ìƒtƒ@ƒCƒ‹–¼
+				// ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒå´ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 				String name1 = verInfo1.getName();
 				boolean isFound = false;
 
-				// ‘¶İƒ`ƒFƒbƒN
+				// å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 				for ( int l2 = 0; l2 < verInfoMyServer[i].size(); l2++ ) {
 					verInfo2 = (VersionInfo)verInfoMyServer[i].get(l2);
 					String name2 = verInfo2.getName();
@@ -539,7 +539,7 @@ public class VersionManager {
 				if ( !isFound ) {
 					VersionInfo verInfo3 = new VersionInfo( name1, "-", "-" );
 					verInfoMyServer[i].add(verInfo3);
-					//** ƒXƒe[ƒ^ƒXƒZƒbƒgu’Ç‰Áv
+					//** ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚»ãƒƒãƒˆã€Œè¿½åŠ ã€
 					verInfo3.setStatus(VersionInfo.STATUS_ADD);
 					addCnt++;
 				}
@@ -552,13 +552,13 @@ public class VersionManager {
 	}
 
 	/**
-	 * Applet‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @return ƒo[ƒWƒ‡ƒ“î•ñ
+	 * Appletã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @return ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 	 */
 	private List<VersionInfo> getVerApplet() {
 		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 	
-		// appletƒfƒBƒŒƒNƒgƒŠ‚Ìƒtƒ@ƒCƒ‹ƒŠƒXƒgæ“¾
+		// appletãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆå–å¾—
 		String appletPath = massBankPath + "applet/";
 		File file = new File( appletPath );
 		String allList[] = file.list();
@@ -568,12 +568,12 @@ public class VersionManager {
 				targetList.add( allList[i] );
 			}
 		}
-		// ƒtƒ@ƒCƒ‹–¼‚Åƒ\[ƒg
+		// ãƒ•ã‚¡ã‚¤ãƒ«åã§ã‚½ãƒ¼ãƒˆ
 		Collections.sort(targetList);
 		for ( int i = 0; i < targetList.size(); i++ ) {
 			String fileName = targetList.get(i);
 			VersionInfo verInfo = getVerJarFile( appletPath + fileName );
-			// ƒo[ƒWƒ‡ƒ“î•ñŠi”[
+			// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±æ ¼ç´
 			verInfo.setName(fileName);
 			verInfoList.add(verInfo);
 		}
@@ -581,13 +581,13 @@ public class VersionManager {
 	}
 
 	/**
-	 * Common Lib‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @return ƒo[ƒWƒ‡ƒ“î•ñ
+	 * Common Libã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @return ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 	 */
 	private List<VersionInfo> getVerComLib() {
 		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
-		// WEB-INF/libƒfƒBƒŒƒNƒgƒŠ‚Ìƒtƒ@ƒCƒ‹ƒŠƒXƒgæ“¾
+		// WEB-INF/libãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆå–å¾—
 		String libPath = webRootPath + "WEB-INF/lib/";
 		File file = new File(libPath);
 		String allList[] = file.list();
@@ -604,12 +604,12 @@ public class VersionManager {
 				targetList.add( allList[i] );
 			}
 		}
-		// ƒtƒ@ƒCƒ‹–¼‚Åƒ\[ƒg
+		// ãƒ•ã‚¡ã‚¤ãƒ«åã§ã‚½ãƒ¼ãƒˆ
 		Collections.sort( targetList );
 		for ( int i = 0; i < targetList.size(); i++ ) {
 			String fileName = targetList.get(i);
 			VersionInfo verInfo = getVerJarFile( libPath + fileName );
-			// ƒo[ƒWƒ‡ƒ“î•ñŠi”[
+			// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±æ ¼ç´
 			verInfo.setName(fileName);
 			verInfoList.add(verInfo);
 		}
@@ -617,13 +617,13 @@ public class VersionManager {
 	}
 
 	/**
-	 * CGI‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @return ƒo[ƒWƒ‡ƒ“î•ñ
+	 * CGIã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @return ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 	 */
 	private List<VersionInfo> getVerCgi() {
 		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
-		// ƒo[ƒWƒ‡ƒ“î•ñæ“¾CGI‚ğÀs
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±å–å¾—CGIã‚’å®Ÿè¡Œ
 		String strUrl = myServerUrl + "/cgi-bin/GetVersion.cgi";
 		try {
 			URL url = new URL(strUrl);
@@ -637,7 +637,7 @@ public class VersionManager {
 				}
 				String[] info = data.split("\t");
 		
-				// ƒXƒy[ƒX‹æØ‚è‚Ìƒo[ƒWƒ‡ƒ“‚Æ“ú•t‚ğæ‚èo‚·
+				// ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Šã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¨æ—¥ä»˜ã‚’å–ã‚Šå‡ºã™
 				String name = info[0];
 				String[] item = info[1].trim().split(" ");
 				String ver  = item[0];
@@ -648,7 +648,7 @@ public class VersionManager {
 						break;
 					}
 				}
-				// ƒo[ƒWƒ‡ƒ“î•ñŠi”[
+				// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±æ ¼ç´
 				verInfoList.add( new VersionInfo(name, ver, date) );
 			}
 			in.close();
@@ -660,13 +660,13 @@ public class VersionManager {
 	}
 
 	/**
-	 * Admin Tool‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @return ƒo[ƒWƒ‡ƒ“î•ñ
+	 * Admin Toolã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @return ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 	 */
 	private List<VersionInfo> getVerAdminTool() {
 		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
-		// ƒtƒ@ƒCƒ‹ƒŠƒXƒgæ“¾
+		// ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆå–å¾—
 		for ( int i = 0; i < ADMIN_DIR.length; i++ ) {
 			String path = tomcatMbPath + "mbadmin/" + ADMIN_DIR[i];
 			File file = new File(path);
@@ -678,18 +678,18 @@ public class VersionManager {
 				}
 			}
 
-			// ƒtƒ@ƒCƒ‹–¼‚Åƒ\[ƒg
+			// ãƒ•ã‚¡ã‚¤ãƒ«åã§ã‚½ãƒ¼ãƒˆ
 			Collections.sort( targetList );
 			for ( int j = 0; j < targetList.size(); j++ ) {
 				String filName = targetList.get(j);
 				File file2 = new File( path + filName );
-				// ƒfƒBƒŒƒNƒgƒŠ‚Í–³‹‚·‚é
+				// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¯ç„¡è¦–ã™ã‚‹
 				if ( file2.isDirectory() ) {
 					continue;
 				}
-				// ƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚Ìƒo[ƒWƒ‡ƒ“æ“¾
+				// ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 				VersionInfo verInfo = getVerTextFile( path + filName );
-				// ƒo[ƒWƒ‡ƒ“î•ñŠi”[
+				// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±æ ¼ç´
 				verInfo.setName( ADMIN_DIR[i] + filName );
 				verInfoList.add(verInfo);
 			}
@@ -698,13 +698,13 @@ public class VersionManager {
 	}
 
 	/**
-	 * ‚»‚Ì‘¼(JSP,CSS, Script)‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @return ƒo[ƒWƒ‡ƒ“î•ñ
+	 * ãã®ä»–(JSP,CSS, Script)ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @return ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 	 */
 	private List<VersionInfo> getVerOther(String path, String extension) {
 		List<VersionInfo> verInfoList = new ArrayList<VersionInfo>();
 
-		// ƒtƒ@ƒCƒ‹ƒŠƒXƒgæ“¾
+		// ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆå–å¾—
 		File file1 = new File(path);
 		String allList[] = file1.list();
 		List<String> targetList = new ArrayList<String>();
@@ -714,18 +714,18 @@ public class VersionManager {
 			}
 		}
 
-		// ƒtƒ@ƒCƒ‹–¼‚Åƒ\[ƒg
+		// ãƒ•ã‚¡ã‚¤ãƒ«åã§ã‚½ãƒ¼ãƒˆ
 		Collections.sort(targetList);
 		for ( int i = 0; i < targetList.size(); i++ ) {
 			String fileName = targetList.get(i);
 			File file2 = new File( path + fileName );
-			// ƒfƒBƒŒƒNƒgƒŠ‚Í–³‹
+			// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¯ç„¡è¦–
 			if ( file2.isDirectory() ) {
 				continue;
 			}
-			// ƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚Ìƒo[ƒWƒ‡ƒ“æ“¾
+			// ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 			VersionInfo verInfo = getVerTextFile( path + fileName );
-			// ƒo[ƒWƒ‡ƒ“î•ñŠi”[
+			// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±æ ¼ç´
 			verInfo.setName(fileName);
 			verInfoList.add(verInfo);
 		}
@@ -733,14 +733,14 @@ public class VersionManager {
 	}
 
 	/**
-	 * jarƒtƒ@ƒCƒ‹‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @param path ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	 * @return ƒo[ƒWƒ‡ƒ“î•ñ
+	 * jarãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @param path ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	 * @return ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 	 */
 	private VersionInfo getVerJarFile(String path) {
 		VersionInfo verInfo = null;
 		try {
-			// ƒ}ƒjƒ…ƒtƒFƒXƒg‚æ‚èƒo[ƒWƒ‡ƒ“î•ñæ“¾
+			// ãƒãƒ‹ãƒ¥ãƒ•ã‚§ã‚¹ãƒˆã‚ˆã‚Šãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±å–å¾—
 			JarFile jar = new JarFile( new File(path) );
 			Manifest manifest = jar.getManifest();
 			Attributes attributes = manifest.getMainAttributes();
@@ -748,7 +748,7 @@ public class VersionManager {
 			if ( item1 == null ) {
 				item1 = "-";
 			}
-			// ƒXƒy[ƒX‹æØ‚è‚Ìƒo[ƒWƒ‡ƒ“‚Æ“ú•t‚ğæ‚èo‚·
+			// ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Šã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¨æ—¥ä»˜ã‚’å–ã‚Šå‡ºã™
 			String[] item2 = item1.trim().split(" ");
 			String ver  = item2[0];
 			String date = "-";
@@ -765,9 +765,9 @@ public class VersionManager {
 
 
 	/*
-	 * ƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
-	 * @param path ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	 * @return ƒo[ƒWƒ‡ƒ“î•ñ
+	 * ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @param path ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	 * @return ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 	 */
 	private VersionInfo getVerTextFile(String path) {
 		VersionInfo verInfo = null;
@@ -780,7 +780,7 @@ public class VersionManager {
 			String line = "";
 			while ( ( line = in.readLine() ) != null ) {
 				if ( isFound ) {
-					// ƒwƒbƒ_[•”•ªƒRƒƒ“ƒgŠJns‚ğŒŸõ
+					// ãƒ˜ãƒƒãƒ€ãƒ¼éƒ¨åˆ†ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹è¡Œã‚’æ¤œç´¢
 					for ( int i = 0; i < FIND_STR.length; i++ ) {
 						int pos1 = line.indexOf(FIND_STR[i]);
 						if ( pos1 >= 0 ) {
@@ -792,7 +792,7 @@ public class VersionManager {
 						break;
 					}
 				}
-				// ƒo[ƒWƒ‡ƒ“î•ñ‹Lq•”•ª‚ğŒŸõ
+				// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±è¨˜è¿°éƒ¨åˆ†ã‚’æ¤œç´¢
 				String find2 = "ver";
 				int pos2 = line.indexOf(find2);
 				if ( pos2 >= 0 ) {
@@ -802,9 +802,9 @@ public class VersionManager {
 			}
 			in.close();
 
-			// ƒXƒy[ƒX‹æØ‚è‚Ìƒo[ƒWƒ‡ƒ“‚Æ“ú•t‚ğæ‚èo‚·
+			// ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Šã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¨æ—¥ä»˜ã‚’å–ã‚Šå‡ºã™
 			String[] item = info.split(" ");
-			// ƒo[ƒWƒ‡ƒ“ƒZƒbƒg
+			// ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚»ãƒƒãƒˆ
 			String ver = "-";
 			String[] vals = null;
 			for ( int j = 0; j < item.length; j++ ) {
@@ -818,10 +818,10 @@ public class VersionManager {
 				}
 			}
 
-			// “ú•tƒZƒbƒg
+			// æ—¥ä»˜ã‚»ãƒƒãƒˆ
 			String date = "-";
 			for ( int j = 1; j < item.length; j++ ) {
-				// ƒXƒy[ƒX‚Í“Ç‚İ”ò‚Î‚·
+				// ã‚¹ãƒšãƒ¼ã‚¹ã¯èª­ã¿é£›ã°ã™
 				if ( !item[j].equals("") ) {
 					vals = item[j].split("\\.");
 					if ( NumberUtils.isNumber(vals[0])
@@ -840,33 +840,33 @@ public class VersionManager {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹‚Ìâ‘ÎƒpƒX‚ğæ“¾‚·‚é
-	 * @param relativePath ƒtƒ@ƒCƒ‹‚Ì‘Š‘ÎƒpƒX
-	 * @return ƒtƒ@ƒCƒ‹‚Ìâ‘ÎƒpƒX
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã®çµ¶å¯¾ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
+	 * @param relativePath ãƒ•ã‚¡ã‚¤ãƒ«ã®ç›¸å¯¾ãƒ‘ã‚¹
+	 * @return ãƒ•ã‚¡ã‚¤ãƒ«ã®çµ¶å¯¾ãƒ‘ã‚¹
 	 */
 	private String getAbsolutePath(String relativePath) {
 		String absPath = "";
 		int pos = relativePath.lastIndexOf("/");
 		String dir = relativePath.substring( 0, pos );
 		if ( dir.equals("jsp") || dir.equals("mbadmin") || dir.equals("mbadmin/css") ) {
-			// Tomcat‚ÌMassBankƒpƒX‚ğƒZƒbƒg
+			// Tomcatã®MassBankãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			absPath = tomcatMbPath;
 		}
 		else if ( dir.equals("WEB-INF/lib") ) {
-			// Tomcat‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒ‹[ƒgƒpƒX‚ğƒZƒbƒg
+			// Tomcatã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			absPath = webRootPath;
 		}
 		else {
-			// Apache‚ÌMassBankƒpƒX‚ğƒZƒbƒg
+			// Apacheã®MassBankãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			absPath = massBankPath;
 		}
 		return absPath;
 	}
 
 	/**
-	 * CGIƒwƒbƒ_[‚Ì‘‚«Š·‚¦—v”Û‚ğ”»’è‚·‚é
-	 * @param relativePath ƒtƒ@ƒCƒ‹‚Ì‘Š‘ÎƒpƒX
-	 * @return true:—v / false:”Û
+	 * CGIãƒ˜ãƒƒãƒ€ãƒ¼ã®æ›¸ãæ›ãˆè¦å¦ã‚’åˆ¤å®šã™ã‚‹
+	 * @param relativePath ãƒ•ã‚¡ã‚¤ãƒ«ã®ç›¸å¯¾ãƒ‘ã‚¹
+	 * @return true:è¦ / false:å¦
 	 */
 	private boolean isOverwriteHeader(String relativePath) {
 		if ( cgiHeader.equals("") ) {
@@ -881,12 +881,12 @@ public class VersionManager {
 	}
 
 	/**
-	 * CGIƒwƒbƒ_[‚ğ‘‚«Š·‚¦‚é
-	 * @param absPath ƒtƒ@ƒCƒ‹‚ÌƒpƒX
+	 * CGIãƒ˜ãƒƒãƒ€ãƒ¼ã‚’æ›¸ãæ›ãˆã‚‹
+	 * @param absPath ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
 	 */
 	private void overwriteHeader(String absPath) {
 		try {
-			// ƒtƒ@ƒCƒ‹“Ç‚İ
+			// ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
 			InputStreamReader reader = new InputStreamReader(new FileInputStream(absPath), "UTF-8");
 			BufferedReader br= new BufferedReader( reader );
 			StringBuffer text = new StringBuffer("");
@@ -894,7 +894,7 @@ public class VersionManager {
 			while ( ( line = br.readLine() ) != null ) {
 				int pos = line.indexOf( "#!" );
 				if ( pos >= 0 ) {
-					// ƒwƒbƒ_[•”‘‚«Š·‚¦
+					// ãƒ˜ãƒƒãƒ€ãƒ¼éƒ¨æ›¸ãæ›ãˆ
 					text.append( cgiHeader + "\n" );
 				}
 				else {
@@ -903,7 +903,7 @@ public class VersionManager {
 			}
 			br.close();
 
-			// ƒtƒ@ƒCƒ‹‘‚İ
+			// ãƒ•ã‚¡ã‚¤ãƒ«æ›¸è¾¼ã¿
 			OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(absPath), "UTF-8");
 			BufferedWriter bw = new BufferedWriter( writer );
 			bw.write( text.toString() );

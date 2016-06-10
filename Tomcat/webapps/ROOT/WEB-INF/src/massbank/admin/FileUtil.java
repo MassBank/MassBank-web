@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒtƒ@ƒCƒ‹‘€ìƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+ * ãƒ•ã‚¡ã‚¤ãƒ«æ“ä½œãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.5 2012.02.20
  *
@@ -33,14 +33,14 @@ import massbank.admin.CmdResult;
 
 public class FileUtil {
 	
-	/** OS–¼ */
+	/** OSå */
 	private static String OS_NAME = System.getProperty("os.name");
 
 	/**
-	 * ZIPŒ`®‚Ìˆ³kƒtƒ@ƒCƒ‹‚ğì¬‚·‚é
-	 * @param zipFilePath ZIPƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	 * @param filePath ˆ³kŒ³ƒtƒ@ƒCƒ‹
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ZIPå½¢å¼ã®åœ§ç¸®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹
+	 * @param zipFilePath ZIPãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	 * @param filePath åœ§ç¸®å…ƒãƒ•ã‚¡ã‚¤ãƒ«
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean makeZip(String zipFilePath, String filePath) {
 		String[] cmd = new String[]{ "zip", "-oqj", zipFilePath, filePath };
@@ -48,10 +48,10 @@ public class FileUtil {
 	}
 	
 	/**
-	 * ƒA[ƒJƒCƒu‚ğ‰ğ“€‚·‚éiZIPŒ`®j
-	 * @param archivePath ƒA[ƒJƒCƒu‚ÌƒpƒX
-	 * @param destPath ‰ğ“€æ‚ÌƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’è§£å‡ã™ã‚‹ï¼ˆZIPå½¢å¼ï¼‰
+	 * @param archivePath ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã®ãƒ‘ã‚¹
+	 * @param destPath è§£å‡å…ˆã®ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean unZip(String archivePath, String destPath) {
 		String[] cmd = new String[]{ "unzip", "-oq", archivePath, "-d", destPath };
@@ -59,13 +59,13 @@ public class FileUtil {
 	}
 	
 	/**
-	 * ƒA[ƒJƒCƒu‚ğ‰ğ“€‚·‚é
-	 * @param archivePath ƒA[ƒJƒCƒu‚ÌƒpƒX
-	 * @param destPath ‰ğ“€æ‚ÌƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’è§£å‡ã™ã‚‹
+	 * @param archivePath ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã®ãƒ‘ã‚¹
+	 * @param destPath è§£å‡å…ˆã®ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean uncompress(String archivePath, String destPath) {
-		// ƒhƒ‰ƒCƒu–¼‚ª‚ ‚éê‡‚Íæ‚èœ‚­
+		// ãƒ‰ãƒ©ã‚¤ãƒ–åãŒã‚ã‚‹å ´åˆã¯å–ã‚Šé™¤ã
 		int pos = archivePath.indexOf(":");
 		if ( pos >= 0 ) {
 			archivePath = archivePath.substring(pos + 1);
@@ -75,11 +75,11 @@ public class FileUtil {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹‚ğƒRƒs[‚·‚é
-	 * @deprecated Windows‚Åg—p‚µ‚½ê‡‚ÍƒRƒs[æƒtƒ@ƒCƒ‹‚ª•s“KØ‚ÈŠ—LÒ‚É‚È‚éiOSˆË‘¶j
-	 * @param srcPath ƒRƒs[Œ³ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	 * @param destPath ƒRƒs[æƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
+	 * @deprecated Windowsã§ä½¿ç”¨ã—ãŸå ´åˆã¯ã‚³ãƒ”ãƒ¼å…ˆãƒ•ã‚¡ã‚¤ãƒ«ãŒä¸é©åˆ‡ãªæ‰€æœ‰è€…ã«ãªã‚‹ï¼ˆOSä¾å­˜ï¼‰
+	 * @param srcPath ã‚³ãƒ”ãƒ¼å…ƒãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	 * @param destPath ã‚³ãƒ”ãƒ¼å…ˆãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean copyFile(String srcPath, String destPath) {
 		String[] cmd = new String[]{ "cp", "-pf", srcPath, destPath };
@@ -87,11 +87,11 @@ public class FileUtil {
 	}
 
 	/**
-	 * ƒfƒBƒŒƒNƒgƒŠ‚ğƒRƒs[‚·‚é
-	 * @deprecated Windows‚Åg—p‚µ‚½ê‡‚ÍƒRƒs[æƒfƒBƒŒƒNƒgƒŠ‚ª•s“KØ‚ÈŠ—LÒ‚É‚È‚éiOSˆË‘¶j
-	 * @param srcPath ƒRƒs[Œ³ƒfƒBƒŒƒNƒgƒŠ‚ÌƒpƒX
-	 * @param destPath ƒRƒs[æƒfƒBƒŒƒNƒgƒŠ‚ÌƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
+	 * @deprecated Windowsã§ä½¿ç”¨ã—ãŸå ´åˆã¯ã‚³ãƒ”ãƒ¼å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒä¸é©åˆ‡ãªæ‰€æœ‰è€…ã«ãªã‚‹ï¼ˆOSä¾å­˜ï¼‰
+	 * @param srcPath ã‚³ãƒ”ãƒ¼å…ƒãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹
+	 * @param destPath ã‚³ãƒ”ãƒ¼å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean copyDir(String srcPath, String destPath) {
 		String[] cmd = new String[]{ "cp", "-pfr", srcPath, destPath };
@@ -99,9 +99,9 @@ public class FileUtil {
 	}
 	
 	/**
-	 * ƒtƒ@ƒCƒ‹‚ğíœ‚·‚é
-	 * @param filePath íœ‚·‚éƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã™ã‚‹
+	 * @param filePath å‰Šé™¤ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean removeFile(String filePath) {
 		String[] cmd = new String[]{ "rm", "-f", filePath };
@@ -109,9 +109,9 @@ public class FileUtil {
 	}
 
 	/**
-	 * ƒfƒBƒŒƒNƒgƒŠ‚ğíœ‚·‚é
-	 * @param dirPath íœ‚·‚éƒfƒBƒŒƒNƒgƒŠ‚ÌƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å‰Šé™¤ã™ã‚‹
+	 * @param dirPath å‰Šé™¤ã™ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean removeDir(String dirPath) {
 		String[] cmd = new String[]{ "rm", "-Rf", dirPath };
@@ -119,10 +119,10 @@ public class FileUtil {
 	}
 
 	/**
-	 * Œ ŒÀ‚ğ•ÏX‚·‚é
-	 * @param permission Œ ŒÀ
-	 * @param path Œ ŒÀ•ÏX‘ÎÛ‚ÌƒfƒBƒŒƒNƒgƒŠ‚à‚µ‚­‚ÍƒtƒHƒ‹ƒ_ƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * æ¨©é™ã‚’å¤‰æ›´ã™ã‚‹
+	 * @param permission æ¨©é™
+	 * @param path æ¨©é™å¤‰æ›´å¯¾è±¡ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚‚ã—ãã¯ãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean changeMode(String permission, String path) {
 		String[] cmd = new String[]{ "chmod", "-R", permission, path };
@@ -130,9 +130,9 @@ public class FileUtil {
 	}
 	
 	/**
-	 * ƒVƒFƒ‹‚ğÀs‚·‚é
-	 * @param filePath Às‚·‚éƒVƒFƒ‹‚ÌƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ã‚·ã‚§ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param filePath å®Ÿè¡Œã™ã‚‹ã‚·ã‚§ãƒ«ã®ãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean executeShell(String filePath) {
 		String[] cmd = new String[]{ filePath };
@@ -140,10 +140,10 @@ public class FileUtil {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹‚ğƒ_ƒEƒ“ƒ[ƒh‚·‚é
-	 * @param srcUrl ƒtƒ@ƒCƒ‹ƒ\[ƒX‚ÌURL
-	 * @param savePath Ši”[æƒpƒX
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
+	 * @param srcUrl ãƒ•ã‚¡ã‚¤ãƒ«ã‚½ãƒ¼ã‚¹ã®URL
+	 * @param savePath æ ¼ç´å…ˆãƒ‘ã‚¹
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean downloadFile(String srcUrl, String savePath ) {
 		try {
@@ -167,11 +167,11 @@ public class FileUtil {
 	}
 	
 	/**
-	 * SQLƒtƒ@ƒCƒ‹‚ğÀs‚·‚é
-	 * @param host ƒŠƒ‚[ƒgƒzƒXƒg–¼
-	 * @param db ‘ÎÛ‚ÌDB–¼
-	 * @param file Às‚·‚éƒtƒ@ƒCƒ‹–¼
-	 * @return true:¬Œ÷ / false:¸”s
+	 * SQLãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param host ãƒªãƒ¢ãƒ¼ãƒˆãƒ›ã‚¹ãƒˆå
+	 * @param db å¯¾è±¡ã®DBå
+	 * @param file å®Ÿè¡Œã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«å
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean execSqlFile(String host, String db, String file) {
 		String opHost = "";
@@ -192,12 +192,12 @@ public class FileUtil {
 	}
 	
 	/**
-	 * SQLƒ_ƒ“ƒv‚ğÀs‚·‚é
-	 * @param host ƒŠƒ‚[ƒgƒzƒXƒg–¼
-	 * @param db ‘ÎÛ‚ÌDB–¼
-	 * @param tables ‘ÎÛ‚Ìƒe[ƒuƒ‹
-	 * @param file o—Í‚·‚éƒtƒ@ƒCƒ‹–¼
-	 * @return true:¬Œ÷ / false:¸”s
+	 * SQLãƒ€ãƒ³ãƒ—ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param host ãƒªãƒ¢ãƒ¼ãƒˆãƒ›ã‚¹ãƒˆå
+	 * @param db å¯¾è±¡ã®DBå
+	 * @param tables å¯¾è±¡ã®ãƒ†ãƒ¼ãƒ–ãƒ«
+	 * @param file å‡ºåŠ›ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«å
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean execSqlDump(String host, String db, String[] tables, String file) {
 		String opHost = "";
@@ -224,15 +224,15 @@ public class FileUtil {
 	}
 	
 	/**
-	 * ƒRƒ}ƒ“ƒh‚ğÀs‚·‚é
-	 * @param cmd ÀsƒRƒ}ƒ“ƒh
-	 * @param isLongTimeOut ƒ^ƒCƒ€ƒAƒEƒg’l‰„’·ƒtƒ‰ƒO
-	 * @return true:¬Œ÷ / false:¸”s
+	 * ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param cmd å®Ÿè¡Œã‚³ãƒãƒ³ãƒ‰
+	 * @param isLongTimeOut ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤å»¶é•·ãƒ•ãƒ©ã‚°
+	 * @return true:æˆåŠŸ / false:å¤±æ•—
 	 */
 	public static boolean command(String[] cmd, boolean isLongTimeOut) {
-		// ƒRƒ}ƒ“ƒhÀs
+		// ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œ
 		CmdResult res = new CmdExecute(isLongTimeOut).exec(cmd);
-			// ƒGƒ‰[o—Í‚ª‚ ‚ê‚ÎƒƒO‚É‘‚«o‚·
+			// ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ãŒã‚ã‚Œã°ãƒ­ã‚°ã«æ›¸ãå‡ºã™
 		String err = res.getStderr();
 		if ( !err.equals("") ) {
 			String cmdline = "";
@@ -243,7 +243,7 @@ public class FileUtil {
 			String errMsg = crlf + "[Command] " + cmdline + crlf + "[Error Discription]" + crlf + err;
 			Logger.global.warning( errMsg );
 		}
-			// I—¹ƒR[ƒhæ“¾
+			// çµ‚äº†ã‚³ãƒ¼ãƒ‰å–å¾—
 		if ( res.getStatus() != 0 ) {
 			if ( err.indexOf("Using a password on the command line interface can be insecure") == -1 ) {
 				return false;

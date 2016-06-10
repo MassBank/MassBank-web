@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒoƒbƒ`ŒŸõˆ—ƒNƒ‰ƒX
+ * ãƒãƒƒãƒæ¤œç´¢å‡¦ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.3 2010.04.08
  *
@@ -56,7 +56,7 @@ public class BatchJobWorker extends Thread {
 	private boolean isTerminated = false;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @param jobInfo
 	 */
 	public BatchJobWorker(BatchJobInfo jobInfo) {
@@ -132,7 +132,7 @@ public class BatchJobWorker extends Thread {
 					peak += "  " + line;
 				}
 
-				// ƒXƒŒƒbƒhI—¹
+				// ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†
 				if ( isTerminated ) {
 					break;
 				}
@@ -150,7 +150,7 @@ public class BatchJobWorker extends Thread {
 				return;
 			}
 			
-			// ƒ[ƒ‹‘—Mî•ñ¶¬
+			// ãƒ¡ãƒ¼ãƒ«é€ä¿¡æƒ…å ±ç”Ÿæˆ
 			AdminCommon admin = new AdminCommon(BatchService.BASE_URL, BatchService.REAL_PATH);
 			SendMailInfo info = new SendMailInfo(admin.getMailSmtp(), admin.getMailFrom(), this.mailAddress);
 			info.setFromName(admin.getMailName());
@@ -165,29 +165,29 @@ public class BatchJobWorker extends Thread {
 							+ "  E-mail: massbank@iab.keio.ac.jp");
 			
 			
-			// “Y•tƒtƒ@ƒCƒ‹¶¬ˆêƒfƒBƒŒƒNƒgƒŠ
+			// æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆä¸€æ™‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
 			attacheDir = new File(tempDir + "/batch_" + RandomStringUtils.randomAlphanumeric(9));
 			while (attacheDir.exists()) {
 				attacheDir = new File(tempDir + "/batch_" + RandomStringUtils.randomAlphanumeric(9));
 			}
 			attacheDir.mkdir();
 			
-			// “Y•tƒtƒ@ƒCƒ‹¶¬iƒeƒLƒXƒgŒ`®j
+			// æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ï¼‰
 			File textFile = new File(attacheDir.getPath() + "/MassBankResults.txt");
 			textFile.createNewFile();
 			createTextFile(time, f2, textFile);
 			
-			// “Y•tƒtƒ@ƒCƒ‹¶¬iHTMLŒ`®j
+			// æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆHTMLå½¢å¼ï¼‰
 			File htmlFile = new File(attacheDir.getPath() + "/MassBankResults.html");
 			htmlFile.createNewFile();
 			createHtmlFile(time, f2, htmlFile);
 			
 			info.setFiles(new File[]{textFile, htmlFile});
 			
-			// ƒ[ƒ‹‘—M
+			// ãƒ¡ãƒ¼ãƒ«é€ä¿¡
 			SendMail.send(info);
 
-			// ƒWƒ‡ƒuƒGƒ“ƒgƒŠíœ
+			// ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªå‰Šé™¤
 			BatchJobManager job = new BatchJobManager();
 			job.deleteEntry(this.sessionId, this.timeStamp);
 
@@ -206,10 +206,10 @@ public class BatchJobWorker extends Thread {
 	}
 	
 	/**
-	 * “Y•tƒtƒ@ƒCƒ‹¶¬iƒeƒLƒXƒgŒ`®j
-	 * @param time ƒŠƒNƒGƒXƒgó‚¯æ‚èŠÔ 
-	 * @param resultFile Œ‹‰Êƒtƒ@ƒCƒ‹
-	 * @param textFile “Y•t—pƒeƒLƒXƒgƒtƒ@ƒCƒ‹
+	 * æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ï¼‰
+	 * @param time ãƒªã‚¯ã‚¨ã‚¹ãƒˆå—ã‘å–ã‚Šæ™‚é–“ 
+	 * @param resultFile çµæœãƒ•ã‚¡ã‚¤ãƒ«
+	 * @param textFile æ·»ä»˜ç”¨ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«
 	 */
 	private void createTextFile(String time, File resultFile, File textFile) {
 		NumberFormat nf = NumberFormat.getNumberInstance();
@@ -219,7 +219,7 @@ public class BatchJobWorker extends Thread {
 			in = new LineNumberReader(new FileReader(resultFile));
 			out = new PrintWriter(new BufferedWriter(new FileWriter(textFile)));
 			
-			// ƒwƒbƒ_[o—Í
+			// ãƒ˜ãƒƒãƒ€ãƒ¼å‡ºåŠ›
 			String reqIonStr = "Both";
 			try {
 				if (Integer.parseInt(this.ion) > 0) {
@@ -240,7 +240,7 @@ public class BatchJobWorker extends Thread {
 			out.println();
 			out.println();
 			
-			// Œ‹‰Êo—Í
+			// çµæœå‡ºåŠ›
 			String line;
 			long queryCnt = 0;
 			boolean readName = false;
@@ -316,10 +316,10 @@ public class BatchJobWorker extends Thread {
 	}
 	
 	/**
-	 * “Y•tƒtƒ@ƒCƒ‹¶¬iHTMLŒ`®j
-	 * @param time ƒŠƒNƒGƒXƒgó‚¯æ‚èŠÔ 
-	 * @param resultFile Œ‹‰Êƒtƒ@ƒCƒ‹
-	 * @param htmlFile “Y•t—pHTMLƒtƒ@ƒCƒ‹
+	 * æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆï¼ˆHTMLå½¢å¼ï¼‰
+	 * @param time ãƒªã‚¯ã‚¨ã‚¹ãƒˆå—ã‘å–ã‚Šæ™‚é–“ 
+	 * @param resultFile çµæœãƒ•ã‚¡ã‚¤ãƒ«
+	 * @param htmlFile æ·»ä»˜ç”¨HTMLãƒ•ã‚¡ã‚¤ãƒ«
 	 */
 	private void createHtmlFile(String time, File resultFile, File htmlFile) {
 		NumberFormat nf = NumberFormat.getNumberInstance();
@@ -329,7 +329,7 @@ public class BatchJobWorker extends Thread {
 			in = new LineNumberReader(new FileReader(resultFile));
 			out = new PrintWriter(new BufferedWriter(new FileWriter(htmlFile)));
 			
-			// ƒwƒbƒ_[o—Í
+			// ãƒ˜ãƒƒãƒ€ãƒ¼å‡ºåŠ›
 			String reqIonStr = "Both";
 			try {
 				if (Integer.parseInt(this.ion) > 0) {
@@ -352,7 +352,7 @@ public class BatchJobWorker extends Thread {
 			out.println("Ion Mode : " + reqIonStr + "<br>");
 			out.println("<br><hr>");
 			
-			// Œ‹‰Êo—Í
+			// çµæœå‡ºåŠ›
 			String line;
 			long queryCnt = 0;
 			boolean readName = false;
@@ -420,11 +420,11 @@ public class BatchJobWorker extends Thread {
 	}
 	
 	/**
-	 * ŒŸõŒ‹‰Ês‚ÌƒtƒH[ƒ}ƒbƒg
-	 * AccessionATitleAFormulaAIonAScoreAHit ‚Ì‡‚É
-	 * “KØ‚ÈƒtƒH[ƒ}ƒbƒg‚É•ÏŠ·‚µ‚½’l‚ğ”z—ñ‚ÉŠi”[‚µ‚Ä•Ô‹p‚·‚é
-	 * @param line ƒtƒH[ƒ}ƒbƒg‘ÎÛ
-	 * @return ƒtƒH[ƒ}ƒbƒgŒã‚Ì’l‚ğŠi”[‚µ‚½”z—ñ
+	 * æ¤œç´¢çµæœè¡Œã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+	 * Accessionã€Titleã€Formulaã€Ionã€Scoreã€Hit ã®é †ã«
+	 * é©åˆ‡ãªãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«å¤‰æ›ã—ãŸå€¤ã‚’é…åˆ—ã«æ ¼ç´ã—ã¦è¿”å´ã™ã‚‹
+	 * @param line ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå¯¾è±¡
+	 * @return ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå¾Œã®å€¤ã‚’æ ¼ç´ã—ãŸé…åˆ—
 	 */
 	private String[] formatLine(String line) {
 		String[] splitLine = line.split("\t");
@@ -449,7 +449,7 @@ public class BatchJobWorker extends Thread {
 	}
 	
 	/**
-	 * ŒŸõÀs
+	 * æ¤œç´¢å®Ÿè¡Œ
 	 * @param writer
 	 */
 	private void doSearch(PrintWriter writer) {
@@ -500,7 +500,7 @@ public class BatchJobWorker extends Thread {
 	}
 
 	/**
-	 * I—¹ˆ—
+	 * çµ‚äº†å‡¦ç†
 	 */
 	public void setTerminate() {
 		isTerminated = true;

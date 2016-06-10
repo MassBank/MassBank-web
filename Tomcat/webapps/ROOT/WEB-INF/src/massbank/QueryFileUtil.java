@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒNƒGƒŠƒtƒ@ƒCƒ‹‚Ìƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+ * ã‚¯ã‚¨ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2012.02.15
  *
@@ -41,7 +41,7 @@ public class QueryFileUtil {
 	private String filePath = "";
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public QueryFileUtil(String filePath) {
 		this.nameList = new ArrayList<String>();
@@ -62,11 +62,11 @@ public class QueryFileUtil {
 			while ( ( line = in.readLine() ) != null ) {
 				line = line.trim();
 
-				// ƒRƒƒ“ƒgs‚ÍƒXƒLƒbƒv‚·‚é
+				// ã‚³ãƒ¡ãƒ³ãƒˆè¡Œã¯ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 				if ( line.startsWith("//") ) {
 					continue;
 				}
-				// NAMEƒ^ƒO
+				// NAMEã‚¿ã‚°
 				else if ( line.matches("^Name:.*") ) {
 					name = line.replaceFirst("^Name: *", "").trim();
 				}
@@ -99,21 +99,21 @@ public class QueryFileUtil {
 	}
 
 	/**
-	 * –¼‘O‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	 * åå‰ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getNameList() {
 		return this.nameList.toArray(new String[0]);
 	}
 
 	/**
-	 * m/z‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	 * m/zã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getMzs(int index) {
 		return this.mzList.get(index);
 	}
 
 	/**
-	 * ‹­“x‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	 * å¼·åº¦ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getAbsIntensities(int index) {
 		return this.intensityList.get(index);
@@ -121,7 +121,7 @@ public class QueryFileUtil {
 
 
 	/**
-	 * ‘Š‘Î‹­“x‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	 * ç›¸å¯¾å¼·åº¦ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getRelIntensities(int index) {
 
@@ -146,7 +146,7 @@ public class QueryFileUtil {
 	}
 
 	/**
-	 * ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚ğíœ‚·‚é
+	 * ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã™ã‚‹
 	 */
 	public void delete() {
 		File f = new File(this.filePath);
@@ -154,7 +154,7 @@ public class QueryFileUtil {
 	}
 
 	/**
-	 * ƒNƒGƒŠî•ñ‚ğƒŠƒXƒg‚É’Ç‰Á‚·‚é
+	 * ã‚¯ã‚¨ãƒªæƒ…å ±ã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
 	 */
 	private void addList(String name, String peak) {
 		DecimalFormat df = new DecimalFormat("000000");

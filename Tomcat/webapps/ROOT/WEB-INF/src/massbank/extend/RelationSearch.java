@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * Relationship Search‚ÌŒŸõˆ—ÀsƒNƒ‰ƒX
+ * Relationship Searchã®æ¤œç´¢å‡¦ç†å®Ÿè¡Œã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2011.12.06
  *
@@ -56,7 +56,7 @@ public class RelationSearch {
 
 
 	/*
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public RelationSearch(String queryPeakString, String cutoff, String ionMode) {
 		this.ionMode = ionMode;
@@ -64,14 +64,14 @@ public class RelationSearch {
 	}
 
 	/*
-	 * ŒŸõƒpƒ‰ƒ[ƒ^ƒZƒbƒg(Peak Tolerance)
+	 * æ¤œç´¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ(Peak Tolerance)
 	 */
 	public void setPeakTolerance(double val) {
 		this.peakTolerance = val;
 	}
 
 	/*
-	 * ŒŸõƒpƒ‰ƒ[ƒ^ƒZƒbƒg(Precursor)
+	 * æ¤œç´¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ(Precursor)
 	 */
 	public void setPrecursor(String val) {
 		this.precursor =val;
@@ -86,7 +86,7 @@ public class RelationSearch {
 	}
 
 	/*
-	 * ŒŸõƒpƒ‰ƒ[ƒ^ƒZƒbƒg(Mass Tolerance)
+	 * æ¤œç´¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ(Mass Tolerance)
 	 */
 	public void setMassTolerance(double val) {
 		this.massTolerance = val;
@@ -106,12 +106,12 @@ public class RelationSearch {
 	}
 
 	/*
-	 * ƒ}ƒbƒ`‚µ‚½•ªq®‚ğæ“¾‚·‚é
+	 * ãƒãƒƒãƒã—ãŸåˆ†å­å¼ã‚’å–å¾—ã™ã‚‹
 	 */
 	public List<Object[]> getMatchedFormulaList() {
 		List<Object[]> formulaList = new ArrayList();
 		for ( String formula: this.queryIonFormulas ) {
-			// ƒ}ƒbƒ`‚µ‚½•ªq®‚Æ¿—Ê‚ğƒŠƒXƒg‚É“ü‚ê‚é
+			// ãƒãƒƒãƒã—ãŸåˆ†å­å¼ã¨è³ªé‡ã‚’ãƒªã‚¹ãƒˆã«å…¥ã‚Œã‚‹
 			for ( String[] items: this.ionMassList ) {
 				if ( formula.equals(items[0]) ) {
 					TreeSet showNoList = new TreeSet();
@@ -151,14 +151,14 @@ public class RelationSearch {
 	}
 
 	/*
-	 * ŒŸõˆ—
+	 * æ¤œç´¢å‡¦ç†
 	 */
 	public Map<String, RelationSearchResult> doSearch(float threshold) {
 		try {
-			// ƒCƒIƒ“‚Ì•ªq®‚Æ¿—Ê‚Ì‘Î‰ƒŠƒXƒg‚ğæ“¾‚·‚é
+			// ã‚¤ã‚ªãƒ³ã®åˆ†å­å¼ã¨è³ªé‡ã®å¯¾å¿œãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 			this.ionMassList = ChemicalFormulaUtils.getIonMassList();
 
-			// m/z’l‚ª¿—ÊƒŠƒXƒg‚Æˆê’v‚µ‚½•ªq®‚ğæ“¾‚·‚é
+			// m/zå€¤ãŒè³ªé‡ãƒªã‚¹ãƒˆã¨ä¸€è‡´ã—ãŸåˆ†å­å¼ã‚’å–å¾—ã™ã‚‹
 			String[] queryFormulas = ChemicalFormulaUtils.getMatchedFormulas(mzs, this.peakTolerance, this.ionMassList);
 
 			// 
@@ -186,10 +186,10 @@ public class RelationSearch {
 			this.queryIonFormulas = formulaList.toArray(new String[]{});
 
 
-			// •ªq®‚Æ•”•ª\‘¢‚ÌŠÖŒWî•ñ‚ğæ“¾‚·‚é
+			// åˆ†å­å¼ã¨éƒ¨åˆ†æ§‹é€ ã®é–¢ä¿‚æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 			this.rInfoList = new RelationInfoList(this.ionMode);
 
-			// ŠÖŒWî•ñ‚Ì•ªq®ƒŠƒXƒg‚ğì¬‚·‚é
+			// é–¢ä¿‚æƒ…å ±ã®åˆ†å­å¼ãƒªã‚¹ãƒˆã‚’ä½œæˆã™ã‚‹
 			int no = 0;
 			List<String> singleFormulas = new ArrayList();
 			List<String> pairFormulas1  = new ArrayList();
@@ -203,12 +203,12 @@ public class RelationSearch {
 				float precision = Float.valueOf(rInfo1.getPrecision());
 				if ( precision >= threshold ) {
 					if ( formula2.equals("") ) {
-						// •ªq®‚P‚Â‚Ìê‡‚ÌŠÖŒWî•ñ
+						// åˆ†å­å¼ï¼‘ã¤ã®å ´åˆã®é–¢ä¿‚æƒ…å ±
 						singleFormulas.add(formula1);
 						singleArrayIndexs.add(no);
 					}
 					else {
-						// •ªq®‚Q‚Â‚Ì‘g‡‚¹‚ÌŠÖŒWî•ñ
+						// åˆ†å­å¼ï¼’ã¤ã®çµ„åˆã›ã®é–¢ä¿‚æƒ…å ±
 						pairFormulas1.add(formula1);
 						pairFormulas2.add(formula2);
 						pairArrayIndexs.add(no);
@@ -217,7 +217,7 @@ public class RelationSearch {
 				no++;
 			}
 
-			// ‚P‚Â‚Ì•ªq®‚ªˆê’v‚·‚é‚à‚Ì‚ğ’Šo‚·‚é
+			// ï¼‘ã¤ã®åˆ†å­å¼ãŒä¸€è‡´ã™ã‚‹ã‚‚ã®ã‚’æŠ½å‡ºã™ã‚‹
 			for ( int lp = 0; lp < this.queryIonFormulas.length; lp++) {
 				for ( int i = 0; i < singleFormulas.size(); i++ ) {
 					String dbFormula = singleFormulas.get(i);
@@ -228,7 +228,7 @@ public class RelationSearch {
 				}
 			}
 
-			// ‚Q‚Â‚Ì•ªq®‚Ì‘g‡‚¹‚ªˆê’v‚·‚é‚à‚Ì‚ğ’Šo‚·‚é
+			// ï¼’ã¤ã®åˆ†å­å¼ã®çµ„åˆã›ãŒä¸€è‡´ã™ã‚‹ã‚‚ã®ã‚’æŠ½å‡ºã™ã‚‹
 			for ( int lp1 = 0; lp1 < this.queryIonFormulas.length; lp1++) {
 				for ( int lp2 = lp1 + 1; lp2 < this.queryIonFormulas.length; lp2++) {
 					for ( int i = 0; i < pairFormulas1.size(); i++ ) {
@@ -281,7 +281,7 @@ public class RelationSearch {
 							result = this.resultList.get(inchiKey);
 							RelationSearchResult.CompoundInfo cInfo = result.getCompoundInfo();
 
-							// d•¡‚·‚éID‚ª‚È‚¢‚©‚ğƒ`ƒFƒbƒN
+							// é‡è¤‡ã™ã‚‹IDãŒãªã„ã‹ã‚’ãƒã‚§ãƒƒã‚¯
 							boolean isIdFound = false;
 							for ( int i = 0; i < cInfo.getCountId(); i++ ) {
 								if ( id.equals(cInfo.getId(i)) ) {
@@ -289,12 +289,12 @@ public class RelationSearch {
 									break;
 								}
 							}
-							// d•¡‚·‚éID‚ª‚È‚¢ê‡‚ÍƒŠƒXƒg‚É’Ç‰Á‚·‚é
+							// é‡è¤‡ã™ã‚‹IDãŒãªã„å ´åˆã¯ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
 							if ( !isIdFound ) {
 								cInfo.addId(id);
 							}
 
-							// ŠÖŒWî•ñ‚Éd•¡‚ª‚È‚¢‚©‚ğƒ`ƒFƒbƒN
+							// é–¢ä¿‚æƒ…å ±ã«é‡è¤‡ãŒãªã„ã‹ã‚’ãƒã‚§ãƒƒã‚¯
 							for ( int i = 0; i < result.getCountRelationInfo(); i++ ) {
 								RelationInfo rInfo3 = result.getRelationInfo(i);
 								if ( relaNo.equals(rInfo3.getRelationNo())
@@ -306,7 +306,7 @@ public class RelationSearch {
 							}
 						}
 						else {
-							// ‰»‡•¨î•ñ‚ª‚È‚¢ê‡‚ÍƒZƒbƒg‚·‚é
+							// åŒ–åˆç‰©æƒ…å ±ãŒãªã„å ´åˆã¯ã‚»ãƒƒãƒˆã™ã‚‹
 							result = new RelationSearchResult();
 							RelationSearchResult.CompoundInfo cInfo = new RelationSearchResult.CompoundInfo();
 							cInfo.addId(id);
@@ -317,7 +317,7 @@ public class RelationSearch {
 							this.resultList.put(inchiKey, result);
 						}
 
-						// ŠÖŒWî•ñ‚Éd•¡‚ª‚È‚¢ê‡‚ÍƒŠƒXƒg‚É’Ç‰Á‚·‚é
+						// é–¢ä¿‚æƒ…å ±ã«é‡è¤‡ãŒãªã„å ´åˆã¯ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
 						if ( !isRInfoFound ) {
 							result.addRelationInfo(rInfo2);
 							this.showRelaNoList.add(relaNo);
@@ -336,7 +336,7 @@ public class RelationSearch {
 	}
 
 	/*
-	 * ƒqƒbƒg‚µ‚½‚·‚×‚Ä‚ÌƒŠƒŒ[ƒVƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
+	 * ãƒ’ãƒƒãƒˆã—ãŸã™ã¹ã¦ã®ãƒªãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public List<RelationInfo> getHitAllInfoList() {
 		for ( int index: this.hitIndexs ) {
@@ -347,16 +347,16 @@ public class RelationSearch {
 	}
 
 	/*
-	 * ƒqƒbƒg‚µ‚½ƒŠƒŒ[ƒVƒ‡ƒ“”Ô†‚ğæ“¾‚·‚é
+	 * ãƒ’ãƒƒãƒˆã—ãŸãƒªãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç•ªå·ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getShowRelaNumbers() {
 		return (String[])this.showRelaNoList.toArray(new String[]{});
 	}
 
 	/*
-     * ƒs[ƒNi•ªq®j‚Æ•”•ª\‘¢‚Ì‘Î‰‚Íˆê’v‚µ‚½‚ªA
-	 * ‚»‚Ì•”•ª\‘¢‚ğŠÜ‚Ş‰»‡•¨‚ªƒf[ƒ^ƒx[ƒX‚É‘¶İ‚µ‚È‚¢‚à‚Ì‚Ì
-	 * ƒŠƒŒ[ƒVƒ‡ƒ“”Ô†‚ğæ“¾‚·‚é
+     * ãƒ”ãƒ¼ã‚¯ï¼ˆåˆ†å­å¼ï¼‰ã¨éƒ¨åˆ†æ§‹é€ ã®å¯¾å¿œã¯ä¸€è‡´ã—ãŸãŒã€
+	 * ãã®éƒ¨åˆ†æ§‹é€ ã‚’å«ã‚€åŒ–åˆç‰©ãŒãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«å­˜åœ¨ã—ãªã„ã‚‚ã®ã®
+	 * ãƒªãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç•ªå·ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getHiddenRelaNumbers() {
 		TreeSet<String> hiddenRelaNoList = new TreeSet();
@@ -378,7 +378,7 @@ public class RelationSearch {
 	}
 
 	/*
-	 * ƒNƒGƒŠ‚Ìm/z‚Ì’l‚ğæ“¾‚·‚é
+	 * ã‚¯ã‚¨ãƒªã®m/zã®å€¤ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getQueryMzs() {
 		return this.mzs;

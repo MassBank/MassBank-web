@@ -93,7 +93,7 @@ public class SVNServiceManager extends HttpServlet {
 	}
 
 	/**
-	 * サービス終了処理を行う
+	 * 繧ｵ繝ｼ繝薙せ邨ゆｺ�蜃ｦ逅�繧定｡後≧
 	 */
 	public void destroy() {
 		this.isTerminated = true;

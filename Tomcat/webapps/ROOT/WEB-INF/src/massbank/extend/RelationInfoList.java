@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * •ªq®‚Æ•”•ª\‘¢‚ÌŠÖŒWî•ñ‚ğŠi”[‚µ‚½ƒf[ƒ^ƒNƒ‰ƒX
+ * åˆ†å­å¼ã¨éƒ¨åˆ†æ§‹é€ ã®é–¢ä¿‚æƒ…å ±ã‚’æ ¼ç´ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  * 
  * ver 1.0.0 2011.12.06
  *
@@ -40,7 +40,7 @@ public class RelationInfoList {
 	 private List<RelationInfo> infoList = new ArrayList();
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public RelationInfoList(String ionMode) throws SQLException, ClassNotFoundException {
 		Class.forName("com.mysql.jdbc.Driver");
@@ -66,21 +66,21 @@ public class RelationInfoList {
 	}
 
 	/**
-	 * ŠÖŒWî•ñ‚Ì”‚ğæ“¾‚·‚é
+	 * é–¢ä¿‚æƒ…å ±ã®æ•°ã‚’å–å¾—ã™ã‚‹
 	 */
 	public int getCount() {
 		return infoList.size();
 	}
 
 	/**
-	 * w’è‚³‚ê‚½ƒCƒ“ƒfƒbƒNƒX‚ÌŠÖŒWî•ñ‚ğæ“¾‚·‚é
+	 * æŒ‡å®šã•ã‚ŒãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®é–¢ä¿‚æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public RelationInfo getInfo(int index) {
 		return this.infoList.get(index);
 	}
 
 	/**
-	 * w’è‚³‚ê‚½ƒŠƒŒ[ƒVƒ‡ƒ“”Ô†‚Ìî•ñ‚ğæ“¾‚·‚é
+	 * æŒ‡å®šã•ã‚ŒãŸãƒªãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç•ªå·ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public RelationInfo[] getInfos(String[] relaNumbers) {
 		List<RelationInfo> relaNoList = new ArrayList();

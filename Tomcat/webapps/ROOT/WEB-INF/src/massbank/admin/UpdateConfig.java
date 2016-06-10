@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ŠÂ‹«İ’èƒtƒ@ƒCƒ‹‚Ìî•ñ‚ğXV‚·‚éƒNƒ‰ƒX
+ * ç’°å¢ƒè¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã®æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.3 2010.11.25
  *
@@ -51,19 +51,19 @@ public class UpdateConfig {
 	private String confPath;
 	
 	/**
-	 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public UpdateConfig() {
 		String confUrl = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_URL);
 		this.confPath = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_PATH);
 		try {
-			// ƒhƒLƒ…ƒƒ“ƒgƒrƒ‹ƒ_[ƒtƒ@ƒNƒgƒŠ‚ğ¶¬
+			// ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆãƒ“ãƒ«ãƒ€ãƒ¼ãƒ•ã‚¡ã‚¯ãƒˆãƒªã‚’ç”Ÿæˆ
 			DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
 
-			// ƒhƒLƒ…ƒƒ“ƒgƒrƒ‹ƒ_[‚ğ¶¬
+			// ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆãƒ“ãƒ«ãƒ€ãƒ¼ã‚’ç”Ÿæˆ
 			DocumentBuilder builder = dbfactory.newDocumentBuilder();
 
-			// ƒp[ƒX‚ğÀs‚µ‚ÄDocumentƒIƒuƒWƒFƒNƒg‚ğæ“¾
+			// ãƒ‘ãƒ¼ã‚¹ã‚’å®Ÿè¡Œã—ã¦Documentã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
 			this.doc = builder.parse( confUrl );
 		}
 		catch ( Exception e ) {
@@ -72,14 +72,14 @@ public class UpdateConfig {
 	}
 	
 	/**
-	 * ’Ç‰Á
-	 * ˜AŒgƒTƒCƒg‚Ìİ’è‚Ì‚İ’Ç‰Á‚ğ‹–‰Â‚·‚é
-	 * @param siteNo ƒTƒCƒg”Ô†
-	 * @param name ƒTƒCƒg–¼Ì
-	 * @param longName ƒƒ“ƒOƒTƒCƒg–¼Ì
-	 * @param url ƒT[ƒoURL
-	 * @param db DB–¼Ì
-	 * @return Œ‹‰Ê
+	 * è¿½åŠ 
+	 * é€£æºã‚µã‚¤ãƒˆã®è¨­å®šã®ã¿è¿½åŠ ã‚’è¨±å¯ã™ã‚‹
+	 * @param siteNo ã‚µã‚¤ãƒˆç•ªå·
+	 * @param name ã‚µã‚¤ãƒˆåç§°
+	 * @param longName ãƒ­ãƒ³ã‚°ã‚µã‚¤ãƒˆåç§°
+	 * @param url ã‚µãƒ¼ãƒURL
+	 * @param db DBåç§°
+	 * @return çµæœ
 	 */
 	public boolean addConfig(int siteNo, String name, String longName, String url, String db) {
 		if ( siteNo == MYSVR_INFO_NUM ) {
@@ -92,14 +92,14 @@ public class UpdateConfig {
 	}
 	
 	/**
-	 * •ÒW
-	 * @param siteNo ƒTƒCƒg”Ô†
-	 * @param internalSiteList “à•”ƒTƒCƒg”Ô†ƒŠƒXƒg
-	 * @param name ƒTƒCƒg–¼Ì
-	 * @param longName ƒƒ“ƒOƒTƒCƒg–¼Ì
-	 * @param url ƒT[ƒoURL
-	 * @param db DB–¼Ì
-	 * @return Œ‹‰Ê
+	 * ç·¨é›†
+	 * @param siteNo ã‚µã‚¤ãƒˆç•ªå·
+	 * @param internalSiteList å†…éƒ¨ã‚µã‚¤ãƒˆç•ªå·ãƒªã‚¹ãƒˆ
+	 * @param name ã‚µã‚¤ãƒˆåç§°
+	 * @param longName ãƒ­ãƒ³ã‚°ã‚µã‚¤ãƒˆåç§°
+	 * @param url ã‚µãƒ¼ãƒURL
+	 * @param db DBåç§°
+	 * @return çµæœ
 	 */
 	public boolean editConfig(int siteNo, ArrayList<Integer> internalSiteList, String name, String longName, String url, String db) {
 		setSetting("Name", siteNo, name);
@@ -111,7 +111,7 @@ public class UpdateConfig {
 					setSetting("URL", internalSiteNo, url);
 				}
 			}
-			// BaseUrl XV
+			// BaseUrl æ›´æ–°
 			MassBankEnv.setBaseUrl(url);
 		}
 		else {
@@ -126,10 +126,10 @@ public class UpdateConfig {
 	}
 	
 	/**
-	 * íœ
-	 * ˜AŒgƒTƒCƒg‚Ìİ’è‚Ì‚İíœ‚ğ‹–‰Â‚·‚é
-	 * @param ƒTƒCƒg”Ô†
-	 * @return Œ‹‰Ê
+	 * å‰Šé™¤
+	 * é€£æºã‚µã‚¤ãƒˆã®è¨­å®šã®ã¿å‰Šé™¤ã‚’è¨±å¯ã™ã‚‹
+	 * @param ã‚µã‚¤ãƒˆç•ªå·
+	 * @return çµæœ
 	 */
 	public boolean delConfig(int siteNo) {
 		if ( siteNo == MYSVR_INFO_NUM ) {
@@ -142,12 +142,12 @@ public class UpdateConfig {
 	}
 	
 	/**
-	 * •ÒW‹¤’Êˆ—
+	 * ç·¨é›†å…±é€šå‡¦ç†
 	 */
 	private boolean setSetting( String tagName, int siteNo, String value ) {
 		boolean ret = false;
 		
-		// İ’èˆ—
+		// è¨­å®šå‡¦ç†
 		if (siteNo == MYSVR_INFO_NUM) {
 			ret = setServerSetting(tagName, siteNo, value);
 		}
@@ -158,7 +158,7 @@ public class UpdateConfig {
 	}
 	
 	/**
-	 * ©ƒT[ƒo[‚Ìİ’è‚ğ•ÒW‚·‚é
+	 * è‡ªã‚µãƒ¼ãƒãƒ¼ã®è¨­å®šã‚’ç·¨é›†ã™ã‚‹
 	 */
 	private boolean setServerSetting(String tagName, int siteNo, String value) {
 		try {
@@ -190,7 +190,7 @@ public class UpdateConfig {
 	}
 	
 	/**
-	 * ˜AŒgƒTƒCƒg‚Ìİ’è‚ğ•ÒW‚·‚é
+	 * é€£æºã‚µã‚¤ãƒˆã®è¨­å®šã‚’ç·¨é›†ã™ã‚‹
 	 */
 	private boolean setRelatedSetting(String tagName, int siteNo, String value) {
 		boolean ret = false;
@@ -225,17 +225,17 @@ public class UpdateConfig {
 	
 	
 	/**
-	 * ˜AŒgƒTƒCƒg‚Ìİ’è‚ğ’Ç‰Á‚·‚é
-	 * @param name ƒTƒCƒg–¼Ì
-	 * @param longName ƒƒ“ƒOƒTƒCƒg–¼Ì
-	 * @param url ƒT[ƒoURL
-	 * @param db DB–¼Ì
-	 * @return Œ‹‰Ê
+	 * é€£æºã‚µã‚¤ãƒˆã®è¨­å®šã‚’è¿½åŠ ã™ã‚‹
+	 * @param name ã‚µã‚¤ãƒˆåç§°
+	 * @param longName ãƒ­ãƒ³ã‚°ã‚µã‚¤ãƒˆåç§°
+	 * @param url ã‚µãƒ¼ãƒURL
+	 * @param db DBåç§°
+	 * @return çµæœ
 	 */
 	private boolean addRelatedSetting(String name, String longName, String url, String db) {
 		boolean ret = false;
 		try {
-			// ƒm[ƒh’Ç‰Áˆ—
+			// ãƒãƒ¼ãƒ‰è¿½åŠ å‡¦ç†
 			Node root = doc.getDocumentElement();
 			if (root.getNodeType() == Node.ELEMENT_NODE ) {
 			
@@ -261,7 +261,7 @@ public class UpdateConfig {
 				siteNode.appendChild(dbNode);
 				siteNode.appendChild(browseModeNode);
 				
-				// Timeout ƒ^ƒO‚Ì‘O‚Éƒm[ƒh‚ğ’Ç‰Á
+				// Timeout ã‚¿ã‚°ã®å‰ã«ãƒãƒ¼ãƒ‰ã‚’è¿½åŠ 
 				NodeList tmpNodeList = ((Element)root).getElementsByTagName("Timeout");
 				if ( tmpNodeList.getLength() > 0 ) {
 					root.insertBefore((Node)siteNode, tmpNodeList.item(0));
@@ -280,9 +280,9 @@ public class UpdateConfig {
 	}
 	
 	/**
-	 * ˜AŒgƒTƒCƒg‚Ìİ’è‚ğíœ‚·‚é
-	 * @param siteNo ƒTƒCƒg”Ô†
-	 * @return Œ‹‰Ê
+	 * é€£æºã‚µã‚¤ãƒˆã®è¨­å®šã‚’å‰Šé™¤ã™ã‚‹
+	 * @param siteNo ã‚µã‚¤ãƒˆç•ªå·
+	 * @return çµæœ
 	 */
 	private boolean delRelatedSetting(int siteNo) {
 		boolean ret = false;
@@ -304,8 +304,8 @@ public class UpdateConfig {
 	}
 	
     /**
-     * İ’èî•ñ‚Ì‘‚«‚İˆ—
-     * @return Œ‹‰Ê
+     * è¨­å®šæƒ…å ±ã®æ›¸ãè¾¼ã¿å‡¦ç†
+     * @return çµæœ
      */
     private boolean saveConf(){
 
@@ -320,7 +320,7 @@ public class UpdateConfig {
 			return false;
 		}
 		
-		// ‘‚«o‚µ
+		// æ›¸ãå‡ºã—
 		try {
 			tf.transform(new DOMSource( doc ), new StreamResult( new File(confPath) ) );
 		} catch (TransformerException e) {

@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] ƒŒƒR[ƒhî•ñŠi”[ƒf[ƒ^ƒNƒ‰ƒX
+ * [WEB-API] ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±æ ¼ç´ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2009.08.19
  *
@@ -31,34 +31,34 @@ public class RecordInfo {
 	private String info = "";
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public RecordInfo() {
 	}
 
 	/**
-	 * ID‚ğƒZƒbƒg‚·‚é
+	 * IDã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setId(String val) {
 		this.id = val;
 	}
 
 	/**
-	 * ƒŒƒR[ƒhî•ñ‚ğƒZƒbƒg‚·‚é
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setInfo(String val) {
 		this.info = val;
 	}
 
 	/**
-	 * ID‚ğæ“¾‚·‚é
+	 * IDã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getId() {
 		return this.id;
 	}
 
 	/*
-	 * ƒŒƒR[ƒhî•ñ‚ğæ“¾‚·‚é
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getInfo() {
 		return this.info;

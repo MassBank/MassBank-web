@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] ƒpƒ‰ƒ[ƒ^ˆ—ƒNƒ‰ƒX
+ * [WEB-API] ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å‡¦ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.3 2011.08.08
  *
@@ -39,7 +39,7 @@ public class ApiParameter {
 	private ArrayList<String> errDetails = null;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public ApiParameter(String type, Map<String,Object> mapParam) {
 		this.type = type;
@@ -48,13 +48,13 @@ public class ApiParameter {
 	}
 
 	/**
-	 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public ApiParameter() {
 	}
 
 	/**
-	 * ƒpƒ‰ƒ[ƒ^‚ğƒ`ƒFƒbƒN‚·‚é
+	 * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	 */
 	public boolean check() {
 		if ( type.equals("searchSpectrum") ) {
@@ -64,10 +64,10 @@ public class ApiParameter {
 			checkSearchPeak();
 		}
 
-		// ‹¤’Ê€–Úƒ`ƒFƒbƒN
+		// å…±é€šé …ç›®ãƒã‚§ãƒƒã‚¯
 		checkSearchCommon();
 
-		// ƒGƒ‰[‚ª‚ ‚é‚©
+		// ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚‹ã‹
 		boolean ret = true;
 		if ( errDetails.size() > 0 ) {
 			ret = false;
@@ -76,7 +76,7 @@ public class ApiParameter {
 	}
 
 	/**
-	 * CGI—p‚ğƒpƒ‰ƒ[ƒ^æ“¾‚·‚é
+	 * CGIç”¨ã‚’ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å–å¾—ã™ã‚‹
 	 */
 	public String getCgiParam() {
 		return this.param;
@@ -84,10 +84,10 @@ public class ApiParameter {
 
 
 	/**
-	 * CGI—pƒpƒ‰ƒ[ƒ^(ID)‚ğæ“¾‚·‚é
+	 * CGIç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(ID)ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getCgiParamId( String[] ids ) {
-		// ID‚Ìd•¡‚ğ”rœ‚µAƒ\[ƒg‚·‚é
+		// IDã®é‡è¤‡ã‚’æ’é™¤ã—ã€ã‚½ãƒ¼ãƒˆã™ã‚‹
 		TreeSet<String> tree = new TreeSet<String>();
 		for ( int i = 0; i < ids.length; i ++ ) {
 			tree.add(ids[i]);
@@ -106,7 +106,7 @@ public class ApiParameter {
 
 
 	/**
-	 * ƒGƒ‰[Ú×î•ñ‚ğæ“¾‚·‚é
+	 * ã‚¨ãƒ©ãƒ¼è©³ç´°æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getErrorDetail() {
 		String errDetail = "";
@@ -119,7 +119,7 @@ public class ApiParameter {
 
 
 	/**
-	 * searchSpectrum ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^‚ğƒ`ƒFƒbƒN‚·‚é
+	 * searchSpectrum ãƒ¡ã‚½ãƒƒãƒ‰ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	 */
 	private void checkSearchSpectrum() {
 		//---------------------------------------
@@ -146,11 +146,11 @@ public class ApiParameter {
 			}
 		}
 		else {
-			// "unit", "ppm" ˆÈŠO‚ÍƒGƒ‰[
+			// "unit", "ppm" ä»¥å¤–ã¯ã‚¨ãƒ©ãƒ¼
 			errDetails.add( "unit=" + unit );
 		}
 
-		// ”’l‚Å‚ ‚é‚©ƒ`ƒFƒbƒN
+		// æ•°å€¤ã§ã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 		if ( !tolerance.equals("") && !NumberUtils.isNumber(tolerance) ) {
 			errDetails.add( "tolerance=" + tolerance );
 		}
@@ -179,12 +179,12 @@ public class ApiParameter {
 		String[] mzs = (String[])mapParam.get("mzs");
 		String[] intensities = (String[])mapParam.get("intensities");
 
-		// mzs‚Æintensities‚Ì”‚ğƒ`ƒFƒbƒN
+		// mzsã¨intensitiesã®æ•°ã‚’ãƒã‚§ãƒƒã‚¯
 		if ( mzs.length != intensities.length ) {
 			errDetails.add( "number of \"mzs\" NOT EQUAL number of \"intensities\"");
 		}
 		else {
-			// â‘Î->‘Š‘Î‹­“x‚Ö•ÏŠ·‚·‚é
+			// çµ¶å¯¾->ç›¸å¯¾å¼·åº¦ã¸å¤‰æ›ã™ã‚‹
 			Double maxInte = 0.0;
 			for ( int i = 0; i < intensities.length; i++ ) {
 				Double inte = Double.parseDouble(intensities[i]);
@@ -213,7 +213,7 @@ public class ApiParameter {
 
 
 	/**
-	 * searchSpectrum ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^‚ğƒ`ƒFƒbƒN‚·‚é
+	 * searchSpectrum ãƒ¡ã‚½ãƒƒãƒ‰ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	 */
 	private void checkSearchPeak() {
 		//---------------------------------------
@@ -254,7 +254,7 @@ public class ApiParameter {
 	}
 
 	/**
-	 * ‹¤’Ê€–Ú‚ğƒ`ƒFƒbƒN‚·‚é
+	 * å…±é€šé …ç›®ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	 */
 	private void checkSearchCommon() {
 		//---------------------------------------

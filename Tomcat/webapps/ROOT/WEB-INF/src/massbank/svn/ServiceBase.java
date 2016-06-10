@@ -50,7 +50,7 @@ public class ServiceBase extends Thread {
 	}
 
 	/**
-	 * I—¹ƒtƒ‰ƒO‚ðƒZƒbƒg‚·‚é
+	 * çµ‚äº†ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setTerminate() {
 		this.isTerminated = true;

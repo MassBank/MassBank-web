@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * KEGG Pathwayへの色付け
+ * KEGG Pathway縺ｸ縺ｮ濶ｲ莉倥￠
  *
  * ver 1.0.0 2010.10.13
  *
@@ -36,7 +36,7 @@ public class ColorPathway implements Callable<HashMap<String, String>> {
 	private String[] cpds;
 
 	/**
-	 * コンストラクタ
+	 * 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
 	 */
 	public ColorPathway(String map, String[] cpds) {
 		this.map = map;

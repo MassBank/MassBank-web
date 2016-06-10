@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒWƒ‡ƒuŠÇ—ƒNƒ‰ƒX
+ * ã‚¸ãƒ§ãƒ–ç®¡ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.2 2013.10.28
  *
@@ -52,7 +52,7 @@ public class JobManager {
 	private String connectUrl;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public JobManager() {
 		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
@@ -60,12 +60,12 @@ public class JobManager {
 			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
 		}
 		this.connectUrl = "jdbc:mysql://" + dbHostName + "/" + DB_NAME;
-		// DBÚ‘±
+		// DBæ¥ç¶š
 		connectDB();
 	}
 
 	/**
-	 * ƒWƒ‡ƒu‚ğ’Ç‰Á‚·‚é
+	 * ã‚¸ãƒ§ãƒ–ã‚’è¿½åŠ ã™ã‚‹
 	 */
 	public String addJobInfo(JobInfo newJobInfo) throws SQLException {
 		String jobId = UUID.randomUUID().toString();
@@ -77,7 +77,7 @@ public class JobManager {
 	}
 
 	/**
-	 * w’è‚µ‚½ƒWƒ‡ƒuID‚Ìî•ñ‚ğæ“¾‚·‚é
+	 * æŒ‡å®šã—ãŸã‚¸ãƒ§ãƒ–IDã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public JobInfo getJobInfo(String jobId) throws SQLException {
 		JobInfo retJobInfo = null;
@@ -102,7 +102,7 @@ public class JobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒu‚Ìó‘Ô‚ğ‰Šú‰»‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã®çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹
 	  */
 	public void setInitStatus() throws SQLException {
 		String sql = "update " + TABLE_NAME + " set STATUS='" + STATE_WAIT + "' where STATUS='" + STATE_RUN + "'";
@@ -110,28 +110,28 @@ public class JobManager {
 	}
 
 	/**
-	  * w’è‚³‚ê‚½ƒWƒ‡ƒu‚Ìó‘Ô‚ğ"Invalid"‚É‚·‚é
+	  * æŒ‡å®šã•ã‚ŒãŸã‚¸ãƒ§ãƒ–ã®çŠ¶æ…‹ã‚’"Invalid"ã«ã™ã‚‹
 	  */
 	public void setInvalid(String jobId) throws SQLException {
 		updateStatus(jobId, STATE_INVALID);
 	}
 
 	/**
-	  * w’è‚³‚ê‚½ƒWƒ‡ƒu‚Ìó‘Ô‚ğ"Rinning"‚É‚·‚é
+	  * æŒ‡å®šã•ã‚ŒãŸã‚¸ãƒ§ãƒ–ã®çŠ¶æ…‹ã‚’"Rinning"ã«ã™ã‚‹
 	  */
 	public void setRunning(String jobId) throws SQLException {
 		updateStatus(jobId, STATE_RUN);
 	}
 
 	/**
-	  * w’è‚³‚ê‚½ƒWƒ‡ƒu‚Ìó‘Ô‚ğ"Completed"‚É‚·‚é
+	  * æŒ‡å®šã•ã‚ŒãŸã‚¸ãƒ§ãƒ–ã®çŠ¶æ…‹ã‚’"Completed"ã«ã™ã‚‹
 	  */
 	public void setCompleted(String jobId) throws SQLException {
 		updateStatus(jobId, STATE_COMPLETE);
 	}
 
 	/**
-	 * ŒŸõŒ‹‰Ê‚ğƒZƒbƒg‚·‚é
+	 * æ¤œç´¢çµæœã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setResult(String jobId, String resultFilePath) throws IOException, SQLException {
 		File file = new File(resultFilePath);
@@ -153,7 +153,7 @@ public class JobManager {
 				break;
 			}
 			catch ( SQLException e) {
-				// DBØ’f‚ÉÄÚ‘±‚·‚é
+				// DBåˆ‡æ–­æ™‚ã«å†æ¥ç¶šã™ã‚‹
 				String state = e.getSQLState();
 				// 08003 : Connection not open
 				// 08S01 : Communication link failure
@@ -168,7 +168,7 @@ public class JobManager {
 	}
 
 	/**
-	  * –¢ÀsƒWƒ‡ƒu‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	  * æœªå®Ÿè¡Œã‚¸ãƒ§ãƒ–ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	  */
 	public ArrayList<JobInfo> getWaitJobList() throws SQLException {
 		String sql = "select * from " + TABLE_NAME + " where STATUS='" + STATE_WAIT + "' order by TIME_STAMP";
@@ -194,7 +194,7 @@ public class JobManager {
 	}
 
 	/**
-	  * Às’†‚ÌƒWƒ‡ƒu”‚ğæ“¾‚·‚é
+	  * å®Ÿè¡Œä¸­ã®ã‚¸ãƒ§ãƒ–æ•°ã‚’å–å¾—ã™ã‚‹
 	  */
 	public int getNumRunJob() throws SQLException  {
 		String sql = "select count(JOB_ID) from " + TABLE_NAME + " where STATUS='" + STATE_RUN + "'";
@@ -206,7 +206,7 @@ public class JobManager {
 	}
 
 	/**
-	  * d•¡ƒWƒ‡ƒuƒGƒ“ƒgƒŠ‚ğ—L–³‚ğƒ`ƒFƒbƒN‚·‚é
+	  * é‡è¤‡ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªã‚’æœ‰ç„¡ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	  */
 	public boolean checkDuplicateEntry(JobInfo newJobInfo) throws SQLException {
 		ArrayList<JobInfo> entryList = getWaitJobList();
@@ -223,7 +223,7 @@ public class JobManager {
 			String fileSize  = jobInfo.getQueryFileSize();
 			String sParam    = jobInfo.getSearchParam();
 
-			// “¯ˆêƒZƒbƒVƒ‡ƒ“‚Åƒtƒ@ƒCƒ‹–¼,ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª“¯‚¶
+			// åŒä¸€ã‚»ãƒƒã‚·ãƒ§ãƒ³ã§ãƒ•ã‚¡ã‚¤ãƒ«å,ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒåŒã˜
 			if ( sessionId.equals(newJobInfo.getSessionId())
 			  && fileName.equals(newJobInfo.getQueryFileName())
 			  && fileSize.equals(newJobInfo.getQueryFileSize())
@@ -231,7 +231,7 @@ public class JobManager {
 				return false;
 			}
 
-		// “¯ˆêIPƒAƒhƒŒƒX‚ÅŠù‚ÉÀs‚³‚ê‚Ä‚¢‚éƒWƒ‡ƒu‚ª‚ ‚é‚©
+		// åŒä¸€IPã‚¢ãƒ‰ãƒ¬ã‚¹ã§æ—¢ã«å®Ÿè¡Œã•ã‚Œã¦ã„ã‚‹ã‚¸ãƒ§ãƒ–ãŒã‚ã‚‹ã‹
 //			if ( ipAddress.equals(newJobInfo.getIpAddr()) ) {
 //				if ( ++cnt >= 3 ) {
 //					return false;
@@ -242,7 +242,7 @@ public class JobManager {
 	}
 
 	/**
-	 * I—¹ˆ—
+	 * çµ‚äº†å‡¦ç†
 	 */
 	public void end() {
 		try {
@@ -254,7 +254,7 @@ public class JobManager {
 	}
 
 	/**
-	 * ƒWƒ‡ƒuî•ñ‚ğDB‚É‘‚«‚Ş
+	 * ã‚¸ãƒ§ãƒ–æƒ…å ±ã‚’DBã«æ›¸ãè¾¼ã‚€
 	 */
 	private void insertDB() throws SQLException {
 		String vals = "";
@@ -274,7 +274,7 @@ public class JobManager {
 	}
 
 	/**
-	 * ó‘Ô‚ğXV‚·‚é
+	 * çŠ¶æ…‹ã‚’æ›´æ–°ã™ã‚‹
 	 */
 	private void updateStatus(String jobId, String val) throws SQLException {
 		String sql = "update " + TABLE_NAME + " set STATUS='" + val + "' where JOB_ID='" + jobId + "'";
@@ -282,18 +282,18 @@ public class JobManager {
 	}
 
 	/**
-	 * DBÚ‘±‚·‚é
+	 * DBæ¥ç¶šã™ã‚‹
 	 */
 	private boolean connectDB() {
-		// - note:massbank.admin.DatabaseAccess ‚Í”r‘¼‚É‚È‚Á‚Ä‚¢‚é‚Ì‚Å•sg—p
+		// - note:massbank.admin.DatabaseAccess ã¯æ’ä»–ã«ãªã£ã¦ã„ã‚‹ã®ã§ä¸ä½¿ç”¨
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			this.con = DriverManager.getConnection(this.connectUrl, "bird", "bird2006");
 
-			// ©“®ƒRƒ~ƒbƒgƒ‚[ƒh‚ğ‰ğœ
+			// è‡ªå‹•ã‚³ãƒŸãƒƒãƒˆãƒ¢ãƒ¼ãƒ‰ã‚’è§£é™¤
 			con.setAutoCommit(false);
 
-			// ƒgƒ‰ƒ“ƒUƒNƒVƒ‡ƒ“•ª—£ƒŒƒxƒ‹‚ğƒZƒbƒg
+			// ãƒˆãƒ©ãƒ³ã‚¶ã‚¯ã‚·ãƒ§ãƒ³åˆ†é›¢ãƒ¬ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
 			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 
 			this.stmt = con.createStatement();
@@ -306,7 +306,7 @@ public class JobManager {
 	}
 
 	/**
-	 * SQL QUERY‚ğÀs‚ğ‚·‚é
+	 * SQL QUERYã‚’å®Ÿè¡Œã‚’ã™ã‚‹
 	 */
 	private ResultSet execQuery(String sql) {
 		for ( int i = 0; i < 2; i++ ) {
@@ -315,7 +315,7 @@ public class JobManager {
 				return rs;
 			}
 			catch (SQLException e) {
-				// DBØ’f‚ÉÄÚ‘±‚·‚é
+				// DBåˆ‡æ–­æ™‚ã«å†æ¥ç¶šã™ã‚‹
 				String state = e.getSQLState();
 				// 08003 : Connection not open
 				// 08S01 : Communication link failure
@@ -331,7 +331,7 @@ public class JobManager {
 	}
 
 	/**
-	 * SQL UPDATE‚ğÀs‚ğÀs‚ğ‚·‚é
+	 * SQL UPDATEã‚’å®Ÿè¡Œã‚’å®Ÿè¡Œã‚’ã™ã‚‹
 	 */
 	private void execUpdate(String sql) {
 		for ( int i = 0; i < 2; i++ ) {
@@ -341,7 +341,7 @@ public class JobManager {
 				break;
 			}
 			catch (SQLException e) {
-				// DBØ’f‚ÉÄÚ‘±‚·‚é
+				// DBåˆ‡æ–­æ™‚ã«å†æ¥ç¶šã™ã‚‹
 				String state = e.getSQLState();
 				// 08003 : Connection not open
 				// 08S01 : Communication link failure

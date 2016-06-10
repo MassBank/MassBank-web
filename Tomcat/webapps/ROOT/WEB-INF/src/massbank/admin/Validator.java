@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒŒƒR[ƒhƒoƒŠƒf[ƒ^
+ * ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒãƒªãƒ‡ãƒ¼ã‚¿
  *
  * ver 1.0.4 2010.11.25
  *
@@ -30,7 +30,7 @@ import java.io.FileReader;
 
 public class Validator {
 
-	/** •K{€–Ú‚Ì–¼Ì **/
+	/** å¿…é ˆé …ç›®ã®åç§° **/
 	private static final String MANDATORY_ITEM [] = {
 		"ACCESSION", "RECORD_TITLE", "DATE", "AUTHORS", "COPYRIGHT", "CH$NAME", "CH$FORMULA",
 		"CH$EXACT_MASS", "CH$SMILES", "CH$IUPAC", "AC$INSTRUMENT", "AC$INSTRUMENT_TYPE",
@@ -41,14 +41,14 @@ public class Validator {
 	private String errMsgMandaroty = "";
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public Validator( String filePath ) {
 
 		boolean[] isExists = new boolean[MANDATORY_ITEM.length];
 
 		try {
-			// ƒtƒ@ƒCƒ‹“Ç‚İ
+			// ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
 			BufferedReader in = new BufferedReader( new FileReader(filePath) );
 			String line = "";
 			while ( ( line = in.readLine() ) != null ) {
@@ -60,14 +60,14 @@ public class Validator {
 					isExists[index] = true;
 				}
 
-				// ’l‚ª‚È‚¢‚à‚Ì‚ğo—Í
+				// å€¤ãŒãªã„ã‚‚ã®ã‚’å‡ºåŠ›
 				if ( !name.equals("") && !name.equals("MS$PROFILE") && value.equals("") ) {
 					this.errMsgValue += "&nbsp;\"" + name + "\" ";
 				}
 			}
 			in.close();
 
-			// •K{€–Ú‚Ì‹Lq‚ª‚È‚¢‚Ì‚à‚Ì‚ğo—Í
+			// å¿…é ˆé …ç›®ã®è¨˜è¿°ãŒãªã„ã®ã‚‚ã®ã‚’å‡ºåŠ›
 			for ( int i = 0; i < MANDATORY_ITEM.length; i++ ) {
 				if ( !isExists[i] ) {
 					this.errMsgMandaroty += "&nbsp;\"" + MANDATORY_ITEM[i] + "\" ";
@@ -104,7 +104,7 @@ public class Validator {
 			name = line.substring( 0, pos );
 			int pos2 = pos + 2;
 			if ( line.length() > pos2 ) {
-				//** AC$ANALYTICAL_CONDITION‚Ìê‡
+				//** AC$ANALYTICAL_CONDITIONã®å ´åˆ
 				if ( name.equals("AC$ANALYTICAL_CONDITION") ) {
 					pos = line.indexOf( " ", pos2 );
 					if ( pos >= 0 ) {

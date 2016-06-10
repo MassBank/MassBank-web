@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] ƒs[ƒNî•ñŠi”[ƒf[ƒ^ƒNƒ‰ƒX
+ * [WEB-API] ãƒ”ãƒ¼ã‚¯æƒ…å ±æ ¼ç´ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2009.08.19
  *
@@ -34,7 +34,7 @@ public class Peak {
 	private ArrayList<String> inteList = null;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public Peak() {
 		mzList = new ArrayList();
@@ -57,7 +57,7 @@ public class Peak {
 	}
 
 	/**
-	 * ID‚ğæ“¾‚·‚é
+	 * IDã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getId() {
 		return this.id;

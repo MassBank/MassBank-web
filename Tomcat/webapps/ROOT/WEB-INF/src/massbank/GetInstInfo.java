@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * INSTRUMENTî•ñ‚ÆMSî•ñ‚ğæ“¾‚·‚éƒNƒ‰ƒX
+ * INSTRUMENTæƒ…å ±ã¨MSæƒ…å ±ã‚’å–å¾—ã™ã‚‹ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.10 2011.07.22
  *
@@ -39,10 +39,10 @@ public class GetInstInfo {
 	private int index = 0;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * ƒŒƒR[ƒhƒtƒH[ƒ}ƒbƒgƒo[ƒWƒ‡ƒ“2‚Ì
-	 * INSTRUMENTî•ñ‚ÆMSî•ñ‚ğæ“¾‚·‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param baseUrl ƒx[ƒXURL
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒãƒ¼ã‚¸ãƒ§ãƒ³2ã®
+	 * INSTRUMENTæƒ…å ±ã¨MSæƒ…å ±ã‚’å–å¾—ã™ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param baseUrl ãƒ™ãƒ¼ã‚¹URL
 	 */
 	public GetInstInfo( String baseUrl ) {
 		String urlParam = "ver=2";
@@ -50,12 +50,12 @@ public class GetInstInfo {
 	}
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * ƒŒƒR[ƒhƒtƒH[ƒ}ƒbƒgƒo[ƒWƒ‡ƒ“‚ÆPeakSearchAdvancedƒtƒ‰ƒO‚ğw’è‚µ‚Ä
-	 * INSTRUMENTî•ñ‚ÆMSî•ñ‚ğæ“¾‚·‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param baseUrl ƒx[ƒXURL
-	 * @param formatVer MassBankƒŒƒR[ƒhƒtƒH[ƒ}ƒbƒgƒo[ƒWƒ‡ƒ“
-	 * @param isPeakAdv PeakSearchAdvancedƒtƒ‰ƒO
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¨PeakSearchAdvancedãƒ•ãƒ©ã‚°ã‚’æŒ‡å®šã—ã¦
+	 * INSTRUMENTæƒ…å ±ã¨MSæƒ…å ±ã‚’å–å¾—ã™ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param baseUrl ãƒ™ãƒ¼ã‚¹URL
+	 * @param formatVer MassBankãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒãƒ¼ã‚¸ãƒ§ãƒ³
+	 * @param isPeakAdv PeakSearchAdvancedãƒ•ãƒ©ã‚°
 	 */
 	public GetInstInfo( String baseUrl, int formatVer, boolean isPeakAdv ) {
 		String urlParam = "ver=" + formatVer;
@@ -66,9 +66,9 @@ public class GetInstInfo {
 	}
 	
 	/**
-	 * ‘•’uí•ÊAMSí•Êî•ñæ“¾
-	 * @param baseUrl ƒx[ƒXURL
-	 * @param urlParam CGIÀs‚Ìƒpƒ‰ƒ[ƒ^
+	 * è£…ç½®ç¨®åˆ¥ã€MSç¨®åˆ¥æƒ…å ±å–å¾—
+	 * @param baseUrl ãƒ™ãƒ¼ã‚¹URL
+	 * @param urlParam CGIå®Ÿè¡Œæ™‚ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	 */
 	private void getInformation( String baseUrl, String urlParam ) {
 		GetConfig conf = new GetConfig(baseUrl);
@@ -116,35 +116,35 @@ public class GetInstInfo {
 	}
 	
 	/**
-	 * ƒTƒCƒgƒCƒ“ƒfƒbƒNƒX‚ğƒZƒbƒg
+	 * ã‚µã‚¤ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 	 */ 
 	public void setIndex(int index) {
 		this.index = index;
 	}
 
 	/**
-	 * INSTRUMENT_TYPE_NO‚ğæ“¾
+	 * INSTRUMENT_TYPE_NOã‚’å–å¾—
 	 */ 
 	public String[] getNo() {
 		return (String[])this.instNo[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_NAME‚ğæ“¾
+	 * INSTRUMENT_NAMEã‚’å–å¾—
 	 */
 	public String[] getName() {
 		return (String[])this.instName[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_TYPE‚ğæ“¾
+	 * INSTRUMENT_TYPEã‚’å–å¾—
 	 */
 	public String[] getType() {
 		return (String[])this.instType[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_TYPE‚ğæ“¾id•¡‚È‚µ‚Å‘SƒTƒCƒg•ª‚ğæ“¾j
+	 * INSTRUMENT_TYPEã‚’å–å¾—ï¼ˆé‡è¤‡ãªã—ã§å…¨ã‚µã‚¤ãƒˆåˆ†ã‚’å–å¾—ï¼‰
 	 */
 	public String[] getTypeAll() {
 		ArrayList<String> instTypeList = new ArrayList<String>();
@@ -156,13 +156,13 @@ public class GetInstInfo {
 				}
 			}
 		}
-		// –¼‘O‡‚Åƒ\[ƒg
+		// åå‰é †ã§ã‚½ãƒ¼ãƒˆ
 		Collections.sort( instTypeList );
 		return (String[])instTypeList.toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_TYPE‚ÌƒOƒ‹[ƒvî•ñ‚ğæ“¾
+	 * INSTRUMENT_TYPEã®ã‚°ãƒ«ãƒ¼ãƒ—æƒ…å ±ã‚’å–å¾—
 	 */
 	public Map<String, List<String>> getTypeGroup() {
 		final String[] baseGroup = { "ESI", "EI", "Others" };
@@ -198,14 +198,14 @@ public class GetInstInfo {
 	}
 	
 	/**
-	 * MS_TYPE‚ğæ“¾
+	 * MS_TYPEã‚’å–å¾—
 	 */
 	public String[] getMsType() {
 		return (String[])this.msType[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * MS_TYPE‚ğæ“¾id•¡‚È‚µ‚Å‘SƒTƒCƒg•ª‚ğæ“¾j
+	 * MS_TYPEã‚’å–å¾—ï¼ˆé‡è¤‡ãªã—ã§å…¨ã‚µã‚¤ãƒˆåˆ†ã‚’å–å¾—ï¼‰
 	 */
 	public String[] getMsAll() {
 		ArrayList<String> msTypeList = new ArrayList<String>();
@@ -217,7 +217,7 @@ public class GetInstInfo {
 				}
 			}
 		}
-		// –¼‘O‡‚Åƒ\[ƒg
+		// åå‰é †ã§ã‚½ãƒ¼ãƒˆ
 		Collections.sort( msTypeList );
 		return (String[])msTypeList.toArray( new String[0] );
 	}

@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒ†[ƒU‘€ìŠÇ—ƒNƒ‰ƒX
+ * ãƒ¦ãƒ¼ã‚¶æ“ä½œç®¡ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2010.02.05
  *
@@ -31,56 +31,56 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * ƒ†[ƒU‘€ì‚ÌŠÇ—‚ğs‚¤SingletonƒNƒ‰ƒX
- * ƒy[ƒW‚É‘Î‚·‚é‘€ì‚ğs‚¦‚éƒ†[ƒU‚Ì§ŒÀ‚ğs‚¤
+ * ãƒ¦ãƒ¼ã‚¶æ“ä½œã®ç®¡ç†ã‚’è¡Œã†Singletonã‚¯ãƒ©ã‚¹
+ * ãƒšãƒ¼ã‚¸ã«å¯¾ã™ã‚‹æ“ä½œã‚’è¡Œãˆã‚‹ãƒ¦ãƒ¼ã‚¶ã®åˆ¶é™ã‚’è¡Œã†
  */
 public class OperationManager {
 
-    /** ŠÇ—‘ÎÛƒy[ƒWiDatabase Managerj */
+    /** ç®¡ç†å¯¾è±¡ãƒšãƒ¼ã‚¸ï¼ˆDatabase Managerï¼‰ */
     public final String P_MANAGER = "Manager";
     
-    /** ŠÇ—‘ÎÛƒy[ƒWiInstrument Editorj */
+    /** ç®¡ç†å¯¾è±¡ãƒšãƒ¼ã‚¸ï¼ˆInstrument Editorï¼‰ */
     public final String P_INSTRUMENT = "Instrument";
     
-    /** ŠÇ—‘ÎÛƒy[ƒWiRecord Listj */
+    /** ç®¡ç†å¯¾è±¡ãƒšãƒ¼ã‚¸ï¼ˆRecord Listï¼‰ */
     public final String P_RECORD = "Record";
     
-    /** ŠÇ—‘ÎÛƒy[ƒWiStructure Listj */
+    /** ç®¡ç†å¯¾è±¡ãƒšãƒ¼ã‚¸ï¼ˆStructure Listï¼‰ */
     public final String P_STRUCTURE = "Structure";
     
-    /** ‘€ìí•ÊiXVŒnj */
+    /** æ“ä½œç¨®åˆ¥ï¼ˆæ›´æ–°ç³»ï¼‰ */
     public final String TP_UPDATE = "Update";
     
-    /** ‘€ìí•Êi•\¦Œnj */
+    /** æ“ä½œç¨®åˆ¥ï¼ˆè¡¨ç¤ºç³»ï¼‰ */
     public final String TP_VIEW = "View";
     
-    /** —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX */
+    /** å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
     private static final OperationManager instance = new OperationManager();
     
-    /** ‘€ìŠÇ——pƒRƒŒƒNƒVƒ‡ƒ“ */
+    /** æ“ä½œç®¡ç†ç”¨ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ */
     private Set<String> oSet = Collections.synchronizedSet(new HashSet<String>());
     
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      */
     private OperationManager() {
     }
 
     /**
-     * ‚±‚ÌƒNƒ‰ƒX‚Ì—Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•Ô‚·
+     * ã“ã®ã‚¯ãƒ©ã‚¹ã®å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¿”ã™
      */
     public static OperationManager getInstance() {
         return instance;
     }
     
     /**
-     * ‘€ìŠJn
-     * ‘ÎÛƒy[ƒW‚Ì‘ÎÛDB‚É‘Î‚·‚éXVŒn‘€ì‚ğ1ƒ†[ƒU‚Ì‚İ‚É§ŒÀ‚·‚é
-     * ‚±‚ÌŠÖ”‚ğŒÄ‚Ño‚µ‚½ê‡‚Í‘€ìI—¹Œã‚É•K‚¸endOparationŠÖ”‚ğŒÄ‚Ño‚·‚±‚Æ
-     * @param page ‘ÎÛƒy[ƒW
-     * @param type ‘€ìí•Ê
-     * @param db ‘ÎÛDB–¼
-     * @return ‘€ìŠJnŒ‹‰Ê
+     * æ“ä½œé–‹å§‹
+     * å¯¾è±¡ãƒšãƒ¼ã‚¸ã®å¯¾è±¡DBã«å¯¾ã™ã‚‹æ›´æ–°ç³»æ“ä½œã‚’1ãƒ¦ãƒ¼ã‚¶ã®ã¿ã«åˆ¶é™ã™ã‚‹
+     * ã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ãŸå ´åˆã¯æ“ä½œçµ‚äº†å¾Œã«å¿…ãšendOparationé–¢æ•°ã‚’å‘¼ã³å‡ºã™ã“ã¨
+     * @param page å¯¾è±¡ãƒšãƒ¼ã‚¸
+     * @param type æ“ä½œç¨®åˆ¥
+     * @param db å¯¾è±¡DBå
+     * @return æ“ä½œé–‹å§‹çµæœ
      */
     public boolean startOparation(String page, String type, String db) {
     	boolean isOperation = false;
@@ -89,9 +89,9 @@ public class OperationManager {
     		key += db;
     	}
     	
-    	// ƒf[ƒ^ƒx[ƒXŠÇ—ŠÖ˜Aƒy[ƒW‚Ìƒ†[ƒU§ŒÀˆ—
-    	//  ->ƒf[ƒ^ƒx[ƒX‚ÌXV‚ÉŠÖ‚·‚éˆ—iƒf[ƒ^ƒx[ƒXŠÇ—A‘•’uî•ñAƒŒƒR[ƒhA\‘¢®j‚ğ
-    	//    1‚Â‚Å‚às‚Á‚Ä‚¢‚éê‡‚Í‘€ì•s‰Â
+    	// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ç®¡ç†é–¢é€£ãƒšãƒ¼ã‚¸ã®ãƒ¦ãƒ¼ã‚¶åˆ¶é™å‡¦ç†
+    	//  ->ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®æ›´æ–°ã«é–¢ã™ã‚‹å‡¦ç†ï¼ˆãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ç®¡ç†ã€è£…ç½®æƒ…å ±ã€ãƒ¬ã‚³ãƒ¼ãƒ‰ã€æ§‹é€ å¼ï¼‰ã‚’
+    	//    1ã¤ã§ã‚‚è¡Œã£ã¦ã„ã‚‹å ´åˆã¯æ“ä½œä¸å¯
     	if ( page.equals(P_MANAGER) ) {
     		isOperation = true;
     		Iterator<String> i = oSet.iterator();
@@ -107,13 +107,13 @@ public class OperationManager {
                 }
     		}
      		if ( isOperation && !type.equals(TP_VIEW)) {
-        		// §ŒÀ‚µ‚½‚¢‘€ì‚Ìê‡‚ÍƒL[‚ğ•Û
+        		// åˆ¶é™ã—ãŸã„æ“ä½œã®å ´åˆã¯ã‚­ãƒ¼ã‚’ä¿æŒ
      			oSet.add(key);
     		}    		
     	}
-    	// ‘•’uî•ñŠÖ˜Aƒy[ƒW‚Ìƒ†[ƒU§ŒÀˆ—
-    	//  ->ƒf[ƒ^ƒx[ƒXŠÇ—AŠY“–DB‚Ì‘•’uî•ñAŠY“–DB‚ÌƒŒƒR[ƒh‚Ì
-    	//    ˆ—‚ğs‚Á‚Ä‚¢‚éê‡‚Í‘€ì•s‰Â
+    	// è£…ç½®æƒ…å ±é–¢é€£ãƒšãƒ¼ã‚¸ã®ãƒ¦ãƒ¼ã‚¶åˆ¶é™å‡¦ç†
+    	//  ->ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ç®¡ç†ã€è©²å½“DBã®è£…ç½®æƒ…å ±ã€è©²å½“DBã®ãƒ¬ã‚³ãƒ¼ãƒ‰ã®
+    	//    å‡¦ç†ã‚’è¡Œã£ã¦ã„ã‚‹å ´åˆã¯æ“ä½œä¸å¯
 		else if ( page.equals(P_INSTRUMENT) ) {
      		if ( !oSet.contains(P_MANAGER + TP_UPDATE) &&
      				!oSet.contains(P_INSTRUMENT + TP_UPDATE + db) &&
@@ -121,13 +121,13 @@ public class OperationManager {
     			isOperation = true;
     		}
      		if ( isOperation && !type.equals(TP_VIEW)) {
-        		// §ŒÀ‚µ‚½‚¢‘€ì‚Ìê‡‚ÍƒL[‚ğ•Û
+        		// åˆ¶é™ã—ãŸã„æ“ä½œã®å ´åˆã¯ã‚­ãƒ¼ã‚’ä¿æŒ
      			oSet.add(key);
     		}
     	}
-    	// ƒŒƒR[ƒhŠÖ˜Aƒy[ƒW‚Ìƒ†[ƒU§ŒÀˆ—
-    	//  ->ƒf[ƒ^ƒx[ƒXŠÇ—AŠY“–DB‚Ì‘•’uî•ñAŠY“–DB‚ÌƒŒƒR[ƒh‚Ì
-    	//    ˆ—‚ğs‚Á‚Ä‚¢‚éê‡‚Í‘€ì•s‰Â
+    	// ãƒ¬ã‚³ãƒ¼ãƒ‰é–¢é€£ãƒšãƒ¼ã‚¸ã®ãƒ¦ãƒ¼ã‚¶åˆ¶é™å‡¦ç†
+    	//  ->ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ç®¡ç†ã€è©²å½“DBã®è£…ç½®æƒ…å ±ã€è©²å½“DBã®ãƒ¬ã‚³ãƒ¼ãƒ‰ã®
+    	//    å‡¦ç†ã‚’è¡Œã£ã¦ã„ã‚‹å ´åˆã¯æ“ä½œä¸å¯
     	else if ( page.equals(P_RECORD) ) {
      		if ( !oSet.contains(P_MANAGER + TP_UPDATE) &&
     				!oSet.contains(P_INSTRUMENT + TP_UPDATE + db) &&
@@ -135,19 +135,19 @@ public class OperationManager {
     			isOperation = true;
     		}
      		if ( isOperation && !type.equals(TP_VIEW) ) {
-        		// §ŒÀ‚µ‚½‚¢‘€ì‚Ìê‡‚ÍƒL[‚ğ•Û
+        		// åˆ¶é™ã—ãŸã„æ“ä½œã®å ´åˆã¯ã‚­ãƒ¼ã‚’ä¿æŒ
      			oSet.add(key);
     		}
     	}
-    	// \‘¢®ŠÖ˜Aƒy[ƒW‚Ìƒ†[ƒU§ŒÀˆ—
-    	//  ->ƒf[ƒ^ƒx[ƒXŠÇ—AŠY“–DB‚Ì\‘¢®‚Ìˆ—‚ğs‚Á‚Ä‚¢‚éê‡‚Í‘€ì•s‰Â
+    	// æ§‹é€ å¼é–¢é€£ãƒšãƒ¼ã‚¸ã®ãƒ¦ãƒ¼ã‚¶åˆ¶é™å‡¦ç†
+    	//  ->ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ç®¡ç†ã€è©²å½“DBã®æ§‹é€ å¼ã®å‡¦ç†ã‚’è¡Œã£ã¦ã„ã‚‹å ´åˆã¯æ“ä½œä¸å¯
     	else if ( page.equals(P_STRUCTURE) ) {
     		if ( !oSet.contains(P_MANAGER + TP_UPDATE) &&
     				!oSet.contains(P_STRUCTURE + TP_UPDATE + db) ) {
     			isOperation = true;
     		}
     		if ( isOperation && !type.equals(TP_VIEW) ) {
-        		// §ŒÀ‚µ‚½‚¢‘€ì‚Ìê‡‚ÍƒL[‚ğ•Û
+        		// åˆ¶é™ã—ãŸã„æ“ä½œã®å ´åˆã¯ã‚­ãƒ¼ã‚’ä¿æŒ
     			oSet.add(key);
     		}
     	}
@@ -156,12 +156,12 @@ public class OperationManager {
     }
     
     /**
-     * ‘€ìI—¹
-     * ‘ÎÛƒy[ƒW‚Ì‘ÎÛDB‚É‘Î‚·‚é‘€ì‚Ì§ŒÀ‚ğ‰ğœ‚·‚é
-     * @param page ‘ÎÛƒy[ƒW
-     * @param type ‘€ìí•Ê
-     * @param db ‘ÎÛDB–¼
-     * @return ‘€ìI—¹Œ‹‰Ê
+     * æ“ä½œçµ‚äº†
+     * å¯¾è±¡ãƒšãƒ¼ã‚¸ã®å¯¾è±¡DBã«å¯¾ã™ã‚‹æ“ä½œã®åˆ¶é™ã‚’è§£é™¤ã™ã‚‹
+     * @param page å¯¾è±¡ãƒšãƒ¼ã‚¸
+     * @param type æ“ä½œç¨®åˆ¥
+     * @param db å¯¾è±¡DBå
+     * @return æ“ä½œçµ‚äº†çµæœ
      */
     public boolean endOparation(String page, String type, String db) {
     	String key = page + type;

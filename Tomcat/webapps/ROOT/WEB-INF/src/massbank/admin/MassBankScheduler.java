@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * MassBank—pƒXƒPƒWƒ…[ƒ‰
+ * MassBankç”¨ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ©
  *
  * ver 1.0.1 2010.11.01
  *
@@ -39,42 +39,42 @@ import javax.servlet.http.HttpServlet;
 
 
 /**
- * MassBank—pƒXƒPƒWƒ…[ƒ‰ƒNƒ‰ƒX
+ * MassBankç”¨ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ©ã‚¯ãƒ©ã‚¹
  * 
- * à–¾F
- * admin.conf‚É‹Lq‚µ‚½ƒXƒPƒWƒ…[ƒ‹ƒ^ƒXƒN‚ğw’è‚³‚ê‚½ŠÔŠu‚ÅÀs‚·‚éB
- * ƒ^ƒXƒN‚Íadmin.conf‚ÉˆÈ‰º‚Ì‚æ‚¤‚É•¡”‹Lq‚Å‚«‚éB
+ * èª¬æ˜ï¼š
+ * admin.confã«è¨˜è¿°ã—ãŸã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚¿ã‚¹ã‚¯ã‚’æŒ‡å®šã•ã‚ŒãŸé–“éš”ã§å®Ÿè¡Œã™ã‚‹ã€‚
+ * ã‚¿ã‚¹ã‚¯ã¯admin.confã«ä»¥ä¸‹ã®ã‚ˆã†ã«è¤‡æ•°è¨˜è¿°ã§ãã‚‹ã€‚
  * 
- *     schedule=[ƒ^ƒXƒN],[‰‰ñÀsŠÔ],[ÀsŠÔŠu]
- *     schedule=[ƒ^ƒXƒN],[‰‰ñÀsŠÔ],[ÀsŠÔŠu]
- *        FiˆÈ~•¡”‹Lq‰Âj
+ *     schedule=[ã‚¿ã‚¹ã‚¯],[åˆå›å®Ÿè¡Œæ™‚é–“],[å®Ÿè¡Œé–“éš”]
+ *     schedule=[ã‚¿ã‚¹ã‚¯],[åˆå›å®Ÿè¡Œæ™‚é–“],[å®Ÿè¡Œé–“éš”]
+ *        ï¼šï¼ˆä»¥é™è¤‡æ•°è¨˜è¿°å¯ï¼‰
  * 
- * •â‘«F
- *  [ƒ^ƒXƒN]
- *    ’èŠú“I‚ÉÀs‚µ‚½‚¢ƒRƒ}ƒ“ƒh‚ğ‹Lq
- *  [‰‰ñÀsŠÔ]
- *    ƒT[ƒuƒŒƒbƒg‹N“®Œã‚Éƒ^ƒXƒN‚ğ‰‰ñÀs‚·‚éŠÔ‚ğ‹Lqi•bw’èj
- *  [ÀsŠÔŠu]
- *    ‘O‰ñÀsƒ^ƒXƒNI—¹Œã‚©‚çŸ‰ñÀsƒ^ƒXƒN‚ğŠJn‚·‚éŠÔ‚ÌŠÔŠu‚ğ‹Lqi•bw’èj
- *    0‚ğw’è‚µ‚½ê‡‚Íƒ^ƒXƒN‚Í‰‰ñ‚Ì‚İÀs‚·‚éi2‰ñ–ÚˆÈ~‚ÍÀs‚µ‚È‚¢j
+ * è£œè¶³ï¼š
+ *  [ã‚¿ã‚¹ã‚¯]
+ *    å®šæœŸçš„ã«å®Ÿè¡Œã—ãŸã„ã‚³ãƒãƒ³ãƒ‰ã‚’è¨˜è¿°
+ *  [åˆå›å®Ÿè¡Œæ™‚é–“]
+ *    ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆèµ·å‹•å¾Œã«ã‚¿ã‚¹ã‚¯ã‚’åˆå›å®Ÿè¡Œã™ã‚‹æ™‚é–“ã‚’è¨˜è¿°ï¼ˆç§’æŒ‡å®šï¼‰
+ *  [å®Ÿè¡Œé–“éš”]
+ *    å‰å›å®Ÿè¡Œã‚¿ã‚¹ã‚¯çµ‚äº†å¾Œã‹ã‚‰æ¬¡å›å®Ÿè¡Œã‚¿ã‚¹ã‚¯ã‚’é–‹å§‹ã™ã‚‹æ™‚é–“ã®é–“éš”ã‚’è¨˜è¿°ï¼ˆç§’æŒ‡å®šï¼‰
+ *    0ã‚’æŒ‡å®šã—ãŸå ´åˆã¯ã‚¿ã‚¹ã‚¯ã¯åˆå›ã®ã¿å®Ÿè¡Œã™ã‚‹ï¼ˆ2å›ç›®ä»¥é™ã¯å®Ÿè¡Œã—ãªã„ï¼‰
  *       
- * ƒT[ƒuƒŒƒbƒg‹N“®Œã‚ÉAw’è‚³‚ê‚½‰‰ñÀsŠÔ‚Å1‰ñ–Ú‚Ìƒ^ƒXƒN‚ğÀs‚·‚éB
- * 2‰ñ–ÚˆÈ~‚Ìƒ^ƒXƒNÀs‚ÍA‘O‰ñ‚Ìƒ^ƒXƒNÀs‚ªI—¹‚µ‚Ä‚©‚çw’è‚³‚ê‚½ÀsŠÔŠu‚ÌŠÔ‚ªŒo‰ßŒã‚ÉÀs‚³‚ê‚éB
- * admin.conf‚É‹Lq‚³‚ê‚½•¡”‚Ìƒ^ƒXƒN‚ÍAƒ^ƒXƒN‚²‚Æ‚É•ÊƒXƒŒƒbƒh‚ÅÀs‚³‚ê‚éB
+ * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆèµ·å‹•å¾Œã«ã€æŒ‡å®šã•ã‚ŒãŸåˆå›å®Ÿè¡Œæ™‚é–“ã§1å›ç›®ã®ã‚¿ã‚¹ã‚¯ã‚’å®Ÿè¡Œã™ã‚‹ã€‚
+ * 2å›ç›®ä»¥é™ã®ã‚¿ã‚¹ã‚¯å®Ÿè¡Œã¯ã€å‰å›ã®ã‚¿ã‚¹ã‚¯å®Ÿè¡ŒãŒçµ‚äº†ã—ã¦ã‹ã‚‰æŒ‡å®šã•ã‚ŒãŸå®Ÿè¡Œé–“éš”ã®æ™‚é–“ãŒçµŒéå¾Œã«å®Ÿè¡Œã•ã‚Œã‚‹ã€‚
+ * admin.confã«è¨˜è¿°ã•ã‚ŒãŸè¤‡æ•°ã®ã‚¿ã‚¹ã‚¯ã¯ã€ã‚¿ã‚¹ã‚¯ã”ã¨ã«åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã§å®Ÿè¡Œã•ã‚Œã‚‹ã€‚
  */
 public class MassBankScheduler extends HttpServlet {
 	
-	/** Å‘åƒXƒPƒWƒ…[ƒ‹ƒXƒŒƒbƒhƒv[ƒ‹ƒTƒCƒY */
+	/** æœ€å¤§ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ—ãƒ¼ãƒ«ã‚µã‚¤ã‚º */
 	private static final int MAX_THREAD_POOL_SIZE = 15;
 	
-	/** ƒXƒPƒWƒ…[ƒ‹ƒIƒuƒWƒFƒNƒg */
+	/** ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
 	private ScheduledExecutorService sc = null;
 	
-	/** ƒXƒPƒWƒ…[ƒ‹ƒ^ƒXƒNó‘ÔƒIƒuƒWƒFƒNƒg */
+	/** ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚¿ã‚¹ã‚¯çŠ¶æ…‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
 	private ScheduledFuture<?>[] futures = null;
 	
 	/**
-	 * ƒT[ƒuƒŒƒbƒg‰Šú‰»ˆ—
+	 * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆåˆæœŸåŒ–å‡¦ç†
 	 */
 	public void init() throws ServletException {
 		AdminCommon admin = new AdminCommon();
@@ -89,7 +89,7 @@ public class MassBankScheduler extends HttpServlet {
 			boolean isFormatError = false;
 			boolean isTimeError = false;
 			
-			// ƒXƒPƒWƒ…[ƒ‹ƒtƒH[ƒ}ƒbƒg“™ƒ`ƒFƒbƒN
+			// ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆç­‰ãƒã‚§ãƒƒã‚¯
 			String taskCmd = "";
 			long initial = 0L;
 			long delay = 0L;
@@ -114,7 +114,7 @@ public class MassBankScheduler extends HttpServlet {
 				isTimeError = true;
 			}
 			
-			// ƒGƒ‰[o—Í‚ÆƒXƒPƒWƒ…[ƒ‹‚ÌÀs
+			// ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã¨ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã®å®Ÿè¡Œ
 			if ( isFormatError && isTimeError ) {
 				Logger.getLogger("global").warning( 
 						"<<SCHEDULE_" + i + ">> The format and time of the schedule is wrong. [schedule=" + schedule + "]" );
@@ -129,11 +129,11 @@ public class MassBankScheduler extends HttpServlet {
 			}
 			else {
 				if ( delay != 0L ) {
-					// ’èŠú“I‚ÉÀs
+					// å®šæœŸçš„ã«å®Ÿè¡Œ
 					futures[i] = sc.scheduleWithFixedDelay(new TaskExec(i, taskCmd, initial, delay), initial, delay, TimeUnit.SECONDS);
 				}
 				else {
-					// 1‰ñ‚Ì‚İÀs
+					// 1å›ã®ã¿å®Ÿè¡Œ
 					futures[i] = sc.schedule(new TaskExec(i, taskCmd, initial, delay), initial, TimeUnit.SECONDS);
 				}
 			}
@@ -141,10 +141,10 @@ public class MassBankScheduler extends HttpServlet {
 	}
 	
 	/**
-	 * ƒT[ƒuƒŒƒbƒgI—¹ˆ—
+	 * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆçµ‚äº†å‡¦ç†
 	 */
 	public void destroy() {
-		// ƒXƒPƒWƒ…[ƒ‹‚©‚ç‘S‚Ä‚Ìƒ^ƒXƒN‚ğœŠO‚µAÀs’†‚Ì‘S‚Ä‚Ìƒ^ƒXƒN‚ğI—¹
+		// ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‹ã‚‰å…¨ã¦ã®ã‚¿ã‚¹ã‚¯ã‚’é™¤å¤–ã—ã€å®Ÿè¡Œä¸­ã®å…¨ã¦ã®ã‚¿ã‚¹ã‚¯ã‚’çµ‚äº†
 		if ( futures != null ) {
 			for (ScheduledFuture<?> future : futures) {
 				if (future != null) {
@@ -152,14 +152,14 @@ public class MassBankScheduler extends HttpServlet {
 				}
 			}
 		}
-		// ƒXƒPƒWƒ…[ƒ‹‚ÌI—¹
+		// ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã®çµ‚äº†
 		if ( sc != null ) {
 			sc.shutdown();
 		}
 	}
 
 	/**
-	 * ƒ^ƒXƒNÀsƒNƒ‰ƒX
+	 * ã‚¿ã‚¹ã‚¯å®Ÿè¡Œã‚¯ãƒ©ã‚¹
 	 */
 	private class TaskExec implements Runnable {
 		private int tskIndex = -1;
@@ -168,11 +168,11 @@ public class MassBankScheduler extends HttpServlet {
 		private long delay;
 		
 		/**
-		 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-		 * @param tskIndex ƒ^ƒXƒNƒCƒ“ƒfƒbƒNƒX
-		 * @param taskCmd ƒ^ƒXƒNƒRƒ}ƒ“ƒh 
-		 * @param initial ‰‰ñÀsŠÔ
-		 * @param delay ÀsŠÔŠu
+		 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+		 * @param tskIndex ã‚¿ã‚¹ã‚¯ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		 * @param taskCmd ã‚¿ã‚¹ã‚¯ã‚³ãƒãƒ³ãƒ‰ 
+		 * @param initial åˆå›å®Ÿè¡Œæ™‚é–“
+		 * @param delay å®Ÿè¡Œé–“éš”
 		 */
 		public TaskExec(int tskIndex, String taskCmd, long initial, long delay) {
 			this.tskIndex = tskIndex;
@@ -195,7 +195,7 @@ public class MassBankScheduler extends HttpServlet {
 				isError = true;
 			}
 			
-			// ƒ^ƒXƒN‚ğÀs‚Å‚«‚È‚©‚Á‚½ê‡‚ÍƒXƒPƒWƒ…[ƒ‹‚©‚çœŠO
+			// ã‚¿ã‚¹ã‚¯ã‚’å®Ÿè¡Œã§ããªã‹ã£ãŸå ´åˆã¯ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‹ã‚‰é™¤å¤–
 			if ( p == null || isError ) {
 				Logger.getLogger("global").severe( 
 						"  <<SCHEDULE_" + tskIndex + ">> The task of failing is excluded from the schedule. [schedule=" + taskCmd + "," + initial + "," + delay + "]" );
@@ -203,11 +203,11 @@ public class MassBankScheduler extends HttpServlet {
 				return;
 			}
 			
-			// ƒ^ƒXƒN‚ÌÀs‚ÉŠÔ‚ª‚©‚©‚éê‡‚ÍI—¹‚Ü‚Å‘Ò‚Â
+			// ã‚¿ã‚¹ã‚¯ã®å®Ÿè¡Œã«æ™‚é–“ãŒã‹ã‹ã‚‹å ´åˆã¯çµ‚äº†ã¾ã§å¾…ã¤
 			try {
 				p.waitFor();
 			} catch (InterruptedException ex) {
-				// ƒT[ƒuƒŒƒbƒgI—¹‚ÉÀs’†‚Ìƒ^ƒXƒN‚Í‹­§I—¹
+				// ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆçµ‚äº†æ™‚ã«å®Ÿè¡Œä¸­ã®ã‚¿ã‚¹ã‚¯ã¯å¼·åˆ¶çµ‚äº†
 				Logger.getLogger("global").warning( 
 						"  <<SCHEDULE_" + tskIndex + ">> Force-quit a schedule task. [schedule=" + taskCmd + "," + initial + "," + delay + "]" );
 				p.destroy();

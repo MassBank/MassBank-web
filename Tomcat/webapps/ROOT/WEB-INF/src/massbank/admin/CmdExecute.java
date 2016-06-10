@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒRƒ}ƒ“ƒhÀsƒNƒ‰ƒX
+ * ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.4 2009.11.20
  *
@@ -32,25 +32,25 @@ import java.io.InputStream;
 
 public final class CmdExecute {
 	
-	// ƒRƒ}ƒ“ƒhÀs’†ƒtƒ‰ƒO
+	// ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œä¸­ãƒ•ãƒ©ã‚°
 	private boolean isRunning = false;
 	
-	// ƒRƒ}ƒ“ƒhÀsƒ^ƒCƒ€ƒAƒEƒgƒtƒ‰ƒO
+	// ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãƒ•ãƒ©ã‚°
 	private boolean isTimeout = false;
 	
-	// ƒ^ƒCƒ€ƒAƒEƒgŠÔiƒ~ƒŠ•b’PˆÊj
+	// ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆæ™‚é–“ï¼ˆãƒŸãƒªç§’å˜ä½ï¼‰
 	private long timout = 60000L;
 
 	/**
-	 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public CmdExecute() {
 	}
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 *
-	 * @param isLongTimeOut ƒ^ƒCƒ€ƒAƒEƒg’l‰„’·ƒtƒ‰ƒO
+	 * @param isLongTimeOut ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤å»¶é•·ãƒ•ãƒ©ã‚°
 	 */
 	public CmdExecute(boolean isLongTimeOut) {
 		if ( isLongTimeOut ) {
@@ -59,10 +59,10 @@ public final class CmdExecute {
 	}
 	
 	/**
-	 * ƒRƒ}ƒ“ƒh‚ğÀs
+	 * ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œ
 	 *
-	 * @param cmdArray ƒRƒ}ƒ“ƒh
-	 * @return ÀsŒ‹‰Ê
+	 * @param cmdArray ã‚³ãƒãƒ³ãƒ‰
+	 * @return å®Ÿè¡Œçµæœ
 	 */
 	public CmdResult exec(final String[] cmd) {
 		CmdResult res = new CmdResult();
@@ -70,25 +70,25 @@ public final class CmdExecute {
 			Process process = Runtime.getRuntime().exec(cmd);
 			isRunning = true;
 			
-			// ƒRƒ}ƒ“ƒhÀsŠÄ‹ƒXƒŒƒbƒh
+			// ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œç›£è¦–ã‚¹ãƒ¬ãƒƒãƒ‰
 			WatchDog wd = new WatchDog(process);
 			
-			// •W€o—ÍAƒGƒ‰[o—Í‚Ìƒnƒ“ƒhƒ‰
+			// æ¨™æº–å‡ºåŠ›ã€ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã®ãƒãƒ³ãƒ‰ãƒ©
 			CmdOutputHandler stdoutHandler =
 					new CmdOutputHandler(process.getInputStream());
 			CmdOutputHandler stderrHandler =
 					new CmdOutputHandler(process.getErrorStream());
 			
-			// ƒXƒŒƒbƒhŠJn
+			// ã‚¹ãƒ¬ãƒƒãƒ‰é–‹å§‹
 			stdoutHandler.start();
 			stderrHandler.start();
 			wd.start();
 			
-			// ƒvƒƒZƒXI—¹‘Ò‚¿AƒXƒe[ƒ^ƒXƒZƒbƒg
+			// ãƒ—ãƒ­ã‚»ã‚¹çµ‚äº†å¾…ã¡ã€ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚»ãƒƒãƒˆ
 			res.setStatus(process.waitFor());
 			isRunning = false;
 			
-			// Š„‚è‚İˆ—
+			// å‰²ã‚Šè¾¼ã¿å‡¦ç†
 			if ( !stdoutHandler.isInterrupted() ) {
 				stdoutHandler.interrupt();
 			}
@@ -98,7 +98,7 @@ public final class CmdExecute {
 			if ( !wd.isInterrupted() ) {
 				wd.interrupt();
 			}
-			// •W€o—ÍAƒGƒ‰[o—Í‚Ì“à—e‚ğƒZƒbƒg
+			// æ¨™æº–å‡ºåŠ›ã€ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã®å†…å®¹ã‚’ã‚»ãƒƒãƒˆ
 			res.setStdout(stdoutHandler.getCmdOutput());
 			if (isTimeout) {
 				res.setStderr(cmd[0] + " command was timeout. (" + timout + "msec.)");
@@ -114,25 +114,25 @@ public final class CmdExecute {
 	}
 	
 	/**
-	 * ƒRƒ}ƒ“ƒho—Íƒnƒ“ƒhƒ‰ƒNƒ‰ƒX
+	 * ã‚³ãƒãƒ³ãƒ‰å‡ºåŠ›ãƒãƒ³ãƒ‰ãƒ©ã‚¯ãƒ©ã‚¹
 	 */
 	private final class CmdOutputHandler extends Thread {
-		// Ši”[ƒoƒbƒtƒ@
+		// æ ¼ç´ãƒãƒƒãƒ•ã‚¡
 		private ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		
-		// ƒVƒFƒ‹ƒRƒ}ƒ“ƒh‚©‚ç‚Ìo—Í‚ğó‚¯æ‚é“ü—ÍƒXƒgƒŠ|ƒ€
+		// ã‚·ã‚§ãƒ«ã‚³ãƒãƒ³ãƒ‰ã‹ã‚‰ã®å‡ºåŠ›ã‚’å—ã‘å–ã‚‹å…¥åŠ›ã‚¹ãƒˆãƒªâˆ’ãƒ 
 		private InputStream in;
 		
 		/**
-		 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì–³Œø‰»
+		 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç„¡åŠ¹åŒ–
 		 */
 		private CmdOutputHandler() {
 			super();
 		}
 		
 		/**
-		 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-		 * @param argIn ƒVƒFƒ‹ƒRƒ}ƒ“ƒh‚©‚ç‚Ìo—Í‚ğó‚¯æ‚éInputStream
+		 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+		 * @param argIn ã‚·ã‚§ãƒ«ã‚³ãƒãƒ³ãƒ‰ã‹ã‚‰ã®å‡ºåŠ›ã‚’å—ã‘å–ã‚‹InputStream
 		 */
 		private CmdOutputHandler(final InputStream argIn) {
 			super();
@@ -140,11 +140,11 @@ public final class CmdExecute {
 		}
 		
 		/**
-		 * ƒRƒ}ƒ“ƒh‚©‚ç‚Ìo—Í‚ğæ“¾‚µ‚Ü‚·
+		 * ã‚³ãƒãƒ³ãƒ‰ã‹ã‚‰ã®å‡ºåŠ›ã‚’å–å¾—ã—ã¾ã™
 		 * @return
 		 */
 		public String getCmdOutput() {
-			// ”O‚Ì‚½‚ßÅŒã‚Éˆê‰ñ“Ç‚İo‚·
+			// å¿µã®ãŸã‚æœ€å¾Œã«ä¸€å›èª­ã¿å‡ºã™
 			storeBuf();
 			try {
 				in.close();
@@ -156,17 +156,17 @@ public final class CmdExecute {
 		}
 		
 		/**
-		 * ƒRƒ}ƒ“ƒh‚©‚ç‚Ìo—Í‚ğ“Ç‚İæ‚è‚Ü‚·
+		 * ã‚³ãƒãƒ³ãƒ‰ã‹ã‚‰ã®å‡ºåŠ›ã‚’èª­ã¿å–ã‚Šã¾ã™
 		 */
 		public void run() {
-			// ƒoƒbƒtƒ@“Ç‚İæ‚èŠÔŠu(ms)
+			// ãƒãƒƒãƒ•ã‚¡èª­ã¿å–ã‚Šé–“éš”(ms)
 			final long sleepTime = 100L;
 			
 			while (isRunning) {
-				// ƒoƒbƒtƒ@‚Ì’†g‚ğæ“¾‚·‚é
+				// ãƒãƒƒãƒ•ã‚¡ã®ä¸­èº«ã‚’å–å¾—ã™ã‚‹
 				storeBuf();
 				
-				// ˆê’èŠÔƒXƒŠ[ƒv‚·‚é
+				// ä¸€å®šæ™‚é–“ã‚¹ãƒªãƒ¼ãƒ—ã™ã‚‹
 				try {
 					sleep(sleepTime);
 				}
@@ -177,7 +177,7 @@ public final class CmdExecute {
 		}
 		
 		/**
-		 * “ü—ÍƒXƒgƒŠ|ƒ€‚Ì“à—e‚ğƒoƒbƒtƒ@‚ÉŠi”[‚µ‚Ü‚·
+		 * å…¥åŠ›ã‚¹ãƒˆãƒªâˆ’ãƒ ã®å†…å®¹ã‚’ãƒãƒƒãƒ•ã‚¡ã«æ ¼ç´ã—ã¾ã™
 		 */
 		private void storeBuf() {
 			try {
@@ -195,23 +195,23 @@ public final class CmdExecute {
 	}
 	
 	/**
-	 * ƒRƒ}ƒ“ƒhÀsŠÄ‹ƒXƒŒƒbƒh
+	 * ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œç›£è¦–ã‚¹ãƒ¬ãƒƒãƒ‰
 	 */
 	private final class WatchDog extends Thread {
-		// Às’†‚ÌƒvƒƒZƒX
+		// å®Ÿè¡Œä¸­ã®ãƒ—ãƒ­ã‚»ã‚¹
 		private Process process = null;
 		
 		/**
 		 * Creates a new WatchDog object.
 		 *
-		 * @param param Às—\’è‚ÌProcess
+		 * @param param å®Ÿè¡Œäºˆå®šã®Process
 		 */
 		public WatchDog(final Process param) {
 			process = param;
 		}
 		
 		/**
-		 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì–³Œø‰»
+		 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç„¡åŠ¹åŒ–
 		 */
 		@SuppressWarnings("unused")
 		private WatchDog() {
@@ -219,12 +219,12 @@ public final class CmdExecute {
 		}
 		
 		/**
-		 * ƒ^ƒCƒ€ƒAƒEƒgˆ—
+		 * ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå‡¦ç†
 		 */
 		public synchronized void run() {
 			long until = System.currentTimeMillis() + timout;
 			long now = 0;			
-			// ˆê’èŠÔ‘Ò‹@‚·‚é
+			// ä¸€å®šæ™‚é–“å¾…æ©Ÿã™ã‚‹
 			while ( isRunning && (until > (now = System.currentTimeMillis())) ) {
 				try {
 					wait( until - now );
@@ -233,7 +233,7 @@ public final class CmdExecute {
 					ignoreEx = null;
 				}
 			}
-			// ˆê’èŠÔŒo‚Á‚Ä‚àÀs’†‚Ìê‡AƒvƒƒZƒX‚ğ‹­§I—¹‚·‚é
+			// ä¸€å®šæ™‚é–“çµŒã£ã¦ã‚‚å®Ÿè¡Œä¸­ã®å ´åˆã€ãƒ—ãƒ­ã‚»ã‚¹ã‚’å¼·åˆ¶çµ‚äº†ã™ã‚‹
 			if ( isRunning ) {
 				process.destroy();
 				isTimeout = true;

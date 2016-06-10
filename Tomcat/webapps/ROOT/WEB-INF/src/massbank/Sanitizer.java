@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒTƒjƒ^ƒCƒWƒ“ƒOƒ†[ƒeƒBƒŠƒeƒB
+ * ã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
  *
  * ver 1.0.0 2009.07.10
  *
@@ -26,14 +26,14 @@
 package massbank;
 
 /**
- * ƒTƒjƒ^ƒCƒWƒ“ƒOƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+ * ã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
  */
 public class Sanitizer {
 
 	/**
-	 * HTMLƒTƒjƒ^ƒCƒWƒ“ƒO
-	 * @param val •¶Žš—ñ
-	 * @return ƒTƒjƒ^ƒCƒYÏ‚Ý•¶Žš—ñ
+	 * HTMLã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°
+	 * @param val æ–‡å­—åˆ—
+	 * @return ã‚µãƒ‹ã‚¿ã‚¤ã‚ºæ¸ˆã¿æ–‡å­—åˆ—
 	 */
 	public static String html( String val ) {
 		if( val == null || val.equals("")) {
@@ -48,9 +48,9 @@ public class Sanitizer {
 	}
 	
 	/**
-	 * HTMLƒAƒ“ƒTƒjƒ^ƒCƒWƒ“ƒO
-	 * @param val •¶Žš—ñ
-	 * @return ƒTƒjƒ^ƒCƒYÏ‚Ý•¶Žš—ñ
+	 * HTMLã‚¢ãƒ³ã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°
+	 * @param val æ–‡å­—åˆ—
+	 * @return ã‚µãƒ‹ã‚¿ã‚¤ã‚ºæ¸ˆã¿æ–‡å­—åˆ—
 	 */
 	public static String unhtml( String val ) {
 		if( val == null || val.equals("")) {
@@ -65,9 +65,9 @@ public class Sanitizer {
 	}
 
 	/**
-	 * SQLƒTƒjƒ^ƒCƒWƒ“ƒO
-	 * @param val •¶Žš—ñ
-	 * @return ƒTƒjƒ^ƒCƒYÏ‚Ý•¶Žš—ñ
+	 * SQLã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°
+	 * @param val æ–‡å­—åˆ—
+	 * @return ã‚µãƒ‹ã‚¿ã‚¤ã‚ºæ¸ˆã¿æ–‡å­—åˆ—
 	 */
 	public static String sql( String val ) {
 		if( val == null || val.equals("")) {
@@ -78,9 +78,9 @@ public class Sanitizer {
 	}
 	
 	/**
-	 * SQLƒTƒjƒ^ƒCƒWƒ“ƒO
-	 * @param val •¶Žš—ñ
-	 * @return ƒTƒjƒ^ƒCƒYÏ‚Ý•¶Žš—ñ
+	 * SQLã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°
+	 * @param val æ–‡å­—åˆ—
+	 * @return ã‚µãƒ‹ã‚¿ã‚¤ã‚ºæ¸ˆã¿æ–‡å­—åˆ—
 	 */
 	public static String unsql( String val ) {
 		if( val == null || val.equals("")) {

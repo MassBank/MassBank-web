@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] ŒŸõŒ‹‰ÊÚ×Ši”[ƒf[ƒ^ƒNƒ‰ƒX
+ * [WEB-API] æ¤œç´¢çµæœè©³ç´°æ ¼ç´ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2010.04.15
  *
@@ -37,38 +37,38 @@ public class Result {
 	private String score = "";
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public Result() {
 	}
 
-	//--  setterƒƒ\ƒbƒh ----------------------------------
+	//--  setterãƒ¡ã‚½ãƒƒãƒ‰ ----------------------------------
 	/**
-	 * ID‚ğƒZƒbƒg‚·‚é
+	 * IDã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setId(String val) {
 		this.id = val;
 	}
 	/**
-	 * ƒŒƒR[ƒhƒ^ƒCƒgƒ‹‚ğƒZƒbƒg‚·‚é
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚¿ã‚¤ãƒˆãƒ«ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setTitle(String val) {
 		this.title = val;
 	}
 	/**
-	 * •ªq®‚ğƒZƒbƒg‚·‚é
+	 * åˆ†å­å¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setFormula(String val) {
 		this.formula = val;
 	}
 	/**
-	 * ¸–§¿—Ê‚ğƒZƒbƒg‚·‚é
+	 * ç²¾å¯†è³ªé‡ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setExactMass(String val) {
 		this.exactMass = val;
 	}
 	/**
-	 * ƒXƒRƒA‚ğƒZƒbƒg‚·‚é
+	 * ã‚¹ã‚³ã‚¢ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	 */
 	public void setScore(String val) {
 		this.score = "0";
@@ -78,33 +78,33 @@ public class Result {
 		}
 	}
 
-	//--  getterƒƒ\ƒbƒh ----------------------------------
+	//--  getterãƒ¡ã‚½ãƒƒãƒ‰ ----------------------------------
 	/**
-	 * ID‚ğæ“¾‚·‚é
+	 * IDã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getId() {
 		return this.id;
 	}
 	/**
-	 * ƒŒƒR[ƒhƒ^ƒCƒgƒ‹‚ğæ“¾‚·‚é
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getTitle() {
 		return this.title;
 	}
 	/**
-	 * •ªq®‚ğæ“¾‚·‚é
+	 * åˆ†å­å¼ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getFormula() {
 		return this.formula;
 	}
 	/**
-	 * ¸–§¿—Ê‚ğæ“¾‚·‚é
+	 * ç²¾å¯†è³ªé‡ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getExactMass() {
 		return this.exactMass;
 	}
 	/**
-	 * ƒXƒRƒA‚ğæ“¾‚·‚é
+	 * ã‚¹ã‚³ã‚¢ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String getScore() {
 		return this.score;

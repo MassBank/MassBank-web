@@ -18,32 +18,32 @@
  *
  *******************************************************************************
  *
- * ŒŸõŒ‹‰ÊƒŒƒR[ƒhî•ñŠi”[ƒNƒ‰ƒX
- * ŒŸõ‚Éƒqƒbƒg‚µ‚½1ƒXƒyƒNƒgƒ‹‚Ìî•ñ‚ğŠi”[‚·‚éƒf[ƒ^ƒNƒ‰ƒX
- *   ’ñ‹Ÿ‹@”\
- *     Eƒm[ƒhƒOƒ‹[ƒvæ“¾
- *     Eƒm[ƒhƒOƒ‹[ƒvİ’è
- *     EƒTƒCƒgæ“¾
- *     EƒTƒCƒgİ’è
- *     E¸–§¿—Êæ“¾
- *     E¸–§¿—Êİ’è
- *     E¸–§¿—Êiƒ\[ƒg—pjæ“¾
- *     E¸–§¿—Êi•\¦—pjæ“¾
- *     E‘g¬®æ“¾
- *     E‘g¬®İ’è
- *     E‘g¬®iƒ\[ƒg—pjæ“¾
- *     EIDæ“¾
- *     EIDİ’è
- *     EƒCƒIƒ“æ“¾
- *     EƒCƒIƒ“İ’è
- *     EƒŒƒR[ƒhî•ñæ“¾
- *     EƒŒƒR[ƒhî•ñİ’è
- *     E‰»‡•¨–¼æ“¾
- *     E‰»‡•¨–¼iƒ\[ƒg—pjæ“¾
- *     E•t‰Áî•ñæ“¾
- *     E•t‰Áî•ñiƒ\[ƒg—pjæ“¾
- *     Eeƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pjæ“¾
- *     Eqƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pjæ“¾
+ * æ¤œç´¢çµæœãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±æ ¼ç´ã‚¯ãƒ©ã‚¹
+ * æ¤œç´¢ã«ãƒ’ãƒƒãƒˆã—ãŸ1ã‚¹ãƒšã‚¯ãƒˆãƒ«ã®æƒ…å ±ã‚’æ ¼ç´ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
+ *   æä¾›æ©Ÿèƒ½
+ *     ãƒ»ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ—å–å¾—
+ *     ãƒ»ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ—è¨­å®š
+ *     ãƒ»ã‚µã‚¤ãƒˆå–å¾—
+ *     ãƒ»ã‚µã‚¤ãƒˆè¨­å®š
+ *     ãƒ»ç²¾å¯†è³ªé‡å–å¾—
+ *     ãƒ»ç²¾å¯†è³ªé‡è¨­å®š
+ *     ãƒ»ç²¾å¯†è³ªé‡ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+ *     ãƒ»ç²¾å¯†è³ªé‡ï¼ˆè¡¨ç¤ºç”¨ï¼‰å–å¾—
+ *     ãƒ»çµ„æˆå¼å–å¾—
+ *     ãƒ»çµ„æˆå¼è¨­å®š
+ *     ãƒ»çµ„æˆå¼ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+ *     ãƒ»IDå–å¾—
+ *     ãƒ»IDè¨­å®š
+ *     ãƒ»ã‚¤ã‚ªãƒ³å–å¾—
+ *     ãƒ»ã‚¤ã‚ªãƒ³è¨­å®š
+ *     ãƒ»ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±å–å¾—
+ *     ãƒ»ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±è¨­å®š
+ *     ãƒ»åŒ–åˆç‰©åå–å¾—
+ *     ãƒ»åŒ–åˆç‰©åï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+ *     ãƒ»ä»˜åŠ æƒ…å ±å–å¾—
+ *     ãƒ»ä»˜åŠ æƒ…å ±ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+ *     ãƒ»è¦ªãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰å–å¾—
+ *     ãƒ»å­ãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰å–å¾—
  *
  * ver 1.0.3 2008.12.05
  *
@@ -55,127 +55,127 @@ import java.util.ArrayList;
 
 public class ResultRecord {
 	
-	/** ƒm[ƒhƒOƒ‹[ƒv */
+	/** ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ— */
 	private int nodeGroup = -1;
 	
-	/** ƒŒƒR[ƒhî•ñ */
-	private String info = "";			// ƒZƒ~ƒRƒƒ“‹æØ‚èƒŒƒR[ƒhî•ñ•¶š—ñ
+	/** ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ± */
+	private String info = "";			// ã‚»ãƒŸã‚³ãƒ­ãƒ³åŒºåˆ‡ã‚Šãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±æ–‡å­—åˆ—
 	
-	/** ‰»‡•¨–¼ */
+	/** åŒ–åˆç‰©å */
 	private String name = "";
 
-	/** ‰»‡•¨–¼iƒ\[ƒg—pj */
+	/** åŒ–åˆç‰©åï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰ */
 	private String sortName = "";
 	
-	/** •t‰Áî•ñ */
+	/** ä»˜åŠ æƒ…å ± */
 	private String addition = "";
 	
-	/** •t‰Áî•ñiƒ\[ƒg—pj */
+	/** ä»˜åŠ æƒ…å ±ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰ */
 	private String sortAddition = "";
 	
-	/** ƒŒƒR[ƒhID */
+	/** ãƒ¬ã‚³ãƒ¼ãƒ‰ID */
 	private String id = "";
 	
-	/** ƒCƒIƒ“ */
+	/** ã‚¤ã‚ªãƒ³ */
 	private String ion = "";
 	
-	/** ‘g¬® */
+	/** çµ„æˆå¼ */
 	private String formula = "";
 	
-	/** ‘g¬®iƒ\[ƒg—pj */
+	/** çµ„æˆå¼ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰ */
 	private String sortFormula = "";
 	
-	/** ¸–§¿—Ê */
+	/** ç²¾å¯†è³ªé‡ */
 	private String emass = "";
 	
-	/** ¸–§¿—Êiƒ\[ƒg—pj */
+	/** ç²¾å¯†è³ªé‡ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰ */
 	private float sortEmass = 0.0f;
 	
-	/** ¸–§¿—Êi•\¦—pj */
+	/** ç²¾å¯†è³ªé‡ï¼ˆè¡¨ç¤ºç”¨ï¼‰ */
 	private String dispEmass = "";
 	
-	/** ƒTƒCƒg */
+	/** ã‚µã‚¤ãƒˆ */
 	private String contributor = "";
 	
-	/** eƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pj */
+	/** è¦ªãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰ */
 	private String parentLink = "";
 	
-	/** qƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pj */
+	/** å­ãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰ */
 	private String childLink = "";
 	
-	/** Œ´q”ƒtƒH[ƒ}ƒbƒg */
+	/** åŸå­æ•°ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ */
 	private DecimalFormat numFormat = new DecimalFormat("000");
 	
-	/** ¸–§¿—Ê¬”“_ˆÈ‰ºƒtƒH[ƒ}ƒbƒg */
+	/** ç²¾å¯†è³ªé‡å°æ•°ç‚¹ä»¥ä¸‹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ */
 	private DecimalFormat backPeriodFormat = new DecimalFormat("0.00000");
 	
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public ResultRecord() {
 	}
 
 	/**
-	 * ƒm[ƒhƒOƒ‹[ƒvæ“¾
-	 * @return ƒm[ƒhƒOƒ‹[ƒv
+	 * ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ—å–å¾—
+	 * @return ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ—
 	 */
 	public int getNodeGroup() {
 		return nodeGroup;
 	}
 
 	/**
-	 * ƒm[ƒhƒOƒ‹[ƒvİ’è
-	 * @param nodeGroup ƒm[ƒhƒOƒ‹[ƒv
+	 * ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ—è¨­å®š
+	 * @param nodeGroup ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ—
 	 */
 	public void setNodeGroup(int nodeGroup) {
 		this.nodeGroup = nodeGroup;
 	}
 	
 	/**
-	 * ƒTƒCƒgæ“¾
-	 * @return ƒTƒCƒg
+	 * ã‚µã‚¤ãƒˆå–å¾—
+	 * @return ã‚µã‚¤ãƒˆ
 	 */
 	public String getContributor() {
 		return contributor;
 	}
 
 	/**
-	 * ƒTƒCƒgİ’è
-	 * @param contributor ƒTƒCƒg
+	 * ã‚µã‚¤ãƒˆè¨­å®š
+	 * @param contributor ã‚µã‚¤ãƒˆ
 	 */
 	public void setContributor(String contributor) {
 		this.contributor = contributor;
 	}
 
 	/**
-	 * ¸–§¿—Êæ“¾
-	 * @return ¸–§¿—Ê
+	 * ç²¾å¯†è³ªé‡å–å¾—
+	 * @return ç²¾å¯†è³ªé‡
 	 */
 	public String getEmass() {
 		return emass;
 	}
 	
 	/**
-	 * ¸–§¿—Êİ’è
-	 * @param emass ¸–§¿—Ê
+	 * ç²¾å¯†è³ªé‡è¨­å®š
+	 * @param emass ç²¾å¯†è³ªé‡
 	 */
 	public void setEmass(String emass) {
 		
-		// ¸–§¿—Êİ’è
+		// ç²¾å¯†è³ªé‡è¨­å®š
 		this.emass = emass;
 		
-		// ¸–§¿—Ê‚©‚çƒ\[ƒg—p¸–§¿—Êİ’è
+		// ç²¾å¯†è³ªé‡ã‹ã‚‰ã‚½ãƒ¼ãƒˆç”¨ç²¾å¯†è³ªé‡è¨­å®š
 		if (!emass.equals("") && emass.length() != 0) {
 		this.sortEmass = Float.parseFloat(emass);
 		}
 		
-		// ¸–§¿—Ê‚©‚ç•\¦—p¸–§¿—Êİ’è
+		// ç²¾å¯†è³ªé‡ã‹ã‚‰è¡¨ç¤ºç”¨ç²¾å¯†è³ªé‡è¨­å®š
 		StringBuffer dispEmass = new StringBuffer();
 		if (!emass.equals("") && emass.length() != 0) {
 			
-			String forePeriod = "";	// ƒsƒŠƒIƒh‘O
-			String backPeriod = "";	// ƒsƒŠƒIƒhˆÈ~
+			String forePeriod = "";	// ãƒ”ãƒªã‚ªãƒ‰å‰
+			String backPeriod = "";	// ãƒ”ãƒªã‚ªãƒ‰ä»¥é™
 			if (emass.indexOf(".") != -1) {
 				forePeriod = emass.substring(0, emass.indexOf("."));
 				backPeriod = emass.substring(emass.indexOf("."));
@@ -184,7 +184,7 @@ public class ResultRecord {
 				forePeriod = emass;
 			}
 			
-			// ®”•”‚ğ3Œ…‚ÉƒtƒH[ƒ}ƒbƒgi¶‹ó”’‹l‚ßj
+			// æ•´æ•°éƒ¨ã‚’3æ¡ã«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆï¼ˆå·¦ç©ºç™½è©°ã‚ï¼‰
 			for (int i=4; i>0; i--) {
 				if (i == forePeriod.length()) {
 					dispEmass.append(forePeriod);
@@ -195,64 +195,64 @@ public class ResultRecord {
 				}
 			}
 			
-			// ¬”•”‚ğ¬”“_•t‚«5Œ…‚ÉƒtƒH[ƒ}ƒbƒgi‰E0‹l‚ßj
+			// å°æ•°éƒ¨ã‚’å°æ•°ç‚¹ä»˜ã5æ¡ã«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆï¼ˆå³0è©°ã‚ï¼‰
 			backPeriod = "0" + backPeriod;
 			backPeriod = backPeriodFormat.format(Double.parseDouble(backPeriod));
 			backPeriod = backPeriod.substring(backPeriod.indexOf("."));
 			
-			// ®”•”{¬”•”i¬”“_•t‚«j
+			// æ•´æ•°éƒ¨ï¼‹å°æ•°éƒ¨ï¼ˆå°æ•°ç‚¹ä»˜ãï¼‰
 			dispEmass.append(backPeriod);
 		}
 		this.dispEmass = dispEmass.toString();
 	}
 	
 	/**
-	 * ¸–§¿—Êiƒ\[ƒg—pjæ“¾
-	 * @return ¸–§¿—Êiƒ\[ƒg—pj
+	 * ç²¾å¯†è³ªé‡ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+	 * @return ç²¾å¯†è³ªé‡ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰
 	 */
 	public float getSortEmass() {
 		return sortEmass;
 	}
 	
 	/**
-	 * ¸–§¿—Êi•\¦—pjæ“¾
-	 * @return ¸–§¿—Êi•\¦—pj
+	 * ç²¾å¯†è³ªé‡ï¼ˆè¡¨ç¤ºç”¨ï¼‰å–å¾—
+	 * @return ç²¾å¯†è³ªé‡ï¼ˆè¡¨ç¤ºç”¨ï¼‰
 	 */
 	public String getDispEmass() {
 		return dispEmass;
 	}
 	
 	/**
-	 * ‘g¬®æ“¾
-	 * @return ‘g¬®
+	 * çµ„æˆå¼å–å¾—
+	 * @return çµ„æˆå¼
 	 */
 	public String getFormula() {
 		return formula;
 	}
 
 	/**
-	 * ‘g¬®İ’è
-	 * @param formula ‘g¬®
+	 * çµ„æˆå¼è¨­å®š
+	 * @param formula çµ„æˆå¼
 	 */
 	public void setFormula(String formula) {
 		
-		// ‘g¬®İ’è
+		// çµ„æˆå¼è¨­å®š
 		this.formula = formula;
 		
-		// ‘g¬®‚©‚çƒ\[ƒg—p‘g¬®İ’è
+		// çµ„æˆå¼ã‹ã‚‰ã‚½ãƒ¼ãƒˆç”¨çµ„æˆå¼è¨­å®š
 		StringBuffer sortFormula = new StringBuffer();
 		if (!formula.equals("") && formula.length() != 0) {
 			
-			int current = 0;									// Œ»•¶šƒCƒ“ƒfƒbƒNƒX
-			int next = 0;										// Ÿ•¶šƒCƒ“ƒfƒbƒNƒX
-			char[] c = formula.toCharArray();					// ‘g¬®•¶š”z—ñ
-			String symbol = String.valueOf(c[current]);			// Œ´q‹L†
-			String num = "";									// Œ´q”
+			int current = 0;									// ç¾æ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+			int next = 0;										// æ¬¡æ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+			char[] c = formula.toCharArray();					// çµ„æˆå¼æ–‡å­—é…åˆ—
+			String symbol = String.valueOf(c[current]);			// åŸå­è¨˜å·
+			String num = "";									// åŸå­æ•°
 			
 			for (current=0; current<c.length; current++) {
 				next = current + 1;
 				
-				// Ÿ‚Ì•¶š‚ªÅŒã‚Ì•¶šA‚Ü‚½‚Í‘å•¶š‰p”š‚Ìê‡
+				// æ¬¡ã®æ–‡å­—ãŒæœ€å¾Œã®æ–‡å­—ã€ã¾ãŸã¯å¤§æ–‡å­—è‹±æ•°å­—ã®å ´åˆ
 				if (next == c.length || Character.isUpperCase(c[next])) {
 					sortFormula.append(symbol);
 					if (!num.equals("")) {
@@ -261,17 +261,17 @@ public class ResultRecord {
 					else {
 						sortFormula.append(numFormat.format(1));
 					}
-					// Ÿ‚Ì•¶š‚ª‘¶İ‚·‚éê‡
+					// æ¬¡ã®æ–‡å­—ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 					if (next != c.length) {
 						symbol = String.valueOf(c[next]);
 						num = "";
 					}
 				}
-				// Ÿ‚Ì•¶š‚ª¬•¶š‰p”š‚Ìê‡
+				// æ¬¡ã®æ–‡å­—ãŒå°æ–‡å­—è‹±æ•°å­—ã®å ´åˆ
 				else if (Character.isLowerCase(c[next])) {
 					symbol += String.valueOf(c[next]);
 				}
-				// Ÿ‚Ì•¶š‚ª”š‚Ìê‡
+				// æ¬¡ã®æ–‡å­—ãŒæ•°å­—ã®å ´åˆ
 				else if (Character.isDigit(c[next])) {
 					num += String.valueOf(c[next]);
 				}
@@ -281,15 +281,15 @@ public class ResultRecord {
 	}
 
 	/**
-	 * ‘g¬®iƒ\[ƒg—pjæ“¾
-	 * @return ‘g¬®iƒ\[ƒg—pj  
+	 * çµ„æˆå¼ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+	 * @return çµ„æˆå¼ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰  
 	 */
 	public String getSortFormula() {
 		return sortFormula;
 	}
 	
 	/**
-	 * IDæ“¾
+	 * IDå–å¾—
 	 * @return ID
 	 */
 	public String getId() {
@@ -297,7 +297,7 @@ public class ResultRecord {
 	}
 
 	/**
-	 * IDİ’è
+	 * IDè¨­å®š
 	 * @param id ID
 	 */
 	public void setId(String id) {
@@ -305,46 +305,46 @@ public class ResultRecord {
 	}
 
 	/**
-	 * ƒCƒIƒ“æ“¾
-	 * @return ƒCƒIƒ“
+	 * ã‚¤ã‚ªãƒ³å–å¾—
+	 * @return ã‚¤ã‚ªãƒ³
 	 */
 	public String getIon() {
 		return ion;
 	}
 	
 	/**
-	 * ƒCƒIƒ“İ’è
-	 * @param ion ƒCƒIƒ“
+	 * ã‚¤ã‚ªãƒ³è¨­å®š
+	 * @param ion ã‚¤ã‚ªãƒ³
 	 */
 	public void setIon(String ion) {
 		this.ion = ion;
 	}
 	
 	/**
-	 * ƒŒƒR[ƒhî•ñæ“¾
-	 * @return ƒŒƒR[ƒhî•ñ
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±å–å¾—
+	 * @return ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±
 	 */
 	public String getInfo() {
 		return info;
 	}
 
 	/**
-	 * ƒŒƒR[ƒhî•ñİ’è
-	 * @param info ƒŒƒR[ƒhî•ñ
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±è¨­å®š
+	 * @param info ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±
 	 */
 	public void setInfo(String info) {
-		// ƒŒƒR[ƒhî•ñİ’è
+		// ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±è¨­å®š
 		this.info = info;
 		
 		String[] tmp = info.split(";");
 		
-		// ‰»‡•¨–¼İ’è
+		// åŒ–åˆç‰©åè¨­å®š
 		this.name = tmp[0].trim();
 		
-		// ƒ\[ƒg—p‰»‡•¨–¼İ’è
+		// ã‚½ãƒ¼ãƒˆç”¨åŒ–åˆç‰©åè¨­å®š
 		this.sortName = tmp[0].trim();
 		
-		// •t‰Áî•ñİ’è
+		// ä»˜åŠ æƒ…å ±è¨­å®š
 		StringBuffer addition = new StringBuffer();
 		for (int i=0; i<tmp.length; i++) {
 			if (i==0) {
@@ -357,10 +357,10 @@ public class ResultRecord {
 		}
 		this.addition = addition.toString();
 		
-		// ƒ\[ƒg—p•t‰Áî•ñİ’è
+		// ã‚½ãƒ¼ãƒˆç”¨ä»˜åŠ æƒ…å ±è¨­å®š
 		this.sortAddition = addition.toString();
 		
-		// ƒŠƒ“ƒN—peƒm[ƒh–¼İ’è
+		// ãƒªãƒ³ã‚¯ç”¨è¦ªãƒãƒ¼ãƒ‰åè¨­å®š
 		final int maxLinkStr = 50;
 		if (tmp[0].trim().length() > maxLinkStr) {
 			StringBuffer parentLink = new StringBuffer();
@@ -372,62 +372,62 @@ public class ResultRecord {
 			this.parentLink = sanitize(tmp[0].trim());
 		}
 		
-		// ƒŠƒ“ƒN—pqƒm[ƒh–¼İ’è
+		// ãƒªãƒ³ã‚¯ç”¨å­ãƒãƒ¼ãƒ‰åè¨­å®š
 		this.childLink = sanitize(addition.toString());
 	}
 
 	/**
-	 * ‰»‡•¨–¼æ“¾
-	 * @return ‰»‡•¨–¼
+	 * åŒ–åˆç‰©åå–å¾—
+	 * @return åŒ–åˆç‰©å
 	 */
 	public String getName() {
 		return name;
 	}
 	
 	/**
-	 * ‰»‡•¨–¼iƒ\[ƒg—pjæ“¾
-	 * @return ‰»‡•¨–¼iƒ\[ƒg—pj
+	 * åŒ–åˆç‰©åï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+	 * @return åŒ–åˆç‰©åï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰
 	 */
 	public String getSortName() {
 		return sortName;
 	}
 	
 	/**
-	 * •t‰Áî•ñæ“¾
-	 * @return •t‰Áî•ñ
+	 * ä»˜åŠ æƒ…å ±å–å¾—
+	 * @return ä»˜åŠ æƒ…å ±
 	 */
 	public String getAddition() {
 		return addition;
 	}
 	
 	/**
-	 * •t‰Áî•ñiƒ\[ƒg—pjæ“¾
-	 * @return •t‰Áî•ñiƒ\[ƒg—pj
+	 * ä»˜åŠ æƒ…å ±ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰å–å¾—
+	 * @return ä»˜åŠ æƒ…å ±ï¼ˆã‚½ãƒ¼ãƒˆç”¨ï¼‰
 	 */
 	public String getSortAddition() {
 		return sortAddition;
 	}
 	
 	/**
-	 * eƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pjæ“¾
-	 * @return eƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pj
+	 * è¦ªãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰å–å¾—
+	 * @return è¦ªãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰
 	 */
 	public String getParentLink() {
 		return parentLink;
 	}
 	
 	/**
-	 * qƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pjæ“¾
-	 * @return qƒm[ƒh–¼ƒŠƒ“ƒNi•\¦—pj
+	 * å­ãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰å–å¾—
+	 * @return å­ãƒãƒ¼ãƒ‰åãƒªãƒ³ã‚¯ï¼ˆè¡¨ç¤ºç”¨ï¼‰
 	 */
 	public String getChildLink() {
 		return childLink;
 	}
 
 	/**
-	 * ƒTƒjƒ^ƒCƒWƒ“ƒOˆ—
-	 * @param value ƒTƒjƒ^ƒCƒWƒ“ƒO‚·‚é•¶š—ñ
-	 * @return ƒTƒjƒ^ƒCƒWƒ“ƒO‚µ‚½•¶š—ñ
+	 * ã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°å‡¦ç†
+	 * @param value ã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°ã™ã‚‹æ–‡å­—åˆ—
+	 * @return ã‚µãƒ‹ã‚¿ã‚¤ã‚¸ãƒ³ã‚°ã—ãŸæ–‡å­—åˆ—
 	 */
 	private String sanitize(String value) {
 		return value.replace("&", "&amp;")

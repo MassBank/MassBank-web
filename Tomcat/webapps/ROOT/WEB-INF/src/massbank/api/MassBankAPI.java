@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] ƒƒCƒ“ƒNƒ‰ƒX
+ * [WEB-API] ãƒ¡ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.4 2011.09.16
  *
@@ -48,14 +48,14 @@ import org.apache.axis2.context.MessageContext;
 public class MassBankAPI {
 
 	/**
-	 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public MassBankAPI() {
 	}
 
 
 	/**
-	 * —Ş—ƒXƒyƒNƒgƒ‹‚ÌŒŸõ‚ğs‚¤
+	 * é¡ä¼¼ã‚¹ãƒšã‚¯ãƒˆãƒ«ã®æ¤œç´¢ã‚’è¡Œã†
 	 */
 	public SearchResult searchSpectrum(
 			String[] mzs, String[] intensities,
@@ -65,10 +65,10 @@ public class MassBankAPI {
 		throws AxisFault {
 
 		//---------------------------------------
-		// ƒpƒ‰ƒ[ƒ^ƒ`ƒFƒbƒN
+		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯
 		//---------------------------------------
 		HashMap<String,Object> mapParam = new HashMap<String,Object>();
-		// massTypes ‚Í‹­§“I‚Éall‚ğw’è
+		// massTypes ã¯å¼·åˆ¶çš„ã«allã‚’æŒ‡å®š
 		String[] keys = { "mzs", "intensities", "unit", "tolerance", "cutoff", "instrumentTypes", "massTypes", "ionMode" };
 		Object[] vals = { mzs, intensities, unit, tolerance, cutoff, instrumentTypes, new String[]{"all"}, ionMode };
 		for ( int i = 0; i < keys.length; i++ ) {
@@ -76,19 +76,19 @@ public class MassBankAPI {
 		}
 		ApiParameter apiParam = new ApiParameter( "searchSpectrum", mapParam );
 		if ( !apiParam.check() ) {
-			// ƒpƒ‰ƒ[ƒ^•s³‚Ìê‡ASOAPFault ‚ğ•Ô‚·
+			// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä¸æ­£ã®å ´åˆã€SOAPFault ã‚’è¿”ã™
 			String errDetail = apiParam.getErrorDetail();
 			throw new AxisFault( "Invalid parameter : " + errDetail );
 		}
 
 		//---------------------------------------
-		// CGI—pƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
+		// CGIç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		//---------------------------------------
 		String param = apiParam.getCgiParam();
 		param += "&API=true";
 
 		//---------------------------------------
-		// MultiDispatcher‚ÌŒÄ‚Ño‚µ
+		// MultiDispatcherã®å‘¼ã³å‡ºã—
 		//---------------------------------------
 		DispatchInvoker inv = new DispatchInvoker();
 		inv.invoke( MassBankCommon.REQ_TYPE_SEARCH, param );
@@ -97,7 +97,7 @@ public class MassBankAPI {
 
 
 	/**
-	 * •ªÍ‹@Šíí•Ê‚ğæ“¾‚·‚é
+	 * åˆ†ææ©Ÿå™¨ç¨®åˆ¥ã‚’å–å¾—ã™ã‚‹
 	 */
 	public String[] getInstrumentTypes() {
 		GetInstInfo instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
@@ -107,18 +107,18 @@ public class MassBankAPI {
 
 
 	/**
-	 * ƒŒƒR[ƒhî•ñ‚ğæ“¾‚·‚é
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public RecordInfo[] getRecordInfo(String[] ids) throws AxisFault {
 		//---------------------------------------
-		// CGI—pƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
+		// CGIç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		//---------------------------------------
 		ApiParameter apiParam = new ApiParameter();
 		String param = apiParam.getCgiParamId(ids);
 		param += "&mode=all";
 
 		//---------------------------------------
-		// MultiDispatcher‚ÌŒÄ‚Ño‚µ
+		// MultiDispatcherã®å‘¼ã³å‡ºã—
 		//---------------------------------------
 		DispatchInvoker inv = new DispatchInvoker();
 		inv.invoke( MassBankCommon.REQ_TYPE_GETRECORD, param );
@@ -147,7 +147,7 @@ public class MassBankAPI {
 		RecordInfo[] result = null;
 		int num = list.size();
 		if ( num == 0 ) {
-			// 1‚Â‚àŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍASOAPFault‚ğ•Ô‚·
+			// 1ã¤ã‚‚è¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ã€SOAPFaultã‚’è¿”ã™
 			throw new AxisFault("Record is not found.");
 		}
 		else {
@@ -159,18 +159,18 @@ public class MassBankAPI {
 
 
 	/**
-	 * ƒs[ƒNƒf[ƒ^‚ğæ“¾‚·‚é
+	 * ãƒ”ãƒ¼ã‚¯ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
 	 */
 	public Peak[] getPeak(String[] ids) throws AxisFault {
 		//---------------------------------------
-		// CGI—pƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
+		// CGIç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		//---------------------------------------
 		ApiParameter apiParam = new ApiParameter();
 		String param = apiParam.getCgiParamId(ids);
 		param += "&mode=peak";
 
 		//---------------------------------------
-		// MultiDispatcher‚ÌŒÄ‚Ño‚µ
+		// MultiDispatcherã®å‘¼ã³å‡ºã—
 		//---------------------------------------
 		DispatchInvoker inv = new DispatchInvoker();
 		inv.invoke( MassBankCommon.REQ_TYPE_GETRECORD, param );
@@ -193,12 +193,12 @@ public class MassBankAPI {
 				continue;
 			}
 			else if ( item.indexOf("PK$PEAK") >= 0 ){
-				if ( item.indexOf("N/A") == -1 ) {	// ‹ŒƒtƒH[ƒ}ƒbƒg‘Î‰
+				if ( item.indexOf("N/A") == -1 ) {	// æ—§ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå¯¾å¿œ
 					isPeakLine = true;
 				}
 			}
 			else {
-				if ( item.indexOf("N/A") >= 0 ) {	// VƒtƒH[ƒ}ƒbƒg‘Î‰
+				if ( item.indexOf("N/A") >= 0 ) {	// æ–°ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå¯¾å¿œ
 					isPeakLine = false;
 				}
 				if ( isPeakLine ) {
@@ -213,7 +213,7 @@ public class MassBankAPI {
 
 		int num = list.size();
 		if ( num == 0 ) {
-			// 1‚Â‚àŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍASOAPFault‚ğ•Ô‚·
+			// 1ã¤ã‚‚è¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ã€SOAPFaultã‚’è¿”ã™
 			throw new AxisFault("MassBank Record is not found.");
 		}
 		else {
@@ -225,7 +225,7 @@ public class MassBankAPI {
 
 
 	/**
-	 * ƒs[ƒNŒŸõ‚ğs‚¤
+	 * ãƒ”ãƒ¼ã‚¯æ¤œç´¢ã‚’è¡Œã†
 	 */
 	public SearchResult searchPeak(
 			String[] mzs,
@@ -250,7 +250,7 @@ public class MassBankAPI {
 
 
 	/**
-	 * ƒs[ƒN·ŒŸõ‚ğs‚¤
+	 * ãƒ”ãƒ¼ã‚¯å·®æ¤œç´¢ã‚’è¡Œã†
 	 */
 	public SearchResult searchPeakDiff(
 		String[] mzs,
@@ -274,7 +274,7 @@ public class MassBankAPI {
 
 
 	/**
-	 * ƒoƒbƒ`ˆ—‚ğs‚¤
+	 * ãƒãƒƒãƒå‡¦ç†ã‚’è¡Œã†
 	 */
 	public String execBatchJob(
 		String type,
@@ -285,7 +285,7 @@ public class MassBankAPI {
 
 		String jobId = "";
 
-		// ƒNƒGƒŠ‚ğƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚É‘‚«o‚·
+		// ã‚¯ã‚¨ãƒªã‚’ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™
 		String tempFileName = "";
 		try {
 			tempFileName = queryStrsToTempFile(queryStrings);
@@ -295,10 +295,10 @@ public class MassBankAPI {
 		}
 
 		//---------------------------------------
-		// ƒpƒ‰ƒ[ƒ^ƒ`ƒFƒbƒN
+		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯
 		//---------------------------------------
 		HashMap<String,Object> mapParam = new HashMap<String,Object>();
-		// massTypes ‚Í‹­§“I‚Éall‚ğw’è
+		// massTypes ã¯å¼·åˆ¶çš„ã«allã‚’æŒ‡å®š
 		String[] keys = { "instrumentTypes", "massTypes", "ionMode" };
 		Object[] vals = { instrumentTypes, new String[]{"all"}, ionMode };
 		for ( int i = 0; i < keys.length; i++ ) {
@@ -306,7 +306,7 @@ public class MassBankAPI {
 		}
 		ApiParameter apiParam = new ApiParameter( "execBatchJob", mapParam );
 		if ( !apiParam.check() ) {
-			// ƒpƒ‰ƒ[ƒ^•s³‚Ìê‡ASOAPFault ‚ğ•Ô‚·
+			// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä¸æ­£ã®å ´åˆã€SOAPFault ã‚’è¿”ã™
 			String errDetail = apiParam.getErrorDetail();
 			throw new AxisFault( "Invalid parameter : " + errDetail );
 		}
@@ -315,7 +315,7 @@ public class MassBankAPI {
 			param = param.substring(1);
 		}
 
-		// ƒWƒ‡ƒuî•ñ‚ğƒZƒbƒg‚·‚é
+		// ã‚¸ãƒ§ãƒ–æƒ…å ±ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		MessageContext context = MessageContext.getCurrentMessageContext();
 		SimpleDateFormat sdf = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
 		String time = sdf.format(new Date());
@@ -341,7 +341,7 @@ public class MassBankAPI {
 
 
 	/**
-	 * w’è‚µ‚½ƒWƒ‡ƒuID‚Ìî•ñ‚ğæ“¾‚·‚é
+	 * æŒ‡å®šã—ãŸã‚¸ãƒ§ãƒ–IDã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public JobStatus getJobStatus(String jobId) throws AxisFault {
 		JobStatus jobStatus = new JobStatus();
@@ -360,7 +360,7 @@ public class MassBankAPI {
 			jobStatus.setRequestDate( info.getTimeStamp() );
 		}
 		else {
-			// ‘ÎÛƒWƒ‡ƒu‚ª‚È‚¢ê‡
+			// å¯¾è±¡ã‚¸ãƒ§ãƒ–ãŒãªã„å ´åˆ
 			throw new AxisFault( "Job Not found");
 		}
 		return jobStatus;
@@ -368,7 +368,7 @@ public class MassBankAPI {
 
 
 	/**
-	 * w’è‚µ‚½ƒWƒ‡ƒuID‚ÌŒ‹‰Ê‚ğæ“¾‚µ‚Ü‚·
+	 * æŒ‡å®šã—ãŸã‚¸ãƒ§ãƒ–IDã®çµæœã‚’å–å¾—ã—ã¾ã™
 	 */
 	public ResultSet[] getJobResult(String jobId) throws AxisFault {
 		ResultSet[] rsets = null;
@@ -431,7 +431,7 @@ public class MassBankAPI {
 			rsets = (ResultSet[])rsetList.toArray(new ResultSet[]{});
 		}
 		else {
-			// ‘ÎÛƒWƒ‡ƒu‚ª‚È‚¢ê‡
+			// å¯¾è±¡ã‚¸ãƒ§ãƒ–ãŒãªã„å ´åˆ
 			throw new AxisFault( "Job Not found");
 		}
 		return rsets;
@@ -439,7 +439,7 @@ public class MassBankAPI {
 
 
 	/**
-	 * ƒs[ƒNŒŸõ‹¤’Êˆ—
+	 * ãƒ”ãƒ¼ã‚¯æ¤œç´¢å…±é€šå‡¦ç†
 	 */
 	private SearchResult searchPeakCommon (
 		boolean isDiff,
@@ -451,10 +451,10 @@ public class MassBankAPI {
 		int maxNumResults ) throws AxisFault {
 
 		//---------------------------------------
-		// ƒpƒ‰ƒ[ƒ^ƒ`ƒFƒbƒN
+		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯
 		//---------------------------------------
 		HashMap<String,Object> mapParam = new HashMap<String,Object>();
-		// massTypes ‚Í‹­§“I‚Éall‚ğw’è
+		// massTypes ã¯å¼·åˆ¶çš„ã«allã‚’æŒ‡å®š
 		String[] keys = { "mzs", "relativeIntensity", "tolerance", "instrumentTypes", "massTypes", "ionMode" };
 		Object[] vals = { mzs, relativeIntensity, tolerance, instrumentTypes, new String[]{"all"}, ionMode };
 		for ( int i = 0; i < keys.length; i++ ) {
@@ -462,14 +462,14 @@ public class MassBankAPI {
 		}
 		ApiParameter apiParam = new ApiParameter( "searchPeak", mapParam );
 		if ( !apiParam.check() ) {
-			// ƒpƒ‰ƒ[ƒ^•s³‚Ìê‡ASOAPFault ‚ğ•Ô‚·
+			// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä¸æ­£ã®å ´åˆã€SOAPFault ã‚’è¿”ã™
 			String errDetail = apiParam.getErrorDetail();
 			throw new AxisFault( "Invalid parameter : " + errDetail );
 		}
 		String param = apiParam.getCgiParam();
 
 		//---------------------------------------
-		// MultiDispatcher‚ÌŒÄ‚Ño‚µ
+		// MultiDispatcherã®å‘¼ã³å‡ºã—
 		//---------------------------------------
 		String typeName = MassBankCommon.REQ_TYPE_PEAK;
 		if ( isDiff ) {
@@ -481,11 +481,11 @@ public class MassBankAPI {
 	}
 
 	/**
-	 * ƒNƒGƒŠ‚ğƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚É‘‚«o‚·
+	 * ã‚¯ã‚¨ãƒªã‚’ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™
 	 */
 	private String queryStrsToTempFile(String[] queryStrings) throws AxisFault {
 
-		// ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚É‘‚«o‚·
+		// ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™
 		PrintWriter writer = null;
 		String tempPath = System.getProperty("java.io.tmpdir");
 		String tempFileName = "";

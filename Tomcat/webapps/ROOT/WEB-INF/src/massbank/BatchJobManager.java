@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒoƒbƒ`ŒŸõƒWƒ‡ƒuŠÇ—ƒNƒ‰ƒX
+ * ãƒãƒƒãƒæ¤œç´¢ã‚¸ãƒ§ãƒ–ç®¡ç†ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.3 2010.04.08
  *
@@ -43,7 +43,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒuƒGƒ“ƒgƒŠ”‚ğæ“¾‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªæ•°ã‚’å–å¾—ã™ã‚‹
 	  */
 	public int getCount() {
 		try {
@@ -68,7 +68,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒuƒGƒ“ƒgƒŠ‚ğƒZƒbƒg‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	  */
 	public void setEntry(BatchJobInfo newJobInfo) {
 		this.jobInfo = newJobInfo;
@@ -76,7 +76,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒuƒGƒ“ƒgƒŠ‚ğƒ`ƒFƒbƒN‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	  */
 	public boolean checkEntry() {
 		ArrayList<BatchJobInfo> entryList = this.getEntryList();
@@ -93,15 +93,15 @@ public class BatchJobManager {
 			String fileSize  = jobInfo.getFileSize();
 
 			BatchJobInfo newJobInfo = this.jobInfo;
-			// “¯ˆêƒZƒbƒVƒ‡ƒ“‚Åƒtƒ@ƒCƒ‹–¼,ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª“¯‚¶
-			//   (“¯‚¶ƒtƒ@ƒCƒ‹‚ğÀs‚µ‚½‚¢ê‡‚à‚ ‚é‚©‚à->I‚í‚ê‚ÎÀs‰Â”\)
+			// åŒä¸€ã‚»ãƒƒã‚·ãƒ§ãƒ³ã§ãƒ•ã‚¡ã‚¤ãƒ«å,ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒåŒã˜
+			//   (åŒã˜ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿè¡Œã—ãŸã„å ´åˆã‚‚ã‚ã‚‹ã‹ã‚‚->çµ‚ã‚ã‚Œã°å®Ÿè¡Œå¯èƒ½)
 			if ( sessionId.equals(newJobInfo.getSessionId())
 				&& fileName.equals(newJobInfo.getFileName())
 				&& fileSize.equals(newJobInfo.getFileSize()) ) {
 				return false;
 			}
 
-			// “¯ˆêIPƒAƒhƒŒƒX‚ÅŠù‚ÉÀs‚³‚ê‚Ä‚¢‚éƒWƒ‡ƒu‚ª‚ ‚é‚©
+			// åŒä¸€IPã‚¢ãƒ‰ãƒ¬ã‚¹ã§æ—¢ã«å®Ÿè¡Œã•ã‚Œã¦ã„ã‚‹ã‚¸ãƒ§ãƒ–ãŒã‚ã‚‹ã‹
 			if ( ipAddress.equals(newJobInfo.getIpAddr()) ) {
 				cnt++;
 			}
@@ -113,14 +113,14 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒuƒGƒ“ƒgƒŠ‚ğ’Ç‰Á‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªã‚’è¿½åŠ ã™ã‚‹
 	  */
 	public void addEntry() {
 			this.storeEntry(true);
 	}
 
 	/**
-	  * ƒWƒ‡ƒuó‘Ô‚ğƒAƒNƒeƒBƒu‚ÉƒZƒbƒg‚·‚é
+	  * ã‚¸ãƒ§ãƒ–çŠ¶æ…‹ã‚’ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã‚»ãƒƒãƒˆã™ã‚‹
 	  */
 	public void setActive() {
 		this.jobInfo.setStatus("active");
@@ -128,7 +128,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒuƒGƒ“ƒgƒŠ‚ğíœ‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªã‚’å‰Šé™¤ã™ã‚‹
 	  */
 	public void deleteEntry(String sessionId, String timeStamp) {
 		synchronized (this.proper) {
@@ -148,7 +148,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * –¢ÀsƒWƒ‡ƒu‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	  * æœªå®Ÿè¡Œã‚¸ãƒ§ãƒ–ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	  */
 	public ArrayList<BatchJobInfo> getPassiveEntry() {
 		ArrayList<BatchJobInfo> entryAll = this.getEntryList();
@@ -167,7 +167,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ‘SƒWƒ‡ƒu‚Ìó‘Ô‚ğ–¢Àsó‘Ô‚É‚·‚é
+	  * å…¨ã‚¸ãƒ§ãƒ–ã®çŠ¶æ…‹ã‚’æœªå®Ÿè¡ŒçŠ¶æ…‹ã«ã™ã‚‹
 	  */
 	public void setPassiveAll() {
 		synchronized (this.proper) {
@@ -189,7 +189,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒuƒGƒ“ƒgƒŠ‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	  */
 	private ArrayList<BatchJobInfo> getEntryList() {
 		ArrayList<BatchJobInfo> entryList = new ArrayList();
@@ -221,7 +221,7 @@ public class BatchJobManager {
 	}
 
 	/**
-	  * ƒWƒ‡ƒuƒGƒ“ƒgƒŠ‚ğ•Û‘¶‚·‚é
+	  * ã‚¸ãƒ§ãƒ–ã‚¨ãƒ³ãƒˆãƒªã‚’ä¿å­˜ã™ã‚‹
 	  */
 	private void storeEntry(boolean isCountup) {
 		String key = jobInfo.getSessionId() + "," + jobInfo.getTimeStamp();

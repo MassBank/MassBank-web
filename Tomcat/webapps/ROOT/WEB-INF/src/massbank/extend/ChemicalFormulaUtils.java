@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ‰»Šw®‚ğˆµ‚¤ƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+ * åŒ–å­¦å¼ã‚’æ‰±ã†ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2012.11.01
  *
@@ -46,7 +46,7 @@ import massbank.MassBankEnv;
 public class ChemicalFormulaUtils {
 
 	/**
-	 * •ªq®‚ğŒ³‘f‹L†‚ÆŒÂ”‚É•ª‰ğ‚·‚é
+	 * åˆ†å­å¼ã‚’å…ƒç´ è¨˜å·ã¨å€‹æ•°ã«åˆ†è§£ã™ã‚‹
 	 */
 	public static Map<String, Integer> getAtomList(String formula) {
 		Map<String, Integer> atomList = new HashMap();
@@ -59,10 +59,10 @@ public class ChemicalFormulaUtils {
 				chr = formula.substring( pos, pos + 1 );
 			}
 			if ( pos == endPos || (!NumberUtils.isNumber(chr) && chr.equals(chr.toUpperCase())) ) {
-				// Œ³‘f‹L† + ŒÂ”‚ğØ‚èo‚·
+				// å…ƒç´ è¨˜å· + å€‹æ•°ã‚’åˆ‡ã‚Šå‡ºã™
 				String item = formula.substring( startPos, pos );
 
-				// Œ³‘f‹L†‚ÆŒÂ”‚ğ•ª‰ğ
+				// å…ƒç´ è¨˜å·ã¨å€‹æ•°ã‚’åˆ†è§£
 				boolean isFound = false;
 				for ( i = 1; i < item.length(); i++ ) {
 					chr = item.substring(i, i + 1);
@@ -76,11 +76,11 @@ public class ChemicalFormulaUtils {
 				if ( isFound ) {
 					num = Integer.parseInt(item.substring(i));
 				}
-				// Œ³‘f‚ª“¯‚¶ê‡
+				// å…ƒç´ ãŒåŒã˜å ´åˆ
 				if ( atomList.get(atom) != null ) {
 					num = num + atomList.get(atom);
 				}
-				// ’lŠi”[
+				// å€¤æ ¼ç´
 				atomList.put(atom, num);
 
 				startPos = pos;
@@ -90,11 +90,11 @@ public class ChemicalFormulaUtils {
 	}
 
 	/**
-	 * •ªq®‚ÌŒ³‘f‹L†‚ğ•À‚Ñ‘Ö‚¦‚é
+	 * åˆ†å­å¼ã®å…ƒç´ è¨˜å·ã‚’ä¸¦ã³æ›¿ãˆã‚‹
 	 */
 	public static String swapFormula(String formula) {
 
-		// Œ³‘f‹L†‚Ì‡”Ô C, H ˆÈ~‚ÍƒAƒ‹ƒtƒ@ƒxƒbƒg‡
+		// å…ƒç´ è¨˜å·ã®é †ç•ª C, H ä»¥é™ã¯ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆé †
 		String[] atomSequece = new String[]{
 			"C", "H", "Cl", "F", "I", "N", "O", "P", "S", "Si"
 		};
@@ -109,7 +109,7 @@ public class ChemicalFormulaUtils {
 
 				if ( atom.equals(atomSequece[i]) )  {
 					swapFormula += atom;
-					// ŒÂ”‚ª1ŒÂ‚Ìê‡AŒÂ”‚Í‘‚©‚È‚¢
+					// å€‹æ•°ãŒ1å€‹ã®å ´åˆã€å€‹æ•°ã¯æ›¸ã‹ãªã„
 					if ( num > 1 ) {
 						swapFormula += String.valueOf(num);
 					}
@@ -121,7 +121,7 @@ public class ChemicalFormulaUtils {
 	}
 
 	/**
-	 * ƒCƒIƒ“‚Ì•ªq®‚Æ¿—Ê‚Ì‘Î‰ƒŠƒXƒg‚ğæ“¾‚·‚é
+	 * ã‚¤ã‚ªãƒ³ã®åˆ†å­å¼ã¨è³ªé‡ã®å¯¾å¿œãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	 */
 	public static List<String[]> getIonMassList() throws IOException {
 		List<String[]> massList = new ArrayList();
@@ -149,7 +149,7 @@ public class ChemicalFormulaUtils {
 	}
 
 	/**
-	 * m/z‚ğ”z—ñ‚ÉŠi”[‚µ‚½’l‚ğæ“¾‚·‚é
+	 * m/zã‚’é…åˆ—ã«æ ¼ç´ã—ãŸå€¤ã‚’å–å¾—ã™ã‚‹
 	 */
 	public static String[] getMzArray(String peakString, int cutoff) {
 		List<String> mzList = new ArrayList();
@@ -174,7 +174,7 @@ public class ChemicalFormulaUtils {
 	}
 
 	/**
-	 * m/z’l‚ª¿—ÊƒŠƒXƒg‚Æˆê’v‚µ‚½•ªq®‚ğæ“¾‚·‚é
+	 * m/zå€¤ãŒè³ªé‡ãƒªã‚¹ãƒˆã¨ä¸€è‡´ã—ãŸåˆ†å­å¼ã‚’å–å¾—ã™ã‚‹
 	 */
 	public static String[] getMatchedFormulas(
 		String[] mzs, double peakTolerance, List<String[]>massList) throws IOException {

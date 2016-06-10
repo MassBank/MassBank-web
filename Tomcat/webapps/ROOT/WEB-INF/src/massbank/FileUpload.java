@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * FileUpload ‹¤’ÊƒNƒ‰ƒX
+ * FileUpload å…±é€šã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2009.02.02
  *
@@ -37,45 +37,45 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
 /**
- * FileUpload ‹¤’ÊƒNƒ‰ƒX
+ * FileUpload å…±é€šã‚¯ãƒ©ã‚¹
  */
 public class FileUpload extends DiskFileUpload {
 
-	// ƒfƒtƒHƒ‹ƒgƒAƒbƒvƒ[ƒhƒpƒX
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ãƒ‘ã‚¹
 	public static final String UPLOAD_PATH = System.getProperty("java.io.tmpdir");
 	
-	// o—ÍæƒpƒX
+	// å‡ºåŠ›å…ˆãƒ‘ã‚¹
 	private String outPath = UPLOAD_PATH;
 	
-	// ƒŠƒNƒGƒXƒgî•ñ
+	// ãƒªã‚¯ã‚¨ã‚¹ãƒˆæƒ…å ±
 	private HttpServletRequest req = null;
 
-	// multipart/form-dataƒŠƒXƒg
+	// multipart/form-dataãƒªã‚¹ãƒˆ
 	private List<FileItem> fileItemList = null;
 	
-	// ƒAƒbƒvƒ[ƒhƒtƒ@ƒCƒ‹î•ñ<ƒtƒ@ƒCƒ‹–¼, ƒAƒbƒvƒ[ƒhŒ‹‰Ê>
+	// ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±<ãƒ•ã‚¡ã‚¤ãƒ«å, ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰çµæœ>
 	private HashMap<String, Boolean> upFileMap = null;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param req ƒŠƒNƒGƒXƒg
-	 * @param outPath o—ÍæƒpƒX
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param req ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
+	 * @param outPath å‡ºåŠ›å…ˆãƒ‘ã‚¹
 	 */
 	public FileUpload(HttpServletRequest req, String outPath ) {
 		super();
-		setSizeMax(-1);					// ƒTƒCƒY
-		setSizeThreshold(1024);			// ƒoƒbƒtƒ@ƒTƒCƒY
-		setRepositoryPath(outPath);		// •Û‘¶æƒtƒHƒ‹ƒ_
-		setHeaderEncoding("utf-8");		// •¶šƒGƒ“ƒR[ƒfƒBƒ“ƒO
+		setSizeMax(-1);					// ã‚µã‚¤ã‚º
+		setSizeThreshold(1024);			// ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+		setRepositoryPath(outPath);		// ä¿å­˜å…ˆãƒ•ã‚©ãƒ«ãƒ€
+		setHeaderEncoding("utf-8");		// æ–‡å­—ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°
 		this.req = req;
 		this.outPath = outPath;
 	}
 	
 	/**
-	 * ƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^‰ğÍ
-	 * multipart/form-data‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚é’ÊíƒŠƒNƒGƒXƒgî•ñ‚ğæ“¾‚·‚é
-	 * ¸”s‚µ‚½ê‡‚Ínull‚ğ•Ô‹p‚·‚é
-	 * @return ’ÊíƒŠƒNƒGƒXƒgî•ñMAP<ƒL[, ’l>
+	 * ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è§£æ
+	 * multipart/form-dataã«å«ã¾ã‚Œã¦ã„ã‚‹é€šå¸¸ãƒªã‚¯ã‚¨ã‚¹ãƒˆæƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * å¤±æ•—ã—ãŸå ´åˆã¯nullã‚’è¿”å´ã™ã‚‹
+	 * @return é€šå¸¸ãƒªã‚¯ã‚¨ã‚¹ãƒˆæƒ…å ±MAP<ã‚­ãƒ¼, å€¤>
 	 */
 	@SuppressWarnings("unchecked")
 	public HashMap<String, String[]> getRequestParam() {
@@ -93,7 +93,7 @@ public class FileUpload extends DiskFileUpload {
 		HashMap<String, String[]> reqParamMap = new HashMap<String, String[]>();
 		for (FileItem fItem : fileItemList) {
 			
-			// ’ÊíƒtƒB[ƒ‹ƒh‚Ìê‡iƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^‚Ì’l‚ª”z—ñ‚Å‚È‚¢ê‡j
+			// é€šå¸¸ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å ´åˆï¼ˆãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ãŒé…åˆ—ã§ãªã„å ´åˆï¼‰
 			if (fItem.isFormField()) {
 				String key = fItem.getFieldName();
 				String val = fItem.getString();
@@ -106,10 +106,10 @@ public class FileUpload extends DiskFileUpload {
 	}
 	
 	/**
-	 * ƒtƒ@ƒCƒ‹ƒAƒbƒvƒ[ƒh
-	 * multipart/form-data‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚ğƒAƒbƒvƒ[ƒh‚·‚é
-	 * ¸”s‚µ‚½ê‡‚Ínull‚ğ•Ô‹p‚·‚é
-	 * @return ƒAƒbƒvƒ[ƒhƒtƒ@ƒCƒ‹î•ñMAP<ƒtƒ@ƒCƒ‹–¼, ƒAƒbƒvƒ[ƒhŒ‹‰Ê>
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰
+	 * multipart/form-dataã«å«ã¾ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
+	 * å¤±æ•—ã—ãŸå ´åˆã¯nullã‚’è¿”å´ã™ã‚‹
+	 * @return ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±MAP<ãƒ•ã‚¡ã‚¤ãƒ«å, ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰çµæœ>
 	 */
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Boolean> doUpload() {
@@ -127,23 +127,23 @@ public class FileUpload extends DiskFileUpload {
 		upFileMap = new HashMap<String, Boolean>();
 		for (FileItem fItem : fileItemList) {
 			
-			// ƒtƒ@ƒCƒ‹ƒtƒB[ƒ‹ƒh‚Ìê‡
+			// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å ´åˆ
 			if ( !fItem.isFormField() ) {
 				
 				String key = "";
 				boolean val = false;
 				
-				// ƒtƒ@ƒCƒ‹–¼æ“¾iŠÂ‹«ˆË‘¶‚ÅƒpƒXî•ñ‚ªŠÜ‚Ü‚ê‚éê‡‚ª‚ ‚éj
+				// ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—ï¼ˆç’°å¢ƒä¾å­˜ã§ãƒ‘ã‚¹æƒ…å ±ãŒå«ã¾ã‚Œã‚‹å ´åˆãŒã‚ã‚‹ï¼‰
 				String filePath = (fItem.getName() != null) ? fItem.getName() : "";
 				
-				// ƒtƒ@ƒCƒ‹–¼æ“¾iŠmÀ‚Éƒtƒ@ƒCƒ‹–¼‚Ì‚İ‚ğæ“¾j
+				// ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—ï¼ˆç¢ºå®Ÿã«ãƒ•ã‚¡ã‚¤ãƒ«åã®ã¿ã‚’å–å¾—ï¼‰
 				String fileName = (new File(filePath)).getName();
 				int pos = fileName.lastIndexOf("\\");
 				fileName = fileName.substring( pos + 1 );
 				pos = fileName.lastIndexOf("/");
 				fileName = fileName.substring( pos + 1 );
 				
-				// ƒtƒ@ƒCƒ‹ƒAƒbƒvƒ[ƒh
+				// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰
 				if ( !fileName.equals("") ) {
 					key = fileName;
 					File upFile = new File( outPath + "/" + fileName); 
@@ -164,12 +164,12 @@ public class FileUpload extends DiskFileUpload {
 	}
 	
 	/**
-	 * FileItem‚Ìíœ
-	 * ƒtƒ@ƒCƒ‹ƒAƒbƒvƒ[ƒh‚ÉŠÖŒW‚·‚éˆêƒfƒBƒXƒN—Ìˆæ‚àŠÜ‚ŞA
-	 * ƒXƒgƒŒ[ƒWã‚Ìƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€‚ğíœ‚·‚éB
-	 * FileItemƒCƒ“ƒXƒ^ƒ“ƒX‚ªƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚É‚©‚©‚Á‚½‚É‚±‚ÌƒXƒgƒŒ[ƒW‚Ííœ‚³‚ê‚é‚ªA
-	 * ‚±‚Ìƒƒ\ƒbƒh‚Í‘f‘‚­ŠmÀ‚Éíœ‚ğÀ{‚·‚éB
-	 * ‘S‚Ä‚Ìmultipart/form-data‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚éî•ñ‚ğæ“¾Œã‚ÉŒÄ‚Ño‚·‚±‚ÆB
+	 * FileItemã®å‰Šé™¤
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã«é–¢ä¿‚ã™ã‚‹ä¸€æ™‚ãƒ‡ã‚£ã‚¹ã‚¯é ˜åŸŸã‚‚å«ã‚€ã€
+	 * ã‚¹ãƒˆãƒ¬ãƒ¼ã‚¸ä¸Šã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¤ãƒ†ãƒ ã‚’å‰Šé™¤ã™ã‚‹ã€‚
+	 * FileItemã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒã‚¬ãƒ™ãƒ¼ã‚¸ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã«ã‹ã‹ã£ãŸæ™‚ã«ã“ã®ã‚¹ãƒˆãƒ¬ãƒ¼ã‚¸ã¯å‰Šé™¤ã•ã‚Œã‚‹ãŒã€
+	 * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ç´ æ—©ãç¢ºå®Ÿã«å‰Šé™¤ã‚’å®Ÿæ–½ã™ã‚‹ã€‚
+	 * å…¨ã¦ã®multipart/form-dataã«å«ã¾ã‚Œã¦ã„ã‚‹æƒ…å ±ã‚’å–å¾—å¾Œã«å‘¼ã³å‡ºã™ã“ã¨ã€‚
 	 */
 	public void deleteFileItem() {
 		if (fileItemList != null) {
@@ -180,7 +180,7 @@ public class FileUpload extends DiskFileUpload {
 	}
 	
 	/**
-	 * ƒAƒbƒvƒ[ƒh‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì‘Síœ
+	 * ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®å…¨å‰Šé™¤
 	 */
 	public void deleteAllFile() {
 		String fileName;
@@ -197,8 +197,8 @@ public class FileUpload extends DiskFileUpload {
 	}
 	
 	/**
-	 * ƒAƒbƒvƒ[ƒh‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ìíœ
-	 * @param fileName íœ‘ÎÛƒtƒ@ƒCƒ‹–¼
+	 * ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®å‰Šé™¤
+	 * @param fileName å‰Šé™¤å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«å
 	 */
 	public void deleteFile(String fileName) {
 		File targetFile = new File ( outPath + "/" + fileName );

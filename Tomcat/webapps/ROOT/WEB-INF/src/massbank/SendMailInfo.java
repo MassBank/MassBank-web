@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒ[ƒ‹‘—Mî•ñƒNƒ‰ƒX
+ * ãƒ¡ãƒ¼ãƒ«é€ä¿¡æƒ…å ±ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2010.04.05
  *
@@ -28,43 +28,43 @@ package massbank;
 import java.io.File;
 
 /**
- * ƒ[ƒ‹‘—Mî•ñƒNƒ‰ƒX
+ * ãƒ¡ãƒ¼ãƒ«é€ä¿¡æƒ…å ±ã‚¯ãƒ©ã‚¹
  * 
  */
 public class SendMailInfo {
 
-	/** SMTPƒAƒhƒŒƒX */
+	/** SMTPã‚¢ãƒ‰ãƒ¬ã‚¹ */
 	private String smtp = "";
 	
-	/** ‘—MÒ–¼ */
+	/** é€ä¿¡è€…å */
 	private String fromName = "";
 	
-	/** Fromƒ[ƒ‹ƒAƒhƒŒƒX */
+	/** Fromãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ */
 	private String from = "";
 	
-	/** Toƒ[ƒ‹ƒAƒhƒŒƒXiƒJƒ“ƒ}‹æØ‚è‚Å•¡”İ’è‰Âj */
+	/** Toãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ˆã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã§è¤‡æ•°è¨­å®šå¯ï¼‰ */
 	private String to = "";
 	
-	/** CCƒ[ƒ‹ƒAƒhƒŒƒXiƒJƒ“ƒ}‹æØ‚è‚Å•¡”İ’è‰Âj */
+	/** CCãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ˆã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã§è¤‡æ•°è¨­å®šå¯ï¼‰ */
 	private String cc = "";
 
-	/** BCCƒ[ƒ‹ƒAƒhƒŒƒXiƒJƒ“ƒ}‹æØ‚è‚Å•¡”İ’è‰Âj */
+	/** BCCãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ˆã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã§è¤‡æ•°è¨­å®šå¯ï¼‰ */
 	private String bcc = "";
 	
-	/** ƒ^ƒCƒgƒ‹ */
+	/** ã‚¿ã‚¤ãƒˆãƒ« */
 	private String subject = "";
 	
-	/** –{•¶ */
+	/** æœ¬æ–‡ */
 	private String contents = "";
 	
-	/** “Y•tƒtƒ@ƒCƒ‹ */
+	/** æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ« */
 	private File[] files = null;
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param smtp SMTPƒAƒhƒŒƒX
-	 * @param from ‘—MŒ³ƒ[ƒ‹ƒAƒhƒŒƒX
-	 * @param to ‘—Mæƒ[ƒ‹ƒAƒhƒŒƒX
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param smtp SMTPã‚¢ãƒ‰ãƒ¬ã‚¹
+	 * @param from é€ä¿¡å…ƒãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹
+	 * @param to é€ä¿¡å…ˆãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹
 	 */
 	public SendMailInfo(String smtp, String from, String to) {
 		if (smtp != null) { this.smtp = smtp.trim(); }
@@ -73,9 +73,9 @@ public class SendMailInfo {
 	}
 
 	/**
-	 * ƒ[ƒ‹‘—Mî•ñ•K{ƒ`ƒFƒbƒN
-	 * •K—vÅ’áŒÀ‚Ìî•ñ‚ªİ’è‚³‚ê‚Ä‚¢‚é‚©‚ğƒ`ƒFƒbƒN
-	 * @return Œ‹‰Ê
+	 * ãƒ¡ãƒ¼ãƒ«é€ä¿¡æƒ…å ±å¿…é ˆãƒã‚§ãƒƒã‚¯
+	 * å¿…è¦æœ€ä½é™ã®æƒ…å ±ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ã‹ã‚’ãƒã‚§ãƒƒã‚¯
+	 * @return çµæœ
 	 */
 	public boolean isCheck() {
 		boolean ret = true;

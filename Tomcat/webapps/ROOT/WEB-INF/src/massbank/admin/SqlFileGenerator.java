@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * DB“o˜^—p‚ÌSQL‚ğ¶¬‚·‚éƒNƒ‰ƒX
+ * DBç™»éŒ²ç”¨ã®SQLã‚’ç”Ÿæˆã™ã‚‹ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.15 2011.10.04
  *
@@ -63,17 +63,17 @@ public class SqlFileGenerator {
 	private Hashtable<String, String> existItem = new Hashtable<String, String>();
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param baseUrl ƒx[ƒXURL
-	 * @param selDbName DB–¼
-	 * @param ver ƒŒƒR[ƒhƒtƒH[ƒ}ƒbƒgƒo[ƒWƒ‡ƒ“
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param baseUrl ãƒ™ãƒ¼ã‚¹URL
+	 * @param selDbName DBå
+	 * @param ver ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒãƒ¼ã‚¸ãƒ§ãƒ³
 	 */ 
 	public SqlFileGenerator( String baseUrl, String selDbName, int ver) {
 		
-		// ƒŒƒR[ƒhƒtƒH[ƒ}ƒbƒgƒo[ƒWƒ‡ƒ“‘Ş”ğ
+		// ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒãƒ¼ã‚¸ãƒ§ãƒ³é€€é¿
 		this.ver = ver;
 		
-		// INSTRUMENTî•ñ‚ğæ“¾
+		// INSTRUMENTæƒ…å ±ã‚’å–å¾—
 		GetInstInfo instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] dbNameList = conf.getDbName();
@@ -96,8 +96,8 @@ public class SqlFileGenerator {
 	}
 
 	/**
-	 * ƒŒƒR[ƒhƒtƒ@ƒCƒ‹“Ç‚İ
-	 * @param filePath ƒŒƒR[ƒhƒtƒ@ƒCƒ‹‚ÌƒpƒX
+	 * ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
+	 * @param filePath ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
 	 */ 
 	public void readFile( String filePath ) {
 		try {
@@ -114,7 +114,7 @@ public class SqlFileGenerator {
 
 			existItem.clear();
 
-			// ƒtƒ@ƒCƒ‹“Ç‚İ
+			// ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
 			BufferedReader in = new BufferedReader( new FileReader(filePath) );
 			while ( ( line = in.readLine() ) != null ) {
 				this.cutItem( line );
@@ -122,7 +122,7 @@ public class SqlFileGenerator {
 					this.acc = value;
 				}
 				//***********************************************
-				// ƒe[ƒuƒ‹:RECORD,INSTRUMENT
+				// ãƒ†ãƒ¼ãƒ–ãƒ«:RECORD,INSTRUMENT
 				//***********************************************
 				else if (name.equals("CH$FORMULA")
 					  || name.equals("CH$EXACT_MASS")
@@ -137,7 +137,7 @@ public class SqlFileGenerator {
 				else if ( name.equals("AC$INSTRUMENT_TYPE") ) {
 					this.acInstType = value.trim();
 					if ( ver == 1 ) {
-						this.acMsType = "N/A";	// ƒtƒH[ƒ}ƒbƒgƒo[ƒWƒ‡ƒ“‚ª1‚Ìê‡‚ÍMS_TYPE‚ª•K{€–Ú‚Å‚Í‚È‚¢‚½‚ß•K‚¸N/A‚Æ‚·‚é
+						this.acMsType = "N/A";	// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒ1ã®å ´åˆã¯MS_TYPEãŒå¿…é ˆé …ç›®ã§ã¯ãªã„ãŸã‚å¿…ãšN/Aã¨ã™ã‚‹
 						this.setRecord();
 					}
 				}
@@ -146,13 +146,13 @@ public class SqlFileGenerator {
 					this.setRecord();
 				}
 				//***********************************************
-				// ƒe[ƒuƒ‹:CH_NAME
+				// ãƒ†ãƒ¼ãƒ–ãƒ«:CH_NAME
 				//***********************************************
 				else if ( name.equals("CH$NAME") ) {
 					this.setChName();
 				}
 				//***********************************************
-				// ƒe[ƒuƒ‹:CH_LINK
+				// ãƒ†ãƒ¼ãƒ–ãƒ«:CH_LINK
 				//***********************************************
 				else if ( name.equals("CH$LINK") ) {
 					this.setChLink();
@@ -166,9 +166,9 @@ public class SqlFileGenerator {
 	}
 
 	/**
-	 * Šeî•ñ—L–³ƒ`ƒFƒbƒN
-	 * @param type ƒŒƒR[ƒhƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	 * @return true:‚ ‚è/false:‚È‚µ
+	 * å„æƒ…å ±æœ‰ç„¡ãƒã‚§ãƒƒã‚¯
+	 * @param type ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	 * @return true:ã‚ã‚Š/false:ãªã—
 	 */ 
 	public boolean isExist( int type ) {
 		boolean ret = true;
@@ -187,9 +187,9 @@ public class SqlFileGenerator {
 	}
 
 	/**
-	 * ¶¬‚µ‚½SQL•¶‚ğæ“¾
-	 * @param type í•Ê
-	 * @return SQL•¶
+	 * ç”Ÿæˆã—ãŸSQLæ–‡ã‚’å–å¾—
+	 * @param type ç¨®åˆ¥
+	 * @return SQLæ–‡
 	 */ 
 	public String getSql( int type ) {
 		String sql = "";
@@ -224,7 +224,7 @@ public class SqlFileGenerator {
 	}
 
 	/**
-	 * RECORD,INSTRUMENTƒe[ƒuƒ‹SQL•¶ƒZƒbƒg
+	 * RECORD,INSTRUMENTãƒ†ãƒ¼ãƒ–ãƒ«SQLæ–‡ã‚»ãƒƒãƒˆ
 	 */ 
 	private void setRecord() {
 		if ( name.equals("CH$FORMULA")
@@ -274,19 +274,19 @@ public class SqlFileGenerator {
 				}
 			}
 			if ( isFound ) {
-				// DB‚É“o˜^Ï‚İINSTRUMENT‚Ìê‡
+				// DBã«ç™»éŒ²æ¸ˆã¿INSTRUMENTã®å ´åˆ
 				valReco += ", " + this.instNo[i];
 			}
 			else {
-				// DB‚É–¢“o˜^INSTRUMENT‚Ìê‡
+				// DBã«æœªç™»éŒ²INSTRUMENTã®å ´åˆ
 				int instNo = 1;
 				String keyStr = this.acInstType + "\t" + this.acInst;
 				if ( this.instNew.containsKey(keyStr) ) {
-					// Šù‚ÉV‹K“o˜^ˆ—‚ğs‚Á‚Ä‚¢‚éINSTRUMENT‚Ìê‡
+					// æ—¢ã«æ–°è¦ç™»éŒ²å‡¦ç†ã‚’è¡Œã£ã¦ã„ã‚‹INSTRUMENTã®å ´åˆ
 					instNo = this.instNew.get(keyStr);
 				}
 				else {
-					// ‚Ü‚¾V‹K“o˜^ˆ—‚ğs‚Á‚Ä‚¢‚È‚¢INSTRUMENT‚Ìê‡
+					// ã¾ã æ–°è¦ç™»éŒ²å‡¦ç†ã‚’è¡Œã£ã¦ã„ãªã„INSTRUMENTã®å ´åˆ
 					for (int tmpNo=instNo; tmpNo<Integer.MAX_VALUE; tmpNo++) {
 						if (!usedNoList.contains(String.valueOf(tmpNo))) {
 							usedNoList.add(String.valueOf(tmpNo));
@@ -307,7 +307,7 @@ public class SqlFileGenerator {
 	}
 
 	/**
-	 * CH_NAMEƒe[ƒuƒ‹SQL•¶ƒZƒbƒg
+	 * CH_NAMEãƒ†ãƒ¼ãƒ–ãƒ«SQLæ–‡ã‚»ãƒƒãƒˆ
 	 */ 
 	private void setChName() {
 		value = value.trim().replaceAll( "'", "\\\\'" );
@@ -315,7 +315,7 @@ public class SqlFileGenerator {
 	}
 
 	/**
-	 * CH_LINKƒe[ƒuƒ‹SQL•¶ƒZƒbƒg
+	 * CH_LINKãƒ†ãƒ¼ãƒ–ãƒ«SQLæ–‡ã‚»ãƒƒãƒˆ
 	 */ 
 	private void setChLink() {
 		int pos = value.trim().indexOf(" ");
@@ -327,8 +327,8 @@ public class SqlFileGenerator {
 	}
 
 	/**
-	 * €–Ú–¼‚Æ’l‚Ì•ªŠ„
-	 * @param line •ªŠ„‘ÎÛ•¶š—ñ
+	 * é …ç›®åã¨å€¤ã®åˆ†å‰²
+	 * @param line åˆ†å‰²å¯¾è±¡æ–‡å­—åˆ—
 	 */ 
 	private void cutItem( String line ) {
 		this.name = "";

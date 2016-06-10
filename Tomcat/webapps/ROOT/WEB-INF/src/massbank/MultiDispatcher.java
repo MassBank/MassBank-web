@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * CGI‚ğƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Å‹N“®‚·‚éƒT[ƒuƒŒƒbƒg
+ * CGIã‚’ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ã§èµ·å‹•ã™ã‚‹ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆ
  *
  * ver 1.0.16 2012.10.10
  *
@@ -46,7 +46,7 @@ public class MultiDispatcher extends HttpServlet {
 	private final String PROG_NAME = MassBankCommon.MULTI_DISPATCHER_NAME;
 
 	/**
-	 * HTTPƒŠƒNƒGƒXƒgˆ—
+	 * HTTPãƒªã‚¯ã‚¨ã‚¹ãƒˆå‡¦ç†
 	 */
 	public void service(HttpServletRequest req, HttpServletResponse res)
 		throws ServletException, IOException {
@@ -56,20 +56,20 @@ public class MultiDispatcher extends HttpServlet {
 		String msg = "";
 
 		//---------------------------------------------------
-		// ƒx[ƒXURLƒZƒbƒg
+		// ãƒ™ãƒ¼ã‚¹URLã‚»ãƒƒãƒˆ
 		//---------------------------------------------------
 		String path = req.getRequestURL().toString();
 		int pos = path.indexOf( MassBankCommon.MULTI_DISPATCHER_NAME );
 		String baseUrl = path.substring( 0, pos );
 
 		//---------------------------------------------------
-		// ŠÂ‹«İ’èƒtƒ@ƒCƒ‹î•ñæ“¾
+		// ç’°å¢ƒè¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±å–å¾—
 		//---------------------------------------------------
 		GetConfig conf = new GetConfig(baseUrl);
 		boolean isTrace = conf.isTraceEnable();
 
 		//---------------------------------------------------
-		// ƒŠƒNƒGƒXƒgƒpƒ‰ƒ[ƒ^æ“¾
+		// ãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å–å¾—
 		//---------------------------------------------------
 		String type = "";
 		Hashtable<String, Object> params = new Hashtable<String, Object>();
@@ -82,11 +82,11 @@ public class MultiDispatcher extends HttpServlet {
 				type = val;
 			}
 			else if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
-				// ƒL[‚ªInstrumentType,MSTypeˆÈŠO‚Ìê‡‚ÍStringƒpƒ‰ƒ[ƒ^
+				// ã‚­ãƒ¼ãŒInstrumentType,MSTypeä»¥å¤–ã®å ´åˆã¯Stringãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 				params.put( key, val );
 			}
 			else {
-				// ƒL[‚ªInstrumentType,MSType‚Ìê‡‚ÍString”z—ñƒpƒ‰ƒ[ƒ^
+				// ã‚­ãƒ¼ãŒInstrumentType,MSTypeã®å ´åˆã¯Stringé…åˆ—ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 				String[] vals = req.getParameterValues( key );
 				params.put( key, vals );
 			}
@@ -100,26 +100,26 @@ public class MultiDispatcher extends HttpServlet {
 			}
 		}
 		if ( typeNum == -1 ) {
-			// ƒGƒ‰[
-			msg = "ƒpƒ‰ƒ[ƒ^type•s³ " + type;
+			// ã‚¨ãƒ©ãƒ¼
+			msg = "ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿typeä¸æ­£ " + type;
 			MassBankLog.ErrorLog( PROG_NAME, msg, context );
 			return;
 		}
 
 		//---------------------------------------------------
-		// ƒT[ƒoEƒXƒe[ƒ^ƒXî•ñæ“¾
-		// (ƒT[ƒoŠÄ‹‚ªs‚í‚ê‚Ä‚¢‚È‚¯‚ê‚Î–¢ˆ—‚Å•Ô‚Á‚Ä‚­‚é)
+		// ã‚µãƒ¼ãƒãƒ»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±å–å¾—
+		// (ã‚µãƒ¼ãƒç›£è¦–ãŒè¡Œã‚ã‚Œã¦ã„ãªã‘ã‚Œã°æœªå‡¦ç†ã§è¿”ã£ã¦ãã‚‹)
 		//---------------------------------------------------
 		ServerStatus svrStatus = new ServerStatus(baseUrl);
 		
 		//---------------------------------------------------
-		// ƒfƒBƒXƒpƒbƒ`‚·‚é
+		// ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒã™ã‚‹
 		//---------------------------------------------------
 		Dispatcher disp = new Dispatcher(context, conf, isTrace, svrStatus, typeNum, params);
 		disp.dispatch();
 
 		//---------------------------------------------------
-		// Œ‹‰Êæ“¾
+		// çµæœå–å¾—
 		//---------------------------------------------------
 		if ( typeNum == MassBankCommon.CGI_TBL_TYPE_SEARCH ) {
 			out.println( disp.getSortedResult() );
@@ -129,13 +129,13 @@ public class MultiDispatcher extends HttpServlet {
 		}
 		out.close();
 
-		msg = "I—¹";
+		msg = "çµ‚äº†";
 		MassBankLog.TraceLog( PROG_NAME, msg, context, isTrace );
 	}
 
 
 	/**
-	 * ˜AŒgƒT[ƒo‚ÉƒfƒBƒXƒpƒbƒ`‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
+	 * é€£æºã‚µãƒ¼ãƒã«ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹
 	 */
 	class Dispatcher {
 		
@@ -152,7 +152,7 @@ public class MultiDispatcher extends HttpServlet {
 		private String frontServerUrl = "";
 
 		/**
-		 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		 * @param context
 		 * @param conf
 		 * @param isTrace
@@ -175,13 +175,13 @@ public class MultiDispatcher extends HttpServlet {
 		}
 		
 		/**
-		 * ƒfƒBƒXƒpƒbƒ`‚·‚é
+		 * ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒã™ã‚‹
 		 */
 		public void dispatch() {
 			final int MYSVR_INFO_NUM = 0;
 
 			//---------------------------------------------------
-			// CGI—p‚ÆJSP—p‚Ìƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg
+			// CGIç”¨ã¨JSPç”¨ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 			//---------------------------------------------------
 			Hashtable<String, Object> cgiParams = null;
 			Hashtable<String, Object> jspParams = null;
@@ -193,22 +193,22 @@ public class MultiDispatcher extends HttpServlet {
 				cgiParams = new Hashtable<String, Object>(params);
 				jspParams = new Hashtable<String, Object>(params);
 			}
-			// Peak Search, Peak Diff SearchˆÈŠO‚Ìê‡AtypeƒL[‚ğíœ‚·‚é
+			// Peak Search, Peak Diff Searchä»¥å¤–ã®å ´åˆã€typeã‚­ãƒ¼ã‚’å‰Šé™¤ã™ã‚‹
 			if ( typeNum != MassBankCommon.CGI_TBL_TYPE_PEAK
 			  && typeNum != MassBankCommon.CGI_TBL_TYPE_PDIFF ) {
 				cgiParams.remove( "type" );
 			}
 
 			//---------------------------------------------------
-			// URL‚Æƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg
+			// URLã¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 			//---------------------------------------------------
 			reqInfoList = new ArrayList<RequestInfo>();
 			for ( int i = 0; i < urlList.length; i++ ) {
 				String url = urlList[i];
 				String dbName = dbNameList[i];
 
-				// ˜AŒgƒT[ƒo‚ªƒAƒNƒeƒBƒu‚Å‚Í‚È‚¢ê‡‚ÍƒXƒLƒbƒv‚·‚é
-				// ƒT[ƒoŠÄ‹‚ªs‚í‚ê‚Ä‚¢‚È‚¯‚ê‚Î–³ğŒ‚ÉTrue‚ª•Ô‚Á‚Ä‚­‚é
+				// é€£æºã‚µãƒ¼ãƒãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã§ã¯ãªã„å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
+				// ã‚µãƒ¼ãƒç›£è¦–ãŒè¡Œã‚ã‚Œã¦ã„ãªã‘ã‚Œã°ç„¡æ¡ä»¶ã«TrueãŒè¿”ã£ã¦ãã‚‹
 				if ( !svrStatus.isServerActive(url, dbName) ) {
 					String backupDbName = svrStatus.get2ndDbName(url, dbName);
 					if ( backupDbName.equals("") || !SVNUtils.checkDBExists(backupDbName) ) {
@@ -224,25 +224,25 @@ public class MultiDispatcher extends HttpServlet {
 				String reqUrl = url;
 				Hashtable<String, Object> reqParams = null;
 
-				//** ©ƒT[ƒo[‚Ìê‡Acgi‚ÖƒAƒNƒZƒX **
+				//** è‡ªã‚µãƒ¼ãƒãƒ¼ã®å ´åˆã€cgiã¸ã‚¢ã‚¯ã‚»ã‚¹ **
 				if ( i == MYSVR_INFO_NUM ) {
 					reqUrl += "cgi-bin/" + MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_FILE][typeNum];
 					reqParams = new Hashtable<String, Object>(cgiParams);
 				}
-				//** ˜AŒgƒT[ƒo[‚Ìê‡ADispatcher.jsp‚ğ‰î‚µ‚ÄƒAƒNƒZƒX **
+				//** é€£æºã‚µãƒ¼ãƒãƒ¼ã®å ´åˆã€Dispatcher.jspã‚’ä»‹ã—ã¦ã‚¢ã‚¯ã‚»ã‚¹ **
 				else {
 					reqUrl += "jsp/" + MassBankCommon.DISPATCHER_NAME;
 					reqParams = new Hashtable<String, Object>(jspParams);
 				}
 				reqParams.put( "dsn", dbName );
 
-				// ƒf[ƒ^ƒNƒ‰ƒX‚ÉURL, ƒpƒ‰ƒ[ƒ^, siteNo‚ğƒZƒbƒg
+				// ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹ã«URL, ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿, siteNoã‚’ã‚»ãƒƒãƒˆ
 				RequestInfo reqInfo = new RequestInfo( reqUrl, reqParams, i );
 				reqInfoList.add(reqInfo);
 			}
 
 			//---------------------------------------------------
-			// ƒXƒŒƒbƒh‹N“®
+			// ã‚¹ãƒ¬ãƒƒãƒ‰èµ·å‹•
 			//---------------------------------------------------
 			this.thread = new CallCgi[this.reqInfoList.size()];
 			for ( int i = 0; i < this.reqInfoList.size(); i++ ) {
@@ -250,17 +250,17 @@ public class MultiDispatcher extends HttpServlet {
 				String reqUrl = reqInfo.getUrl();
 				Hashtable<String, Object> reqParams = reqInfo.getParam();
 
-				// ƒƒOo—Í
+				// ãƒ­ã‚°å‡ºåŠ›
 				String param = "";
 				for ( Enumeration<String> keys = reqParams.keys(); keys.hasMoreElements(); ) {
 					String key = (String)keys.nextElement();
 					if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
-						// ƒL[‚ªInstrumentType,MSTypeˆÈŠO‚Ìê‡‚ÍStringƒpƒ‰ƒ[ƒ^
+						// ã‚­ãƒ¼ãŒInstrumentType,MSTypeä»¥å¤–ã®å ´åˆã¯Stringãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 						String val = (String)reqParams.get(key);
 						param += key + "=" + val + "&";
 					}
 					else {
-						// ƒL[‚ªInstrumentType,MSType‚Ìê‡‚ÍString”z—ñƒpƒ‰ƒ[ƒ^
+						// ã‚­ãƒ¼ãŒInstrumentType,MSTypeã®å ´åˆã¯Stringé…åˆ—ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 						String[] vals = (String[])reqParams.get(key);
 						for ( int j = 0; j < vals.length; j++ ) {
 							param += key + "=" + vals[j] + "&";
@@ -271,15 +271,15 @@ public class MultiDispatcher extends HttpServlet {
 				String msg = "Call(" + Integer.toString(i+1) + ") : " + reqUrl + "?" + param;
 				MassBankLog.TraceLog( PROG_NAME, msg, context, isTrace );
 
-				// ‹N“®
+				// èµ·å‹•
 				this.thread[i] = new CallCgi( reqUrl, reqParams, timeout, context );
 				this.thread[i].start();
 			}
 
 			//-------------------------------------------
-			// ƒXƒŒƒbƒhI—¹‘Ò‚¿
+			// ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†å¾…ã¡
 			//-------------------------------------------
-			// HttpClient‘¤‚Åƒ^ƒCƒ€ƒAƒEƒg‚ğİ’è‚µ‚Ä‚¢‚é‚Ì‚Å–³ŒÀ‚Å‚à‚æ‚¢
+			// HttpClientå´ã§ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã‚’è¨­å®šã—ã¦ã„ã‚‹ã®ã§ç„¡é™ã§ã‚‚ã‚ˆã„
 			long until = System.currentTimeMillis() + timeout * 1000;
 			boolean isRunning = true;
 			while ( isRunning && System.currentTimeMillis() < until ) {
@@ -287,13 +287,13 @@ public class MultiDispatcher extends HttpServlet {
 				for ( int i = 0; i < this.thread.length; i++ ) {
 					try {
 						if ( this.thread[i].isAlive() ) {
-							//** ƒXƒŒƒbƒhI—¹‚·‚é‚Ü‚Å‘Ò‹@ **
+							//** ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ã™ã‚‹ã¾ã§å¾…æ©Ÿ **
 							this.thread[i].join(500);
 							isRunning = true;
 						}
 					}
 					catch ( Exception e ) {
-						// ƒGƒ‰[
+						// ã‚¨ãƒ©ãƒ¼
 						String msg = e.toString();
 						MassBankLog.ErrorLog( PROG_NAME, msg, context );
 					}
@@ -302,12 +302,12 @@ public class MultiDispatcher extends HttpServlet {
 		}
 
 		/**
-		 * ƒXƒRƒA‡‚Åƒ\[ƒg‚³‚ê‚½Œ‹‰Ê‚ğæ“¾‚·‚é
-		 * @return Œ‹‰Ê
+		 * ã‚¹ã‚³ã‚¢é †ã§ã‚½ãƒ¼ãƒˆã•ã‚ŒãŸçµæœã‚’å–å¾—ã™ã‚‹
+		 * @return çµæœ
 		 */
 		private String getSortedResult() {
 			//-------------------------------------------
-			// ÀsŒ‹‰Ê‚ğƒŠƒXƒg‚ÉŠi”[
+			// å®Ÿè¡Œçµæœã‚’ãƒªã‚¹ãƒˆã«æ ¼ç´
 			//-------------------------------------------
 			StringBuffer res = new StringBuffer("");
 			ArrayList<String> result = new ArrayList<String>();
@@ -318,12 +318,12 @@ public class MultiDispatcher extends HttpServlet {
 				}
 				String[] lines = this.thread[i].result.replaceAll("\r","").split("\n");
 				for ( int j = 0; j < lines.length; j++ ) {
-					// Internal Server Error‚Ìê‡
+					// Internal Server Errorã®å ´åˆ
 					if ( lines[j].indexOf("<!") >= 0 ) {
 						break;
 					}
 
-					// Site No •t‰Á
+					// Site No ä»˜åŠ 
 					if ( lines[j].split("\t").length > 1 ) {
 						result.add( lines[j] + "\t" + this.reqInfoList.get(i).getSiteNo() );
 					}
@@ -331,7 +331,7 @@ public class MultiDispatcher extends HttpServlet {
 			}
 
 			//-------------------------------------------
-			// ƒXƒRƒAƒŠƒXƒg‚ğì¬
+			// ã‚¹ã‚³ã‚¢ãƒªã‚¹ãƒˆã‚’ä½œæˆ
 			//-------------------------------------------
 			String line = "";
 			String[] item;
@@ -349,12 +349,12 @@ public class MultiDispatcher extends HttpServlet {
 				scoreList.add( score + "\t" + Integer.toString(i) );
 			}
 			//-------------------------------------------
-			// ƒXƒRƒAƒŠƒXƒg‚ğƒ\[ƒg
+			// ã‚¹ã‚³ã‚¢ãƒªã‚¹ãƒˆã‚’ã‚½ãƒ¼ãƒˆ
 			//-------------------------------------------
 			Collections.sort(scoreList, new ScoreComparator());
 
 			//-------------------------------------------
-			// ƒXƒRƒA‡‚ÅŒ‹‰Ê‚ğ•Ô‚·
+			// ã‚¹ã‚³ã‚¢é †ã§çµæœã‚’è¿”ã™
 			//-------------------------------------------
 			for ( int i = 0; i < result.size(); i++ ) {
 				line = (String)scoreList.get(i);
@@ -366,20 +366,20 @@ public class MultiDispatcher extends HttpServlet {
 				String name  = item[1];
 				String score = item[2];
 				String ion   = item[3];
-				// Quick Search by Peak‚ÌŒ‹‰Ê‚Ìê‡
+				// Quick Search by Peakã®çµæœã®å ´åˆ
 				if ( item.length == 6 ) {
 					String formula = item[4];
 					String site = item[5];
 					res.append( name + "\t" + id + "\t" + ion + "\t" + formula + "\t" + score + "\t" + site + "\n" );
 				}
-				// API‚Ìê‡
+				// APIã®å ´åˆ
 				else if ( item.length == 7 ) {
 					String formula = item[4];
 					String emass = item[5];
 					String site = item[6];
 					res.append( id + "\t" + name + "\t" + formula + "\t" + emass + "\t" + score + "\t" + site + "\n" );
 				}
-				// Nist Search‚ÌŒ‹‰Ê‚Ìê‡
+				// Nist Searchã®çµæœã®å ´åˆ
 				else {
 					String site = item[4];
 					res.append( id + "\t" + name + "\t" + score + "\t" + ion + "\t" + site + "\n" );
@@ -389,8 +389,8 @@ public class MultiDispatcher extends HttpServlet {
 		}
 
 		/**
-		 * ’Êí‚ÌƒŒƒXƒ|ƒ“ƒX
-		 * @return Œ‹‰Ê
+		 * é€šå¸¸ã®ãƒ¬ã‚¹ãƒãƒ³ã‚¹
+		 * @return çµæœ
 		 */
 		private String getResult() {
 			StringBuffer res = new StringBuffer("");
@@ -400,12 +400,12 @@ public class MultiDispatcher extends HttpServlet {
 				}
 				String[] lines = this.thread[i].result.replaceAll("\r","").split("\n");
 				for ( int j = 0; j < lines.length; j++ ) {
-					// Internal Server Error‚Ìê‡
+					// Internal Server Errorã®å ´åˆ
 					if ( lines[j].indexOf("<!") >= 0 ) {
 						break;
 					}
 
-					// Site No •t‰Á
+					// Site No ä»˜åŠ 
 					res.append( lines[j] + "\t" + this.reqInfoList.get(i).getSiteNo() + "\n" );
 				}
 			}
@@ -414,7 +414,7 @@ public class MultiDispatcher extends HttpServlet {
 	}
 
 	/**
-	 * ƒŠƒNƒGƒXƒgî•ñƒf[ƒ^ƒNƒ‰ƒX
+	 * ãƒªã‚¯ã‚¨ã‚¹ãƒˆæƒ…å ±ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
 	 */
 	class RequestInfo {
 		private String url = "";
@@ -422,7 +422,7 @@ public class MultiDispatcher extends HttpServlet {
 		private int siteNo = 0;
 
 		/**
-		 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		 */
 		public RequestInfo(String url, Hashtable<String, Object> param, int siteNo) {
 			this.url = url;
@@ -430,19 +430,19 @@ public class MultiDispatcher extends HttpServlet {
 			this.siteNo = siteNo;
 		}
 		/**
-		 * URLæ“¾
+		 * URLå–å¾—
 		 */
 		public String getUrl() {
 			return this.url;
 		}
 		/**
-		 * ƒpƒ‰ƒ[ƒ^æ“¾
+		 * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å–å¾—
 		 */
 		public Hashtable<String, Object> getParam() {
 			return this.param;
 		}
 		/**
-		 * ƒTƒCƒgNoæ“¾
+		 * ã‚µã‚¤ãƒˆNoå–å¾—
 		 */
 		public String getSiteNo() {
 			return String.valueOf(this.siteNo);
@@ -450,7 +450,7 @@ public class MultiDispatcher extends HttpServlet {
 	}
 
 	/**
-	 * Score‡‚Åƒ\[ƒg‚·‚é‚½‚ß‚ÌComparator
+	 * Scoreé †ã§ã‚½ãƒ¼ãƒˆã™ã‚‹ãŸã‚ã®Comparator
 	 */
 	public class ScoreComparator implements Comparator<Object> {
 		public int compare(Object o1, Object o2){

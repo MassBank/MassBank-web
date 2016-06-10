@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒ[ƒ‹‘—M‹¤’ÊƒNƒ‰ƒX
+ * ãƒ¡ãƒ¼ãƒ«é€ä¿¡å…±é€šã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2013.11.11
  *
@@ -45,7 +45,7 @@ import javax.mail.PasswordAuthentication;
 
 
 /**
- * ƒ[ƒ‹‘—M‹¤’ÊƒNƒ‰ƒX
+ * ãƒ¡ãƒ¼ãƒ«é€ä¿¡å…±é€šã‚¯ãƒ©ã‚¹
  */
 public class SendMail {
 
@@ -55,13 +55,13 @@ public class SendMail {
 	private static String pass = "";
 
 	/**
-	 * ƒ[ƒ‹‘—MŠÖ”
-	 * @param info ƒ[ƒ‹‘—Mî•ñƒIƒuƒWƒFƒNƒg
-	 * @return Œ‹‰Ê
+	 * ãƒ¡ãƒ¼ãƒ«é€ä¿¡é–¢æ•°
+	 * @param info ãƒ¡ãƒ¼ãƒ«é€ä¿¡æƒ…å ±ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	 * @return çµæœ
 	 */
 	public static boolean send(SendMailInfo info) {
 		
-		// ƒ[ƒ‹‘—Mî•ñƒ`ƒFƒbƒN
+		// ãƒ¡ãƒ¼ãƒ«é€ä¿¡æƒ…å ±ãƒã‚§ãƒƒã‚¯
 		if (!info.isCheck()) {
 			Logger.global.severe( "The mail sending failed.");
 			return false;
@@ -86,7 +86,7 @@ public class SendMail {
 		System.out.println( host + "/" + port + "/" + user + "/" + pass);
 
 		try {
-			// SMTPƒT[ƒo[‚ÌƒAƒhƒŒƒX‚ğİ’è
+			// SMTPã‚µãƒ¼ãƒãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’è¨­å®š
 			Properties props = new Properties();
 			props.put("mail.smtp.host", host);
 			props.put("mail.smtp.port", port);
@@ -118,10 +118,10 @@ public class SendMail {
 
 			MimeMessage mimeMsg = new MimeMessage(session);
 
-			// ‘—MŒ³ƒ[ƒ‹ƒAƒhƒŒƒX‚Æ‘—MÒ–¼‚ğİ’è
+			// é€ä¿¡å…ƒãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨é€ä¿¡è€…åã‚’è¨­å®š
 			mimeMsg.setFrom(new InternetAddress(info.getFrom(), info.getFromName(), "utf-8"));
 			
-			// ‘—Mæƒ[ƒ‹ƒAƒhƒŒƒX‚ğİ’è
+			// é€ä¿¡å…ˆãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’è¨­å®š
 			mimeMsg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(info.getTo()));
 			if (!info.getCc().equals("")) {
 				mimeMsg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(info.getCc()));
@@ -130,17 +130,17 @@ public class SendMail {
 				mimeMsg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(info.getBcc()));
 			}
 			
-			// ƒ[ƒ‹ƒ^ƒCƒgƒ‹‚ğİ’è
+			// ãƒ¡ãƒ¼ãƒ«ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
 			mimeMsg.setSubject(info.getSubject(), "utf-8");
 			
-			// ƒ[ƒ‹ƒ{ƒfƒB—pƒ}ƒ‹ƒ`ƒp[ƒgƒIƒuƒWƒFƒNƒg¶¬
+			// ãƒ¡ãƒ¼ãƒ«ãƒœãƒ‡ã‚£ç”¨ãƒãƒ«ãƒãƒ‘ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 			MimeMultipart mp = new MimeMultipart();
 			MimeBodyPart mbp = new MimeBodyPart();
-			mbp.setText(info.getContents(), "utf-8" );	// –{•¶
+			mbp.setText(info.getContents(), "utf-8" );	// æœ¬æ–‡
 			mp.addBodyPart(mbp);
 			File[] files = info.getFiles();
 			if (files != null) {
-				for(int i=0; i<files.length; i++){		// “Y•tƒtƒ@ƒCƒ‹
+				for(int i=0; i<files.length; i++){		// æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«
 					mbp = new MimeBodyPart();
 					FileDataSource fds = new FileDataSource(files[i]);
 					mbp.setDataHandler(new DataHandler(fds));
@@ -149,7 +149,7 @@ public class SendMail {
 				}
 			}
 			
-			// ƒ[ƒ‹“à—e‚Éƒ}ƒ‹ƒ`ƒp[ƒgƒIƒuƒWƒFƒNƒg‚Æ‘—M“ú•t‚ğİ’è‚µ‚Ä‘—M
+			// ãƒ¡ãƒ¼ãƒ«å†…å®¹ã«ãƒãƒ«ãƒãƒ‘ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨é€ä¿¡æ—¥ä»˜ã‚’è¨­å®šã—ã¦é€ä¿¡
 			mimeMsg.setContent(mp);
 			mimeMsg.setSentDate(new Date());
 			Transport.send(mimeMsg);

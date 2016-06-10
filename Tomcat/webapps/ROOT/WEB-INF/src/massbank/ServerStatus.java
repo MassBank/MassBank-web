@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ˜AŒgƒT[ƒo‚Ìó‘Ô‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+ * é€£æºã‚µãƒ¼ãƒã®çŠ¶æ…‹ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.2 2012.11.01
  *
@@ -43,35 +43,35 @@ import massbank.svn.SVNUtils;
 
 public class ServerStatus {
 	private Properties proper = new Properties();
-	//ŠÇ—ƒtƒ@ƒCƒ‹‚ÌƒpƒX
+	//ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
 	private String filePath = "";
-	// ƒ|[ƒŠƒ“ƒOüŠú
+	// ãƒãƒ¼ãƒªãƒ³ã‚°å‘¨æœŸ
 	private int pollInterval = 0;
-	// ŠÄ‹‘ÎÛƒT[ƒo”
+	// ç›£è¦–å¯¾è±¡ã‚µãƒ¼ãƒæ•°
 	private int serverNum = 0;
-	// ƒT[ƒoEƒXƒe[ƒ^ƒXî•ñ
+	// ã‚µãƒ¼ãƒãƒ»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±
 	private ServerStatusInfo[] statusList = null;
-	// ŠÇ—ƒtƒ@ƒCƒ‹–¼Ì
+	// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«åç§°
 	private static final String PROF_FILE_NAME = "ServerStatus.inf";
-	// ƒvƒƒpƒeƒB‚ÌƒL[–¼
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®ã‚­ãƒ¼å
 	private static final String SERVER_KEY_NAME = "server";
 	private static final String MANAGED_KEY_NAME = "status";
 
 	private DecimalFormat decFormat = new DecimalFormat("00");
 
 	/**
-	 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public ServerStatus() {
-		// ŠÇ—ƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğƒZƒbƒg
+		// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 		this.filePath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPPSERV_PATH) + PROF_FILE_NAME;
 		setBaseInfo();
 	}
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param baseUrl ƒx[ƒXURL
-	 * @deprecated ”ñ„§ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param baseUrl ãƒ™ãƒ¼ã‚¹URL
+	 * @deprecated éæ¨å¥¨ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @see ServerStatus#ServerStatus()
 	 */
 	public ServerStatus(String baseUrl) {
@@ -86,36 +86,36 @@ public class ServerStatus {
 //
 //		this.baseUrl = baseUrl;
 //		setBaseInfo();
-		// ŠÇ—ƒtƒ@ƒCƒ‹‚ÌƒpƒXƒZƒbƒg‚ÍƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ås‚¤‚±‚Æ‚É‚·‚é
+		// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚»ãƒƒãƒˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§è¡Œã†ã“ã¨ã«ã™ã‚‹
 		this();
 	}
 
 	/**
-	 * ƒx[ƒXî•ñ‚ğƒZƒbƒg
+	 * ãƒ™ãƒ¼ã‚¹æƒ…å ±ã‚’ã‚»ãƒƒãƒˆ
 	 */
 	public void setBaseInfo() {
-		// İ’èƒtƒ@ƒCƒ‹“Ç‚İ
+		// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
 		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
-		// URLƒŠƒXƒg‚ğæ“¾
+		// URLãƒªã‚¹ãƒˆã‚’å–å¾—
 		String[] urls = conf.getSiteUrl();
-		// DB–¼ƒŠƒXƒg‚ğæ“¾
+		// DBåãƒªã‚¹ãƒˆã‚’å–å¾—
 		String[] dbNames = conf.getDbName();
-		// ƒZƒJƒ“ƒ_ƒŠDB–¼ƒŠƒXƒg‚ğæ“¾
+		// ã‚»ã‚«ãƒ³ãƒ€ãƒªDBåãƒªã‚¹ãƒˆã‚’å–å¾—
 		String[] db2Names = conf.getSecondaryDBName();
-		// ƒT[ƒo–¼ƒŠƒXƒg‚ğæ“¾
+		// ã‚µãƒ¼ãƒåãƒªã‚¹ãƒˆã‚’å–å¾—
 		String[] svrNames = conf.getSiteName();
-		// ƒtƒƒ“ƒgƒT[ƒoURL‚ğæ“¾
+		// ãƒ•ãƒ­ãƒ³ãƒˆã‚µãƒ¼ãƒURLã‚’å–å¾—
 		String serverUrl = conf.getServerUrl();
-		// ƒ|[ƒŠƒ“ƒOüŠú‚ğæ“¾
+		// ãƒãƒ¼ãƒªãƒ³ã‚°å‘¨æœŸã‚’å–å¾—
 		this.pollInterval = conf.getPollInterval();
 
-		// ŠÄ‹‘ÎÛƒT[ƒo‚ÌURL‚ÆDB–¼‚ğŠi”[
+		// ç›£è¦–å¯¾è±¡ã‚µãƒ¼ãƒã®URLã¨DBåã‚’æ ¼ç´
 		List<String> svrNameList = new ArrayList();
 		List<String> urlList = new ArrayList();
 		List<String> dbNameList = new ArrayList();
 		List<String> db2NameList = new ArrayList();
 		for ( int i = 0; i < urls.length; i++ ) {
-			// ƒ~ƒhƒ‹ƒT[ƒo‚Ü‚½‚ÍAƒtƒƒ“ƒgƒT[ƒo‚Æ“¯ˆêURL‚Ìê‡‚Í‘ÎÛŠO
+			// ãƒŸãƒ‰ãƒ«ã‚µãƒ¼ãƒã¾ãŸã¯ã€ãƒ•ãƒ­ãƒ³ãƒˆã‚µãƒ¼ãƒã¨åŒä¸€URLã®å ´åˆã¯å¯¾è±¡å¤–
 			if ( i != GetConfig.MYSVR_INFO_NUM && !urls[i].equals(serverUrl) ) {
 				svrNameList.add(svrNames[i]);
 				urlList.add(urls[i]);
@@ -124,76 +124,76 @@ public class ServerStatus {
 			}
 		}
 
-		// ó‘ÔŠÇ—ƒŠƒXƒg‚ğƒZƒbƒg
+		// çŠ¶æ…‹ç®¡ç†ãƒªã‚¹ãƒˆã‚’ã‚»ãƒƒãƒˆ
 		this.serverNum = urlList.size();
 		if ( this.serverNum > 0 ) {
 			this.statusList = new ServerStatusInfo[this.serverNum];
 			for ( int i = 0; i < svrNameList.size(); i++ ) {
-				String svrName = svrNameList.get(i);	// ƒT[ƒo–¼
+				String svrName = svrNameList.get(i);	// ã‚µãƒ¼ãƒå
 				String url = urlList.get(i);			// URL
-				String dbName = dbNameList.get(i);		// DB–¼
-				String db2Name = db2NameList.get(i);	// ƒZƒJƒ“ƒ_ƒŠDB–¼
-				// ƒXƒe[ƒ^ƒX‚Í–¢ƒZƒbƒg
+				String dbName = dbNameList.get(i);		// DBå
+				String db2Name = db2NameList.get(i);	// ã‚»ã‚«ãƒ³ãƒ€ãƒªDBå
+				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã¯æœªã‚»ãƒƒãƒˆ
 				this.statusList[i] = new ServerStatusInfo( svrName, url, dbName, db2Name );
 			}
 		}
 	}
 
 	/**
-	 * ŠÇ—ƒtƒ@ƒCƒ‹‚ğ®‡‚·‚é
+	 * ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ•´åˆã™ã‚‹
 	 */
 	public void clean() {
 		setBaseInfo();
 
-		// ŠÇ—ƒtƒ@ƒCƒ‹‚ğ“Ç‚İAƒT[ƒo‚Ìó‘Ô‚ğæ“¾‚·‚é
+		// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­è¾¼ã¿ã€ã‚µãƒ¼ãƒã®çŠ¶æ…‹ã‚’å–å¾—ã™ã‚‹
 		boolean[] isActiveList = getStatusList();
 		if ( isActiveList == null ) {
 			return;
 		}
 		int listNum = isActiveList.length;
 
-		// ƒXƒe[ƒ^ƒXƒZƒbƒg
+		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚»ãƒƒãƒˆ
 		for ( int i = 0; i < listNum; i++ ) {
 			setStatus( i, isActiveList[i] );
 		}
-		// ŠÄ‹‘ÎÛ‚ÌƒT[ƒo‚ªŒ¸‚Á‚½ê‡A—]•ª‚Èî•ñ‚ğíœ‚·‚é
+		// ç›£è¦–å¯¾è±¡ã®ã‚µãƒ¼ãƒãŒæ¸›ã£ãŸå ´åˆã€ä½™åˆ†ãªæƒ…å ±ã‚’å‰Šé™¤ã™ã‚‹
 		if ( this.serverNum < listNum ) {
 			for ( int i = this.serverNum; i < listNum; i++ ) {
 				deleteStatus(i);
 			}
 		}
 
-		// ŠÇ—ƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚é
+		// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã™ã‚‹
 		store();
 	}
 
 	/**
-	 * ŠÄ‹‘ÎÛƒT[ƒo”‚ğæ“¾‚·‚é
-	 * @return ŠÄ‹‘ÎÛƒT[ƒo”
+	 * ç›£è¦–å¯¾è±¡ã‚µãƒ¼ãƒæ•°ã‚’å–å¾—ã™ã‚‹
+	 * @return ç›£è¦–å¯¾è±¡ã‚µãƒ¼ãƒæ•°
 	 */
 	public int getServerNum() {
 		return this.serverNum;
 	}
 
 	/**
-	 * ƒ|[ƒŠƒ“ƒOüŠú‚ğæ“¾‚·‚é
-	 * @return ƒ|[ƒŠƒ“ƒOüŠú
+	 * ãƒãƒ¼ãƒªãƒ³ã‚°å‘¨æœŸã‚’å–å¾—ã™ã‚‹
+	 * @return ãƒãƒ¼ãƒªãƒ³ã‚°å‘¨æœŸ
 	 */
 	public int getPollInterval() {
 		return this.pollInterval;
 	}
 
 	/**
-	 * ƒT[ƒoEƒXƒe[ƒ^ƒXî•ñ‚ğæ“¾‚·‚é
-	 * @return ƒXƒe[ƒ^ƒXî•ñ
+	 * ã‚µãƒ¼ãƒãƒ»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	 * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±
 	 */
 	public ServerStatusInfo[] getStatusInfo() {
-		// ”ñŠÄ‹‚Ìê‡‚ÍAnull‚ğ•Ô‚·
+		// éç›£è¦–ã®å ´åˆã¯ã€nullã‚’è¿”ã™
 		if ( !isManaged() ) {
 			return null;
 		}
 
-		// ŠÇ—ƒtƒ@ƒCƒ‹‚ğ“Ç‚İAƒT[ƒo‚Ìó‘Ô‚ğæ“¾‚·‚é
+		// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­è¾¼ã¿ã€ã‚µãƒ¼ãƒã®çŠ¶æ…‹ã‚’å–å¾—ã™ã‚‹
 		boolean[] isActiveList = getStatusList();
 		if ( isActiveList != null ) {
 			int num = isActiveList.length;
@@ -208,9 +208,9 @@ public class ServerStatus {
 	}
 
 	/**
-	 * ƒT[ƒo‚Ìó‘Ô‚ğƒZƒbƒg‚·‚é
-	 * @param index ƒŠƒXƒg‚ÌƒCƒ“ƒfƒbƒNƒX
-	 * @param isActive ó‘Ô -- true:active / false:inactive
+	 * ã‚µãƒ¼ãƒã®çŠ¶æ…‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	 * @param index ãƒªã‚¹ãƒˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	 * @param isActive çŠ¶æ…‹ -- true:active / false:inactive
 	 */
 	public void setStatus(int index, boolean isActive) {
 		String status = "";
@@ -233,8 +233,8 @@ public class ServerStatus {
 	}
 
 	/**
-	 * ƒT[ƒoó‘Ô‚ğíœ‚·‚é
-	 * @param index ƒŠƒXƒg‚ÌƒCƒ“ƒfƒbƒNƒX
+	 * ã‚µãƒ¼ãƒçŠ¶æ…‹ã‚’å‰Šé™¤ã™ã‚‹
+	 * @param index ãƒªã‚¹ãƒˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	 */
 	public void deleteStatus(int index) {
 		
@@ -250,7 +250,7 @@ public class ServerStatus {
 	}
 
 	/**
-	  * ŠÇ—ƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚é
+	  * ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã™ã‚‹
 	  */
 	public void store() {
 		FileOutputStream stream = null;
@@ -267,14 +267,14 @@ public class ServerStatus {
 	}
 
 	/**
-	 * ŠÄ‹ó‘Ô‚ğƒZƒbƒg‚·‚é
-	 * @param isManaged true:ŠÄ‹’† / false:”ñŠÄ‹
+	 * ç›£è¦–çŠ¶æ…‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	 * @param isManaged true:ç›£è¦–ä¸­ / false:éç›£è¦–
 	 */
 	public void setManaged(boolean isManaged) {
-		// ŠÇ—ƒtƒ@ƒCƒ‹“Ç‚İ
+		// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
 		read();
 
-		// ó‘ÔƒZƒbƒg
+		// çŠ¶æ…‹ã‚»ãƒƒãƒˆ
 		String status = "";
 		if ( isManaged ) {
 			status = "managed";
@@ -294,8 +294,8 @@ public class ServerStatus {
 	}
 
 	/**
-	 * ŠÄ‹ó‘Ô‚©”Û‚©
-	 * @return true:ŠÄ‹’† / false:”ñŠÄ‹
+	 * ç›£è¦–çŠ¶æ…‹ã‹å¦ã‹
+	 * @return true:ç›£è¦–ä¸­ / false:éç›£è¦–
 	 */
 	public boolean isManaged() {
 		boolean isManaged = false;
@@ -309,7 +309,7 @@ public class ServerStatus {
 	}
 
 	/**
-	  * ŠÇ—ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+	  * ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
 	  */
 	private boolean read() {
 		File f = new File(this.filePath);
@@ -330,26 +330,26 @@ public class ServerStatus {
 	}
 
 	/**
-	 * ŠÇ—ƒtƒ@ƒCƒ‹‚ğ“Ç‚İAƒT[ƒo‚Ìó‘Ô‚ğæ“¾‚·‚é
-	 * @return ƒT[ƒoó‘ÔƒŠƒXƒg -- true:active / false:inactive / null:‘ÎÛƒT[ƒo‚È‚µ
+	 * ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­è¾¼ã¿ã€ã‚µãƒ¼ãƒã®çŠ¶æ…‹ã‚’å–å¾—ã™ã‚‹
+	 * @return ã‚µãƒ¼ãƒçŠ¶æ…‹ãƒªã‚¹ãƒˆ -- true:active / false:inactive / null:å¯¾è±¡ã‚µãƒ¼ãƒãªã—
 	 */
 	private boolean[] getStatusList() {
-		// ”z—ñisActiveList‚ğ‰Šú‰»
+		// é…åˆ—isActiveListã‚’åˆæœŸåŒ–
 		boolean[] isActiveList = null;
 		if ( this.serverNum > 0 ) {
 			isActiveList = new boolean[this.serverNum];
 			for ( int i = 0; i < this.serverNum; i++ ) {
-				// true =uActivev‚ğƒZƒbƒg
+				// true =ã€ŒActiveã€ã‚’ã‚»ãƒƒãƒˆ
 				isActiveList[i] = true;
 			}
-			// ŠÇ—ƒtƒ@ƒCƒ‹“Ç‚İ
+			// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ã¿
 			if ( !read() ) {
-				// ƒtƒ@ƒCƒ‹‚È‚µ
+				// ãƒ•ã‚¡ã‚¤ãƒ«ãªã—
 				return isActiveList;
 			}
 		}
 
-		// ƒvƒƒpƒeƒBƒŠƒXƒgæ“¾
+		// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒªã‚¹ãƒˆå–å¾—
 		Map list = new TreeMap();
 		Enumeration names = proper.propertyNames();
 		while ( names.hasMoreElements() ) {
@@ -360,9 +360,9 @@ public class ServerStatus {
 			}
 		}
 
-		// ŠÇ—ƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İæ‚Á‚½“à—e‚ğƒZƒbƒg
-		/* - serverNum ŠÄ‹‘ÎÛ‚ÌƒT[ƒo”       */
-		/* - list.size ŠÇ—ƒtƒ@ƒCƒ‹ã‚ÌƒT[ƒo” */
+		// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿å–ã£ãŸå†…å®¹ã‚’ã‚»ãƒƒãƒˆ
+		/* - serverNum ç›£è¦–å¯¾è±¡ã®ã‚µãƒ¼ãƒæ•°       */
+		/* - list.size ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã®ã‚µãƒ¼ãƒæ•° */
 		int num = list.size();
 		if ( num > 0 ) {
 			isActiveList = new boolean[num];
@@ -382,8 +382,8 @@ public class ServerStatus {
 	}
 
 	/**
-	 * ƒT[ƒo‚Ìó‘Ô‚ğæ“¾‚·‚é
-	 * @return ƒT[ƒoó‘ÔƒŠƒXƒg -- true:active / false:inactive
+	 * ã‚µãƒ¼ãƒã®çŠ¶æ…‹ã‚’å–å¾—ã™ã‚‹
+	 * @return ã‚µãƒ¼ãƒçŠ¶æ…‹ãƒªã‚¹ãƒˆ -- true:active / false:inactive
 	 */
 	public boolean isServerActive(String url, String dbName) {
 		ServerStatusInfo[] info = getStatusInfo();

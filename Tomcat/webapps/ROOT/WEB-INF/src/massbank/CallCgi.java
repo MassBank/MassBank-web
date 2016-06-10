@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * CGI‚ğÀs‚·‚éƒXƒŒƒbƒh‚ÌƒNƒ‰ƒX
+ * CGIã‚’å®Ÿè¡Œã™ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ã®ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.8 2011.07.25
  *
@@ -48,7 +48,7 @@ public class CallCgi extends Thread
 	private int m_timeout;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */ 
 	public CallCgi( String url, Hashtable params, int timeout, ServletContext context ) {
 		this.m_url = url;
@@ -62,7 +62,7 @@ public class CallCgi extends Thread
 		String msg = "";
 
 		HttpClient client = new HttpClient();
-		// ƒ^ƒCƒ€ƒAƒEƒg’l(msec)ƒZƒbƒg
+		// ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤(msec)ã‚»ãƒƒãƒˆ
 		client.setTimeout( m_timeout * 1000 );
 		PostMethod method = new PostMethod( this.m_url );
 		String strParam = "";
@@ -70,13 +70,13 @@ public class CallCgi extends Thread
 			for ( Enumeration keys = m_params.keys(); keys.hasMoreElements(); ) {
 				String key = (String)keys.nextElement();
 				if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
-					// ƒL[‚ªInstrumentType,MSTypeˆÈŠO‚Ìê‡‚ÍStringƒpƒ‰ƒ[ƒ^
+					// ã‚­ãƒ¼ãŒInstrumentType,MSTypeä»¥å¤–ã®å ´åˆã¯Stringãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 					String val = (String)m_params.get(key);
 					strParam += key + "=" + val + "&";
 					method.addParameter( key, val );
 				}
 				else {
-					// ƒL[‚ªInstrumentType,MSType‚Ìê‡‚ÍString”z—ñƒpƒ‰ƒ[ƒ^
+					// ã‚­ãƒ¼ãŒInstrumentType,MSTypeã®å ´åˆã¯Stringé…åˆ—ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 					String[] vals = (String[])m_params.get(key);
 					for (int i=0; i<vals.length; i++) {
 						strParam += key + "=" + vals[i] + "&";
@@ -88,17 +88,17 @@ public class CallCgi extends Thread
 		}
 
 		try {
-			// Às
+			// å®Ÿè¡Œ
 			int statusCode = client.executeMethod(method);
-			// ƒXƒe[ƒ^ƒXƒR[ƒh‚Ìƒ`ƒFƒbƒN
+			// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚³ãƒ¼ãƒ‰ã®ãƒã‚§ãƒƒã‚¯
 			if ( statusCode != HttpStatus.SC_OK ){
-				// ƒGƒ‰[
+				// ã‚¨ãƒ©ãƒ¼
 				msg = method.getStatusLine().toString() + "\n" + "URL  : " + this.m_url;
 				msg += "\nPARAM : " + strParam;
 				MassBankLog.ErrorLog( progName, msg, m_context );
 				return;
 			}
-			// ƒŒƒXƒ|ƒ“ƒXæ“¾
+			// ãƒ¬ã‚¹ãƒãƒ³ã‚¹å–å¾—
 //			this.result = method.getResponseBodyAsString();
 			
 			/**
@@ -145,13 +145,13 @@ public class CallCgi extends Thread
 			 */
 		}
 		catch ( Exception e ) {
-			// ƒGƒ‰[
+			// ã‚¨ãƒ©ãƒ¼
 			msg = e.toString() + "\n" + "URL  : " + this.m_url;
 			msg += "\nPARAM : " + strParam;
 			MassBankLog.ErrorLog( progName, msg, m_context );
 		}
 		finally {
-			// ƒRƒlƒNƒVƒ‡ƒ“‰ğ•ú
+			// ã‚³ãƒã‚¯ã‚·ãƒ§ãƒ³è§£æ”¾
 			method.releaseConnection();
 		}
 	}

@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] ŒŸõŒ‹‰ÊŠi”[ƒf[ƒ^ƒNƒ‰ƒX
+ * [WEB-API] æ¤œç´¢çµæœæ ¼ç´ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.0 2009.08.19
  *
@@ -32,28 +32,28 @@ public class SearchResult {
 	private ArrayList<Result> list = null;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public SearchResult() {
 		this.list = new ArrayList<Result>();
 	}
 
 	/**
-	 * ƒqƒbƒg‚µ‚½ƒŒƒR[ƒh‚Ìî•ñ‚ğ’Ç‰Á‚·‚é
+	 * ãƒ’ãƒƒãƒˆã—ãŸãƒ¬ã‚³ãƒ¼ãƒ‰ã®æƒ…å ±ã‚’è¿½åŠ ã™ã‚‹
 	 */
 	public void addInfo(Result val) {
 		this.list.add(val);
 	}
 
 	/**
-	 * ƒqƒbƒg‚µ‚½ƒŒƒR[ƒh‚ÌŒ”‚ğæ“¾‚·‚é
+	 * ãƒ’ãƒƒãƒˆã—ãŸãƒ¬ã‚³ãƒ¼ãƒ‰ã®ä»¶æ•°ã‚’å–å¾—ã™ã‚‹
 	 */
 	public int getNumResults() {
 		return this.list.size();
 	}
 
 	/**
-	 * ƒqƒbƒg‚µ‚½ƒŒƒR[ƒh‚Ìî•ñ‚ğæ“¾‚·‚é
+	 * ãƒ’ãƒƒãƒˆã—ãŸãƒ¬ã‚³ãƒ¼ãƒ‰ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	 */
 	public Result[] getResults() {
 		Result[] ret = new Result[this.list.size()];

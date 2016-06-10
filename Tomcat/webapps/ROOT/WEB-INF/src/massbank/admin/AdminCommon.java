@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ŠÇ—Òİ’è‹¤’ÊƒNƒ‰ƒX
+ * ç®¡ç†è€…è¨­å®šå…±é€šã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.17 2010.11.26
  *
@@ -34,58 +34,58 @@ import java.util.ArrayList;
 import massbank.MassBankEnv;
 
 /**
- * ŠÇ—Òİ’è‹¤’ÊƒNƒ‰ƒX
- * ˆÈ‰º‚Ì‹@”\‚ğ’ñ‹Ÿ‚·‚é
+ * ç®¡ç†è€…è¨­å®šå…±é€šã‚¯ãƒ©ã‚¹
+ * ä»¥ä¸‹ã®æ©Ÿèƒ½ã‚’æä¾›ã™ã‚‹
  * 
- *   ƒ‹@”\„                                       ƒæ“¾æ„
- *   DBƒT[ƒoƒzƒXƒg–¼æ“¾i”ñ„§j                 MassBankEnv
- *   CGIƒwƒbƒ_æ“¾                                  admin.conf(cgi_header)
- *   Annotationƒ‹[ƒgƒpƒXæ“¾i”ñ„§j             MassBankEnv
- *   Molfileƒ‹[ƒgƒpƒXæ“¾i”ñ„§j                MassBankEnv
- *   Profileƒ‹[ƒgƒpƒXæ“¾i”ñ„§j                MassBankEnv
- *   GIFƒ‹[ƒgƒpƒXæ“¾i”ñ„§j                    MassBankEnv
- *   GIFSMALLƒ‹[ƒgƒpƒXæ“¾i”ñ„§j               MassBankEnv
- *   GIFLARGEƒ‹[ƒgƒpƒXæ“¾i”ñ„§j               MassBankEnv
- *   o—ÍæƒpƒXæ“¾                                 admin.conf(out_path)
- *   o—ÍæƒpƒXæ“¾i”ñ„§j                       MassBankEnv
- *   MassBankƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾i”ñ„§j         MassBankEnv
- *   ƒ|[ƒ^ƒ‹ƒTƒCƒgƒtƒ‰ƒOæ“¾                       admin.conf(portal)
- *   ŠÇ—ÒŒ ŒÀƒtƒ‰ƒOæ“¾                           admin.conf(auth_root)
- *   Peak SearchiMolecular Formulaj•\¦ƒtƒ‰ƒOæ“¾ admin.conf(service_peakadv)
- *   Batch Service•\¦ƒtƒ‰ƒOæ“¾                    admin.conf(service_batch)
- *   Substructure SearchiKNApSAcKj•\¦ƒtƒ‰ƒOæ“¾  admin.conf(service_knapsack)
- *   Advanced Search•\¦ƒtƒ‰ƒOæ“¾                  admin.conf(service_advanced)
- *   WEB-API’ñ‹Ÿƒtƒ‰ƒO                              admin.conf(service_api)
- *   AdminTool•\¦ƒtƒ‰ƒO                            admin.conf(admin_all)
- *   SMTPƒAƒhƒŒƒXæ“¾i”ñ„§j                     MassBankEnv
- *   ‘—MÒ–¼æ“¾i”ñ„§j                         MassBankEnv
- *   FromƒAƒhƒŒƒXæ“¾i”ñ„§j                     MassBankEnv
- *   ƒXƒPƒWƒ…[ƒ‹æ“¾                               admin.conf(schedule)
+ *   ï¼œæ©Ÿèƒ½ï¼                                       ï¼œå–å¾—å…ˆï¼
+ *   DBã‚µãƒ¼ãƒãƒ›ã‚¹ãƒˆåå–å¾—ï¼ˆéæ¨å¥¨ï¼‰                 MassBankEnv
+ *   CGIãƒ˜ãƒƒãƒ€å–å¾—                                  admin.conf(cgi_header)
+ *   Annotationãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰             MassBankEnv
+ *   Molfileãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰                MassBankEnv
+ *   Profileãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰                MassBankEnv
+ *   GIFãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰                    MassBankEnv
+ *   GIFSMALLãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰               MassBankEnv
+ *   GIFLARGEãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰               MassBankEnv
+ *   å‡ºåŠ›å…ˆãƒ‘ã‚¹å–å¾—                                 admin.conf(out_path)
+ *   å‡ºåŠ›å…ˆãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰                       MassBankEnv
+ *   MassBankãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰         MassBankEnv
+ *   ãƒãƒ¼ã‚¿ãƒ«ã‚µã‚¤ãƒˆãƒ•ãƒ©ã‚°å–å¾—                       admin.conf(portal)
+ *   ç®¡ç†è€…æ¨©é™ãƒ•ãƒ©ã‚°å–å¾—                           admin.conf(auth_root)
+ *   Peak Searchï¼ˆMolecular Formulaï¼‰è¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾— admin.conf(service_peakadv)
+ *   Batch Serviceè¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—                    admin.conf(service_batch)
+ *   Substructure Searchï¼ˆKNApSAcKï¼‰è¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—  admin.conf(service_knapsack)
+ *   Advanced Searchè¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—                  admin.conf(service_advanced)
+ *   WEB-APIæä¾›ãƒ•ãƒ©ã‚°                              admin.conf(service_api)
+ *   AdminToolè¡¨ç¤ºãƒ•ãƒ©ã‚°                            admin.conf(admin_all)
+ *   SMTPã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰                     MassBankEnv
+ *   é€ä¿¡è€…åå–å¾—ï¼ˆéæ¨å¥¨ï¼‰                         MassBankEnv
+ *   Fromã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—ï¼ˆéæ¨å¥¨ï¼‰                     MassBankEnv
+ *   ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«å–å¾—                               admin.conf(schedule)
  *   
- *   ¦”ñ„§‚Ì‹@”\‚ÉŠÖ‚µ‚Ä‚ÍMassBankEnv#get(String)‚Ìg—p‚ğ„§‚·‚é
+ *   â€»éæ¨å¥¨ã®æ©Ÿèƒ½ã«é–¢ã—ã¦ã¯MassBankEnv#get(String)ã®ä½¿ç”¨ã‚’æ¨å¥¨ã™ã‚‹
  *   
  */
 public class AdminCommon {
 	
 	/**
-	 * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public AdminCommon() {
 	}
 	
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param reqUrl ƒŠƒNƒGƒXƒgURL
-	 * @param realPath ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒpƒX‚Ìâ‘ÎƒpƒX
-	 * @deprecated ”ñ„§ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param reqUrl ãƒªã‚¯ã‚¨ã‚¹ãƒˆURL
+	 * @param realPath ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‘ã‚¹ã®çµ¶å¯¾ãƒ‘ã‚¹
+	 * @deprecated éæ¨å¥¨ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @see AdminCommon#AdminCommon()
 	 */
 	public AdminCommon( String reqUrl, String realPath ) {
 	}
 	
 	/**
-	 * DBƒT[ƒoƒzƒXƒg–¼æ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * DBã‚µãƒ¼ãƒãƒ›ã‚¹ãƒˆåå–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getDbHostName() {
@@ -93,7 +93,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * CGIƒwƒbƒ_æ“¾
+	 * CGIãƒ˜ãƒƒãƒ€å–å¾—
 	 */
 	public String getCgiHeader() {
 		String header = getSetting( "cgi_header" );
@@ -104,8 +104,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * Annotationƒ‹[ƒgƒpƒXæ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * Annotationãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getDbRootPath() {
@@ -113,8 +113,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * Molfileƒ‹[ƒgƒpƒXæ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * Molfileãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getMolRootPath() {
@@ -122,8 +122,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * Profileƒ‹[ƒgƒpƒXæ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * Profileãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getProfileRootPath() {
@@ -131,8 +131,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * GIFƒ‹[ƒgƒpƒXæ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * GIFãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getGifRootPath() {
@@ -140,8 +140,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * GIFSMALLƒ‹[ƒgƒpƒXæ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * GIFSMALLãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getGifSmallRootPath() {
@@ -149,8 +149,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * GIFLARGEƒ‹[ƒgƒpƒXæ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * GIFLARGEãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹å–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getGifLargeRootPath() {
@@ -158,12 +158,12 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * o—ÍæƒpƒXæ“¾
+	 * å‡ºåŠ›å…ˆãƒ‘ã‚¹å–å¾—
 	 */
 	public String getOutPath() {
 		String outPath = getSetting( "out_path" );
 		if ( !outPath.equals("") ) {
-			// ƒpƒX––”ö‚Éƒtƒ@ƒCƒ‹‚Ì‹æØ‚è•¶š‚È‚¯‚ê‚Î•t‰Á‚·‚é
+			// ãƒ‘ã‚¹æœ«å°¾ã«ãƒ•ã‚¡ã‚¤ãƒ«ã®åŒºåˆ‡ã‚Šæ–‡å­—ãªã‘ã‚Œã°ä»˜åŠ ã™ã‚‹
 			char chrLast = outPath.charAt( outPath.length()-1 );
 			if ( chrLast != '/' && chrLast != '\\' ) {
 				outPath += File.separator;
@@ -173,8 +173,8 @@ public class AdminCommon {
 	}
 
 	/**
-	 * ƒvƒ‰ƒCƒ}ƒŠƒT[ƒoURLæ“¾
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * ãƒ—ãƒ©ã‚¤ãƒãƒªã‚µãƒ¼ãƒURLå–å¾—
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getPServerUrl() {
@@ -182,9 +182,9 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * MassBankƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
-	 * Apache‚ÌMassBankƒfƒBƒŒƒNƒgƒŠ‚ÌƒŠƒAƒ‹ƒpƒX‚ğæ“¾‚·‚é
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * MassBankãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
+	 * Apacheã®MassBankãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒªã‚¢ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getMassBankPath() {
@@ -192,7 +192,7 @@ public class AdminCommon {
 	}
 
 	/**
-	 * ƒ|[ƒ^ƒ‹ƒTƒCƒgƒtƒ‰ƒOæ“¾
+	 * ãƒãƒ¼ã‚¿ãƒ«ã‚µã‚¤ãƒˆãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isPortal() {
 		boolean ret = false;
@@ -204,7 +204,7 @@ public class AdminCommon {
 	}
 
 	/**
-	 * ŠÇ—ÒŒ ŒÀƒtƒ‰ƒOæ“¾
+	 * ç®¡ç†è€…æ¨©é™ãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isAdmin() {
 		boolean ret = false;
@@ -216,7 +216,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * Peak SearchiMolecular Formulaj•\¦ƒtƒ‰ƒOæ“¾
+	 * Peak Searchï¼ˆMolecular Formulaï¼‰è¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isPeakAdv() {
 		boolean ret = false;
@@ -228,7 +228,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * Batch Service•\¦ƒtƒ‰ƒOæ“¾
+	 * Batch Serviceè¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isBatch() {
 		boolean ret = false;
@@ -240,7 +240,7 @@ public class AdminCommon {
 	}
 
 	/**
-	 * Substructure SearchiKNApSAcKj•\¦ƒtƒ‰ƒOæ“¾
+	 * Substructure Searchï¼ˆKNApSAcKï¼‰è¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isKnapsack() {
 		boolean ret = false;
@@ -252,7 +252,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * Advanced Search•\¦ƒtƒ‰ƒOæ“¾
+	 * Advanced Searchè¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isAdvanced() {
 		boolean ret = false;
@@ -264,7 +264,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * WEB-API’ñ‹Ÿƒtƒ‰ƒOæ“¾
+	 * WEB-APIæä¾›ãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isApi() {
 		boolean ret = false;
@@ -276,7 +276,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * AdminTool•\¦ƒtƒ‰ƒOæ“¾
+	 * AdminToolè¡¨ç¤ºãƒ•ãƒ©ã‚°å–å¾—
 	 */
 	public boolean isAllAdmin() {
 		boolean ret = false;
@@ -288,8 +288,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * SMTPƒAƒhƒŒƒXæ“¾iBatch Service—pj
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * SMTPã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—ï¼ˆBatch Serviceç”¨ï¼‰
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getMailSmtp() {
@@ -297,8 +297,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * ‘—MÒ–¼æ“¾iBatch Service—pj
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * é€ä¿¡è€…åå–å¾—ï¼ˆBatch Serviceç”¨ï¼‰
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getMailName() {
@@ -306,8 +306,8 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * FromƒAƒhƒŒƒXæ“¾iBatch Service—pj
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * Fromã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—ï¼ˆBatch Serviceç”¨ï¼‰
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getMailFrom() {
@@ -315,7 +315,7 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * ƒXƒPƒWƒ…[ƒ‹æ“¾
+	 * ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«å–å¾—
 	 */
 	public ArrayList<String> getSchedule() {
 		String[] tmp = getSetting( "schedule" ).split("\t");
@@ -329,10 +329,10 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * admin.conf‚É’è‹`‚³‚ê‚½’l‚ğæ“¾‚·‚é
-	 * u#v‚Ån‚Ü‚és‚ÍƒRƒƒ“ƒgs‚Æ‚·‚é
-	 * @param key ƒL[–¼
-	 * @return ’l
+	 * admin.confã«å®šç¾©ã•ã‚ŒãŸå€¤ã‚’å–å¾—ã™ã‚‹
+	 * ã€Œ#ã€ã§å§‹ã¾ã‚‹è¡Œã¯ã‚³ãƒ¡ãƒ³ãƒˆè¡Œã¨ã™ã‚‹
+	 * @param key ã‚­ãƒ¼å
+	 * @return å€¤
 	 */
 	private String getSetting( String key ) {
 		String adminConfPath = MassBankEnv.get(MassBankEnv.KEY_ADMIN_CONF_PATH);
@@ -342,7 +342,7 @@ public class AdminCommon {
 			br = new BufferedReader( new FileReader( adminConfPath ) );
 			String line = "";
 			while ( ( line = br.readLine() ) != null ) {
-				// "#" ‚Ån‚Ü‚és‚ÍƒRƒƒ“ƒgs‚Æ‚·‚é
+				// "#" ã§å§‹ã¾ã‚‹è¡Œã¯ã‚³ãƒ¡ãƒ³ãƒˆè¡Œã¨ã™ã‚‹
 				if (line.startsWith("#") || line.equals("")) {
 					continue;
 				}

@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒT[ƒoEƒXƒe[ƒ^ƒXî•ñƒf[ƒ^ƒNƒ‰ƒX
+ * ã‚µãƒ¼ãƒãƒ»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2012.10.10
  *
@@ -33,10 +33,10 @@ public class ServerStatusInfo {
 	private boolean status = true;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	 * @param svrName ƒT[ƒo–¼ 
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	 * @param svrName ã‚µãƒ¼ãƒå 
 	 * @param url URL
-	 * @param dbName DB–¼
+	 * @param dbName DBå
 	 */
 	public ServerStatusInfo(String svrName, String url, String dbName, String db2Name) {
 		this.svrName = svrName;
@@ -46,22 +46,22 @@ public class ServerStatusInfo {
 	}
 
 	/**
-	 * ƒXƒe[ƒ^ƒX‚ğİ’è‚·‚é
-	 * @param isActive ƒXƒe[ƒ^ƒX
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¨­å®šã™ã‚‹
+	 * @param isActive ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 	 */
 	public void setStatus(boolean isActive) {
 		this.status = isActive;
 	}
 
 	/**
-	 * ƒT[ƒo–¼‚ğæ“¾‚·‚é
-	 * return ƒT[ƒo–¼
+	 * ã‚µãƒ¼ãƒåã‚’å–å¾—ã™ã‚‹
+	 * return ã‚µãƒ¼ãƒå
 	 */
 	public String getServerName() {
 		return this.svrName;
 	}
 	/**
-	 * URL‚ğæ“¾‚·‚é
+	 * URLã‚’å–å¾—ã™ã‚‹
 	 * return URL
 	 */
 	public String getUrl() {
@@ -69,24 +69,24 @@ public class ServerStatusInfo {
 	}
 
 	/**
-	 * DB–¼‚ğæ“¾‚·‚é
-	 * return DB–¼
+	 * DBåã‚’å–å¾—ã™ã‚‹
+	 * return DBå
 	 */
 	public String getDbName() {
 		return this.dbName;
 	}
 
 	/**
-	 * ƒZƒJƒ“ƒ_ƒŠDB–¼‚ğæ“¾‚·‚é
-	 * return DB–¼
+	 * ã‚»ã‚«ãƒ³ãƒ€ãƒªDBåã‚’å–å¾—ã™ã‚‹
+	 * return DBå
 	 */
 	public String get2ndDbName() {
 		return this.db2Name;
 	}
 
 	/**
-	 * ƒXƒe[ƒ^ƒX‚ğæ“¾‚·‚é
-	 * return ƒXƒe[ƒ^ƒX
+	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—ã™ã‚‹
+	 * return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 	 */
 	public boolean getStatus() {
 		return this.status;

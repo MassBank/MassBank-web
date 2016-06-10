@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒoƒbƒ`ŒŸõƒT[ƒrƒX
+ * ãƒãƒƒãƒæ¤œç´¢ã‚µãƒ¼ãƒ“ã‚¹
  *
  * ver 1.0.7 2012.09.07
  *
@@ -41,7 +41,7 @@ public class BatchService extends HttpServlet {
 	private JobMonitor mon = null;
 
 	/**
-	 * ƒT[ƒrƒX‰Šúˆ—‚ğs‚¤
+	 * ã‚µãƒ¼ãƒ“ã‚¹åˆæœŸå‡¦ç†ã‚’è¡Œã†
 	 */
 	public void init() throws ServletException {
 		try {
@@ -51,7 +51,7 @@ public class BatchService extends HttpServlet {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		// ’èŠú“I‚ÉƒWƒ‡ƒu‚ğŠÄ‹
+		// å®šæœŸçš„ã«ã‚¸ãƒ§ãƒ–ã‚’ç›£è¦–
 		mon = new JobMonitor();
 		this.mon.start();
 	}
@@ -60,16 +60,16 @@ public class BatchService extends HttpServlet {
 	}
 
 	/**
-	 * ƒT[ƒrƒXI—¹ˆ—‚ğs‚¤
+	 * ã‚µãƒ¼ãƒ“ã‚¹çµ‚äº†å‡¦ç†ã‚’è¡Œã†
 	 */
 	public void destroy() {
-		// I—¹ó‘ÔƒZƒbƒg
+		// çµ‚äº†çŠ¶æ…‹ã‚»ãƒƒãƒˆ
 		this.mon.setTerminate();
 
-		// JobMonitorƒXƒŒƒbƒh‚ÉŠ„‚è‚Ş
+		// JobMonitorã‚¹ãƒ¬ãƒƒãƒ‰ã«å‰²ã‚Šè¾¼ã‚€
 		this.mon.interrupt();
 
-		// JobMonitorƒXƒŒƒbƒh‚ªI—¹‚·‚é‚Ì‚ğ‘Ò‚Â
+		// JobMonitorã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã™ã‚‹ã®ã‚’å¾…ã¤
 		do {
 			try { this.mon.join(200); }
 			catch ( Exception e ) {}
@@ -77,7 +77,7 @@ public class BatchService extends HttpServlet {
 	}
 
 	/**
-	 * ƒWƒ‡ƒuŠÄ‹ƒNƒ‰ƒX
+	 * ã‚¸ãƒ§ãƒ–ç›£è¦–ã‚¯ãƒ©ã‚¹
 	 */
 	public class JobMonitor extends Thread {
 		private boolean isTerminated = false;
@@ -87,7 +87,7 @@ public class BatchService extends HttpServlet {
 		}
 
 		/**
-		 * ƒXƒŒƒbƒh‚ğ‹N“®‚·‚é
+		 * ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’èµ·å‹•ã™ã‚‹
 		 */
 		public void run() {
 			try { sleep(5000); }
@@ -95,7 +95,7 @@ public class BatchService extends HttpServlet {
 
 			JobManager jobMgr = new JobManager();
 			try {
-				// ƒAƒNƒeƒBƒuó‘Ô‚É‚È‚Á‚Ä‚¢‚éƒWƒ‡ƒu‚ğ–¢Àsó‘Ô‚É‚·‚é
+				// ã‚¢ã‚¯ãƒ†ã‚£ãƒ–çŠ¶æ…‹ã«ãªã£ã¦ã„ã‚‹ã‚¸ãƒ§ãƒ–ã‚’æœªå®Ÿè¡ŒçŠ¶æ…‹ã«ã™ã‚‹
 				jobMgr.setInitStatus();
 			}
 			catch (Exception e) {
@@ -104,11 +104,11 @@ public class BatchService extends HttpServlet {
 			}
 
 			do {
-				// ‘Ò‹@
+				// å¾…æ©Ÿ
 				try { sleep(10000); }
 				catch (Exception e) {}
 
-				// BatchJobWorkerƒXƒŒƒbƒhI—¹ƒ`ƒFƒbƒN
+				// BatchJobWorkerã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ãƒã‚§ãƒƒã‚¯
 				int size = this.thList.size();
 				int n = 0;
 				for ( int i = 0; i < size; i++ ) {
@@ -121,7 +121,7 @@ public class BatchService extends HttpServlet {
 					}
 				}
 
-				// BatchSearchWorkerƒXƒŒƒbƒh‚ğI—¹‚³‚¹‚é
+				// BatchSearchWorkerã‚¹ãƒ¬ãƒƒãƒ‰ã‚’çµ‚äº†ã•ã›ã‚‹
 				if ( isTerminated ) {
 					for ( int i = 0; i < this.thList.size(); i++ ) {
 						BatchSearchWorker thRunning = (BatchSearchWorker)this.thList.get(i);
@@ -130,7 +130,7 @@ public class BatchService extends HttpServlet {
 					break;
 				}
 
-				// –¢ÀsƒWƒ‡ƒu‚ÌƒŠƒXƒg‚ğæ“¾
+				// æœªå®Ÿè¡Œã‚¸ãƒ§ãƒ–ã®ãƒªã‚¹ãƒˆã‚’å–å¾—
 				try {
 					ArrayList<JobInfo> jobList = jobMgr.getWaitJobList();
 					if ( jobList == null ) {
@@ -141,13 +141,13 @@ public class BatchService extends HttpServlet {
 						continue;
 					}
 
-					// “¯‚ÉÀs‚Å‚«‚éƒWƒ‡ƒu”‚ğ§ŒÀ
+					// åŒæ™‚ã«å®Ÿè¡Œã§ãã‚‹ã‚¸ãƒ§ãƒ–æ•°ã‚’åˆ¶é™
 					int numRun = jobMgr.getNumRunJob();
 					int numExec = numWait;
 					if ( numWait > MAX_NUM_JOB - numRun ) {
 						numExec = MAX_NUM_JOB - numRun;
 					}
-					// ƒWƒ‡ƒuÀs
+					// ã‚¸ãƒ§ãƒ–å®Ÿè¡Œ
 					BatchSearchWorker[] thread = new BatchSearchWorker[numExec];
 					for ( int i = 0; i < numExec; i++ ) {
 						JobInfo jobInfo = jobList.get(i);
@@ -167,7 +167,7 @@ public class BatchService extends HttpServlet {
 		}
 
 		/**
-		 * I—¹ƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
+		 * çµ‚äº†ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		 */
 		public void setTerminate() {
 			isTerminated = true;

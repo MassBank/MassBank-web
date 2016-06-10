@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * MassBank‹¤’ÊƒNƒ‰ƒX(Applet, JSP, Servlet ‘S‚Ä‚É‚¨‚¢‚Äg—p‚³‚ê‚é)
+ * MassBankå…±é€šã‚¯ãƒ©ã‚¹(Applet, JSP, Servlet å…¨ã¦ã«ãŠã„ã¦ä½¿ç”¨ã•ã‚Œã‚‹)
  *
  * ver 1.0.23 2011.09.21
  *
@@ -37,10 +37,10 @@ public class MassBankCommon {
 	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
 	public static final String MULTI_DISPATCHER_NAME = "MultiDispatcher";
 
-	// ƒŒŸõğŒ”„
+	// ï¼œæ¤œç´¢æ¡ä»¶æ•°ï¼
 	public static final int PEAK_SEARCH_PARAM_NUM     = 6;
 	
-	// ƒƒŠƒNƒGƒXƒgí•Ê„
+	// ï¼œãƒªã‚¯ã‚¨ã‚¹ãƒˆç¨®åˆ¥ï¼
 	public static final String REQ_TYPE_PEAK      = "peak";
 	public static final String REQ_TYPE_PEAKDIFF  = "diff";
 	public static final String REQ_TYPE_DISP      = "disp";
@@ -53,8 +53,8 @@ public class MassBankCommon {
 	public static final String REQ_TYPE_GSON      = "gson";
 	public static final String REQ_TYPE_DISPDIFF  = "dispdiff";
 	public static final String REQ_TYPE_QUICK     = "quick";
-	public static final String REQ_TYPE_PEAK2     = "peak2";		// ver 1.0.11 –¢g—p
-	public static final String REQ_TYPE_PEAKDIFF2 = "diff2";		// ver 1.0.11 –¢g—p
+	public static final String REQ_TYPE_PEAK2     = "peak2";		// ver 1.0.11 æœªä½¿ç”¨
+	public static final String REQ_TYPE_PEAKDIFF2 = "diff2";		// ver 1.0.11 æœªä½¿ç”¨
 	public static final String REQ_TYPE_RECORD    = "record";
 	public static final String REQ_TYPE_IDXCNT    = "idxcnt";
 	public static final String REQ_TYPE_RCDIDX    = "rcdidx";
@@ -72,11 +72,11 @@ public class MassBankCommon {
 	public static final String REQ_TYPE_GETCINFO  = "gcinfo";
 	public static final String REQ_TYPE_GETFORMULA = "gform";
 	
-	// ƒCGIƒe[ƒuƒ‹ƒCƒ“ƒfƒbƒNƒX„
-	public static final int CGI_TBL_NUM_TYPE = 0;		// CGIí•Êw’è
-	public static final int CGI_TBL_NUM_FILE = 1;		// CGIƒtƒ@ƒCƒ‹w’è
+	// ï¼œCGIãƒ†ãƒ¼ãƒ–ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼
+	public static final int CGI_TBL_NUM_TYPE = 0;		// CGIç¨®åˆ¥æŒ‡å®š
+	public static final int CGI_TBL_NUM_FILE = 1;		// CGIãƒ•ã‚¡ã‚¤ãƒ«æŒ‡å®š
 
-	// ƒCGIƒe[ƒuƒ‹”Ô†„
+	// ï¼œCGIãƒ†ãƒ¼ãƒ–ãƒ«ç•ªå·ï¼
 	public static final int CGI_TBL_TYPE_PEAK     = 0;
 	public static final int CGI_TBL_TYPE_PDIFF    = 1;
 	public static final int CGI_TBL_TYPE_DISP     = 2;
@@ -89,8 +89,8 @@ public class MassBankCommon {
 	public static final int CGI_TBL_TYPE_GSON     = 9;
 	public static final int CGI_TBL_TYPE_DISPDIFF = 10;
 	public static final int CGI_TBL_TYPE_QUICK    = 11;
-	public static final int CGI_TBL_TYPE_PEAK2    = 12;		// ver 1.0.11 –¢g—p
-	public static final int CGI_TBL_TYPE_PDIFF2   = 13;		// ver 1.0.11 –¢g—p
+	public static final int CGI_TBL_TYPE_PEAK2    = 12;		// ver 1.0.11 æœªä½¿ç”¨
+	public static final int CGI_TBL_TYPE_PDIFF2   = 13;		// ver 1.0.11 æœªä½¿ç”¨
 	public static final int CGI_TBL_TYPE_RECORD   = 14;
 	public static final int CGI_TBL_TYPE_IDXCNT   = 15;
 	public static final int CGI_TBL_TYPE_RCDIDX   = 16;
@@ -109,7 +109,7 @@ public class MassBankCommon {
 	public static final int CGI_TBL_TYPE_GETFORMULA = 29;
 	
 
-	// ƒCGIƒe[ƒuƒ‹„
+	// ï¼œCGIãƒ†ãƒ¼ãƒ–ãƒ«ï¼
 	public static final String[][] CGI_TBL = {
 		{ REQ_TYPE_PEAK,     REQ_TYPE_PEAKDIFF,  REQ_TYPE_DISP,     REQ_TYPE_GDATA,
 		  REQ_TYPE_GDATA2,   REQ_TYPE_SEARCH,    REQ_TYPE_GNAME,    REQ_TYPE_GPEAK,
@@ -135,12 +135,12 @@ public class MassBankCommon {
 
 	
 	/**
-	 * ƒT[ƒuƒŒƒbƒgMultiDispatcher‚ğÀs‚·‚é
-	 * @param serverUrl 	ƒx[ƒXURL
-	 * @param type		ƒŠƒNƒGƒXƒgí•Ê
-	 * @param param	URLƒpƒ‰ƒ[ƒ^iƒŠƒNƒGƒXƒgí•Ê‚ğŠÜ‚Ü‚È‚¢j
+	 * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆMultiDispatcherã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param serverUrl 	ãƒ™ãƒ¼ã‚¹URL
+	 * @param type		ãƒªã‚¯ã‚¨ã‚¹ãƒˆç¨®åˆ¥
+	 * @param param	URLãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ï¼ˆãƒªã‚¯ã‚¨ã‚¹ãƒˆç¨®åˆ¥ã‚’å«ã¾ãªã„ï¼‰
 	 * @return
-	 * @deprecated ”ñ„§ƒƒ\ƒbƒh
+	 * @deprecated éæ¨å¥¨ãƒ¡ã‚½ãƒƒãƒ‰
 	 * @see execDispatcher(String serverUrl, String type, String param, boolean isMulti, String siteNo)
 	 */
 	public ArrayList<String> execMultiDispatcher( String serverUrl, String type, String param ) {
@@ -149,12 +149,12 @@ public class MassBankCommon {
 	
 	
 	/**
-	 * ƒT[ƒuƒŒƒbƒgMultiDispatcher ‚Ü‚½‚ÍADispatcher.jsp‚ğÀs‚·‚é
-	 * @param serverUrl		ƒT[ƒo[URL
-	 * @param type			ƒŠƒNƒGƒXƒgí•Ê
-	 * @param param			URLƒpƒ‰ƒ[ƒ^iƒŠƒNƒGƒXƒgí•Ê‚ğŠÜ‚Ü‚È‚¢j
-	 * @param isMulti		ƒ}ƒ‹ƒ`ƒtƒ‰ƒO
-	 * @param siteNo		ƒTƒCƒgNo.
+	 * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆMultiDispatcher ã¾ãŸã¯ã€Dispatcher.jspã‚’å®Ÿè¡Œã™ã‚‹
+	 * @param serverUrl		ã‚µãƒ¼ãƒãƒ¼URL
+	 * @param type			ãƒªã‚¯ã‚¨ã‚¹ãƒˆç¨®åˆ¥
+	 * @param param			URLãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ï¼ˆãƒªã‚¯ã‚¨ã‚¹ãƒˆç¨®åˆ¥ã‚’å«ã¾ãªã„ï¼‰
+	 * @param isMulti		ãƒãƒ«ãƒãƒ•ãƒ©ã‚°
+	 * @param siteNo		ã‚µã‚¤ãƒˆNo.
 	 * @return 
 	 */
 	public ArrayList<String> execDispatcher(
@@ -174,7 +174,7 @@ public class MassBankCommon {
 			site = Integer.parseInt(siteNo);
 		}
 		
-		// URLƒpƒ‰ƒ[ƒ^¶¬
+		// URLãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç”Ÿæˆ
 		String reqParam = "type=" + type;
 		if ( !param.equals("") ) {
 			reqParam += "&" + param;
@@ -192,7 +192,7 @@ public class MassBankCommon {
 			boolean isStartSpace = true;
 			String line = "";
 			while ( ( line = in.readLine() ) != null ) {
-				// æ“ªƒXƒy[ƒX‚ğ“Ç‚İ”ò‚Î‚·‚½‚ß
+				// å…ˆé ­ã‚¹ãƒšãƒ¼ã‚¹ã‚’èª­ã¿é£›ã°ã™ãŸã‚
 				if ( isStartSpace ) {
 					if ( line.equals("") ) {
 						continue;
@@ -220,14 +220,14 @@ public class MassBankCommon {
 	
 
 	/**
-	 * ƒT[ƒuƒŒƒbƒgMultiDispatcher ‚Ü‚½‚ÍADispatcher.jsp‚ğÀs‚·‚éiŒŸõŒ‹‰Êƒy[ƒW•\¦—pj
-	 * @param serverUrl		ƒT[ƒo[URL
-	 * @param type			ƒŠƒNƒGƒXƒgí•Ê
-	 * @param reqParam		URLƒpƒ‰ƒ[ƒ^iƒŠƒNƒGƒXƒgí•Ê‚ğŠÜ‚Ü‚È‚¢j
-	 * @param isMulti		ƒ}ƒ‹ƒ`ƒtƒ‰ƒO
-	 * @param siteNo		ƒTƒCƒgNo.
-	 * @param conf			İ’èƒtƒ@ƒCƒ‹î•ñƒIƒuƒWƒFƒNƒg
-	 * @return ƒŒƒR[ƒhî•ñƒŠƒXƒg
+	 * ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆMultiDispatcher ã¾ãŸã¯ã€Dispatcher.jspã‚’å®Ÿè¡Œã™ã‚‹ï¼ˆæ¤œç´¢çµæœãƒšãƒ¼ã‚¸è¡¨ç¤ºç”¨ï¼‰
+	 * @param serverUrl		ã‚µãƒ¼ãƒãƒ¼URL
+	 * @param type			ãƒªã‚¯ã‚¨ã‚¹ãƒˆç¨®åˆ¥
+	 * @param reqParam		URLãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ï¼ˆãƒªã‚¯ã‚¨ã‚¹ãƒˆç¨®åˆ¥ã‚’å«ã¾ãªã„ï¼‰
+	 * @param isMulti		ãƒãƒ«ãƒãƒ•ãƒ©ã‚°
+	 * @param siteNo		ã‚µã‚¤ãƒˆNo.
+	 * @param conf			è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	 * @return ãƒ¬ã‚³ãƒ¼ãƒ‰æƒ…å ±ãƒªã‚¹ãƒˆ
 	 */
 	public ResultList execDispatcherResult(
 			String serverUrl,
@@ -247,7 +247,7 @@ public class MassBankCommon {
 			site = Integer.parseInt(siteNo);
 		}
 		
-		// Œ‹‰Êæ“¾
+		// çµæœå–å¾—
 		ArrayList<String> allLine = new ArrayList<String>();
 		try {
 			URL url = new URL( reqUrl );
@@ -262,7 +262,7 @@ public class MassBankCommon {
 			boolean isStartSpace = true;
 			String line = "";
 			while ( ( line = in.readLine() ) != null ) {
-				// æ“ªƒXƒy[ƒX‚ğ“Ç‚İ”ò‚Î‚·‚½‚ß
+				// å…ˆé ­ã‚¹ãƒšãƒ¼ã‚¹ã‚’èª­ã¿é£›ã°ã™ãŸã‚
 				if ( isStartSpace ) {
 					if ( line.equals("") ) {
 						continue;
@@ -287,7 +287,7 @@ public class MassBankCommon {
 			ex.printStackTrace();
 		}
 		
-		// Œ‹‰Êî•ñƒŒƒR[ƒh¶¬
+		// çµæœæƒ…å ±ãƒ¬ã‚³ãƒ¼ãƒ‰ç”Ÿæˆ
 		ResultList list = new ResultList(conf);
 		ResultRecord record;
 		int nodeGroup = -1;
@@ -303,7 +303,7 @@ public class MassBankCommon {
 			record.setFormula(fields[3]);
 			record.setEmass(fields[4]);
 			record.setContributor(fields[fields.length-1]);
-			// ƒm[ƒhƒOƒ‹[ƒvİ’è
+			// ãƒãƒ¼ãƒ‰ã‚°ãƒ«ãƒ¼ãƒ—è¨­å®š
 			if (!nodeCount.containsKey(record.getName())) {
 				nodeGroup++;
 				nodeCount.put(record.getName(), nodeGroup);
@@ -315,7 +315,7 @@ public class MassBankCommon {
 			list.addRecord(record);
 		}
 		
-		// ƒ\[ƒgƒL[æ“¾
+		// ã‚½ãƒ¼ãƒˆã‚­ãƒ¼å–å¾—
 		String sortKey = ResultList.SORT_KEY_NAME;
 		if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_FORMULA) != -1) {
 			sortKey = ResultList.SORT_KEY_FORMULA;
@@ -327,13 +327,13 @@ public class MassBankCommon {
 			sortKey = ResultList.SORT_KEY_ID;
 		}
 		
-		// ƒ\[ƒgƒAƒNƒVƒ‡ƒ“æ“¾
+		// ã‚½ãƒ¼ãƒˆã‚¢ã‚¯ã‚·ãƒ§ãƒ³å–å¾—
 		int sortAction = ResultList.SORT_ACTION_ASC;
 		if (reqParam.indexOf("sortAction=" + ResultList.SORT_ACTION_DESC) != -1) {
 			sortAction = ResultList.SORT_ACTION_DESC;
 		}
 		
-		// ƒŒƒR[ƒhƒ\[ƒg
+		// ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚½ãƒ¼ãƒˆ
 		list.sortList(sortKey, sortAction);
 		
 		

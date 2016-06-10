@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * [WEB-API] MultiDispatcher ƒT[ƒuƒŒƒbƒg‚ğŒÄ‚Ño‚·ƒNƒ‰ƒX
+ * [WEB-API] MultiDispatcher ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆã‚’å‘¼ã³å‡ºã™ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.3 2011.09.16
  *
@@ -38,7 +38,7 @@ public class DispatchInvoker {
 	private String typeName = "";
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	public DispatchInvoker() {
 		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
@@ -46,7 +46,7 @@ public class DispatchInvoker {
 	}
 
 	/**
-	 * MultiDispatcher‚ÌŒÄ‚Ño‚µ
+	 * MultiDispatcherã®å‘¼ã³å‡ºã—
 	 */
 	public void invoke( String typeName, String param ) {
 		MassBankCommon mbcommon = new MassBankCommon();
@@ -56,7 +56,7 @@ public class DispatchInvoker {
 	}
 
 	/**
-	 * ƒŒƒXƒ|ƒ“ƒX‚ğæ“¾‚·‚é
+	 * ãƒ¬ã‚¹ãƒãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 	 */
 	public ArrayList<String> getResponse() {
 		return this.response;
@@ -64,11 +64,11 @@ public class DispatchInvoker {
 
 
 	/**
-	 * ŒŸõŒ‹‰Ê‚ğæ“¾‚·‚é
+	 * æ¤œç´¢çµæœã‚’å–å¾—ã™ã‚‹
 	 */
 	public SearchResult getSearchResult( int maxNumResults ) {
 		ArrayList<String> ret = this.response;
-//		Collections.sort(ret);	// ƒ\[ƒg‚·‚é
+//		Collections.sort(ret);	// ã‚½ãƒ¼ãƒˆã™ã‚‹
 		SearchResult result = new SearchResult();
 		int hitCnt = ret.size();
 		if ( hitCnt > 0 ) {
@@ -99,7 +99,7 @@ public class DispatchInvoker {
 				}
 
 				//---------------------------------------
-				// ŒŸõŒ‹‰Ê‚ğƒZƒbƒg‚·‚é
+				// æ¤œç´¢çµæœã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 				//---------------------------------------
 				Result info = new Result();
 				info.setId(id);

@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * Tomcat‹N“®Žž‚ÉŽÀsƒ‚ƒWƒ…[ƒ‹‚ð‹N“®‚·‚éƒT[ƒuƒŒƒbƒg
+ * Tomcatèµ·å‹•æ™‚ã«å®Ÿè¡Œãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’èµ·å‹•ã™ã‚‹ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆ
  *
  * ver 1.0.5 2010.11.22
  *
@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @deprecated ”ñ„§ƒNƒ‰ƒX
+ * @deprecated éžæŽ¨å¥¨ã‚¯ãƒ©ã‚¹
  * @see MassBankEnv
  */
 public class StartupExecModule extends HttpServlet {
@@ -42,7 +42,7 @@ public class StartupExecModule extends HttpServlet {
 	public static String APPLICATION_TEMP = "";
 
 	/**
-	 * ƒT[ƒrƒX‰Šúˆ—‚ðs‚¤
+	 * ã‚µãƒ¼ãƒ“ã‚¹åˆæœŸå‡¦ç†ã‚’è¡Œã†
 	 */
 	public void init() throws ServletException {
 //		String baseUrl = getInitParameter("baseUrl");
@@ -75,7 +75,7 @@ public class StartupExecModule extends HttpServlet {
 	}
 
 	/**
-	 * ƒT[ƒrƒXI—¹ˆ—‚ðs‚¤
+	 * ã‚µãƒ¼ãƒ“ã‚¹çµ‚äº†å‡¦ç†ã‚’è¡Œã†
 	 */
 	public void destroy() {
 	}

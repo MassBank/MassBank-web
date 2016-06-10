@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒRƒ}ƒ“ƒhÀsŒ‹‰ÊŠi”[ƒf[ƒ^ƒNƒ‰ƒX
+ * ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œçµæœæ ¼ç´ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2008.12.05
  *
@@ -33,37 +33,37 @@ import java.io.Serializable;
 		private String stderr = "";
 
 	/**
-	 * I—¹ƒR[ƒh‚ğİ’è‚µ‚Ü‚·
+	 * çµ‚äº†ã‚³ãƒ¼ãƒ‰ã‚’è¨­å®šã—ã¾ã™
 	 */
 	public void setStatus(int status){
 		this.status = status;
 	}
 	/**
-	 * •W€o—Í‚Ì“à—e‚ğİ’è‚µ‚Ü‚·
+	 * æ¨™æº–å‡ºåŠ›ã®å†…å®¹ã‚’è¨­å®šã—ã¾ã™
 	 */
 	public void setStdout(String msg){
 		this.stdout = msg;
 	}
 	/**
-	 * ƒGƒ‰[o—Í‚Ì“à—e‚ğİ’è‚µ‚Ü‚·
+	 * ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã®å†…å®¹ã‚’è¨­å®šã—ã¾ã™
 	 */
 	public void setStderr(String msg){
 		this.stderr = msg;
 	}
 	/**
-	 * I—¹ƒR[ƒh‚ğæ“¾‚µ‚Ü‚·
+	 * çµ‚äº†ã‚³ãƒ¼ãƒ‰ã‚’å–å¾—ã—ã¾ã™
 	 */
 	public int getStatus(){
 		return this.status;
 	}
 	/**
-	 * •W€o—Í‚Ì“à—e‚ğæ“¾‚µ‚Ü‚·
+	 * æ¨™æº–å‡ºåŠ›ã®å†…å®¹ã‚’å–å¾—ã—ã¾ã™
 	 */
 	public String getStdout(){
 		return this.stdout;
 	}
 	/**
-	 * ƒGƒ‰[o—Í‚Ì“à—e‚ğæ“¾‚µ‚Ü‚·
+	 * ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã®å†…å®¹ã‚’å–å¾—ã—ã¾ã™
 	 */
 	public String getStderr(){
 		return this.stderr;

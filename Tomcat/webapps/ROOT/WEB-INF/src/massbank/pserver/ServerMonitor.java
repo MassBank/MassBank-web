@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ˜AŒgƒT[ƒo‚ğŠÄ‹‚·‚éí’“ƒT[ƒuƒŒƒbƒg
+ * é€£æºã‚µãƒ¼ãƒã‚’ç›£è¦–ã™ã‚‹å¸¸é§ã‚µãƒ¼ãƒ–ãƒ¬ãƒƒãƒˆ
  *
  * ver 1.0.2 2012.11.01
  *
@@ -45,17 +45,17 @@ public class ServerMonitor extends HttpServlet {
 	private ServerPolling poll = null;
 
 	/**
-	 * ‰Šúˆ—‚ğs‚¤
+	 * åˆæœŸå‡¦ç†ã‚’è¡Œã†
 	 */
 	public void init() throws ServletException {
 		this.context = getServletContext();
 
-		// ŠÄ‹ŠJn
+		// ç›£è¦–é–‹å§‹
 		managed();
 	}
 
 	/**
-	 * HTTPƒŠƒNƒGƒXƒgˆ—
+	 * HTTPãƒªã‚¯ã‚¨ã‚¹ãƒˆå‡¦ç†
 	 */
 	public void service(HttpServletRequest req, HttpServletResponse res)
 		throws ServletException, IOException {
@@ -66,11 +66,11 @@ public class ServerMonitor extends HttpServlet {
 		}
 		action = req.getParameter("act");
 
-		// ŠÄ‹ŠJn
+		// ç›£è¦–é–‹å§‹
 		if ( action.equals("Managed") ) {
 			managed();
 		}
-		// ŠÄ‹’â~
+		// ç›£è¦–åœæ­¢
 		else if ( action.equals("Unmanaged") ) {
 			unmanaged();
 		}
@@ -81,26 +81,26 @@ public class ServerMonitor extends HttpServlet {
 	}
 
 	/**
-	 * I—¹ˆ—‚ğs‚¤
+	 * çµ‚äº†å‡¦ç†ã‚’è¡Œã†
 	 */
 	public void destroy() {
 		unmanaged();
 	}
 
 	/**
-	 * ŠÄ‹‚ğŠJn‚·‚é
+	 * ç›£è¦–ã‚’é–‹å§‹ã™ã‚‹
 	 */
 	private void managed() {
 		Logger.global.info( "managed start" );
 
-		// ƒXƒŒƒbƒh‚ª¶‘¶‚µ‚Ä‚¢‚éê‡
+		// ã‚¹ãƒ¬ãƒƒãƒ‰ãŒç”Ÿå­˜ã—ã¦ã„ã‚‹å ´åˆ
 		if ( this.poll != null && this.poll.isAlive() ) {
-			// I—¹ƒtƒ‰ƒO‚ª–³Œø‚Ìê‡
+			// çµ‚äº†ãƒ•ãƒ©ã‚°ãŒç„¡åŠ¹ã®å ´åˆ
 			if ( !poll.isTerminated() ) {
 				return;
 			}
 
-			// ƒXƒŒƒbƒhI—¹’†‚Å‚ ‚ê‚ÎAI—¹‚·‚é‚Ì‚ğ‘Ò‚Â
+			// ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ä¸­ã§ã‚ã‚Œã°ã€çµ‚äº†ã™ã‚‹ã®ã‚’å¾…ã¤
 			do {
 				try {
 					poll.join(200);
@@ -110,33 +110,33 @@ public class ServerMonitor extends HttpServlet {
 			} while ( poll.isAlive() );
 		}
 
-		// ó‘Ô‚ğuŠÄ‹v‚ÉƒZƒbƒg‚·‚é
+		// çŠ¶æ…‹ã‚’ã€Œç›£è¦–ã€ã«ã‚»ãƒƒãƒˆã™ã‚‹
 		this.svrStatus = new ServerStatus();
 		svrStatus.setManaged(true);
 
-		// ˜AŒgƒT[ƒo‚ğƒ|[ƒŠƒ“ƒO‚·‚éƒXƒŒƒbƒh‚ğ‹N“®
+		// é€£æºã‚µãƒ¼ãƒã‚’ãƒãƒ¼ãƒªãƒ³ã‚°ã™ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’èµ·å‹•
 		this.poll = new ServerPolling();
 		this.poll.start();
 	}
 
 	/**
-	 * ŠÄ‹‚ğ’â~‚·‚é
+	 * ç›£è¦–ã‚’åœæ­¢ã™ã‚‹
 	 */
 	private void unmanaged() {
 		Logger.global.info( "unmanaged start" );
 
-		// ServerPollingƒXƒŒƒbƒh‚ª¶‘¶‚µ‚Ä‚¢‚È‚¢ê‡‚Í‰½‚à‚¹‚¸
+		// ServerPollingã‚¹ãƒ¬ãƒƒãƒ‰ãŒç”Ÿå­˜ã—ã¦ã„ãªã„å ´åˆã¯ä½•ã‚‚ã›ãš
 		if ( !poll.isAlive() ) {
 			return;
 		}
 
-		// ServerPollingƒXƒŒƒbƒh‚ÉŠ„‚è‚Ş
+		// ServerPollingã‚¹ãƒ¬ãƒƒãƒ‰ã«å‰²ã‚Šè¾¼ã‚€
 		poll.interrupt();
 
-		// I—¹ƒtƒ‰ƒO‚ğ—LŒø‚É‚·‚é
+		// çµ‚äº†ãƒ•ãƒ©ã‚°ã‚’æœ‰åŠ¹ã«ã™ã‚‹
 		poll.setTerminate(true);
 
-		// ServerPollingƒXƒŒƒbƒh‚ªI—¹‚·‚é‚Ì‚ğ‘Ò‚Â
+		// ServerPollingã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã™ã‚‹ã®ã‚’å¾…ã¤
 		do {
 			try {
 				poll.join(200);
@@ -145,10 +145,10 @@ public class ServerMonitor extends HttpServlet {
 			}
 		} while ( poll.isAlive() );
 
-		// I—¹ƒtƒ‰ƒO‚ğ–³Œø‚·‚é
+		// çµ‚äº†ãƒ•ãƒ©ã‚°ã‚’ç„¡åŠ¹ã™ã‚‹
 		poll.setTerminate(false);
 
-		// ó‘Ô‚ğu”ñŠÄ‹v‚ÉƒZƒbƒg‚·‚é
+		// çŠ¶æ…‹ã‚’ã€Œéç›£è¦–ã€ã«ã‚»ãƒƒãƒˆã™ã‚‹
 		svrStatus.setManaged(false);
 		this.svrStatus = null;
 
@@ -156,25 +156,25 @@ public class ServerMonitor extends HttpServlet {
 	}
 
 	/**
-	 * ˜AŒgƒT[ƒo‚ğƒ|[ƒŠƒ“ƒO‚·‚éƒXƒŒƒbƒh
+	 * é€£æºã‚µãƒ¼ãƒã‚’ãƒãƒ¼ãƒªãƒ³ã‚°ã™ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰
 	 */
 	class ServerPolling extends Thread {
-		// ƒ^ƒCƒ€ƒAƒEƒgŠÔ
+		// ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆæ™‚é–“
 		private static final int TIMEOUT_SEC = 15;
-		// I—¹ƒtƒ‰ƒO
+		// çµ‚äº†ãƒ•ãƒ©ã‚°
 		private boolean isTerminated = false;
 
 		/**
-		 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		 */
 		public ServerPolling() {
 		}
 
 		/**
-		 * ƒXƒŒƒbƒhŠJn
+		 * ã‚¹ãƒ¬ãƒƒãƒ‰é–‹å§‹
 		 */
 		public void run() {
-			// ƒ|[ƒŠƒ“ƒOüŠú‚ğæ“¾
+			// ãƒãƒ¼ãƒªãƒ³ã‚°å‘¨æœŸã‚’å–å¾—
 			int pollInterval = svrStatus.getPollInterval();
 			Logger.global.info( "polling start" );
 
@@ -182,48 +182,48 @@ public class ServerMonitor extends HttpServlet {
 			catch (InterruptedException ex) { ex = null; }
 
 			//-----------------------------------------------------------------
-			// ƒ|[ƒŠƒ“ƒO‚·‚é
+			// ãƒãƒ¼ãƒªãƒ³ã‚°ã™ã‚‹
 			//-----------------------------------------------------------------
 			do {
-				// I—¹ƒtƒ‰ƒO‚ª—LŒø‚Å‚ ‚ê‚ÎƒXƒŒƒbƒh‚ğI—¹‚·‚é
+				// çµ‚äº†ãƒ•ãƒ©ã‚°ãŒæœ‰åŠ¹ã§ã‚ã‚Œã°ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’çµ‚äº†ã™ã‚‹
 				if ( isTerminated() ) {
 					break;
 				}
 
-				// ŠÇ—ƒtƒ@ƒCƒ‹‚Ì®‡
+				// ç®¡ç†ãƒ•ã‚¡ã‚¤ãƒ«ã®æ•´åˆ
 				svrStatus.clean();
 
-				// ŠÄ‹‘ÎÛ‚ÌƒT[ƒo‚ª‚È‚¢ê‡‚ÍI—¹‚·‚é
+				// ç›£è¦–å¯¾è±¡ã®ã‚µãƒ¼ãƒãŒãªã„å ´åˆã¯çµ‚äº†ã™ã‚‹
 				if ( svrStatus.getServerNum() == 0 ) {
 					Logger.global.info( "ServerNum=0" );
 					svrStatus.setManaged(false);
 					return;
 				}
 
-				// CGI‚ÌURL‚Æƒpƒ‰ƒ[ƒ^‚ÌƒŠƒXƒg‚ğƒZƒbƒg
+				// CGIã®URLã¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ãƒªã‚¹ãƒˆã‚’ã‚»ãƒƒãƒˆ
 				ServerStatusInfo[] info = svrStatus.getStatusInfo();
 				int num = info.length;
 				String[] urls = new String[num];
 				Hashtable[] params = new Hashtable[num];
 				boolean[] isActive = new boolean[num];
 				for ( int i = 0; i < num; i++ ) {
-					// URL‚ğƒZƒbƒg
+					// URLã‚’ã‚»ãƒƒãƒˆ
 					urls[i] = info[i].getUrl() + "cgi-bin/ServerCheck.cgi";
-					// DB–¼‚ğƒZƒbƒg
+					// DBåã‚’ã‚»ãƒƒãƒˆ
 					params[i] = new Hashtable();
 					params[i].put( "dsn", info[i].getDbName() );
-					// ƒXƒe[ƒ^ƒX‚ğƒZƒbƒg
+					// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 					isActive[i] = info[i].getStatus();
 				}
 
-				// Še˜AŒgƒT[ƒoã‚Åƒ`ƒFƒbƒNƒvƒƒOƒ‰ƒ€‚ğÀs‚·‚é
+				// å„é€£æºã‚µãƒ¼ãƒä¸Šã§ãƒã‚§ãƒƒã‚¯ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’å®Ÿè¡Œã™ã‚‹
 				CallCgi[] thread = new CallCgi[num];
 				for ( int i = 0; i < num; i++ ) {
 					thread[i] = new CallCgi( urls[i], params[i], TIMEOUT_SEC, context );
 					thread[i].start();
 				}
 
-				// CallCgiƒXƒŒƒbƒhI—¹‘Ò‚¿
+				// CallCgiã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†å¾…ã¡
 				long until = System.currentTimeMillis() + TIMEOUT_SEC * 1000;
 				boolean isRunning = true;
 				while ( isRunning && System.currentTimeMillis() < until ) {
@@ -231,19 +231,19 @@ public class ServerMonitor extends HttpServlet {
 					for ( int i = 0; i < num; i++ ) {
 						try {
 							if ( thread[i].isAlive() ) {
-								// ƒXƒŒƒbƒh‚ªI—¹‚·‚é‚Ü‚Å‘Ò‹@
+								// ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã™ã‚‹ã¾ã§å¾…æ©Ÿ
 								thread[i].join(200);
 								isRunning = true;
 							}
 						}
 						catch ( Exception e ) {
-							// ƒGƒ‰[
+							// ã‚¨ãƒ©ãƒ¼
 							Logger.global.severe( e.toString() );
 						}
 					}
 				}
 
-				// Œ‹‰Êæ“¾
+				// çµæœå–å¾—
 				boolean isUpate = false;
 				for ( int i = 0; i < num; i++ ) {
 					String res = thread[i].result;
@@ -252,7 +252,7 @@ public class ServerMonitor extends HttpServlet {
 						isOK = true;
 					}
 
-					// ó‘Ô•Ï‰»‚ª‚ ‚ê‚Î•ÏX‚·‚é
+					// çŠ¶æ…‹å¤‰åŒ–ãŒã‚ã‚Œã°å¤‰æ›´ã™ã‚‹
 					if ( isOK != isActive[i] ) {
 //						String state = "";
 //						String subject = "";
@@ -261,7 +261,7 @@ public class ServerMonitor extends HttpServlet {
 						isActive[i] = isOK;
 						isUpate = true;
 
-						// ƒAƒ‰[ƒgƒ[ƒ‹‘—M
+						// ã‚¢ãƒ©ãƒ¼ãƒˆãƒ¡ãƒ¼ãƒ«é€ä¿¡
 //						if ( isOK ) {
 //							state = "Server recovery";
 //						}
@@ -276,12 +276,12 @@ public class ServerMonitor extends HttpServlet {
 					}
 				}
 
-				// XV‚ª‚ ‚ê‚Î•Û‘¶‚·‚é
+				// æ›´æ–°ãŒã‚ã‚Œã°ä¿å­˜ã™ã‚‹
 				if ( isUpate ) {
 					svrStatus.store();
 				}
 
-				// ƒ|[ƒŠƒ“ƒOüŠú‚ÌŠÔ‘Ò‹@‚·‚é
+				// ãƒãƒ¼ãƒªãƒ³ã‚°å‘¨æœŸã®æ™‚é–“å¾…æ©Ÿã™ã‚‹
 				try { sleep( pollInterval * 1000 ); }
 				catch (InterruptedException ex) { ex = null; }
 
@@ -289,16 +289,16 @@ public class ServerMonitor extends HttpServlet {
 		}
 
 		/**
-		 * I—¹ƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
-	   * @param enable  true:—LŒø / false:–³Œø
+		 * çµ‚äº†ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	   * @param enable  true:æœ‰åŠ¹ / false:ç„¡åŠ¹
 		 */
 		public void setTerminate(boolean enable) {
 			this.isTerminated = enable;
 		}
 
 		/**
-		 * I—¹ƒtƒ‰ƒO‚ª—LŒø‚©–³Œø‚©
-	   * @return true:—LŒø / false:–³Œø
+		 * çµ‚äº†ãƒ•ãƒ©ã‚°ãŒæœ‰åŠ¹ã‹ç„¡åŠ¹ã‹
+	   * @return true:æœ‰åŠ¹ / false:ç„¡åŠ¹
 		 */
 		public boolean isTerminated() {
 			return this.isTerminated;

@@ -18,7 +18,7 @@
  *
  *******************************************************************************
  *
- * ƒƒOo—ÍƒNƒ‰ƒX
+ * ãƒ­ã‚°å‡ºåŠ›ã‚¯ãƒ©ã‚¹
  *
  * ver 1.0.1 2008.12.05
  *
@@ -33,7 +33,7 @@ import massbank.GetConfig;
 public class MassBankLog {
 
 	/**
-	 * ƒGƒ‰[ƒƒOo—Í
+	 * ã‚¨ãƒ©ãƒ¼ãƒ­ã‚°å‡ºåŠ›
 	 */
 	static public void ErrorLog( String progName, String msg, ServletContext context ) {
 		String logHead = "** " + progName + " **\n";
@@ -42,7 +42,7 @@ public class MassBankLog {
 	}
 
 	/**
-	 * ƒgƒŒ[ƒXƒƒOo—Í
+	 * ãƒˆãƒ¬ãƒ¼ã‚¹ãƒ­ã‚°å‡ºåŠ›
 	 */
 	static public void TraceLog( String progName, String msg, ServletContext context, boolean isTrace ) {
 		if ( !isTrace ) {
