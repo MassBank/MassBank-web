@@ -162,15 +162,15 @@ print << "HTML";
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
 		<link rel="stylesheet" type="text/css" href="../css/Common.css">
 		<script type="text/javascript" src="../script/Common.js"></script>
-		<!-- SpeckTackle dependencies-->
+		<!-- SpecTackle dependencies-->
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
 		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-		<!-- SpeckTackle library-->
+		<!-- SpecTackle library-->
 		<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
-		<!-- SpeckTackle style sheet-->
+		<!-- SpecTackle style sheet-->
 		<link rel="stylesheet"  href="../css/st.css" type="text/css" />	
-		<!-- SpeckTackle MassBank loading script-->
-		<script type="text/javascript" src="../script/massbank_specktackle.js"></script>
+		<!-- SpecTackle MassBank loading script-->
+		<script type="text/javascript" src="../script/massbank_spectackle.js"></script>
 		<title>$short_name Mass Spectrum</title>
 	</head>
 	<body style="font-family:Times;">
