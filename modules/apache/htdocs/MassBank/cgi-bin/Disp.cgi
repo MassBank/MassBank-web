@@ -443,7 +443,7 @@ if ( -f $gifFile ) {
 }
 else {
 print << "HTML";
-					<applet code="MolVie.class" archive="../applet/MolView.jar" width="200" height="200">
+					<applet code="MolView.class" archive="../applet/MolView.jar" width="200" height="200">
 						<param name="site" value="$src">
 						<param name="compound_name" value="$compound_name[0]">
 					</applet>
