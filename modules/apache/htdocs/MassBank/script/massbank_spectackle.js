@@ -6,11 +6,12 @@ function initializeMSSpecTackle() {
 
     if (MSchart != undefined) return;
 
-    MSchart = st.chart.ms().xlabel("Mass-to-Charge").ylabel("Intensity").legend(true).labels(true);
+    MSchart = st.chart.ms().labels(true).margins([10,60,30,90]);
 
     MSchart.render("#spectrum_canvas");
 
     MSData = st.data.set().x("peaks.mz").y("peaks.intensity").title("spectrumId");
+
     MSchart.load(MSData);
 
 }
@@ -71,6 +72,7 @@ $(document).ready(function (){
 		spectrum["mzStart"] = mzStart;
 		spectrum["mzStop"] = mzStop;
 		loadSpectrum(spectrum);
+
 	});
 	jqxhr.fail(function (jqXHR, textStatus, errorThrown) {
 		alert("Error: " + errorThrown);

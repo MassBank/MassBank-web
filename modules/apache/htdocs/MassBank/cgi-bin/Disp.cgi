@@ -415,7 +415,7 @@ if ( $version == 1 ) {
 
 print << "HTML";
 					<br>
-					<div id="spectrum_canvas" style="height: 200px; width: 750px; background-color: floralwhite"></div>
+					<div id="spectrum_canvas" style="height: 200px; width: 750px; background-color: white"></div>
 HTML
 
 print << "HTML";
