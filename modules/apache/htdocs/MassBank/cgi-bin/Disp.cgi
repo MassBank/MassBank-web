@@ -177,7 +177,9 @@ print << "HTML";
 		<!-- Kekule library-->
 		<script type="text/javascript" src="../script/kekule.min.js"></script>
 		<!-- Kekule style sheet-->
-		<link rel="stylesheet" href="../css/kekule.css" type="text/css" />
+		<link rel="stylesheet" href="../css/kekule/kekule.css" type="text/css" />
+		<!-- Kekule MassBank loading script-->
+		<script type="text/javascript" src="../script/massbank_kekule.js"></script>
 		<title>$short_name Mass Spectrum</title>
 	</head>
 	<body style="font-family:Times;">
