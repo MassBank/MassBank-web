@@ -19,7 +19,7 @@ function initializeMSSpecTackle() {
 function loadSpectrum(spectrum) {
 
 	initializeMSSpecTackle();
-	
+	alert(JSON.stringify(spectrum));
     MSData.add(spectrum);
 
 }
