@@ -11,6 +11,7 @@ function initializeMSSpecTackle() {
     MSchart.render("#spectrum_canvas");
 
     MSData = st.data.set().x("peaks.mz").y("peaks.intensity").title("spectrumId");
+    MSData.annotationColumn(st.annotation.TOOLTIP_MOL, "Fragment");
 
     MSchart.load(MSData);
 
@@ -19,8 +20,40 @@ function initializeMSSpecTackle() {
 function loadSpectrum(spectrum) {
 
 	initializeMSSpecTackle();
-	alert(JSON.stringify(spectrum));
+
     MSData.add(spectrum);
+    // array for mol2svg XHR promises
+	var deferreds = [];
+    // hide the tooltip-mol sub-div until
+    // all promises are fulfilled
+    d3.selectAll('#tooltips-mol')
+    	.style('display', 'none');
+	// resolve all SDfile URLs one by one 
+    var moldivid = '#molecule_viewer';
+    d3.selectAll('#molecule_viewer')
+    	.append('div')
+        .attr('id', 'tooltips-mol-XX000001.mol')
+        .style('float', 'left')
+        .style('height', '100%')
+        .style('width', '50%');
+    // draw to the tooltip-mol sub-div and assign a title
+    d3.selectAll(moldivid).html(
+        '<em>XX000001.mol</em><br/>'
+    );
+    var jqxhr = MSchart.mol2svg.draw('../DB/molfile/MassBank/XX000001.mol', moldivid);
+    deferreds.push(jqxhr);
+    // wait until all XHR promises are finished
+    $.when.apply($, deferreds).done(function () {
+    // hide the spinner
+    // spinner.css('display', 'none');
+    // make the tooltip-mol sub-div visible
+    d3.selectAll('#tooltips-mol')
+    	.style('display', 'inline');
+    })
+    .fail(function () {
+    	// hide the spinner
+        // spinner.css('display', 'none');
+    });
 
 }
 
@@ -39,7 +72,6 @@ function getUrlVars()
 }
 
 $(document).ready(function (){
-
 	// load the spectrum
 	var queryString = window.location.href.slice(window.location.href.indexOf('?') + 1);
 	var jqxhr = $.get("../cgi-bin/GetData.cgi?" + queryString,"text");
@@ -72,7 +104,6 @@ $(document).ready(function (){
 		spectrum["mzStart"] = mzStart;
 		spectrum["mzStop"] = mzStop;
 		loadSpectrum(spectrum);
-
 	});
 	jqxhr.fail(function (jqXHR, textStatus, errorThrown) {
 		alert("Error: " + errorThrown);
