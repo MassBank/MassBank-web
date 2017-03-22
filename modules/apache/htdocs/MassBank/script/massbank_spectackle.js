@@ -11,7 +11,6 @@ function initializeMSSpecTackle() {
     MSchart.render("#spectrum_canvas");
 
     MSData = st.data.set().x("peaks.mz").y("peaks.intensity").title("spectrumId");
-    MSData.annotationColumn(st.annotation.TOOLTIP_MOL, "Fragment");
 
     MSchart.load(MSData);
 
@@ -22,32 +21,35 @@ function loadSpectrum(spectrum) {
 	initializeMSSpecTackle();
 
     MSData.add(spectrum);
+
+	var urlVars = getUrlVars();
+
     // array for mol2svg XHR promises
 	var deferreds = [];
     // hide the tooltip-mol sub-div until
     // all promises are fulfilled
-    d3.selectAll('#tooltips-mol')
+    d3.selectAll('#molecule_viewer')
     	.style('display', 'none');
 	// resolve all SDfile URLs one by one 
     var moldivid = '#molecule_viewer';
     d3.selectAll('#molecule_viewer')
     	.append('div')
-        .attr('id', 'tooltips-mol-XX000001.mol')
+        .attr('id', 'tooltips-mol-'+urlVars["id"]+'.mol')
         .style('float', 'left')
         .style('height', '100%')
         .style('width', '50%');
     // draw to the tooltip-mol sub-div and assign a title
-    d3.selectAll(moldivid).html(
-        '<em>XX000001.mol</em><br/>'
-    );
-    var jqxhr = MSchart.mol2svg.draw('../DB/molfile/MassBank/XX000001.mol', moldivid);
+    // d3.selectAll(moldivid).html(
+    //     '<em>XX000001.mol</em><br/>'
+    // );
+    var jqxhr = MSchart.mol2svg.draw('../DB/molfile/MassBank/'+urlVars["id"]+'.mol', moldivid);
     deferreds.push(jqxhr);
     // wait until all XHR promises are finished
     $.when.apply($, deferreds).done(function () {
     // hide the spinner
     // spinner.css('display', 'none');
     // make the tooltip-mol sub-div visible
-    d3.selectAll('#tooltips-mol')
+    d3.selectAll('#molecule_viewer')
     	.style('display', 'inline');
     })
     .fail(function () {
