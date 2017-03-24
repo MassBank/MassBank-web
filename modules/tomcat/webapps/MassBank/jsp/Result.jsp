@@ -454,6 +454,15 @@
 	<script type="text/javascript" src="../script/StructSearch.js"></script>
 	<script type="text/javascript" src="../script/jquery.js"></script>
 	<script type="text/javascript" src="../script/StructurePreview.js"></script>
+	<!-- SpecTackle dependencies-->
+	<!--script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script-->
+	<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+	<!-- SpecTackle library-->
+	<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
+	<!-- SpecTackle style sheet-->
+	<link rel="stylesheet" href="../css/st.css" type="text/css" />	
+	<!-- SpecTackle MassBank loading script-->
+	<script type="text/javascript" src="../script/massbank_spectackle2.js"></script>	
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
