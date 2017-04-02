@@ -197,6 +197,7 @@
 	}
 %>
 <%
+
 	MassBankCommon mbcommon = new MassBankCommon();
 	
 	//-------------------------------------
@@ -426,6 +427,7 @@
 	String [] siteLongName = conf.getSiteLongName();	// サイト名取得
 	String[] dbNameList = conf.getDbName();
 	String[] urlList = conf.getSiteUrl();
+
 %>
 
 <html>
@@ -452,7 +454,8 @@
 	<script type="text/javascript" src="../script/Result.js"></script>
 	<script type="text/javascript" src="../script/ResultMenu.js"></script>
 	<script type="text/javascript" src="../script/StructSearch.js"></script>
-	<script type="text/javascript" src="../script/jquery.js"></script>
+	<!--script type="text/javascript" src="../script/jquery.js"></script-->
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
 	<script type="text/javascript" src="../script/StructurePreview.js"></script>
 	<!-- SpecTackle dependencies-->
 	<!--script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script-->
@@ -1220,7 +1223,7 @@
 //						out.println( "  </a>" );
 //					}
 
-					out.println("<div id=\"molecule_viewer\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
+					out.println("<div class=\"molecule_viewer\" id=\"molecule_viewer_" + rec.getName() + "\" molecule=\"" + rec.getName() + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
 
 					out.println( "  </td>" );
 					out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );
