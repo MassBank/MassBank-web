@@ -83,24 +83,24 @@ $(document).ready(function (){
     });
 
     // load the spectrum
-    var queryString = window.location.href.slice(window.location.href.indexOf('?') + 1);
-    var jqxhr = $.get("../cgi-bin/GetData.cgi?" + queryString,"text");
-    jqxhr.done(function (data) {
+    // var queryString = window.location.href.slice(window.location.href.indexOf('?') + 1);
+    // var jqxhr = $.get("../cgi-bin/GetData.cgi?" + queryString,"text");
+    // jqxhr.done(function (data) {
         var spectrum = {};
-        var urlVars = getUrlVars();
         var line = "";
         var mzStart = null;
         var mzStop = null;
-        spectrum["spectrumId"] = urlVars["id"];
+        spectrum["spectrumId"] = "Query Spectrum";
         spectrum["peaks"] = [];
-        dataLines = data.split("\n");
+        data = d3.selectAll('#spectrum_canvas').attr('peaks');
+        dataLines = data.split("@");
         for (index = 0; index < dataLines.length; ++index) {
             if (dataLines[index]) {
-                line = dataLines[index].split("\t");
-                spectrum["peaks"][index] = {"mz":parseFloat(line[0]),"intensity":parseFloat(line[2])};
+                line = dataLines[index].split(",");
+                spectrum["peaks"][index] = {"mz":parseFloat(line[0]),"intensity":parseFloat(line[1])};
                 if (index == 0) {
                     mzStart = parseFloat(line[0]);
-                    mzStop = parseFloat(line[2]);
+                    mzStop = parseFloat(line[1]);
                 } else {
                     if (mzStart > parseFloat(line[0])) {
                         mzStart = parseFloat(line[0]);
@@ -114,10 +114,10 @@ $(document).ready(function (){
         spectrum["mzStart"] = mzStart;
         spectrum["mzStop"] = mzStop;
         loadSpectrum(spectrum);
-    });
-    jqxhr.fail(function (jqXHR, textStatus, errorThrown) {
-        alert("Error: " + errorThrown);
-    });
+    // });
+    // jqxhr.fail(function (jqXHR, textStatus, errorThrown) {
+    //     alert("Error: " + errorThrown);
+    // });
 
 });
 
