@@ -39,7 +39,7 @@ $(document).ready(function (){
         //     '<em>XX000001.mol</em><br/>'
         // );
         // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
-        var jqxhr = st.util.mol2svg(100,100).draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
+        var jqxhr = st.util.mol2svg(100,100).draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=' + molname + '&dsn=MassBank', moldivid);
         deferreds.push(jqxhr);
         // wait until all XHR promises are finished
         $.when.apply($, deferreds).done(function () {
