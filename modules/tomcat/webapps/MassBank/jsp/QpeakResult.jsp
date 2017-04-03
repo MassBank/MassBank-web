@@ -477,7 +477,7 @@
 		//	+ " width=\"" + tableWidth + "\" height=\"150\">" );
 		// out.println( "    <param name=\"qpeak\" value=\"" + paramPeak.toString() + "\">" );
 		// out.println( "   </applet>" );
-		out.println("<div id=\"spectrum_canvas\" style=\"height: 200px; width: 750px; background-color: white\"></div>");
+		out.println("<div id=\"spectrum_canvas\" peaks=\"" + paramPeak.toString() + "\" style=\"height: 200px; width: 750px; background-color: white\"></div>");
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( " <tr>" );
