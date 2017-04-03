@@ -25,12 +25,12 @@ $(document).ready(function (){
         .style('display', 'none');
     // resolve all SDfile URLs one by one 
     d3.selectAll('.molecule_viewer').each(function () {
-        var molname = d3.select(this).attr('molecule');
+        var molid = d3.select(this).attr('molecule');
         // var moldivid = '#molecule_viewer';
         var moldivid = '#' + d3.select(this).attr('id');
         d3.selectAll(moldivid)
             .append('div')
-            .attr('id', 'tooltips-mol-'+molname+'.mol')
+            .attr('id', 'tooltips-mol-'+molid+'.mol')
             .style('float', 'left')
             .style('height', '100%')
             .style('width', '50%');
@@ -39,7 +39,8 @@ $(document).ready(function (){
         //     '<em>XX000001.mol</em><br/>'
         // );
         // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
-        var jqxhr = st.util.mol2svg(100,100).draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
+        // var jqxhr = st.util.mol2svg(100,100).draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
+        var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/MassBank/'+molid+'.mol', moldivid);
         deferreds.push(jqxhr);
         // wait until all XHR promises are finished
         $.when.apply($, deferreds).done(function () {
