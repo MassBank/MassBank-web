@@ -473,10 +473,11 @@
 		out.println( "<table border=\"0\" cellpadding=\"1\" cellspacing=\"5\">" );
 		out.println( " <tr>" );
 		out.println( "  <td>" );
-		out.println( "   <applet code=\"Display.class\" archive=\"../applet/Display2.jar\""
-			+ " width=\"" + tableWidth + "\" height=\"150\">" );
-		out.println( "    <param name=\"qpeak\" value=\"" + paramPeak.toString() + "\">" );
-		out.println( "   </applet>" );
+		// out.println( "   <applet code=\"Display.class\" archive=\"../applet/Display2.jar\""
+		//	+ " width=\"" + tableWidth + "\" height=\"150\">" );
+		// out.println( "    <param name=\"qpeak\" value=\"" + paramPeak.toString() + "\">" );
+		// out.println( "   </applet>" );
+		out.println("<div id=\"spectrum_canvas\" style=\"height: 200px; width: 750px; background-color: white\"></div>");
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( " <tr>" );
