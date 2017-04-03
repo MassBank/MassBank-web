@@ -636,12 +636,13 @@
 				else if ( mapMolData.containsKey(key) ) {
 					String moldata = mapMolData.get(key).trim();
 					if ( !moldata.equals("") ) {
-						out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
-						out.println( "    <param name=\"options\" value=\"depict\">" );
-						out.println( "    <param name=\"mol\" value=\"");
-						out.print( moldata );
-						out.println( "\">");
-						out.println( "   </applet>\n");
+						// out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
+						// out.println( "    <param name=\"options\" value=\"depict\">" );
+						// out.println( "    <param name=\"mol\" value=\"");
+						// out.print( moldata );
+						// out.println( "\">");
+						// out.println( "   </applet>\n");
+						out.println("<div class=\"molecule_viewer\" id=\"molecule_viewer_" + id + "\" molecule=\"" + id + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
 					}
 				}
 				else {
