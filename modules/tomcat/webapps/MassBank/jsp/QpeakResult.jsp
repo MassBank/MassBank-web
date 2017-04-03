@@ -400,7 +400,8 @@
 <script type="text/javascript" src="../script/Common.js"></script>
 <script type="text/javascript" src="../script/QpeakResult.js"></script>
 <script type="text/javascript" src="../script/QpeakResultMenu.js"></script>
-<script type="text/javascript" src="../script/jquery.js"></script>
+<!--script type="text/javascript" src="../script/jquery.js"></script-->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
 <script type="text/javascript" src="../script/StructurePreview.js"></script>
 <title>MassBank | Database | Quick Search Results</title>
 </head>
