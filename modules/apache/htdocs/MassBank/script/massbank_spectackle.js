@@ -42,7 +42,7 @@ function loadSpectrum(spectrum) {
     // d3.selectAll(moldivid).html(
     //     '<em>XX000001.mol</em><br/>'
     // );
-    var jqxhr = st.util.mol2svg(200,200).draw('../DB/molfile/MassBank/'+urlVars["id"]+'.mol', moldivid);
+    var jqxhr = st.util.mol2svg(200,200).draw('../DB/molfile/' + urlVars["dsn"] + '/'+urlVars["id"]+'.mol', moldivid);
     // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
     deferreds.push(jqxhr);
     // wait until all XHR promises are finished
