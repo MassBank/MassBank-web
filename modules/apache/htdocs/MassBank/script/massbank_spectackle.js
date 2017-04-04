@@ -42,22 +42,25 @@ function loadSpectrum(spectrum) {
     // d3.selectAll(moldivid).html(
     //     '<em>XX000001.mol</em><br/>'
     // );
-    var jqxhr = st.util.mol2svg(200,200).draw('../DB/molfile/' + urlVars["dsn"] + '/'+urlVars["id"]+'.mol', moldivid);
-    // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
-    deferreds.push(jqxhr);
-    // wait until all XHR promises are finished
-    $.when.apply($, deferreds).done(function () {
-    // hide the spinner
-    // spinner.css('display', 'none');
-    // make the tooltip-mol sub-div visible
-    d3.selectAll('#molecule_viewer')
-    	.style('display', 'inline');
-    })
-    .fail(function () {
-    	// hide the spinner
+    var jqxhr = $.get("../cgi-bin/GetMolfileById.cgi?dsn="+urlVars["dsn"]+"&id="+urlVars["id"],"text");
+    jqxhr.done(function (data) {
+        var molFileName = data.replace(/\r?\n|\r/g,"")+'.mol';
+        var jqxhr = st.util.mol2svg(200,200).draw('../DB/molfile/'+urlVars["dsn"]+'/'+molFileName, moldivid);
+        // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
+        deferreds.push(jqxhr);
+        // wait until all XHR promises are finished
+        $.when.apply($, deferreds).done(function () {
+        // hide the spinner
         // spinner.css('display', 'none');
+        // make the tooltip-mol sub-div visible
+        d3.selectAll('#molecule_viewer')
+            .style('display', 'inline');
+        })
+        .fail(function () {
+            // hide the spinner
+            // spinner.css('display', 'none');
+        });
     });
-
 }
 
 // Read a page's GET URL variables and return them as an associative array.
