@@ -862,7 +862,7 @@
 	}
 	
 	// 検索実行
-	if ( isMulti ) {
+	if ( isMulti ) {;
 		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
 	}
 	else {
@@ -1140,7 +1140,7 @@
 				// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
 				else if( refQuick || refRecIndex || refStruct ) {
 					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
-					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor();
+					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
 				}
 				
 				
