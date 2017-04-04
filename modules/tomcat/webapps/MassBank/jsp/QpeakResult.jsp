@@ -601,7 +601,7 @@
 				// レコードページへのリンクURLをセット
 				typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 				String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
-								 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff;
+								 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + conf.getDbName()[Integer.parseInt(site)];
 				String valstr = name.replace("\"", "&quot;") + "\t" + id + "\t" + formula + "\t0\t" + site;
 				
 				String rowId = String.valueOf(i);
