@@ -66,7 +66,7 @@ $(document).ready(function (){
         // );
         // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
         // var jqxhr = st.util.mol2svg(100,100).draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
-        var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/MassBank/'+molid+'.mol', moldivid);
+        var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+urlVars["dsn"]+'/'+molid+'.mol', moldivid);
         deferreds.push(jqxhr);
         // wait until all XHR promises are finished
         $.when.apply($, deferreds).done(function () {
