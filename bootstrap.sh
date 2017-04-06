@@ -6,13 +6,14 @@ export DEBIAN_FRONTEND=noninteractive
 # get universe apt-get repo
 sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe"
 
+# enable support for i386 binaries
+sudo dpkg --add-architecture i386
+
 # Freshen package index
 apt-get update
 apt-get upgrade
 
 # support the precompiled struct_server
-sudo dpkg --add-architecture i386
-
 apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
 # Set timezone
