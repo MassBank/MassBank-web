@@ -25,7 +25,8 @@ $(document).ready(function (){
         .style('display', 'none');
     // resolve all SDfile URLs one by one 
     d3.selectAll('.molecule_viewer').each(function () {
-        var molname = d3.select(this).attr('molecule');
+        var molname = d3.select(this).attr('id').split("_")[2];
+        var site = d3.select(this).attr('id').split("_")[3];
         // var moldivid = '#molecule_viewer';
         var moldivid = '#' + d3.select(this).attr('id');
         d3.selectAll(moldivid)
@@ -39,8 +40,15 @@ $(document).ready(function (){
         //     '<em>XX000001.mol</em><br/>'
         // );
         // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
-        var jqxhr = st.util.mol2svg(100,100).draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=' + molname + '&dsn=MassBank', moldivid);
-        deferreds.push(jqxhr);
+        var jqxhrList = $.get('../massbank.conf').done(function(data){
+            var list = data.evaluate('//MassBank/MyServer/DB',data,null,XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
+            var dsn = list.snapshotItem(site).textContent;
+            jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molname +'&dsn=' + dsn).done(function(data) {
+                var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', moldivid);
+                deferreds.push(jqxhr);    
+            });
+            
+        });
         // wait until all XHR promises are finished
         $.when.apply($, deferreds).done(function () {
         // hide the spinner
