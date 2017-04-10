@@ -653,7 +653,7 @@
 						// out.print( moldata );
 						// out.println( "\">");
 						// out.println( "   </applet>\n");
-						out.println("<div class=\"molecule_viewer\" id=\"molecule_viewer_" + id + "\" molecule=\"" + id + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
+						out.println("<div class=\"molecule_viewer\" id=\"molecule_viewer_" + id + "_" + conf.getDbName()[Integer.parseInt(site)] +  "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
 					}
 				}
 				else {

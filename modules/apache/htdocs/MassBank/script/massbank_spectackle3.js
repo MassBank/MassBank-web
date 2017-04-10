@@ -66,8 +66,14 @@ $(document).ready(function (){
         // );
         // var jqxhr = MSchart.mol2svg.draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
         // var jqxhr = st.util.mol2svg(100,100).draw('../cgi-bin/GetMolfile2.cgi?&type=getmol&names=gaba&dsn=MassBank', moldivid);
-        var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+urlVars["dsn"]+'/'+molid+'.mol', moldivid);
-        deferreds.push(jqxhr);
+        d3.selectAll('.molecule_viewer').each(function () {
+            var molId = d3.select(this).attr('id').split("_")[2];
+            var dsn = d3.select(this).attr('id').split("_")[3];
+            jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn).done(function(data) {
+                var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', moldivid);
+                deferreds.push(jqxhr);    
+            });
+        });        
         // wait until all XHR promises are finished
         $.when.apply($, deferreds).done(function () {
         // hide the spinner
