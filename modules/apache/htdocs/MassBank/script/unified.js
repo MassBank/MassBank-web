@@ -15,6 +15,7 @@ function getUrlVars() {
     return vars;
 }
 
+// initialize the spectrum chart
 function initializeMSSpecTackle() {
     if (MSchart != undefined) return;
     MSchart = st.chart.ms().labels(true).margins([10,60,30,90]);
@@ -23,19 +24,20 @@ function initializeMSSpecTackle() {
     MSchart.load(MSData);
 }
 
+// display the spectrum
 function loadSpectrum(spectrum) {
 	initializeMSSpecTackle();
     MSData.add(spectrum);
 }
 
+// load data from molfile and display the structure
 function loadMolFile() {
 	var urlVars = getUrlVars();
     // array for mol2svg XHR promises
     var deferreds = [];
-    // hide the tooltip-mol sub-div until
-    // all promises are fulfilled
-    // d3.selectAll('.molecule_viewer').style('display', 'none');
-    // resolve all SDfile URLs one by one 
+    // hide the sub-div until all promises are fulfilled
+    d3.selectAll('.molecule_viewer').style('display', 'none');
+    // resolve all file URLs one by one 
     d3.selectAll('.molecule_viewer').each(function () {
     	molDivId = "#" + d3.select(this).attr('id');
     	d3.selectAll(molDivId)
@@ -45,25 +47,34 @@ function loadMolFile() {
             .style('height', '100%')
             .style('width', '50%');
             var idSplit = d3.select(this).attr('id').split("_");
+            // the id of the mol div takes the form molecule_viewer[_id][_site|dsn]
+            // example id with site molecule_viewer_XX000001_0
+            // example id with dsn molecule_viewer_XX000001_MassBank
+            // check if the id contains an id and site or dsn
             if (idSplit[2] !== undefined && idSplit[3] !== undefined) {
             	var molId = idSplit[2];
             	var dsn = idSplit[3];
+            	// check if the id is a site, i.e. a number
             	if (!isNaN(dsn)) {
             		var jqxhrList = $.get('../massbank.conf').done(function (data){
-			            var list = data.evaluate('//MassBank/MyServer/DB',data,null,XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
+			            var list = data.evaluate('//DB',data,null,XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
 			            var dsn = list.snapshotItem(dsn).textContent;
 			            jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn,"text").done(function (data) {
 				            var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
 				            deferreds.push(jqxhr);    
 				        });
 			    	});
-            	} else {
+            	} 
+            	// if it is not a number take the value as the string for the dsn parameter
+            	else {
 	            	var jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn).done(function (data) {
 	                	var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
 	                	deferreds.push(jqxhr);    
 	            	});		
             	}
-            } else {
+            } 
+            // if the id does not contain an id and site or dsn try to retrieve both parameters from the page's URL
+            else {
             	var molId = urlVars["id"];
             	var dsn = urlVars["dsn"];
             	if (molId !== "" && dsn !== "") {
@@ -76,21 +87,18 @@ function loadMolFile() {
             }
         // wait until all XHR promises are finished
         $.when.apply($, deferreds).done(function () {
-        // hide the spinner
-        // spinner.css('display', 'none');
         // make the tooltip-mol sub-div visible
         d3.selectAll(molDivId)
             .style('display', 'inline');
-        })
-        .fail(function () {
-            // hide the spinner
-            // spinner.css('display', 'none');
         });
     });
 }
 
+// construct the spectrum data structure
 function loadData() {
+	// array for mol2svg XHR promises
 	var deferreds = [];
+	// check if there is a spectrum canvas on the page (only one is allowed)
 	if (d3.selectAll('#spectrum_canvas')[0].length === 1) {
 		var spectrum = {};
 		var line = "";
@@ -98,6 +106,7 @@ function loadData() {
 		var mzStop = null;
 		spectrum["spectrumId"] = "";
 		spectrum["peaks"] = [];
+		// construct spectrum data peak list if it is given as an attribute of the #spectrum_canvas div
 		if (d3.selectAll('#spectrum_canvas').attr('peaks')) {
 			spectrum["spectrumId"] = "Query Spectrum";
 			data = d3.selectAll('#spectrum_canvas').attr('peaks');
@@ -121,7 +130,9 @@ function loadData() {
 	        }
 	        spectrum["mzStart"] = mzStart;
 	        spectrum["mzStop"] = mzStop;
-		} else {
+		} 
+		// if no peak list is specified try to get peak list for a component specified by id in the URL
+		else {
 			var urlVars = getUrlVars();
 			var id = urlVars["id"];
 			var dsn = urlVars["dsn"];
