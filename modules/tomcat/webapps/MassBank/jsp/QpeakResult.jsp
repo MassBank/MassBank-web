@@ -411,7 +411,8 @@
 <!-- SpecTackle style sheet-->
 <link rel="stylesheet" href="../css/st.css" type="text/css" />	
 <!-- SpecTackle MassBank loading script-->
-<script type="text/javascript" src="../script/massbank_spectackle3.js"></script>	
+<!--script type="text/javascript" src="../script/massbank_spectackle3.js"></script-->
+<script type="text/javascript" src="../script/unified.js"></script>
 <title>MassBank | Database | Quick Search Results</title>
 </head>
 <body class="msbkFont cursorDefault">
