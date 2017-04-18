@@ -444,7 +444,7 @@ if ( -f $gifFile ) {
 }
 else {
 print << "HTML";
-					<div class="molecule_viewer" id="molecule_viewer" style="height: 200px; width = 200px; background-color: white"></div>
+					<div class="molecule§viewer" id="molecule§viewer" style="height: 200px; width = 200px; background-color: white"></div>
 HTML
 }
 

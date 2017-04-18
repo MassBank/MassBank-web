@@ -36,17 +36,17 @@ function loadMolFile() {
     // array for mol2svg XHR promises
     var deferreds = [];
     // hide the sub-div until all promises are fulfilled
-    d3.selectAll('.molecule_viewer').style('display', 'none');
+    d3.selectAll('.molecule§viewer').style('display', 'none');
     // resolve all file URLs one by one 
-    d3.selectAll('.molecule_viewer').each(function () {
-    	molDivId = "#" + d3.select(this).attr('id');
+    d3.selectAll('.molecule§viewer').each(function () {
+    	var molDivId = "#" + d3.select(this).attr('id');
     	d3.selectAll(molDivId)
             .append('div')
             .attr('id', 'tooltips-mol-'+molDivId+'.mol')
             .style('float', 'left')
             .style('height', '100%')
             .style('width', '50%');
-            var idSplit = d3.select(this).attr('id').split("_");
+            var idSplit = d3.select(this).attr('id').split("§");
             // the id of the mol div takes the form molecule_viewer[_id][_site|dsn]
             // example id with site molecule_viewer_XX000001_0
             // example id with dsn molecule_viewer_XX000001_MassBank
@@ -54,11 +54,14 @@ function loadMolFile() {
             if (idSplit[2] !== undefined && idSplit[3] !== undefined) {
             	var molId = idSplit[2];
             	var dsn = idSplit[3];
+            	// if (idSplit[4]) {
+            	// 	dsn = idSplit[3]+"_"+idSplit[4];
+            	// }
             	// check if the id is a site, i.e. a number
             	if (!isNaN(dsn)) {
             		var jqxhrList = $.get('../massbank.conf').done(function (data){
 			            var list = data.evaluate('//DB',data,null,XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
-			            var dsn = list.snapshotItem(dsn).textContent;
+			            dsn = list.snapshotItem(dsn).textContent;
 			            jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn,"text").done(function (data) {
 				            var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
 				            deferreds.push(jqxhr);    

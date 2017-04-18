@@ -1224,7 +1224,7 @@
 //						out.println( "  </a>" );
 //					}
 
-					out.println("<div class=\"molecule_viewer\" id=\"molecule_viewer_" + rec.getId() + "_" + rec.getContributor() + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
+					out.println("<div class=\"molecule§viewer\" id=\"molecule§viewer§" + rec.getId() + "§" + rec.getContributor() + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
 
 					out.println( "  </td>" );
 					out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );
