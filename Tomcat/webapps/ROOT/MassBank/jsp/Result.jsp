@@ -197,6 +197,7 @@
 	}
 %>
 <%
+
 	MassBankCommon mbcommon = new MassBankCommon();
 	
 	//-------------------------------------
@@ -426,6 +427,7 @@
 	String [] siteLongName = conf.getSiteLongName();	// サイト名取得
 	String[] dbNameList = conf.getDbName();
 	String[] urlList = conf.getSiteUrl();
+
 %>
 
 <html>
@@ -452,8 +454,18 @@
 	<script type="text/javascript" src="../script/Result.js"></script>
 	<script type="text/javascript" src="../script/ResultMenu.js"></script>
 	<script type="text/javascript" src="../script/StructSearch.js"></script>
-	<script type="text/javascript" src="../script/jquery.js"></script>
+	<!--script type="text/javascript" src="../script/jquery.js"></script-->
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
 	<script type="text/javascript" src="../script/StructurePreview.js"></script>
+	<!-- SpeckTackle dependencies-->
+	<!--script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script-->
+	<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+	<!-- SpeckTackle library-->
+	<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
+	<!-- SpeckTackle style sheet-->
+	<link rel="stylesheet" href="../css/st.css" type="text/css" />	
+	<!-- SpeckTackle MassBank loading script-->
+	<script type="text/javascript" src="../script/massbank_specktackle.js"></script>	
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -850,7 +862,7 @@
 	}
 	
 	// 検索実行
-	if ( isMulti ) {
+	if ( isMulti ) {;
 		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
 	}
 	else {
@@ -1128,7 +1140,7 @@
 				// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
 				else if( refQuick || refRecIndex || refStruct ) {
 					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
-					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor();
+					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
 				}
 				
 				
@@ -1175,41 +1187,43 @@
 					// 化学構造式を表示（画像がなければアプレットで表示）
 					String key = rec.getName().toLowerCase();
 					StringBuilder previewName = new StringBuilder(rec.getName());
-					if (previewName.length() > 17) {
-						previewName.delete(17, previewName.length());
-						previewName.append("...");
-					}
-					if ( mapGifSmallUrl.containsKey(key) ) {
-						if ( mapGifUrl.containsKey(key) ) {
-							out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-						}
-						else {
-							out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-						}
-						if ( mapGifLargeUrl.containsKey(key) ) {
-							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key) + "')\" style=\"margin:0px; cursor:pointer\">");
-						}
-						else {
-							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-						}
-						out.println( "  </a>" );
-					}
-					else if ( mapMolData.containsKey(key) ) {
-						String moldata = mapMolData.get(key).trim();
-						if ( !moldata.equals("") ) {
-							out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
-							out.println( "    <param name=\"options\" value=\"depict\">" );
-							out.println( "    <param name=\"mol\" value=\"");
-							out.print( moldata );
-							out.println( "\">");
-							out.println( "   </applet>\n");
-						}
-					}
-					else {
-						out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-						out.println( "  </a>" );
-					}
+//					if (previewName.length() > 17) {
+//						previewName.delete(17, previewName.length());
+//						previewName.append("...");
+//					}
+//					if ( mapGifSmallUrl.containsKey(key) ) {
+//						if ( mapGifUrl.containsKey(key) ) {
+//							out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+//						}
+//						else {
+//							out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+//						}
+//						if ( mapGifLargeUrl.containsKey(key) ) {
+//							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key) + "')\" style=\"margin:0px; cursor:pointer\">");
+//						}
+//						else {
+//							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
+//						}
+//						out.println( "  </a>" );
+//					}
+//					else if ( mapMolData.containsKey(key) ) {
+//						String moldata = mapMolData.get(key).trim();
+//						if ( !moldata.equals("") ) {
+//							out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
+//							out.println( "    <param name=\"options\" value=\"depict\">" );
+//							out.println( "    <param name=\"mol\" value=\"");
+//							out.print( moldata );
+//							out.println( "\">");
+//							out.println( "   </applet>\n");
+//						}
+//					}
+//					else {
+//						out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+//						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('..image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
+//						out.println( "  </a>" );
+//					}
+
+					out.println("<div class=\"molecule§viewer\" id=\"molecule§viewer§" + rec.getId() + "§" + rec.getContributor() + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
 
 					out.println( "  </td>" );
 					out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );

@@ -400,8 +400,16 @@
 <script type="text/javascript" src="../script/Common.js"></script>
 <script type="text/javascript" src="../script/QpeakResult.js"></script>
 <script type="text/javascript" src="../script/QpeakResultMenu.js"></script>
-<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
 <script type="text/javascript" src="../script/StructurePreview.js"></script>
+<!-- SpeckTackle dependencies-->
+<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<!-- SpeckTackle library-->
+<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
+<!-- SpeckTackle style sheet-->
+<link rel="stylesheet" href="../css/st.css" type="text/css" />	
+<!-- SpeckTackle MassBank loading script-->
+<script type="text/javascript" src="../script/massbank_specktackle.js"></script>
 <title>MassBank | Database | Quick Search Results</title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -463,10 +471,11 @@
 		out.println( "<table border=\"0\" cellpadding=\"1\" cellspacing=\"5\">" );
 		out.println( " <tr>" );
 		out.println( "  <td>" );
-		out.println( "   <applet code=\"Display.class\" archive=\"../applet/Display2.jar\""
-			+ " width=\"" + tableWidth + "\" height=\"150\">" );
-		out.println( "    <param name=\"qpeak\" value=\"" + paramPeak.toString() + "\">" );
-		out.println( "   </applet>" );
+		// out.println( "   <applet code=\"Display.class\" archive=\"../applet/Display2.jar\""
+		//	+ " width=\"" + tableWidth + "\" height=\"150\">" );
+		// out.println( "    <param name=\"qpeak\" value=\"" + paramPeak.toString() + "\">" );
+		// out.println( "   </applet>" );
+		out.println("<div id=\"spectrum_canvas\" peaks=\"" + paramPeak.toString() + "\" style=\"height: 200px; width: 750px; background-color: white\"></div>");
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( " <tr>" );
@@ -590,7 +599,7 @@
 				// レコードページへのリンクURLをセット
 				typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 				String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
-								 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff;
+								 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + conf.getDbName()[Integer.parseInt(site)];
 				String valstr = name.replace("\"", "&quot;") + "\t" + id + "\t" + formula + "\t0\t" + site;
 				
 				String rowId = String.valueOf(i);
@@ -636,12 +645,13 @@
 				else if ( mapMolData.containsKey(key) ) {
 					String moldata = mapMolData.get(key).trim();
 					if ( !moldata.equals("") ) {
-						out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
-						out.println( "    <param name=\"options\" value=\"depict\">" );
-						out.println( "    <param name=\"mol\" value=\"");
-						out.print( moldata );
-						out.println( "\">");
-						out.println( "   </applet>\n");
+						// out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
+						// out.println( "    <param name=\"options\" value=\"depict\">" );
+						// out.println( "    <param name=\"mol\" value=\"");
+						// out.print( moldata );
+						// out.println( "\">");
+						// out.println( "   </applet>\n");
+						out.println("<div class=\"molecule§viewer\" id=\"molecule§viewer§" + id + "§" + conf.getDbName()[Integer.parseInt(site)] +  "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
 					}
 				}
 				else {

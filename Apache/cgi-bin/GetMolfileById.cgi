@@ -19,71 +19,50 @@
 #
 #===============================================================================
 #
-# Molfile情報一括取得
+# スペクトル情報取得
 #
-# ver 1.0.0  2009.10.15
+# ver 3.0.1  2008.12.05
 #
 #-------------------------------------------------------------------------------
 use CGI;
 use DBI;
 
-print "Content-Type: text/plain\n\n";
+$DB = '../DB';
 
-my $query = new CGI;
-my $names = $query->param('names');
-my $DbName = $query->param('dsn');
+$query = new CGI;
+$id = $query->param('id');
+$db_name = $query->param('dsn');
+if ( $db_name eq '' ) {
+	$db_name = "MassBank";
+}
 open(F, "DB_HOST_NAME");
 while ( <F> ) {
 	chomp;
-	$Host .= $_;
+	$host_name .= $_;
 }
-my $DB = "DBI:mysql:$DbName:$Host";
-my $User = 'bird';
-my $PassWord = 'bird2006';
-my $MolDir = "../DB/molfile/$DbName";
-my $dbh = DBI->connect($DB, $User, $PassWord) || &errorexit;
-my @name_list = split( '@', $names );
-my $in = "NAME in(";
-foreach my $name ( @name_list ) {
-	$name =~ s/\'/\'\'/g;
-#	print $name . "\n";
-	$in .= "'$name',";
-}
-chop $in;
-$in .= ")";
-#print "select FILE, NAME from MOLFILE where $in\n";
-@ans = &MySql("select FILE, NAME from MOLFILE where $in");
-foreach $x ( @ans ) {
-	($fname, $name) = @$x;
-	open(F, "$MolDir/$fname.mol");
-	@mol = ();
-	while ( <F> ) {
-		push(@mol, $_);
-	}
-	close(F);
-	foreach $x ( @mol ) {
-		print "$x";
-	}
-}
-$dbh->disconnect;
-exit(0);
 
-sub errorexit() {
-	print "-1\n";
-	exit(0);
-}
+print "Content-Type: text/plain\n\n";
+
+$SQLDB = "DBI:mysql:$db_name:$host_name";
+$User = 'bird';
+$PassWord = 'bird2006';
+$dbh  = DBI->connect($SQLDB, $User, $PassWord) || exit(0);
+@ans = &MySql("select FILE from CH_NAME, MOLFILE where CH_NAME.NAME = MOLFILE.NAME and ID = '$id'");
+foreach $rec ( @ans ) { print join("\t", @$rec), "\n"; }
+$dbh->disconnect;
+
+print "\n";
+
+exit(0);
 
 sub MySql() { local($sql) = @_;
 	local($sth, $n, $i, @ans, @ret);
 	@ret = ();
-	$sth = $dbh->prepare($sql) || &errorexit;
-	$sth->execute || &errorexit;
+	$sth = $dbh->prepare($sql);
+	$sth->execute || exit(0);
 	$n = $sth->rows;
-	for ( $i = 0; $i < $n; $i ++ ) {
-	@ans = $sth->fetchrow_array;
-	push(@ret, [@ans]);
-	}
-	$sth->finish || &errorexit;
+	for ( $i = 0; $i < $n; $i ++ ) { @ans = $sth->fetchrow_array; push(@ret, [@ans]); }
+	$sth->finish;
 	return @ret;
 }
 

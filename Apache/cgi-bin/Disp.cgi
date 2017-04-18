@@ -162,6 +162,15 @@ print << "HTML";
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
 		<link rel="stylesheet" type="text/css" href="../css/Common.css">
 		<script type="text/javascript" src="../script/Common.js"></script>
+		<!-- SpeckTackle dependencies-->
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<!-- SpeckTackle library-->
+		<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
+		<!-- SpeckTackle style sheet-->
+		<link rel="stylesheet" href="../css/st.css" type="text/css" />	
+		<!-- SpeckTackle MassBank loading script-->
+		<script type="text/javascript" src="../script/massbank_specktackle.js"></script>
 		<title>$short_name Mass Spectrum</title>
 	</head>
 	<body style="font-family:Times;">
@@ -406,23 +415,10 @@ if ( $version == 1 ) {
 
 print << "HTML";
 					<br>
-					<applet code="Display.class" archive="../applet/Display2.jar" width="750" height="$height">
-						<param name="id" value="$id">
-						<param name="site" value="$src">
-						<param name="num" value="$mz_num">
+					<div id="spectrum_canvas" style="height: 200px; width: 750px; background-color: white"></div>
 HTML
 
-if ( $param ne '' ) {
-	print $param;
-}
-if ( $precursor ne '' ) {
 print << "HTML";
-						<param name="precursor" value="$precursor">
-HTML
-}
-
-print << "HTML";
-					</applet>
 				</td>
 				<td valign="top">
 					<font style="font-size:10pt;" color="dimgray">Chemical Structure</font><br>
@@ -447,10 +443,7 @@ if ( -f $gifFile ) {
 }
 else {
 print << "HTML";
-					<applet code="MolVie.class" archive="../applet/MolView.jar" width="200" height="200">
-						<param name="site" value="$src">
-						<param name="compound_name" value="$compound_name[0]">
-					</applet>
+					<div class="molecule§viewer" id="molecule§viewer" style="height: 200px; width = 200px; background-color: white"></div>
 HTML
 }
 
