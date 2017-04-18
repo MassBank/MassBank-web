@@ -47,16 +47,13 @@ function loadMolFile() {
             .style('height', '100%')
             .style('width', '50%');
             var idSplit = d3.select(this).attr('id').split("§");
-            // the id of the mol div takes the form molecule_viewer[_id][_site|dsn]
-            // example id with site molecule_viewer_XX000001_0
-            // example id with dsn molecule_viewer_XX000001_MassBank
+            // the id of the mol div takes the form molecule§viewer[§id][§site|dsn]
+            // example id with site molecule§viewer§XX000001§0
+            // example id with dsn molecule§viewer§XX000001§MassBank
             // check if the id contains an id and site or dsn
             if (idSplit[2] !== undefined && idSplit[3] !== undefined) {
             	var molId = idSplit[2];
             	var dsn = idSplit[3];
-            	// if (idSplit[4]) {
-            	// 	dsn = idSplit[3]+"_"+idSplit[4];
-            	// }
             	// check if the id is a site, i.e. a number
             	if (!isNaN(dsn)) {
             		var jqxhrList = $.get('../massbank.conf').done(function (data){
