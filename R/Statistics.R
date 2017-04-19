@@ -1,8 +1,16 @@
+## Generation of a static statistics page for MassBank server
+## Script by Erik Müller and Tobias Schulze
+## Edited: 2016/05/24 by Tobias Schulze
+## note new dependence on obabel.exe
+## LICENSE: GPL 3.0
+## Copyright (c) 2014-2017
+
+
 #Path to the record database
 path <- "/var/www/html/MassBank/DB/annotation/"
 
 # Source the script
-source("/vagrant/getInfo_and_InChIKeys_extended.R")
+source("/vagrant/R/getInfo_and_InChIKeys_extended.R")
 
 # Run the script and generate a csv
 getInfoFixKey(path, "/var/www/html/MassBank/statistics.csv","/usr/bin")

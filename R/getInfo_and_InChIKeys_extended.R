@@ -1,7 +1,9 @@
-##Script by Erik Müller, Tobias Schulze, Emma Schymanski
+## Script by Erik Müller, Tobias Schulze, Emma Schymanski
 ## Edited 7.7.14 E. Schymanski (adding InChI Key functionality)
 ## Edited 31.1.16 T. Schulze (adding parsing of more fields)
 ## note new dependence on obabel.exe
+## LICENSE: GPL 3.0
+## Copyright (c) 2014-2017
 
 # get InChI Keys using Open Babel
 # need to define the directory containing Open Babel, specifically "obabel.exe"
