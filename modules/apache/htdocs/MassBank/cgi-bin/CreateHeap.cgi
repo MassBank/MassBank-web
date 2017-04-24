@@ -141,11 +141,11 @@ foreach my $db_name (@db_names) {
 	mysql_execute($sql);
 	if ( $mysqlVer >= 5.2 || $mysqlVer eq "" ) {	# MySQL5.2からは"TYPE="構文が使用できない
 		$sql = "CREATE TABLE $tbl_name(INDEX(ID),INDEX(MZ),INDEX(RELATIVE)) "
-		     . "ENGINE=HEAP SELECT ID,MZ,RELATIVE FROM PEAK";
+		     . "ENGINE=InnoDB SELECT ID,MZ,RELATIVE FROM PEAK";
 	}
 	else {
 		$sql = "CREATE TABLE $tbl_name(INDEX(ID),INDEX(MZ),INDEX(RELATIVE)) "
-		     . "TYPE=HEAP SELECT ID,MZ,RELATIVE FROM PEAK";
+		     . "TYPE=InnoDB SELECT ID,MZ,RELATIVE FROM PEAK";
 	}
 	mysql_execute($sql);
 	print " CREATE TABLE $tbl_name --OK\n";
