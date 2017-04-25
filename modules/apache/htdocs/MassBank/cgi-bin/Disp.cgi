@@ -19,43 +19,43 @@
 #
 #===============================================================================
 #
-# レコードページ表示
+# レコードページ表示 @Record page display
 #
 # ver 3.0.30  2012.11.22
 #
 #-------------------------------------------------------------------------------
 %FMT = (
-'LICENSE:',                       'https://creativecommons.org/licenses/',
-'PUBLICATION:',                   'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
-'COMMENT: \[MSn\]',               'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
-'COMMENT: \[Merging\]',           'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
-'COMMENT: \[Merged\]',            'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
-'COMMENT: \[Mass spectrometry\]', '',                                        # version 2
-'COMMENT: \[Chromatography\]',    '',                                        # version 2
-'COMMENT: \[Profile\]',           '../DB/profile/%s/%s',                     # version 2
-'COMMENT: \[Mixture\]',           'Dispatcher.jsp?type=disp&id=%s&site=%s',  # version 2
-'CH\$FORMULA:',                   'http://www.chemspider.com/Search.aspx?q=%s',
-'CH\$LINK: CAS',                  'https://www.google.com/search?q=&quot;%s&quot;',
-'CH\$LINK: CAYMAN',               'http://www.caymanchem.com/app/template/Product.vm/catalog/%s',
-'CH\$LINK: CHEBI',                'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
-'CH\$LINK: CHEMPDB',              'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
-'CH\$LINK: CHEMSPIDER',           'http://www.chemspider.com/%s',
-'CH\$LINK: FLAVONOIDVIEWER',      'http://www.metabolome.jp/software/FlavonoidViewer/',
-'CH\$LINK: HMDB',                 'http://www.hmdb.ca/metabolites/%s',
-'CH\$LINK: INCHIKEY',		  'https://www.google.com/search?q=&quot;%s&quot;',
-'CH\$LINK: KAPPAVIEW',            'http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=%s',
-'CH\$LINK: KEGG',                 'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
-'CH\$LINK: KNAPSACK',             'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
-'CH\$LINK: LIPIDBANK',            'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
-'CH\$LINK: LIPIDMAPS',            'http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=%s',
-'CH\$LINK: NIKKAJI',              'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
-'CH\$LINK: PUBCHEM',              'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
-'CH\$LINK: OligosaccharideDataBase', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html%s',
-'CH\$LINK: OligosaccharideDataBase2D', 'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html',
-'SP\$LINK: NCBI-TAXONOMY', 	  'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%s',
-'SP\$SAMPLE: LOCATION', 	  'https://www.ebi.ac.uk/ontology-lookup/?termId=%s',
-'MS\$RELATED_MS: PREVIOUS_SPECTRUM', 'Dispatcher.jsp?type=disp&id=%s',
-'PK\$SPLASH', 			  'https://www.google.com/search?q=&quot;%s&quot;'
+'LICENSE:',								'https://creativecommons.org/licenses/',
+'PUBLICATION:',							'http://www.ncbi.nlm.nih.gov/pubmed/%s?dopt=Citation',
+'COMMENT: \[MSn\]',						'Dispatcher.jsp?type=disp&id=%s&site=%s',
+'COMMENT: \[Merging\]',					'Dispatcher.jsp?type=disp&id=%s&site=%s',
+'COMMENT: \[Merged\]',					'Dispatcher.jsp?type=disp&id=%s&site=%s',
+'COMMENT: \[Mass spectrometry\]',		'',
+'COMMENT: \[Chromatography\]',			'',
+'COMMENT: \[Profile\]',					'../DB/profile/%s/%s',
+'COMMENT: \[Mixture\]',					'Dispatcher.jsp?type=disp&id=%s&site=%s',
+'CH\$FORMULA:',							'http://www.chemspider.com/Search.aspx?q=%s',
+'CH\$LINK: CAS',						'https://www.google.com/search?q=&quot;%s&quot;',
+'CH\$LINK: CAYMAN',						'http://www.caymanchem.com/app/template/Product.vm/catalog/%s',
+'CH\$LINK: CHEBI',						'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
+'CH\$LINK: CHEMPDB',					'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
+'CH\$LINK: CHEMSPIDER',					'http://www.chemspider.com/%s',
+'CH\$LINK: FLAVONOIDVIEWER',			'http://www.metabolome.jp/software/FlavonoidViewer/',
+'CH\$LINK: HMDB',						'http://www.hmdb.ca/metabolites/%s',
+'CH\$LINK: INCHIKEY',					'https://www.google.com/search?q=&quot;%s&quot;',
+'CH\$LINK: KAPPAVIEW',					'http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=%s',
+'CH\$LINK: KEGG',						'http://www.genome.jp/dbget-bin/www_bget?%s:%s',
+'CH\$LINK: KNAPSACK',					'http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=%s',
+'CH\$LINK: LIPIDBANK',					'http://lipidbank.jp/cgi-bin/detail.cgi?id=%s',
+'CH\$LINK: LIPIDMAPS',					'http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=%s',
+'CH\$LINK: NIKKAJI',					'http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=%s&CONTENT=syosai',
+'CH\$LINK: PUBCHEM',					'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?',
+'CH\$LINK: OligosaccharideDataBase',	'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html%s',
+'CH\$LINK: OligosaccharideDataBase2D',	'http://www.fukuyama-u.ac.jp/life/bio/biochem/%s.html',
+'SP\$LINK: NCBI-TAXONOMY',				'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%s',
+'SP\$SAMPLE: LOCATION', 				'https://www.ebi.ac.uk/ontology-lookup/?termId=%s',
+'MS\$RELATED_MS: PREVIOUS_SPECTRUM',	'Dispatcher.jsp?type=disp&id=%s',
+'PK\$SPLASH', 							'https://www.google.com/search?q=&quot;%s&quot;'
 );
 
 use CGI;
@@ -89,7 +89,7 @@ while ( <F> ) {
 			$myServer .= "/";
 		}
 		last;
-	} 
+	}
 }
 close(F);
 
@@ -168,7 +168,7 @@ print << "HTML";
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
 		<!-- SpeckTackle style sheet-->
-		<link rel="stylesheet" href="../css/st.css" type="text/css" />	
+		<link rel="stylesheet" href="../css/st.css" type="text/css" />
 		<!-- SpeckTackle MassBank loading script-->
 		<script type="text/javascript" src="../script/massbank_specktackle.js"></script>
 		<title>$short_name Mass Spectrum</title>
@@ -496,7 +496,7 @@ foreach my $l ( @Line ) {
 			}
 		}
 	}
-	
+
 	my $item_name = '';
 	my $val = '';
 	my @vals = ();
