@@ -155,10 +155,12 @@ print << "HTML";
 		<meta name="coverage" content="worldwide" />
 		<meta name="Targeted Geographic Area" content="worldwide" />
 		<meta name="rating" content="general" />
-		<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
+		<meta name="copyright" content="Copyright (c) 2006 MassBank Project and (c) 2011 NORMAN Association" />
 		<meta name="description" content="MassBank Record of $acc">
-		<meta name="keywords" content="$short_name">
+		<meta name="keywords" content="$short_name, mass spectrum, MassBank record, mass spectrometry, mass spectral library">
 		<meta name="revisit_after" content="30 days">
+		<meta name="hreflang" content="en">
+		<meta name="variableMeasured" content="m/z">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
 		<link rel="stylesheet" type="text/css" href="../css/Common.css">
@@ -314,7 +316,7 @@ if ( $qmz ne '' ) {
 #------------------------
 elsif ( $product ne '' ) {
 	my @formula_list = split(",", $product);
-	@formula_list = grep {!$count{$_}++} @formula_list;		# 重複削除
+	@formula_list = grep {!$count{$_}++} @formula_list;		# 重複削除 @Delete duplicates
 	$mz_num = scalar(@formula_list);
 	$param  = "\t\t\t\t\t\t<param name=\"type\" value=\"product\">\n";
 	my $cnt = 1;
@@ -363,7 +365,7 @@ elsif ( $nloss ne '' ) {
 				}
 			}
 		}
-		@hit_ppno = grep {!$count{$_}++} @hit_ppno;		# 重複削除
+		@hit_ppno = grep {!$count{$_}++} @hit_ppno;		# 重複削除 @Delete duplicates
 		my $ppno = join(",", @hit_ppno);
 		$where = "and NO in($ppno)";
 	}
@@ -372,7 +374,7 @@ elsif ( $nloss ne '' ) {
 	#--------------------
 	elsif ( $mode eq 'and' ) {
 		my @sql_formula_list = ();
-		@formula_list = sort(grep {!$count{$_}++} @formula_list);		# 重複削除
+		@formula_list = sort(grep {!$count{$_}++} @formula_list);		# 重複削除 @Delete duplicates
 		for my $i ( 0 .. $#formula_list ) {
 			push(@sql_formula_list, "'" . $formula_list[$i] . "'");
 		}
@@ -389,9 +391,9 @@ elsif ( $nloss ne '' ) {
 	$param  = "\t\t\t\t\t\t<param name=\"type\" value=\"nloss\">\n";
 	my $cnt = 1;
 	for my $item ( @ans ) {
-		my $pre_mz = &MassCalc($$item[0]);	# プレカーサイオンを数値に変換
-		my $pro_mz = &MassCalc($$item[1]);	# プロダクトイオンを数値に変換
-		my $nloss = $$item[2];				# ニュートラルロス分子式
+		my $pre_mz = &MassCalc($$item[0]);	# プレカーサイオンを数値に変換 @Numeric conversion of the precursor ion
+		my $pro_mz = &MassCalc($$item[1]);	# プロダクトイオンを数値に変換 @Numerice conversion of the product ion
+		my $nloss = $$item[2];				# ニュートラルロス分子式 @Neutral loss molecular formula
 		my $val ="$pro_mz,$pre_mz,$nloss";
 		$param .= "\t\t\t\t\t\t<param name=\"nloss$cnt\" value=\"$val\">\n";
 		$cnt++;
@@ -708,7 +710,7 @@ sub GetAtomList() {
 			$chr = substr( $formula, $pos, 1 );
 		}
 		if ( $pos == $end_pos || ($pos > 0 && $chr =~ /[\D]/ && $chr eq uc($chr)) ) {
-			# 元素記号 + 個数を切り出す
+			# 元素記号 + 個数を切り出す @Cutting out the element symbol + number
 			my $item = substr( $formula, $start_pos, $pos - $start_pos );
 
 			# 元素記号と個数を分解
