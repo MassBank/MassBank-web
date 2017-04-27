@@ -43,6 +43,7 @@
 <meta http-equiv="imagetoolbar" content="no">
 <meta name="description" content="Mass Spectral DataBase">
 <meta name="keywords" content="Mass,Spectral,Database,MassBank">
+<meta name="hreflang" content="en">
 <meta name="revisit_after" content="10 seconds">
 <title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
 <link rel="stylesheet" type="text/css" href="css/Common.css">
@@ -74,20 +75,20 @@
 									<div align="center">
 										<table width="670" border="0" cellspacing="10" cellpadding="1" bgcolor="#FFFFFF">
 											<tr>
-												<!--// Spectrum Search -->
-												<td width="2" bgcolor="blue"></td>
-												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
-													<table border="0" cellspacing="0" cellpadding="5" width="190">
-														<tr>
-															<td><a href="SearchPage.html" style="font-weight:bold;" class="bullet_link" target="_self">Spectrum Search</a></td>
-														</tr>
-														<tr>
-															<td align="center"><A href="SearchPage.html" target="_self"><img src="img/search.gif" alt="Spectrum Search" width="170" border="0"></a></td>
-														</tr>
-													</table>
-												</td>
-												<td width="20" bgcolor="white"></td>
-												<!--// Quick Search -->
+												<!-- Spectrum Search -->
+												<!-- <td width="2" bgcolor="blue"></td> -->
+												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
+													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
+														<!-- <tr> -->
+															<!-- <td><a href="SearchPage.html" style="font-weight:bold;" class="bullet_link" target="_self">Spectrum Search</a></td> -->
+														<!-- </tr> -->
+														<!-- <tr> -->
+															<!-- <td align="center"><A href="SearchPage.html" target="_self"><img src="img/search.gif" alt="Spectrum Search" width="170" border="0"></a></td> -->
+														<!-- </tr> -->
+													<!-- </table> -->
+												<!-- </td> -->
+												<!-- <td width="20" bgcolor="white"></td> -->
+												<!-- Quick Search -->
 												<td width="2" bgcolor="green"></td>
 												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
 													<table border="0" cellspacing="0" cellpadding="5" width="190">
@@ -99,62 +100,62 @@
 														</tr>
 													</table>
 												</td>
-												<td width="20" bgcolor="white"></td>
-												<!--// Substructure Search -->
-												<td width="2" bgcolor="BlueViolet"></td>
-												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
-													<table border="0" cellspacing="0" cellpadding="5" width="190">
-														<tr>
-															<td><a href="StructureSearch.html" style="font-weight:bold;" class="bullet_link" target="_self">Substructure Search</a></td>
-														</tr>
-														<tr>
-															<td align="center"><a href="StructureSearch.html" target="_self"><img src="img/substructure.gif" alt="Substructure Search" width="170" border="0"></a></td>
-														</tr>
-													</table>
-												</td>
-											</tr>
-											<tr>
+ 												<td width="20" bgcolor="white"></td>
+												<!-- Substructure Search -->
+												<!-- <td width="2" bgcolor="BlueViolet"></td> -->
+												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
+													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
+														<!-- <tr> -->
+															<!-- <td><a href="StructureSearch.html" style="font-weight:bold;" class="bullet_link" target="_self">Substructure Search</a></td> -->
+														<!-- </tr> -->
+														<!-- <tr> -->
+															<!-- <td align="center"><a href="StructureSearch.html" target="_self"><img src="img/substructure.gif" alt="Substructure Search" width="170" border="0"></a></td> -->
+														<!-- </tr> -->
+													<!-- </table> -->
+												<!-- </td> -->
+											<!-- </tr> -->
+											<!-- <tr> -->
 												<!--// Browse Page -->
-												<td width="2" bgcolor="red"></td>
-												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
-													<table border="0" cellspacing="0" cellpadding="5" width="190">
-														<tr>
-															<td><a href="BrowsePage.html" style="font-weight:bold;" class="bullet_link" target="_self">Browse Page</a></td>
-														</tr>
-														<tr>
-															<td align="center"><a href="BrowsePage.html" target="_self"><img src="img/browse.gif" alt="Browse Page" width="170" border="0"></a></td>
-														</tr>
-													</table>
-												</td>
-												<td width="20" bgcolor="white"></td>
-												<!--// Peak Search -->
-												<td width="2" bgcolor="gold"></td>
-												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
-													<table border="0" cellspacing="0" cellpadding="5" width="190">
-														<tr>
-															<td><a href="PeakSearch.html" style="font-weight:bold;" class="bullet_link" target="_self">Peak Search</a></td>
-														</tr>
-														<tr>
-															<td align="center"><a href="PeakSearch.html" target="_self"><img src="img/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td>
-														</tr>
-													</table>
-												</td>
-												<td width="20" bgcolor="white"></td>
-												<!--// Spectral Browser -->
-												<td width="2" bgcolor="Chocolate"></td>
-												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
-													<table border="0" cellspacing="0" cellpadding="5" width="190">
-														<tr>
-															<td><a href="PackageView.html" style="font-weight:bold;" class="bullet_link" target="_self">Spectral Browser</a></td>
-														</tr>
-														<tr>
-															<td align="center"><a href="PackageView.html" target="_self"><img src="img/package.gif" alt="Spectral Browser" width="170" border="0"></a></td>
-														</tr>
-													</table>
-												</td>
-												<td width="20" bgcolor="white"></td>
-											</tr>
-											<tr>
+												<!-- <td width="2" bgcolor="red"></td> -->
+												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
+													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
+														<!-- <tr> -->
+															<!-- <td><a href="BrowsePage.html" style="font-weight:bold;" class="bullet_link" target="_self">Browse Page</a></td> -->
+														<!-- </tr> -->
+														<!-- <tr> -->
+															<!-- <td align="center"><a href="BrowsePage.html" target="_self"><img src="img/browse.gif" alt="Browse Page" width="170" border="0"></a></td> -->
+														<!-- </tr> -->
+													<!-- </table> -->
+												<!-- </td> -->
+												<!-- <td width="20" bgcolor="white"></td> -->
+												<!-- Peak Search -->
+												<!-- <td width="2" bgcolor="gold"></td> -->
+												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
+													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
+														<!-- <tr> -->
+															<!-- <td><a href="PeakSearch.html" style="font-weight:bold;" class="bullet_link" target="_self">Peak Search</a></td> -->
+														<!-- </tr> -->
+														<!-- <tr> -->
+															<!-- <td align="center"><a href="PeakSearch.html" target="_self"><img src="img/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td> -->
+														<!-- </tr> -->
+													<!-- </table> -->
+												<!-- </td> -->
+												<!-- <td width="20" bgcolor="white"></td> -->
+												<!-- Spectral Browser -->
+												<!-- <td width="2" bgcolor="Chocolate"></td> -->
+												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
+													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
+														<!-- <tr> -->
+															<!-- <td><a href="PackageView.html" style="font-weight:bold;" class="bullet_link" target="_self">Spectral Browser</a></td> -->
+														<!-- </tr> -->
+														<!-- <tr> -->
+															<!-- <td align="center"><a href="PackageView.html" target="_self"><img src="img/package.gif" alt="Spectral Browser" width="170" border="0"></a></td> -->
+														<!-- </tr> -->
+													<!-- </table> -->
+												<!-- </td> -->
+												<!-- <td width="20" bgcolor="white"></td> -->
+											<!-- </tr> -->
+											<!-- <tr>  -->
 												<!--// Record Index -->
 												<td width="2" bgcolor="DeepPink"></td>
 												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
@@ -172,6 +173,14 @@
 												<td height="100" colspan="6">
 													<!-- <li><a href="./mbadmin/">MassBank Administration Tool</a></li><br /><br /> -->
 													<li><a href="./api/services/MassBankAPI?wsdl" target="_blank">WEB-API WSDL</a></li>
+												</td>
+											</tr>
+											<tr>
+												<td heigth="100" colspan="100">
+												<b>Announcement<br><br></b>
+												Dear customers,<br>
+												The Java applet technology was deprecated. Therefore many services of MassBank are out of service (e.g. spectral search). The main services quick search, record index and record display are working properly. Our apologies for any inconvience.
+												
 												</td>
 											</tr>
 										</table>
