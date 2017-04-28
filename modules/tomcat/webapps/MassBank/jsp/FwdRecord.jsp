@@ -76,10 +76,18 @@
 		out.println( "<h1>" + id + " Record Not Found</h1>" );
 	}
 	else {
-		String url = "Dispatcher.jsp?type=disp&id=" + id + "&site=" + val[1];
+		String dsn = "";
+		if ( request.getParameter( "dsn") != null) {
+			// forward to dispathcer
+			String url = "Dispatcher.jsp?type=disp&id=" + id + "&site=" + val[1];
 %>
 <jsp:forward page="<%= url %>" />
-<%
+<%			
+		} else {
+			// redirect ot a fwdRecord url with dsn parameter
+			String url = "FwdRecord.jsp?" + request.getQueryString() + "&dsn=" + conf.getDbName()[Integer.parseInt(val[1])];
+			response.sendRedirect(url);
+		}
 	}
 %>
 </body>
