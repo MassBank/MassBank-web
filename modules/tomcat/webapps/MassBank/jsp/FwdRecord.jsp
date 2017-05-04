@@ -77,15 +77,20 @@
 	}
 	else {
 		String dsn = "";
+		String url = "";
 		if ( request.getParameter( "dsn") != null) {
 			// forward to dispathcer
-			String url = "Dispatcher.jsp?type=disp&id=" + id + "&site=" + val[1];
+			url = "Dispatcher.jsp?type=disp&id=" + id + "&site=" + val[1];
 %>
 <jsp:forward page="<%= url %>" />
 <%			
 		} else {
-			// redirect ot a fwdRecord url with dsn parameter
-			String url = "FwdRecord.jsp?" + request.getQueryString() + "&dsn=" + conf.getDbName()[Integer.parseInt(val[1])];
+			// redirect to a FwdRecord url with dsn parameter
+			if (request.getQueryString() != null) {
+				url = "FwdRecord.jsp?" + request.getQueryString() + "&dsn=" + conf.getDbName()[Integer.parseInt(val[1])];
+			} else {
+				url = "FwdRecord.jsp?id=" + id + "&site=" + val[1] + "&dsn=" + conf.getDbName()[Integer.parseInt(val[1])];
+			}
 			response.sendRedirect(url);
 		}
 	}
