@@ -165,6 +165,11 @@ print << "HTML";
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
 		<link rel="stylesheet" type="text/css" href="../css/Common.css">
 		<script type="text/javascript" src="../script/Common.js"></script>
+		<script type="text/javascript">
+			var id = "$id";
+			var site = $src;
+			var dsn = "$db_name";
+		</script>
 		<!-- SpeckTackle dependencies-->
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
 		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
