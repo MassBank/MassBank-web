@@ -10,40 +10,33 @@ apt-get update
 ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 dpkg-reconfigure tzdata
 
-# install Apache
-apt-get install -y apache2 unzip apache2-utils
+# speed up deployment with one install command
+apt-get install -y -q \
+apache2 unzip apache2-utils \
+mariadb-server mariadb-client libdbd-mysql-perl \
+default-jre tomcat7 libapache2-mod-jk \
+git-core \
+nano joe \
+lynx \
+build-essential libmysqlclient-dev \
+mc xterm mysql-workbench \
+r-base-core \
+openbabel
 
 cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
-EOF
-
-cat > /etc/apache2/sites-available/000-default.conf << EOF
-<VirtualHost *:80>
-        ServerName localhost
-        ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/html
-        ErrorLog ${APACHE_LOG_DIR}/error.log
-        CustomLog ${APACHE_LOG_DIR}/access.log combined
-        <Directory "/var/www/html">
-    		AllowOverride All
-		</Directory>
-</VirtualHost>
 EOF
 
 # enable required apache modules
 a2enmod rewrite
 a2enmod cgi
 
-
-# install mysql and perl clients
-apt-get install -y mariadb-server mariadb-client libdbd-mysql-perl
-
 # ATTENTION: CUSTOMISE THE MYSQL PASSWORD FOR YOUR OWN INSTALLATION !!!
 
 cat > mariadb_secure.sh << EOF
 #!/bin/bash
 
-apt-get install -y expect
+apt-get install -y -q expect
 
 MYSQL_ROOT_PASSWORD=bird2006
 
@@ -79,7 +72,7 @@ expect eof
 ")
 
 echo "\$SECURE_MYSQL"
-apt-get -y purge --auto-remove expect
+apt-get -y -q purge --auto-remove expect
 EOF
 
 chmod +x mariadb_secure.sh && ./mariadb_secure.sh && rm mariadb_secure.sh
@@ -90,9 +83,6 @@ chmod +x mariadb_secure.sh && ./mariadb_secure.sh && rm mariadb_secure.sh
 #rm -rf /vagrant/source-mx-feeds
 #ln -fs /vagrant /var/www
 
-# install tomcat
-apt-get install -y default-jre tomcat7 libapache2-mod-jk
-
 cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
 # configure jk-status
 worker.list=jk-status
@@ -102,22 +92,6 @@ worker.jk-status.read_only=true
 worker.list=jk-manager
 worker.jk-manager.type=status
 EOF
-
-
-# install GIT
-apt-get install -y git-core
-
-# install editors
-apt-get install -y nano joe
-
-# install lynx
-apt-get install -y lynx
-
-# Compiler to install Search.cgi
-apt-get install -y build-essential libmysqlclient-dev
-
-# Install European MassBank specific tools
-apt-get install -y mc xterm mysql-workbench
 
 # download latest version of MassBank
 git clone https://github.com/MassBank/MassBank-web
@@ -135,9 +109,6 @@ cd MassBank-web
 
 ## During development: change into temporary branch
 #git checkout updateFromCVS
-
-sudo apt-get install -y r-base-core
-sudo apt-get install -y openbabel
 
 bash ./install-ubuntu.sh
 #sudo mv robots.txt /var/www/html/
