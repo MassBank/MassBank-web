@@ -33,8 +33,6 @@ DEST_TOMCAT_PATH=/var/lib/tomcat7
 
 echo
 echo ">> service stop"
-
-if [ -x /etc/init.d/xvfb ] ; then /etc/init.d/xvfb stop ; fi 
 service tomcat7 stop 
 service apache2 stop
 
@@ -70,8 +68,6 @@ echo "Compile Search.cgi"
 cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
 
 
-#cp -ip $INST_ROOT_PATH/StartupScript/tomcat /etc/init.d
-cp -p $INST_ROOT_PATH/StartupScript/xvfb /etc/init.d
 #mv $APACHE_ERROR_PATH/noindex.html $APACHE_ERROR_PATH/noindex.html.bak
 cp -fp $INST_ERROR_PATH/403.html $APACHE_ERROR_PATH/noindex.html
 
@@ -96,9 +92,6 @@ chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
 chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
 
-#chmod u+x /etc/init.d/tomcat
-chmod u+x /etc/init.d/xvfb
-
 ## Configure Tomcat if not already done
 if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' $DEST_TOMCAT_PATH/conf/server.xml ; then 
 sed -i -e 's#<!-- Define an AJP 1.3 Connector on port 8009 -->#<!-- Define an AJP 1.3 Connector on port 8009 -->\n<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />#' $DEST_TOMCAT_PATH/conf/server.xml    
@@ -107,10 +100,9 @@ fi
 
 echo
 echo ">> service start"
-/etc/init.d/xvfb start
-service mysql start 
-service tomcat7 start 
-service apache2 start
+service mysql restart 
+service tomcat7 restart 
+service apache2 restart
 
 echo
 echo ">> create database (root authority)"
@@ -126,16 +118,6 @@ password="bird2006"
 EOF
 
 mysql --user=root  < $INST_SQL_PATH
-
-#echo
-#echo ">> chkconfig xvfb on"
-#echo ">> chkconfig mysqld on"
-#echo ">> chkconfig httpd on"
-#echo ">> chkconfig tomcat on"
-#chkconfig xvfb on
-#chkconfig mysqld on
-#chkconfig httpd on
-#chkconfig tomcat on
 
 # echo
 # echo ">> retrieving massbank.jp page and specifications"

@@ -3,38 +3,20 @@
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
 
-# get universe apt-get repo
-sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe"
-
-# enable support for i386 binaries
-sudo dpkg --add-architecture i386
-
 # Freshen package index
 apt-get update
-apt-get upgrade
-
-# support the precompiled struct_server
-apt-get install -y libgcc1:i386 libstdc++6:i386 libc6-i386 lib32stdc++6
 
 # Set timezone
-echo "Europe/Berlin" | tee /etc/timezone
-dpkg-reconfigure --frontend noninteractive tzdata
-
-# set locale
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-locale-gen en_US.UTF-8 de_DE.UTF-8
-dpkg-reconfigure locales
-
-# virtual X
-apt-get install -y xvfb openjdk-7-jre
+ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+dpkg-reconfigure tzdata
 
 # install Apache
 apt-get install -y apache2 unzip apache2-utils
 
-a2enmod rewrite #enable mod-rewrite
+cat >> /etc/apache2/apache2.conf << EOF
+ServerName localhost
+EOF
+
 cat > /etc/apache2/sites-available/000-default.conf << EOF
 <VirtualHost *:80>
         ServerName localhost
@@ -48,22 +30,59 @@ cat > /etc/apache2/sites-available/000-default.conf << EOF
 </VirtualHost>
 EOF
 
-cat >> /etc/apache2/apache2.conf << EOF
-ServerName localhost
-EOF
-
 # enable required apache modules
 a2enmod rewrite
 a2enmod cgi
 
 
+# install mysql and perl clients
+apt-get install -y mariadb-server mariadb-client libdbd-mysql-perl
 
-# install mysql and java and perl clients
 # ATTENTION: CUSTOMISE THE MYSQL PASSWORD FOR YOUR OWN INSTALLATION !!!
-debconf-set-selections <<< 'mysql-server mysql-server/root_password password bird2006'
-debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password bird2006'
 
-apt-get install -y mysql-server mysql-client libdbd-mysql-perl
+cat > mariadb_secure.sh << EOF
+#!/bin/bash
+
+apt-get install -y expect
+
+MYSQL_ROOT_PASSWORD=bird2006
+
+SECURE_MYSQL=\$(expect -c "
+set timeout 10
+spawn mysql_secure_installation
+
+expect \"Enter current password for root (enter for none):\"
+send \"\r\"
+
+expect \"Set root password?\"
+send \"y\r\"
+
+expect \"New password:\"
+send \"\MYSQL_ROOT_PASSWORD\r\"
+
+expect \"Re-enter new password:\"
+send \"\MYSQL_ROOT_PASSWORD\r\"
+
+expect \"Remove anonymous users?\"
+send \"y\r\"
+
+expect \"Disallow root login remotely?\"
+send \"y\r\"
+
+expect \"Remove test database and access to it?\"
+send \"y\r\"
+
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+
+expect eof
+")
+
+echo "\$SECURE_MYSQL"
+apt-get -y purge --auto-remove expect
+EOF
+
+chmod +x mariadb_secure.sh && ./mariadb_secure.sh && rm mariadb_secure.sh
 
 # clean environment
 #rm -rf /var/www
@@ -72,7 +91,7 @@ apt-get install -y mysql-server mysql-client libdbd-mysql-perl
 #ln -fs /vagrant /var/www
 
 # install tomcat
-apt-get install -y tomcat7 libapache2-mod-jk
+apt-get install -y default-jre tomcat7 libapache2-mod-jk
 
 cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
 # configure jk-status
