@@ -23,8 +23,6 @@ INST_SQL_PATH=$INST_ROOT_PATH/sql/init.sql
 # Apache Path
 APACHE_HTDOCS_PATH=/var/www/html
 APACHE_ERROR_PATH=/var/www/error
-APACHE_CONF_PATH=/etc/apache2/
-APACHE_MODULE_PATH=/usr/lib/httpd/modules
 
 # Tomcat Path
 DEST_TOMCAT_PATH=/var/lib/tomcat7
@@ -52,7 +50,7 @@ a2enmod jk
 ## mbadmin password
 htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
 
-install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
+install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf /etc/apache2/sites-available
 a2ensite 010-a2site-massbank
 
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
@@ -64,26 +62,22 @@ echo "Compile Search.cgi"
 cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
 
 
-cp -fp $INST_ERROR_PATH/403.html $APACHE_ERROR_PATH/noindex.html
-
 echo
 echo ">> change file mode"
-chmod a+x $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*.cgi
-chmod a+x $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*/*.pl
-chmod 755 $APACHE_HTDOCS_PATH/MassBank/script/*.pl
+chmod 755 $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*.cgi \
+          $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*/*.pl \
+          $APACHE_HTDOCS_PATH/MassBank/script/*.pl \
+          $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct_server
 chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct.dat
-chmod 755 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct_server
+install -d -m 777 -o www-data -g www-data $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
+
+install -d -m 777 -o tomcat7 -g tomcat7 $DEST_TOMCAT_PATH/temp
+chown -R tomcat7:tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
+chown -R tomcat7:tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
+chown -R tomcat7:tomcat7 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
 
 
-mkdir -p $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
-chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
-chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch
-mkdir -p $DEST_TOMCAT_PATH/temp
-chmod a+w $DEST_TOMCAT_PATH/temp
-
-chown -R tomcat7.tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
-chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
-chown -R tomcat7.tomcat7 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
+#chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch
 
 ## Configure Tomcat if not already done
 if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' $DEST_TOMCAT_PATH/conf/server.xml ; then 
