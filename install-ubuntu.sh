@@ -27,7 +27,6 @@ APACHE_CONF_PATH=/etc/apache2/
 APACHE_MODULE_PATH=/usr/lib/httpd/modules
 
 # Tomcat Path
-#DEST_TOMCAT_PATH=/usr/local
 DEST_TOMCAT_PATH=/var/lib/tomcat7
 
 
@@ -45,8 +44,6 @@ mkdir -p $APACHE_ERROR_PATH
 cp -fp $INST_ERROR_PATH/40?.html $APACHE_ERROR_PATH
 cp -fp $INST_ERROR_PATH/50?.html $APACHE_ERROR_PATH
 
-#cp -rip $INST_CONF_PATH/* $APACHE_CONF_PATH
-
 a2enmod rewrite
 a2enmod authz_groupfile
 a2enmod cgid
@@ -58,7 +55,6 @@ htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
 cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
 a2ensite 010-a2site-massbank
 
-#cp -ip $INST_MODULE_PATH/mod_jk.so $APACHE_MODULE_PATH
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
 cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
 
@@ -68,7 +64,6 @@ echo "Compile Search.cgi"
 cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
 
 
-#mv $APACHE_ERROR_PATH/noindex.html $APACHE_ERROR_PATH/noindex.html.bak
 cp -fp $INST_ERROR_PATH/403.html $APACHE_ERROR_PATH/noindex.html
 
 echo
@@ -83,8 +78,6 @@ chmod 755 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct_server
 mkdir -p $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
 chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
 chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch
-#chmod u+x $APACHE_MODULE_PATH/mod_jk.so
-#chmod u+x $DEST_TOMCAT_PATH/tomcat/bin/*.sh
 mkdir -p $DEST_TOMCAT_PATH/temp
 chmod a+w $DEST_TOMCAT_PATH/temp
 
