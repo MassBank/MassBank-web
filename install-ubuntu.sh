@@ -37,12 +37,12 @@ service apache2 stop
 
 echo
 echo ">> file copy"
-cp -rp $INST_HTDOCS_PATH/. $APACHE_HTDOCS_PATH
-cp -fp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
-
-mkdir -p $APACHE_ERROR_PATH
-cp -fp $INST_ERROR_PATH/40?.html $APACHE_ERROR_PATH
-cp -fp $INST_ERROR_PATH/50?.html $APACHE_ERROR_PATH
+cp -r $INST_HTDOCS_PATH/. $APACHE_HTDOCS_PATH
+cp -r $INST_ERROR_PATH/. $APACHE_ERROR_PATH
+cp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
+chown -R www-data:www-data /var/www/*
+find /var/www/ -type d -exec chmod 755 {} \;
+find /var/www/ -type f -exec chmod 644 {} \;
 
 a2enmod rewrite
 a2enmod authz_groupfile
@@ -52,7 +52,7 @@ a2enmod jk
 ## mbadmin password
 htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
 
-cp -p $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
+install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf $APACHE_CONF_PATH/sites-available
 a2ensite 010-a2site-massbank
 
 cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH

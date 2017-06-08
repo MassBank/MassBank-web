@@ -124,7 +124,7 @@ INSERT INTO `MOLFILE` VALUES ('XX000001','GABA');
 
 
 DROP DATABASE IF EXISTS MassBank_General;
-CREATE DATABASE MassBank_General;
+CREATE DATABASE MassBank_General CHARACTER SET = 'latin1';
 USE MassBank_General;
 
 --
