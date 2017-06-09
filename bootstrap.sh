@@ -3,6 +3,17 @@
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
 
+# enable support for i386 binaries
+sudo dpkg --add-architecture i386
+
+# set up docker repo
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+
 # Freshen package index
 apt-get update
 
@@ -12,10 +23,11 @@ dpkg-reconfigure tzdata
 
 # speed up deployment with one install command
 apt-get install -y -q \
-apache2 unzip apache2-utils \
-mariadb-server mariadb-client libdbd-mysql-perl \
+docker-ce curl \
+libstdc++6:i386 libc6:i386 libgcc1:i386 \
+apache2 unzip apache2-utils libcgi-pm-perl \
+mariadb-client  \
 default-jre tomcat7 libapache2-mod-jk \
-git-core \
 nano joe \
 lynx \
 build-essential libmysqlclient-dev \
@@ -23,6 +35,22 @@ mc xterm mysql-workbench \
 r-base-core \
 openbabel
 
+# enable docker support for standard user
+usermod -a -G docker ubuntu
+
+#install docker compose
+curl -L https://github.com/docker/compose/releases/download/1.13.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# prepare mariadb
+mkdir /mariadb
+
+# pull up mariadb docker
+cd /vagrant
+docker-compose up -d
+
+
+#set up apache httpd
 cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
 EOF
@@ -30,58 +58,6 @@ EOF
 # enable required apache modules
 a2enmod rewrite
 a2enmod cgi
-
-# ATTENTION: CUSTOMISE THE MYSQL PASSWORD FOR YOUR OWN INSTALLATION !!!
-
-cat > mariadb_secure.sh << EOF
-#!/bin/bash
-
-apt-get install -y -q expect
-
-MYSQL_ROOT_PASSWORD=bird2006
-
-SECURE_MYSQL=\$(expect -c "
-set timeout 10
-spawn mysql_secure_installation
-
-expect \"Enter current password for root (enter for none):\"
-send \"\r\"
-
-expect \"Set root password?\"
-send \"y\r\"
-
-expect \"New password:\"
-send \"\MYSQL_ROOT_PASSWORD\r\"
-
-expect \"Re-enter new password:\"
-send \"\MYSQL_ROOT_PASSWORD\r\"
-
-expect \"Remove anonymous users?\"
-send \"y\r\"
-
-expect \"Disallow root login remotely?\"
-send \"y\r\"
-
-expect \"Remove test database and access to it?\"
-send \"y\r\"
-
-expect \"Reload privilege tables now?\"
-send \"y\r\"
-
-expect eof
-")
-
-echo "\$SECURE_MYSQL"
-apt-get -y -q purge --auto-remove expect
-EOF
-
-chmod +x mariadb_secure.sh && ./mariadb_secure.sh && rm mariadb_secure.sh
-
-# clean environment
-#rm -rf /var/www
-#rm -rf /vagrant/source-mx
-#rm -rf /vagrant/source-mx-feeds
-#ln -fs /vagrant /var/www
 
 cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
 # configure jk-status
@@ -93,8 +69,6 @@ worker.list=jk-manager
 worker.jk-manager.type=status
 EOF
 
-# download latest version of MassBank
-git clone https://github.com/MassBank/MassBank-web
 
 # Compile and Copy MassBank components
 
@@ -105,7 +79,7 @@ service apache2 restart
 echo $(cat /dev/urandom |  tr -dc _A-Z-a-z-0-9 | head -c${1:-16}) 
 
 
-cd MassBank-web
+#cd MassBank-web
 
 ## During development: change into temporary branch
 #git checkout updateFromCVS

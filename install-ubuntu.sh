@@ -18,7 +18,7 @@ INST_ERROR_PATH=$INST_ROOT_PATH/apache/error
 INST_CONF_PATH=$INST_ROOT_PATH/apache/conf
 INST_MODULE_PATH=$INST_ROOT_PATH/apache/modules
 INST_TOMCAT_PATH=$INST_ROOT_PATH/tomcat
-INST_SQL_PATH=$INST_ROOT_PATH/sql/init.sql
+#INST_SQL_PATH=$INST_ROOT_PATH/sql/init.sql
 
 # Apache Path
 APACHE_HTDOCS_PATH=/var/www/html
@@ -60,6 +60,7 @@ echo
 echo "Compile Search.cgi"
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
 cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
+(cd ./Apache/cgi-bin/Search.cgi/ ; make clean)
 
 
 echo
@@ -87,24 +88,24 @@ fi
 
 echo
 echo ">> service start"
-service mysql restart 
+#service mysql restart 
 service tomcat7 restart 
 service apache2 restart
 
-echo
-echo ">> create database (root authority)"
+#echo
+#echo ">> create database (root authority)"
+#
+#cat >~/.my.cnf <<EOF
+#[client]
+#user=root
+#password="bird2006"
+#
+#[mysql]
+#user=root
+#password="bird2006"
+#EOF
 
-cat >~/.my.cnf <<EOF
-[client]
-user=root
-password="bird2006"
-
-[mysql]
-user=root
-password="bird2006"
-EOF
-
-mysql --user=root  < $INST_SQL_PATH
+#mysql --user=root  < $INST_SQL_PATH
 
 # echo
 # echo ">> retrieving massbank.jp page and specifications"
