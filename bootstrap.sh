@@ -27,7 +27,7 @@ docker-ce curl \
 libstdc++6:i386 libc6:i386 libgcc1:i386 \
 apache2 unzip apache2-utils libcgi-pm-perl \
 mariadb-client  \
-default-jre tomcat7 libapache2-mod-jk \
+default-jre tomcat8 libapache2-mod-jk \
 nano joe \
 lynx \
 build-essential libmysqlclient-dev \
@@ -39,7 +39,7 @@ openbabel
 usermod -a -G docker ubuntu
 
 #install docker compose
-curl -L https://github.com/docker/compose/releases/download/1.13.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+curl -s -L https://github.com/docker/compose/releases/download/1.13.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
 # prepare mariadb
@@ -95,12 +95,12 @@ APACHE_HTDOCS_PATH=/var/www/html
 APACHE_ERROR_PATH=/var/www/error
 
 # Tomcat Path
-DEST_TOMCAT_PATH=/var/lib/tomcat7
+DEST_TOMCAT_PATH=/var/lib/tomcat8
 
 
 echo
 echo ">> service stop"
-service tomcat7 stop 
+service tomcat8 stop 
 service apache2 stop
 
 echo
@@ -144,10 +144,10 @@ chmod 755 $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*.cgi \
 chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct.dat
 install -d -m 777 -o www-data -g www-data $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
 
-install -d -m 777 -o tomcat7 -g tomcat7 $DEST_TOMCAT_PATH/temp
-chown -R tomcat7:tomcat7 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
-chown -R tomcat7:tomcat7 $APACHE_HTDOCS_PATH/MassBank/DB/
-chown -R tomcat7:tomcat7 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
+install -d -m 777 -o tomcat8 -g tomcat8 $DEST_TOMCAT_PATH/temp
+chown -R tomcat8:tomcat8 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
+chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
+chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
 
 
 # Configure Tomcat if not already done
@@ -158,7 +158,7 @@ fi
 
 echo
 echo ">> service start"
-service tomcat7 restart 
+service tomcat8 restart 
 service apache2 restart
 
 # echo
