@@ -85,7 +85,7 @@ echo
 
 # Install Files Path
 INST_ROOT_PATH=./modules
-INST_HTDOCS_PATH=$INST_ROOT_PATH/apache/htdocs
+INST_HTDOCS_PATH=$INST_ROOT_PATH/apache/html
 INST_ERROR_PATH=$INST_ROOT_PATH/apache/error
 INST_CONF_PATH=$INST_ROOT_PATH/apache/conf
 INST_MODULE_PATH=$INST_ROOT_PATH/apache/modules
@@ -109,8 +109,8 @@ cp -r $INST_HTDOCS_PATH/. $APACHE_HTDOCS_PATH
 cp -r $INST_ERROR_PATH/. $APACHE_ERROR_PATH
 cp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
 chown -R www-data:www-data /var/www/*
-find /var/www/ -type d -exec chmod 755 {} \;
-find /var/www/ -type f -exec chmod 644 {} \;
+#find /var/www/ -type d -exec chmod 755 {} \;
+#find /var/www/ -type f -exec chmod 644 {} \;
 
 #enable required apache modules
 a2enmod rewrite
@@ -132,12 +132,12 @@ cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bi
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean)
 
 # change file mode
-chmod 755 $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*.cgi \
-          $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*/*.pl \
-          $APACHE_HTDOCS_PATH/MassBank/script/*.pl \
-          $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct_server
-chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct.dat
-install -d -m 777 -o www-data -g www-data $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
+#chmod 755 $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*.cgi \
+#          $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*/*.pl \
+#          $APACHE_HTDOCS_PATH/MassBank/script/*.pl \
+#          $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct_server
+#chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct.dat
+#install -d -m 777 -o www-data -g www-data $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
 
 
 #exit
