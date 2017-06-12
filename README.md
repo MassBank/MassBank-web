@@ -92,11 +92,39 @@ There are three parts needed to have a working development environment:
 Get your docker environment incl. docker-compose ready. Create a mariadb data directory `mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps -a` for **massbankweb_mariadb_1**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
 
 ## Install Apache httpd content
+Install dependencies: apache2 libcgi-pm-perl build-essential libmysqlclient-dev libapache2-mod-jk.
 Install apache httpd and make sure you have no old projects installed.
 ```
 sudo cp -rp modules/apache/error /var/www/
 sudo cp -rp modules/apache/html /var/www/
+(cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
+sudo cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi /var/www/html/MassBank/cgi-bin/
+(cd ./Apache/cgi-bin/Search.cgi/ ; make clean)
 sudo chown -R www-data:www-data /var/www/*
+```
+Configure apache httpd.
+```
+install -m 644 -o root -g root modules/apache/conf/010-a2site-massbank.conf /etc/apache2/sites-available
+a2ensite 010-a2site-massbank
+a2enmod rewrite
+a2enmod authz_groupfile
+a2enmod cgid
+a2enmod jk
+
+sudo bash -c 'cat >> /etc/apache2/apache2.conf << EOF
+ServerName localhost
+EOF'
+
+sudo bash -c 'cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
+# configure jk-status
+worker.list=jk-status
+worker.jk-status.type=status
+worker.jk-status.read_only=true
+# configure jk-manager
+worker.list=jk-manager
+worker.jk-manager.type=status
+EOF'
+
 ```
 
 ## Import project into Eclipse
