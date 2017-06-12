@@ -1,20 +1,26 @@
 Installation
 ============
 
-The requirement is the "vagrant" system, which you install on ubuntu via
-sudo apt-get install vagrant (I used version 1:1.7.2)
+There are two possibilities: Install MassBank in a virtual machiene
+without major impact on the host computer or install it as "Dynamic Web Module"
+in eclipse for development(requires installation of local Apache httpd).
+
+Virtual Machine Installation
+----------------------------
+The requirement is the "vagrant" system. I used the latest vagrant (1.9.5) on 
+Ubuntu 16.04. Please follow the instructions on `https://www.vagrantup.com/docs/installation/`.
 
 Then you check out the MassBank-web project, 
-(or fork on github first and clone from your own repository)
+(or fork on github first and clone from your own repository).
 
 which contains 1) The virtual machine initialization files 
 Vagrantfile and bootstrap.sh and 2) the MassBank software 
 to be installed inside the virtual machine. 
 
-After cloning the repo, the create the virtual machine 
+After cloning the repo, create the virtual machine 
 and fire it up in virtualbox. Once everything finished, 
 you  should have a running MassBank, so point your browser 
-to http://192.168.35.18/MassBank/ You can also ssh into 
+to http://192.168.35.18/MassBank/. You can also ssh into 
 the virtual machine without password:
 
 ````

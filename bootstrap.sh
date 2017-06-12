@@ -103,8 +103,7 @@ echo ">> service stop"
 service tomcat8 stop 
 service apache2 stop
 
-echo
-echo ">> file copy"
+# apache file copy
 cp -r $INST_HTDOCS_PATH/. $APACHE_HTDOCS_PATH
 cp -r $INST_ERROR_PATH/. $APACHE_ERROR_PATH
 cp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
@@ -125,24 +124,25 @@ htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
 install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf /etc/apache2/sites-available
 a2ensite 010-a2site-massbank
 
-cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
-cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
-
 echo 
 echo "Compile Search.cgi"
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
 cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean)
 
-
-echo
-echo ">> change file mode"
+# change file mode
 chmod 755 $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*.cgi \
           $APACHE_HTDOCS_PATH/MassBank/cgi-bin/*/*.pl \
           $APACHE_HTDOCS_PATH/MassBank/script/*.pl \
           $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct_server
 chmod 777 $APACHE_HTDOCS_PATH/MassBank/StructureSearch/struct.dat
 install -d -m 777 -o www-data -g www-data $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
+
+
+#exit
+# tomcat file copy
+#cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
+cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
 
 install -d -m 777 -o tomcat8 -g tomcat8 $DEST_TOMCAT_PATH/temp
 chown -R tomcat8:tomcat8 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
