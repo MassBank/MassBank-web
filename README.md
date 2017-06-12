@@ -81,3 +81,24 @@ If the tickbox is checked, the integrity of the appliance will be checked during
 
 Import the ova file to your VMWare environment and change the settings if necessary.
 
+# Install in eclipse for development
+
+There are three parts needed to have a working development environment:
+1. MySQL database - we use a MariaDB docker container
+2. Apache httpd
+3. Local Apache tomcat in eclipse
+
+## Install MariaDB
+Get your docker environment incl. docker-compose ready. Create a mariadb data directory `mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps -a` for **massbankweb_mariadb_1**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
+
+## Install Apache httpd content
+Install apache httpd and make sure you have no old projects installed.
+```
+sudo cp -rp modules/apache/error /var/www/
+sudo cp -rp modules/apache/html /var/www/
+sudo chown -R www-data:www-data /var/www/*
+```
+
+## Import project into Eclipse
+File-> Import -> Existing Maven Project
+Select the `MassBank` folder from this repo for import.
