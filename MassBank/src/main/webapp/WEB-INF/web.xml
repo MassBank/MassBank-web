@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:web="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<display-name>Archetype Created Web Application</display-name>
+	<servlet>
+		<servlet-name>MassBankEnv</servlet-name>
+		<servlet-class>massbank.MassBankEnv</servlet-class>
+		<init-param>
+			<param-name>localUrl</param-name>
+			<param-value>http://localhost/MassBank/</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MassBankEnv</servlet-name>
+		<url-pattern>/MassBankEnv</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>StartupExecModule</servlet-name>
+		<servlet-class>massbank.StartupExecModule</servlet-class>
+		<load-on-startup>2</load-on-startup>
+    </servlet>
+    
+	<servlet>
+        <servlet-name>MultiDispatcher</servlet-name>
+        <servlet-class>massbank.MultiDispatcher</servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MultiDispatcher</servlet-name>
+        <url-pattern>/MultiDispatcher</url-pattern>
+    </servlet-mapping>
+</web-app>

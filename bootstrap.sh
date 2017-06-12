@@ -27,13 +27,14 @@ docker-ce curl \
 libstdc++6:i386 libc6:i386 libgcc1:i386 \
 apache2 unzip apache2-utils libcgi-pm-perl \
 mariadb-client  \
-default-jre tomcat8 libapache2-mod-jk \
+default-jdk tomcat8 libapache2-mod-jk \
 nano joe \
 lynx \
 build-essential libmysqlclient-dev \
 mc xterm mysql-workbench \
 r-base-core \
-openbabel
+openbabel \
+maven
 
 # enable docker support for standard user
 usermod -a -G docker ubuntu
@@ -140,12 +141,19 @@ install -d -m 777 -o www-data -g www-data $APACHE_HTDOCS_PATH/MassBank/Structure
 
 
 #exit
-# tomcat file copy
-#cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
-cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
+# tomcat install webapp
+echo "Compile MassBank"
+cd MassBank
+mvn install
+echo "Copy webapp to tomcat"
+cp target/MassBank.war /var/lib/tomcat8/webapps/
 
-install -d -m 777 -o tomcat8 -g tomcat8 $DEST_TOMCAT_PATH/temp
-chown -R tomcat8:tomcat8 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
+
+#cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
+#cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
+
+#install -d -m 777 -o tomcat8 -g tomcat8 $DEST_TOMCAT_PATH/temp
+#chown -R tomcat8:tomcat8 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
 

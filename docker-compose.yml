@@ -5,7 +5,7 @@ services:
     image: mariadb:latest
     volumes:
       - /mariadb:/var/lib/mysql
-      - /vagrant/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - '3306:3306'
     environment:
