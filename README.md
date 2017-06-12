@@ -5,7 +5,6 @@ without major impact on the host computer or install it as "Dynamic Web Module"
 in eclipse for development(requires installation of local Apache httpd).
 
 ## Virtual Machine Installation
-----------------------------
 The requirement is the "vagrant" system and Virtualbox. I used the latest vagrant (1.9.5) with Virtualbox 5.1 on 
 Ubuntu 16.04. Please follow the instructions on [https://www.vagrantup.com/docs/installation/](https://www.vagrantup.com/docs/installation/) and [https://www.virtualbox.org/wiki/Linux_Downloads](https://www.virtualbox.org/wiki/Linux_Downloads).
 
