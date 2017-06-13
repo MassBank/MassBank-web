@@ -91,7 +91,7 @@ There are three parts needed to have a working development environment:
 3. Local Apache tomcat in eclipse
 
 ## Install MariaDB
-Get your docker environment incl. docker-compose ready. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps -a` for **massbankweb_mariadb_1**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
+Get your [docker environment](https://store.docker.com/editions/community/docker-ce-server-ubuntu) incl. [docker-compose](https://docs.docker.com/compose/install/) ready. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps -a` for **massbankweb_mariadb_1**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
 
 ## Install Apache httpd content
 Install dependencies: apache2 libcgi-pm-perl build-essential libmysqlclient-dev libapache2-mod-jk.
