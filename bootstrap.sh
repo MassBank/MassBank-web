@@ -56,15 +56,15 @@ cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
 EOF
 
-cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
-# configure jk-status
-worker.list=jk-status
-worker.jk-status.type=status
-worker.jk-status.read_only=true
-# configure jk-manager
-worker.list=jk-manager
-worker.jk-manager.type=status
-EOF
+#cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
+## configure jk-status
+#worker.list=jk-status
+#worker.jk-status.type=status
+#worker.jk-status.read_only=true
+## configure jk-manager
+#worker.list=jk-manager
+#worker.jk-manager.type=status
+#EOF
 
 
 # Create unique passwords
@@ -107,7 +107,7 @@ service apache2 stop
 # apache file copy
 cp -r $INST_HTDOCS_PATH/. $APACHE_HTDOCS_PATH
 cp -r $INST_ERROR_PATH/. $APACHE_ERROR_PATH
-cp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
+#cp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
 chown -R www-data:www-data /var/www/*
 #find /var/www/ -type d -exec chmod 755 {} \;
 #find /var/www/ -type f -exec chmod 644 {} \;
@@ -144,7 +144,7 @@ cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bi
 # tomcat install webapp
 echo "Compile MassBank"
 cd MassBank
-mvn install
+mvn -q install
 echo "Copy webapp to tomcat"
 cp target/MassBank.war /var/lib/tomcat8/webapps/
 

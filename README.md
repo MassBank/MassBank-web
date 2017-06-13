@@ -94,7 +94,7 @@ There are three parts needed to have a working development environment:
 Get your [docker environment](https://store.docker.com/editions/community/docker-ce-server-ubuntu) incl. [docker-compose](https://docs.docker.com/compose/install/) ready. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps -a` for **massbankweb_mariadb_1**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
 
 ## Install Apache httpd content
-Install dependencies: apache2 libcgi-pm-perl build-essential libmysqlclient-dev libapache2-mod-jk.
+Install dependencies: apache2 libcgi-pm-perl build-essential libmysqlclient-dev libapache2-mod-jk libdbd-mysql-perl mariadb-client.
 Install apache httpd and make sure you have no old projects installed.
 ```
 sudo cp -rp modules/apache/error /var/www/
@@ -103,6 +103,8 @@ sudo cp -rp modules/apache/html /var/www/
 sudo cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi /var/www/html/MassBank/cgi-bin/
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean)
 sudo chown -R www-data:www-data /var/www/*
+sudo chown -R $USER /var/www/html/MassBank/DB
+sudo chown -R $USER /var/www/html/MassBank/massbank.conf
 ```
 Configure apache httpd.
 ```
@@ -120,5 +122,5 @@ a2enmod jk'
 Restart server: `sudo systemctl restart apache2`.
 
 ## Import project into Eclipse
-Install eclipse with maven support. In eclipse do: File-> Import -> Existing Maven Project. 
+Install eclipse with "Maven Integration for Eclipse" and "Maven Integration for WTP". In eclipse do: File-> Import -> Existing Maven Project. 
 Select the `MassBank` folder from this repo for import. Them create a Tomcat server to run this project. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html).
