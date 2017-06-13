@@ -106,29 +106,19 @@ sudo chown -R www-data:www-data /var/www/*
 ```
 Configure apache httpd.
 ```
-install -m 644 -o root -g root modules/apache/conf/010-a2site-massbank.conf /etc/apache2/sites-available
-a2ensite 010-a2site-massbank
-a2enmod rewrite
-a2enmod authz_groupfile
-a2enmod cgid
-a2enmod jk
-
 sudo bash -c 'cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
 EOF'
 
-sudo bash -c 'cat >>/etc/libapache2-mod-jk/workers.properties <<EOF
-# configure jk-status
-worker.list=jk-status
-worker.jk-status.type=status
-worker.jk-status.read_only=true
-# configure jk-manager
-worker.list=jk-manager
-worker.jk-manager.type=status
-EOF'
-
+sudo bash -c 'install -m 644 -o root -g root modules/apache/conf/010-a2site-massbank.conf /etc/apache2/sites-available
+a2ensite 010-a2site-massbank
+a2enmod rewrite
+a2enmod authz_groupfile
+a2enmod cgid
+a2enmod jk'
 ```
+Restart server: `sudo systemctl restart apache2`.
 
 ## Import project into Eclipse
-File-> Import -> Existing Maven Project
-Select the `MassBank` folder from this repo for import.
+Install eclipse with maven support. In eclipse do: File-> Import -> Existing Maven Project. 
+Select the `MassBank` folder from this repo for import. Them create a Tomcat server to run this project. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html).
