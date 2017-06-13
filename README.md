@@ -7,6 +7,7 @@ in eclipse for development(requires installation of local Apache httpd).
 ## Virtual Machine Installation
 The requirement is the "vagrant" system and Virtualbox. I used the latest vagrant (1.9.5) with Virtualbox 5.1 on 
 Ubuntu 16.04. Please follow the instructions on [https://www.vagrantup.com/docs/installation/](https://www.vagrantup.com/docs/installation/) and [https://www.virtualbox.org/wiki/Linux_Downloads](https://www.virtualbox.org/wiki/Linux_Downloads).
+Note: 16.04 default vagrant(1.8.1) refuses to work correctly with 16.04 client boxes.
 
 Check out the MassBank-web project(or fork on github first and clone from your own repository), 
 which contains 1) The virtual machine initialization files 
@@ -26,6 +27,7 @@ vagrant up
 vagrant ssh
 ```
 
+## !Not tested with latest MassBank!
 ### Fedora 22 Workstation
 
 Install vagrant
