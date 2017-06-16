@@ -9,7 +9,7 @@ The requirement is the "vagrant" system and Virtualbox. I used the latest vagran
 Ubuntu 16.04. Please follow the instructions on [https://www.vagrantup.com/docs/installation/](https://www.vagrantup.com/docs/installation/) and [https://www.virtualbox.org/wiki/Linux_Downloads](https://www.virtualbox.org/wiki/Linux_Downloads).
 Note: 16.04 default vagrant(1.8.1) refuses to work correctly with 16.04 client boxes.
 
-Check out the MassBank-web project(or fork on github first and clone from your own repository), 
+Install [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) on your system if not present. Check out the MassBank-web project(or fork on github first and clone from your own repository), 
 which contains 1) The virtual machine initialization files 
 `Vagrantfile` and `bootstrap.sh` and 2) the MassBank software 
 to be installed inside the virtual machine. 
@@ -91,27 +91,34 @@ There are three parts needed to have a working development environment:
 3. Local Apache tomcat in eclipse
 
 ## Install MariaDB
-Get your [docker environment](https://store.docker.com/editions/community/docker-ce-server-ubuntu) incl. [docker-compose](https://docs.docker.com/compose/install/) ready. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps -a` for **massbankweb_mariadb_1**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
+Install and configure [docker environment](https://store.docker.com/editions/community/docker-ce-server-ubuntu) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your system-user is in the group 'docker'. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps -a` for **massbankweb_mariadb_1**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
 
 ## Install Apache httpd content
 Install dependencies: apache2 libcgi-pm-perl build-essential libmysqlclient-dev libapache2-mod-jk libdbd-mysql-perl mariadb-client.
 Install apache httpd and make sure you have no old projects installed.
 ```
+# copy Massbank-web content into folder '/var/www/'
 sudo cp -rp modules/apache/error /var/www/
 sudo cp -rp modules/apache/html /var/www/
+
+# built Search.cgi and copy to '/var/www/html/MassBank/cgi-bin/'
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
 sudo cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi /var/www/html/MassBank/cgi-bin/
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean)
+
+# configure file system rights
 sudo chown -R www-data:www-data /var/www/*
 sudo chown -R $USER /var/www/html/MassBank/DB
 sudo chown -R $USER /var/www/html/MassBank/massbank.conf
 ```
 Configure apache httpd.
 ```
+# write server-name to apache2.conf
 sudo bash -c 'cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
 EOF'
 
+# enable apache sites and modules
 sudo bash -c 'install -m 644 -o root -g root modules/apache/conf/010-a2site-massbank.conf /etc/apache2/sites-available
 a2ensite 010-a2site-massbank
 a2enmod rewrite
@@ -122,5 +129,6 @@ a2enmod jk'
 Restart server: `sudo systemctl restart apache2`.
 
 ## Import project into Eclipse
-Install eclipse with "Maven Integration for Eclipse" and "Maven Integration for WTP". In eclipse do: File-> Import -> Existing Maven Project. 
-Select this repo for import. Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). Edit /var/www/html/MassBank/massbank.conf and set `<MiddleServer URL="http://localhost/MassBank/"/>`. Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost/MassBank/](http://localhost/MassBank/).
+Download the [Eclipse IDE for Java EE Developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/marsr) with "Maven Integration for Eclipse" and "Maven Integration for WTP" and extract it to your preferred folder. Start eclipse and import the clones github-project 'Massbank-web': File -> Import -> Existing Maven Project -> Select this repo for import. 
+Download [Apache Tomcat](http://tomcat.apache.org/) and extract it to your preferred folder.
+Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). Edit '/var/www/html/MassBank/massbank.conf' and set `<MiddleServer URL="http://localhost/MassBank/"/>`. Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost/MassBank/](http://localhost/MassBank/).
