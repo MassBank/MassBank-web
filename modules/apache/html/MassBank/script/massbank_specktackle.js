@@ -1,5 +1,24 @@
 var MSchart;
 var MSData;
+// define global variables if they don not already exist in the scope
+try{ id; }
+catch(e) {
+    if(e.name == "ReferenceError") {
+        var id;
+    }
+}
+try{ site; }
+catch(e) {
+    if(e.name == "ReferenceError") {
+        var site;
+    }
+}
+try{ dsn; }
+catch(e) {
+    if(e.name == "ReferenceError") {
+        var dsn;
+    }
+}
 
 // Read a page's GET URL variables and return them as an associative array
 // (see http://stackoverflow.com/questions/12727081/function-to-retrieve-url-variables-using-javascript-and-jquery)
@@ -54,7 +73,7 @@ function loadMolFile() {
             // check if the id contains an id and site or dsn
             if (idSplit[2] !== undefined && idSplit[3] !== undefined) {
             	var molId = idSplit[2];
-            	dsn = idSplit[3];
+            	var dsn = idSplit[3];
             	// check if the id is a site, i.e. a number
             	if (!isNaN(dsn)) {
             		var jqxhrList = $.get('../massbank.conf').done(function (data){
