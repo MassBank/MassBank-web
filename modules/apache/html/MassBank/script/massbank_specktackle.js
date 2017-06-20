@@ -73,12 +73,11 @@ function loadMolFile() {
             // check if the id contains an id and site or dsn
             if (idSplit[2] !== undefined && idSplit[3] !== undefined) {
             	var molId = idSplit[2];
-            	dsn = idSplit[3];
+            	var dsn = idSplit[3];
             	// check if the id is a site, i.e. a number
             	if (!isNaN(dsn)) {
             		var jqxhrList = $.get('../massbank.conf').done(function (data){
 			            var list = data.evaluate('//DB',data,null,XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
-			            alert("before: " + dsn);
 			            dsn = list.snapshotItem(dsn).textContent;
 			            jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn,"text").done(function (data) {
 				            var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
