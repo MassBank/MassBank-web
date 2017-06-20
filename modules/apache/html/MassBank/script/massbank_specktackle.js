@@ -78,6 +78,7 @@ function loadMolFile() {
             	if (!isNaN(dsn)) {
             		var jqxhrList = $.get('../massbank.conf').done(function (data){
 			            var list = data.evaluate('//DB',data,null,XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
+			            alert("before: " + dsn);
 			            dsn = list.snapshotItem(dsn).textContent;
 			            jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn,"text").done(function (data) {
 				            var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
