@@ -20,7 +20,8 @@ function initializeMSSpecTackle() {
     if (MSchart != undefined) return;
     MSchart = st.chart.ms().labels(true).margins([10,60,30,90]);
     MSchart.render("#spectrum_canvas");
-    MSData = st.data.set().x("peaks.mz").y("peaks.intensity").title("spectrumId");
+    var ylims = [0,1100];
+    MSData = st.data.set().x("peaks.mz").y("peaks.intensity").title("spectrumId").ylimits(ylims);
     MSchart.load(MSData);
 }
 
