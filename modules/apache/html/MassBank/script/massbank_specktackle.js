@@ -186,6 +186,25 @@ function loadData() {
 }
 
 $(document).ready(function () {
+	// define global variables if they don not already exist in the scope
+	try{ id; }
+	catch(e) {
+	    if(e.name == "ReferenceError") {
+	        var id;
+	    }
+	}
+	try{ site; }
+	catch(e) {
+	    if(e.name == "ReferenceError") {
+	        var site;
+	    }
+	}
+	try{ dsn; }
+	catch(e) {
+	    if(e.name == "ReferenceError") {
+	        var dsn;
+	    }
+	}
 	loadData();
 	loadMolFile();
 });
