@@ -53,7 +53,7 @@ function loadMolFile() {
             // check if the id contains an id and site or dsn
             if (idSplit[2] !== undefined && idSplit[3] !== undefined) {
             	var molId = idSplit[2];
-            	var dsn = idSplit[3];
+            	dsn = idSplit[3];
             	// check if the id is a site, i.e. a number
             	if (!isNaN(dsn)) {
             		var jqxhrList = $.get('../massbank.conf').done(function (data){
@@ -75,8 +75,15 @@ function loadMolFile() {
             } 
             // if the id does not contain an id and site or dsn try to retrieve both parameters from the page's URL
             else {
-            	var molId = urlVars["id"];
-            	var dsn = urlVars["dsn"];
+            	var molId = id;
+            	var molIdURL = urlVars["id"];
+            	var dsnURL = urlVars["dsn"];
+    			if (molIdURL !== undefined) {
+					molId = molIdURL;
+				}
+				if (dsnURL !== undefined) {
+					dsn = dsnURL;
+				}
             	if (molId !== "" && dsn !== "") {
             		var jqxhr = $.get("../cgi-bin/GetMolfileById.cgi?dsn="+dsn+"&id="+molId,"text");
 				    jqxhr.done(function (data) {
@@ -131,11 +138,18 @@ function loadData() {
 	        spectrum["mzStart"] = mzStart;
 	        spectrum["mzStop"] = mzStop;
 		} 
-		// if no peak list is specified try to get peak list for a component specified by id in the URL
+		// if no peak list is specified try to get peak list for a component specified by it's id
 		else {
+			// try to get id from the url
 			var urlVars = getUrlVars();
-			var id = urlVars["id"];
-			var dsn = urlVars["dsn"];
+			var idURL = urlVars["id"];
+			var dsnURL = urlVars["dsn"];
+			if (idURL !== undefined) {
+				id = idURL;
+			}
+			if (dsnURL !== undefined) {
+				dsn = dsnURL;
+			}
 			if (id !== "" && dsn !== "") {
 				var jqxhr = $.get("../cgi-bin/GetData.cgi?id="+id+"&dsn="+dsn,"text");
 				jqxhr.done(function (data) {
