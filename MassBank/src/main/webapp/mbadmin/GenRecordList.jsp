@@ -93,11 +93,30 @@
 		psm.print( param );
 		BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
 		String line = "";
+		
+		boolean contentSeen = false;	// just for bug-fix: ignore trailing empty lines
 		ArrayList<String> list = new ArrayList<String>();
 		while ( ( line = in.readLine() ) != null ) {
+			// bug-fix: ignore trailing empty lines
+			if(!contentSeen && line.length() == 0)
+				continue;
+			if(!contentSeen && line.length() > 0)
+				contentSeen	= true;
+			// bug-fix: ignore trailing empty lines
+			
 			list.add( line );
 		}
 		in.close();
+		
+		// bug-fix: ignore tailing empty lines
+		for(int idx = list.size() - 1; idx >= 0; idx--){
+			if(list.get(idx).length() == 0){
+				list.remove(idx);
+			} else {
+				break;
+			}
+		}
+		// bug-fix: ignore tailing empty lines
 		
 		// ワークブック、ワークシートを作成
 		HSSFWorkbook wb = new HSSFWorkbook();
@@ -151,6 +170,7 @@
 				isColReSize = true;
 				colspan = idList.length;
 			}
+			
 			for ( short n = 0; n < idList.length; n++ ) {
 				short col2 = (short)(item.length - 1 + n);
 				HSSFCell cell = hsRow.createCell(col2);
