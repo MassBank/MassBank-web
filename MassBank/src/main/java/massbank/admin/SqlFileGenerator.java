@@ -275,18 +275,22 @@ public class SqlFileGenerator {
 			}
 			if ( isFound ) {
 				// DBに登録済みINSTRUMENTの場合
+				// instrument is registered in DB
 				valReco += ", " + this.instNo[i];
 			}
 			else {
 				// DBに未登録INSTRUMENTの場合
+				// instrument is not registered in DB
 				int instNo = 1;
 				String keyStr = this.acInstType + "\t" + this.acInst;
 				if ( this.instNew.containsKey(keyStr) ) {
 					// 既に新規登録処理を行っているINSTRUMENTの場合
+					// instrument is already pending registration
 					instNo = this.instNew.get(keyStr);
 				}
 				else {
 					// まだ新規登録処理を行っていないINSTRUMENTの場合
+					// instrument is unknown so far
 					for (int tmpNo=instNo; tmpNo<Integer.MAX_VALUE; tmpNo++) {
 						if (!usedNoList.contains(String.valueOf(tmpNo))) {
 							usedNoList.add(String.valueOf(tmpNo));

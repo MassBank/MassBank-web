@@ -115,9 +115,18 @@ public class CallCgi extends Thread
 			String line = "";
 			if (is != null) {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
+				boolean contentSeen = false;	// just for bug-fix: ignore trailing empty lines 
 				while ((line = reader.readLine()) != null) {
 					reader.mark(2000);
 					String forward = reader.readLine();
+					
+					// bug-fix: ignore trailing empty lines
+					if(!contentSeen && line.length() == 0)
+						continue;
+					if(!contentSeen && line.length() > 0)
+						contentSeen	= true;
+					// bug-fix: ignore trailing empty lines
+					
 					if((line.equals("") || line.equals("\n") || line.equals("OK")) && forward == null)
 						sb.append(line);				// append last line to StringBuilder
 					else if(forward != null)

@@ -28,6 +28,7 @@ package massbank;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -57,6 +58,7 @@ public class MultiDispatcher extends HttpServlet {
 
 		//---------------------------------------------------
 		// ベースURLセット
+		// set base URL
 		//---------------------------------------------------
 		String path = req.getRequestURL().toString();
 		int pos = path.indexOf( MassBankCommon.MULTI_DISPATCHER_NAME );
@@ -64,12 +66,14 @@ public class MultiDispatcher extends HttpServlet {
 
 		//---------------------------------------------------
 		// 環境設定ファイル情報取得
+		// fetch environment setting from file
 		//---------------------------------------------------
 		GetConfig conf = new GetConfig(baseUrl);
 		boolean isTrace = conf.isTraceEnable();
 
 		//---------------------------------------------------
 		// リクエストパラメータ取得
+		// Request parameter acquisition
 		//---------------------------------------------------
 		String type = "";
 		Hashtable<String, Object> params = new Hashtable<String, Object>();
@@ -308,6 +312,7 @@ public class MultiDispatcher extends HttpServlet {
 		private String getSortedResult() {
 			//-------------------------------------------
 			// 実行結果をリストに格納
+			// store result from execution as list
 			//-------------------------------------------
 			StringBuffer res = new StringBuffer("");
 			ArrayList<String> result = new ArrayList<String>();
@@ -332,6 +337,7 @@ public class MultiDispatcher extends HttpServlet {
 
 			//-------------------------------------------
 			// スコアリストを作成
+			// create score list
 			//-------------------------------------------
 			String line = "";
 			String[] item;
@@ -350,11 +356,13 @@ public class MultiDispatcher extends HttpServlet {
 			}
 			//-------------------------------------------
 			// スコアリストをソート
+			// sort score list
 			//-------------------------------------------
 			Collections.sort(scoreList, new ScoreComparator());
 
 			//-------------------------------------------
 			// スコア順で結果を返す
+			// return results in score-order
 			//-------------------------------------------
 			for ( int i = 0; i < result.size(); i++ ) {
 				line = (String)scoreList.get(i);
@@ -390,7 +398,8 @@ public class MultiDispatcher extends HttpServlet {
 
 		/**
 		 * 通常のレスポンス
-		 * @return 結果
+		 * normal (unsorted) response
+		 * @return 結果 the result
 		 */
 		private String getResult() {
 			StringBuffer res = new StringBuffer("");
@@ -404,7 +413,6 @@ public class MultiDispatcher extends HttpServlet {
 					if ( lines[j].indexOf("<!") >= 0 ) {
 						break;
 					}
-
 					// Site No 付加
 					res.append( lines[j] + "\t" + this.reqInfoList.get(i).getSiteNo() + "\n" );
 				}

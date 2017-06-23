@@ -723,6 +723,7 @@ function selDb() {
 	try {
 		//----------------------------------------------------
 		// ファイルアップロード時の初期化処理
+		// Initialization process at file upload
 		//----------------------------------------------------
 		if ( FileUpload.isMultipartContent(request) ) {
 			(new File(tmpPath)).mkdir();
@@ -739,6 +740,7 @@ function selDb() {
 		
 		//----------------------------------------------------
 		// 存在するDB名取得（ディレクトリによる判定）
+		// Acquire existing DB name (determined by directory)
 		//----------------------------------------------------
 		List<String> dbNameList = Arrays.asList(conf.getDbName());
 		ArrayList<String> dbNames = new ArrayList<String>();
@@ -769,6 +771,7 @@ function selDb() {
 		
 		//----------------------------------------------------
 		// リクエスト取得
+		// Request Acquisition
 		//----------------------------------------------------
 		if ( FileUpload.isMultipartContent(request) ) {
 			HashMap<String, String[]> reqParamMap = new HashMap<String, String[]>();
@@ -796,6 +799,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// フォーム表示
+		// Assemble HTML page elements
 		//---------------------------------------------
 		out.println( "<form name=\"formMain\" action=\"./RecordRegist.jsp\" enctype=\"multipart/form-data\" method=\"post\" onSubmit=\"doWait()\">" );
 		out.println( "\t<span class=\"baseFont\">Database :</span>&nbsp;" );
@@ -843,6 +847,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// ファイルアップロード
+		// File upload
 		//---------------------------------------------
 		HashMap<String, Boolean> upFileMap = up.doUpload();
 		if ( upFileMap != null ) {
@@ -860,7 +865,7 @@ function selDb() {
 				isResult = false;
 			}
 			else if ( !upFileName.endsWith(ZIP_EXTENSION) && !upFileName.endsWith(MSBK_EXTENSION) ) {
-				out.println( msgErr( "prease select&nbsp;&nbsp;[" + UPLOAD_RECDATA_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_RECDATA_MSBK + "].") );
+				out.println( msgErr( "please select&nbsp;&nbsp;[" + UPLOAD_RECDATA_ZIP + "]&nbsp;&nbsp;or&nbsp;&nbsp;[" + UPLOAD_RECDATA_MSBK + "].") );
 				up.deleteFile( upFileName );
 				isResult = false;
 			}
@@ -876,6 +881,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// アップロードファイルの解凍処理
+		// Decompression of uploaded file
 		//---------------------------------------------
 		final String upFilePath = (new File(tmpPath + File.separator + upFileName)).getPath();
 		isResult = FileUtil.unZip(upFilePath, tmpPath);
@@ -886,6 +892,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// アップロードファイル格納ディレクトリ存在確認
+		// Confirm existence of directory of decompressed uploaded file
 		//---------------------------------------------
 		final String recPath = (new File(dbRootPath + File.separator + selDbName)).getPath();
 		File tmpRecDir = new File(recPath);
@@ -895,11 +902,13 @@ function selDb() {
 		
 		//---------------------------------------------
 		// 解凍ファイルチェック処理
+		// Check decompressed file
 		//---------------------------------------------
 		// dataディレクトリ存在チェック
 		final String recDataPath = (new File(tmpPath + File.separator + RECDATA_DIR_NAME)).getPath() + File.separator;
 		if ( (new File( recDataPath )).isDirectory() ) {
 			// ファイル拡張子チェック
+			// File extension check
 			for ( String fileName : (new File(recDataPath)).list() ) {
 				if ( fileName.lastIndexOf(".") == -1 ) {
 					isResult = false;
@@ -931,6 +940,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// DB接続
+		// Establish database connection
 		//---------------------------------------------
 		db = new DatabaseAccess(dbHostName, selDbName);
 		isResult = db.open();
@@ -942,6 +952,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// ロールバック用DBダンプ処理
+		// DB dump processing for rollback
 		//---------------------------------------------
 		String dumpPath = tmpPath + selDbName + ".dump";
 		String[] tables = new String[]{"SPECTRUM", "RECORD", "PEAK", "CH_NAME", "CH_LINK", "TREE", "INSTRUMENT"};
@@ -956,6 +967,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// チェック処理
+		// Check records
 		//---------------------------------------------
 		ArrayList<String> regFileList = checkRecord(db, out, recDataPath, recPath, recVersion);
 		if ( regFileList.size() == 0 ) {
@@ -965,6 +977,7 @@ function selDb() {
 		
 		//---------------------------------------------
 		// 登録処理
+		// Registration process
 		//---------------------------------------------
 		ArrayList<File> copiedFiles = new ArrayList<File>();	// ロールバック（登録ファイル削除）用
 		isResult = registRecord(db, out, conf, dbHostName, tmpPath, regFileList, recPath, selDbName, baseUrl, copiedFiles, recVersion);
