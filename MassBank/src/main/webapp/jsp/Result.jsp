@@ -1187,43 +1187,42 @@
 					// 化学構造式を表示（画像がなければアプレットで表示）
 					String key = rec.getName().toLowerCase();
 					StringBuilder previewName = new StringBuilder(rec.getName());
-//					if (previewName.length() > 17) {
-//						previewName.delete(17, previewName.length());
-//						previewName.append("...");
-//					}
-//					if ( mapGifSmallUrl.containsKey(key) ) {
-//						if ( mapGifUrl.containsKey(key) ) {
-//							out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-//						}
-//						else {
-//							out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-//						}
-//						if ( mapGifLargeUrl.containsKey(key) ) {
-//							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key) + "')\" style=\"margin:0px; cursor:pointer\">");
-//						}
-//						else {
-//							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-//						}
-//						out.println( "  </a>" );
-//					}
-//					else if ( mapMolData.containsKey(key) ) {
-//						String moldata = mapMolData.get(key).trim();
-//						if ( !moldata.equals("") ) {
+					if (previewName.length() > 17) {
+						previewName.delete(17, previewName.length());
+						previewName.append("...");
+					}
+					if ( mapGifSmallUrl.containsKey(key) ) {
+						if ( mapGifUrl.containsKey(key) ) {
+							out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+						}
+						else {
+							out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+						}
+						if ( mapGifLargeUrl.containsKey(key) ) {
+							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key) + "')\" style=\"margin:0px; cursor:pointer\">");
+						}
+						else {
+							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
+						}
+						out.println( "  </a>" );
+					}
+					else if ( mapMolData.containsKey(key) ) {
+						String moldata = mapMolData.get(key).trim();
+						if ( !moldata.equals("") ) {
 //							out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
 //							out.println( "    <param name=\"options\" value=\"depict\">" );
 //							out.println( "    <param name=\"mol\" value=\"");
 //							out.print( moldata );
 //							out.println( "\">");
 //							out.println( "   </applet>\n");
-//						}
-//					}
-//					else {
-//						out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-//						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('..image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-//						out.println( "  </a>" );
-//					}
-
-					out.println("<div class=\"molecule§viewer\" id=\"molecule§viewer§" + rec.getId() + "§" + rec.getContributor() + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
+							out.println("<div class=\"molecule§viewer\" id=\"molecule§viewer§" + rec.getId() + "§" + rec.getContributor() + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
+						}
+					}
+					else {
+						out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('..image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
+						out.println( "  </a>" );
+					}
 
 					out.println( "  </td>" );
 					out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );
