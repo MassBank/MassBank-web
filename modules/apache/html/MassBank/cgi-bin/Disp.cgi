@@ -40,6 +40,7 @@
 'CH\$LINK: CHEBI',						'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
 'CH\$LINK: CHEMPDB',					'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
 'CH\$LINK: CHEMSPIDER',					'http://www.chemspider.com/%s',
+'CH\$LINK: COMPTOX',					'https://comptox.epa.gov/dashboard/dsstoxdb/results?search=%s',
 'CH\$LINK: FLAVONOIDVIEWER',			'http://www.metabolome.jp/software/FlavonoidViewer/',
 'CH\$LINK: HMDB',						'http://www.hmdb.ca/metabolites/%s',
 'CH\$LINK: INCHIKEY',					'https://www.google.com/search?q=&quot;%s&quot;',
