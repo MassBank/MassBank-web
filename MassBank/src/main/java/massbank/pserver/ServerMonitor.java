@@ -90,7 +90,7 @@ public class ServerMonitor extends HttpServlet {
 	 * 監視を開始する
 	 */
 	private void managed() {
-		Logger.global.info( "managed start" );
+		Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info( "managed start" );
 
 		// スレッドが生存している場合
 		if ( this.poll != null && this.poll.isAlive() ) {
@@ -122,7 +122,7 @@ public class ServerMonitor extends HttpServlet {
 	 * 監視を停止する
 	 */
 	private void unmanaged() {
-		Logger.global.info( "unmanaged start" );
+		Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info( "unmanaged start" );
 
 		// ServerPollingスレッドが生存していない場合は何もせず
 		if ( !poll.isAlive() ) {
@@ -151,7 +151,7 @@ public class ServerMonitor extends HttpServlet {
 		svrStatus.setManaged(false);
 		this.svrStatus = null;
 
-		Logger.global.info( "unmanaged end" );
+		Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info( "unmanaged end" );
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class ServerMonitor extends HttpServlet {
 		public void run() {
 			// ポーリング周期を取得
 			int pollInterval = svrStatus.getPollInterval();
-			Logger.global.info( "polling start" );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info( "polling start" );
 
 			try { sleep( 2000 ); }
 			catch (InterruptedException ex) { ex = null; }
@@ -194,7 +194,7 @@ public class ServerMonitor extends HttpServlet {
 
 				// 監視対象のサーバがない場合は終了する
 				if ( svrStatus.getServerNum() == 0 ) {
-					Logger.global.info( "ServerNum=0" );
+					Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info( "ServerNum=0" );
 					svrStatus.setManaged(false);
 					return;
 				}
@@ -237,7 +237,7 @@ public class ServerMonitor extends HttpServlet {
 						}
 						catch ( Exception e ) {
 							// エラー
-							Logger.global.severe( e.toString() );
+							Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( e.toString() );
 						}
 					}
 				}

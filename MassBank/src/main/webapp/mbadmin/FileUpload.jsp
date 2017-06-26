@@ -249,7 +249,7 @@ function checkAll() {
 						}
 					}
 					catch (SecurityException e) {
-						Logger.global.severe( "Molfile : " + file.getPath() );
+						Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( "Molfile : " + file.getPath() );
 						e.printStackTrace();
 					}
 				}

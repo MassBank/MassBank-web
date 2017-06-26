@@ -326,8 +326,8 @@
 				String peak = line.substring( 0, posP );
 				String inte = line.substring( posP+1, line.length() );
 				// m/z,intensity の値が数値以外の場合はエラー
-				if ( !NumberUtils.isNumber(peak)
-				  || !NumberUtils.isNumber(inte)  ) {
+				if ( !NumberUtils.isCreatable(peak)
+				  || !NumberUtils.isCreatable(inte)  ) {
 					isError = true;
 					break;
 				}
