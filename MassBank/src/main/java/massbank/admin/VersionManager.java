@@ -45,7 +45,7 @@ import java.util.jar.Manifest;
 import massbank.GetConfig;
 import massbank.MassBankEnv;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class VersionManager {
 
@@ -810,7 +810,7 @@ public class VersionManager {
 			for ( int j = 0; j < item.length; j++ ) {
 				if ( !item[j].equals("") ) {
 					vals = item[j].split("\\.");
-					if ( NumberUtils.isNumber(vals[0])
+					if ( NumberUtils.isCreatable(vals[0])
 					  && vals[0].length() < 4 ) {
 						ver = item[0];
 						break;
@@ -824,7 +824,7 @@ public class VersionManager {
 				// スペースは読み飛ばす
 				if ( !item[j].equals("") ) {
 					vals = item[j].split("\\.");
-					if ( NumberUtils.isNumber(vals[0])
+					if ( NumberUtils.isCreatable(vals[0])
 					  && Integer.parseInt(vals[0]) > 2000 ) {
 						date = item[j];
 						break;

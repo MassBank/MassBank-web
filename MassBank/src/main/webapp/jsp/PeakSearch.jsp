@@ -34,7 +34,7 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ include file="./Common.jsp"%>
 <%
 	AdminCommon admin = new AdminCommon();

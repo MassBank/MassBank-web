@@ -43,7 +43,7 @@
 <%@ page import="java.net.URLConnection" %>
 <%@ page import="org.apache.commons.fileupload.DiskFileUpload" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="org.apache.commons.lang.NumberUtils" %>
+<%@ page import="org.apache.commons.lang3.math.NumberUtils" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	private HttpServletRequest req = null;

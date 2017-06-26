@@ -38,7 +38,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class ChemicalFormulaUtils {
 
@@ -55,7 +55,7 @@ public class ChemicalFormulaUtils {
 			if ( pos < endPos ) {
 				chr = formula.substring( pos, pos + 1 );
 			}
-			if ( pos == endPos || (!NumberUtils.isNumber(chr) && chr.equals(chr.toUpperCase())) ) {
+			if ( pos == endPos || (!NumberUtils.isCreatable(chr) && chr.equals(chr.toUpperCase())) ) {
 				// 元素記号 + 個数を切り出す
 				String item = formula.substring( startPos, pos );
 
@@ -63,7 +63,7 @@ public class ChemicalFormulaUtils {
 				boolean isFound = false;
 				for ( i = 1; i < item.length(); i++ ) {
 					chr = item.substring(i, i + 1);
-					if ( NumberUtils.isNumber(chr) ) {
+					if ( NumberUtils.isCreatable(chr) ) {
 						isFound = true;
 						break;
 					}

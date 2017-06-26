@@ -30,7 +30,7 @@ import java.text.DecimalFormat;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
-import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 
 public class QueryFileUtil {
@@ -174,7 +174,7 @@ public class QueryFileUtil {
 			pair = pair.replaceAll("\t+", ",");
 			String[] vals = pair.split(",");
 			if ( vals.length < 2 || 
-				 !NumberUtils.isNumber(vals[0]) || !NumberUtils.isNumber(vals[1]) ) {
+				 !NumberUtils.isCreatable(vals[0]) || !NumberUtils.isCreatable(vals[1]) ) {
 				mzs[i] = ("-1");
 				intes[i] = ("-1");
 			}

@@ -31,7 +31,7 @@ import java.io.BufferedReader;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class SVNServiceManager extends HttpServlet {
 	public static String SVN_BASE_URL = "";
@@ -68,8 +68,8 @@ public class SVNServiceManager extends HttpServlet {
 			int startDelay = 0; 
 			int interval = 0; 
 			if ( items.length == 3 ) {
-				startDelay = NumberUtils.stringToInt(items[1].trim());
-				interval = NumberUtils.stringToInt(items[2].trim());
+				startDelay = NumberUtils.toInt(items[1].trim());
+				interval = NumberUtils.toInt(items[2].trim());
 			}
 			if ( enable.equals("true") ) {
 				if ( serviceNames[i].equals("RegistrationCommitter") ) {

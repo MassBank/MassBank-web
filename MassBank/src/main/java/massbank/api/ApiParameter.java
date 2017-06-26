@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Iterator;
-import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 
 public class ApiParameter {
@@ -151,7 +151,7 @@ public class ApiParameter {
 		}
 
 		// 数値であるかチェック
-		if ( !tolerance.equals("") && !NumberUtils.isNumber(tolerance) ) {
+		if ( !tolerance.equals("") && !NumberUtils.isCreatable(tolerance) ) {
 			errDetails.add( "tolerance=" + tolerance );
 		}
 
@@ -162,7 +162,7 @@ public class ApiParameter {
 		if ( cutoff.equals("") ) {
 			cutoff = "50";
 		}
-		else if ( NumberUtils.isNumber(cutoff) ) {
+		else if ( NumberUtils.isCreatable(cutoff) ) {
 			int val = Integer.parseInt(cutoff);
 			if ( val < 0 || val > 999 ) {
 				errDetails.add( "cutoff=" + cutoff );
@@ -222,7 +222,7 @@ public class ApiParameter {
 		String[] mzs = (String[])mapParam.get("mzs");
 
 		String relInte = (String)mapParam.get("relativeIntensity");
-		if ( !NumberUtils.isNumber(relInte) ) {
+		if ( !NumberUtils.isCreatable(relInte) ) {
 			errDetails.add( "relativeIntensity=" + relInte );
 		}
 		else {
@@ -233,7 +233,7 @@ public class ApiParameter {
 		}
 
 		String tol = (String)mapParam.get("tolerance");
-		if ( !NumberUtils.isNumber(tol) ) {
+		if ( !NumberUtils.isCreatable(tol) ) {
 			errDetails.add( "tolerance=" + tol );
 		}
 
