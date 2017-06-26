@@ -35,7 +35,8 @@
 	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 	String siteLongName = conf.getSiteLongName()[0];	// サイト名取得
 %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -49,13 +50,13 @@
 <link rel="stylesheet" type="text/css" href="css/Common.css">
 <link rel="stylesheet" type="text/css" href="css/Personal.css">
 </head>
-<body class="msbkFont" bgcolor="#ECECEC" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-<div align="center" valign="top">
+<body class="msbkFont" bgcolor="#ECECEC">
+<div align="center">
 
 <table width="820" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<!--// left -->
-		<td width="10" background="image/index_bg_left_001.gif"><img src="image/spacer.gif" alt="" width="10"></td>
+		<td width="10"><img src="image/spacer.gif" alt="spacer" width="10"></td>
 		<td align="center" bgcolor="#FFFFFF">
 			<!--// header -->
 			<table width="800" border="0" cellspacing="0" cellpadding="0">
@@ -66,7 +67,7 @@
 			<table width="800" border="0" cellpadding="0" cellspacing="0" class="pageShadow">
 				<tr>
 					<td align="center">
-						<img src="image/spacer.gif" width="1" height="10">
+						<img src="image/spacer.gif" alt="spacer" width="1" height="10">
 						<h2><font color="dimgray"><%=siteLongName%></font></h2>
 						<!--// database -->
 						<table width="700" border="0" cellspacing="0" cellpadding="0">
@@ -171,12 +172,14 @@
 											</tr>
 											<tr>
 												<td height="100" colspan="6">
-													<!-- <li><a href="./mbadmin/">MassBank Administration Tool</a></li><br /><br /> -->
-													<li><a href="./api/services/MassBankAPI?wsdl" target="_blank">WEB-API WSDL</a></li>
+													<ul>
+														<!-- <li><a href="./mbadmin/">MassBank Administration Tool</a></li><br /><br /> -->
+														<li><a href="./api/services/MassBankAPI?wsdl" target="_blank">WEB-API WSDL</a></li>
+													</ul>	
 												</td>
 											</tr>
 											<tr>
-												<td heigth="100" colspan="100">
+												<td colspan="100">
 												<b>Announcement<br><br></b>
 												Dear customers,<br>
 												The Java applet technology was deprecated. Therefore many services of MassBank are out of service (e.g. spectral search). The main services quick search, record index and record display are working properly. Our apologies for any inconvience.
@@ -205,7 +208,7 @@
 				</tr>
 			</table>
 		</td>
-		<td width="10" background="image/index_bg_right_001.gif"><img src="image/spacer.gif" alt="" width="10"></td>
+		<td width="10"><img src="image/spacer.gif" alt="" width="10"></td>
 	</tr>
 </table>
 </div>
