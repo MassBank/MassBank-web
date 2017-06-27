@@ -60,14 +60,14 @@
 &nbsp;&nbsp;
 <a href="./index.html" target="_parent" title="MassBank">Home</a>
 |
-<a href="./SearchPage.html" target="_parent" title="Spectrum Search">Spectrum</a>
-|
+<!-- <a href="./SearchPage.html" target="_parent" title="Spectrum Search">Spectrum</a>
+| -->
 <a href="./QuickSearch.html" target="_parent" title="Quick Search">Quick</a>
 |
 <a href="./PeakSearch.html" target="_parent" title="Peak Search">Peak</a>
 |
-<a href="./StructureSearch.html" target="_parent" title="Substructure Search">Substructure</a>
-|
+<!-- <a href="./StructureSearch.html" target="_parent" title="Substructure Search">Substructure</a>
+| -->
 <%
 	if ( isAdvanced ) {
 %>
@@ -76,21 +76,21 @@
 <%
 	}
 %>
-<a href="./PackageView.html" target="_parent" title="Spectral Browser">Browser</a>
-|
+<!-- <a href="./PackageView.html" target="_parent" title="Spectral Browser">Browser</a>
+| -->
 <%
 	if ( isBatch ) {
 %>
-<a href="http://www.massbank.jp/BatchSearch.html" target="_blank" title="Batch Service at MassBank Japan">Batch</a>
-|
+<!-- <a href="http://www.massbank.jp/BatchSearch.html" target="_blank" title="Batch Service at MassBank Japan">Batch</a>
+| -->
 <%
 	}
 %>
-<a href="./BrowsePage.html" target="_parent" title="Browse Page">Browse</a>
-|
+<!-- <a href="./BrowsePage.html" target="_parent" title="Browse Page">Browse</a>
+| -->
 <a href="./RecordIndex.html" target="_parent" title="Record Index">Index</a>
 |
-<a href="./Statistics.html" target="_parent" title="Record and Compounds Statistics">Statistics</a>
+<a href="./Statistics.html" target="_blank" title="Record and Compounds Statistics">Statistics</a>
 |
 &nbsp;&nbsp;&nbsp;MassBank ID:&nbsp;<input name="id" type="text" size="10" value="" maxlength="8">&nbsp;<input type="submit" value=" Go ">
 					</td>

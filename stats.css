@@ -1,9 +1,0 @@
-#stats table { width:100%; line-height: 20px; margin-bottom:5px; }
-#stats tr { background:#9ff781; }
-#stats th { padding:0.3em 0.6em; vertical-align:middle; text-align:center;  background:#088a29; color:#fff; font-weight:bold; }
-#stats td { padding:0.3em 0.6em; vertical-align:middle; text-align:left; }
-#stats th.prefix_en { width:44px; }
-#stats th.instms_en { width:185px; }
-#stats th.spectra_en { width:80px; }
-#stats th.compound_en { width:80px; }
-#stats .text_right { text-align:right; }

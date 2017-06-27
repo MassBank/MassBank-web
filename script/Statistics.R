@@ -10,7 +10,7 @@
 path <- "/var/www/html/MassBank/DB/annotation/"
 
 # Source the script
-source("/vagrant/R/getInfo_and_InChIKeys_extended.R")
+source("/vagrant/script/GetInfo_and_InChIKeys_extended.R")
 
 # Run the script and generate a csv
 getInfoFixKey(path, "/var/www/html/MassBank/statistics.csv","/usr/bin")
