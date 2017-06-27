@@ -227,7 +227,7 @@ public class ServerStatus {
 			}
 		}
 		catch (Exception e) {
-			Logger.global.severe( e.toString() );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( e.toString() );
 		}
 	}
 
@@ -244,7 +244,7 @@ public class ServerStatus {
 			}
 		}
 		catch (Exception e) {
-			Logger.global.severe( e.toString() );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( e.toString() );
 		}
 	}
 
@@ -261,7 +261,7 @@ public class ServerStatus {
 			}
 		}
 		catch (Exception e) {
-			Logger.global.severe( e.toString() );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( e.toString() );
 		}
 	}
 
@@ -287,7 +287,7 @@ public class ServerStatus {
 			}
 		}
 		catch (Exception e) {
-			Logger.global.severe( e.toString() );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( e.toString() );
 		}
 		store();
 	}
@@ -323,7 +323,7 @@ public class ServerStatus {
 			}
 		}
 		catch (Exception e) {
-			Logger.global.severe( e.toString() );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( e.toString() );
 		}
 		return true;
 	}

@@ -31,13 +31,14 @@ import java.util.ArrayList;
 import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.net.NetworkInterface;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import massbank.MassBankEnv;
 
 public class SVNUtils {
@@ -100,7 +101,7 @@ public class SVNUtils {
 			String filePath = paths[i];
 			boolean found = false;
 			try {
-				List<String> lines = FileUtils.readLines(new File(filePath));
+				List<String> lines = FileUtils.readLines(new File(filePath), StandardCharsets.UTF_8);
 				for ( int l = 0; l < lines.size(); l++ ) {
 					String line = lines.get(l);
 					if ( line.startsWith("LICENSE: CC") ) {

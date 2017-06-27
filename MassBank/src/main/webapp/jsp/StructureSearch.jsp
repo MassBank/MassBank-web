@@ -43,7 +43,7 @@
 <%@ page import="java.net.URLConnection" %>
 <%@ page import="org.apache.commons.fileupload.DiskFileUpload" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="org.apache.commons.lang.NumberUtils" %>
+<%@ page import="org.apache.commons.lang3.math.NumberUtils" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	private HttpServletRequest req = null;
@@ -64,7 +64,7 @@
 		for ( int i = 0; i < findKeys.length; i++ ) {
 			if ( key.indexOf(findKeys[i]) == 0 ) {
 				String num = key.substring(findKeys[i].length());
-				if ( NumberUtils.isNumber(num) ) {
+				if ( NumberUtils.isCreatable(num) ) {
 					index = Integer.parseInt(num);
 					numKey = i;
 				}
@@ -100,7 +100,7 @@
 		String bondLine = line.substring(3,6);
 		String[] numbers = new String[]{ atomLine.trim(), bondLine.trim() };
 		for ( int i = 0; i < numbers.length; i++ ) {
-			if ( NumberUtils.isNumber(numbers[i]) ) {
+			if ( NumberUtils.isCreatable(numbers[i]) ) {
 				int val = Integer.parseInt(numbers[i]);
 				if ( val == 0 || val > 999 ) {
 					return false;
@@ -265,7 +265,7 @@
 		}
 
 		// Molfile読込み時に変数を更新する
-		if ( isRead && NumberUtils.isNumber(updateIndex) ) {
+		if ( isRead && NumberUtils.isCreatable(updateIndex) ) {
 			molData[Integer.parseInt(updateIndex)] = "@data=" + readMolData;
 		}
 

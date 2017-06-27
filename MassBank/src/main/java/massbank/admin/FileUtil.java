@@ -160,7 +160,7 @@ public class FileUtil {
 			inpstrm.close();
 		}
 		catch ( Exception ex ) {
-			Logger.global.severe( ex.toString() );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( ex.toString() );
 			return false;
 		}
 		return true;
@@ -241,7 +241,7 @@ public class FileUtil {
 			}
 			String crlf = System.getProperty("line.separator");
 			String errMsg = crlf + "[Command] " + cmdline + crlf + "[Error Discription]" + crlf + err;
-			Logger.global.warning( errMsg );
+			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning( errMsg );
 		}
 			// 終了コード取得
 		if ( res.getStatus() != 0 ) {

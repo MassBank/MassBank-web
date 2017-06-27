@@ -77,7 +77,6 @@ public class FileUpload extends DiskFileUpload {
 	 * 失敗した場合はnullを返却する
 	 * @return 通常リクエスト情報MAP<キー, 値>
 	 */
-	@SuppressWarnings("unchecked")
 	public HashMap<String, String[]> getRequestParam() {
 		
 		if (fileItemList == null) {
@@ -111,7 +110,6 @@ public class FileUpload extends DiskFileUpload {
 	 * 失敗した場合はnullを返却する
 	 * @return アップロードファイル情報MAP<ファイル名, アップロード結果>
 	 */
-	@SuppressWarnings("unchecked")
 	public HashMap<String, Boolean> doUpload() {
 		
 		if (fileItemList == null) {

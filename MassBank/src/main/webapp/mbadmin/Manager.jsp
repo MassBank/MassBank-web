@@ -52,7 +52,7 @@
 <%@ page import="massbank.admin.OperationManager" %>
 <%@ page import="massbank.admin.UpdateConfig" %>
 <%@ page import="org.apache.commons.io.FileUtils" %>
-<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.apache.commons.lang3.StringUtils" %>
 
 <%!
 	/** 改行文字列 */

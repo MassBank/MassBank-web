@@ -12,20 +12,20 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<version>4.0.0-b07</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>javax.servlet.jsp-api</artifactId>
-			<version>2.3.1</version>
+			<version>2.3.2-b02</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.j2ee/j2ee -->
@@ -40,12 +40,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>RELEASE</version>
+			<version>2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
@@ -55,7 +50,7 @@
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-kernel</artifactId>
-			<version>1.7.4</version>
+			<version>1.7.5</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -71,12 +66,12 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>RELEASE</version>
+			<version>1.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>RELEASE</version>
+			<version>1.0.19</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -86,9 +81,14 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>RELEASE</version>
+			<version>2.0.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.6</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>MassBank</finalName>

@@ -38,7 +38,7 @@
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.ResultList" %>
 <%@ page import="massbank.ResultRecord" %>
-<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
 <%@ include file="./Common.jsp"%>
 <%!

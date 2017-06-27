@@ -34,7 +34,8 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.math.BigDecimal" %>
-<%@ page import="org.apache.commons.lang.*" %>
+<%@ page import="org.apache.commons.lang3.math.NumberUtils" %>
+<%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankEnv" %>
@@ -325,8 +326,8 @@
 				String peak = line.substring( 0, posP );
 				String inte = line.substring( posP+1, line.length() );
 				// m/z,intensity の値が数値以外の場合はエラー
-				if ( !NumberUtils.isNumber(peak)
-				  || !NumberUtils.isNumber(inte)  ) {
+				if ( !NumberUtils.isCreatable(peak)
+				  || !NumberUtils.isCreatable(inte)  ) {
 					isError = true;
 					break;
 				}
