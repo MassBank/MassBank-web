@@ -72,8 +72,6 @@ EOF
 
 #mv robots.txt /var/www/html/
 #mv stats.css /var/www/html/
-IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/sitemap.sh' /etc/crontab) > /etc/crontab
-IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/Statistics.R' /etc/crontab) > /etc/crontab
 
 echo
 echo
@@ -177,6 +175,9 @@ service apache2 restart
 # sudo wget -q -i ./csslist -P /var/www/html/MassBank/css
 # sudo mkdir /var/www/html/MassBank/en
 # sudo wget -q -i ./pagelist -P /var/www/html/MassBank/en
+
+IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/script/Sitemap.sh' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/script/Statistics.R' /etc/crontab) > /etc/crontab 
 
 echo
 echo
