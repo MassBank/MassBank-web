@@ -16,33 +16,13 @@
 	<priority>0.5</priority>
   </url>
   <url>
-    <loc>http://massbank.eu/MassBank/SearchPage.html</loc>
-    <changefreq>always</changefreq>
-        <priority>0.5</priority>
-  </url>
-  <url>
     <loc>http://massbank.eu/MassBank/QuickSearch.html</loc>
     <changefreq>always</changefreq>
 	<priority>0.5</priority>
   </url>
-  <url>
-    <loc>http://massbank.eu/MassBank/StructureSearch.html</loc>
-    <changefreq>always</changefreq>
-	<priority>0.5</priority>
-  </url>
-  <url>
-    <loc>http://massbank.eu/MassBank/BrowsePage.html</loc>
-    <changefreq>always</changefreq>
-	<priority>0.5</priority>
-  </url>
-  <url>
     <loc>http://massbank.eu/MassBank/PeakSearch.html</loc>
     <changefreq>always</changefreq>
 	<priority>0.5</priority>
-  </url>
-  <url>
-    <loc>http://massbank.eu/MassBank/PackageView.html</loc>
-    <changefreq>never</changefreq>
   </url>
   <url>
     <loc>http://massbank.eu/MassBank/RecordIndex.html</loc>
