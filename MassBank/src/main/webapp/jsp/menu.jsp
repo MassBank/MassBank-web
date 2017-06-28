@@ -62,9 +62,9 @@
 |
 <!-- <a href="./SearchPage.html" target="_parent" title="Spectrum Search">Spectrum</a>
 | -->
-<a href="./QuickSearch.html" target="_parent" title="Quick Search">Quick</a>
+<a href="./QuickSearch.html" target="_parent" title="Quick Search">Quick Search</a>
 |
-<a href="./PeakSearch.html" target="_parent" title="Peak Search">Peak</a>
+<a href="./PeakSearch.html" target="_parent" title="Peak Search">Peak Search</a>
 |
 <!-- <a href="./StructureSearch.html" target="_parent" title="Substructure Search">Substructure</a>
 | -->
@@ -88,7 +88,7 @@
 %>
 <!-- <a href="./BrowsePage.html" target="_parent" title="Browse Page">Browse</a>
 | -->
-<a href="./RecordIndex.html" target="_parent" title="Record Index">Index</a>
+<a href="./RecordIndex.html" target="_parent" title="Record Index">Index Index</a>
 |
 <a href="./Statistics.html" target="_blank" title="Record and Compounds Statistics">Statistics</a>
 |
