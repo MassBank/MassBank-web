@@ -1,3 +1,4 @@
+<%@page import="org.apache.poi.ss.util.CellRangeAddress"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
 /*******************************************************************************
@@ -44,7 +45,6 @@
 <%@ page import="org.apache.poi.hssf.usermodel.HSSFSheet" %>
 <%@ page import="org.apache.poi.hssf.usermodel.HSSFWorkbook" %>
 <%@ page import="org.apache.poi.hssf.util.HSSFColor" %>
-<%@ page import="org.apache.poi.hssf.util.Region" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.MassBankEnv" %>
@@ -209,7 +209,7 @@
 				sheet.autoSizeColumn(col);
 		}
 		// Recored IDヘッダのセルを結合
-		sheet.addMergedRegion( new Region(0,(short)(headline.length-1), 0,(short)(colspan+1)) );
+		sheet.addMergedRegion( new CellRangeAddress(0, 0, (short)(headline.length-1), (short)(colspan+1)) );
 		
 		//** 保存
 		String outPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + dbNameList[siteNum] + "_list.xls";
