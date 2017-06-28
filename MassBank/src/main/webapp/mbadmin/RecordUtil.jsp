@@ -398,6 +398,7 @@ function changeSort() {
 		else if ( act.equals("check") ) {
 			out.println( "<b>Result</b>" );
 			out.println( "<table bgcolor=\"Gainsboro\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">" );
+			if(paramFileNames != null)
 			for ( int i = 0; i < paramFileNames.length; i++ ) {
 				String filePath = dbPath + "/" + paramFileNames[i];
 				Validator valid = new Validator( filePath );
