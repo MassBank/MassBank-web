@@ -51,7 +51,7 @@
 		<meta name="ROBOTS" content="NOINDEX,FOLLOW">
 		<link rel="stylesheet" type="text/css" href="./css/Common.css">
 		<title>MassBank | Menu Link</title>
-	</head>
+		</head>
 	<body class="msbkFont">
 		<form method="post" action="./jsp/FwdRecord.jsp" target="_blank" class="formStyle">
 			<table  border="0" cellpadding="0" cellspacing="0" width="980" class="menuFont">
@@ -88,7 +88,7 @@
 %>
 <!-- <a href="./BrowsePage.html" target="_parent" title="Browse Page">Browse</a>
 | -->
-<a href="./RecordIndex.html" target="_parent" title="Record Index">Index Index</a>
+<a href="./RecordIndex.html" target="_parent" title="Record Index">Record Index</a>
 |
 <a href="./Statistics.html" target="_blank" title="Record and Compounds Statistics">Statistics</a>
 |
