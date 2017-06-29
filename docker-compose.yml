@@ -7,7 +7,7 @@ services:
       - /mariadb:/var/lib/mysql
       - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
-      - '3306:3306'
+      - '127.0.0.1:3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: bird2006
     restart: always
