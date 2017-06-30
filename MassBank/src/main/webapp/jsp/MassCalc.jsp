@@ -75,11 +75,12 @@
 	<meta name="keywords" content="Mass,Calc,Calculator,mz,Formula">
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<link rel="stylesheet" type="text/css" href="./css/03_design.css" media="all">
-	<script type="text/javascript" src="script/jquery.js"></script>
-	<script type="text/javascript" src="script/AtomicMass.js"></script>
-	<script type="text/javascript" src="script/MassCalc.js"></script>
+	<script type="text/javascript" src="./script/jquery.js"></script>
+	<script type="text/javascript" src="./script/AtomicMass.js"></script>
+	<script type="text/javascript" src="./script/MassCalc.js"></script>
 	<title>MassBank | Mass Calculator</title>
-</head>
+	<script type="text/javascript" src="./script/Piwik.js"></script>
+	</head>
 <body class="msbkFont backgroundImg cursorDefault" bgcolor="#cee6f2">
 	<h2 style="margin:0px;">Mass Calculator</h2>
 	<hr size="1" style="margin-top:5; margin-bottom:5;">

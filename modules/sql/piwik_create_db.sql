@@ -1,0 +1,3 @@
+CREATE DATABASE piwikdb;
+FLUSH PRIVILEGES;
+exit

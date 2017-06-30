@@ -183,15 +183,16 @@
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
 	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
-	<script type="text/javascript" src="script/Common.js"></script>
-	<script type="text/javascript" src="script/jquery.js"></script>
+	<script type="text/javascript" src="./script/Common.js"></script>
+	<script type="text/javascript" src="./script/jquery.js"></script>
 <% if ( isPeakAdv ) { %>
-	<script type="text/javascript" src="script/FormulaSuggest.js"></script>
+	<script type="text/javascript" src="./script/FormulaSuggest.js"></script>
 <% } %>
-	<script type="text/javascript" src="script/AtomicMass.js"></script>
-	<script type="text/javascript" src="script/PeakSearch.js"></script>
+	<script type="text/javascript" src="./script/AtomicMass.js"></script>
+	<script type="text/javascript" src="./script/PeakSearch.js"></script>
 	<title>MassBank | Database | Peak Search</title>
-</head>
+	<script type="text/javascript" src="./script/Piwik.js"></script>
+	</head>
 <body class="msbkFont backgroundImg cursorDefault" onload="loadCheck('<%=searchOf%>', '<%=searchBy%>');">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>

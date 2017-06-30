@@ -51,6 +51,7 @@
 		<meta name="ROBOTS" content="NOINDEX,FOLLOW">
 		<link rel="stylesheet" type="text/css" href="./css/Common.css">
 		<title>MassBank | Menu Link</title>
+		<script type="text/javascript" src="./script/Piwik.js"></script>
 		</head>
 	<body class="msbkFont">
 		<form method="post" action="./jsp/FwdRecord.jsp" target="_blank" class="formStyle">
