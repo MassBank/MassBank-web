@@ -217,15 +217,6 @@ chmod 644 *
 
 service apache2 restart
 
-# echo
-# echo
-# echo "Please run \"URL/piwik\" to configure Piwik."
-# echo
-# echo
-
-# echo
-# echo ">> retrieving massbank.jp page and specifications"
-
 # Append curation scripts to crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /var/www/html/MassBank/script/Sitemap.sh' /etc/crontab) > /etc/crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /var/www/html/MassBank/script/Statistics.R' /etc/crontab) > /etc/crontab 
