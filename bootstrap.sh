@@ -225,12 +225,6 @@ service apache2 restart
 # echo
 # echo ">> retrieving massbank.jp page and specifications"
 
-# sudo wget -q www.massbank.jp/index.html?lang=en -O /var/lib/tomcat7/webapps/MassBank/jsp/index.jsp
-# sudo wget -q -i ./imglist -P /var/www/html/MassBank/img
-# sudo wget -q -i ./csslist -P /var/www/html/MassBank/css
-# sudo mkdir /var/www/html/MassBank/en
-# sudo wget -q -i ./pagelist -P /var/www/html/MassBank/en
-
 # Append scripts to crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/script/Sitemap.sh' /etc/crontab) > /etc/crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/script/Statistics.R' /etc/crontab) > /etc/crontab 
