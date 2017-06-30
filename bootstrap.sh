@@ -226,9 +226,9 @@ service apache2 restart
 # echo
 # echo ">> retrieving massbank.jp page and specifications"
 
-# Append scripts to crontab
-IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/script/Sitemap.sh' /etc/crontab) > /etc/crontab
-IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/script/Statistics.R' /etc/crontab) > /etc/crontab 
+# Install curation scripts and append scripts to crontab
+IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /var/www/html/script/Sitemap.sh' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /var/www/html/script/Statistics.R' /etc/crontab) > /etc/crontab 
 
 echo
 echo
