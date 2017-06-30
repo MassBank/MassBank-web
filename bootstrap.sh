@@ -176,10 +176,11 @@ sudo apt-get install
 
 apt-get update
 apt-get -y install \
-php-curl php-gd \
+php php-curl php-gd \
 php-mbstring php-mysql \
 libapache2-mod-php php-mcrypt \
-php-zi
+php-zip php-json php-opcache php-xml \
+mcrypt
 
 cd $APACHE_HTDOCS_PATH
 wget --quiet https://builds.piwik.org/latest.zip 
