@@ -9,13 +9,13 @@
 # Somewhat hack test for provisioning
 vagrant_arg = ARGV[0]
 if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/virtualbox/*").empty? and vagrant_arg == 'up'
-  variables = %w{USERNAME PASSWORD}
+  variables = %w{MBUSERNAME PASSWORD}
   missing = variables.find_all { |v| ENV[v] == nil }
   unless missing.empty?
     puts "FATAL: The following variables are missing and are needed for provisioning: #{missing.join(', ')}."
-    puts "Please set the environment variables USERNAME and PASSWORD for your site before running"
+    puts "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
     puts "this script. You can use a command like:"
-    puts "USERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+    puts "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
     exit
   end
 end
@@ -29,7 +29,7 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/xenial64"
-  config.vm.provision :shell, path: "bootstrap.sh", env: {"USERNAME" => ENV['USERNAME'], "PASSWORD" => ENV['PASSWORD']}
+  config.vm.provision :shell, path: "bootstrap.sh", env: {"MBUSERNAME" => ENV['MBUSERNAME'], "PASSWORD" => ENV['PASSWORD']}
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -75,7 +75,7 @@ Vagrant.configure(2) do |config|
   # such as FTP and Heroku are also available. See the documentation at
   # https://docs.vagrantup.com/v2/push/atlas.html for more information.
   # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
+  #   push.app = "YOUR_ATLAS_MBUSERNAME/YOUR_APPLICATION_NAME"
   # end
 
   # Enable provisioning with a shell script. Additional provisioners such as
