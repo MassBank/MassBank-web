@@ -9,7 +9,7 @@ import javax.servlet.annotation.WebListener;
  * Implementing a class which holds the context path and store
  * it in the application scope using a Listener. This is usefull
  * for access to resources by absolute path using the global
- * atribute "ctx". 
+ * attribute "ctx". 
  * 
  */
 
