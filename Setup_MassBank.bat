@@ -1,18 +1,21 @@
 @echo off
-SetLocal
-If [%1]=="" echo Please set the environment variables MBUSERNAME and PASSWORD for your site before running this script. else ( goto pw)
-If [%1]=="" echo You can use a command like:
-If [%1]=="" echo Setup_MassBank.bat MBUSERNAME PASSWORD
-
+Set /p MBSUSERNAME= Please set an username for the MassBank administration tool: 
 :pw
-If [%2]=="" echo Please set the environment variables MBUSERNAME and PASSWORD for your site before running this script. else ( goto start)
-If [%2]=="" echo You can use a command like:
-If [%2]=="" echo Setup_MassBank.bat MBUSERNAME PASSWORD
+Set /p PASSWORD= Please set a password for the MassBank administration tool: 
+Set /p PASSWORD1= Please repeat the password for the MassBank administration tool: 
+If %PASSWORD%==%PASSWORD1% ( goto start) else ( goto pw_repeat)
+
+:pw_repeat
+echo The passwords did not match. Repeat please.
+Set /p PASSWORD= Please set a password for the MassBank administration tool: 
+Set /p PASSWORD1= Please repeat the password for the MassBank administration tool: 
+If %PASSWORD%==%PASSWORD1% ( goto start) else ( goto pw_repeat)
 
 :start
-set MBUSERNAME=%1
-set PASSWORD=%2
 vagrant up
-setx USER ""
-setx PASS ""
-EndLocal
+
+:clean up
+setx MBUSERNAME ""
+setx PASSWORD ""
+setx PASSWORD1 ""
+
