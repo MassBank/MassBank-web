@@ -65,9 +65,11 @@ Source: https://github.com/MassBank/MassBank-web
 Start a commandline window and change to the folder with the repo:
 ```
 cd MassBank-web
-vagrant up
+Setup_MassBank.bat USER PASSWORD
 ```
-Now the the virtual machineshould be available in the Oracle VM VirtualBox manager
+Please replace USER by a secret username and PASSWORD by a secret password. The user will be stored in the .htaccess stored in /etc/apache2 to protect the mbadmin area.
+
+Now the the virtual machine should be available in the Oracle VM VirtualBox manager
 
 Type to connect to the VM
 ```

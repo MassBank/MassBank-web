@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# check for username and password environmental variables
-if [ -z "$USERNAME" ]; then
-    echo "Please set the environment variables USERNAME and PASSWORD for your site before running this script."
+# check for user and password environmental variables
+if [ -z "$USER" ]; then
+    echo "Please set the environment variables USER and PASSWORD for your site before running this script."
     echo "You can use a command like:"
-    echo "USERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+    echo "USER=massbankuser PASSWORD=massbankpassword vagrant up"
     exit 1
 fi  
 
 if [ -z "$PASSWORD" ]; then
-    echo "Please set the environment variables USERNAME and PASSWORD for your site before running this script."
+    echo "Please set the environment variables USER and PASSWORD for your site before running this script."
     echo "You can use a command like:"
-    echo "USERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+    echo "USER=massbankuser PASSWORD=massbankpassword vagrant up"
     exit 1
 fi
 
@@ -121,7 +121,7 @@ a2enmod cgid
 a2enmod jk
 
 ## mbadmin password
-htpasswd -b -c /etc/apache2/.htpasswd $USERNAME $PASSWORD
+htpasswd -b -c /etc/apache2/.htpasswd $USER $PASSWORD
 
 # enable MassBank site
 install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf /etc/apache2/sites-available
