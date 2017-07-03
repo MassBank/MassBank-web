@@ -3,6 +3,7 @@ version: '2'
 services:
   mariadb:
     image: mariadb:latest
+    container_name: massbank_mariadb
     volumes:
       - /mariadb:/var/lib/mysql
       - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
