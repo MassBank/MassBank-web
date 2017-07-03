@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# check for username and password environmental variables
+if [ -z "$USERNAME" ]; then
+    echo "Please set the environment variables USERNAME and PASSWORD for your site before running this script."
+    echo "You can use a command like:"
+    echo "USERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+    exit 1
+fi  
+
+if [ -z "$PASSWORD" ]; then
+    echo "Please set the environment variables USERNAME and PASSWORD for your site before running this script."
+    echo "You can use a command like:"
+    echo "USERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+    exit 1
+fi
+
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
 
@@ -12,7 +27,6 @@ sudo add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
-
 
 # Freshen package index
 apt-get update
@@ -50,7 +64,6 @@ mkdir /mariadb
 cd /vagrant
 docker-compose up -d
 
-
 #set up apache httpd
 cat >> /etc/apache2/apache2.conf << EOF
 ServerName localhost
@@ -67,12 +80,6 @@ EOF
 #EOF
 
 
-# Create unique passwords
-#echo $(cat /dev/urandom |  tr -dc _A-Z-a-z-0-9 | head -c${1:-16}) 
-
-#mv robots.txt /var/www/html/
-#mv stats.css /var/www/html/
-
 echo
 echo
 echo "*********************************************"
@@ -86,7 +93,6 @@ INST_ROOT_PATH=./modules
 INST_HTDOCS_PATH=$INST_ROOT_PATH/apache/html
 INST_ERROR_PATH=$INST_ROOT_PATH/apache/error
 INST_CONF_PATH=$INST_ROOT_PATH/apache/conf
-INST_MODULE_PATH=$INST_ROOT_PATH/apache/modules
 INST_TOMCAT_PATH=$INST_ROOT_PATH/tomcat
 INST_SQL_PATH=$INST_ROOT_PATH/sql
 
@@ -106,10 +112,7 @@ service apache2 stop
 # apache file copy
 cp -r $INST_HTDOCS_PATH/. $APACHE_HTDOCS_PATH
 cp -r $INST_ERROR_PATH/. $APACHE_ERROR_PATH
-#cp $INST_ROOT_PATH/massbank.conf $APACHE_HTDOCS_PATH/MassBank
 chown -R www-data:www-data /var/www/*
-#find /var/www/ -type d -exec chmod 755 {} \;
-#find /var/www/ -type f -exec chmod 644 {} \;
 
 #enable required apache modules
 a2enmod rewrite
@@ -118,7 +121,7 @@ a2enmod cgid
 a2enmod jk
 
 ## mbadmin password
-htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
+htpasswd -b -c /etc/apache2/.htpasswd $USERNAME $PASSWORD
 
 # enable MassBank site
 install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf /etc/apache2/sites-available
@@ -139,7 +142,6 @@ cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bi
 #install -d -m 777 -o www-data -g www-data $APACHE_HTDOCS_PATH/MassBank/StructureSearch/temp
 
 
-#exit
 # tomcat install webapp
 echo "Compile MassBank"
 cd MassBank
@@ -147,12 +149,6 @@ mvn -q install
 echo "Copy webapp to tomcat"
 cp target/MassBank.war /var/lib/tomcat8/webapps/
 
-
-#cp -rp $INST_TOMCAT_PATH $DEST_TOMCAT_PATH
-#cp -rp $INST_TOMCAT_PATH/webapps/* $DEST_TOMCAT_PATH/webapps/
-
-#install -d -m 777 -o tomcat8 -g tomcat8 $DEST_TOMCAT_PATH/temp
-#chown -R tomcat8:tomcat8 $DEST_TOMCAT_PATH/webapps/MassBank/temp/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
 
@@ -200,8 +196,8 @@ cd /vagrant
 # # superuser password: bird2006
 # # make sure that the superuser is changed before going productive!
 
-docker exec -i vagrant_mariadb_1 sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
-docker exec -i vagrant_mariadb_1 sh -c 'mysql -u bird -pbird2006 piwikdb' < $INST_SQL_PATH/piwik_db_preset.sql
+docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
+docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006 piwikdb' < $INST_SQL_PATH/piwik_db_preset.sql
 cp -f $INST_CONF_PATH/config.ini.php $APACHE_HTDOCS_PATH/piwik/config
 cp -f $INST_CONF_PATH/global.ini.php $APACHE_HTDOCS_PATH/piwik/config
 chown www-data.www-data *

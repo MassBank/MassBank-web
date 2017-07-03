@@ -5,6 +5,22 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+
+# Somewhat hack test for provisioning
+vagrant_arg = ARGV[0]
+if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/virtualbox/*").empty? and vagrant_arg == 'up'
+  variables = %w{USERNAME PASSWORD}
+  missing = variables.find_all { |v| ENV[v] == nil }
+  unless missing.empty?
+    puts "FATAL: The following variables are missing and are needed for provisioning: #{missing.join(', ')}."
+    puts "Please set the environment variables USERNAME and PASSWORD for your site before running"
+    puts "this script. You can use a command like:"
+    puts "USERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+    exit
+  end
+end
+
+
 Vagrant.configure(2) do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
@@ -13,7 +29,7 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/xenial64"
-  config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.provision :shell, path: "bootstrap.sh", env: {"USERNAME" => ENV['USERNAME'], "PASSWORD" => ENV['PASSWORD']}
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
