@@ -62,9 +62,10 @@
 	<meta name="Targeted Geographic Area" content="worldwide" />
 	<meta name="rating" content="general" />
 	<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
-	<script type="text/javascript" src="<%=baseUrl%>script/Common.js"></script>
+	<script type="text/javascript" src="./script/Common.js"></script>
 	<title><%=compoundName%></title>
-</head>
+	<script type="text/javascript" src="./script/Piwik.js"></script>
+	</head>
 <body style="margin-top:2px;">
 	<table  cellspacing="0" cellpadding="0" border="0">
 		<tr>

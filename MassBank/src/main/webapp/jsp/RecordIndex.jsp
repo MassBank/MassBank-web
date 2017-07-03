@@ -159,6 +159,7 @@
 	<link rel="stylesheet" type="text/css" href="./css/Common.css">
 	<script type="text/javascript" src="./script/Common.js"></script>
 	<title>MassBank | Database | Record Index</title>
+	<script type="text/javascript" src="./script/Piwik.js"></script>
 </head>
 <body class="msbkFont">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">

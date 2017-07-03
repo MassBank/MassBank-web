@@ -49,6 +49,7 @@
 <title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
 <link rel="stylesheet" type="text/css" href="css/Common.css">
 <link rel="stylesheet" type="text/css" href="css/Personal.css">
+<script type="text/javascript" src="./script/Piwik.js"></script>
 </head>
 <body class="msbkFont" bgcolor="#ECECEC">
 <div align="center">

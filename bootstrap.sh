@@ -88,6 +88,7 @@ INST_ERROR_PATH=$INST_ROOT_PATH/apache/error
 INST_CONF_PATH=$INST_ROOT_PATH/apache/conf
 INST_MODULE_PATH=$INST_ROOT_PATH/apache/modules
 INST_TOMCAT_PATH=$INST_ROOT_PATH/tomcat
+INST_SQL_PATH=$INST_ROOT_PATH/sql
 
 # Apache Path
 APACHE_HTDOCS_PATH=/var/www/html
@@ -167,17 +168,58 @@ echo ">> service start"
 service tomcat8 restart 
 service apache2 restart
 
+# # Install piwik log analyser
+# # If you don't consider to install, you may comment the whole piwik section.
+# # Install the php stack
+
+sudo apt-get install 
+
+apt-get update
+apt-get -y install \
+php php-curl php-gd \
+php-mbstring php-mysql \
+libapache2-mod-php php-mcrypt \
+php-zip php-json php-opcache php-xml \
+mcrypt
+
+cd $APACHE_HTDOCS_PATH
+wget --quiet https://builds.piwik.org/latest.zip 
+unzip ./latest.zip
+chown -R www-data:www-data ./piwik
+chmod -R 755 ./piwik/tmp
+rm ./latest.zip 'How to install Piwik.html'
+rm rm -Rf ./piwik/plugins/Morpheus/icons/submodules
+cd /vagrant
+
+# # Deploy the pre-configured settings.
+# # The preset configuration follows with high privacy standards.
+# # The preset configuration follows https://piwik.org/docs/privacy/.
+# # The preset configuration undiscloses all plugins which may have privacy issues.
+# # You must check the configuration for compliance with your local and internal laws for privacy protection!
+# # superuser name: bird
+# # superuser password: bird2006
+# # make sure that the superuser is changed before going productive!
+
+docker exec -i vagrant_mariadb_1 sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
+docker exec -i vagrant_mariadb_1 sh -c 'mysql -u bird -pbird2006 piwikdb' < $INST_SQL_PATH/piwik_db_preset.sql
+cp -f $INST_CONF_PATH/config.ini.php $APACHE_HTDOCS_PATH/piwik/config
+cp -f $INST_CONF_PATH/global.ini.php $APACHE_HTDOCS_PATH/piwik/config
+chown www-data.www-data *
+chmod 644 *
+
+# # Deploy an empty piwik database and a bare piwik installation
+# # You must check the configuration for compliance with your local and internal laws for privacy protection!
+
+# docker exec -i vagrant_mariadb_1 sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
+
 # echo
-# echo ">> retrieving massbank.jp page and specifications"
+# echo "Please run \"192.168.35.18/piwik\" to configure Piwik."
 
-# sudo wget -q www.massbank.jp/index.html?lang=en -O /var/lib/tomcat7/webapps/MassBank/jsp/index.jsp
-# sudo wget -q -i ./imglist -P /var/www/html/MassBank/img
-# sudo wget -q -i ./csslist -P /var/www/html/MassBank/css
-# sudo mkdir /var/www/html/MassBank/en
-# sudo wget -q -i ./pagelist -P /var/www/html/MassBank/en
+service apache2 restart
 
-IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /vagrant/script/Sitemap.sh' /etc/crontab) > /etc/crontab
-IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /vagrant/script/Statistics.R' /etc/crontab) > /etc/crontab 
+# Append curation scripts to crontab
+IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /var/www/html/MassBank/script/Sitemap.sh' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /var/www/html/MassBank/script/Statistics.R' /etc/crontab) > /etc/crontab 
 
 echo
 echo

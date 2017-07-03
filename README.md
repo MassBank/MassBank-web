@@ -135,3 +135,26 @@ Restart server: `sudo systemctl restart apache2`.
 Download the [Eclipse IDE for Java EE Developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/marsr) with "Maven Integration for Eclipse" and "Maven Integration for WTP" and extract it to your preferred folder. Start eclipse and import the clones github-project 'Massbank-web': File -> Import -> Existing Maven Project -> Select this repo for import. 
 Download [Apache Tomcat](http://tomcat.apache.org/) and extract it to your preferred folder.
 Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). Edit '/var/www/html/MassBank/massbank.conf' and set `<MiddleServer URL="http://localhost/MassBank/"/>`. Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost/MassBank/](http://localhost/MassBank/).
+
+## PIWIK log analyser (https://piwik.org/)
+The default MassBank server installation includes the PIWIK log analyser. Consider that user tracking has privacy issues.
+The default preset follows very strict rules according to http://piwik.org/docs/privacy/ and only the following usage data:
+
+* Site from which the file was requested
+* Name of the file
+* Date and time of the request
+* Volume of data transferred
+* Access status (file transferred, file not found)
+* Description of the type of web browser used
+* IP address of the requesting computer shortened by the last six digits.
+
+The creation of personal user profiles is therefore precluded.
+
+## customised piwik tracking code
+
+The tracking code for piwik is specific for each site and configuration in order to fullfil your local legal and personal requirements!
+The tracking code for http://your_server_url/MassBank is called from /var/www/html/MassBank/script/Piwik.js.
+Make sure to replace the default code with your customised tracking code. Exclude the script tags.
+Make also sure that you customise your superuser if using the default bootstrap.sh!
+
+

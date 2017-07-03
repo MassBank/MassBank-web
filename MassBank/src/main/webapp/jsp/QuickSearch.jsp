@@ -141,7 +141,8 @@
 	<script type="text/javascript" src="./script/Common.js"></script>
 	<script type="text/javascript" src="./script/QuickSearch.js"></script>
 	<title>MassBank | Database | Quick Search</title>
-</head>
+	<script type="text/javascript" src="./script/Piwik.js"></script>
+	</head>
 <body class="msbkFont backgroundImg cursorDefault" onload="initFocus();">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>

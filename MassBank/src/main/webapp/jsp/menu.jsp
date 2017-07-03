@@ -51,7 +51,8 @@
 		<meta name="ROBOTS" content="NOINDEX,FOLLOW">
 		<link rel="stylesheet" type="text/css" href="./css/Common.css">
 		<title>MassBank | Menu Link</title>
-	</head>
+		<script type="text/javascript" src="./script/Piwik.js"></script>
+		</head>
 	<body class="msbkFont">
 		<form method="post" action="./jsp/FwdRecord.jsp" target="_blank" class="formStyle">
 			<table  border="0" cellpadding="0" cellspacing="0" width="980" class="menuFont">
@@ -62,9 +63,9 @@
 |
 <!-- <a href="./SearchPage.html" target="_parent" title="Spectrum Search">Spectrum</a>
 | -->
-<a href="./QuickSearch.html" target="_parent" title="Quick Search">Quick</a>
+<a href="./QuickSearch.html" target="_parent" title="Quick Search">Quick Search</a>
 |
-<a href="./PeakSearch.html" target="_parent" title="Peak Search">Peak</a>
+<a href="./PeakSearch.html" target="_parent" title="Peak Search">Peak Search</a>
 |
 <!-- <a href="./StructureSearch.html" target="_parent" title="Substructure Search">Substructure</a>
 | -->
@@ -88,7 +89,7 @@
 %>
 <!-- <a href="./BrowsePage.html" target="_parent" title="Browse Page">Browse</a>
 | -->
-<a href="./RecordIndex.html" target="_parent" title="Record Index">Index</a>
+<a href="./RecordIndex.html" target="_parent" title="Record Index">Record Index</a>
 |
 <a href="./Statistics.html" target="_blank" title="Record and Compounds Statistics">Statistics</a>
 |
