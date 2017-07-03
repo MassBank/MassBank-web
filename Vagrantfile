@@ -7,18 +7,18 @@
 # you're doing.
 
 # Somewhat hack test for provisioning
-vagrant_arg = ARGV[0]
-if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/virtualbox/*").empty? and vagrant_arg == 'up'
-  variables = %w{MBUSERNAME PASSWORD}
-  missing = variables.find_all { |v| ENV[v] == nil }
-  unless missing.empty?
-    puts "FATAL: The following variables are missing and are needed for provisioning: #{missing.join(', ')}."
-    puts "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
-    puts "this script. You can use a command like:"
-    puts "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
-    exit
-  end
-end
+# vagrant_arg = ARGV[0]
+# if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/virtualbox/*").empty? and vagrant_arg == 'up'
+  # variables = %w{MBUSERNAME PASSWORD}
+  # missing = variables.find_all { |v| ENV[v] == nil }
+  # unless missing.empty?
+    # puts "FATAL: The following variables are missing and are needed for provisioning: #{missing.join(', ')}."
+    # puts "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
+    # puts "this script. You can use a command like:"
+    # puts "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+    # exit
+  # end
+# end
 
 
 Vagrant.configure(2) do |config|
@@ -29,8 +29,9 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/xenial64"
-  config.vm.provision :shell, path: "bootstrap.sh", env: {"MBUSERNAME" => ENV['MBUSERNAME'], "PASSWORD" => ENV['PASSWORD']}
-
+  # config.vm.provision :shell, path: "bootstrap.sh", env: {"MBUSERNAME" => ENV['MBUSERNAME'], "PASSWORD" => ENV['PASSWORD']}
+  config.vm.provision :shell, path: "bootstrap.sh"
+  
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
