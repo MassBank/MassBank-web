@@ -16,8 +16,7 @@ if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/virtualbox/*").
     puts "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
     puts "this script. On linux use a command like this:"
     puts "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
-    puts "On windows use a command like this:"
-    puts "set MBUSERNAME=massbankuser & PASSWORD=massbankpassword & vagrant up"
+    puts "On Windows you can use the Setup_MassBank.bat"
     exit
   end
 end
