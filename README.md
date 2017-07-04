@@ -64,8 +64,8 @@ Source: https://github.com/MassBank/MassBank-web
 
 Start a commandline window and change to the folder with the repo:
 ```
-cd MassBank-web
-vagrant up
+cd folder_with_repo
+run Install_MassBank.bat
 ```
 
 Now the the virtual machine should be available in the Oracle VM VirtualBox manager
