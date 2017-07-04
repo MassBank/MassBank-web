@@ -11,6 +11,7 @@ Disallow: /MassBank/cgi-bin/
 Disallow: /MassBank/script/
 Disallow: /MassBank/swn_wc/
 Disallow: /MassBank/download/
+Disallow: /piwik/
 Sitemap:  http://massbank.eu/MassBank/sitemapindex.xml
 
 User-agent: googlebot
@@ -25,4 +26,5 @@ Disallow: /MassBank/files/
 Disallow: /MassBank/cgi-bin/
 Disallow: /MassBank/swn_wc
 Disallow: /MassBank/download/
+Disallow: /piwik/
 Sitemap:  http://massbank.eu/MassBank/sitemapindex.xml
