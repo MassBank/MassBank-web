@@ -154,9 +154,9 @@ echo "Copy webapp to tomcat"
 cp target/MassBank.war /var/lib/tomcat8/webapps/
 cd ..
 
+# Deploy permissions to tomcat
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
-
 
 # Configure Tomcat if not already done
 if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' $DEST_TOMCAT_PATH/conf/server.xml ; then 
@@ -206,6 +206,11 @@ rm -Rf $APACHE_HTDOCS_PATH/piwik/plugins/Morpheus/icons/submodules
 
 # echo
 # echo "Please run \"192.168.35.18/piwik\" to configure Piwik."
+
+# Deploy permissions
+chmod 755 $(find $APACHE_HTDOCS_PATH -type d)
+chmod 644 $(find $APACHE_HTDOCS_PATH -type f)
+chmod 755 $(find $APACHE_HTDOCS_PATH/MassBank -name "*.cgi" -type f)
 
 service apache2 restart
 
