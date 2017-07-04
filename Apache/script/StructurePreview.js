@@ -32,7 +32,7 @@
 this.structurePreview = function(){
 	// 表示位置設定
 	xOffset = 10;
-	yOffset = 30;
+	yOffset = 10;
 	
 	// 表示処理
 	$("a.preview_structure").hover(function(e){
@@ -41,8 +41,9 @@ this.structurePreview = function(){
 		var c = (this.t != "") ? "<br/>" + this.t : "";
 		$("body").append("<p id='preview_structure'><img src='"+ this.href +"' alt='Image loading...' />"+ c +"</p>");
 		$("#preview_structure")
-			.css("top",(e.pageY - xOffset) + "px")
-			.css("left",(e.pageX + yOffset) + "px")
+			//.css("top",(e.pageY - yOffset + ( ((e.pageY - yOffset - window.innerHeight) < 0) ? -(e.pageY - yOffset - window.innerHeight) : 0 ) ) + "px")
+			.css("top",(e.pageY - yOffset) + "px")
+			.css("left",(e.pageX + xOffset) + "px")
 			.fadeIn("fast");
 	},
 	function(){
@@ -51,8 +52,8 @@ this.structurePreview = function(){
 	});	
 	$("a.preview_structure").mousemove(function(e){
 		$("#preview_structure")
-			.css("top",(e.pageY - xOffset) + "px")
-			.css("left",(e.pageX + yOffset) + "px");
+			.css("top",(e.pageY - yOffset) + "px")
+			.css("left",(e.pageX + xOffset) + "px");
 	});
 };
 

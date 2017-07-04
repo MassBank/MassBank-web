@@ -1,3 +1,17 @@
+<%@page import="massbank.StructureToSvgStringGenerator"%>
+<%@page import="java.net.URL"%>
+<%@page import="java.io.PrintWriter"%>
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.io.File"%>
+<%@page import="org.openscience.cdk.DefaultChemObjectBuilder"%>
+<%@page import="org.openscience.cdk.depict.DepictionGenerator"%>
+<%@page import="org.openscience.cdk.silent.SilentChemObjectBuilder"%>
+<%@page import="org.openscience.cdk.interfaces.IChemObjectBuilder"%>
+<%@page import="org.openscience.cdk.interfaces.IAtomContainer"%>
+<%@page import="org.openscience.cdk.inchi.InChIGeneratorFactory"%>
+<%@page import="org.openscience.cdk.inchi.InChIToStructure"%>
+
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
 /*******************************************************************************
@@ -55,146 +69,6 @@
 	private final String ascGif = "../image/asc.gif";
 	private final String descGif = "../image/desc.gif";
 
-	/**
-	 * 構造式情報を一括取得する
-	 * @param list
-	 * @param startIndex
-	 * @param endIndex
-	 * @param serverUrl
-	 * @param urlList
-	 * @param dbNameList
-	 * @return List<Map>(Map<String, String>, Map<String, String>, Map<String, String>) 画像とMolfile情報をそれぞれ格納したMapをListに格納
-	 */
-	private List<Map> getStructure(ResultList list, int startIndex, int endIndex, String serverUrl, String[] urlList, String[] dbNameList) {
-		List<Map> resultList = new ArrayList<Map>(4);
-		
-		String prevName = "";
-		String param = "";
-		for ( int i = startIndex; i <= endIndex; i++ ) {
-			ResultRecord rec = list.getRecord(i);
-			String name = rec.getName();
-			if ( !name.equals(prevName) ) {
-				String ename = "";
-				try {
-					ename = URLEncoder.encode( name, "utf-8" );
-				}
-				catch ( UnsupportedEncodingException e ) {
- 					e.printStackTrace();
-				}
-				param += ename + "@";
-			}
-			prevName = name;
-		}
-		if ( !param.equals("") ) {
-			param = param.substring(0, param.length()-1);
-			param = "&names=" + param;
-		}
-		MassBankCommon mbcommon = new MassBankCommon();
-		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_GETSTRUCT];
-		
-		ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
-		
-		Map<String, String> gifMap = new HashMap<String, String>();
-		Map<String, String> gifSmallMap = new HashMap<String, String>();
-		Map<String, String> gifLargeMap = new HashMap<String, String>();
-		Map<String, String> molMap = new HashMap<String, String>();
-		String key = "";
-		int siteNo = -1;
-		String gifUrl = "";
-		String gifSmallUrl = "";
-		String gifLargeUrl = "";
-		String molData = "";
-		for ( int i = 0; i < result.size(); i++ ) {
-			String temp = (String)result.get(i);
-			String[] item = temp.split("\t");
-			String line = item[0];
-			if ( line.indexOf("---NAME:") >= 0 ) {
-				if ( !key.equals("") ) {
-					// GIFURL格納
-					if ( !gifMap.containsKey(key) && !gifUrl.trim().equals("")) {
-						gifMap.put(key, gifUrl);
-					}
-					// GIFSMALLURL格納
-					if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("")) {
-						gifSmallMap.put(key, gifSmallUrl);
-					}
-					// GIFLARGEURL格納
-					if ( !gifLargeMap.containsKey(key) && !gifLargeUrl.trim().equals("")) {
-						gifLargeMap.put(key, gifLargeUrl);
-					}
-					// Molfileデータ格納
-					else if ( !molMap.containsKey(key) && !molData.trim().equals("")) {
-						molMap.put(key, molData);
-					}
-				}
-				// 次のデータのキー名
-				key = line.substring(8).toLowerCase();
-				siteNo = Integer.parseInt(item[1]);
-				gifUrl = "";
-				gifSmallUrl = "";
-				gifLargeUrl = "";
-				molData = "";
-			}
-			else if ( line.indexOf("---GIF:") != -1 ) {
-				String gifFile = line.replaceAll("---GIF:", "");
-				if ( !gifFile.equals("") ) {
-					if ( siteNo == 0 ) {
-						gifUrl = serverUrl + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
-					}
-					else {
-						gifUrl = urlList[siteNo] + "DB/gif/" + dbNameList[siteNo] + "/" + gifFile;
-					}
-				}
-			}
-			else if ( line.indexOf("---GIF_SMALL:") != -1 ) {
-				String gifFile = line.replaceAll("---GIF_SMALL:", "");
-				if ( !gifFile.equals("") ) {
-					if ( siteNo == 0 ) {
-						gifSmallUrl = serverUrl + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
-					}
-					else {
-						gifSmallUrl = urlList[siteNo] + "DB/gif_small/" + dbNameList[siteNo] + "/" + gifFile;
-					}
-				}
-			}
-			else if ( line.indexOf("---GIF_LARGE:") != -1 ) {
-				String gifFile = line.replaceAll("---GIF_LARGE:", "");
-				if ( !gifFile.equals("") ) {
-					if ( siteNo == 0 ) {
-						gifLargeUrl = serverUrl + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
-					}
-					else {
-						gifLargeUrl = urlList[siteNo] + "DB/gif_large/" + dbNameList[siteNo] + "/" + gifFile;
-					}
-				}
-			}
-			else {
-				// JME Editor 
-				if ( line.indexOf("M  CHG") >= 0 ) {
-					continue;
-				}
-				molData += line + "|\n";
-			}
-		}
-		if ( !gifMap.containsKey(key) && !gifUrl.trim().equals("") ) {
-			gifMap.put(key, gifUrl);
-		}
-		if ( !gifSmallMap.containsKey(key) && !gifSmallUrl.trim().equals("") ) {
-			gifSmallMap.put(key, gifSmallUrl);
-		}
-		if ( !gifLargeMap.containsKey(key) && !gifLargeUrl.trim().equals("") ) {
-			gifLargeMap.put(key, gifLargeUrl);
-		}
-		if ( !molMap.containsKey(key) && !molData.trim().equals("") ) {
-			molMap.put(key, molData);
-		}
-		resultList.add(gifMap);
-		resultList.add(gifSmallMap);
-		resultList.add(gifLargeMap);
-		resultList.add(molMap);
-		
-		return resultList;
-	}
 %>
 <%
 
@@ -1101,16 +975,11 @@
 			String cRowId = "";
 
 			// 化学構造式表示情報を一括取得する
-			List<Map> structureResult = getStructure(list, startIndex, endIndex, serverUrl, urlList, dbNameList);
-			Map<String, String> mapGifUrl = structureResult.get(0);
-			Map<String, String> mapGifSmallUrl = structureResult.get(1);
-			Map<String, String> mapGifLargeUrl = structureResult.get(2);
-			Map<String, String> mapMolData = structureResult.get(3);
-			
 			ResultRecord rec;
 			for (int i=startIndex; i<=endIndex; i++) {
 				rec = list.getRecord(i);
 				// ツリー表示用ID、およびイメージ名生成
+				// Generation of display name and image name
 				if ( prevNode != rec.getNodeGroup() ) {
 					tParentId++;
 					parentTreeFlag = true;
@@ -1146,6 +1015,7 @@
 				
 				//------------------------------------
 				// ツリータグ出力
+				// print tree output
 				//------------------------------------
 				if ( parentTreeFlag ) {
 					if ( i > startIndex ) {
@@ -1191,39 +1061,85 @@
 						previewName.delete(17, previewName.length());
 						previewName.append("...");
 					}
-					if ( mapGifSmallUrl.containsKey(key) ) {
-						if ( mapGifUrl.containsKey(key) ) {
-							out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-						}
-						else {
-							out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-						}
-						if ( mapGifLargeUrl.containsKey(key) ) {
-							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key) + "')\" style=\"margin:0px; cursor:pointer\">");
-						}
-						else {
-							out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-						}
+					
+					// get accession and structure for svg image generation
+					// TODO fetch the accession, inchi, and smiles without all this overhead
+					String param	= "id=" + rec.getId() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
+					ArrayList<String> result = mbcommon.execDispatcher( serverUrl, typeName, param, false, rec.getContributor() );
+					
+					String accession	= null;
+					String inchi		= null;
+					String smiles		= null;
+					for(String line : result){
+						if(line.startsWith("ACCESSION: ") && accession == null)	accession	= line.substring("ACCESSION: "  .length(), line.indexOf("\t"));
+						if(line.startsWith("CH$IUPAC: " ))						inchi		= line.substring("CH$IUPAC: " .length(), line.indexOf("\t"));
+						if(line.startsWith("CH$SMILES: "))						smiles		= line.substring("CH$SMILES: ".length(), line.indexOf("\t"));
+					}
+					
+					if(accession == null || accession.equals("NA"))
+						accession	= "Unknown";
+					if(inchi.equals("NA"))
+						inchi	= null;
+					if(smiles.equals("NA"))
+						smiles	= null;
+					
+					// generate SVG string from structure (inchi / smiles)
+					boolean inchiThere	= inchi  != null;
+					boolean smilesThere	= smiles != null;
+					boolean structureThere	= inchiThere | smilesThere;
+					
+					String svg = null;
+					if(structureThere){
+						// structure there --> generate svg string
+						if(svg == null && inchiThere)	svg	= StructureToSvgStringGenerator.fromInChI(inchi);
+						if(svg == null && smilesThere)	svg	= StructureToSvgStringGenerator.fromSMILES(smiles);
+					}
+					
+					// display svg
+					if(svg != null){
+						// path to temp file as local file and as url
+						String rootPath	= request.getServletContext().getAttribute("ctx").toString();
+						String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+						
+						// file names
+						final SimpleDateFormat sdf	= new SimpleDateFormat("yyMMdd_HHmmss_SSS");
+						String accession2			= accession.replaceAll("[^0-9a-zA-Z]", "_");
+						String fileName				= sdf.format(new Date()) + "_" + accession2 + ".svg";
+						String fileNamePreview		= sdf.format(new Date()) + "_" + accession2 + "_preview.svg";
+						
+						String tmpFile				= (new File(tomcatTmpPath + fileName		)).getPath();
+						String tmpFilePreview		= (new File(tomcatTmpPath + fileNamePreview	)).getPath();
+						String tmpFileUrl			= rootPath + "/temp/" + fileName;
+						String tmpFileUrlPreview	= rootPath + "/temp/" + fileNamePreview;
+						
+						// adapt size of svg image
+						String svgSmall		= StructureToSvgStringGenerator.resizeSvg(svg,  80,  80, "margin:0px; cursor:pointer");
+						String svgMedium	= StructureToSvgStringGenerator.resizeSvg(svg, 250, 250, null);
+						String svgBig		= StructureToSvgStringGenerator.resizeSvg(svg, 436, 436, null);
+						
+						// add expandMolView on click
+						svgSmall	= svgSmall.replaceAll(
+								"</g>\\n</svg>", 
+								"<rect class=\"btn\" x=\"0\" y=\"0\" width=\"80\" height=\"80\" onclick=\"expandMolView('" + tmpFileUrl + "')\" fill-opacity=\"0.0\" stroke-width=\"0\" /> </g>\\\\n</svg>"
+						);
+						
+						// write big image as temp file
+						PrintWriter pw1	= new PrintWriter(tmpFile);
+						pw1.println(svgBig);
+						pw1.close();
+						PrintWriter pw2	= new PrintWriter(tmpFilePreview);
+						pw2.println(svgMedium);
+						pw2.close();
+						
+						// paste small image to web site
+						out.println( "  <a href=\"" + tmpFileUrlPreview + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+						out.println( "   " + svgSmall);
 						out.println( "  </a>" );
+					} else {
+						// no structure there or svg generation failed
+						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" style=\"margin:0px;\">");
 					}
-					else if ( mapMolData.containsKey(key) ) {
-						String moldata = mapMolData.get(key).trim();
-						if ( !moldata.equals("") ) {
-//							out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
-//							out.println( "    <param name=\"options\" value=\"depict\">" );
-//							out.println( "    <param name=\"mol\" value=\"");
-//							out.print( moldata );
-//							out.println( "\">");
-//							out.println( "   </applet>\n");
-							out.println("<div class=\"molecule§viewer\" id=\"molecule§viewer§" + rec.getId() + "§" + rec.getContributor() + "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
-						}
-					}
-					else {
-						out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('..image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-						out.println( "  </a>" );
-					}
-
+					
 					out.println( "  </td>" );
 					out.println( "  <td class=\"treeLayout1\" width=\"" + width[5] + "\" valign=\"top\">&nbsp;<b>" + rec.getDispEmass() + "</b>&nbsp;</td>" );
 					out.println( "  <td class=\"treeLayout2\" width=\"" + width[6] + "\" valign=\"top\">&nbsp;</td>" );
