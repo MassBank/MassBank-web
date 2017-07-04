@@ -1,3 +1,4 @@
+USE piwikdb;
 -- MySQL dump 10.15  Distrib 10.0.29-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: localhost

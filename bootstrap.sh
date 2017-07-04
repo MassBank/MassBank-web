@@ -1,19 +1,23 @@
 #!/bin/bash
 
-# # check for user and password environmental variables
-# if [ -z "$MBUSERNAME" ]; then
-    # echo "Please set the environment variables MBUSERNAME and PASSWORD for your site before running this script."
-    # echo "You can use a command like:"
-    # echo "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
-    # exit 1
-# fi  
+# check for user and password environmental variables
+if [ -z "$MBUSERNAME" ]; then
+ echo "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
+ echo "this script. On linux use a command like this:"
+ echo "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+ echo "On windows use a command like this:"
+ echo "set MBUSERNAME=massbankuser & PASSWORD=massbankpassword & vagrant up"
+ exit 1
+fi  
 
-# if [ -z "$PASSWORD" ]; then
-    # echo "Please set the environment variables MBUSERNAME and PASSWORD for your site before running this script."
-    # echo "You can use a command like:"
-    # echo "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
-    # exit 1
-# fi
+if [ -z "$PASSWORD" ]; then
+ echo "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
+ echo "this script. On linux use a command like this:"
+ echo "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+ echo "On windows use a command like this:"
+ echo "set MBUSERNAME=massbankuser & PASSWORD=massbankpassword & vagrant up"
+ exit 1
+fi
 
 # install a MassBank Dev machine
 export DEBIAN_FRONTEND=noninteractive
@@ -121,7 +125,7 @@ a2enmod cgid
 a2enmod jk
 
 ## mbadmin password
-htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
+htpasswd -b -c /etc/apache2/.htpasswd $MBUSERNAME $PASSWORD
 
 # enable MassBank site
 install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf /etc/apache2/sites-available
@@ -148,6 +152,7 @@ cd MassBank
 mvn -q install
 echo "Copy webapp to tomcat"
 cp target/MassBank.war /var/lib/tomcat8/webapps/
+cd ..
 
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
@@ -168,9 +173,6 @@ service apache2 restart
 # # If you don't consider to install, you may comment the whole piwik section.
 # # Install the php stack
 
-sudo apt-get install 
-
-apt-get update
 apt-get -y install \
 php php-curl php-gd \
 php-mbstring php-mysql \
@@ -178,30 +180,24 @@ libapache2-mod-php php-mcrypt \
 php-zip php-json php-opcache php-xml \
 mcrypt
 
-cd $APACHE_HTDOCS_PATH
-wget --quiet https://builds.piwik.org/latest.zip 
-unzip ./latest.zip
-chown -R www-data:www-data ./piwik
-chmod -R 755 ./piwik/tmp
-rm ./latest.zip 'How to install Piwik.html'
-rm rm -Rf ./piwik/plugins/Morpheus/icons/submodules
-cd /vagrant
+wget -qO- https://builds.piwik.org/latest.tar.gz | tar xz -C $APACHE_HTDOCS_PATH
+cp -f $INST_CONF_PATH/config.ini.php $APACHE_HTDOCS_PATH/piwik/config/
+cp -f $INST_CONF_PATH/global.ini.php $APACHE_HTDOCS_PATH/piwik/config/
+chown -R www-data:www-data $APACHE_HTDOCS_PATH/piwik
+#chmod -R 644 $APACHE_HTDOCS_PATH/piwik
+#chmod -R 755 $APACHE_HTDOCS_PATH/piwik/tmp
+rm $APACHE_HTDOCS_PATH/How\ to\ install\ Piwik.html
+rm -Rf $APACHE_HTDOCS_PATH/piwik/plugins/Morpheus/icons/submodules
 
 # # Deploy the pre-configured settings.
 # # The preset configuration follows with high privacy standards.
 # # The preset configuration follows https://piwik.org/docs/privacy/.
 # # The preset configuration undiscloses all plugins which may have privacy issues.
 # # You must check the configuration for compliance with your local and internal laws for privacy protection!
-# # superuser name: bird
-# # superuser password: bird2006
 # # make sure that the superuser is changed before going productive!
 
-docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
-docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006 piwikdb' < $INST_SQL_PATH/piwik_db_preset.sql
-cp -f $INST_CONF_PATH/config.ini.php $APACHE_HTDOCS_PATH/piwik/config
-cp -f $INST_CONF_PATH/global.ini.php $APACHE_HTDOCS_PATH/piwik/config
-chown www-data.www-data *
-chmod 644 *
+#docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
+#docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006 piwikdb' < $INST_SQL_PATH/piwik_db_preset.sql
 
 # # Deploy an empty piwik database and a bare piwik installation
 # # You must check the configuration for compliance with your local and internal laws for privacy protection!
