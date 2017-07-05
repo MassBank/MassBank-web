@@ -154,6 +154,15 @@ echo "Copy webapp to tomcat"
 cp target/MassBank.war /var/lib/tomcat8/webapps/
 cd ..
 
+# add tomcat folders and deploy permissions
+TOMCAT_SHARE_PATH= /usr/share/tomcat8
+mkdir $TOMCAT_SHARE_PATH/common
+mkdir $TOMCAT_SHARE_PATH/common/classes
+mkdir $TOMCAT_SHARE_PATH/server
+mkdir $TOMCAT_SHARE_PATH/server/classes
+mkdir $TOMCAT_SHARE_PATH/shared
+mkdir $TOMCAT_SHARE_PATH/shared/classes
+
 # Deploy permissions to tomcat
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
