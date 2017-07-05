@@ -157,7 +157,7 @@ cd ..
 
 # add tomcat folders
 TOMCAT_SHARE_PATH=/usr/share/tomcat8
-TOMCAT_CACHE_PATH=/usr/cache/tomcat8
+TOMCAT_CACHE_PATH=/var/cache/tomcat8
 mkdir $TOMCAT_SHARE_PATH/common
 mkdir $TOMCAT_SHARE_PATH/common/classes
 mkdir $TOMCAT_SHARE_PATH/server
