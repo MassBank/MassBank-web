@@ -107,7 +107,6 @@ APACHE_ERROR_PATH=/var/www/error
 # Tomcat Path
 DEST_TOMCAT_PATH=/var/lib/tomcat8
 
-
 echo
 echo ">> service stop"
 service tomcat8 stop 
@@ -126,6 +125,8 @@ a2enmod jk
 
 ## mbadmin password
 htpasswd -b -c /etc/apache2/.htpasswd $MBUSERNAME $PASSWORD
+
+
 
 # enable MassBank site
 install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf /etc/apache2/sites-available
@@ -155,17 +156,27 @@ cp target/MassBank.war /var/lib/tomcat8/webapps/
 cd ..
 
 # add tomcat folders
-TOMCAT_SHARE_PATH= /usr/share/tomcat8
+TOMCAT_SHARE_PATH=/usr/share/tomcat8
+TOMCAT_CACHE_PATH=/usr/cache/tomcat8
 mkdir $TOMCAT_SHARE_PATH/common
 mkdir $TOMCAT_SHARE_PATH/common/classes
 mkdir $TOMCAT_SHARE_PATH/server
 mkdir $TOMCAT_SHARE_PATH/server/classes
 mkdir $TOMCAT_SHARE_PATH/shared
 mkdir $TOMCAT_SHARE_PATH/shared/classes
+mkdir $TOMCAT_CACHE_PATH/temp
 
 # Deploy permissions to tomcat
+chown -R tomcat8:tomcat8 $TOMCAT_SHARE_PATH
+find $TOMCAT_SHARE_PATH -type d -exec chmod 755 {} \;
+find $TOMCAT_SHARE_PATH -type f -exec chmod 644 {} \;
+find $TOMCAT_SHARE_PATH/bin -name "*.sh" -type f -exec chmod 755 {} \;
+
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
+
+chown -R tomcat8:tomcat8 $TOMCAT_CACHE_PATH/temp
+find $TOMCAT_CACHE_PATH -type d -exec chmod 755 {} \;
 
 # Configure Tomcat if not already done
 if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' $DEST_TOMCAT_PATH/conf/server.xml ; then 
@@ -178,10 +189,6 @@ echo ">> service start"
 service tomcat8 restart 
 service apache2 restart
 
-# # Install piwik log analyser
-# # If you don't consider to install, you may comment the whole piwik section.
-# # Install the php stack
-
 apt-get -y install \
 php php-curl php-gd \
 php-mbstring php-mysql \
@@ -193,23 +200,15 @@ wget -qO- https://builds.piwik.org/latest.tar.gz | tar xz -C $APACHE_HTDOCS_PATH
 cp -f $INST_CONF_PATH/config.ini.php $APACHE_HTDOCS_PATH/piwik/config/
 cp -f $INST_CONF_PATH/global.ini.php $APACHE_HTDOCS_PATH/piwik/config/
 chown -R www-data:www-data $APACHE_HTDOCS_PATH/piwik
-#chmod -R 644 $APACHE_HTDOCS_PATH/piwik
-#chmod -R 755 $APACHE_HTDOCS_PATH/piwik/tmp
+
 rm $APACHE_HTDOCS_PATH/How\ to\ install\ Piwik.html
 rm -Rf $APACHE_HTDOCS_PATH/piwik/plugins/Morpheus/icons/submodules
 
-# # Deploy the pre-configured settings.
-# # The preset configuration follows with high privacy standards.
-# # The preset configuration follows https://piwik.org/docs/privacy/.
-# # The preset configuration undiscloses all plugins which may have privacy issues.
-# # You must check the configuration for compliance with your local and internal laws for privacy protection!
-# # make sure that the superuser is changed before going productive!
 
-#docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
-#docker exec -i massbank_mariadb sh -c 'mysql -u bird -pbird2006 piwikdb' < $INST_SQL_PATH/piwik_db_preset.sql
 
-# # Deploy an empty piwik database and a bare piwik installation
-# # You must check the configuration for compliance with your local and internal laws for privacy protection!
+
+
+
 
 # docker exec -i vagrant_mariadb_1 sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
 
@@ -226,6 +225,7 @@ service apache2 restart
 # Append curation scripts to crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /var/www/html/MassBank/script/Sitemap.sh' /etc/crontab) > /etc/crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /var/www/html/MassBank/script/Statistics.R' /etc/crontab) > /etc/crontab 
+
 
 echo
 echo
