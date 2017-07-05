@@ -217,9 +217,9 @@ rm -Rf $APACHE_HTDOCS_PATH/piwik/plugins/Morpheus/icons/submodules
 # echo "Please run \"192.168.35.18/piwik\" to configure Piwik."
 
 # Deploy permissions
-chmod 755 $(find $APACHE_HTDOCS_PATH -type d)
-chmod 644 $(find $APACHE_HTDOCS_PATH -type f)
-chmod 755 $(find $APACHE_HTDOCS_PATH/MassBank -name "*.cgi" -type f)
+find $APACHE_HTDOCS_PATH -type d -exec chmod 755 {} \;
+find $APACHE_HTDOCS_PATH -type f -exec chmod 644 {} \;
+find $APACHE_HTDOCS_PATH/MassBank -name "*.cgi" -type f -exec chmod 755 {} \;
 
 service apache2 restart
 
