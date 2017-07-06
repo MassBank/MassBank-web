@@ -189,6 +189,7 @@ echo ">> service start"
 service tomcat8 restart 
 service apache2 restart
 
+# Deploy piwik log analyser
 apt-get -y install \
 php php-curl php-gd \
 php-mbstring php-mysql \
@@ -203,11 +204,6 @@ chown -R www-data:www-data $APACHE_HTDOCS_PATH/piwik
 
 rm $APACHE_HTDOCS_PATH/How\ to\ install\ Piwik.html
 rm -Rf $APACHE_HTDOCS_PATH/piwik/plugins/Morpheus/icons/submodules
-
-
-
-
-
 
 
 # docker exec -i vagrant_mariadb_1 sh -c 'mysql -u bird -pbird2006' < $INST_SQL_PATH/piwik_create_db.sql
@@ -225,7 +221,8 @@ service apache2 restart
 # Append curation scripts to crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /var/www/html/MassBank/script/Sitemap.sh' /etc/crontab) > /etc/crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /var/www/html/MassBank/script/Statistics.R' /etc/crontab) > /etc/crontab 
-
+IFS='<';echo $(sed '$i0 0   * * *   tomcat8     rm -f /var/lib/tomcat8/webapps/MassBank/temp/*.svg' /etc/crontab) > /etc/crontab
+IFS='<';echo $(sed '$i0 0   * * *   tomcat8     rm -f /var/cache/tomcat8/temp/*' /etc/crontab) > /etc/crontab
 
 echo
 echo
