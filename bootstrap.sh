@@ -152,7 +152,7 @@ echo "Compile MassBank"
 cd MassBank
 mvn -q install
 echo "Copy webapp to tomcat"
-cp target/MassBank.war /var/lib/tomcat8/webapps/
+cp MassBank/target/MassBank.war /var/lib/tomcat8/webapps/
 cd ..
 
 # add tomcat folders
