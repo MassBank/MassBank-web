@@ -7,6 +7,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>MassBank Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+	<parent>
+		<groupId>de.ipb-halle.msbi</groupId>
+		<artifactId>MassBank-Project</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
@@ -89,7 +94,7 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.6</version>
 		</dependency>
-		
+
 		<!-- CDK -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
@@ -156,7 +161,7 @@
 			<artifactId>cdk-depict</artifactId>
 			<version>1.5.12</version>
 		</dependency>
-		
+
 	</dependencies>
 	<build>
 		<finalName>MassBank</finalName>
