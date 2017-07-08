@@ -149,7 +149,7 @@ cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bi
 
 # tomcat install webapp
 echo "Compile MassBank"
-cd MassBank
+cd MassBank-Project
 mvn -q install
 echo "Copy webapp to tomcat"
 cp MassBank/target/MassBank.war /var/lib/tomcat8/webapps/
