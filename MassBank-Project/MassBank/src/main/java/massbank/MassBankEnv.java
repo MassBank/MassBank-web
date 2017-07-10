@@ -101,6 +101,8 @@ public class MassBankEnv extends HttpServlet {
 	public static final String KEY_BATCH_SMTP			= "mail.batch.smtp";		// ex. "[BatchService用メールSMTPサーバ名]"
 	public static final String KEY_BATCH_NAME			= "mail.batch.name";		// ex. "[BatchService用メール送信者名]"
 	public static final String KEY_BATCH_FROM			= "mail.batch.from";		// ex. "[BatchService用メール送信アドレス]"
+	public static final String KEY_DB_USER				= "db.user";
+	public static final String KEY_DB_PASSWORD			= "db.password";
 	
 	// MassBank 環境変数（固定値）	
 	private static String VAL_LOCAL_URL					= "";	// ex. "http://localhost/MassBank/"
@@ -135,6 +137,8 @@ public class MassBankEnv extends HttpServlet {
 	private static String VAL_BATCH_SMTP				= "";	// ex. "[BatchService用メールSMTPサーバ名]"
 	private static String VAL_BATCH_NAME				= "";	// ex. "[BatchService用メール送信者名]"
 	private static String VAL_BATCH_FROM				= "";	// ex. "[BatchService用メール送信アドレス]"
+	private static String VAL_DB_USER					= "";
+	private static String VAL_DB_PASSWORD				= "";
 	
 	// Apache 接続リトライ回数
 	private static int APACHE_CONNECT_RETRY_CNT = 15;
@@ -281,6 +285,10 @@ public class MassBankEnv extends HttpServlet {
 			envListLog();
 			return;
 		}
+		
+		// VAL_DB_USER, VAL_DB_PASSWORD
+		VAL_DB_USER		= getServletContext().getInitParameter("user");
+		VAL_DB_PASSWORD	= getServletContext().getInitParameter("password");
 		
 		// VAL_APACHE_APPROOT_PATH
 		VAL_APACHE_APPROOT_PATH = VAL_APACHE_DOCROOT_PATH + VAL_SUB_PATH;
@@ -588,6 +596,12 @@ public class MassBankEnv extends HttpServlet {
 		}
 		else if ( key.equals(KEY_BATCH_FROM) ) {
 			val = VAL_BATCH_FROM;
+		}
+		else if ( key.equals(KEY_DB_USER) ) {
+			val = VAL_DB_USER;
+		}
+		else if ( key.equals(KEY_DB_PASSWORD) ) {
+			val = VAL_DB_PASSWORD;
 		}
 		else {
 			val = "-1";

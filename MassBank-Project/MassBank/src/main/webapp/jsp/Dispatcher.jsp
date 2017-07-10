@@ -1,3 +1,4 @@
+<%@page import="massbank.MassBankEnv"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
 /*******************************************************************************
@@ -88,10 +89,29 @@
 		msg = "パラメータtype不正";
 		MassBankLog.ErrorLog( progName, msg, context );
 	}
+	
+	if(typeNum == MassBankCommon.CGI_TBL_TYPE_DISP){
+		// ###############################################################################
+		// redirect to jsp/RecordDisplay.jsp instead of using disp.cgi
+		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String urlStub	= baseUrl + "jsp/RecordDisplay.jsp";
+		String redirectUrl	= urlStub + "?id=" + params.get("id") + "&dsn=" + dbName;
+		
+		//out.print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+		//out.print("<html lang=\"en\">");
+		//out.print("  <head>");
+		//out.print("    <meta http-equiv=\"refresh\" content=\"0; url=" + redirectUrl + "\" />");
+		//out.print("  </head>");
+		//out.print("</html>");
+		response.sendRedirect(redirectUrl);
+		return;
+	}
+	
 	String cgiName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_FILE][typeNum];
 	
 	//-------------------------------------------
 	// 環境設定ファイルからURLリストを取得
+	// Get URL list from environment setting file
 	//-------------------------------------------
 	String path = request.getRequestURL().toString();
 	int pos = path.indexOf("/jsp");
@@ -108,6 +128,7 @@
 	String reqStr = urlList[siteNum];
 	//---------------------------------------------------
 	// 自サーバーの場合、cgiへアクセス
+	// access CGI from server
 	//---------------------------------------------------
 	if ( siteNum == MYSVR_INFO_NUM ) {
 		reqStr += "cgi-bin/" + cgiName;
