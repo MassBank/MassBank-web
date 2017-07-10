@@ -311,6 +311,10 @@ public class AccessionData{
 		if(fileLines == null)
 			return null;
 		
+		final String sumFormulaRegEx	= "([A-Za-z]{1,3}\\d*(\\[\\d+\\])?)+";
+		final String decimalRegEx		= "\\d+(\\.\\d+)?";
+		final String integerRegEx		= "\\d+";
+		
 		try{
 			for(String fileLine : fileLines){
 				
@@ -355,6 +359,8 @@ public class AccessionData{
 					String[] tmp	= fileLine.substring("CH$LINK: ".length()).split(" ");
 					CH$LINK_ID.add(tmp[0]);
 					CH$LINK_NAME.add(tmp[1]);
+				} else if(fileLine.startsWith("SP$SAMPLE: ")){
+					// not parsed
 				} else if(fileLine.startsWith("AC$INSTRUMENT: ")){
 					AC$INSTRUMENT	= fileLine.substring("AC$INSTRUMENT: ".length());
 				} else if(fileLine.startsWith("AC$INSTRUMENT_TYPE: ")){
@@ -369,19 +375,26 @@ public class AccessionData{
 					MS$DATA_PROCESSING.add(fileLine.substring("MS$DATA_PROCESSING: ".length()));
 				} else if(fileLine.startsWith("PK$SPLASH: ")){
 					PK$SPLASH	= fileLine.substring("PK$SPLASH: ".length());
-//				} else if(fileLine.startsWith("PK$ANNOTATION")){
-//					PK$ANNOTATION	= fileLine.substring("PK$ANNOTATION".length());
-//				} else if(fileLine.startsWith("")){
-//					PK$ANNOTATION	= fileLine.substring("".length());
+				} else if(fileLine.startsWith("PK$ANNOTATION")){
+					// PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
+				} else if(
+						fileLine.matches(" *" + decimalRegEx + " +" + sumFormulaRegEx + "[+-] +" + integerRegEx + " +" + decimalRegEx + " +-?" + decimalRegEx + " *") ||
+						fileLine.matches(" *" + decimalRegEx + " +" + decimalRegEx + " +" + sumFormulaRegEx + "/-" + sumFormulaRegEx + " *") ||
+						fileLine.matches(" *" + decimalRegEx + " +" + decimalRegEx + " +" + sumFormulaRegEx + "/none *") ||
+						fileLine.matches(" *" + decimalRegEx + " +" + decimalRegEx + " +" + sumFormulaRegEx + " *")
+				){
+					// annotation
 				} else if(fileLine.startsWith("PK$NUM_PEAK: ")){
 					PK$NUM_PEAK	= Integer.parseInt(fileLine.substring("PK$NUM_PEAK: ".length()));
-//				} else if(fileLine.startsWith("PK$PEAK: ")){
-//					PK$PEAK	= fileLine.substring("PK$PEAK: ".length());
-				} else if(fileLine.matches(" *\\d+(\\.\\d+)? \\d+(\\.\\d+)? \\d+(\\.\\d+)?")){
+				} else if(fileLine.startsWith("PK$PEAK: ")){
+					// PK$PEAK: m/z int. rel.int.
+				} else if(fileLine.matches(" *-?" + decimalRegEx + " " + decimalRegEx + " " + decimalRegEx + "")){
 					String[] tmp	= fileLine.trim().split(" ");
 					PK$PEAK_MZ .add(Double.parseDouble(tmp[0]));
 					PK$PEAK_INT.add(Double.parseDouble(tmp[1]));
 					PK$PEAK_REL.add( Short.parseShort( tmp[2]));
+				} else if(fileLine.startsWith("//")){
+					// end of record
 				} else {
 					System.out.println("Warning: could not parse line in file '" + file.getName() + "': '" + fileLine + "'");
 				}
