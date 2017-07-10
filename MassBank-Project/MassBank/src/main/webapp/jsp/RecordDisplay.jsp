@@ -134,6 +134,7 @@ All links:
 'CH\$LINK: CHEBI',						'http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:%s',
 'CH\$LINK: CHEMPDB',					'http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=%s',
 'CH\$LINK: CHEMSPIDER',					'http://www.chemspider.com/%s',
+'CH\$LINK: COMPTOX',                    'https://comptox.epa.gov/dashboard/dsstoxdb/results?search=%s',
 'CH\$LINK: FLAVONOIDVIEWER',			'http://www.metabolome.jp/software/FlavonoidViewer/',
 'CH\$LINK: HMDB',						'http://www.hmdb.ca/metabolites/%s',
 'CH\$LINK: INCHIKEY',					'https://www.google.com/search?q=&quot;%s&quot;',
@@ -207,11 +208,12 @@ Links not implemented yet:
 			case "CHEBI":                       CH$LINK_ID	= "<a href=\"http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + CH$LINK_ID								+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "CHEMPDB":                     CH$LINK_ID	= "<a href=\"http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=" + CH$LINK_ID		+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "CHEMSPIDER":                  CH$LINK_ID	= "<a href=\"http://www.chemspider.com/" + CH$LINK_ID															+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "COMPTOX": 	                CH$LINK_ID	= "<a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + CH$LINK_ID															+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "FLAVONOIDVIEWER":             CH$LINK_ID	= "<a href=\"http://www.metabolome.jp/software/FlavonoidViewer/"												+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "HMDB":                        CH$LINK_ID	= "<a href=\"http://www.hmdb.ca/metabolites/" + CH$LINK_ID														+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "INCHIKEY":                    CH$LINK_ID	= "<a href=\"https://www.google.com/search?q=&quot;" + CH$LINK_ID + "&quot;"									+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "KAPPAVIEW":                   CH$LINK_ID	= "<a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=" + CH$LINK_ID						+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-			case "KEGG":                        CH$LINK_ID	= "<a href=\"http://www.genome.jp/dbget-bin/www_bget?%s:" + CH$LINK_ID											+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "KEGG":                        CH$LINK_ID	= "<a href=\"http://www.genome.jp/dbget-bin/www_bget?" + CH$LINK_ID + ":" + CH$LINK_ID											+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "KNAPSACK":                    CH$LINK_ID	= "<a href=\"http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=" + CH$LINK_ID						+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "LIPIDBANK":                   CH$LINK_ID	= "<a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + CH$LINK_ID											+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "LIPIDMAPS":                   CH$LINK_ID	= "<a href=\"http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;

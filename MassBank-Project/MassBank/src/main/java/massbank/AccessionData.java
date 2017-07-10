@@ -260,13 +260,18 @@ public class AccessionData{
 		return databaseName;
 	}
 	public static boolean existsFile(String databaseName, String accession){
-		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH) + databaseName + File.separator + accession + ".txt");
+		File file	= AccessionData.getFile(databaseName, accession);
 		return file.exists();
 	}
-	public static AccessionData getAccessionDataFromFile(String databaseName, String accession){
+	public static File getFile(String databaseName, String accession){
+		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
 		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH) + databaseName + File.separator + accession + ".txt");
-		if(!file.exists())
+		return file;
+	}
+	public static AccessionData getAccessionDataFromFile(String databaseName, String accession){
+		if(!AccessionData.existsFile(databaseName, accession))
 			return null;
+		File file	= AccessionData.getFile(databaseName, accession);
 		return AccessionData.getAccessionDataFromFile(file);
 	}
 	public static AccessionData getAccessionDataFromFile(File file){
@@ -377,6 +382,8 @@ public class AccessionData{
 					PK$PEAK_MZ .add(Double.parseDouble(tmp[0]));
 					PK$PEAK_INT.add(Double.parseDouble(tmp[1]));
 					PK$PEAK_REL.add( Short.parseShort( tmp[2]));
+				} else {
+					System.out.println("Warning: could not parse line in file '" + file.getName() + "': '" + fileLine + "'");
 				}
 				
 				/*
