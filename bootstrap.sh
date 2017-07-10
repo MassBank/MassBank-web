@@ -52,6 +52,7 @@ build-essential libmysqlclient-dev \
 mc xterm mysql-workbench \
 r-base-core \
 openbabel \
+ntp \
 maven
 
 # enable docker support for standard user
