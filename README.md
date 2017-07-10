@@ -133,7 +133,7 @@ sudo htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
 Restart server: `sudo systemctl restart apache2`.
 
 ## Import project into Eclipse
-Download the [Eclipse IDE for Java EE Developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/marsr) with "Maven Integration for Eclipse" and "Maven Integration for WTP" and extract it to your preferred folder. Start eclipse and import the clones github-project 'Massbank-web': File -> Import -> Existing Maven Project -> Select this repo for import. 
+Download and install the [Eclipse IDE for Java EE Developers](https://www.eclipse.org/downloads) with "Maven Integration for Eclipse" and "Maven Integration for WTP" and extract it to your preferred folder. Start eclipse and import the clones github-project 'Massbank-web': File -> Import -> Existing Maven Project -> Select this repo for import. 
 Download [Apache Tomcat](http://tomcat.apache.org/) and extract it to your preferred folder.
 Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). Edit '/var/www/html/MassBank/massbank.conf' and set `<MiddleServer URL="http://localhost/MassBank/"/>`. Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost/MassBank/](http://localhost/MassBank/).
 
