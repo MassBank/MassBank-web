@@ -1,16 +1,5 @@
 <%@page import="massbank.StructureToSvgStringGenerator"%>
-<%@page import="java.net.URL"%>
-<%@page import="java.io.PrintWriter"%>
-<%@page import="java.util.Date"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="java.io.File"%>
-<%@page import="org.openscience.cdk.DefaultChemObjectBuilder"%>
-<%@page import="org.openscience.cdk.depict.DepictionGenerator"%>
-<%@page import="org.openscience.cdk.silent.SilentChemObjectBuilder"%>
-<%@page import="org.openscience.cdk.interfaces.IChemObjectBuilder"%>
-<%@page import="org.openscience.cdk.interfaces.IAtomContainer"%>
-<%@page import="org.openscience.cdk.inchi.InChIGeneratorFactory"%>
-<%@page import="org.openscience.cdk.inchi.InChIToStructure"%>
+<%@page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData"%>
 
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
@@ -35,6 +24,7 @@
  *******************************************************************************
  *
  * 検索結果ページ表示用モジュール
+ * Search result page display module
  *
  * ver 2.0.36 2011.08.02
  *
@@ -76,6 +66,7 @@
 	
 	//-------------------------------------
 	// リファラー（遷移元）、及びタイトル設定
+	// Referrer (transition source), title setting
 	//-------------------------------------
 	boolean refPeak     = false;			// PeakSearch
 	boolean refPeakDiff = false;			// PeakDifferenceSearch
@@ -143,8 +134,10 @@
 	
 	//-------------------------------------
 	// リクエストパラメータ取得
+	// Request parameter acquisition
 	//-------------------------------------
 	// 全てのリクエストパラメータをハッシュに持つ
+	// Hash all request parameters
 	Hashtable<String, Object> reqParams = new Hashtable<String, Object>();	// リクエストパラメータ格納用ハッシュ
 	Enumeration names = request.getParameterNames();
 	String exec = (request.getParameter("exec") != null) ? (String)request.getParameter("exec") : "";
@@ -168,8 +161,10 @@
 		}
 	}
 	// パラメータリセット
+	// parameter reset
 	reqParams.put("exec", "");
 	// デフォルト値設定
+	// Default value setting
 	if ( reqParams.get("pageNo") == null ) {
 		reqParams.put("pageNo", "1");
 	}
@@ -182,6 +177,7 @@
 	
 	//-------------------------------------
 	// リクエストパラメータ加工、及びURLパラメータ生成
+	// Request parameter processing and URL parameter generation
 	//-------------------------------------
 	String searchParam = "";				// URLパラメータ（検索実行用）
 	String recordParam = "";				// URLパラメータ（レコードページ表示用）
@@ -263,6 +259,7 @@
 	}
 	
 	// URLパラメータ（検索実行用）生成
+	// Parameter generation (for search execution)
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ){
 		String key = (String)keys.nextElement();
 		if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
@@ -293,6 +290,7 @@
 	
 	//-------------------------------------------
 	// 設定ファイルから各種情報を取得
+	// Acquire various information from setting file
 	//-------------------------------------------
 	String path = request.getRequestURL().toString();
 	String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
@@ -354,11 +352,18 @@
 	</table>
 <iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
-<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
+<%
+	/*
+		↓ServerInfo.jsp
+		はプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)
+		Exists only on the primary server (it does not cause an error even if there is no file)
+	*/
+%>
 <jsp:include page="../pserver/ServerInfo.jsp" />
 <%
 	//-------------------------------------
 	// 検索条件パラメータ表示
+	// display search parameters
 	//-------------------------------------
 	out.println( "<a name=\"resultsTop\"></a>" );
 	
@@ -696,6 +701,7 @@
 
 	//-------------------------------------
 	// 検索実行・結果取得
+	// execute search and acquire results
 	//-------------------------------------
 	String typeName = "";
 	ResultList list = null;
@@ -736,6 +742,7 @@
 	}
 	
 	// 検索実行
+	// execute search
 	if ( isMulti ) {;
 		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
 	}
@@ -770,6 +777,7 @@
 	
 	//-------------------------------------
 	// リクエストパラメータを隠しフィールドに保持
+	// Keep request parameters in hidden field
 	//-------------------------------------
 	for ( Enumeration keys = reqParams.keys(); keys.hasMoreElements(); ){
 		String key = (String)keys.nextElement();
@@ -796,6 +804,7 @@
 	
 	//-------------------------------------
 	// 検索結果数、ボタン出力
+	// number of search results, buttons
 	//-------------------------------------
 	out.println( "<table width=\"" + tableWidth + "\" cellpadding=\"0\" cellspacing=\"0\">" );
 	out.println( " <tr>");
@@ -892,8 +901,10 @@
 		
 		//-------------------------------------
 		// 検索結果テーブルラベル出力
+		// Search result table output
 		//-------------------------------------
 		// ソートイメージ変更
+		// change sort image
 		String nameSortImg = defaultGif;
 		String formulaSortImg = defaultGif;
 		String emassSortImg = defaultGif;
@@ -960,6 +971,7 @@
 		
 		//-------------------------------------
 		// 結果表示
+		// display results
 		//-------------------------------------
 		if ( startIndex > -1 && endIndex > -1 ) {
 			int prevNode = -1;
@@ -1062,77 +1074,32 @@
 						previewName.append("...");
 					}
 					
-					// get accession and structure for svg image generation
-					// TODO fetch the accession, inchi, and smiles without all this overhead
-					String param	= "id=" + rec.getId() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
-					ArrayList<String> result = mbcommon.execDispatcher( serverUrl, typeName, param, false, rec.getContributor() );
-					
-					String accession	= null;
-					String inchi		= null;
-					String smiles		= null;
-					for(String line : result){
-						if(line.startsWith("ACCESSION: ") && accession == null)	accession	= line.substring("ACCESSION: "  .length(), line.indexOf("\t"));
-						if(line.startsWith("CH$IUPAC: " ))						inchi		= line.substring("CH$IUPAC: " .length(), line.indexOf("\t"));
-						if(line.startsWith("CH$SMILES: "))						smiles		= line.substring("CH$SMILES: ".length(), line.indexOf("\t"));
-					}
-					
-					if(accession == null || accession.equals("NA"))
-						accession	= "Unknown";
-					if(inchi.equals("NA"))
-						inchi	= null;
-					if(smiles.equals("NA"))
-						smiles	= null;
-					
-					// generate SVG string from structure (inchi / smiles)
-					boolean inchiThere	= inchi  != null;
-					boolean smilesThere	= smiles != null;
-					boolean structureThere	= inchiThere | smilesThere;
-					
-					String svg = null;
-					if(structureThere){
-						// structure there --> generate svg string
-						if(svg == null && inchiThere)	svg	= StructureToSvgStringGenerator.fromInChI(inchi);
-						if(svg == null && smilesThere)	svg	= StructureToSvgStringGenerator.fromSMILES(smiles);
-					}
+					// get data for svg image generation
+					String databaseName		= conf.getDbName()[Integer.parseInt(rec.getContributor())];
+					String accession		= rec.getId();
+					String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
+					String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
+							databaseName, accession, tmpFileFolder, tmpUrlFolder,
+							80, 250, 436
+					);
 					
 					// display svg
-					if(svg != null){
-						// path to temp file as local file and as url
-						String rootPath	= request.getServletContext().getAttribute("ctx").toString();
-						String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+					if(clickablePreviewImageData != null){
+						// write big image and medium image as temp file
+						ClickablePreviewImageData.writeToFile(clickablePreviewImageData.svgMedium,	clickablePreviewImageData.tmpFileMedium);
+						ClickablePreviewImageData.writeToFile(clickablePreviewImageData.svgBig,		clickablePreviewImageData.tmpFileBig);
 						
-						// file names
-						final SimpleDateFormat sdf	= new SimpleDateFormat("yyMMdd_HHmmss_SSS");
-						String accession2			= accession.replaceAll("[^0-9a-zA-Z]", "_");
-						String fileName				= sdf.format(new Date()) + "_" + accession2 + ".svg";
-						String fileNamePreview		= sdf.format(new Date()) + "_" + accession2 + "_preview.svg";
-						
-						String tmpFile				= (new File(tomcatTmpPath + fileName		)).getPath();
-						String tmpFilePreview		= (new File(tomcatTmpPath + fileNamePreview	)).getPath();
-						String tmpFileUrl			= rootPath + "/temp/" + fileName;
-						String tmpFileUrlPreview	= rootPath + "/temp/" + fileNamePreview;
-						
-						// adapt size of svg image
-						String svgSmall		= StructureToSvgStringGenerator.resizeSvg(svg,  80,  80, "margin:0px; cursor:pointer");
-						String svgMedium	= StructureToSvgStringGenerator.resizeSvg(svg, 250, 250, null);
-						String svgBig		= StructureToSvgStringGenerator.resizeSvg(svg, 436, 436, null);
-						
-						// add expandMolView on click
-						svgSmall	= svgSmall.replaceAll(
+						// add expandMolView on click for small image
+						String svgSmall	= clickablePreviewImageData.svgSmall.replaceAll(
 								"</g>\\n</svg>", 
-								"<rect class=\"btn\" x=\"0\" y=\"0\" width=\"80\" height=\"80\" onclick=\"expandMolView('" + tmpFileUrl + "')\" fill-opacity=\"0.0\" stroke-width=\"0\" /> </g>\\\\n</svg>"
+								"<rect class=\"btn\" x=\"0\" y=\"0\" width=\"80\" height=\"80\" onclick=\"expandMolView('" + clickablePreviewImageData.tmpUrlBig + "')\" fill-opacity=\"0.0\" stroke-width=\"0\" /> </g>\\\\n</svg>"
 						);
-						
-						// write big image as temp file
-						PrintWriter pw1	= new PrintWriter(tmpFile);
-						pw1.println(svgBig);
-						pw1.close();
-						PrintWriter pw2	= new PrintWriter(tmpFilePreview);
-						pw2.println(svgMedium);
-						pw2.close();
+						// cursor for small image
+						svgSmall	= StructureToSvgStringGenerator.setSvgStyle(svgSmall, "cursor:pointer");
 						
 						// paste small image to web site
-						out.println( "  <a href=\"" + tmpFileUrlPreview + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+						out.println( "  <a href=\"" + clickablePreviewImageData.tmpUrlMedium + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
 						out.println( "   " + svgSmall);
 						out.println( "  </a>" );
 					} else {
