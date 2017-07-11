@@ -28,7 +28,7 @@ public class StructureToSvgStringGenerator {
 			// get the SVG XML string
 			svg = new DepictionGenerator().depict(mol).toSvgStr();
 		} catch (CDKException e) {
-			e.printStackTrace();
+			System.out.println("Warning: " + e.getLocalizedMessage());
 		}
 		
 		return svg;
@@ -44,7 +44,7 @@ public class StructureToSvgStringGenerator {
 			// get the SVG XML string
 			svg = new DepictionGenerator().depict(mol).toSvgStr();
 		} catch (CDKException e) {
-			e.printStackTrace();
+			System.out.println("Warning: " + e.getLocalizedMessage());
 		}
 		
 		return svg;

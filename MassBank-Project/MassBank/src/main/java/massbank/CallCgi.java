@@ -25,17 +25,25 @@
  ******************************************************************************/
 package massbank;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 
 public class CallCgi extends Thread
@@ -61,10 +69,19 @@ public class CallCgi extends Thread
 		String progName = "CallCgi";
 		String msg = "";
 
-		HttpClient client = new HttpClient();
+		CloseableHttpClient httpclient = HttpClients.createDefault();
 		// タイムアウト値(msec)セット
-		client.setTimeout( m_timeout * 1000 );
-		PostMethod method = new PostMethod( this.m_url );
+		int CONNECTION_TIMEOUT_MS = m_timeout * 1000; // Timeout in millis.
+		RequestConfig requestConfig = RequestConfig.custom()
+		    .setConnectionRequestTimeout(CONNECTION_TIMEOUT_MS)
+		    .setConnectTimeout(CONNECTION_TIMEOUT_MS)
+		    .setSocketTimeout(CONNECTION_TIMEOUT_MS)
+		    .build();
+		
+		HttpPost httpPost = new HttpPost(this.m_url);
+		httpPost.setConfig(requestConfig);
+		
+		List <NameValuePair> nvps = new ArrayList <NameValuePair>();
 		String strParam = "";
 		if ( m_params != null && m_params.size() > 0 ) {
 			for ( Enumeration keys = m_params.keys(); keys.hasMoreElements(); ) {
@@ -73,85 +90,56 @@ public class CallCgi extends Thread
 					// キーがInstrumentType,MSType以外の場合はStringパラメータ
 					String val = (String)m_params.get(key);
 					strParam += key + "=" + val + "&";
-					method.addParameter( key, val );
+					nvps.add(new BasicNameValuePair( key, val ));
 				}
 				else {
 					// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 					String[] vals = (String[])m_params.get(key);
 					for (int i=0; i<vals.length; i++) {
 						strParam += key + "=" + vals[i] + "&";
-						method.addParameter( key, vals[i] );
+						nvps.add(new BasicNameValuePair( key, vals[i] ));
 					}
 				}
 			}
 			strParam = strParam.substring( 0, strParam.length()-1 );
 		}
 
+		CloseableHttpResponse response = null;
 		try {
+			// set parameters and execute
+			httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+			response = httpclient.execute(httpPost);
+			
 			// 実行
-			int statusCode = client.executeMethod(method);
+			int statusCode = response.getStatusLine().getStatusCode();
 			// ステータスコードのチェック
 			if ( statusCode != HttpStatus.SC_OK ){
 				// エラー
-				msg = method.getStatusLine().toString() + "\n" + "URL  : " + this.m_url;
+				msg = response.getStatusLine().toString() + "\n" + "URL  : " + this.m_url;
 				msg += "\nPARAM : " + strParam;
 				MassBankLog.ErrorLog( progName, msg, m_context );
 				return;
 			}
-			// レスポンス取得
-//			this.result = method.getResponseBodyAsString();
 			
 			/**
-			 * modification start
-			 * Use method.getResponseBodyAsStream() rather 
-			 * than method.getResponseBodyAsString() (marked as deprecated) for updated HttpClient library.
-			 * Prevents logging of message:
-			 * "Going to buffer response body of large or unknown size. Using getResponseBodyAsStream instead is recommended."
+			 * get result
 			 */
 
-			String charset = method.getResponseCharSet();
-			InputStream is = method.getResponseBodyAsStream();
-			StringBuilder sb = new StringBuilder();
-			String line = "";
-			if (is != null) {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset));
-				boolean contentSeen = false;	// just for bug-fix: ignore trailing empty lines 
-				while ((line = reader.readLine()) != null) {
-					reader.mark(2000);
-					String forward = reader.readLine();
-					
-					// bug-fix: ignore trailing empty lines
-					if(!contentSeen && line.length() == 0)
-						continue;
-					if(!contentSeen && line.length() > 0)
-						contentSeen	= true;
-					// bug-fix: ignore trailing empty lines
-					
-					if((line.equals("") || line.equals("\n") || line.equals("OK")) && forward == null)
-						sb.append(line);				// append last line to StringBuilder
-					else if(forward != null)
-						sb.append(line).append("\n");	// append current line with explicit line break
-					else sb.append(line);
-					
-					reader.reset();
-				}
-				reader.close();
-				is.close();
-				
-//				this.result = sb.toString().trim();
-				this.result = sb.toString();			// trim() deleted. because the last [\t] and [\n] are removed.
-				if(this.result.endsWith("\n"))			// remove trailing line break
-				{
-					int pos = this.result.lastIndexOf("\n");
-					this.result = this.result.substring(0, pos);
-				}
-			} else {		
-				this.result = "";
-			}
-
-			/**
-			 * modification end
-			 */
+			HttpEntity entity = response.getEntity();
+			String responseString	= EntityUtils.toString(entity);
+			
+			// remove trailing and tailing blank lines
+			int numberOfTrailingBlankLines	= 0;
+			while(responseString.charAt(numberOfTrailingBlankLines) == 13 || responseString.charAt(numberOfTrailingBlankLines) == 10)
+				numberOfTrailingBlankLines++;
+			responseString	= responseString.substring(numberOfTrailingBlankLines, responseString.length());
+			
+			int numberOfTailingBlankLines	= 0;
+			while(responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 13 || responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 10)
+				numberOfTailingBlankLines++;
+			responseString	= responseString.substring(0, responseString.length() - numberOfTailingBlankLines);
+			
+			this.result	= responseString;
 		}
 		catch ( Exception e ) {
 			// エラー
@@ -161,7 +149,12 @@ public class CallCgi extends Thread
 		}
 		finally {
 			// コネクション解放
-			method.releaseConnection();
+			if(response != null)
+				try {
+					response.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 	}
 }

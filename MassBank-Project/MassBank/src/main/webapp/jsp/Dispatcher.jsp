@@ -28,11 +28,22 @@
  ******************************************************************************/
 %>
 
-<%@ page import="org.apache.commons.httpclient.HttpClient" %>
-<%@ page import="org.apache.commons.httpclient.HttpStatus" %>
-<%@ page import="org.apache.commons.httpclient.methods.PostMethod" %>
+<%@ page import="org.apache.http.HttpStatus" %>
+<%@ page import="org.apache.http.HttpEntity" %>
+<%@ page import="org.apache.http.NameValuePair" %>
+<%@ page import="org.apache.http.client.config.RequestConfig" %>
+<%@ page import="org.apache.http.client.entity.UrlEncodedFormEntity" %>
+<%@ page import="org.apache.http.client.methods.CloseableHttpResponse" %>
+<%@ page import="org.apache.http.client.methods.HttpPost" %>
+<%@ page import="org.apache.http.impl.client.CloseableHttpClient" %>
+<%@ page import="org.apache.http.impl.client.HttpClients" %>
+<%@ page import="org.apache.http.message.BasicNameValuePair" %>
+<%@ page import="org.apache.http.util.EntityUtils" %>
+<%@ page import="java.io.IOException" %>
 <%@ page import="java.util.Enumeration" %>
 <%@ page import="java.util.Hashtable" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.MassBankLog" %>
@@ -156,10 +167,19 @@
 	}
 	params.put( "dsn", dbName );
 	
-	HttpClient client = new HttpClient();
+	CloseableHttpClient httpclient = HttpClients.createDefault();
 	// タイムアウト値(msec)セット
-	client.setTimeout( timeout * 1000 );
-	PostMethod method = new PostMethod( reqStr );
+	int CONNECTION_TIMEOUT_MS = timeout * 1000; // Timeout in millis.
+	RequestConfig requestConfig = RequestConfig.custom()
+	    .setConnectionRequestTimeout(CONNECTION_TIMEOUT_MS)
+	    .setConnectTimeout(CONNECTION_TIMEOUT_MS)
+	    .setSocketTimeout(CONNECTION_TIMEOUT_MS)
+	    .build();
+	
+	HttpPost httpPost = new HttpPost(reqStr);
+	httpPost.setConfig(requestConfig);
+	
+	List <NameValuePair> nvps = new ArrayList <NameValuePair>();
 	String strParam = "";
 	for ( Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
 		String key = (String)keys.nextElement();
@@ -167,14 +187,14 @@
 			// キーがInstrumentType,MSType以外の場合はStringパラメータ
 			String val = (String)params.get(key);
 			strParam += key + "=" + val + "&";
-			method.addParameter( key, val );
+			nvps.add(new BasicNameValuePair( key, val ));
 		}
 		else {
 			// キーがInstrumentType,MSTypeの場合はString配列パラメータ
 			String[] vals = (String[])params.get(key);
 			for (int i=0; i<vals.length; i++) {
 				strParam += key + "=" + vals[i] + "&";
-				method.addParameter( key, vals[i] );
+				nvps.add(new BasicNameValuePair( key, vals[i] ));
 			}
 		}
 	}
@@ -194,19 +214,36 @@
 	msg += reqStr + "?" + strParam;
 	MassBankLog.TraceLog( progName, msg, context, isTrace );
 	
-	
+	CloseableHttpResponse response2 = null;
 	try {
-		int statusCode = client.executeMethod(method);
+		// set parameters and execute
+		httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+		response2 = httpclient.execute(httpPost);
+		
+		int statusCode = response2.getStatusLine().getStatusCode();
 		//** ステータスコードのチェック **
 		if ( statusCode != HttpStatus.SC_OK ){
 			// エラー
-			msg = method.getStatusLine().toString() + "\n" + "URL : " + reqStr;
+			msg = response2.getStatusLine().toString() + "\n" + "URL : " + reqStr;
 			MassBankLog.ErrorLog( progName, msg, context );
 		}
 		
 		//** レスポンス取得 **
-		String result = method.getResponseBodyAsString();
-		out.print(result);
+		HttpEntity entity = response2.getEntity();
+		String responseString	= EntityUtils.toString(entity);
+		
+		// remove trailing and tailing blank lines
+		int numberOfTrailingBlankLines	= 0;
+		while(responseString.charAt(numberOfTrailingBlankLines) == 13 || responseString.charAt(numberOfTrailingBlankLines) == 10)
+			numberOfTrailingBlankLines++;
+		responseString	= responseString.substring(numberOfTrailingBlankLines, responseString.length());
+		
+		int numberOfTailingBlankLines	= 0;
+		while(responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 13 || responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 10)
+			numberOfTailingBlankLines++;
+		responseString	= responseString.substring(0, responseString.length() - numberOfTailingBlankLines);
+		
+		out.print(responseString);
 	}
 	catch ( Exception e ) {
 		// エラー
@@ -215,6 +252,11 @@
 	}
 	finally {
 		//** コネクション解放 **
-		method.releaseConnection();
+		if(response2 != null)
+				try {
+					response2.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 	}
 %>

@@ -91,7 +91,7 @@
 	//-------------------------------------
 	MassBankCommon mbcommon = new MassBankCommon();
 	String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
-	ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
+	ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();
