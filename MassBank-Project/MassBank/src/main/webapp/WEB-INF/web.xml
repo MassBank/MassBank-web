@@ -38,22 +38,22 @@
         <url-pattern>/MultiDispatcher</url-pattern>
     </servlet-mapping>
 
-	<servlet>
-		<servlet-name>SVNServiceManager</servlet-name>
-		<servlet-class>massbank.svn.SVNServiceManager</servlet-class>
-		<init-param>
-			<param-name>URL</param-name>
-			<param-value>http://www.massbank.jp/SVN/</param-value>
-		</init-param>
-		<init-param>
-			<param-name>RegistrationCommitter</param-name>
-			<param-value>true,10,30</param-value>
-		</init-param>
-		<init-param>
-			<param-name>MSDBUpdater</param-name>
-			<param-value>true,30,60</param-value>
-		</init-param>
-		<load-on-startup>10</load-on-startup>
-	</servlet> 
+<!-- 	<servlet> -->
+<!-- 		<servlet-name>SVNServiceManager</servlet-name> -->
+<!-- 		<servlet-class>massbank.svn.SVNServiceManager</servlet-class> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>URL</param-name> -->
+<!-- 			<param-value>http://www.massbank.jp/SVN/</param-value> -->
+<!-- 		</init-param> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>RegistrationCommitter</param-name> -->
+<!-- 			<param-value>true,10,30</param-value> -->
+<!-- 		</init-param> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>MSDBUpdater</param-name> -->
+<!-- 			<param-value>true,30,60</param-value> -->
+<!-- 		</init-param> -->
+<!-- 		<load-on-startup>10</load-on-startup> -->
+<!-- 	</servlet>  -->
 	
 </web-app>
