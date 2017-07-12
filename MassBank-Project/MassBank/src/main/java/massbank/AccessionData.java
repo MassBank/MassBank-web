@@ -357,8 +357,8 @@ public class AccessionData{
 					CH$IUPAC	= fileLine.substring("CH$IUPAC: ".length());
 				} else if(fileLine.startsWith("CH$LINK: ")){
 					String[] tmp	= fileLine.substring("CH$LINK: ".length()).split(" ");
-					CH$LINK_ID.add(tmp[0]);
-					CH$LINK_NAME.add(tmp[1]);
+					CH$LINK_NAME.add(tmp[0]);
+					CH$LINK_ID.add(tmp[1]);
 				} else if(fileLine.startsWith("SP$SAMPLE: ")){
 					// not parsed
 				} else if(fileLine.startsWith("AC$INSTRUMENT: ")){
