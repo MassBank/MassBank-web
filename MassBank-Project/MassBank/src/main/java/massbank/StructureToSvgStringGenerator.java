@@ -80,13 +80,26 @@ public class StructureToSvgStringGenerator {
 		);
 	}
 	public static ClickablePreviewImageData createClickablePreviewImage(
-			AccessionData accData, String tmpFileFolder, String tmpUrlFolder,
+			AccessionData accData, 
+			String tmpFileFolder, String tmpUrlFolder,
 			int sizeSmall, int sizeMedium, int sizeBig
 	){
 		// fetch structure
 		String accession	= accData.ACCESSION;
 		String inchi		= accData.CH$IUPAC;
 		String smiles		= accData.CH$SMILES;
+		
+		return StructureToSvgStringGenerator.createClickablePreviewImage(
+				accession, inchi, smiles, 
+				tmpFileFolder, tmpUrlFolder, 
+				sizeSmall, sizeMedium, sizeBig
+		);
+	}
+	public static ClickablePreviewImageData createClickablePreviewImage(
+			String accession, String inchi, String smiles,
+			String tmpFileFolder, String tmpUrlFolder,
+			int sizeSmall, int sizeMedium, int sizeBig
+	){
 		
 		if(inchi != null && (inchi.equals("NA") || inchi.equals("N/A")))
 			inchi	= null;
@@ -182,6 +195,37 @@ public class StructureToSvgStringGenerator {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
+		}
+		public String getMediumClickableImage(){
+			// write big image as temp file
+			ClickablePreviewImageData.writeToFile(this.svgBig,		this.tmpFileBig);
+			
+			// add expandMolView on click for small image
+			String svgMedium	= this.svgMedium.replaceAll(
+					"</g>\\n</svg>", 
+					"<rect class=\"btn\" x=\"0\" y=\"0\" width=\"200\" height=\"200\" onclick=\"expandMolView('" + this.tmpUrlBig + "')\" fill-opacity=\"0.0\" stroke-width=\"0\" /> </g>\\\\n</svg>"
+			);
+			// cursor for small image
+			svgMedium	= StructureToSvgStringGenerator.setSvgStyle(svgMedium, "cursor:pointer");
+			
+			return svgMedium;
+		}
+		public String getMediumClickablePreviewLink(String previewName, String linkName){
+			// write big image and medium image as temp file
+			ClickablePreviewImageData.writeToFile(this.svgMedium,	this.tmpFileMedium);
+			ClickablePreviewImageData.writeToFile(this.svgBig,		this.tmpFileBig);
+			
+			String linkHtml	= 
+					"<a " +
+					"href=\"" + this.tmpUrlMedium + "\" " +
+					"class=\"preview_structure\" " +
+					"title=\"" + previewName.toString() + "\" " +
+					"onclick=\"expandMolView('" + this.tmpUrlBig + "');return false;\" " +
+					"target=\"_blank\"" +
+					">" + linkName + "</a>" +
+					"\n";
+			
+			return linkHtml;
 		}
 	}
 }

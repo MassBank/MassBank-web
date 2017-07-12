@@ -98,18 +98,8 @@
 	);
 	
 	String svgMedium	= null;
-	if(clickablePreviewImageData != null){
-		// write big image as temp file
-		ClickablePreviewImageData.writeToFile(clickablePreviewImageData.svgBig,		clickablePreviewImageData.tmpFileBig);
-		
-		// add expandMolView on click for small image
-		svgMedium	= clickablePreviewImageData.svgMedium.replaceAll(
-				"</g>\\n</svg>", 
-				"<rect class=\"btn\" x=\"0\" y=\"0\" width=\"200\" height=\"200\" onclick=\"expandMolView('" + clickablePreviewImageData.tmpUrlBig + "')\" fill-opacity=\"0.0\" stroke-width=\"0\" /> </g>\\\\n</svg>"
-		);
-		// cursor for small image
-		svgMedium	= StructureToSvgStringGenerator.setSvgStyle(svgMedium, "cursor:pointer");
-	}
+	if(clickablePreviewImageData != null)
+		svgMedium	= clickablePreviewImageData.getMediumClickableImage();
 	
 	// ##################################################################################################
 	// compile entry information
@@ -200,6 +190,48 @@ Links not implemented yet:
 	if(accData.CH$EXACT_MASS != -1)		sb.append("CH$EXACT_MASS: " + accData.CH$EXACT_MASS + "\n");
 	if(accData.CH$SMILES != null)		sb.append("CH$SMILES: " + accData.CH$SMILES + "\n");
 	if(accData.CH$IUPAC != null)		sb.append("CH$IUPAC: " + accData.CH$IUPAC + "\n");
+	
+	// TODO fetch from AccessionData accData
+	String CH$CDK_DEPICT_SMILES				= null;//"CCOCCOCCO |Sg:n:3,4,5:2:ht| PEG-2";
+	String CH$CDK_DEPICT_GENERIC_SMILES		= null;//"c1ccc(cc1)/C=C/C(=O)O[R]";
+	String CH$CDK_DEPICT_STRUCTURE_SMILES	= null;//"c1ccc(cc1)/C=C/C(=O)O";
+	
+	if(CH$CDK_DEPICT_SMILES != null){
+		ClickablePreviewImageData clickablePreviewImageData2	= StructureToSvgStringGenerator.createClickablePreviewImage(
+				CH$CDK_DEPICT_SMILES, null, CH$CDK_DEPICT_SMILES,
+				tmpFileFolder, tmpUrlFolder,
+				80, 200, 436
+		);
+		if(clickablePreviewImageData2 != null)
+			sb.append("CH$CDK_DEPICT_SMILES: " + clickablePreviewImageData2.getMediumClickablePreviewLink("CH$CDK_DEPICT_SMILES", CH$CDK_DEPICT_SMILES));
+		else
+			sb.append("CH$CDK_DEPICT_SMILES: " + CH$CDK_DEPICT_SMILES + "\n");
+	}
+	
+	if(CH$CDK_DEPICT_GENERIC_SMILES != null){
+		ClickablePreviewImageData clickablePreviewImageData3	= StructureToSvgStringGenerator.createClickablePreviewImage(
+				CH$CDK_DEPICT_GENERIC_SMILES, null, CH$CDK_DEPICT_GENERIC_SMILES,
+				tmpFileFolder, tmpUrlFolder,
+				80, 200, 436
+		);
+		if(clickablePreviewImageData3 != null)
+			sb.append("CH$CDK_DEPICT_GENERIC_SMILES: " + clickablePreviewImageData3.getMediumClickablePreviewLink("CH$CDK_DEPICT_GENERIC_SMILES", CH$CDK_DEPICT_GENERIC_SMILES));
+		else
+			sb.append("CH$CDK_DEPICT_GENERIC_SMILES: " + CH$CDK_DEPICT_GENERIC_SMILES + "\n");
+	}
+	
+	if(CH$CDK_DEPICT_STRUCTURE_SMILES != null){
+		ClickablePreviewImageData clickablePreviewImageData4	= StructureToSvgStringGenerator.createClickablePreviewImage(
+				CH$CDK_DEPICT_STRUCTURE_SMILES, null, CH$CDK_DEPICT_STRUCTURE_SMILES,
+				tmpFileFolder, tmpUrlFolder,
+				80, 200, 436
+		);
+		if(clickablePreviewImageData4 != null)
+			sb.append("CH$CDK_DEPICT_STRUCTURE_SMILES: " + clickablePreviewImageData4.getMediumClickablePreviewLink("CH$CDK_DEPICT_STRUCTURE_SMILES", CH$CDK_DEPICT_STRUCTURE_SMILES));
+		else
+			sb.append("CH$CDK_DEPICT_STRUCTURE_SMILES: " + CH$CDK_DEPICT_STRUCTURE_SMILES + "\n");
+	}
+	
 	for(int idx = 0; idx < accData.CH$LINK_ID.length; idx++){
 		String CH$LINK_ID	= accData.CH$LINK_ID[idx];
 		switch(accData.CH$LINK_NAME[idx]){
@@ -281,6 +313,7 @@ Links not implemented yet:
 		<script type="text/javascript" src="../script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
+		<script type="text/javascript" src="../script/StructurePreview.js"></script>
 		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
