@@ -236,10 +236,10 @@ Links not implemented yet:
 		String CH$LINK_ID	= accData.CH$LINK_ID[idx];
 		switch(accData.CH$LINK_NAME[idx]){
 			case "CAS":							CH$LINK_ID	= "<a href=\"https://www.google.com/search?q=&quot;" + CH$LINK_ID + "&quot;"									+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-			case "CAYMAN":                      CH$LINK_ID	= "<a href=\"http://www.caymanchem.com/app/template/Product.vm/catalog/" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-			case "CHEBI":                       CH$LINK_ID	= "<a href=\"http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + CH$LINK_ID								+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-			case "CHEMPDB":                     CH$LINK_ID	= "<a href=\"http://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=" + CH$LINK_ID		+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-			case "CHEMSPIDER":                  CH$LINK_ID	= "<a href=\"http://www.chemspider.com/" + CH$LINK_ID															+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "CAYMAN":                      CH$LINK_ID	= "<a href=\"https://www.caymanchem.com/app/template/Product.vm/catalog/" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "CHEBI":                       CH$LINK_ID	= "<a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + CH$LINK_ID								+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "CHEMPDB":                     CH$LINK_ID	= "<a href=\"https://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=" + CH$LINK_ID		+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "CHEMSPIDER":                  CH$LINK_ID	= "<a href=\"https://www.chemspider.com/" + CH$LINK_ID															+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "COMPTOX": 	                CH$LINK_ID	= "<a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + CH$LINK_ID															+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "FLAVONOIDVIEWER":             CH$LINK_ID	= "<a href=\"http://www.metabolome.jp/software/FlavonoidViewer/"												+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "HMDB":                        CH$LINK_ID	= "<a href=\"http://www.hmdb.ca/metabolites/" + CH$LINK_ID														+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
@@ -250,10 +250,10 @@ Links not implemented yet:
 			case "LIPIDBANK":                   CH$LINK_ID	= "<a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + CH$LINK_ID											+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "LIPIDMAPS":                   CH$LINK_ID	= "<a href=\"http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "NIKKAJI":                     CH$LINK_ID	= "<a href=\"http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.jsp?SN=" + CH$LINK_ID + "&CONTENT=syosai"		+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-			case "PUBCHEM":                     CH$LINK_ID	= "<a href=\"http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?"												+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "PUBCHEM":                     CH$LINK_ID	= "<a href=\"https://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?"												+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "OligosaccharideDataBase":     CH$LINK_ID	= "<a href=\"http://www.fukuyama-u.ac.jp/life/bio/biochem/" + CH$LINK_ID + ".html" + CH$LINK_ID					+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 			case "OligosaccharideDataBase2D":   CH$LINK_ID	= "<a href=\"http://www.fukuyama-u.ac.jp/life/bio/biochem/" + CH$LINK_ID + ".html"								+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-			case "NCBI-TAXONOMY":               CH$LINK_ID	= "<a href=\"http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
+			case "NCBI-TAXONOMY":               CH$LINK_ID	= "<a href=\"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 		}
 		
 		sb.append("CH$LINK: " + accData.CH$LINK_NAME[idx] + " " + CH$LINK_ID + "\n");
@@ -314,7 +314,7 @@ Links not implemented yet:
 		<!-- SpeckTackle dependencies-->
 		<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script>
 		<script type="text/javascript" src="../script/StructurePreview.js"></script>
-		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
 		<!-- SpeckTackle style sheet-->
