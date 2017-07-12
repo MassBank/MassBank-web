@@ -16,37 +16,39 @@ import org.openscience.cdk.smiles.SmilesParser;
 
 public class StructureToSvgStringGenerator {
 	
-	public static String fromInChI(String inchi){
-		
-		String svg	= null;
+	public static IAtomContainer structureFromInChI(String inchi){
+		IAtomContainer mol	= null;
 		try {
 			// get atom container
 			InChIGeneratorFactory inchiFactory = InChIGeneratorFactory.getInstance();
 			InChIToStructure inchi2structure = inchiFactory.getInChIToStructure(inchi, DefaultChemObjectBuilder.getInstance());
-			IAtomContainer mol	= inchi2structure.getAtomContainer();
-			
-			// get the SVG XML string
-			svg = new DepictionGenerator().depict(mol).toSvgStr();
+			mol	= inchi2structure.getAtomContainer();
 		} catch (CDKException e) {
 			System.out.println("Warning: " + e.getLocalizedMessage());
 		}
 		
-		return svg;
+		return mol;
 	}
-	public static String fromSMILES(String smiles){
-		
-		String svg	= null;
+	public static IAtomContainer structureFromSMILES(String smiles){
+		IAtomContainer mol	= null;
 		try {
 			// get atom container
 	    	SmilesParser smipar = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-	    	IAtomContainer mol = smipar.parseSmiles(smiles);
-			
-			// get the SVG XML string
-			svg = new DepictionGenerator().depict(mol).toSvgStr();
+	    	mol = smipar.parseSmiles(smiles);
 		} catch (CDKException e) {
 			System.out.println("Warning: " + e.getLocalizedMessage());
 		}
 		
+		return mol;
+	}
+	public static String drawToSvg(IAtomContainer mol){
+		String svg	= null;
+		try {
+			// get the SVG XML string
+			svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr();
+		} catch (CDKException e) {
+			e.printStackTrace();
+		}
 		return svg;
 	}
 	public static String resizeSvg(String svg, int width, int heigth){
@@ -110,49 +112,48 @@ public class StructureToSvgStringGenerator {
 		boolean inchiThere	= inchi  != null;
 		boolean smilesThere	= smiles != null;
 		
-		String svg = null;
-		// structure there --> generate svg string
-		if(svg == null && smilesThere)	svg	= StructureToSvgStringGenerator.fromSMILES(smiles);
-		if(svg == null && inchiThere)	svg	= StructureToSvgStringGenerator.fromInChI(inchi);
-		
-		// display svg
-		if(svg != null){
-			// path to temp file as local file and as url
-			
-			// file names
-			final SimpleDateFormat sdf	= new SimpleDateFormat("yyMMdd_HHmmss_SSS");
-			String accession2			= accession.replaceAll("[^0-9a-zA-Z]", "_");
-			
-			String fileNameSmall		= sdf.format(new Date()) + "_" + accession2 + "_small.svg";
-			String fileNameMedium		= sdf.format(new Date()) + "_" + accession2 + "_medium.svg";
-			String fileNameBig			= sdf.format(new Date()) + "_" + accession2 + "_big.svg";
-			
-			String tmpFileSmall			= (new File(tmpFileFolder + fileNameSmall	)).getPath();
-			String tmpFileMedium		= (new File(tmpFileFolder + fileNameMedium	)).getPath();
-			String tmpFileBig			= (new File(tmpFileFolder + fileNameBig		)).getPath();
-			
-			String tmpUrlSmall			= tmpUrlFolder + "/" + fileNameSmall;
-			String tmpUrlMedium			= tmpUrlFolder + "/" + fileNameMedium;
-			String tmpUrlBig			= tmpUrlFolder + "/" + fileNameBig;
-			
-			// adapt size of svg image
-			String svgSmall		= StructureToSvgStringGenerator.resizeSvg(svg, sizeSmall,	sizeSmall);
-			String svgMedium	= StructureToSvgStringGenerator.resizeSvg(svg, sizeMedium,	sizeMedium);
-			String svgBig		= StructureToSvgStringGenerator.resizeSvg(svg, sizeBig,		sizeBig);
-			
-			return new ClickablePreviewImageData(
-					tmpFileSmall,
-					tmpFileMedium,
-					tmpFileBig, 
-					tmpUrlSmall, 
-					tmpUrlMedium, 
-					tmpUrlBig,
-					svgSmall, 
-					svgMedium,
-					svgBig            
-			);
-		} else
+		IAtomContainer mol	= null;
+		if(mol == null && smilesThere)	mol	= StructureToSvgStringGenerator.structureFromSMILES(smiles);
+		if(mol == null && inchiThere)	mol	= StructureToSvgStringGenerator.structureFromInChI(inchi);
+		if(mol == null)
 			return null;
+		
+		String svg = StructureToSvgStringGenerator.drawToSvg(mol);
+		if(svg == null)
+			return null;
+		
+		// path to temp file as local file and as url
+		final SimpleDateFormat sdf	= new SimpleDateFormat("yyMMdd_HHmmss_SSS");
+		String accession2			= accession.replaceAll("[^0-9a-zA-Z]", "_");
+		
+		String fileNameSmall		= sdf.format(new Date()) + "_" + accession2 + "_small.svg";
+		String fileNameMedium		= sdf.format(new Date()) + "_" + accession2 + "_medium.svg";
+		String fileNameBig			= sdf.format(new Date()) + "_" + accession2 + "_big.svg";
+		
+		String tmpFileSmall			= (new File(tmpFileFolder + fileNameSmall	)).getPath();
+		String tmpFileMedium		= (new File(tmpFileFolder + fileNameMedium	)).getPath();
+		String tmpFileBig			= (new File(tmpFileFolder + fileNameBig		)).getPath();
+		
+		String tmpUrlSmall			= tmpUrlFolder + "/" + fileNameSmall;
+		String tmpUrlMedium			= tmpUrlFolder + "/" + fileNameMedium;
+		String tmpUrlBig			= tmpUrlFolder + "/" + fileNameBig;
+		
+		// adapt size of svg image
+		String svgSmall		= StructureToSvgStringGenerator.resizeSvg(svg, sizeSmall,	sizeSmall);
+		String svgMedium	= StructureToSvgStringGenerator.resizeSvg(svg, sizeMedium,	sizeMedium);
+		String svgBig		= StructureToSvgStringGenerator.resizeSvg(svg, sizeBig,		sizeBig);
+		
+		return new ClickablePreviewImageData(
+				tmpFileSmall,
+				tmpFileMedium,
+				tmpFileBig, 
+				tmpUrlSmall, 
+				tmpUrlMedium, 
+				tmpUrlBig,
+				svgSmall, 
+				svgMedium,
+				svgBig            
+		);
 	}
 	public static class ClickablePreviewImageData{
 		public final String tmpFileSmall;
