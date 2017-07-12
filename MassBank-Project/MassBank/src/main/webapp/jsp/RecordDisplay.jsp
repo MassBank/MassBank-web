@@ -312,7 +312,7 @@ Links not implemented yet:
 		<link rel="stylesheet" type="text/css" href="../css/Common.css">
 		<script type="text/javascript" src="../script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
-		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script>
 		<script type="text/javascript" src="../script/StructurePreview.js"></script>
 		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
