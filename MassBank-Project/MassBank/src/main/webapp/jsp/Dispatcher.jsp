@@ -233,15 +233,18 @@
 		String responseString	= EntityUtils.toString(entity);
 		
 		// remove trailing and tailing blank lines
-		int numberOfTrailingBlankLines	= 0;
-		while(responseString.charAt(numberOfTrailingBlankLines) == 13 || responseString.charAt(numberOfTrailingBlankLines) == 10)
-			numberOfTrailingBlankLines++;
-		responseString	= responseString.substring(numberOfTrailingBlankLines, responseString.length());
-		
-		int numberOfTailingBlankLines	= 0;
-		while(responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 13 || responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 10)
-			numberOfTailingBlankLines++;
-		responseString	= responseString.substring(0, responseString.length() - numberOfTailingBlankLines);
+		if(responseString.length() > 0){
+			int numberOfTrailingBlankLines	= 0;
+			while(numberOfTrailingBlankLines < responseString.length() && (responseString.charAt(numberOfTrailingBlankLines) == 13 || responseString.charAt(numberOfTrailingBlankLines) == 10))
+				numberOfTrailingBlankLines++;
+			responseString	= responseString.substring(numberOfTrailingBlankLines, responseString.length());
+		}
+		if(responseString.length() > 0){
+			int numberOfTailingBlankLines	= 0;
+			while(numberOfTailingBlankLines < responseString.length() && (responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 13 || responseString.charAt(responseString.length() - 1 - numberOfTailingBlankLines) == 10))
+				numberOfTailingBlankLines++;
+			responseString	= responseString.substring(0, responseString.length() - numberOfTailingBlankLines);
+		}
 		
 		out.print(responseString);
 	}
