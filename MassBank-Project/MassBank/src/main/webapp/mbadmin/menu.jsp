@@ -142,7 +142,7 @@ body {
 					<td class="<%=slMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=slMenu%>'" onClick="parent.location.href='StructureList.jsp'">Structure List</td>
 					<td class="<%=ovMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ovMenu%>'" onClick="parent.location.href='RecordUtil.jsp?act=check'">Validator</td>
 					<td class="<%=rgMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rgMenu%>'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</td>
-					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Dababase Manager</td>
+					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Database Manager</td>
 				</tr>
 <%
 	}
@@ -153,7 +153,7 @@ body {
 					<td class="<%=rvMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rvMenu%>'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</td>
 					<td class="<%=rrMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rrMenu%>'" onClick="parent.location.href='RecordRegist.jsp'">Record Registration</td>
 					<td class="<%=srMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=srMenu%>'" onClick="parent.location.href='StructureRegist.jsp'">Structure Registration</td>
-					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Dababase Manager</td>
+					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Database Manager</td>
 				</tr>
 				<tr>
 					<td class="<%=ieMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ieMenu%>'" onClick="parent.location.href='InstEdit.jsp'">Instrument Editor</td>

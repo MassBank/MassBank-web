@@ -108,12 +108,6 @@
 		String urlStub	= baseUrl + "jsp/RecordDisplay.jsp";
 		String redirectUrl	= urlStub + "?id=" + params.get("id") + "&dsn=" + dbName;
 		
-		//out.print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		//out.print("<html lang=\"en\">");
-		//out.print("  <head>");
-		//out.print("    <meta http-equiv=\"refresh\" content=\"0; url=" + redirectUrl + "\" />");
-		//out.print("  </head>");
-		//out.print("</html>");
 		response.sendRedirect(redirectUrl);
 		return;
 	}
