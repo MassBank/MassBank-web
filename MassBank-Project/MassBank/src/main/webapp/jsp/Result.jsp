@@ -1077,7 +1077,9 @@
 					// get data for svg image generation
 					String databaseName		= conf.getDbName()[Integer.parseInt(rec.getContributor())];
 					String accession		= rec.getId();
-					String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
+					
+					String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
+					//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
 					String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
 					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
 							databaseName, accession, tmpFileFolder, tmpUrlFolder,
