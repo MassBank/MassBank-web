@@ -109,8 +109,6 @@ body {
 	String ieMenu = (referer.indexOf("/InstEdit.jsp") == -1)             ? "menu" : "menuSelect";
 	String rrMenu = (referer.indexOf("/RecordRegist.jsp") == -1)         ? "menu" : "menuSelect";
 	String rlMenu = (referer.indexOf("/RecordList.jsp") == -1)           ? "menu" : "menuSelect";
-	String srMenu = (referer.indexOf("/StructureRegist.jsp") == -1)      ? "menu" : "menuSelect";
-	String slMenu = (referer.indexOf("/StructureList.jsp") == -1)        ? "menu" : "menuSelect";
 	String ovMenu = (referer.indexOf("/RecordUtil.jsp?act=check") == -1) ? "menu" : "menuSelect";
 	String sgMenu = (referer.indexOf("/RecordUtil.jsp?act=sql") == -1)   ? "menu" : "menuSelect";
 	String fuMenu = (referer.indexOf("/FileUpload.jsp") == -1)           ? "menu" : "menuSelect";
@@ -131,7 +129,6 @@ body {
 					<td class="titl" onClick="parent.location.href='./'" rowspan="2">ADMIN<br>MENU</td>
 					<td class="<%=rvMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rvMenu%>'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</td>
 					<td class="<%=rrMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rrMenu%>'" onClick="parent.location.href='RecordRegist.jsp'">Record Registration</td>
-					<td class="<%=srMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=srMenu%>'" onClick="parent.location.href='StructureRegist.jsp'">Structure Registration</td>
 					<td class="<%=fuMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=fuMenu%>'" onClick="parent.location.href='FileUpload.jsp'">File Upload</td>
 					<td class="<%=sgMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=sgMenu%>'" onClick="parent.location.href='RecordUtil.jsp?act=sql'">Sql File Generator</td>
 					<td class="<%=viMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=viMenu%>'" onClick="parent.location.href='../jsp/DispVersion.jsp'">Version Information</td>
@@ -139,7 +136,6 @@ body {
 				<tr>
 					<td class="<%=ieMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ieMenu%>'" onClick="parent.location.href='InstEdit.jsp'">Instrument Editor</td>
 					<td class="<%=rlMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rlMenu%>'" onClick="parent.location.href='RecordList.jsp'">Record List</td>
-					<td class="<%=slMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=slMenu%>'" onClick="parent.location.href='StructureList.jsp'">Structure List</td>
 					<td class="<%=ovMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ovMenu%>'" onClick="parent.location.href='RecordUtil.jsp?act=check'">Validator</td>
 					<td class="<%=rgMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rgMenu%>'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</td>
 					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Database Manager</td>
@@ -152,13 +148,11 @@ body {
 					<td class="titl" onClick="parent.location.href='./'" rowspan="2">&nbsp;ADMIN TOOL&nbsp;<br>MENU</td>
 					<td class="<%=rvMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rvMenu%>'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</td>
 					<td class="<%=rrMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rrMenu%>'" onClick="parent.location.href='RecordRegist.jsp'">Record Registration</td>
-					<td class="<%=srMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=srMenu%>'" onClick="parent.location.href='StructureRegist.jsp'">Structure Registration</td>
 					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Database Manager</td>
 				</tr>
 				<tr>
 					<td class="<%=ieMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ieMenu%>'" onClick="parent.location.href='InstEdit.jsp'">Instrument Editor</td>
 					<td class="<%=rlMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rlMenu%>'" onClick="parent.location.href='RecordList.jsp'">Record List</td>
-					<td class="<%=slMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=slMenu%>'" onClick="parent.location.href='StructureList.jsp'">Structure List</td>
 				</tr>
 <%
 	}
