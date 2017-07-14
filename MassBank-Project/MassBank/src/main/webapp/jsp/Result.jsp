@@ -821,8 +821,6 @@
 	if ( list.getResultNum() > 0 ) {
 		out.println( "  <td align=\"right\">" );
 		out.println( "   <input style=\"width:120\" type=\"button\" name=\"treeCtrl\" value=\"Open All Tree\" onClick=\"allTreeCtrl()\">" );
-		out.println( "   <input style=\"width:120\" type=\"submit\" name=\"multi\" value=\"Multiple Display\" onClick=\"return submitShowSpectra();\">" );
-		out.println( "   <input style=\"width:120\" type=\"button\" name=\"search\" value=\"Spectrum Search\" onClick=\"submitSearchPage();\">" );
 		out.println( "  </td>" );
 	}
 	out.println( " </tr>" );
