@@ -769,6 +769,7 @@ $(window).load(function() {
 <%
 	//----------------------------------------------------
 	// リクエストパラメータ取得
+	// get request type
 	//----------------------------------------------------
 	request.setCharacterEncoding("utf-8");
 	String act = "";
@@ -819,6 +820,7 @@ $(window).load(function() {
 	
 	//----------------------------------------------------
 	// 各種パラメータを取得
+	// fetch parameters
 	//----------------------------------------------------
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String[] dbPathes = new String[]{ MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH),
@@ -856,6 +858,7 @@ $(window).load(function() {
 	try {
 		//----------------------------------------------------
 		// 排他確認
+		// check for concurrent users
 		//----------------------------------------------------
 		if ( act.equals("") ) {
 			isResult = om.startOparation(om.P_MANAGER, om.TP_VIEW, null);
@@ -871,8 +874,10 @@ $(window).load(function() {
 		
 		//----------------------------------------------------
 		// 初期処理
+		// prepare operation
 		//----------------------------------------------------
 		// 一時ディレクトリを準備
+		// set rights for tmp path
 		(new File(tmpPath)).mkdir();
 		if(os.indexOf("Windows") == -1){
 			isResult = FileUtil.changeMode("777", tmpPath);
@@ -883,6 +888,7 @@ $(window).load(function() {
 		}
 		
 		// 編集前の情報を保持
+		// get infos
 		String beforeServerUrl = gtConf.getServerUrl();
 		String[] beforeDbList = gtConf.getDbName();
 		String[] beforeUrlList = gtConf.getSiteUrl();
@@ -890,16 +896,19 @@ $(window).load(function() {
 		
 		//----------------------------------------------------
 		// 追加処理
+		// perform checks
 		//----------------------------------------------------
 		if ( act.equals("add") ) {
 			reqNo = beforeDbList.length;
 			
 			// 入力値チェック
+			// check database
 			if ( !checkValue(out, reqSiteDb, reqShortLabel, reqLongLabel, reqSiteUrl) ) {
 				out.println( msgErr("additional failure.") );
 				isResult = false;
 			}
 			// URL種別チェック
+			// check url
 			else if ( !getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(reqUrlType) ) {
 				if ( reqUrlType.equals(URL_TYPE_INTERNAL) ) {
 					out.println( msgErr("url on the external cannot be specified.") );
@@ -911,6 +920,7 @@ $(window).load(function() {
 				}
 			}
 			// 登録済みチェック
+			// check if database is already registred
 			else if ( isAlready(beforeDbList, beforeUrlList, reqSiteDb, reqSiteUrl, baseUrl, hostName, ipAddress) ) {
 				isResult = false;
 				out.println( msgErr("database already exists.") );
@@ -918,6 +928,7 @@ $(window).load(function() {
 			// 追加
 			else {
 				// 内部サイトのデータベースの追加処理を行う
+				// create database
 				if ( getUrlType(baseUrl, hostName, ipAddress, reqSiteUrl).equals(URL_TYPE_INTERNAL) ) {
 				
 					// SQLファイル準備
@@ -941,6 +952,7 @@ $(window).load(function() {
 					}
 					
 					// フォルダ追加処理
+					// create working directories
 					for (int i=0; i<dbPathes.length; i++) {
 						File workDir = new File(dbPathes[i] + reqSiteDb);
 						if ( !workDir.isDirectory() ) {
@@ -961,6 +973,7 @@ $(window).load(function() {
 				}
 				
 				// massbank.conf 追加処理
+				// add database to config
 				isResult = upConf.addConfig(reqNo, reqShortLabel, reqLongLabel, reqSiteUrl, reqSiteDb);
 				if ( !isResult ) {
 					Logger.getLogger("global").severe( "edit massbank.conf failed." );
