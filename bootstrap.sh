@@ -184,6 +184,9 @@ if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' $
 sed -i -e 's#<!-- Define an AJP 1.3 Connector on port 8009 -->#<!-- Define an AJP 1.3 Connector on port 8009 -->\n<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />#' $DEST_TOMCAT_PATH/conf/server.xml    
 fi 
 
+# Increase default maximum JAVA heap size for Tomcat
+sed -i 's/Xmx128m/Xmx512m/g' /usr/share/tomcat8/defaults.template
+sed -i 's/Xmx128m/Xmx512m/g' /etc/default/tomcat8
 
 echo
 echo ">> service start"
