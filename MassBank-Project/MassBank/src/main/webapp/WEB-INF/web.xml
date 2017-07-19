@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:web="http://xmlns.jcp.org/xml/ns/javaee"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-	<display-name>Archetype Created Web Application</display-name>
-	
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+		 http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+	<display-name>MassBank Web Application</display-name>
+
 	<!-- get this parameters in the code with getServletContext().getInitParameter("user"); -->
 	<context-param>
-        <param-name>user</param-name>
-        <param-value>bird</param-value>
-    </context-param>
-    <context-param>
-        <param-name>password</param-name>
-        <param-value>bird2006</param-value>
-    </context-param>
-	
+		<param-name>user</param-name>
+		<param-value>bird</param-value>
+	</context-param>
+	<context-param>
+		<param-name>password</param-name>
+		<param-value>bird2006</param-value>
+	</context-param>
+
 	<servlet>
 		<servlet-name>MassBankEnv</servlet-name>
 		<servlet-class>massbank.MassBankEnv</servlet-class>
@@ -27,33 +28,33 @@
 		<servlet-name>MassBankEnv</servlet-name>
 		<url-pattern>/MassBankEnv</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-        <servlet-name>MultiDispatcher</servlet-name>
-        <servlet-class>massbank.MultiDispatcher</servlet-class>
-        <load-on-startup>3</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>MultiDispatcher</servlet-name>
-        <url-pattern>/MultiDispatcher</url-pattern>
-    </servlet-mapping>
 
-<!-- 	<servlet> -->
-<!-- 		<servlet-name>SVNServiceManager</servlet-name> -->
-<!-- 		<servlet-class>massbank.svn.SVNServiceManager</servlet-class> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>URL</param-name> -->
-<!-- 			<param-value>http://www.massbank.jp/SVN/</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>RegistrationCommitter</param-name> -->
-<!-- 			<param-value>true,10,30</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>MSDBUpdater</param-name> -->
-<!-- 			<param-value>true,30,60</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<load-on-startup>10</load-on-startup> -->
-<!-- 	</servlet>  -->
-	
+	<servlet>
+		<servlet-name>MultiDispatcher</servlet-name>
+		<servlet-class>massbank.MultiDispatcher</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MultiDispatcher</servlet-name>
+		<url-pattern>/MultiDispatcher</url-pattern>
+	</servlet-mapping>
+
+	<!-- <servlet> -->
+	<!-- <servlet-name>SVNServiceManager</servlet-name> -->
+	<!-- <servlet-class>massbank.svn.SVNServiceManager</servlet-class> -->
+	<!-- <init-param> -->
+	<!-- <param-name>URL</param-name> -->
+	<!-- <param-value>http://www.massbank.jp/SVN/</param-value> -->
+	<!-- </init-param> -->
+	<!-- <init-param> -->
+	<!-- <param-name>RegistrationCommitter</param-name> -->
+	<!-- <param-value>true,10,30</param-value> -->
+	<!-- </init-param> -->
+	<!-- <init-param> -->
+	<!-- <param-name>MSDBUpdater</param-name> -->
+	<!-- <param-value>true,30,60</param-value> -->
+	<!-- </init-param> -->
+	<!-- <load-on-startup>10</load-on-startup> -->
+	<!-- </servlet> -->
+
 </web-app>
