@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Package: massbank
-Implementation-Version: 1.0.51 2013.11.11
-Implementation-Vendor: MassBank Project

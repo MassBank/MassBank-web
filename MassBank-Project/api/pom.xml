@@ -156,6 +156,7 @@
 
 	</dependencies>
 	<build>
+		<finalName>${project.artifactId}</finalName>
 		<resources>
 			<resource>
 				<directory>conf</directory>
@@ -231,7 +232,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<warName>api</warName>
+					<!-- <warName>api</warName> -->
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
 					</archive>
