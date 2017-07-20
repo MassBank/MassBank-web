@@ -214,7 +214,7 @@ service apache2 restart
 echo "append curation scripts to crontab"
 IFS='<';echo $(sed '$i0 0   * * *   www-data    bash /var/www/html/MassBank/script/Sitemap.sh' /etc/crontab) > /etc/crontab
 IFS='<';echo $(sed '$i0 0   * * *   www-data    Rscript /var/www/html/MassBank/script/Statistics.R' /etc/crontab) > /etc/crontab 
-IFS='<';echo $(sed '$i0 0   * * *   tomcat8     rm -f /var/lib/tomcat8/webapps/MassBank/temp/*.svg' /etc/crontab) > /etc/crontab
+# IFS='<';echo $(sed '$i0 0   * * *   tomcat8     rm -f /var/lib/tomcat8/webapps/MassBank/temp/*.svg' /etc/crontab) > /etc/crontab # done by tomcat filecleaner?
 IFS='<';echo $(sed '$i0 0   * * *   tomcat8     rm -f /var/cache/tomcat8/temp/*' /etc/crontab) > /etc/crontab
 
 echo
