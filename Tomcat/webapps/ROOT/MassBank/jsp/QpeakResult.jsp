@@ -400,10 +400,10 @@
 <script type="text/javascript" src="../script/Common.js"></script>
 <script type="text/javascript" src="../script/QpeakResult.js"></script>
 <script type="text/javascript" src="../script/QpeakResultMenu.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" ></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script>
 <script type="text/javascript" src="../script/StructurePreview.js"></script>
 <!-- SpeckTackle dependencies-->
-<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 <!-- SpeckTackle library-->
 <script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
 <!-- SpeckTackle style sheet-->
