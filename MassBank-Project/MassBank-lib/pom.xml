@@ -55,57 +55,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-formula</artifactId>
+			<artifactId>cdk-data</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-inchi</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-fingerprint</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-smiles</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-tautomer</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-silent</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-smarts</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-sdg</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-renderbasic</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-standard</artifactId>
-			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-renderawt</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>

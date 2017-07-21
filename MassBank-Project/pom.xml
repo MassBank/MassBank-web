@@ -18,7 +18,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axis2.version>1.7.5</axis2.version>
-		<cdk.version>1.5.12</cdk.version>
+		<cdk.version>2.0</cdk.version>
 	</properties>
 
 	<build>

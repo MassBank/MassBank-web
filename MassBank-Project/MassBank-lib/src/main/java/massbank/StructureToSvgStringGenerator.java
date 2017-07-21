@@ -29,6 +29,7 @@ public class StructureToSvgStringGenerator {
 		
 		return mol;
 	}
+	
 	public static IAtomContainer structureFromSMILES(String smiles){
 		IAtomContainer mol	= null;
 		try {
@@ -41,6 +42,7 @@ public class StructureToSvgStringGenerator {
 		
 		return mol;
 	}
+	
 	public static String drawToSvg(IAtomContainer mol){
 		String svg	= null;
 		try {
@@ -51,18 +53,21 @@ public class StructureToSvgStringGenerator {
 		}
 		return svg;
 	}
+	
 	public static String resizeSvg(String svg, int width, int heigth){
 		return svg.replaceAll(
 				"width='[0-9]*(\\.[0-9]*)?mm' height='[0-9]*(\\.[0-9]*)?mm'", 
 				"width=\"" + width + "\" height=\"" + heigth + "\""
 		);
 	}
+	
 	public static String setSvgStyle(String svg, String styleParameters){
 		return svg.replaceAll(
 				"viewBox", 
 				"style=\"" + styleParameters + "\" viewBox"
 		);
 	}
+	
 	public static ClickablePreviewImageData createClickablePreviewImage(
 			String databaseName, String accession, String tmpFileFolder, String tmpUrlFolder,
 			int sizeSmall, int sizeMedium, int sizeBig
@@ -81,6 +86,7 @@ public class StructureToSvgStringGenerator {
 				sizeSmall, sizeMedium, sizeBig
 		);
 	}
+	
 	public static ClickablePreviewImageData createClickablePreviewImage(
 			AccessionData accData, 
 			String tmpFileFolder, String tmpUrlFolder,
@@ -97,6 +103,7 @@ public class StructureToSvgStringGenerator {
 				sizeSmall, sizeMedium, sizeBig
 		);
 	}
+	
 	public static ClickablePreviewImageData createClickablePreviewImage(
 			String accession, String inchi, String smiles,
 			String tmpFileFolder, String tmpUrlFolder,
@@ -155,6 +162,7 @@ public class StructureToSvgStringGenerator {
 				svgBig            
 		);
 	}
+	
 	public static class ClickablePreviewImageData{
 		public final String tmpFileSmall;
 		public final String tmpFileMedium;
@@ -188,6 +196,7 @@ public class StructureToSvgStringGenerator {
 			this.svgMedium		= svgMedium;        
 			this.svgBig			= svgBig;           
 		}
+		
 		public static void writeToFile(String svg, String file){
 			try {
 				PrintWriter pw = new PrintWriter(file);
