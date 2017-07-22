@@ -140,16 +140,29 @@ echo "enable_mpm_worker" # due to better performance
 a2dismod mpm_prefork
 a2enmod mpm_worker
 
-echo "set up apache httpd"
-cat >> /etc/apache2/apache2.conf << EOF
-<IfModule mpm_worker_module>
+echo "config mpm_worker"
+rm -f /etc/apache2/mods-available/mpm_worker.conf
+cat >> /etc/apache2/mods-available/mpm_worker.conf << EOF
+# worker MPM
+# StartServers: initial number of server processes to start
+# MinSpareThreads: minimum number of worker threads which are kept spare
+# MaxSpareThreads: maximum number of worker threads which are kept spare
+# ThreadLimit: ThreadsPerChild can be changed to this maximum value during a
+#                         graceful restart. ThreadLimit can only be changed by stopping
+#                         and starting Apache.
+# ThreadsPerChild: constant number of worker threads in each server process
+# MaxRequestWorkers: maximum number of threads
+# MaxConnectionsPerChild: maximum number of requests a server process serves
+
+#<IfModule mpm_worker_module>
 ServerLimit 16
 StartServers 2
 MaxClients 150
 MinSpareThreads 25
 MaxSpareThreads 75
 ThreadsPerChild 25 
-</IfModule>
+#</IfModule>
+
 EOF
 
 echo "set mbadmin username to $MBUSERNAME and password to $PASSWORD"
