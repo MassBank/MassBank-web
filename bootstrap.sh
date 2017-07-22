@@ -136,6 +136,22 @@ a2enmod authz_groupfile
 a2enmod cgid
 a2enmod jk
 
+echo "enable_mpm_worker" # due to better performance
+a2dismod mpm_prefork
+a2enmod mpm_worker
+
+echo "set up apache httpd"
+cat >> /etc/apache2/apache2.conf << EOF
+<IfModule mpm_worker_module>
+ServerLimit 16
+StartServers 2
+MaxClients 150
+MinSpareThreads 25
+MaxSpareThreads 75
+ThreadsPerChild 25 
+</IfModule>
+EOF
+
 echo "set mbadmin username to $MBUSERNAME and password to $PASSWORD"
 htpasswd -b -c /etc/apache2/.htpasswd $MBUSERNAME $PASSWORD
 
