@@ -13,10 +13,10 @@ path <- "/var/www/html/MassBank/DB/annotation/"
 source("/var/www/html/MassBank/script/GetInfo_and_InChIKeys_extended.R")
 
 # Run the script and generate a csv
-getInfoFixKey(path, "/var/www/html/MassBank/statistics.csv","/usr/bin")
+getInfoFixKey(path, "/var/www/html/MassBank/recordlist.csv","/usr/bin")
 
 # Read csv, get prefixes of the accessions, and split the dataframe
-statCsv <- read.csv("/var/www/html/MassBank/statistics.csv")
+statCsv <- read.csv("/var/www/html/MassBank/recordlist.csv")
 statCsv$PREFIX <- gsub(statCsv$ACCESSION,pattern = "[0-9]*",replacement = "")
 splitStats <- split.data.frame(statCsv,statCsv$RESEARCH_GROUP)
 
