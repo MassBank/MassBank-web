@@ -43,9 +43,6 @@ import massbank.MassBankEnv;
  *   Annotationルートパス取得（非推奨）             MassBankEnv
  *   Molfileルートパス取得（非推奨）                MassBankEnv
  *   Profileルートパス取得（非推奨）                MassBankEnv
- *   GIFルートパス取得（非推奨）                    MassBankEnv
- *   GIFSMALLルートパス取得（非推奨）               MassBankEnv
- *   GIFLARGEルートパス取得（非推奨）               MassBankEnv
  *   出力先パス取得                                 admin.conf(out_path)
  *   出力先パス取得（非推奨）                       MassBankEnv
  *   MassBankディレクトリパス取得（非推奨）         MassBankEnv
@@ -128,33 +125,6 @@ public class AdminCommon {
 	 */
 	public String getProfileRootPath() {
 		return MassBankEnv.get(MassBankEnv.KEY_PROFILE_PATH);
-	}
-	
-	/**
-	 * GIFルートパス取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getGifRootPath() {
-		return MassBankEnv.get(MassBankEnv.KEY_GIF_PATH);
-	}
-	
-	/**
-	 * GIFSMALLルートパス取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getGifSmallRootPath() {
-		return MassBankEnv.get(MassBankEnv.KEY_GIF_SMALL_PATH);
-	}
-	
-	/**
-	 * GIFLARGEルートパス取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getGifLargeRootPath() {
-		return MassBankEnv.get(MassBankEnv.KEY_GIF_LARGE_PATH);
 	}
 	
 	/**

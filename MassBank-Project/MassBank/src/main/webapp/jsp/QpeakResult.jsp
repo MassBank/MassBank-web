@@ -472,10 +472,6 @@
 		out.println( "<table border=\"0\" cellpadding=\"1\" cellspacing=\"5\">" );
 		out.println( " <tr>" );
 		out.println( "  <td>" );
-		// out.println( "   <applet code=\"Display.class\" archive=\"../applet/Display2.jar\""
-		//	+ " width=\"" + tableWidth + "\" height=\"150\">" );
-		// out.println( "    <param name=\"qpeak\" value=\"" + paramPeak.toString() + "\">" );
-		// out.println( "   </applet>" );
 		out.println("<div id=\"spectrum_canvas\" peaks=\"" + paramPeak.toString() + "\" style=\"height: 200px; width: 750px; background-color: white\"></div>");
 		out.println( "  </td>" );
 		out.println( " </tr>" );
@@ -604,7 +600,7 @@
 				String valstr = name.replace("\"", "&quot;") + "\t" + id + "\t" + formula + "\t0\t" + site;
 				
 				String rowId = String.valueOf(i);
-				out.println( " <tr id=\"" + rowId + "\"onmouseover=\"overBgColor(this, '#E6E6FA', '" + rowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + rowId + "');\">" );
+				out.println( " <tr id=\"" + rowId + "\" onmouseover=\"overBgColor(this, '#E6E6FA', '" + rowId + "');\" onmouseout=\"outBgColor(this, '#FFFFFF', '" + rowId + "');\">" );
 				
 				//** チェックボックス
 				out.println( "  <td class=\"treeLayout1\" width=\"" + width[0] + "\" align=\"center\">" );
@@ -628,6 +624,7 @@
 					previewName.delete(17, previewName.length());
 					previewName.append("...");
 				}
+				//TODO: insert svg here
 				if ( mapGifSmallUrl.containsKey(key) ) {
 					if ( mapGifUrl.containsKey(key) ) {
 						out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );

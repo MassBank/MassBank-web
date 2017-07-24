@@ -825,10 +825,7 @@ $(window).load(function() {
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String[] dbPathes = new String[]{ MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH),
 	                                        MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH),
-	                                        MassBankEnv.get(MassBankEnv.KEY_PROFILE_PATH),
-	                                        MassBankEnv.get(MassBankEnv.KEY_GIF_PATH),
-	                                        MassBankEnv.get(MassBankEnv.KEY_GIF_SMALL_PATH),
-	                                        MassBankEnv.get(MassBankEnv.KEY_GIF_LARGE_PATH) };
+	                                        MassBankEnv.get(MassBankEnv.KEY_PROFILE_PATH)};
 	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	final String massbankConfPath = MassBankEnv.get(MassBankEnv.KEY_MASSBANK_CONF_PATH);
 	GetConfig gtConf = new GetConfig(baseUrl);

@@ -92,5 +92,4 @@
 	String SAMPLE_ZIP_URL = commonRefBaseUrl + "sample/sample.zip";
 	String RECDATA_ZIP_URL = commonRefBaseUrl + "sample/recdata.zip";
 	String MOLDATA_ZIP_URL = commonRefBaseUrl + "sample/moldata.zip";
-	String GIFDATA_ZIP_URL = commonRefBaseUrl + "sample/gifdata.zip";
 %>

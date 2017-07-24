@@ -91,9 +91,6 @@ public class MassBankEnv extends HttpServlet {
 	public static final String KEY_ANNOTATION_PATH		= "path.annotation";		// ex. "/var/www/html/MassBank/DB/annotation/"
 	public static final String KEY_MOLFILE_PATH			= "path.molfile";			// ex. "/var/www/html/MassBank/DB/molfile/"
 	public static final String KEY_PROFILE_PATH			= "path.profile";			// ex. "/var/www/html/MassBank/DB/profile/"
-	public static final String KEY_GIF_PATH				= "path.gif";				// ex. "/var/www/html/MassBank/DB/gif/"
-	public static final String KEY_GIF_SMALL_PATH		= "path.gif.small";			// ex. "/var/www/html/MassBank/DB/gif_small/"
-	public static final String KEY_GIF_LARGE_PATH		= "path.gif.large";			// ex. "/var/www/html/MassBank/DB/gif_large/"
 	// MassBank 環境変数（可変値）取得キー
 	public static final String KEY_PRIMARY_SERVER_URL	= "url.pserver";			// ex. "[サーバ監視用URL]"
 	public static final String KEY_DB_HOST_NAME			= "db.host_name";			// ex. "[DBアクセス用ホスト名]"
@@ -127,9 +124,6 @@ public class MassBankEnv extends HttpServlet {
 	private static String VAL_ANNOTATION_PATH			= "";	// ex. "/var/www/html/MassBank/DB/annotation/"
 	private static String VAL_MOLFILE_PATH				= "";	// ex. "/var/www/html/MassBank/DB/molfile/"
 	private static String VAL_PROFILE_PATH				= "";	// ex. "/var/www/html/MassBank/DB/profile/"
-	private static String VAL_GIF_PATH					= "";	// ex. "/var/www/html/MassBank/DB/gif/"
-	private static String VAL_GIF_SMALL_PATH			= "";	// ex. "/var/www/html/MassBank/DB/gif_small/"
-	private static String VAL_GIF_LARGE_PATH			= "";	// ex. "/var/www/html/MassBank/DB/gif_large/"
 	// MassBank 環境変数（可変値）
 	private static String VAL_PRIMARY_SERVER_URL		= "http://www.massbank.jp/";	// ex. "[サーバ監視用URL]"
 	private static String VAL_DB_HOST_NAME				= "localhost";					// ex. "[DBアクセス用ホスト名]"
@@ -420,30 +414,6 @@ public class MassBankEnv extends HttpServlet {
 			}
 		}
 		
-		// VAL_GIF_PATH
-		if ( !VAL_DATAROOT_PATH.equals("") ) {
-			VAL_GIF_PATH = VAL_DATAROOT_PATH + "gif/";
-			if ( isWindows ) {
-				VAL_GIF_PATH = VAL_DATAROOT_PATH + "gif\\";
-			}
-		}
-		
-		// VAL_GIF_SMALL_PATH
-		if ( !VAL_DATAROOT_PATH.equals("") ) {
-			VAL_GIF_SMALL_PATH = VAL_DATAROOT_PATH + "gif_small/";
-			if ( isWindows ) {
-				VAL_GIF_SMALL_PATH = VAL_DATAROOT_PATH + "gif_small\\";
-			}
-		}
-		
-		// VAL_GIF_LARGE_PATH
-		if ( !VAL_DATAROOT_PATH.equals("") ) {
-			VAL_GIF_LARGE_PATH = VAL_DATAROOT_PATH + "gif_large/";
-			if ( isWindows ) {
-				VAL_GIF_LARGE_PATH = VAL_DATAROOT_PATH + "gif_large\\";
-			}
-		}
-		
 		// VAL_PRIMARY_SERVER_URL
 		String tmpPrimaryServerUrl = getAdminConf(VAL_ADMIN_CONF_PATH, "primary_server_url");
 		if ( !tmpPrimaryServerUrl.equals("") ) {
@@ -570,15 +540,6 @@ public class MassBankEnv extends HttpServlet {
 		else if ( key.equals(KEY_PROFILE_PATH) ) {
 			val = VAL_PROFILE_PATH;
 		}
-		else if ( key.equals(KEY_GIF_PATH) ) {
-			val = VAL_GIF_PATH;
-		}
-		else if ( key.equals(KEY_GIF_SMALL_PATH) ) {
-			val = VAL_GIF_SMALL_PATH;
-		}
-		else if ( key.equals(KEY_GIF_LARGE_PATH) ) {
-			val = VAL_GIF_LARGE_PATH;
-		}
 		else if ( key.equals(KEY_PRIMARY_SERVER_URL) ) {
 			val = VAL_PRIMARY_SERVER_URL;
 		}
@@ -641,9 +602,6 @@ public class MassBankEnv extends HttpServlet {
 		sb.append(KEY_ANNOTATION_PATH).append("=").append(VAL_ANNOTATION_PATH).append("\n");
 		sb.append(KEY_MOLFILE_PATH).append("=").append(VAL_MOLFILE_PATH).append("\n");
 		sb.append(KEY_PROFILE_PATH).append("=").append(VAL_PROFILE_PATH).append("\n");
-		sb.append(KEY_GIF_PATH).append("=").append(VAL_GIF_PATH).append("\n");
-		sb.append(KEY_GIF_SMALL_PATH).append("=").append(VAL_GIF_SMALL_PATH).append("\n");
-		sb.append(KEY_GIF_LARGE_PATH).append("=").append(VAL_GIF_LARGE_PATH).append("\n");
 		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append("\n");
 		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append("\n");
 		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append("\n");
@@ -736,9 +694,6 @@ public class MassBankEnv extends HttpServlet {
 		sb.append(KEY_ANNOTATION_PATH).append("=").append(VAL_ANNOTATION_PATH).append(ls);
 		sb.append(KEY_MOLFILE_PATH).append("=").append(VAL_MOLFILE_PATH).append(ls);
 		sb.append(KEY_PROFILE_PATH).append("=").append(VAL_PROFILE_PATH).append(ls);
-		sb.append(KEY_GIF_PATH).append("=").append(VAL_GIF_PATH).append(ls);
-		sb.append(KEY_GIF_SMALL_PATH).append("=").append(VAL_GIF_SMALL_PATH).append(ls);
-		sb.append(KEY_GIF_LARGE_PATH).append("=").append(VAL_GIF_LARGE_PATH).append(ls);
 		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append(ls);
 		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append(ls);
 		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append(ls);
