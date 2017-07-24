@@ -116,6 +116,7 @@ INST_SQL_PATH=$INST_ROOT_PATH/sql
 # Apache Path
 APACHE_HTDOCS_PATH=/var/www/html
 APACHE_ERROR_PATH=/var/www/error
+APACHE_CACHE_PATH=/var/cache/apache2
 
 # Tomcat Path
 DEST_TOMCAT_PATH=/var/lib/tomcat8
@@ -154,14 +155,14 @@ cat >> /etc/apache2/mods-available/mpm_worker.conf << EOF
 # MaxRequestWorkers: maximum number of threads
 # MaxConnectionsPerChild: maximum number of requests a server process serves
 
-#<IfModule mpm_worker_module>
+<IfModule mpm_worker_module>
 ServerLimit 16
 StartServers 2
 MaxClients 150
 MinSpareThreads 25
 MaxSpareThreads 75
 ThreadsPerChild 25 
-#</IfModule>
+</IfModule>
 
 EOF
 
@@ -175,6 +176,9 @@ a2ensite 010-a2site-massbank
 echo "compile and install Search.cgi"
 (cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
 install -m 755 -o www-data -g www-data ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
+
+echo "deploy permissions to apache2"
+chown -R www-data:www-data $APACHE_CACHE_PATH
 
 echo "compile MassBank webapp"
 # set user and password in axis2.xml
@@ -214,7 +218,7 @@ chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
 
 
-# Deploy permissions to tomcat ?necessary?
+# Deploy permissions to tomcat
 chown -R tomcat8:tomcat8 $TOMCAT_SHARE_PATH
 find $TOMCAT_SHARE_PATH -type d -exec chmod 755 {} \;
 find $TOMCAT_SHARE_PATH -type f -exec chmod 644 {} \;
@@ -231,7 +235,7 @@ chown -R www-data:www-data $APACHE_HTDOCS_PATH/piwik
 rm $APACHE_HTDOCS_PATH/How\ to\ install\ Piwik.html
 rm -Rf $APACHE_HTDOCS_PATH/piwik/plugins/Morpheus/icons/submodules
 
-# Deploy permissions ?necessary?
+# Deploy permissions
 find $APACHE_HTDOCS_PATH -type d -exec chmod 755 {} \;
 find $APACHE_HTDOCS_PATH -type f -exec chmod 644 {} \;
 find $APACHE_HTDOCS_PATH/MassBank -name "*.cgi" -type f -exec chmod 755 {} \;
