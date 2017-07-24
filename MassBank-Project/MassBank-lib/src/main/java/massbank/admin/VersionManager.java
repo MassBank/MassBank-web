@@ -93,7 +93,6 @@ public class VersionManager {
 	private static final String EXCLUSION_LIST[][] = {
 		{ "JSP", "index.jsp" },
 		{ "JSP", "BatchSearch.jsp" },
-		{ "CGI", "BatchSender.cgi" }
 	};
 	// Common Lib 更新除外ファイル
 	private static final String EXCLUSION_COM_LIB[] = {
