@@ -174,8 +174,8 @@ install -m 644 -o root -g root $INST_CONF_PATH/010-a2site-massbank.conf /etc/apa
 a2ensite 010-a2site-massbank
 
 echo "compile and install Search.cgi"
-(cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
-install -m 755 -o www-data -g www-data ./Apache/cgi-bin/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
+(cd ./modules/Search.cgi/ ; make clean ; make )
+install -m 755 -o www-data -g www-data ./modules/Search.cgi/Search.cgi $APACHE_HTDOCS_PATH/MassBank/cgi-bin/
 
 echo "deploy permissions to apache2"
 chown -R www-data:www-data $APACHE_CACHE_PATH
