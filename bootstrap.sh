@@ -154,14 +154,14 @@ cat >> /etc/apache2/mods-available/mpm_worker.conf << EOF
 # MaxRequestWorkers: maximum number of threads
 # MaxConnectionsPerChild: maximum number of requests a server process serves
 
-#<IfModule mpm_worker_module>
+<IfModule mpm_worker_module>
 ServerLimit 16
 StartServers 2
 MaxClients 150
 MinSpareThreads 25
 MaxSpareThreads 75
 ThreadsPerChild 25 
-#</IfModule>
+</IfModule>
 
 EOF
 
