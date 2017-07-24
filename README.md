@@ -103,9 +103,9 @@ sudo cp -rp modules/apache/error /var/www/
 sudo cp -rp modules/apache/html /var/www/
 
 # built Search.cgi and copy to '/var/www/html/MassBank/cgi-bin/'
-(cd ./Apache/cgi-bin/Search.cgi/ ; make clean ; make ) 
-sudo cp -p ./Apache/cgi-bin/Search.cgi/Search.cgi /var/www/html/MassBank/cgi-bin/
-(cd ./Apache/cgi-bin/Search.cgi/ ; make clean)
+(cd ./modules/Search.cgi/ ; make clean ; make ) 
+sudo cp -p ./modules/Search.cgi/Search.cgi /var/www/html/MassBank/cgi-bin/
+(cd ./modules/Search.cgi/ ; make clean)
 
 # configure file system rights
 sudo chown -R www-data:www-data /var/www/*
