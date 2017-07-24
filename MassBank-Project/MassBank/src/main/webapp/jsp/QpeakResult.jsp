@@ -1,3 +1,5 @@
+<%@page import="massbank.StructureToSvgStringGenerator"%>
+<%@page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
 /*******************************************************************************
@@ -624,38 +626,40 @@
 					previewName.delete(17, previewName.length());
 					previewName.append("...");
 				}
-				//TODO: insert svg here
-				if ( mapGifSmallUrl.containsKey(key) ) {
-					if ( mapGifUrl.containsKey(key) ) {
-						out.println( "  <a href=\"" + mapGifUrl.get(key) + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-					}
-					else {
-						out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-					}
-					if ( mapGifLargeUrl.containsKey(key) ) {
-						out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('" + mapGifLargeUrl.get(key) + "')\" style=\"margin:0px; cursor:pointer\">");
-					}
-					else {
-						out.println( "   <img src=\"" + mapGifSmallUrl.get(key) + "\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-					}
+				
+				// get data for svg image generation
+				String databaseName		= conf.getDbName()[Integer.parseInt(site)];
+				String accession		= id;
+				
+				String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
+				//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
+				String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
+						databaseName, accession, tmpFileFolder, tmpUrlFolder,
+						80, 250, 436
+				);
+				
+				// display svg
+				if(clickablePreviewImageData != null){
+					// write big image and medium image as temp file
+					ClickablePreviewImageData.writeToFile(clickablePreviewImageData.svgMedium,	clickablePreviewImageData.tmpFileMedium);
+					ClickablePreviewImageData.writeToFile(clickablePreviewImageData.svgBig,		clickablePreviewImageData.tmpFileBig);
+					
+					// add expandMolView on click for small image
+					String svgSmall	= clickablePreviewImageData.svgSmall.replaceAll(
+							"</g>\\n</svg>", 
+							"<rect class=\"btn\" x=\"0\" y=\"0\" width=\"80\" height=\"80\" onclick=\"expandMolView('" + clickablePreviewImageData.tmpUrlBig + "')\" fill-opacity=\"0.0\" stroke-width=\"0\" /> </g>\\\\n</svg>"
+					);
+					// cursor for small image
+					svgSmall	= StructureToSvgStringGenerator.setSvgStyle(svgSmall, "cursor:pointer");
+					
+					// paste small image to web site
+					out.println( "  <a href=\"" + clickablePreviewImageData.tmpUrlMedium + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+					out.println( "   " + svgSmall);
 					out.println( "  </a>" );
-				}
-				else if ( mapMolData.containsKey(key) ) {
-					String moldata = mapMolData.get(key).trim();
-					if ( !moldata.equals("") ) {
-						// out.println( "   <applet name=\"jme_query\" code=\"JME.class\" archive=\"../applet/JME.jar\" width=\"80\" height=\"80\">");
-						// out.println( "    <param name=\"options\" value=\"depict\">" );
-						// out.println( "    <param name=\"mol\" value=\"");
-						// out.print( moldata );
-						// out.println( "\">");
-						// out.println( "   </applet>\n");
-						out.println("<div class=\"molecule§viewer\" id=\"molecule§viewer§" + id + "§" + conf.getDbName()[Integer.parseInt(site)] +  "\" style=\"height: 80px; width = 80px; background-color: white\"></div>");
-					}
-				}
-				else {
-					out.println( "  <a href=\"../image/not_available.gif\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
-					out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" onClick=\"expandMolView('../image/not_available_l.gif')\" style=\"margin:0px; cursor:pointer\">");
-					out.println( "  </a>" );
+				} else {
+					// no structure there or svg generation failed
+					out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" style=\"margin:0px;\">");
 				}
 				out.println( "</td>" );
 				
