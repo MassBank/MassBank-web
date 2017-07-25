@@ -28,15 +28,8 @@ package massbank;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ConnectException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -68,12 +61,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class MassBankEnv extends HttpServlet {
 
+	private static final long serialVersionUID = 1L;
+	
 	// MassBank 環境変数（固定値）取得キー
 	public static final String KEY_LOCAL_URL			= "url.local";				// ex. "http://localhost/MassBank/"
-	public static final String KEY_BASE_URL				= "url.base";				// ex. "http://[ホスト名]/MassBank/"
-	public static final String KEY_SUB_URL				= "url.sub";				// ex. "MassBank/"
-	public static final String KEY_SUB_PATH				= "path.sub";				// ex. "MassBank/"
-	public static final String KEY_APACHE_DOCROOT_PATH	= "path.apache.root";		// ex. "/var/www/html/"
+	public static final String KEY_BASE_URL				= "url.base";				// ex. "http://massbank.eu/MassBank/"
 	public static final String KEY_APACHE_APPROOT_PATH	= "path.apache.app.root";	// ex. "/var/www/html/MassBank/"
 	public static final String KEY_TOMCAT_DOCROOT_PATH	= "path.tomcat.root";		// ex. "/usr/local/tomcat/webapps/ROOT/"
 	public static final String KEY_TOMCAT_TEMP_PATH		= "path.tomcat.temp";		// ex. "/usr/local/tomcat/temp/"
@@ -103,10 +95,7 @@ public class MassBankEnv extends HttpServlet {
 	
 	// MassBank 環境変数（固定値）	
 	private static String VAL_LOCAL_URL					= "";	// ex. "http://localhost/MassBank/"
-	private static String VAL_BASE_URL					= "";	// ex. "http://[ホスト名]/MassBank/"
-	private static String VAL_SUB_URL					= "";	// ex. "MassBank/"
-	private static String VAL_SUB_PATH					= "";	// ex. "MassBank/"
-	private static String VAL_APACHE_DOCROOT_PATH		= "";	// ex. "/var/www/html/"
+	private static String VAL_BASE_URL					= "";	// ex. "http://massbank.eu/MassBank/"
 	private static String VAL_APACHE_APPROOT_PATH		= "";	// ex. "/var/www/html/MassBank/"
 	private static String VAL_TOMCAT_DOCROOT_PATH		= "";	// ex. "/usr/local/tomcat/webapps/ROOT/"
 	private static String VAL_TOMCAT_TEMP_PATH			= "";	// ex. "/usr/local/tomcat/temp/"
@@ -143,220 +132,84 @@ public class MassBankEnv extends HttpServlet {
 	 * サービス初期処理を行う
 	 */
 	public void init() throws ServletException {
-		
-		// OS判定
-		boolean isWindows = false;
-		if ( System.getProperty("os.name").indexOf("Windows") != -1 ) {
-			isWindows = true;
-		}
-		
-		// 初期パラメータ取得
-		String tmpRetryCnt = getInitParameter("retryCnt");
-		if ( tmpRetryCnt != null && !tmpRetryCnt.equals("") ) {
-			APACHE_CONNECT_RETRY_CNT = Integer.parseInt(tmpRetryCnt);
-		}
-		String tmpRetryTime = getInitParameter("retryTime");
-		if ( tmpRetryTime != null && !tmpRetryTime.equals("") ) {
-			APACHE_CONNECT_RETRY_TIME = Long.parseLong(tmpRetryTime);
-		}		
-		
-		
+
 		// VAL_LOCAL_URL
 		String tmpLocalUrl = getInitParameter("localUrl");
-		if ( tmpLocalUrl != null && !tmpLocalUrl.equals("") ) {
-			if ( !tmpLocalUrl.endsWith("/") ) {
+		if (tmpLocalUrl != null && !tmpLocalUrl.isEmpty()) {
+			if (!tmpLocalUrl.endsWith("/")) {
 				tmpLocalUrl += "/";
 			}
 			VAL_LOCAL_URL = tmpLocalUrl;
+		} else {
+			throw new ServletException("\"localUrl\" is not set in in web.xml.");
 		}
-		else {
-			Logger.getLogger("global").severe("\"localUrl\" is not set to web.xml.");
-			Logger.getLogger("global").severe("It failed in the initialization of the MassBank environment variable.\n");
-			envListLog();
-			return;
-		}
-		
-		// VAL_SUB_URL, VAL_SUB_PATH
-		if ( !VAL_LOCAL_URL.equals("") ) {
-			Pattern p = Pattern.compile("http:\\/\\/.*\\/(.*\\/)");
-			Matcher m = p.matcher(VAL_LOCAL_URL);
-			if( m.find() ) {
-				VAL_SUB_URL = m.group(1);
-				if ( isWindows ) {
-					VAL_SUB_PATH = VAL_SUB_URL.replaceAll("/", "\\\\");
-				}
-				else {
-					VAL_SUB_PATH = VAL_SUB_URL;
-				}
-			}
-		}
-		
+
 		// VAL_BASE_URL
 		String tmpBaseUrl = "";
-		for (int cnt=0; cnt<=APACHE_CONNECT_RETRY_CNT; cnt++) {			// Apache 停止時はリトライ
-			if ( cnt > 0 ) {
+		GetConfig conf = new GetConfig(VAL_LOCAL_URL);
+		tmpBaseUrl = conf.getServerUrl();
+		if (tmpBaseUrl.equals("")) {
+			for (int cnt = 1; cnt <= APACHE_CONNECT_RETRY_CNT; cnt++) { // Apache 停止時はリトライ
 				Logger.getLogger("global").info("Waiting for a start of Apache... " + cnt + "/" + APACHE_CONNECT_RETRY_CNT + "\n");
 				try {
 					Thread.sleep(APACHE_CONNECT_RETRY_TIME);
-				}
-				catch (InterruptedException ie) {
+				} catch (InterruptedException ie) {
 					ie.printStackTrace();
 				}
-			}
-			GetConfig conf = new GetConfig(VAL_LOCAL_URL);
-			tmpBaseUrl = conf.getServerUrl();
-			if ( !tmpBaseUrl.equals("") ) {
-				break;
+				conf = new GetConfig(VAL_LOCAL_URL);
+				tmpBaseUrl = conf.getServerUrl();
+				if (!tmpBaseUrl.equals("")) {
+					break;
+				}
 			}
 		}
-		if ( !tmpBaseUrl.equals("") ) {
+		if (!tmpBaseUrl.equals("")) {
 			VAL_BASE_URL = tmpBaseUrl;
-		}
-		else {
-			Logger.getLogger("global").severe("Apache doesn't start.  " + 
-					"Cannot access \"" + VAL_LOCAL_URL + "massbank.conf\".");
-			Logger.getLogger("global").severe("It failed in the initialization of the MassBank environment variable.\n");
+		} else {
 			envListLog();
-			return;
+			throw new ServletException("Apache doesn't start.  " + "Cannot access \"" + VAL_LOCAL_URL + "massbank.conf\".");
 		}
-		
-		// VAL_APACHE_DOCROOT_PATH
-		String tmpApacheDocrootPath = "";
-		BufferedReader br = null;
-		try {
-			URL url = new URL(VAL_LOCAL_URL + "cgi-bin/GetDocRoot.cgi");
-			URLConnection con = null;
-			for (int cnt=0; cnt<=APACHE_CONNECT_RETRY_CNT; cnt++) {		// Apache 停止時はリトライ
-				if ( cnt > 0 ) {
-					Logger.getLogger("global").info("Waiting for a start of Apache... " + cnt + "/" + APACHE_CONNECT_RETRY_CNT + "\n");
-					try {
-						Thread.sleep(APACHE_CONNECT_RETRY_TIME);
-					}
-					catch (InterruptedException ie) {
-						ie.printStackTrace();
-					}
-				}
-				try {
-					con = url.openConnection();
-					br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8") );
-					break;
-				}
-				catch ( ConnectException ce ) {
-					if ( cnt == APACHE_CONNECT_RETRY_CNT ) {
-						throw ce;
-					}
-				}
-			}
-			String line = "";
-			while ((line = br.readLine()) != null) {
-				if ( !line.equals("") ) {
-					tmpApacheDocrootPath = line;
-					break;
-				}
-			}
-			if ( !tmpApacheDocrootPath.equals("") ) {
-				if ( !tmpApacheDocrootPath.endsWith("/") && !tmpApacheDocrootPath.endsWith("\\") ) {
-					tmpApacheDocrootPath = tmpApacheDocrootPath + "/";
-				}
-				if ( isWindows ) {
-					tmpApacheDocrootPath = tmpApacheDocrootPath.replaceAll("/", "\\\\");
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();				
-		}
-		finally {
-			try { if ( br != null ) { br.close(); } } catch (IOException e) {}
-		}
-		if ( !tmpApacheDocrootPath.equals("") ) {
-			VAL_APACHE_DOCROOT_PATH = tmpApacheDocrootPath;
-		}
-		else {
-			Logger.getLogger("global").severe("Apache doesn't start.  " + 
-					"Cannot access \"" + VAL_LOCAL_URL + "cgi-bin/GetDocRoot.cgi\".");
-			Logger.getLogger("global").severe("It failed in the initialization of the MassBank environment variable.\n");
-			envListLog();
-			return;
-		}
-		
-		// VAL_DB_USER, VAL_DB_PASSWORD
-		VAL_DB_USER		= getServletContext().getInitParameter("user");
-		VAL_DB_PASSWORD	= getServletContext().getInitParameter("password");
 		
 		// VAL_APACHE_APPROOT_PATH
-		VAL_APACHE_APPROOT_PATH = VAL_APACHE_DOCROOT_PATH + VAL_SUB_PATH;
-		if ( isWindows ) {
-			VAL_APACHE_APPROOT_PATH = VAL_APACHE_DOCROOT_PATH + VAL_SUB_PATH;
-		}
+		VAL_APACHE_APPROOT_PATH = conf.getApacheDocumentRoot() + "MassBank/";
 		
 		// VAL_TOMCAT_DOCROOT_PATH
 		VAL_TOMCAT_DOCROOT_PATH = this.getServletContext().getRealPath("/");
-		/*// re if ( VAL_TOMCAT_DOCROOT_PATH.indexOf("api") != -1 ) {
-			VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.replaceAll("webapps/api/", "webapps/ROOT/");
-			if ( isWindows ) {
-				VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.replaceAll("webapps\\\\api\\\\", "webapps\\\\ROOT\\\\");
-			}
-			if ( !(new File(VAL_TOMCAT_DOCROOT_PATH + VAL_SUB_PATH)).exists() ) {
-				VAL_TOMCAT_DOCROOT_PATH = VAL_TOMCAT_DOCROOT_PATH.substring(0, VAL_TOMCAT_DOCROOT_PATH.indexOf("ROOT"));
-			}
-		}*/
 	
 		// VAL_TOMCAT_TEMP_PATH
 		VAL_TOMCAT_TEMP_PATH = VAL_TOMCAT_DOCROOT_PATH + "temp/";
-		/*// reif ( !VAL_TOMCAT_DOCROOT_PATH.equals("") ) {
-			VAL_TOMCAT_TEMP_PATH = VAL_TOMCAT_DOCROOT_PATH.substring(0, VAL_TOMCAT_DOCROOT_PATH.indexOf("webapps")) + "temp/";
-			if ( isWindows ) {
-				VAL_TOMCAT_TEMP_PATH = VAL_TOMCAT_DOCROOT_PATH.substring(0, VAL_TOMCAT_DOCROOT_PATH.indexOf("webapps")) + "temp\\";
-			}
-		}*/
 		
 		// VAL_TOMCAT_APPROOT_PATH
 		if ( !VAL_TOMCAT_DOCROOT_PATH.equals("") ) {
 			VAL_TOMCAT_APPROOT_PATH = VAL_TOMCAT_DOCROOT_PATH;
-			if ( !VAL_TOMCAT_DOCROOT_PATH.endsWith(VAL_SUB_PATH) ) {
-				VAL_TOMCAT_APPROOT_PATH = VAL_TOMCAT_DOCROOT_PATH + VAL_SUB_PATH;
+			if ( !VAL_TOMCAT_DOCROOT_PATH.endsWith("MassBank/") ) {
+				VAL_TOMCAT_APPROOT_PATH = VAL_TOMCAT_DOCROOT_PATH + "MassBank/";
 			}
 		}
 		
 		// VAL_TOMCAT_APPJSP_PATH
 		if ( !VAL_TOMCAT_APPROOT_PATH.equals("") ) {
 			VAL_TOMCAT_APPJSP_PATH = VAL_TOMCAT_APPROOT_PATH + "jsp/";
-			if ( isWindows ) {
-				VAL_TOMCAT_APPJSP_PATH = VAL_TOMCAT_APPROOT_PATH + "jsp\\";
-			}
 		}
 		
 		// VAL_TOMCAT_APPADMIN_PATH
 		if ( !VAL_TOMCAT_APPROOT_PATH.equals("") ) {
 			VAL_TOMCAT_APPADMIN_PATH = VAL_TOMCAT_APPROOT_PATH + "mbadmin/";
-			if ( isWindows ) {
-				VAL_TOMCAT_APPADMIN_PATH = VAL_TOMCAT_APPROOT_PATH + "mbadmin\\";
-			}
 		}
 		
 		// VAL_TOMCAT_APPEXT_PATH
 		if ( !VAL_TOMCAT_APPROOT_PATH.equals("") ) {
 			VAL_TOMCAT_APPEXT_PATH = VAL_TOMCAT_APPROOT_PATH + "extend/";
-			if ( isWindows ) {
-				VAL_TOMCAT_APPEXT_PATH = VAL_TOMCAT_APPROOT_PATH + "extend\\";
-			}
 		}
 		
 		// VAL_TOMCAT_APPPSERV_PATH
 		if ( !VAL_TOMCAT_APPROOT_PATH.equals("") ) {
 			VAL_TOMCAT_APPPSERV_PATH = VAL_TOMCAT_APPROOT_PATH + "pserver/";
-			if ( isWindows ) {
-				VAL_TOMCAT_APPPSERV_PATH = VAL_TOMCAT_APPROOT_PATH + "pserver\\";
-			}
 		}
 		
 		// VAL_TOMCAT_APPTEMP_PATH
 		if ( !VAL_TOMCAT_APPROOT_PATH.equals("") ) {
 			VAL_TOMCAT_APPTEMP_PATH = VAL_TOMCAT_APPROOT_PATH + "temp/";
-			if ( isWindows ) {
-				VAL_TOMCAT_APPTEMP_PATH = VAL_TOMCAT_APPROOT_PATH + "temp\\";
-			}
 		}
 		
 		// VAL_MASSBANK_CONF_URL
@@ -377,41 +230,26 @@ public class MassBankEnv extends HttpServlet {
 		// VAL_ADMIN_CONF_PATH
 		if ( !VAL_TOMCAT_APPADMIN_PATH.equals("") ) {
 			VAL_ADMIN_CONF_PATH = VAL_TOMCAT_APPADMIN_PATH + "admin.conf";
-			if ( isWindows ) {
-				VAL_ADMIN_CONF_PATH = VAL_TOMCAT_APPADMIN_PATH + "admin.conf";
-			}
 		}
 		
 		// VAL_DATAROOT_PATH
 		if ( !VAL_APACHE_APPROOT_PATH.equals("") ) {
 			VAL_DATAROOT_PATH = VAL_APACHE_APPROOT_PATH + "DB/";
-			if ( isWindows ) {
-				VAL_DATAROOT_PATH = VAL_APACHE_APPROOT_PATH + "DB\\";
-			}
 		}
 		
 		// VAL_ANNOTATION_PATH
 		if ( !VAL_DATAROOT_PATH.equals("") ) {
 			VAL_ANNOTATION_PATH = VAL_DATAROOT_PATH + "annotation/";
-			if ( isWindows ) {
-				VAL_ANNOTATION_PATH = VAL_DATAROOT_PATH + "annotation\\";
-			}
 		}
 		
 		// VAL_MOLFILE_PATH
 		if ( !VAL_DATAROOT_PATH.equals("") ) {
 			VAL_MOLFILE_PATH = VAL_DATAROOT_PATH + "molfile/";
-			if ( isWindows ) {
-				VAL_MOLFILE_PATH = VAL_DATAROOT_PATH + "molfile\\";
-			}
 		}
 		
 		// VAL_PROFILE_PATH
 		if ( !VAL_DATAROOT_PATH.equals("") ) {
 			VAL_PROFILE_PATH = VAL_DATAROOT_PATH + "profile/";
-			if ( isWindows ) {
-				VAL_PROFILE_PATH = VAL_DATAROOT_PATH + "profile\\";
-			}
 		}
 		
 		// VAL_PRIMARY_SERVER_URL
@@ -440,6 +278,10 @@ public class MassBankEnv extends HttpServlet {
 		
 		// VAL_BATCH_FROM
 		VAL_BATCH_FROM = getAdminConf(VAL_ADMIN_CONF_PATH, "mail_batch_from");
+		
+		// VAL_DB_USER, VAL_DB_PASSWORD
+		VAL_DB_USER		= getServletContext().getInitParameter("user");
+		VAL_DB_PASSWORD	= getServletContext().getInitParameter("password");
 		
 		// ログ出力
 		envListLog();
@@ -479,15 +321,6 @@ public class MassBankEnv extends HttpServlet {
 		}
 		else if ( key.equals(KEY_BASE_URL) ) {
 			val = VAL_BASE_URL;
-		}
-		else if ( key.equals(KEY_SUB_URL) ) {
-			val = VAL_SUB_URL;
-		}
-		else if ( key.equals(KEY_SUB_PATH) ) {
-			val = VAL_SUB_PATH;
-		}
-		else if ( key.equals(KEY_APACHE_DOCROOT_PATH) ) {
-			val = VAL_APACHE_DOCROOT_PATH;
 		}
 		else if ( key.equals(KEY_APACHE_APPROOT_PATH) ) {
 			val = VAL_APACHE_APPROOT_PATH;
@@ -582,10 +415,6 @@ public class MassBankEnv extends HttpServlet {
 		
 		sb.append(KEY_LOCAL_URL).append("=").append(VAL_LOCAL_URL).append("\n");
 		sb.append(KEY_BASE_URL).append("=").append(VAL_BASE_URL).append("\n");
-		sb.append(KEY_SUB_URL).append("=").append(VAL_SUB_URL).append("\n");
-		sb.append(KEY_SUB_PATH).append("=").append(VAL_SUB_PATH).append("\n");
-		sb.append(KEY_APACHE_DOCROOT_PATH).append("=").append(VAL_APACHE_DOCROOT_PATH).append("\n");
-		sb.append(KEY_APACHE_APPROOT_PATH).append("=").append(VAL_APACHE_APPROOT_PATH).append("\n");
 		sb.append(KEY_TOMCAT_DOCROOT_PATH).append("=").append(VAL_TOMCAT_DOCROOT_PATH).append("\n");
 		sb.append(KEY_TOMCAT_TEMP_PATH).append("=").append(VAL_TOMCAT_TEMP_PATH).append("\n");
 		sb.append(KEY_TOMCAT_APPROOT_PATH).append("=").append(VAL_TOMCAT_APPROOT_PATH).append("\n");
@@ -674,9 +503,6 @@ public class MassBankEnv extends HttpServlet {
 		sb.append("-------------------------------------------------------------------------").append(ls);
 		sb.append(KEY_LOCAL_URL).append("=").append(VAL_LOCAL_URL).append(ls);
 		sb.append(KEY_BASE_URL).append("=").append(VAL_BASE_URL).append(ls);
-		sb.append(KEY_SUB_URL).append("=").append(VAL_SUB_URL).append(ls);
-		sb.append(KEY_SUB_PATH).append("=").append(VAL_SUB_PATH).append(ls);
-		sb.append(KEY_APACHE_DOCROOT_PATH).append("=").append(VAL_APACHE_DOCROOT_PATH).append(ls);
 		sb.append(KEY_APACHE_APPROOT_PATH).append("=").append(VAL_APACHE_APPROOT_PATH).append(ls);
 		sb.append(KEY_TOMCAT_DOCROOT_PATH).append("=").append(VAL_TOMCAT_DOCROOT_PATH).append(ls);
 		sb.append(KEY_TOMCAT_TEMP_PATH).append("=").append(VAL_TOMCAT_TEMP_PATH).append(ls);

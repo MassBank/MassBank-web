@@ -105,6 +105,14 @@ public class GetConfig {
 		return getSetting("Name");
 	}
 
+	
+	/**
+	 * Get the DocumentRoot folder of Apache HTTPD.
+	 */ 
+	public String getApacheDocumentRoot() {
+		return getValByTagName( "ApacheDocumentRoot" );
+	}
+	
 	/**
 	 * タイムアウト値取得する
 	 */ 
