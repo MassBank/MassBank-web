@@ -27,8 +27,7 @@ vagrant up
 vagrant ssh
 ```
 
-## !Not tested with latest MassBank!
-### Fedora 22 Workstation
+### Fedora 22 Workstation (!Not tested with latest MassBank!)
 
 Install vagrant
 
@@ -49,14 +48,25 @@ $ source ~/.zshrc
 The vagrant version from the repository (Version 1.7.2) does NOT support Virtualbox Version 5
 
 
-### Windows 7 64 bit
+### Windows 7 64 bit (!Not tested for other Windows versions!)
 Install Virtualbox for Windows
 https://www.virtualbox.org/wiki/Downloads
 
 Install Vagrant for Windows
 https://www.vagrantup.com/downloads.html
 
-Install the Tortoise Git client
+Install Git for Windows
+https://git-scm.com/download/win
+
+Clone the repo to your favorite folder
+
+```
+cmd
+cd your_favorite_folder
+git clone https://github.com/MassBank/MassBank-web
+```
+
+Install the Tortoise Git client if you don't feel comfortable with the command line tool
 https://tortoisegit.org/download/
 
 Clone the repo by right mouse click and click to "Git clone" to your favorite folder 
@@ -64,10 +74,10 @@ Source: https://github.com/MassBank/MassBank-web
 
 Start a commandline window and change to the folder with the repo:
 ```
-cd folder_with_repo
+cd your_favorite_folder\MassBank-web
 run Setup_MassBank.bat
 ```
-
+You will be asked for an username and the password to access the mbadmin environment
 Now the the virtual machine should be available in the Oracle VM VirtualBox manager
 
 Type to connect to the VM
@@ -82,7 +92,7 @@ Start the Oracle VM VirtualBox manager and export the appliance to the Open Virt
 Use the expert mode for individual settings (e.g. the name of the machine) and select the tickbox to create a manifest file.
 If the tickbox is checked, the integrity of the appliance will be checked during the import.
 
-Import the ova file to your VMWare environment and change the settings if necessary.
+Import the ova file to your VMWare environment and change the settings if necessary using the console
 
 # Install in eclipse for development
 
