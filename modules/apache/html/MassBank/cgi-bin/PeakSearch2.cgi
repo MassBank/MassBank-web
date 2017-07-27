@@ -56,10 +56,10 @@ foreach $key ( @params ) {
 		}
 	}
 	elsif ( $key eq 'inst' ) {
-		@inst = $query->param($key);
+		@inst = $query->multi_param($key);
 	}
 	elsif ( $key eq 'ms' ) {
-		@ms = $query->param($key);
+		@ms = $query->multi_param($key);
 	}
 	elsif ( $key ne 'check' ) {
 		$Arg{$key} = $val;
