@@ -512,7 +512,7 @@ Links not implemented yet:
 		<iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 		<hr size="1">
 		<br>
-		<font size="+1" style="background-color:LightCyan">&nbsp;<%=recordTitle%> (3)&nbsp;</font>
+		<font size="+1" style="background-color:LightCyan">&nbsp;<%=recordTitle%>&nbsp;</font>
 		<hr size="1">
 		<table>
 			<tr>
