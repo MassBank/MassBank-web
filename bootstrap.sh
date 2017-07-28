@@ -69,7 +69,7 @@ echo "enable docker support for standard user"
 usermod -a -G docker ubuntu
 
 echo "install docker-compose"
-curl -s -L https://github.com/docker/compose/releases/download/1.13.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+curl -s -L https://github.com/docker/compose/releases/download/1.14.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
 echo "INSTALL MASSBANK COMPONENTS"
@@ -110,8 +110,6 @@ INST_ROOT_PATH=$PWD/modules
 INST_HTDOCS_PATH=$INST_ROOT_PATH/apache/html
 INST_ERROR_PATH=$INST_ROOT_PATH/apache/error
 INST_CONF_PATH=$INST_ROOT_PATH/apache/conf
-INST_TOMCAT_PATH=$INST_ROOT_PATH/tomcat
-INST_SQL_PATH=$INST_ROOT_PATH/sql
 
 # Apache Path
 APACHE_HTDOCS_PATH=/var/www/html
