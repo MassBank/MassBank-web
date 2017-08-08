@@ -106,7 +106,8 @@ public class MSDBUpdateUtil {
 			logger.severe("[SVNService] File not found:" + dumpFilePath);
 			return false;
 		}
-		boolean ret = FileUtil.execSqlFile("localhost", dbName, dumpFilePath);
+		// TODO: remove hardcoded DB hostname
+		boolean ret = FileUtil.execSqlFile("127.0.0.1", dbName, dumpFilePath);
 		if ( !ret ) {
 			return false;
 		}
