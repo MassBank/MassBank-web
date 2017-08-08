@@ -128,7 +128,7 @@ public class SVNUtils {
 	 */
 	public static Connection connectDB(String dbName) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("org.mariadb.jdbc.Driver");
 			String url = "jdbc:mysql://localhost/" + dbName;
 			Connection con = DriverManager.getConnection(url, "bird", "bird2006");
 			return con;

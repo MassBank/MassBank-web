@@ -41,7 +41,7 @@ public class RelationInfoList {
 	 * コンストラクタ
 	 */
 	public RelationInfoList(String ionMode) throws SQLException, ClassNotFoundException {
-		Class.forName("com.mysql.jdbc.Driver");
+		Class.forName("org.mariadb.jdbc.Driver");
 		String conUrl = "jdbc:mysql://localhost/FORMULA_STRUCTURE_RELATION";
 		Connection con = DriverManager.getConnection(conUrl, "bird", "bird2006");
 		Statement stmt = con.createStatement();

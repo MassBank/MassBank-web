@@ -287,7 +287,7 @@ public class JobManager {
 	private boolean connectDB() {
 		// - note:massbank.admin.DatabaseAccess は排他になっているので不使用
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("org.mariadb.jdbc.Driver");
 			this.con = DriverManager.getConnection(this.connectUrl, "bird", "bird2006");
 
 			// 自動コミットモードを解除
