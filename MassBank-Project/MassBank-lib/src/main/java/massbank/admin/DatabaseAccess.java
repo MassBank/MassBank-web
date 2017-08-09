@@ -51,7 +51,7 @@ public class DatabaseAccess {
 	 */
 	public DatabaseAccess(String hostName, String dbName) {
 		if (hostName == null || hostName.equals("")) {
-			hostName = "localhost";
+			hostName = "127.0.0.1";
 		}
 		if (dbName == null || dbName.equals("")) {
 			dbName = "MassBank";
