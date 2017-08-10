@@ -83,6 +83,11 @@
 		return;
 	}
 	
+	if(!AccessionData.existsFile(databaseName, accession)){
+		System.out.println("Error: accession '" + accession + "' in database '" + databaseName + "' does not exist");
+		return;
+	}
+	
 	// paths
 	String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
 	//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";// ${ctx}
