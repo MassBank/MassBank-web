@@ -115,7 +115,7 @@ public class MassBankEnv extends HttpServlet {
 	private static String VAL_PROFILE_PATH				= "";	// ex. "/var/www/html/MassBank/DB/profile/"
 	// MassBank 環境変数（可変値）
 	private static String VAL_PRIMARY_SERVER_URL		= "http://www.massbank.jp/";	// ex. "[サーバ監視用URL]"
-	private static String VAL_DB_HOST_NAME				= "localhost";					// ex. "[DBアクセス用ホスト名]"
+	private static String VAL_DB_HOST_NAME				= "127.0.0.1";					// ex. "[DBアクセス用ホスト名]"
 	private static String VAL_DB_MASTER_NAME			= "";	// ex. "[ロードバランス用マスタDB名]"
 	private static String VAL_BATCH_SMTP				= "";	// ex. "[BatchService用メールSMTPサーバ名]"
 	private static String VAL_BATCH_NAME				= "";	// ex. "[BatchService用メール送信者名]"

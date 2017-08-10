@@ -245,7 +245,7 @@ public class RelationSearch {
 
 			if ( this.hitIndexs.size() > 0 ) {
 				Class.forName("org.mariadb.jdbc.Driver");
-				String conUrl = "jdbc:mysql://localhost/FORMULA_STRUCTURE_RELATION";
+				String conUrl = "jdbc:mysql://127.0.0.1/FORMULA_STRUCTURE_RELATION";
 				Connection con = DriverManager.getConnection(conUrl, "bird", "bird2006");
 				Statement stmt = con.createStatement();
 

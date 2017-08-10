@@ -125,7 +125,7 @@ public class ChemicalFormulaUtils {
 		try {
 	
 			Class.forName("org.mariadb.jdbc.Driver");
-			String conUrl = "jdbc:mysql://localhost/FORMULA_STRUCTURE_RELATION";
+			String conUrl = "jdbc:mysql://127.0.0.1/FORMULA_STRUCTURE_RELATION";
 			Connection con = DriverManager.getConnection(conUrl, "bird", "bird2006");
 			Statement stmt = con.createStatement();
 			String sql = "SELECT FORMULA, MASS FROM ION_MASS order by MASS";
