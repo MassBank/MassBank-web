@@ -21,6 +21,7 @@
  *******************************************************************************
  *
  * データベース管理画面
+ * panel for database management
  *
  * ver 1.0.15 2012.02.21
  *
@@ -171,7 +172,7 @@
 			}
 			// 使用不可文字が含まれている場合
 			else if ( type.equals(TYPE_DB) ) {
-				if ( StringUtils.indexOfAny(str, new String[]{"\\", "/", ":", "*", "?", "\"", "<", ">", "|", "."}) != -1 ) {
+				if ( StringUtils.indexOfAny(str, new String[]{"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ".", " ", "\t", "\r", "\n"}) != -1 ) {
 					op.println( msgErr( "[" + type + "]&nbsp;&nbsp;character that cannot be used." ) );
 					ret = false;
 				}

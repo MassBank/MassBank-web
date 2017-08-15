@@ -178,7 +178,7 @@ public class FileUtil {
 		if (host != null && !host.equals("")) {
 			opHost = " --host=" + host;
 		}
-		String main = "mysql" + opHost + " --user=bird --password=bird2006 " + db + " < \"" + file + "\"";
+		String main = "mysql" + opHost + " --user=bird --password=bird2006 \"" + db + "\" < \"" + file + "\"";
 		
 		String[] cmd = null;
 		if(OS_NAME.indexOf("Windows") != -1){
@@ -210,7 +210,7 @@ public class FileUtil {
 				strTable.append(" " + table);
 			}
 		}
-		String main = "mysqldump" + opHost + " --user=bird --password=bird2006 " + db + strTable.toString() + " > \"" + file + "\"";
+		String main = "mysqldump" + opHost + " --user=bird --password=bird2006 \"" + db + "\"" + strTable.toString() + " > \"" + file + "\"";
 		
 		String[] cmd = null;
 		if(OS_NAME.indexOf("Windows") != -1){

@@ -604,7 +604,7 @@
 			insertFile = tmpPath + selDbName + suffix;
 			ret = FileUtil.execSqlFile(hostName, selDbName, insertFile);
 			if ( !ret ) {
-				Logger.getLogger("global").severe( "sql file execute failed." + NEW_LINE +
+				Logger.getLogger("global").severe( "sql file execute failed for database '" + selDbName + "'." + NEW_LINE +
 				                                   "    file : " + insertFile );
 				return false;
 			}
