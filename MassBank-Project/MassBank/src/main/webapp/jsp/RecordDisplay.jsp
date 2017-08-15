@@ -70,21 +70,41 @@
 		return;
 	}
 	
+	// ##################################################################################################
+	// error handling
 	if(accession != null && accession.equals(""))
 		accession		= null;
 	if(databaseName != null && databaseName.equals(""))
-		databaseName		= null;
+		databaseName	= null;
 	
-	if(accession == null || databaseName == null){
-		if(accession == null)
-			System.out.println("Error: Missing argument 'id'");
-		if(databaseName == null)
-			System.out.println("Error: Missing argument 'dsn'");
+	if(accession == null){
+		System.out.println("Error: Missing argument 'id'");
+		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
+		String error	= "Error: Missing argument 'id'";
+		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
+		
+		response.sendRedirect(redirectUrl);
 		return;
 	}
-	
+	if(databaseName == null){
+		System.out.println("Error: Missing argument 'dsn'");
+		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
+		String error	= "Error: Missing argument 'dsn'";
+		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
+		
+		response.sendRedirect(redirectUrl);
+		return;
+	}
 	if(!AccessionData.existsFile(databaseName, accession)){
-		System.out.println("Error: accession '" + accession + "' in database '" + databaseName + "' does not exist");
+		System.out.println("Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.");
+		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
+		String error	= "Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.";
+		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
+		
+		response.sendRedirect(redirectUrl);
 		return;
 	}
 	
