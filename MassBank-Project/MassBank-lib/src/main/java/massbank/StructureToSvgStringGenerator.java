@@ -197,18 +197,9 @@ public class StructureToSvgStringGenerator {
 			this.svgBig			= svgBig;           
 		}
 		
-		public static void writeToFile(String svg, String file){
-			try {
-				PrintWriter pw = new PrintWriter(file);
-				pw.println(svg);
-				pw.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
 		public String getMediumClickableImage(){
 			// write big image as temp file
-			ClickablePreviewImageData.writeToFile(this.svgBig,		this.tmpFileBig);
+			FileUtil.writeToFile(this.svgBig,		this.tmpFileBig);
 			
 			// add expandMolView on click for small image
 			String svgMedium	= this.svgMedium.replaceAll(
@@ -222,8 +213,8 @@ public class StructureToSvgStringGenerator {
 		}
 		public String getMediumClickablePreviewLink(String previewName, String linkName){
 			// write big image and medium image as temp file
-			ClickablePreviewImageData.writeToFile(this.svgMedium,	this.tmpFileMedium);
-			ClickablePreviewImageData.writeToFile(this.svgBig,		this.tmpFileBig);
+			FileUtil.writeToFile(this.svgMedium,	this.tmpFileMedium);
+			FileUtil.writeToFile(this.svgBig,		this.tmpFileBig);
 			
 			String linkHtml	= 
 					"<a " +

@@ -35,6 +35,7 @@
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.AccessionData" %>
+<%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.StructureToSvgStringGenerator" %>
 <%@ page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData" %>
 <%
@@ -338,27 +339,7 @@ Links not implemented yet:
 	
 	// read file
 	File file	= new File(MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH) + databaseName + File.separator + accession + ".txt");
-	List<String> list	= new ArrayList<String>();
-	BufferedReader br = null;
-	try {
-		// read
-		br = new BufferedReader(new FileReader(file));
-		String currentLine;
-		while ((currentLine = br.readLine()) != null)
-			list.add(currentLine);
-
-	} catch (IOException e) {
-		// read error
-		e.printStackTrace();
-	} finally {
-		// close file
-		try {
-			if (br != null)
-				br.close();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
+	List<String> list	= FileUtil.readFromFile(file);
 	
 	// process record
 	final String delimiter	= ": ";

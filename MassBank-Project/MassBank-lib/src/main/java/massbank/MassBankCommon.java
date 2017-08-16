@@ -288,6 +288,7 @@ public class MassBankCommon {
 		}
 		
 		// 結果情報レコード生成
+		// Result information record generation
 		ResultList list = new ResultList(conf);
 		ResultRecord record;
 		int nodeGroup = -1;
