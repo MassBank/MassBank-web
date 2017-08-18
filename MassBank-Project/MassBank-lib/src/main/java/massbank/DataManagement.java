@@ -16,6 +16,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 public class DataManagement {
+	/**
+	 * TODO see https://docs.google.com/document/d/13Fy1155GsH7L7lTqth2rzsuGU6YIz0YOlf4-SkGUtSc/edit#heading=h.7b33yzb6ohc1
+	 * @param resultList
+	 * @param fileName
+	 * @return
+	 */
 	public static String toMsp(ResultList resultList, String fileName){
 		// global variables
 		String path		= MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
@@ -196,119 +202,6 @@ public class DataManagement {
 		else {
 			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
 		}
-		
-		return list;
-	}
-	
-	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
-	public static final String MULTI_DISPATCHER_NAME = "MultiDispatcher";
-	public static ResultList search(
-			String serverUrl,
-			String type,
-			String reqParam,
-			boolean isMulti,
-			String siteNo,
-			GetConfig conf ) {
-		
-		String reqUrl = "";
-		int site = 0;
-		if ( isMulti ) {
-			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
-		}
-		else {
-			reqUrl = serverUrl + "jsp/" + DISPATCHER_NAME;
-			site = Integer.parseInt(siteNo);
-		}
-		
-		// 結果取得
-		ArrayList<String> allLine = new ArrayList<String>();
-		try {
-			URL url = new URL( reqUrl );
-			URLConnection con = url.openConnection();
-//			if ( !reqParam.equals("") ) {
-//				con.setDoOutput(true);
-//				PrintStream psm = new PrintStream( con.getOutputStream() );
-//				psm.print( reqParam );
-//			}
-			
-			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
-			boolean isStartSpace = true;
-			String line = "";
-			while ( ( line = in.readLine() ) != null ) {
-				// 先頭スペースを読み飛ばすため
-				if ( isStartSpace ) {
-					if ( line.equals("") ) {
-						continue;
-					}
-					else {
-						isStartSpace = false;
-					}
-				}
-				
-				if ( !line.equals("") ) {
-					if ( isMulti ) {
-						allLine.add(line);
-					}
-					else {
-						allLine.add(line + "\t" + Integer.toString(site) );
-					}
-				}
-			}
-			in.close();
-		}
-		catch ( Exception ex ) {
-			ex.printStackTrace();
-		}
-		
-		// 結果情報レコード生成
-		// Result information record generation
-		ResultList list = new ResultList(conf);
-		ResultRecord record;
-		int nodeGroup = -1;
-		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();
-		String[] fields;
-		for (int i=0; i<allLine.size(); i++) {
-			fields = allLine.get(i).split("\t");
-			record = new ResultRecord();
-			record.setInfo(fields[0]);
-			record.setId(fields[1]);
-			record.setIon(fields[2]);
-			record.setFormula(fields[3]);
-			record.setEmass(fields[4]);
-			record.setContributor(fields[fields.length-1]);
-			// ノードグループ設定
-			if (!nodeCount.containsKey(record.getName())) {
-				nodeGroup++;
-				nodeCount.put(record.getName(), nodeGroup);
-				record.setNodeGroup(nodeGroup);
-			}
-			else {
-				record.setNodeGroup(nodeCount.get(record.getName()));
-			}
-			list.addRecord(record);
-		}
-		
-		// ソートキー取得
-		String sortKey = ResultList.SORT_KEY_NAME;
-		if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_FORMULA) != -1) {
-			sortKey = ResultList.SORT_KEY_FORMULA;
-		}
-		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_EMASS) != -1) {
-			sortKey = ResultList.SORT_KEY_EMASS;
-		}
-		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_ID) != -1) {
-			sortKey = ResultList.SORT_KEY_ID;
-		}
-		
-		// ソートアクション取得
-		int sortAction = ResultList.SORT_ACTION_ASC;
-		if (reqParam.indexOf("sortAction=" + ResultList.SORT_ACTION_DESC) != -1) {
-			sortAction = ResultList.SORT_ACTION_DESC;
-		}
-		
-		// レコードソート
-		list.sortList(sortKey, sortAction);
-		
 		
 		return list;
 	}

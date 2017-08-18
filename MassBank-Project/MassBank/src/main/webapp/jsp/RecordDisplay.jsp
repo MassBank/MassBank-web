@@ -206,16 +206,35 @@ Links not implemented yet:
 	if(accData.COPYRIGHT != null)		sb.append("COPYRIGHT: " + accData.COPYRIGHT + "\n");
 	
 	if(accData.PUBLICATION != null){
-		Pattern pattern = Pattern.compile(".*(PMID:[ ]?\\d{8,8}).*");
-	    Matcher matcher = pattern.matcher(accData.PUBLICATION);
-	    if(matcher.matches()){
-	    	String PMID	= accData.PUBLICATION.substring(matcher.start(1), matcher.end(1));
-	    	String id	= PMID.substring("PMID:".length()).trim();
-	    	String PUBLICATION	= accData.PUBLICATION.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
-	    	sb.append("PUBLICATION: " + PUBLICATION + "\n");
-	    } else {
-			sb.append("PUBLICATION: " + accData.PUBLICATION + "\n");
+		String value	= accData.PUBLICATION;
+		String regex_pmid	= "PMID:[ ]?\\d{8,8}";
+		String regex_doi	= "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
+		String regex_doiUrl	= "http\\:\\/\\/doi\\.org\\/" + regex_doi;
+		Pattern pattern_pmid	= Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
+	    Matcher matcher_pmid	= pattern_pmid.matcher(value);
+	    Pattern pattern_doi		= Pattern.compile(".*" + "(" + regex_doi	+ ")" + ".*");
+	    Matcher matcher_doi		= pattern_doi.matcher(value);
+	    Pattern pattern_doiUrl	= Pattern.compile(".*" + "(" + regex_doiUrl	+ ")" + ".*");
+	    Matcher matcher_doiUrl	= pattern_doiUrl.matcher(value);
+	    
+	    if(matcher_pmid.matches()){
+	    	// link pubmed id
+	    	String PMID		= value.substring(matcher_pmid.start(1), matcher_pmid.end(1));
+	    	String id		= PMID.substring("PMID:".length()).trim();
+	    	value			= value.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
 	    }
+	    if(matcher_doiUrl.matches()){
+	    	// link http://dx.doi.org/<doi> url
+	    	String doiUrl	= value.substring(matcher_doiUrl.start(1), matcher_doiUrl.end(1));
+	    	value			= value.replaceAll(doiUrl, "<a href=\"" + doiUrl + "\" target=\"_blank\">" + doiUrl + "</a>");
+	    } else 
+	    if(matcher_doi.matches()){
+	    	// link doi
+	    	String doi	= value.substring(matcher_doi.start(1), matcher_doi.end(1));
+	    	value			= value.replaceAll(doi, "<a href=\"http:\\/\\/dx.doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
+	    }
+	    
+		sb.append("PUBLICATION: " + value + "\n");
 	}
 	
 	for(String COMMENT : accData.COMMENT)
@@ -377,16 +396,33 @@ Links not implemented yet:
 			sb.append("LICENSE: " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + value + "</a>" + "\n");
 			break;
 		case "PUBLICATION":
-			Pattern pattern = Pattern.compile(".*(PMID:[ ]?\\d{8,8}).*");
-		    Matcher matcher = pattern.matcher(value);
-		    if(matcher.matches()){
-		    	String PMID	= value.substring(matcher.start(1), matcher.end(1));
-		    	String id	= PMID.substring("PMID:".length()).trim();
-		    	String PUBLICATION	= value.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
-		    	sb.append("PUBLICATION: " + PUBLICATION + "\n");
-		    } else {
-				sb.append("PUBLICATION: " + value + "\n");
+			String regex_pmid	= "PMID:[ ]?\\d{8,8}";
+			String regex_doi	= "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
+			String regex_doiUrl	= "http\\:\\/\\/doi\\.org\\/" + regex_doi;
+			Pattern pattern_pmid	= Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
+		    Matcher matcher_pmid	= pattern_pmid.matcher(value);
+		    Pattern pattern_doi		= Pattern.compile(".*" + "(" + regex_doi	+ ")" + ".*");
+		    Matcher matcher_doi		= pattern_doi.matcher(value);
+		    Pattern pattern_doiUrl	= Pattern.compile(".*" + "(" + regex_doiUrl	+ ")" + ".*");
+		    Matcher matcher_doiUrl	= pattern_doiUrl.matcher(value);
+		    
+		    if(matcher_pmid.matches()){
+		    	// link pubmed id
+		    	String PMID		= value.substring(matcher_pmid.start(1), matcher_pmid.end(1));
+		    	String id		= PMID.substring("PMID:".length()).trim();
+		    	value			= value.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
 		    }
+		    if(matcher_doiUrl.matches()){
+		    	// link http://dx.doi.org/<doi> url
+		    	String doiUrl	= value.substring(matcher_doiUrl.start(1), matcher_doiUrl.end(1));
+		    	value			= value.replaceAll(doiUrl, "<a href=\"" + doiUrl + "\" target=\"_blank\">" + doiUrl + "</a>");
+		    } else 
+		    if(matcher_doi.matches()){
+		    	// link doi
+		    	String doi	= value.substring(matcher_doi.start(1), matcher_doi.end(1));
+		    	value			= value.replaceAll(doi, "<a href=\"http:\\/\\/dx.doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
+		    }
+			sb.append("PUBLICATION: " + value + "\n");
 			break;
 		case "CH$FORMULA":
 			sb.append("CH$FORMULA: " + "<a href=\"http://www.chemspider.com/Search.aspx?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n");

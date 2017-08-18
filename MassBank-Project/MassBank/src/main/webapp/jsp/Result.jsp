@@ -40,6 +40,7 @@
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.ResultList" %>
 <%@ page import="massbank.ResultRecord" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
@@ -1087,8 +1088,8 @@
 					// display svg
 					if(clickablePreviewImageData != null){
 						// write big image and medium image as temp file
-						ClickablePreviewImageData.writeToFile(clickablePreviewImageData.svgMedium,	clickablePreviewImageData.tmpFileMedium);
-						ClickablePreviewImageData.writeToFile(clickablePreviewImageData.svgBig,		clickablePreviewImageData.tmpFileBig);
+						FileUtil.writeToFile(clickablePreviewImageData.svgMedium,	clickablePreviewImageData.tmpFileMedium);
+						FileUtil.writeToFile(clickablePreviewImageData.svgBig,		clickablePreviewImageData.tmpFileBig);
 						
 						// add expandMolView on click for small image
 						String svgSmall	= clickablePreviewImageData.svgSmall.replaceAll(
