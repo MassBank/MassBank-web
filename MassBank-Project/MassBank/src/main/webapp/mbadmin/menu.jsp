@@ -33,7 +33,6 @@
 	// パラメータ取得
 	//----------------------------------------------------
 	AdminCommon admin = new AdminCommon();
-	boolean isAllAdmin = admin.isAllAdmin();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
@@ -113,7 +112,6 @@ body {
 	String sgMenu = (referer.indexOf("/RecordUtil.jsp?act=sql") == -1)   ? "menu" : "menuSelect";
 	String fuMenu = (referer.indexOf("/FileUpload.jsp") == -1)           ? "menu" : "menuSelect";
 	String rgMenu = (referer.indexOf("/GenRecordList.jsp") == -1)        ? "menu" : "menuSelect";
-	String viMenu = (referer.indexOf("/DispVersion.jsp") == -1)          ? "menu" : "menuSelect";
 	String dbMenu = (referer.indexOf("/Manager.jsp") == -1)              ? "menu" : "menuSelect";
 %>
 
@@ -122,41 +120,21 @@ body {
 	<tr>
 		<td>
 			<table cellspacing="3" cellpadding="0" bgcolor="Lavender" style="border:1px Gainsboro solid;" width="920px">
-<%
-	if ( isAllAdmin ) {
-%>
 				<tr>
 					<td class="titl" onClick="parent.location.href='./'" rowspan="2">ADMIN<br>MENU</td>
 					<td class="<%=rvMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rvMenu%>'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</td>
 					<td class="<%=rrMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rrMenu%>'" onClick="parent.location.href='RecordRegist.jsp'">Record Registration</td>
 					<td class="<%=fuMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=fuMenu%>'" onClick="parent.location.href='FileUpload.jsp'">File Upload</td>
 					<td class="<%=sgMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=sgMenu%>'" onClick="parent.location.href='RecordUtil.jsp?act=sql'">Sql File Generator</td>
-					<td class="<%=viMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=viMenu%>'" onClick="parent.location.href='../jsp/DispVersion.jsp'">Version Information</td>
+					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Database Manager</td>
 				</tr>
 				<tr>
 					<td class="<%=ieMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ieMenu%>'" onClick="parent.location.href='InstEdit.jsp'">Instrument Editor</td>
 					<td class="<%=rlMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rlMenu%>'" onClick="parent.location.href='RecordList.jsp'">Record List</td>
 					<td class="<%=ovMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ovMenu%>'" onClick="parent.location.href='RecordUtil.jsp?act=check'">Validator</td>
 					<td class="<%=rgMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rgMenu%>'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</td>
-					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Database Manager</td>
+					<td> </td>
 				</tr>
-<%
-	}
-	else  {
-%>
-				<tr>
-					<td class="titl" onClick="parent.location.href='./'" rowspan="2">&nbsp;ADMIN TOOL&nbsp;<br>MENU</td>
-					<td class="<%=rvMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rvMenu%>'" onClick="parent.location.href='RecordValidator.jsp'">Record Validator</td>
-					<td class="<%=rrMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rrMenu%>'" onClick="parent.location.href='RecordRegist.jsp'">Record Registration</td>
-					<td class="<%=dbMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=dbMenu%>'" onClick="parent.location.href='Manager.jsp'">Database Manager</td>
-				</tr>
-				<tr>
-					<td class="<%=ieMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=ieMenu%>'" onClick="parent.location.href='InstEdit.jsp'">Instrument Editor</td>
-					<td class="<%=rlMenu%>" onMouseOver="className='menuOver'" onMouseOut="className='<%=rlMenu%>'" onClick="parent.location.href='RecordList.jsp'">Record List</td>
-				</tr>
-<%
-	}
-%>
 			</table>
 		</td>
 		<td class="home" onClick="parent.location.href='../'" width="58px">&nbsp;HOME&nbsp;</td>

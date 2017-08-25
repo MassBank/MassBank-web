@@ -33,7 +33,6 @@
 	// パラメータ取得
 	//----------------------------------------------------
 	AdminCommon admin = new AdminCommon();
-	boolean isAllAdmin = admin.isAllAdmin();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
@@ -58,16 +57,9 @@
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='FileUpload.jsp'">File Upload</div>
 	</div>
 	<div class="baseHerf" style="margin-left:490px;">
-<%
-	if ( isAllAdmin ) {
-%>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='RecordUtil.jsp?act=check'">Validator</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='RecordUtil.jsp?act=sql'">SQL File Generator</div>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='GenRecordList.jsp'">Record List Generator</div>
-		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='../jsp/DispVersion.jsp'">Version Information</div>
-<%
-	}
-%>
 		<div class="item" onMouseOver="className='itemOver'" onMouseOut="className='item'" onClick="parent.location.href='Manager.jsp'">Database Manager</div>
 	</div>
 	<div class="home" style="position: absolute; top:420px; left:860px; text-align:center;">
