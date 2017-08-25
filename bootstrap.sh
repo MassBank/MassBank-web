@@ -185,7 +185,7 @@ fi
 echo "allow webapp write permission to apache folder"
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/DB/
 chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/massbank.conf
-
+chown -R tomcat8:tomcat8 $APACHE_HTDOCS_PATH/MassBank/svn_wc/
 
 # Deploy permissions to tomcat
 chown -R tomcat8:tomcat8 $TOMCAT_SHARE_PATH
