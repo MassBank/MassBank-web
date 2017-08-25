@@ -71,60 +71,12 @@ public class AdminCommon {
 	}
 	
 	/**
-	 * コンストラクタ
-	 * @param reqUrl リクエストURL
-	 * @param realPath アプリケーションパスの絶対パス
-	 * @deprecated 非推奨コンストラクタ
-	 * @see AdminCommon#AdminCommon()
-	 */
-	public AdminCommon( String reqUrl, String realPath ) {
-	}
-	
-	/**
-	 * DBサーバホスト名取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getDbHostName() {
-		return MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
-	}
-	
-	/**
-	 * CGIヘッダ取得
-	 */
-	public String getCgiHeader() {
-		String header = getSetting( "cgi_header" );
-		if ( !header.equals("") ) {
-			header = "#! " + header;
-		}
-		return header;
-	}
-	
-	/**
-	 * Annotationルートパス取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getDbRootPath() {
-		return MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
-	}
-	
-	/**
 	 * Molfileルートパス取得
 	 * @deprecated 非推奨メソッド
 	 * @see MassBankEnv#get(String)
 	 */
 	public String getMolRootPath() {
 		return MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
-	}
-	
-	/**
-	 * Profileルートパス取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getProfileRootPath() {
-		return MassBankEnv.get(MassBankEnv.KEY_PROFILE_PATH);
 	}
 	
 	/**
@@ -140,25 +92,6 @@ public class AdminCommon {
 			}
 		}
 		return outPath;
-	}
-
-	/**
-	 * プライマリサーバURL取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getPServerUrl() {
-		return MassBankEnv.get(MassBankEnv.KEY_PRIMARY_SERVER_URL);
-	}
-	
-	/**
-	 * MassBankディレクトリパス取得
-	 * ApacheのMassBankディレクトリのリアルパスを取得する
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getMassBankPath() {
-		return MassBankEnv.get(MassBankEnv.KEY_APACHE_APPROOT_PATH);
 	}
 
 	/**
@@ -243,45 +176,6 @@ public class AdminCommon {
 			ret = true;
 		}
 		return ret;
-	}
-	
-	/**
-	 * AdminTool表示フラグ取得
-	 */
-	public boolean isAllAdmin() {
-		boolean ret = false;
-		String apiFlag = getSetting( "admin_all" );
-		if ( apiFlag.toLowerCase().equals("true") ) {
-			ret = true;
-		}
-		return ret;
-	}
-	
-	/**
-	 * SMTPアドレス取得（Batch Service用）
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getMailSmtp() {
-		return MassBankEnv.get(MassBankEnv.KEY_BATCH_SMTP);
-	}
-	
-	/**
-	 * 送信者名取得（Batch Service用）
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getMailName() {
-		return MassBankEnv.get(MassBankEnv.KEY_BATCH_NAME);
-	}
-	
-	/**
-	 * Fromアドレス取得（Batch Service用）
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getMailFrom() {
-		return MassBankEnv.get(MassBankEnv.KEY_BATCH_FROM);
 	}
 	
 	/**
