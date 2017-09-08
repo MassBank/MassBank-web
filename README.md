@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sneumann/MassBank-web.svg?branch=master)](https://travis-ci.org/sneumann/MassBank-web)
+
 # Installation
 
 There are two possibilities: Install MassBank in a virtual machine
