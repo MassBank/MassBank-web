@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/sneumann/MassBank-web.svg?branch=master)](https://travis-ci.org/sneumann/MassBank-web)
+[![Build
+Status](https://travis-ci.org/MassBank/MassBank-web.svg?branch=master)](https://travis-ci.org/MassBank/MassBank-web)
 
 # Installation
 
