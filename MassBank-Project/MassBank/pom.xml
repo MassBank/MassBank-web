@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.ipb-halle.msbi</groupId>
+		<artifactId>MassBank-Project</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>MassBank</artifactId>
+	<packaging>war</packaging>
+	<name>MassBank servlet</name>
+	<url>http://maven.apache.org</url>
+	
+	
+	<dependencies>
+		<dependency>
+			<groupId>de.ipb-halle.msbi</groupId>
+			<artifactId>MassBank-lib</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.0-b07</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.3.2-b02</version>
+		</dependency>
+				<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.16</version>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.mariadb.jdbc</groupId> -->
+<!-- 			<artifactId>mariadb-java-client</artifactId> -->
+<!-- 			<version>2.0.3</version> -->
+<!-- 		</dependency> -->
+	</dependencies>
+	<build>
+        	<finalName>${project.artifactId}</finalName>
+    	</build>
+</project>

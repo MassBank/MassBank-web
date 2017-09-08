@@ -1,0 +1,51 @@
+.gradient {
+	box-shadow: 0px 0px 10px 10px #888
+}
+
+#copyright p {
+	padding: 0 0 30px;
+	padding-left: 8px;
+}
+
+#copyrightline span {
+	color: #666;
+	font-family: Verdana, Arial, Trebuchet MS;
+	font-size: 10px;
+	font-style: italic;
+	text-decoration: none;
+	font-weight: normal;
+	clear: both;
+	display: block;
+	margin: 0;
+	position: relative;
+}
+
+.msbkFont {
+	font-family: Arial, 'MS UI Gothic', sans-serif, monospace;
+}
+
+.pageShadow {
+	background-image: url(../image/index_bg_002.gif);
+	background-repeat: repeat-x;
+}
+
+caption {
+    display: block;
+    font-size: 1.5em;
+    margin-top: 0.83em;
+    margin-bottom: 0.83em;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
+}
+
+.version {
+	height: 60px;
+	color: #666;
+	font-family: Verdana, Arial, Trebuchet MS;
+	font-size: 10px;
+	font-style: italic;
+	display: block;
+	margin-right: 25px;
+	position: relative;
+}

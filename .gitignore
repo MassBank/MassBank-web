@@ -1,2 +1,2 @@
-./Tomcat/webapps/ROOT/WEB-INF/src/massbank/svn/svn.info
-*~
+.vagrant
+/*.log

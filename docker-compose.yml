@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  mariadb:
+    image: mariadb:10.1
+    container_name: massbank_mariadb
+    volumes:
+      - /mariadb:/var/lib/mysql
+      - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - '127.0.0.1:3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: bird2006
+    restart: always
