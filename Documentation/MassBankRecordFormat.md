@@ -39,14 +39,14 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <th>Notes</th>
   </tr>
   <tr>
-    <td colspan="7">Record Specific Information<br></td>
+    <td colspan="7">Record Specific Information</td>
   </tr>
   <tr>
-    <td>ACCESSION<br></td>
-    <td>M<br></td>
+    <td>ACCESSION</td>
+    <td>M</td>
     <td>U</td>
     <td>S</td>
-    <td>Record identifier<br></td>
+    <td>Record identifier</td>
     <td>2.1.1</td>
     <td></td>
   </tr>
@@ -55,25 +55,25 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>M</td>
     <td>U</td>
     <td>S</td>
-    <td>Short title of the record<br></td>
+    <td>Short title of the record</td>
     <td>2.1.2</td>
     <td></td>
   </tr>
   <tr>
-    <td>DATE<br></td>
+    <td>DATE</td>
     <td>M</td>
     <td>U</td>
     <td>S</td>
-    <td>Date of creation or last modification of record<br></td>
+    <td>Date of creation or last modification of record</td>
     <td>2.1.3</td>
     <td></td>
   </tr>
   <tr>
-    <td>AUTHORS<br></td>
+    <td>AUTHORS</td>
     <td>M</td>
     <td>U</td>
     <td>S</td>
-    <td>Name and affiliation of authors<br></td>
+    <td>Name and affiliation of authors</td>
     <td>2.1.4</td>
     <td></td>
   </tr>
@@ -82,12 +82,12 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>M</td>
     <td>U</td>
     <td>S</td>
-    <td>Creative Commons License or its compatible terms<br></td>
+    <td>Creative Commons License or its compatible terms</td>
     <td>2.1.5</td>
     <td></td>
   </tr>
   <tr>
-    <td>COPYRIGHT<br></td>
+    <td>COPYRIGHT</td>
     <td>O</td>
     <td>U</td>
     <td>S</td>
@@ -96,11 +96,11 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td></td>
   </tr>
   <tr>
-    <td>PUBLICATION<br></td>
+    <td>PUBLICATION</td>
     <td>O</td>
     <td>U</td>
     <td>S</td>
-    <td>Bibliographic information of reference<br></td>
+    <td>Bibliographic information of reference</td>
     <td>2.1.7</td>
     <td></td>
   </tr>
@@ -114,72 +114,190 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td></td>
   </tr>
   <tr>
-    <td colspan="7">Information of Chemical Compound Analyzed<br></td>
+    <td colspan="7">Information of Chemical Compound Analyzed</td>
   </tr>
   <tr>
-    <td>CH$NAME<br></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td>CH$NAME</td>
+    <td>M</td>
+    <td>I</td>
+    <td>S</td>
+    <td>Chemical name</td>
+    <td>2.2.1</td>
     <td></td>
   </tr>
   <tr>
     <td>CH$COMPOUND_CLASS</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Chemical category</td>
+    <td>2.2.2</td>
     <td></td>
   </tr>
   <tr>
     <td>CH$FORMULA</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Chemical formula</td>
+    <td>2.2.3</td>
     <td></td>
   </tr>
   <tr>
     <td>CH$EXACT_MASS</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Exact mass</td>
+    <td>2.2.4</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>CH$SMILES</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>SMILES code</td>
+    <td>2.2.5</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>CH$IUPAC</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>InChi code</td>
+    <td>2.2.6</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>CH$LINK subtag identifier</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>External database name with identifier</td>
+    <td>2.2.7</td>
+    <td>Note 1</td>
+  </tr>
+  <tr>
+    <td colspan="7">Information of Biological Sample</td>
+  </tr>
+  <tr>
+    <td>SP$SCIENTIFIC_NAME</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Scientific name of biological species</td>
+    <td>2.3.1</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>SP$LINEAGE</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Lineage of species</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td>SP$LINK subtag identifier</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>External database name with identifier</td>
+    <td>2.3.2</td>
+    <td>Note 1</td>
+  </tr>
+  <tr>
+    <td>SP$SAMPLE</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Information of sample preparation</td>
+    <td>2.3.3</td>
     <td></td>
   </tr>
   <tr>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td colspan="7">Analytical Methods and Conditions</td>
+  </tr>
+  <tr>
+    <td>AC$INSTRUMENT</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Commercial name and manufacturer of instrument</td>
+    <td>2.4.1</td>
     <td></td>
   </tr>
   <tr>
+    <td>AC$INSTRUMENT_TYPE</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Type of instrument</td>
+    <td>2.4.2</td>
+    <td>Note 2</td>
+  </tr>
+  <tr>
+    <td>AC$MASS_SPECTROMETRY: MS_TYPE</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>MSn type of data</td>
+    <td>2.4.3</td>
+    <td>Note 3</td>
+  </tr>
+  <tr>
+    <td>AC$MASS_SPECTROMETRY: ION_MODE</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Positive or negative mode of ion detection</td>
+    <td>2.4.4</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>AC$MASS_SPECTROMETRY: subtag</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Analytical conditions of mass spectrometry</td>
+    <td>2.4.5</td>
+    <td>Note 1</td>
+  </tr>
+  <tr>
+    <td>AC$CHROMATOGRAPHY: subtag</td>
+    <td>O</td>
+    <td>U/I</td>
+    <td>S</td>
+    <td>Analytical conditions of chromatographic seperation</td>
+    <td>2.4.6</td>
+    <td>Note 1, 4</td>
+  </tr>
+    <tr>
+    <td colspan="7">Description of mass spectral data</td>
+  </tr>
+  <tr>
+    <td>MS$FOCUSED_ION: subtag</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Precursor ion and m/z</td>
+    <td>2.5.1</td>
+    <td>Note 1</td>
+  </tr>
+  <tr>
+    <td>MS$DATA_PROCESSING: subtag</td>
+    <td>O</td>
+    <td>U</td>
+    <td>S</td>
+    <td>DATA processing method</td>
     <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td>Note 1</td>
   </tr>
 </table>
+
 (Last modified: March 1, 2016)
 
 General note. Decimal point should be a period, “.”, but not a comma, “,”.  For example, “m/z 425.7”.  No thousand separator is inserted.
