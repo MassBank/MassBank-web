@@ -275,7 +275,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>2.4.6</td>
     <td>Note 1, 4</td>
   </tr>
-    <tr>
+  <tr>
     <td colspan="7">Description of mass spectral data</td>
   </tr>
   <tr>
@@ -295,6 +295,53 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>DATA processing method</td>
     <td></td>
     <td>Note 1</td>
+  </tr>
+  <tr>
+    <td colspan="7">Peak Information</td>
+  </tr>
+  <tr>
+    <td>PK$SPLASH</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Hashed identifier of mass spectra</td>
+    <td>2.6.1</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>PK$ANNOTATION</td>
+    <td>O</td>
+    <td>U</td>
+    <td>M</td>
+    <td>Chemical annotation of peaks by molecular formula</td>
+    <td>2.6.2</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>PK$NUM_PEAK</td>
+    <td>M</td>
+    <td>U</td>
+    <td>S</td>
+    <td>Total number of peaks</td>
+    <td>2.6.3</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>PK$PEAK</td>
+    <td>M</td>
+    <td>U</td>
+    <td>M</td>
+    <td>Peak(m/z, intensity and relative intensity</td>
+    <td>2.6.4</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td colspan="7">Supplementary Definitions</td>
+  </tr>
+  <tr>
+    <td colspan="5">Description of isotope-labeled chemical compound</td>
+    <td>2.7.1</td>
+    <td></td>
   </tr>
 </table>
 
