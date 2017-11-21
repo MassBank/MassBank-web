@@ -347,47 +347,42 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
 
 (Last modified: March 1, 2016)
 
-General note. Decimal point should be a period, “.”, but not a comma, “,”.  For example, “m/z 425.7”.  No thousand separator is inserted.
-Note 1. Within each tag, data fields should be arranged by the alphabetical order of subtag names.
-Note 2. Data field of AC$INSTRUMENT_TYPE consists of "(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)".  Examples of the data are "ESI-QTOF", "ESI-QQ", "GC-EI-EB", "LC-ESI-ITTOF".  
-Note 3. Data field of AC$MASS_SPECTROMETRY: MS_TYPE is either "MS", "MS2", "MS3", "MS4", , , , .
-Note 4. Tag AC$CHROMATOGRAPHY: SOLVENT is iterative.
-2. MassBank Record Information
-Table 1 summarizes the current MassBank Record Information.
-MassBank Record Information consists of 6 groups (Table 2).
+- General note. Decimal point should be a period, “.”, but not a comma, “,”.  For example, “m/z 425.7”.  No thousand separator is inserted.
+- Note 1. Within each tag, data fields should be arranged by the alphabetical order of subtag names.
+- Note 2. Data field of AC$INSTRUMENT_TYPE consists of "(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)".  Examples of the data are "ESI-QTOF", "ESI-QQ", "GC-EI-EB", "LC-ESI-ITTOF".  
+- Note 3. Data field of AC$MASS_SPECTROMETRY: MS_TYPE is either "MS", "MS2", "MS3", "MS4", , , , .
+- Note 4. Tag AC$CHROMATOGRAPHY: SOLVENT is iterative.
 
-		Table 2.  Groups of MassBank Record Information.
-Information groups
-Sections
-Record Specific Information
-2.1
-Chemical Information (Tag starts with CH$)
-2.2
-Sample Information (Tag starts with SP$)
-2.3
-Analytical Chemistry Information (Tag starts with AC$)
-2.4
-Mass Spectral Data Information (Tag starts with MS$)
-2.5
-Mass Spectral Peak Data (Tag starts with PK$)
-2.6
 
-Information should be arranged by the order shown in Table 2.
+## 2. MassBank Record Information
+* Table 1 summarizes the current MassBank Record Information.
+* MassBank Record Information consists of 6 groups (Table 2).
+## Table 2.  Groups of MassBank Record Information.
+| Information groups | Sections |
+|--------------------|----------|
+| Record Specific Information | 2.1 |
+| Chemical Information (Tag starts with CH$) | 2.2 |
+| Sample Information (Tag starts with SP$) | 2.3 |
+| Analytical Chemistry Information (Tag starts with AC$) | 2.4 |
+| Mass Spectral Data Information (Tag starts with MS$) | 2.5 |
+| Mass Spectral Peak Data (Tag starts with PK$) | 2.6 |
 
-2.1 Record Specific Information
-2.1.1 ACCESSION *
-Identifier of the MassBank Record.   Mandatory
-Example
-ACCESSION: ZMS00006
-8-character fix-length string.
-Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored.
-Prefixes currently used are listed in the “Prefix of ID” column of the MassBank  “Statistics” table (http://www.massbank.jp/en/statistics.html).
-Rest of the field is decimal letters which are the identifier of the record at each site.
+* Information should be arranged by the order shown in Table 2.
 
-2.1.2 RECORD_TITLE *
-Brief Description of MassBank Record.   Mandatory
-Example
-RECORD_TITLE: (-)-Nicotine; ESI-QQ; MS2; CE 40 V; [M+H]+
+### 2.1 Record Specific Information
+#### 2.1.1 ACCESSION
+Identifier of the MassBank Record. Mandatory
+
+Example:
+`ACCESSION: ZMS00006`
+
+8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank  “Statistics” table (http://www.massbank.jp/en/statistics.html). Rest of the field is decimal letters which are the identifier of the record at each site.
+
+#### 2.1.2 RECORD_TITLE
+Brief Description of MassBank Record. Mandatory
+Example:
+`RECORD_TITLE: (-)-Nicotine; ESI-QQ; MS2; CE 40 V; [M+H]+`
+
 It consists of the values of CH$NAME ; AC$INSTRUMENT_TYPE ; AC$MASS_SPECTROMETRY: MS_TYPE.
 
 2.1.3 DATE *
