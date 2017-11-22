@@ -340,13 +340,13 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
   </tr>
   <tr>
     <td colspan="5">Description of isotope-labeled chemical compound</td>
-    <td><a href="#2.7.1>2.7.1</a></td>
+    <td><a href="#2.7.1">2.7.1</a></td>
     <td></td>
   </tr>
 </table>
 
 (Last modified: March 1, 2016)
-
+  
 * General note. Decimal point should be a period, `.`, but not a comma, `,`.  For example, `m/z 425.7`.  No thousand separator is inserted.
 * <a name="Note 1"></a>Note 1. Within each tag, data fields should be arranged by the alphabetical order of subtag names.
 * <a name="Note 2"></a>Note 2. Data field of AC$INSTRUMENT_TYPE consists of `(separation tool type-)ionization method-ion analyzer type(Ion analyzer type)`.  Examples of the data are `ESI-QTOF`, `ESI-QQ`, `GC-EI-EB`, `LC-ESI-ITTOF`.  
