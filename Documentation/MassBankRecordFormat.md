@@ -47,7 +47,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Record identifier</td>
-    <td>2.1.1</td>
+    <td><a href="#2.1.1">2.1.1</a></td>
     <td></td>
   </tr>
   <tr>
@@ -56,7 +56,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Short title of the record</td>
-    <td>2.1.2</td>
+    <td><a href="#2.1.2">2.1.2</a></td>
     <td></td>
   </tr>
   <tr>
@@ -65,7 +65,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Date of creation or last modification of record</td>
-    <td>2.1.3</td>
+    <td><a href="#2.1.3">2.1.3</a></td>
     <td></td>
   </tr>
   <tr>
@@ -74,7 +74,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Name and affiliation of authors</td>
-    <td>2.1.4</td>
+    <td><a href="#2.1.4">2.1.4</a></td>
     <td></td>
   </tr>
   <tr>
@@ -370,30 +370,30 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
 * Information should be arranged by the order shown in Table 2.
 
 ### 2.1 Record Specific Information
-#### 2.1.1 ACCESSION
+#### <a name="2.1.1"></a>2.1.1 ACCESSION
 Identifier of the MassBank Record. Mandatory
 
-Example:
-`ACCESSION: ZMS00006`
+Example: `ACCESSION: ZMS00006`
 
 8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank  “Statistics” table (http://www.massbank.jp/en/statistics.html). Rest of the field is decimal letters which are the identifier of the record at each site.
 
-#### 2.1.2 RECORD_TITLE
+#### <a name="2.1.2"></a>2.1.2 RECORD_TITLE
 Brief Description of MassBank Record. Mandatory
-Example:
-`RECORD_TITLE: (-)-Nicotine; ESI-QQ; MS2; CE 40 V; [M+H]+`
+
+Example: `RECORD_TITLE: (-)-Nicotine; ESI-QQ; MS2; CE 40 V; [M+H]+`
 
 It consists of the values of CH$NAME ; AC$INSTRUMENT_TYPE ; AC$MASS_SPECTROMETRY: MS_TYPE.
 
-2.1.3 DATE *
-Date of the Creation or the Last Modification of MassBank Record.   Mandatory
-Example
-DATE: 2011.02.21 (Created 2007.07.07)
+#### <a name="2.1.3"></a>2.1.3 DATE
+Date of the Creation or the Last Modification of MassBank Record. Mandatory
 
-2.1.4 AUTHORS *
-Authors and Affiliations of MassBank Record.   Mandatory
-Example
-AUTHORS: Akimoto N, Grad Sch Pharm Sci, Kyoto Univ and Maoka T, Res Inst Prod Dev.
+Example: `DATE: 2011.02.21 (Created 2007.07.07)`
+
+#### <a name="2.1.4"></a>2.1.4 AUTHORS
+Authors and Affiliations of MassBank Record. Mandatory
+
+Example: `AUTHORS: Akimoto N, Grad Sch Pharm Sci, Kyoto Univ and Maoka T, Res Inst Prod Dev.`
+
 Only single-byte characters are allowed.  For example, ö is not allowed.
 
 2.1.5 LICENSE *
