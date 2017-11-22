@@ -83,7 +83,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Creative Commons License or its compatible terms</td>
-    <td>2.1.5</td>
+    <td><a href="#2.1.5">2.1.5</a></td>
     <td></td>
   </tr>
   <tr>
@@ -92,7 +92,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Copyright</td>
-    <td>2.1.6</td>
+    <td><a href="#2.1.6">2.1.6</a></td>
     <td></td>
   </tr>
   <tr>
@@ -101,7 +101,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Bibliographic information of reference</td>
-    <td>2.1.7</td>
+    <td><a href="#2.1.7">2.1.7</a></td>
     <td></td>
   </tr>
   <tr>
@@ -110,7 +110,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>I</td>
     <td>S</td>
     <td>Comments</td>
-    <td>2.1.8</td>
+    <td><a href="#2.1.8">2.1.8</a></td>
     <td></td>
   </tr>
   <tr>
@@ -122,7 +122,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>I</td>
     <td>S</td>
     <td>Chemical name</td>
-    <td>2.2.1</td>
+    <td><a href="#2.2.1">2.2.1</a></td>
     <td></td>
   </tr>
   <tr>
@@ -131,7 +131,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Chemical category</td>
-    <td>2.2.2</td>
+    <td><a href="#2.2.2">2.2.2</a></td>
     <td></td>
   </tr>
   <tr>
@@ -140,7 +140,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Chemical formula</td>
-    <td>2.2.3</td>
+    <td><a href="#2.2.3">2.2.3</a></td>
     <td></td>
   </tr>
   <tr>
@@ -149,7 +149,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Exact mass</td>
-    <td>2.2.4</td>
+    <td><a href="#2.2.4">2.2.4</a></td>
     <td></td>
   </tr>
   <tr>
@@ -158,7 +158,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>SMILES code</td>
-    <td>2.2.5</td>
+    <td><a href="#2.2.5">2.2.5</a></td>
     <td></td>
   </tr>
   <tr>
@@ -167,7 +167,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>InChi code</td>
-    <td>2.2.6</td>
+    <td><a href="#2.2.6">2.2.6</a></td>
     <td></td>
   </tr>
   <tr>
@@ -176,8 +176,8 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>External database name with identifier</td>
-    <td>2.2.7</td>
-    <td>Note 1</td>
+    <td><a href="#2.2.7">2.2.7</a></td>
+    <td><a href="Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td colspan="7">Information of Biological Sample</td>
@@ -188,7 +188,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Scientific name of biological species</td>
-    <td>2.3.1</td>
+    <td><a href="#2.3.1">2.3.1</a></td>
     <td></td>
   </tr>
   <tr>
@@ -206,8 +206,8 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>External database name with identifier</td>
-    <td>2.3.2</td>
-    <td>Note 1</td>
+    <td><a href="#2.2.2">2.3.2</a></td>
+    <td><a href="Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td>SP$SAMPLE</td>
@@ -215,7 +215,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Information of sample preparation</td>
-    <td>2.3.3</td>
+    <td><a href="#2.3.3">2.3.3</a></td>
     <td></td>
   </tr>
   <tr>
@@ -227,7 +227,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Commercial name and manufacturer of instrument</td>
-    <td>2.4.1</td>
+    <td><a href="#2.4.1">2.4.1</a></td>
     <td></td>
   </tr>
   <tr>
@@ -236,8 +236,8 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Type of instrument</td>
-    <td>2.4.2</td>
-    <td>Note 2</td>
+    <td><a href="#2.4.2">2.4.2</a></td>
+    <td><a href="Note 2">Note 2</a></td>
   </tr>
   <tr>
     <td>AC$MASS_SPECTROMETRY: MS_TYPE</td>
@@ -245,8 +245,8 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>MSn type of data</td>
-    <td>2.4.3</td>
-    <td>Note 3</td>
+    <td><a href="#2.4.3">2.4.3</td>
+    <td><a href="Note 3">Note 3</a></td>
   </tr>
   <tr>
     <td>AC$MASS_SPECTROMETRY: ION_MODE</td>
@@ -254,7 +254,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Positive or negative mode of ion detection</td>
-    <td>2.4.4</td>
+    <td><a href="#2.4.4">2.4.4</a></td>
     <td></td>
   </tr>
   <tr>
@@ -263,8 +263,8 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Analytical conditions of mass spectrometry</td>
-    <td>2.4.5</td>
-    <td>Note 1</td>
+    <td><a href="#2.4.5">2.4.5</a></td>
+    <td><a href="Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td>AC$CHROMATOGRAPHY: subtag</td>
@@ -272,8 +272,8 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U/I</td>
     <td>S</td>
     <td>Analytical conditions of chromatographic seperation</td>
-    <td>2.4.6</td>
-    <td>Note 1, 4</td>
+    <td><a href="#2.4.6">2.4.6</a></td>
+    <td><a href="Note 1">Note 1</a>, <a href="Note 4">Note 4</a></td>
   </tr>
   <tr>
     <td colspan="7">Description of mass spectral data</td>
@@ -284,8 +284,8 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Precursor ion and m/z</td>
-    <td>2.5.1</td>
-    <td>Note 1</td>
+    <td><a href="#2.5.1">2.5.1</a></td>
+    <td><a href="Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td>MS$DATA_PROCESSING: subtag</td>
@@ -294,7 +294,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>DATA processing method</td>
     <td></td>
-    <td>Note 1</td>
+    <td><a href="Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td colspan="7">Peak Information</td>
@@ -305,7 +305,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Hashed identifier of mass spectra</td>
-    <td>2.6.1</td>
+    <td><a href="#2.6.1">2.6.1</a></td>
     <td></td>
   </tr>
   <tr>
@@ -314,7 +314,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>M</td>
     <td>Chemical annotation of peaks by molecular formula</td>
-    <td>2.6.2</td>
+    <td><a href="#2.6.2">2.6.2</a></td>
     <td></td>
   </tr>
   <tr>
@@ -323,7 +323,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>Total number of peaks</td>
-    <td>2.6.3</td>
+    <td><a href="#2.6.3">2.6.3</a></td>
     <td></td>
   </tr>
   <tr>
@@ -332,7 +332,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>M</td>
     <td>Peak(m/z, intensity and relative intensity</td>
-    <td>2.6.4</td>
+    <td><a href="#2.6.4">2.6.4</a></td>
     <td></td>
   </tr>
   <tr>
@@ -340,18 +340,18 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
   </tr>
   <tr>
     <td colspan="5">Description of isotope-labeled chemical compound</td>
-    <td>2.7.1</td>
+    <td><a href="#2.7.1>2.7.1</a></td>
     <td></td>
   </tr>
 </table>
 
 (Last modified: March 1, 2016)
 
-- General note. Decimal point should be a period, “.”, but not a comma, “,”.  For example, “m/z 425.7”.  No thousand separator is inserted.
-- Note 1. Within each tag, data fields should be arranged by the alphabetical order of subtag names.
-- Note 2. Data field of AC$INSTRUMENT_TYPE consists of "(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)".  Examples of the data are "ESI-QTOF", "ESI-QQ", "GC-EI-EB", "LC-ESI-ITTOF".  
-- Note 3. Data field of AC$MASS_SPECTROMETRY: MS_TYPE is either "MS", "MS2", "MS3", "MS4", , , , .
-- Note 4. Tag AC$CHROMATOGRAPHY: SOLVENT is iterative.
+* General note. Decimal point should be a period, `.`, but not a comma, `,`.  For example, `m/z 425.7`.  No thousand separator is inserted.
+* <a name="Note 1"></a>Note 1. Within each tag, data fields should be arranged by the alphabetical order of subtag names.
+* <a name="Note 2"></a>Note 2. Data field of AC$INSTRUMENT_TYPE consists of `(separation tool type-)ionization method-ion analyzer type(Ion analyzer type)`.  Examples of the data are `ESI-QTOF`, `ESI-QQ`, `GC-EI-EB`, `LC-ESI-ITTOF`.  
+* <a name="Note 3"></a>Note 3. Data field of AC$MASS_SPECTROMETRY: MS_TYPE is either `MS`, `MS2`, `MS3`, `MS4`, , , , .
+* <a name="Note 4"></a>Note 4. Tag AC$CHROMATOGRAPHY: SOLVENT is iterative.
 
 
 ## 2. MassBank Record Information
@@ -396,44 +396,57 @@ Example: `AUTHORS: Akimoto N, Grad Sch Pharm Sci, Kyoto Univ and Maoka T, Res In
 
 Only single-byte characters are allowed.  For example, ö is not allowed.
 
-2.1.5 LICENSE *
-Creative Commons License of Re-use of MassBank Record.   Mandatory
-Example
-LICENSE: CC BY
-Contributors to MassBank are encouraged to show the license “CC BY”. This license mean that others are free to “share” (copy and redistribute the MassBank record in any medium or format) and to “adapt” (remix, transform, and build upon the MassBank record) for any purpose, even commercially. The contributors cannot revoke these freedoms as long as the others follow the license terms.
+#### <a name="2.1.5"></a>2.1.5 LICENSE
+Creative Commons License of Re-use of MassBank Record. Mandatory
 
-2.1.6 COPYRIGHT
-Copyright of MassBank Record.   Optional
-Example
-COPYRIGHT: Keio University
+Example: `LICENSE: CC BY`
 
-2.1.7 PUBLICATION
-Reference of the Mass Spectral Data.   Optional
-Example
-PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]
+Contributors to MassBank are encouraged to show the license `CC BY`. This license mean that others are free to "share" (copy and redistribute the MassBank record in any medium or format) and to "adapt" (remix, transform, and build upon the MassBank record) for any purpose, even commercially. The contributors cannot revoke these freedoms as long as the others follow the license terms.
+
+#### <a name="2.1.6"></a>2.1.6 COPYRIGHT
+Copyright of MassBank Record. Optional
+
+Example: `COPYRIGHT: Keio University`
+
+#### <a name="2.1.7"></a>2.1.7 PUBLICATION
+Reference of the Mass Spectral Data. Optional
+
+Example: `PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]`
+
 Citation with PubMed ID is recommended.
 
-2.1.8 COMMENT
-Comments.   Optional and Iterative 
+#### <a name="2.1.8"></a>2.1.8 COMMENT
+Comments. Optional and Iterative
+ 
 In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments specific to the following five examples.
-Example 1
+Example 1:
+```
 COMMENT: This record is a MS3 spectrum. Link to the MS2 spectrum is added in the following comment field.
 COMMENT: [MS2] KO008089
-Example 2
+```
+Example 2:
+```
 COMMENT: This record was generated by merging the following three MassBank records.
 COMMENT: [Merging] KO006229 Tiglate; ESI-QTOF; MS2; CE:10 V [M-H]-.
 COMMENT: [Merging] KO006230 Tiglate; ESI-QTOF; MS2; CE:20 V [M-H]-.
 COMMENT: [Merging] KO006231 Tiglate; ESI-QTOF; MS2; CE:30 V [M-H]-.
-Example 3
+```
+Example 3:
+```
 COMMENT: This record was merged into a MassBank record, KOX00012, with other records.
 COMMENT: [Merged] KOX00012
-Example 4
+```
+Example 4:
+```
 COMMENT: Analytical conditions of LC-MS were described in separate files.
 COMMENT: [Mass spectrometry] ms1.txt
 COMMENT: [Chromatography] lc1.txt.
-Example 5
+```
+Example 5:
+```
 COMMENT: Profile spectrum of this record is given as a JPEG file.
 COMMENT: [Profile] CA000185.jpg
+```
 
 2.2 Information of Chemical Compound Analyzed
 2.2.1 CH$NAME *
