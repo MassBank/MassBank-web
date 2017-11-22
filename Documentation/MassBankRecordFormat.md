@@ -448,67 +448,76 @@ COMMENT: Profile spectrum of this record is given as a JPEG file.
 COMMENT: [Profile] CA000185.jpg
 ```
 
-2.2 Information of Chemical Compound Analyzed
-2.2.1 CH$NAME *
-Name of the Chemical Compound Analyzed.   Mandatory and Iterative
-Example
+### 2.2 Information of Chemical Compound Analyzed
+
+#### <a name="2.2.1"></a>2.2.1 CH$NAME
+Name of the Chemical Compound Analyzed. Mandatory and Iterative
+
+Example: 
+```
 CH$NAME: D-Tartaric acid
 CH$NAME: (2S,3S)-Tartaric acid
-No prosthetic molecule of adducts (HCl, H2SO3, H2O, etc), conjugate ions (Chloride, etc) , and protecting groups (TMS, etc.) is included.
-Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
-If chemical compound is a stereoisomer, stereochemistry should be indicated.
+```
+No prosthetic molecule of adducts (HCl, H2SO3, H2O, etc), conjugate ions (Chloride, etc) , and protecting groups (TMS, etc.) is included. Chemical names which are listed in the compound list are recommended.  Synonyms could be added. If chemical compound is a stereoisomer, stereochemistry should be indicated.
 
-2.2.2 CH$COMPOUND_CLASS *
-Category of Chemical Compound.   Mandatory
-Example
-CH$COMPOUND_CLASS: Natural Product; Carotenoid; Terpenoid; Lipid
+#### <a name="2.2.2"></a>2.2.2 CH$COMPOUND_CLASS
+Category of Chemical Compound. Mandatory
+
+Example: `CH$COMPOUND_CLASS: Natural Product; Carotenoid; Terpenoid; Lipid`
+
 Either Natural Product or Non-Natural Product should be precedes the other class names .
 
-2.2.3 CH$FORMULA *
-Molecular Formula of Chemical Compound.   Mandatory
-Example
-CH$FORMULA: C9H10ClNO3
-It follows the Hill's System.
-No prosthetic molecule is included (see 2.2.1 CH$NAME).
-Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in the MS$FOCUSED_ION: DERIVATIVE_FORM (2.5.1) field.
+#### <a name="2.2.3"></a>2.2.3 CH$FORMULA
+Molecular Formula of Chemical Compound. Mandatory
 
-2.2.4 CH$EXACT_MASS *
-Monoisotopic Mass of Chemical Compound.   Mandatory
-Example
-CH$EXACT_MASS: 430.38108
+Example: `CH$FORMULA: C9H10ClNO3`
+
+It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> CH$NAME). Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
+
+#### <a name="2.2.4"></a>2.2.4 CH$EXACT_MASS
+Monoisotopic Mass of Chemical Compound. Mandatory
+
+Example: `CH$EXACT_MASS: 430.38108`
+
 A value with 5 digits after the decimal point is recommended.
 
-2.2.5 CH$SMILES *
-SMILES String.   Mandatory
-Example
-CH$SMILES: NCC(O)=O
+#### <a name="2.2.5"></a>2.2.5 CH$SMILES
+SMILES String. Mandatory
+
+Example: `CH$SMILES: NCC(O)=O`
+
 Isomeric SMILES but not a canonical one.
 
-2.2.6 CH$IUPAC *
-IUPAC International Chemical Identifier (InChI Code).   Mandatory
-Example
-CH$IUPAC: InChI=1S/C2H5NO2/c3-1-2(4)5/h1,3H2,(H,4,5)
+#### <a name="2.2.6"></a>2.2.6 CH$IUPAC
+IUPAC International Chemical Identifier (InChI Code). Mandatory
+
+Example: `CH$IUPAC: InChI=1S/C2H5NO2/c3-1-2(4)5/h1,3H2,(H,4,5)`
+
 Not IUPAC name.
 
-2.2.7 CH$CDK_DEPICT
-Displays partially defined structures with CDK depict in record view
-In test phase, advanced users only
-Optional and Iterative
-Example
+#### <a name="2.2.7"></a>2.2.7 CH$CDK_DEPICT
+Displays partially defined structures with CDK depict in record view.  In test phase, advanced users only. Optional and Iterative
+
+Example:
+```
 CH$CDK_DEPICT_SMILES CCOCCOCCO |Sg:n:3,4,5:2:ht| PEG-2
 CH$CDK_DEPICT_GENERIC_SMILES c1ccc(cc1)/C=C/C(=O)O[R]
 CH$CDK_DEPICT_STRUCTURE_SMILES c1ccc(cc1)/C=C/C(=O)O
+```
 
-2.2.8 CH$LINK: subtag  identifier
-Identifier and Link of Chemical Compound to External Databases.
-Optional and Iterative
-Example
+#### <a name="2.2.8"></a>2.2.8 CH$LINK: subtag  identifier
+Identifier and Link of Chemical Compound to External Databases. Optional and Iterative
+
+Example:
+```
 CH$LINK: CAS 56-40-6
 CH$LINK: COMPTOX DTXSID50274017
 CH$LINK: INCHIKEY UFFBMTHBGFGIHF-UHFFFAOYSA-N
 CH$LINK: KEGG C00037
 CH$LINK: PUBCHEM SID: 11916 CID:182232
-Currently MassBank records have links to the following external databases :
+```
+Currently MassBank records have links to the following external databases:
+```
 CAS
 CHEBI
 CHEMPDB
@@ -520,58 +529,61 @@ KNAPSACK
 LIPIDBANK
 LIPIDMAPS
 PUBCHEM
+```
 
 CH$LINK fields should be arranged by the alphabetical order of database names.
 InChI Key, a hashed version of InChI code, is a common link by chemical structures.
 
-Information of Biological Sample
-2.3.1 SP$SCIENTIFIC_NAME
-Scientific Name of Biological Species, from Which Sample was Prepared.  Optional
-Example
-SP$SCIENTIFIC_NAME: Mus musculus
+###2.3 Information of Biological Sample
+#### <a name="2.3.1"></a>2.3.1 SP$SCIENTIFIC_NAME
+Scientific Name of Biological Species, from Which Sample was Prepared. Optional
 
-2.3.2 SP$LINK subtag identifier
-Identifier of Biological Species in External Databases.  Optional
-Example
-SP$LINK: NCBI-TAXONOMY 10090
+Example: `SP$SCIENTIFIC_NAME: Mus musculus`
 
-2.3.3 SP$SAMPLE
-Tissue or Cell, from which Sample was Prepared.   Optional and iterative
-Example
-SP$SAMPLE: Liver extracts
+#### <a name="2.3.2"></a>2.3.2 SP$LINK subtag identifier
+Identifier of Biological Species in External Databases. Optional
 
-2.4 Analytical Method and Conditions
-2.4.1 AC$INSTRUMENT *
-Commercial Name and Model of (Chromatographic Separation Instrument, if any were coupled, and) Mass Spectrometer and Manufacturer.  Mandatory
-Example
-AC$INSTRUMENT: LC-10ADVPmicro HPLC, Shimadzu; LTQ Orbitrap, Thermo Electron.
+Example: `SP$LINK: NCBI-TAXONOMY 10090`
+
+#### <a name="2.3.3"></a>2.3.3 SP$SAMPLE
+Tissue or Cell, from which Sample was Prepared. Optional and iterative
+
+Example: `SP$SAMPLE: Liver extracts`
+
+### 2.4 Analytical Method and Conditions
+#### <a name="2.4.1"></a>2.4.1 AC$INSTRUMENT
+Commercial Name and Model of (Chromatographic Separation Instrument, if any were coupled, and) Mass Spectrometer and Manufacturer. Mandatory
+
+Example: `AC$INSTRUMENT: LC-10ADVPmicro HPLC, Shimadzu; LTQ Orbitrap, Thermo Electron.`
+
 Cross-reference to mzOntology: Instrument model [MS:1000031]
 All the instruments are given together in a single line. This record is not iterative.
 
-2.4.2 AC$INSTRUMENT_TYPE *
-General Type of Instrument.  Mandatory
-Example
-AC$INSTRUMENT_TYPE: LC-ESI-QTOF
+#### <a name="2.4.2"></a>2.4.2 AC$INSTRUMENT_TYPE
+General Type of Instrument. Mandatory
+
+Example: `AC$INSTRUMENT_TYPE: LC-ESI-QTOF`
+
 Format is
-  (Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type).
-Separation tool types are CE, GC, LC.
-Ionization methods are APCI, APPI, EI, ESI, FAB, MALDI.
-Ion analyzer types are B, E, FT, IT, Q, TOF.
-In tandem mass analyzers, no “–“ is inserted between ion analyzers.
-FT includes FTICR and other type analyzers using FT, such as Orbitrap(R).
-IT comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap.
-Other examples of AC$INSTRUMENT_TYPE data are as follows.
+  `(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)`.
+Separation tool types are `CE`, `GC`, `LC`.
+Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`.
+Ion analyzer types are `B`, `E`, `FT`, `IT`, `Q`, `TOF`.
+In tandem mass analyzers, no `-` is inserted between ion analyzers.
+`FT` includes `FTICR` and other type analyzers using `FT`, such as Orbitrap(R). `IT` comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap. Other examples of `AC$INSTRUMENT_TYPE` data are as follows.
+```
 ESI-QQ
 ESI-QTOF
 GC-EI-EB
 LC-ESI-ITFT
+```
 Cross-reference to mzOntology: Ionization methods [MS:1000008]; APCI [MS:1000070]; APPI [MS:1000382]; EI [MS:1000389]; ESI [MS:1000073]; B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
 
-2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE *
-Data Type.   Mandatory
-Example
-AC$MASS_SPECTROMETRY: MS_TYPE MS2
-Either of MS, MS2, MS3, MS4, , , .
+#### <a name="2.4.3"></a>2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE *
+Data Type. Mandatory
+Example: `AC$MASS_SPECTROMETRY: MS_TYPE MS2`
+
+Either of `MS`, `MS2`, `MS3`, `MS4`, , , .
 Brief definition of terms used in MS_TYPE
 MS2  is 1st generation product ion spectrum(of MS)
 MS3  is 2nd generation product ion spectrum(of MS)
