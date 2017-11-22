@@ -177,7 +177,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>External database name with identifier</td>
     <td><a href="#2.2.7">2.2.7</a></td>
-    <td><a href="Note 1">Note 1</a></td>
+    <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td colspan="7">Information of Biological Sample</td>
@@ -207,7 +207,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>External database name with identifier</td>
     <td><a href="#2.2.2">2.3.2</a></td>
-    <td><a href="Note 1">Note 1</a></td>
+    <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td>SP$SAMPLE</td>
@@ -237,7 +237,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>Type of instrument</td>
     <td><a href="#2.4.2">2.4.2</a></td>
-    <td><a href="Note 2">Note 2</a></td>
+    <td><a href="#Note 2">Note 2</a></td>
   </tr>
   <tr>
     <td>AC$MASS_SPECTROMETRY: MS_TYPE</td>
@@ -246,7 +246,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>MSn type of data</td>
     <td><a href="#2.4.3">2.4.3</td>
-    <td><a href="Note 3">Note 3</a></td>
+    <td><a href="#Note 3">Note 3</a></td>
   </tr>
   <tr>
     <td>AC$MASS_SPECTROMETRY: ION_MODE</td>
@@ -264,7 +264,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>Analytical conditions of mass spectrometry</td>
     <td><a href="#2.4.5">2.4.5</a></td>
-    <td><a href="Note 1">Note 1</a></td>
+    <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td>AC$CHROMATOGRAPHY: subtag</td>
@@ -273,7 +273,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>Analytical conditions of chromatographic seperation</td>
     <td><a href="#2.4.6">2.4.6</a></td>
-    <td><a href="Note 1">Note 1</a>, <a href="Note 4">Note 4</a></td>
+    <td><a href="#Note 1">Note 1</a>, <a href="#Note 4">Note 4</a></td>
   </tr>
   <tr>
     <td colspan="7">Description of mass spectral data</td>
@@ -285,7 +285,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>Precursor ion and m/z</td>
     <td><a href="#2.5.1">2.5.1</a></td>
-    <td><a href="Note 1">Note 1</a></td>
+    <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td>MS$DATA_PROCESSING: subtag</td>
@@ -294,7 +294,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>DATA processing method</td>
     <td></td>
-    <td><a href="Note 1">Note 1</a></td>
+    <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
     <td colspan="7">Peak Information</td>
