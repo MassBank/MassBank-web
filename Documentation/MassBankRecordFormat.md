@@ -581,205 +581,217 @@ Cross-reference to mzOntology: Ionization methods [MS:1000008]; APCI [MS:1000070
 
 #### <a name="2.4.3"></a>2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE *
 Data Type. Mandatory
+
 Example: `AC$MASS_SPECTROMETRY: MS_TYPE MS2`
 
 Either of `MS`, `MS2`, `MS3`, `MS4`, , , .
-Brief definition of terms used in MS_TYPE
-MS2  is 1st generation product ion spectrum(of MS)
-MS3  is 2nd generation product ion spectrum(of MS)
-MS2  is the precursor ion spectrum of MS3
-IUPAC Recommendations 2006 (http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
+Brief definition of terms used in `MS_TYPE`:
+* `MS2` is 1st generation product ion spectrum(of `MS`)
+* `MS3` is 2nd generation product ion spectrum(of `MS`)
+* `MS2` is the precursor ion spectrum of `MS3`
+* [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
 
-2.4.4 AC$MASS_SPECTROMETRY: ION_MODE *
-Polarity of Ion Detection.   Mandatory
-Example
-AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
-Either of POSITIVE or NEGATIVE is allowed.
-Cross-reference to mzOntology: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+#### <a name="2.4.4"></a>2.4.4 AC$MASS_SPECTROMETRY: ION_MODE *
+Polarity of Ion Detection. Mandatory
 
-2.4.5 AC$MASS_SPECTROMETRY: subtag Description
+Example: `AC$MASS_SPECTROMETRY: ION_MODE POSITIVE`
+
+Either of POSITIVE or NEGATIVE is allowed. Cross-reference to mzOntology: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+
+#### <a name="2.4.5"></a>2.4.5 AC$MASS_SPECTROMETRY: subtag Description
 Other Optional Experimental Methods and Conditions of Mass Spectrometry.
+
 Description is a list of numerical values with/without unit or a sentence.
-AC$MASS_SPECTROMETRY fields should be arranged by the alphabetical order of subtag names.
+`AC$MASS_SPECTROMETRY` fields should be arranged by the alphabetical order of subtag names.
 
-2.4.5 Subtag: COLLISION_ENERGY
+##### 2.4.5 Subtag: COLLISION_ENERGY
 Collision Energy for Dissociation.
-Example 1
-AC$MASS_SPECTROMETRY: COLLISION_ENERGY 20 kV
-Example 2
-AC$MASS_SPECTROMETRY: COLLISION_ENERGY Ramp 10-50 kV
 
-2.4.5 Subtag: COLLISION_GAS
+Example 1: `AC$MASS_SPECTROMETRY: COLLISION_ENERGY 20 kV`
+Example 2: `AC$MASS_SPECTROMETRY: COLLISION_ENERGY Ramp 10-50 kV`
+
+##### 2.4.5 Subtag: COLLISION_GAS
 Name of Collision Gas.
-Example
-AC$MASS_SPECTROMETRY: COLLISION_GAS N2
+
+Example: `AC$MASS_SPECTROMETRY: COLLISION_GAS N2`
+
 Cross-reference to mzOntology: Collision gas [MS:1000419]
 
-2.4.5 Subtag: DATE
+##### 2.4.5 Subtag: DATE
 Date of Analysis.
 
-2.4.5 Subtag: DESOLVATION_GAS_FLOW
+##### 2.4.5 Subtag: DESOLVATION_GAS_FLOW
 Flow Rate of Desolvation Gas.
-Example
-AC$MASS_SPECTROMETRY: DESOLVATION_GAS_FLOW 600.0 l/h
 
-2.4.5 Subtag: DESOLVATION_TEMPERATURE
+Example: `AC$MASS_SPECTROMETRY: DESOLVATION_GAS_FLOW 600.0 l/h`
+
+##### 2.4.5 Subtag: DESOLVATION_TEMPERATURE
 Temperature of Desolvation Gas.
-Example
-AC$MASS_SPECTROMETRY: DESOLVATION_TEMPERATURE 400 C
 
-2.4.5 Subtag: IONIZATION_ENERGY
+Example: `AC$MASS_SPECTROMETRY: DESOLVATION_TEMPERATURE 400 C`
+
+##### 2.4.5 Subtag: IONIZATION_ENERGY
 Energy of Ionization.
-Example
-AC$MASS_SPECTROMETRY: IONIZATION_ENERGY 70 eV
 
-2.4.5 Subtag: LASER
+Example: `AC$MASS_SPECTROMETRY: IONIZATION_ENERGY 70 eV`
+
+##### 2.4.5 Subtag: LASER
 Desorption /Ionization Conditions in MALDI.
-Example
-AC$MASS_SPECTROMETRY: LASER 337 nm nitrogen laser, 20 Hz, 10 nsec
 
-2.4.5 Subtag: MATRIX
+Example: `AC$MASS_SPECTROMETRY: LASER 337 nm nitrogen laser, 20 Hz, 10 nsec`
+
+##### 2.4.5 Subtag: MATRIX
 Matrix Used in MALDI and FAB.
-Example
-AC$MASS_SPECTROMETRY: MATRIX 1-2 uL m-NBA
 
-2.4.5. Subtag : MASS_ACCURACY
+Example: `AC$MASS_SPECTROMETRY: MATRIX 1-2 uL m-NBA`
+
+##### 2.4.5. Subtag : MASS_ACCURACY
 Relative Mass Accuracy.
-Example
-AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000
 
-2.4.5 Subtag: REAGENT_GAS
+Example: `AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000`
+
+##### 2.4.5 Subtag: REAGENT_GAS
 Name of Reagent Gas.
-Example
-AC$MASS_SPECTROMETRY: REAGENT_GAS ammonia
 
-2.4.5 Subtag: SCANNING
+Example: `AC$MASS_SPECTROMETRY: REAGENT_GAS ammonia`
+
+##### 2.4.5 Subtag: SCANNING
 Scan Cycle and Range.
-Example
-AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)
 
-2.4.6 AC$CHROMATOGRAPHY: subtag Description
-・	Experimental Method and Conditions of Chromatographic Separation.  Optional
-・	AC$CHROMATOGRAPHY fields should be arranged by the alphabetical order of subtag names.
+Example: `AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)`
 
-2.4.6 Subtag: CAPILLARY_VOLTAGE
+#### <a name="2.4.6"></a>2.4.6 AC$CHROMATOGRAPHY: subtag Description
+Experimental Method and Conditions of Chromatographic Separation.  Optional
+
+AC$CHROMATOGRAPHY fields should be arranged by the alphabetical order of subtag names.
+
+##### 2.4.6 Subtag: CAPILLARY_VOLTAGE
 Voltage Applied to Capillary Electrophoresis or Voltage Applied to the Interface of LC-MS.
-Example
-AC$CHROMATOGRAPHY: CAPILLARY_VOLTAGE 4 kV
 
-2.4.6 Subtag: COLUMN_NAME
+Example: `AC$CHROMATOGRAPHY: CAPILLARY_VOLTAGE 4 kV`
+
+##### 2.4.6 Subtag: COLUMN_NAME
 Commercial Name of Chromatography Column and Manufacture.
-Example of LC
-AC$CHROMATOGRAPHY: COLUMN_NAME Acquity UPLC BEH C18 2.1 by 50 mm (Waters, Milford, MA, USA)
-Example of CE
-AC$CHROMATOGRAPHY: COLUMN_NAME Fused silica capillary id=50 um L=100 cm (HMT, Tsuruoka, Japan)
 
-2.4.6 Subtag: COLUMN_TEMPERATURE
+Example of LC: `AC$CHROMATOGRAPHY: COLUMN_NAME Acquity UPLC BEH C18 2.1 by 50 mm (Waters, Milford, MA, USA)`
+Example of CE: `AC$CHROMATOGRAPHY: COLUMN_NAME Fused silica capillary id=50 um L=100 cm (HMT, Tsuruoka, Japan)`
+
+##### 2.4.6 Subtag: COLUMN_TEMPERATURE
 Column Temperature.
-Example
-AC$CHROMATOGRAPHY: COLUMN_TEMPERATURE 40 C
 
-2.4.6 Subtag: FLOW_GRADIENT
+Example: `AC$CHROMATOGRAPHY: COLUMN_TEMPERATURE 40 C`
+
+##### 2.4.6 Subtag: FLOW_GRADIENT
 Gradient of Elusion Solutions.
-Example  
-AC$CHROMATOGRAPHY: FLOW_GRADIENT 0/100 at 0 min, 15/85 at 5 min, 21/79 at 20 min, 90/10 at 24 min, 95/5 at 26 min, 0/100, 30 min
 
-2.4.6 Subtag: FLOW_RATE
+Example: `AC$CHROMATOGRAPHY: FLOW_GRADIENT 0/100 at 0 min, 15/85 at 5 min, 21/79 at 20 min, 90/10 at 24 min, 95/5 at 26 min, 0/100, 30 min`
+
+##### 2.4.6 Subtag: FLOW_RATE
 Flow Rate of Migration Phase.
-Example
-AC$CHROMATOGRAPHY: FLOW_RATE 0.25 ml/min
 
-2.4.6 Subtag: RETENTION_TIME
+Example: `AC$CHROMATOGRAPHY: FLOW_RATE 0.25 ml/min`
+
+##### 2.4.6 Subtag: RETENTION_TIME
 Retention Time on Chromatography.
-Example
-AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min
+
+Example: `AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min`
+
 Cross-reference to mzOntology: Retention time [MS:1000016]
 
-2.4.6 Subtag: SOLVENT
+##### 2.4.6 Subtag: SOLVENT
 Chemical Composition of Buffer Solution.  Iterative
-Example
+
+Example: 
+
+```
 AC$CHROMATOGRAPHY: SOLVENT A acetonitrile-methanol-water (19:19:2) with 0.1% acetic acid
 AC$CHROMATOGRAPHY: SOLVENT B 2-propanol with 0.1% acetic acid and 0.1% ammonium hydroxide (28%)
+```
 
-2.4.6 Subtag: NAPS_RTI
+##### 2.4.6 Subtag: NAPS_RTI
 N-alkylpyrinium-3-sulfonate based retention time index.
+
 Reference: http://nparc.cisti-icist.nrc-cnrc.gc.ca/eng/view/object/?id=b4db3589-ae0b-497e-af03-264785d7922f
-Example
-AC$CHROMATOGRAPHY: NAPS_RTI 100
 
-2.5 Description of Mass Spectral Data
-2.5.1 MS$FOCUSED_ION: subtag Description
+Example: `AC$CHROMATOGRAPHY: NAPS_RTI 100`
+
+### 2.5 Description of Mass Spectral Data
+#### <a name="2.5.1"></a>2.5.1 MS$FOCUSED_ION: subtag Description
 Information of Precursor or Molecular Ion.
-MS$FOCUSED_ION fields should be arranged by the alphabetical order of subtag names.
 
-2.5.1 Subtag: BASE_PEAK
+`MS$FOCUSED_ION` fields should be arranged by the alphabetical order of subtag names.
+
+##### 2.5.1 Subtag: BASE_PEAK
 m/z of Base Peak.
-Example
-MS$FOCUSED_ION: BASE_PEAK 73
 
-2.5.1 Subtag: DERIVATIVE_FORM
+Example: `MS$FOCUSED_ION: BASE_PEAK 73`
+
+##### 2.5.1 Subtag: DERIVATIVE_FORM
 Molecular Formula of Derivative for GC-MS.
-Example 1
+
+Example
+
+```
 MS$FOCUSED_ION: DERIVATIVE_FORM C19H42O5Si4
-Example 2
 MS$FOCUSED_ION: DERIVATIVE_FORM C{9+3*n}H{16+8*n}NO5Si{n}
+```
 
-2.5.1 Subtag: DERIVATIVE_MASS
+##### 2.5.1 Subtag: DERIVATIVE_MASS
 Exact Mass of Derivative for GC-MS.
-Example
-MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093
 
-2.5.1 Subtag: DERIVATIVE_TYPE
+Example: `MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093`
+
+##### 2.5.1 Subtag: DERIVATIVE_TYPE
 Type of Derivative for GC-MS.
-Example
-	MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS
 
-2.5.1 Subtag: ION_TYPE
+Example: `MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS`
+
+##### 2.5.1 Subtag: ION_TYPE
 Type of Focused Ion.
-Example
-MS$FOCUSED_ION: ION_TYPE [M+H]+
-Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+, [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+, [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-, [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-.
 
-2.5.1 Subtag: PRECURSOR_M/Z
+Example: `MS$FOCUSED_ION: ION_TYPE [M+H]+`
+
+Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`.
+
+##### 2.5.1 Subtag: PRECURSOR_M/Z
 m/z of Precursor Ion in MSn spectrum.
-Example
-MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123
-Calculated exact mass is preferred to the measured accurate mass of the precursor ion.
-Cross-reference to mzOntology: precursor m/z [MS:1000504]
 
-2.5.1 Subtag: PRECURSOR_TYPE
+Example: `MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123`
+
+Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to mzOntology: precursor m/z [MS:1000504]
+
+##### 2.5.1 Subtag: PRECURSOR_TYPE
 Type of Precursor Ion in MSn.
-Example
-MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-
-・	Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+, [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+, [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-, [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-.
-Cross-reference to mzOntology: Precursor type [MS: 1000792]
 
-2.5.3 MS$DATA_PROCESSING: subtag
-・	Data Processing Method of Peak Detection.  Optional
-・MS$DATA_PROCESSING fields should be arranged by the alphabetical order of subtag names.
-Cross-reference to mzOntology: Data processing [MS:1000543]
+Example: `MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-`
 
-2.5.3 Subtag: FIND_PEAK
+Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`. Cross-reference to mzOntology: Precursor type [MS: 1000792]
+
+#### <a name="2.5.3"></a>2.5.3 MS$DATA_PROCESSING: subtag
+Data Processing Method of Peak Detection. Optional
+
+`MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to mzOntology: Data processing [MS:1000543]
+
+##### 2.5.3 Subtag: FIND_PEAK
 Peak Detection.
-Example
-  MS$DATA_PROCESSING: FIND_PEAK convexity search; threshold = 9.1
 
-2.5.3 Subtag: WHOLE
+Example: `MS$DATA_PROCESSING: FIND_PEAK convexity search; threshold = 9.1`
+
+##### 2.5.3 Subtag: WHOLE
 Whole Process in Single Method / Software.
-Example
-MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
 
-2.6 Information of Mass Spectral Peaks
-2.6.1 PK$SPLASH *
+Example: `MS$DATA_PROCESSING: WHOLE Analyst 1.4.2`
+
+### 2.6 Information of Mass Spectral Peaks
+#### <a name="2.6.1"></a>2.6.1 PK$SPLASH *
 Hashed Identifier of Mass Spectra.   Mandatory and Single Line Information
-Example
-PK$SPLASH: splash10-z200000000-87bb3c76b8e5f33dd07f
 
-2.6.2 PK$ANNOTATION
-Chemical Annotation of Peaks with Molecular Formula.  Optional and Multiple Line Information
-Example 1
-PK$ANNOTATION: m/z annotation exact_mass error(ppm) formula
-794.76 [PC(18:0,20:4)-CH3]- 794.56998 239 C45H81NO8P
+Example: `PK$SPLASH: splash10-z200000000-87bb3c76b8e5f33dd07f`
+
+#### <a name="2.6.2"></a>2.6.2 PK$ANNOTATION
+Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
+
+Example 1: `PK$ANNOTATION: m/z annotation exact_mass error(ppm) formula 794.76 [PC(18:0,20:4)-CH3]- 794.56998 239 C45H81NO8P
 Example 2
 PK$ANNOTATION: m/z {annotation formula exact_mass error(ppm)}
 494.34
