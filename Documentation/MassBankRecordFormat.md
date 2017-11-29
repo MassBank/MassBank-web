@@ -791,7 +791,9 @@ Example: `PK$SPLASH: splash10-z200000000-87bb3c76b8e5f33dd07f`
 #### <a name="2.6.2"></a>2.6.2 PK$ANNOTATION
 Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
 
-Example 1: `PK$ANNOTATION: m/z annotation exact_mass error(ppm) formula 794.76 [PC(18:0,20:4)-CH3]- 794.56998 239 C45H81NO8P
+Example 1:
+PK$ANNOTATION: m/z annotation exact_mass error(ppm) formula
+794.76 [PC(18:0,20:4)-CH3]- 794.56998 239 C45H81NO8P
 Example 2
 PK$ANNOTATION: m/z {annotation formula exact_mass error(ppm)}
 494.34
