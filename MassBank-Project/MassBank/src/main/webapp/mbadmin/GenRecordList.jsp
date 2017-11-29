@@ -45,6 +45,7 @@
 <%@ page import="org.apache.poi.hssf.usermodel.HSSFSheet" %>
 <%@ page import="org.apache.poi.hssf.usermodel.HSSFWorkbook" %>
 <%@ page import="org.apache.poi.hssf.util.HSSFColor" %>
+<%@ page import="org.apache.poi.ss.usermodel.*" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.MassBankEnv" %>
@@ -126,12 +127,12 @@
 		HSSFCellStyle style1 = wb.createCellStyle();
 			// フォント - 太字、白色
 		HSSFFont font1 = wb.createFont();
-		font1.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		font1.setBold(true);
 		font1.setColor(HSSFColor.WHITE.index);
 		style1.setFont(font1);
 			// 背景色
 		style1.setFillForegroundColor(HSSFColor.GREY_40_PERCENT.index);
-		style1.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		style1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		
 		// リンク用スタイルをセット
 		HSSFCellStyle style2 = wb.createCellStyle();
@@ -140,7 +141,7 @@
 		font2.setColor(HSSFColor.BLUE.index);
 		font2.setUnderline(HSSFFont.U_SINGLE);
 		style2.setFont(font2);
-		style2.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		style2.setAlignment(HorizontalAlignment.CENTER);
 		
 		// コメント用
 		HSSFPatriarch patr = sheet.createDrawingPatriarch();
