@@ -472,7 +472,7 @@ Molecular Formula of Chemical Compound. Mandatory
 
 Example: `CH$FORMULA: C9H10ClNO3`
 
-It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> CH$NAME). Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
+It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> `CH$NAME`). Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
 
 #### <a name="2.2.4"></a>2.2.4 CH$EXACT_MASS
 Monoisotopic Mass of Chemical Compound. Mandatory
