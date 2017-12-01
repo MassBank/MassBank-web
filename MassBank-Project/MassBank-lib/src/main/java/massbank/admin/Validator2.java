@@ -2,13 +2,8 @@ package massbank.admin;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-import org.petitparser.context.Failure;
-import org.petitparser.context.ParseError;
 import org.petitparser.context.Result;
-import org.petitparser.context.Token;
 import org.petitparser.parser.Parser;
 import massbank.Record;
 import massbank.RecordParser;
@@ -22,8 +17,9 @@ public class Validator2 {
 			"COPYRIGHT: Chandler, C., Habig, J. and McDougal O. Boise State University\n" +
 			"PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]\n" +
 			"COMMENT: Data obtained from a veratramine standard purchased from Logan Natural Products, Logan, Utah USA.\n" +
+			"COMMENT: Data obtained from a veratramine standard purchased from Logan Natural Products, Logan, Utah USA.\n" +
 			"CH$NAME: Veratramine\n" + 
-			"CH$NAME: (3beta,23R)-14,15,16,17-Tetradehydroveratraman-3,23-diol\n" +
+			"CH$NAME: {(3beta,23R)-14,15,16,17-Tetradehydroveratraman-3,23-diol\n" +
 			"CH$COMPOUND_CLASS: Natural Product; Alkaloid\n" + 
 			"CH$FORMULA: C27H39NO2\n" +
 			"CH$EXACT_MASS: 409.29807\n" +
@@ -176,7 +172,8 @@ public class Validator2 {
 		}
 		if (arguments.length==0)
 		{
-			System.out.println(res.get().toString());
+			//System.out.println(res.get().toString());
+			System.out.println(record.toString());
 		}
 	}
 }

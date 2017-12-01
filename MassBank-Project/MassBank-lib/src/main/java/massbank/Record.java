@@ -9,8 +9,10 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import net.sf.jniinchi.INCHI_RET;
 
@@ -93,9 +95,9 @@ public class Record {
 	}
 	
 	public String CH_FORMULA() {
-		return (String) data.get("CH_FORMULA");
+		return MolecularFormulaManipulator.getString((IMolecularFormula) data.get("CH_FORMULA"));
 	}
-	public void CH_FORMULA(String value) {
+	public void CH_FORMULA(IMolecularFormula value) {
 		data.put("CH_FORMULA", value);
 	}
 	

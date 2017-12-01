@@ -13,8 +13,10 @@ import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.petitparser.context.Token;
 import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
@@ -33,22 +35,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 	public RecordParserDefinition(Record callback) {
 		def("start",
 				ref("accession")
-				.seq(ref("record_title")));/*
-				.seq(ref("date_value"))
-				.seq(ref("authors_value"))
-				.seq(ref("license_value"))
-				.seq(ref("copyright_value").optional())
-				.seq(ref("publication_value").optional())
-				.seq(ref("comment_value").optional())
-				.seq(ref("ch_name_value"))
-				.seq(ref("ch_compound_class_value"))
-				.seq(ref("ch_formula_value"))
-				.seq(ref("ch_exact_mass_value"))
-				.seq(ref("ch_smiles_value"))
-				.seq(ref("ch_iupac_value"))
-				.seq(ref("ch_link_value").optional())
-				.seq(ref("sp_scientific_name_value").optional())
-				.seq(ref("sp_lineage_value").optional())
+				.seq(ref("record_title"))
+				.seq(ref("date"))
+				.seq(ref("authors"))
+				.seq(ref("license"))
+				.seq(ref("copyright").optional())
+				.seq(ref("publication").optional())
+				.seq(ref("comment").optional())
+				.seq(ref("ch_name"))
+				.seq(ref("ch_compound_class"))
+				.seq(ref("ch_formula"))
+				.seq(ref("ch_exact_mass"))
+				.seq(ref("ch_smiles"))
+				.seq(ref("ch_iupac"))
+				.seq(ref("ch_link").optional())
+				.seq(ref("sp_scientific_name").optional())
+				.seq(ref("sp_lineage").optional()));/*
 				.seq(ref("endtag"))
 				.map((List<?> value) -> {
 						value.remove(value.size()-1);
@@ -87,7 +89,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						callback.ACCESSION( (String) value.get(1));
 						//System.out.println(value.toString());
 						return value;						
@@ -125,9 +126,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
-						if (value.get(value.size()-1) == null) value.remove(value.size()-1); 
-						callback.RECORD_TITLE(value.subList(1, value.size()).toString());
+						if (value.get(value.size()-2) == null) {
+							callback.RECORD_TITLE(value.subList(1, value.size()-2).toString());
+						}
+						else {
+							callback.RECORD_TITLE(value.subList(1, value.size()-1).toString());
+						}
 						//System.out.println(value.toString());
 						return value;						
 					})
@@ -151,8 +155,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					return LocalDate.of(value.get(0),value.get(1),value.get(2));		
 				})
 			);
-		
-		def("date_value",
+		def("date",
 				StringParser.of("DATE")
     			.seq(ref("tagsep")).pick(0)
     			.seq(
@@ -167,8 +170,6 @@ public class RecordParserDefinition extends GrammarDefinition {
     				)
     			.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-					value.remove(value.size()-1);
-					if (value.get(value.size()-1) == null) value.remove(value.size()-1); 
 					callback.DATE((LocalDate) value.get(1));
 					//System.out.println(value.toString());
 					return value;						
@@ -180,7 +181,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// AUTHORS: Akimoto N, Grad Sch Pharm Sci, Kyoto Univ and Maoka T, Res Inst Prod Dev.
 		// Only single-byte characters are allowed.  For example, ö is not allowed.
-		def("authors_value",
+		def("authors",
 				StringParser.of("AUTHORS")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -188,7 +189,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						callback.AUTHORS((String) value.get(1));
 						//System.out.println(value.toString());
 						return value;
@@ -200,7 +200,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// LICENSE: CC BY
 		// TODO fix format doc
-		def("license_value",
+		def("license",
 				StringParser.of("LICENSE")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -208,7 +208,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						callback.LICENSE((String) value.get(1));
 						//System.out.println(value.toString());
 						return value;
@@ -219,7 +218,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Copyright of MassBank Record. Optional
 		// Example
 		// COPYRIGHT: Keio University
-		def("copyright_value",
+		def("copyright",
 				StringParser.of("COPYRIGHT")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -227,7 +226,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						callback.COPYRIGHT((String) value.get(1));
 						//System.out.println(value.toString());
 						return value;
@@ -239,7 +237,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]
 		// Citation with PubMed ID is recommended.
-		def("publication_value",
+		def("publication",
 				StringParser.of("PUBLICATION")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -247,7 +245,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						callback.PUBLICATION((String) value.get(1));
 						//System.out.println(value.toString());
 						return value;
@@ -275,12 +272,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example 5
 		// COMMENT: Profile spectrum of this record is given as a JPEG file.
 		// COMMENT: [Profile] CA000185.jpg
-		def("comment_value",
+		def("comment",
 				StringParser.of("COMMENT")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten().trim(CharacterParser.none(), Token.NEWLINE_PARSER)
-					).plus()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+					)
+				.seq(Token.NEWLINE_PARSER)
+				.plus()
 				.map((List<?> value) -> {
 						List<String> comments = new ArrayList<String>();
 						for (int i = 0; i < value.size(); i++) {
@@ -289,9 +288,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 							comments.add(tmp.get(1));
 						}
 						callback.COMMENT(comments);
-						//System.out.println(comments.toString());
+						//System.out.println(value);
 						return value;
-						
 					})
 			);
 		
@@ -306,15 +304,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
 		def("ch_name_value",
-				CharacterParser.word().or(CharacterParser.anyOf("-+, ()/'"))
+				CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:'"))
 						.plusLazy(Token.NEWLINE_PARSER.or(CharacterParser.of(';')))
 						.flatten()
 			);
-				
 		def("ch_name", 
 				StringParser.of("CH$NAME")
 				.seq(ref("tagsep")).pick(0)
 				.seq(ref("ch_name_value"))
+				.seq(Token.NEWLINE_PARSER)
 				.plus()
 				.map((List<?> value) -> {
 					List<String> ch_name = new ArrayList<String>();
@@ -324,7 +322,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 						ch_name.add(tmp.get(1));
 					}
 					callback.CH_NAME(ch_name);
-					//System.out.println(ch_name.toString());
+					//System.out.println(value);
 					return value;						
 				})
 			);
@@ -335,7 +333,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$COMPOUND_CLASS: Natural Product; Carotenoid; Terpenoid; Lipid
 		// Either Natural Product or Non-Natural Product should be precedes the other class names .
-		def("ch_compound_class_value",
+		def("ch_compound_class",
 				StringParser.of("CH$COMPOUND_CLASS")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -343,7 +341,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-					value.remove(value.size()-1);
 					callback.CH_COMPOUND_CLASS((String) value.get(1));
 					//System.out.println(value.toString());
 					return value;
@@ -357,7 +354,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// It follows the Hill's System.
 		// No prosthetic molecule is included (see 2.2.1 CH$NAME).
 		// Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in the MS$FOCUSED_ION: DERIVATIVE_FORM (2.5.1) field.
-		def("ch_formula_value",
+		def("ch_formula",
 				StringParser.of("CH$FORMULA")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -365,8 +362,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
-						callback.CH_FORMULA((String) value.get(1));
+						IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula((String) value.get(1), DefaultChemObjectBuilder.getInstance());
+						callback.CH_FORMULA(m);
 						//System.out.println(value.toString());
 						return value;
 					})
@@ -378,7 +375,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$EXACT_MASS: 430.38108
 		// A value with 5 digits after the decimal point is recommended.
-		def("ch_exact_mass_value",
+		def("ch_exact_mass",
 				StringParser.of("CH$EXACT_MASS")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -390,9 +387,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
-						//System.out.println(value.toString());
 						callback.CH_EXACT_MASS((Double) value.get(1));
+						//System.out.println(value.toString());
 						return value;
 					})
 			);
@@ -402,7 +398,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$SMILES: NCC(O)=O
 		// Isomeric SMILES but not a canonical one.
-		def("ch_smiles_value",
+		def("ch_smiles",
 				StringParser.of("CH$SMILES")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -410,7 +406,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						try {
 						     SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
 						     IAtomContainer m = sp.parseSmiles((String) value.get(1));
@@ -428,7 +423,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$IUPAC: InChI=1S/C2H5NO2/c3-1-2(4)5/h1,3H2,(H,4,5)
 		// Not IUPAC name.
-		def("ch_iupac_value",
+		def("ch_iupac",
 				StringParser.of("CH$IUPAC")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -436,12 +431,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						try {
-							InChIGeneratorFactory factory = InChIGeneratorFactory.getInstance();
 							// Get InChIToStructure
-							InChIToStructure intostruct = factory.getInChIToStructure((String) value.get(1), DefaultChemObjectBuilder.getInstance());
-
+							InChIToStructure intostruct = InChIGeneratorFactory.getInstance()
+									.getInChIToStructure((String) value.get(1), DefaultChemObjectBuilder.getInstance());
 							INCHI_RET ret = intostruct.getReturnStatus();
 							if (ret == INCHI_RET.WARNING) {
 								// Structure generated, but with warning message
@@ -456,7 +449,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 						} catch (CDKException e) {
 							throw new IllegalStateException("Can not parse INCHI string in \"CH$IUPAC\" field.", e);
 						}
-						
 						//System.out.println(value.toString());
 						return value;
 					})
@@ -488,7 +480,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// PUBCHEM
 		// CH$LINK fields should be arranged by the alphabetical order of database names.
 		// InChI Key, a hashed version of InChI code, is a common link by chemical structures.
-		def("ch_link_value",
+		def("ch_link",
 				StringParser.of("CH$LINK")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -512,7 +504,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Scientific Name of Biological Species, from Which Sample was Prepared.  Optional
 		// Example
 		// SP$SCIENTIFIC_NAME: Mus musculus
-		def("sp_scientific_name_value",
+		def("sp_scientific_name",
 				StringParser.of("SP$SCIENTIFIC_NAME")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -520,14 +512,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						callback.SP_SCIENTIFIC_NAME((String) value.get(1));
 						//System.out.println(value.toString());
 						return value;
 					})
 		);
 		
-		def("sp_lineage_value",
+		def("sp_lineage",
 				StringParser.of("SP$LINEAGE")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
@@ -535,7 +526,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						value.remove(value.size()-1);
 						callback.SP_LINEAGE((String) value.get(1));
 						//System.out.println(value.toString());
 						return value;
