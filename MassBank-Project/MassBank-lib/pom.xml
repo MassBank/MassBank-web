@@ -116,11 +116,6 @@
 			<artifactId>octarine-core</artifactId>
 			<version>0.17</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.jni-inchi</groupId>
-			<artifactId>jni-inchi</artifactId>
-			<version>0.7</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -149,11 +144,6 @@
 		</plugins>
 	</build>
 	<repositories>
-		<repository>
-			<id>jni-inchi</id>
-			<name>JNI-InChI Maven Repository</name>
-			<url>http://jni-inchi.sourceforge.net/m2repo</url>
-		</repository>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
