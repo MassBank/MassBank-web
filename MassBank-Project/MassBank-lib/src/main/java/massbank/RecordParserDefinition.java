@@ -253,7 +253,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 		
 		// 2.1.8 COMMENT
 		// Comments.   Optional and Iterative 
-		// In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments specific to the following five examples.
+		// In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank
+		// records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments
+		// specific to the following five examples.
 		// Example 1
 		// COMMENT: This record is a MS3 spectrum. Link to the MS2 spectrum is added in the following comment field.
 		// COMMENT: [MS2] KO008089
@@ -300,7 +302,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$NAME: D-Tartaric acid
 		// CH$NAME: (2S,3S)-Tartaric acid
-		// No prosthetic molecule of adducts (HCl, H2SO3, H2O, etc), conjugate ions (Chloride, etc) , and protecting groups (TMS, etc.) is included.
+		// No prosthetic molecule of adducts (HCl, H2SO3, H2O, etc), conjugate ions (Chloride, etc) , and 
+		// protecting groups (TMS, etc.) is included.
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
 		def("ch_name_value",
@@ -431,7 +434,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						try {
+						/*try {
 							// Get InChIToStructure
 							InChIToStructure intostruct = InChIGeneratorFactory.getInstance()
 									.getInChIToStructure((String) value.get(1), DefaultChemObjectBuilder.getInstance());
@@ -449,7 +452,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 						} catch (CDKException e) {
 							throw new IllegalStateException("Can not parse INCHI string in \"CH$IUPAC\" field.", e);
 						}
-						//System.out.println(value.toString());
+						//System.out.println(value.toString());*/
 						return value;
 					})
 			);
