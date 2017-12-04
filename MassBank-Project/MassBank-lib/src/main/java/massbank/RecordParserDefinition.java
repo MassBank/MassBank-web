@@ -434,7 +434,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						/*try {
+						try {
 							// Get InChIToStructure
 							InChIToStructure intostruct = InChIGeneratorFactory.getInstance()
 									.getInChIToStructure((String) value.get(1), DefaultChemObjectBuilder.getInstance());
@@ -452,7 +452,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 						} catch (CDKException e) {
 							throw new IllegalStateException("Can not parse INCHI string in \"CH$IUPAC\" field.", e);
 						}
-						//System.out.println(value.toString());*/
+						//System.out.println(value.toString());
 						return value;
 					})
 			);
