@@ -579,7 +579,7 @@ LC-ESI-ITFT
 ```
 Cross-reference to mzOntology: Ionization methods [MS:1000008]; APCI [MS:1000070]; APPI [MS:1000382]; EI [MS:1000389]; ESI [MS:1000073]; B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
 
-#### <a name="2.4.3"></a>2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE *
+#### <a name="2.4.3"></a>2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE
 Data Type. Mandatory
 
 Example: `AC$MASS_SPECTROMETRY: MS_TYPE MS2`
@@ -591,7 +591,7 @@ Brief definition of terms used in `MS_TYPE`:
 * `MS2` is the precursor ion spectrum of `MS3`
 * [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
 
-#### <a name="2.4.4"></a>2.4.4 AC$MASS_SPECTROMETRY: ION_MODE *
+#### <a name="2.4.4"></a>2.4.4 AC$MASS_SPECTROMETRY: ION_MODE
 Polarity of Ion Detection. Mandatory
 
 Example: `AC$MASS_SPECTROMETRY: ION_MODE POSITIVE`
