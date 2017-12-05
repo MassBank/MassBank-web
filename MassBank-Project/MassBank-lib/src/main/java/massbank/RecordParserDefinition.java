@@ -2,6 +2,7 @@ package massbank;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.time.LocalDate;
 
 import static org.petitparser.parser.primitive.CharacterParser.digit;
@@ -17,6 +18,8 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
+import org.petitparser.context.Context;
+import org.petitparser.context.Result;
 import org.petitparser.context.Token;
 import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
@@ -26,12 +29,7 @@ import net.sf.jniinchi.INCHI_RET;
 
 
 public class RecordParserDefinition extends GrammarDefinition {
-	
-	public Double tuwas(String value) {
-		return Double.parseDouble(value);
-	}
-	
-	
+
 	public RecordParserDefinition(Record callback) {
 		def("start",
 				ref("accession")
@@ -406,19 +404,27 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(ref("tagsep")).pick(0)
 				.seq(
 						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						// call a Continuation Parser to validate content of SMILES string
+						.callCC((Function<Context, Result> continuation, Context context) -> {
+							Result r = continuation.apply(context);
+							if (r.isSuccess()) {
+								try {
+									SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
+									IAtomContainer m = sp.parseSmiles((String) r.get());
+									r = r.success(m);
+								} catch (InvalidSmilesException e) { 
+									return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.");		 				
+								}		 			
+							}
+							return r; 
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
 				.map((List<?> value) -> {
-						try {
-						     SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
-						     IAtomContainer m = sp.parseSmiles((String) value.get(1));
-						     callback.CH_SMILES(m);
-						 } catch (InvalidSmilesException e) {
-							 throw new IllegalStateException("Can not parse SMILES string in \"CH$SMILES\" field.", e);
-						 }
-						//System.out.println(value.toString());
-						return value;
-					})
+					callback.CH_SMILES((IAtomContainer) value.get(1));
+					//System.out.println(value.toString());
+					return value;
+				})
 			);
 
 		// 2.2.6 CH$IUPAC *
