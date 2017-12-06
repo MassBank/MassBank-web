@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
 
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
@@ -78,19 +79,19 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Prefix two or three alphabetical capital characters.
 		def("accession", 
 				StringParser.of("ACCESSION")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				// parse accession and put it in the record
 				.seq(
 						letter().times(2).seq(digit().times(6))
 						.or(letter().times(3).seq(digit().times(5)))
 						.flatten()
+						.map((String value) -> {
+							//System.out.println(value);
+							callback.ACCESSION(value);
+							return value;
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						callback.ACCESSION( (String) value.get(1));
-						//System.out.println(value.toString());
-						return value;						
-					})
 			);
 		
 		// 2.1.2 RECORD_TITLE (CH$NAME ; AC$INSTRUMENT_TYPE ; AC$MASS_SPECTROMETRY: MS_TYPE)
@@ -141,7 +142,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// DATE: 2011.02.21 (Created 2007.07.07)
 		// DATE: 2016.01.15
 		// DATE: 2016.01.19 (Created 2006.12.21, modified 2011.05.06)
-		def("date_helper",
+		def("date_value",
 				CharacterParser.digit().times(4).flatten().trim(CharacterParser.of('.')).map((String value) -> Integer.parseInt(value))
 				.seq(
 						CharacterParser.digit().times(2).flatten().trim(CharacterParser.of('.')).map((String value) -> Integer.parseInt(value))
@@ -157,13 +158,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 				StringParser.of("DATE")
     			.seq(ref("tagsep")).pick(0)
     			.seq(
-    					ref("date_helper")
+    					ref("date_value")
     				)
     			.seq(
-    					ref("date_helper").trim(StringParser.of(" (Created "),StringParser.of(", modified "))
-    						.seq(ref("date_helper").trim(CharacterParser.none(), CharacterParser.of(')')))
+    					ref("date_value").trim(StringParser.of(" (Created "),StringParser.of(", modified "))
+    						.seq(ref("date_value").trim(CharacterParser.none(), CharacterParser.of(')')))
  						.or(
- 								ref("date_helper").trim(StringParser.of(" (Created "),CharacterParser.of(')'))
+ 								ref("date_value").trim(StringParser.of(" (Created "),CharacterParser.of(')'))
     						).optional()
     				)
     			.seq(Token.NEWLINE_PARSER)
@@ -181,16 +182,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Only single-byte characters are allowed.  For example, ö is not allowed.
 		def("authors",
 				StringParser.of("AUTHORS")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
+						.map((String value) -> {
+							//System.out.println(value);
+							callback.AUTHORS(value);
+							return value;
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						callback.AUTHORS((String) value.get(1));
-						//System.out.println(value.toString());
-						return value;
-					})
 			);
 		
 		// 2.1.5 LICENSE
@@ -200,16 +202,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// TODO fix format doc
 		def("license",
 				StringParser.of("LICENSE")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
+						.map((String value) -> {
+							//System.out.println(value);
+							callback.LICENSE(value);
+							return value;
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						callback.LICENSE((String) value.get(1));
-						//System.out.println(value.toString());
-						return value;
-					})
 		);
 			
 		// 2.1.6 COPYRIGHT
@@ -218,16 +221,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// COPYRIGHT: Keio University
 		def("copyright",
 				StringParser.of("COPYRIGHT")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
+						.map((String value) -> {
+							//System.out.println(value);
+							callback.COPYRIGHT(value);
+							return value;
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						callback.COPYRIGHT((String) value.get(1));
-						//System.out.println(value.toString());
-						return value;
-					})
 		);
 		
 		// 2.1.7 PUBLICATION
@@ -237,16 +241,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Citation with PubMed ID is recommended.
 		def("publication",
 				StringParser.of("PUBLICATION")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
+						.map((String value) -> {
+							//System.out.println(value);
+							callback.PUBLICATION(value);
+							return value;
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						callback.PUBLICATION((String) value.get(1));
-						//System.out.println(value.toString());
-						return value;
-					})
 			);
 		
 		// 2.1.8 COMMENT
@@ -336,16 +341,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Either Natural Product or Non-Natural Product should be precedes the other class names .
 		def("ch_compound_class",
 				StringParser.of("CH$COMPOUND_CLASS")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
+						.map((String value) -> {
+							//System.out.println(value);
+							callback.CH_COMPOUND_CLASS(value);
+							return value;
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-					callback.CH_COMPOUND_CLASS((String) value.get(1));
-					//System.out.println(value.toString());
-					return value;
-				})
 			);
 		
 		// 2.2.3 CH$FORMULA
@@ -359,15 +365,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 				StringParser.of("CH$FORMULA")
 				.seq(ref("tagsep")).pick(0)
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
+						.map((String value) -> {
+							IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula((String) value, DefaultChemObjectBuilder.getInstance());
+							callback.CH_FORMULA(m);
+							return value;
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula((String) value.get(1), DefaultChemObjectBuilder.getInstance());
-						callback.CH_FORMULA(m);
-						//System.out.println(value.toString());
-						return value;
-					})
 			);
 		
 		
@@ -378,22 +384,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// A value with 5 digits after the decimal point is recommended.
 		def("ch_exact_mass",
 				StringParser.of("CH$EXACT_MASS")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
 						digit().plus()
 				        .seq(
 				        	CharacterParser.of('.')
 				        	.seq(digit().plus()).optional()
-				        	).flatten().map((String value) -> Double.parseDouble(value))
+				        	)
+				        .flatten()
+				        .map((String value) -> {
+				        		Double d = Double.parseDouble(value);
+				        		callback.CH_EXACT_MASS(d);
+				        		return value;
+				        	})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						callback.CH_EXACT_MASS((Double) value.get(1));
-						//System.out.println(value.toString());
-						return value;
-					})
 			);
 		
+		// TODO handle empty SMILES better
 		// 2.2.5 CH$SMILES *
 		// SMILES String. Mandatory
 		// Example
@@ -401,17 +409,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Isomeric SMILES but not a canonical one.
 		def("ch_smiles",
 				StringParser.of("CH$SMILES")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
 						// call a Continuation Parser to validate content of SMILES string
 						.callCC((Function<Context, Result> continuation, Context context) -> {
 							Result r = continuation.apply(context);
 							if (r.isSuccess()) {
 								try {
-									SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
-									IAtomContainer m = sp.parseSmiles((String) r.get());
-									r = r.success(m);
+									if (r.get().equals("N/A")) callback.CH_SMILES(new AtomContainer());
+									else callback.CH_SMILES(new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(r.get()));
 								} catch (InvalidSmilesException e) { 
 									return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.");		 				
 								}		 			
@@ -420,13 +428,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-					callback.CH_SMILES((IAtomContainer) value.get(1));
-					//System.out.println(value.toString());
-					return value;
-				})
 			);
 
+		// TODO handle empty InChi better
 		// 2.2.6 CH$IUPAC *
 		// IUPAC International Chemical Identifier (InChI Code). Mandatory
 		// Example
@@ -434,33 +438,39 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Not IUPAC name.
 		def("ch_iupac",
 				StringParser.of("CH$IUPAC")
-				.seq(ref("tagsep")).pick(0)
+				.seq(ref("tagsep"))
 				.seq(
-						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
+						CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+						.flatten()
+						// call a Continuation Parser to validate content of InChi string
+						.callCC((Function<Context, Result> continuation, Context context) -> {
+							Result r = continuation.apply(context);
+							if (r.isSuccess()) {
+								try {
+									if (r.get().equals("N/A")) callback.CH_IUPAC(new AtomContainer());
+									else {
+										// Get InChIToStructure
+										InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), DefaultChemObjectBuilder.getInstance());
+										INCHI_RET ret = intostruct.getReturnStatus();
+										if (ret == INCHI_RET.WARNING) {
+											// Structure generated, but with warning message
+											System.out.println("InChI warning: " + intostruct.getMessage());
+										} 
+										else if (ret != INCHI_RET.OKAY) {
+											// Structure generation failed
+											return r=context.failure("Can not parse INCHI string in \\\"CH$SMILES\\\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "]");
+										}
+										IAtomContainer m = intostruct.getAtomContainer();
+										callback.CH_IUPAC(m);
+									}
+								} catch (CDKException e) { 
+									return r=context.failure("Can not parse INCHI string in \"CH$SMILES\" field.");		 				
+								}		 			
+							}
+							return r; 
+						})
 					)
 				.seq(Token.NEWLINE_PARSER)
-				.map((List<?> value) -> {
-						try {
-							// Get InChIToStructure
-							InChIToStructure intostruct = InChIGeneratorFactory.getInstance()
-									.getInChIToStructure((String) value.get(1), DefaultChemObjectBuilder.getInstance());
-							INCHI_RET ret = intostruct.getReturnStatus();
-							if (ret == INCHI_RET.WARNING) {
-								// Structure generated, but with warning message
-								System.out.println("InChI warning: " + intostruct.getMessage());
-							} 
-							else if (ret != INCHI_RET.OKAY) {
-								// Structure generation failed
-								throw new IllegalStateException("Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "]");
-							}
-							IAtomContainer m = intostruct.getAtomContainer();
-							callback.CH_IUPAC(m);
-						} catch (CDKException e) {
-							throw new IllegalStateException("Can not parse INCHI string in \"CH$IUPAC\" field.", e);
-						}
-						//System.out.println(value.toString());
-						return value;
-					})
 			);
 
 		// TODO no record implements CH$CDK_DEPICT

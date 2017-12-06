@@ -109,6 +109,7 @@ public class Record {
 	}
 	
 	public String CH_SMILES() throws CDKException {
+		if (((IAtomContainer) data.get("CH_SMILES")).isEmpty()) return "N/A";
 		SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Isomeric);
 		return smigen.create((IAtomContainer) data.get("CH_SMILES"));
 	}
@@ -117,6 +118,7 @@ public class Record {
 	}
 	
 	public String CH_IUPAC() throws CDKException {
+		if (((IAtomContainer) data.get("CH_IUPAC")).isEmpty()) return "N/A";
 		InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator((IAtomContainer) data.get("CH_IUPAC"));
 		INCHI_RET ret = gen.getReturnStatus();
 		if (ret == INCHI_RET.WARNING) {
