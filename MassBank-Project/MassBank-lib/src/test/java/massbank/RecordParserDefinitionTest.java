@@ -24,8 +24,8 @@ public class RecordParserDefinitionTest {
 	
 	@Test
 	public void testaccession() {
-		assertEquals("[ACCESSION, AAA00001, \n]", validate("ACCESSION: AAA00001\n", "accession").toString());
-		assertEquals("[ACCESSION, AA100001, \n]", validate("ACCESSION: AA100001\n", "accession").toString());
+		assertEquals("[ACCESSION, : , AAA00001, \n]", validate("ACCESSION: AAA00001\n", "accession").toString());
+		assertEquals("[ACCESSION, : , AA100001, \n]", validate("ACCESSION: AA100001\n", "accession").toString());
 		try { validate("ACCESSION: AAAA0001\n", "accession"); }
 		catch (ParseError pe) {  assertEquals("digit expected", pe.getMessage()); }
 		try { validate("ACCESSION: A0000001\n", "accession"); }
