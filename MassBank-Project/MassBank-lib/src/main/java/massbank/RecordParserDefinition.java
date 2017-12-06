@@ -47,7 +47,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("sp_scientific_name").optional())
 			.seq(ref("sp_lineage").optional())
 			.seq(ref("sp_link").optional())
-			.seq(ref("sp_sample").optional()));/*
+			.seq(ref("sp_sample").optional())
+			.seq(ref("ac_instrument"))
+				);/*
 			.seq(ref("endtag"))
 			.map((List<?> value) -> {
 				value.remove(value.size()-1);
@@ -649,6 +651,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 //			})
 		);
 
+		// TODO in spec file marged as unique. check!
 		// 2.3.2 SP$LINK subtag identifier
 		// Identifier of Biological Species in External Databases.  Optional
 		// Example
@@ -674,7 +677,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		
 
 		// 2.3.3 SP$SAMPLE
-		// Tissue or Cell, from which Sample was Prepared.   Optional and iterative
+		// Tissue or Cell, from which Sample was Prepared. Optional and iterative
 		// Example
 		// SP$SAMPLE: Liver extracts
 		def("sp_sample",
@@ -697,6 +700,30 @@ public class RecordParserDefinition extends GrammarDefinition {
 		
 		
 		
+		
+		// 2.4.1 AC$INSTRUMENT
+		// Commercial Name and Model of (Chromatographic Separation Instrument,
+		// if any were coupled, and) Mass Spectrometer and Manufacturer. Mandatory
+		// Example: AC$INSTRUMENT: LC-10ADVPmicro HPLC, Shimadzu; LTQ Orbitrap, Thermo Electron.
+		// Cross-reference to mzOntology: Instrument model [MS:1000031] All the instruments
+		// are given together in a single line. This record is not iterative.
+		def("ac_instrument",
+			StringParser.of("AC$INSTRUMENT")
+			.seq(ref("tagsep"))
+			.seq(
+				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+				.flatten()
+				.map((String value) -> {
+					callback.AC_INSTRUMENT(value);
+					return value;
+				})
+			)
+			.seq(Token.NEWLINE_PARSER)
+			.map((List<?> value) -> {
+				System.out.println(value.toString());
+				return value;						
+			})
+		);
 		
 		
 		

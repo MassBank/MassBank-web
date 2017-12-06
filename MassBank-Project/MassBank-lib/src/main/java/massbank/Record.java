@@ -173,6 +173,13 @@ public class Record {
 		data.put("SP_SAMPLE", value);
 	}
 	
+	public String AC_INSTRUMENT() {
+		return (String) data.get("AC_INSTRUMENT");
+	}
+	public void AC_INSTRUMENT(String value) {
+		data.put("AC_INSTRUMENT", value);
+	}
+	
 	public String toString() {
 		StringBuilder sb	= new StringBuilder();
 		
@@ -217,6 +224,7 @@ public class Record {
 				sb.append("SP$LINK: " + link + "\n");
 		}
 		if (SP_SAMPLE() != null) sb.append("SP$SAMPLE: " + SP_SAMPLE() + "\n");
+		sb.append("AC$INSTRUMENT: " + AC_INSTRUMENT() + "\n");
 
 
 		/*
