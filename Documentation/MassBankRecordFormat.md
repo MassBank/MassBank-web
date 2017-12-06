@@ -176,7 +176,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>External database name with identifier</td>
-    <td><a href="#2.2.7">2.2.7</a></td>
+    <td><a href="#2.2.8">2.2.8</a></td>
     <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
@@ -206,7 +206,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>External database name with identifier</td>
-    <td><a href="#2.2.2">2.3.2</a></td>
+    <td><a href="#2.3.2">2.3.2</a></td>
     <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
@@ -534,7 +534,7 @@ PUBCHEM
 CH$LINK fields should be arranged by the alphabetical order of database names.
 InChI Key, a hashed version of InChI code, is a common link by chemical structures.
 
-###2.3 Information of Biological Sample
+### 2.3 Information of Biological Sample
 #### <a name="2.3.1"></a>2.3.1 SP$SCIENTIFIC_NAME
 Scientific Name of Biological Species, from Which Sample was Prepared. Optional
 
