@@ -534,7 +534,7 @@ PUBCHEM
 CH$LINK fields should be arranged by the alphabetical order of database names.
 InChI Key, a hashed version of InChI code, is a common link by chemical structures.
 
-###2.3 Information of Biological Sample
+### 2.3 Information of Biological Sample
 #### <a name="2.3.1"></a>2.3.1 SP$SCIENTIFIC_NAME
 Scientific Name of Biological Species, from Which Sample was Prepared. Optional
 
