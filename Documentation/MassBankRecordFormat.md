@@ -176,7 +176,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>External database name with identifier</td>
-    <td><a href="#2.2.7">2.2.7</a></td>
+    <td><a href="#2.2.8">2.2.8</a></td>
     <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
@@ -206,7 +206,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>U</td>
     <td>S</td>
     <td>External database name with identifier</td>
-    <td><a href="#2.2.2">2.3.2</a></td>
+    <td><a href="#2.3.2">2.3.2</a></td>
     <td><a href="#Note 1">Note 1</a></td>
   </tr>
   <tr>
