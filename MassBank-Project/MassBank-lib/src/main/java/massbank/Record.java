@@ -158,6 +158,21 @@ public class Record {
 		data.put("SP_LINEAGE", value);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<String> SP_LINK() {
+		return (List<String>) data.get("SP_LINK");
+	}
+	public void SP_LINK(List<String> value) {
+		data.put("SP_LINK", value);
+	}
+	
+	public String SP_SAMPLE() {
+		return (String) data.get("SP_SAMPLE");
+	}
+	public void SP_SAMPLE(String value) {
+		data.put("SP_SAMPLE", value);
+	}
+	
 	public String toString() {
 		StringBuilder sb	= new StringBuilder();
 		
@@ -197,11 +212,14 @@ public class Record {
 		}
 		if (SP_SCIENTIFIC_NAME() != null) sb.append("SP$SCIENTIFIC_NAME: " + SP_SCIENTIFIC_NAME() + "\n");
 		if (SP_LINEAGE() != null) sb.append("SP$LINEAGE: " + SP_LINEAGE() + "\n");
+		if (SP_LINK() != null) {
+			for(String link : SP_LINK())
+				sb.append("SP$LINK: " + link + "\n");
+		}
+		if (SP_SAMPLE() != null) sb.append("SP$SAMPLE: " + SP_SAMPLE() + "\n");
 
 
 		/*
-		for(int idx = 0; idx < this.CH$LINK_ID.length; idx++)
-			sb.append("CH$LINK: " + CH$LINK_NAME[idx] + " " + CH$LINK_ID[idx] + "\n");
 		sb.append("AC$INSTRUMENT: " + this.AC$INSTRUMENT + "\n");
 		sb.append("AC$INSTRUMENT_TYPE: " + this.AC$INSTRUMENT_TYPE + "\n");
 		for(String AC$MASS_SPECTROMETRY : this.AC$MASS_SPECTROMETRY)
