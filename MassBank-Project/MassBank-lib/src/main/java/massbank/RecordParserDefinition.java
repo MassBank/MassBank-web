@@ -325,7 +325,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
 		def("ch_name_value",
-			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:'"))
+			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'"))
 			.plusLazy(Token.NEWLINE_PARSER.or(CharacterParser.of(';')))
 			.flatten()
 		);
