@@ -681,25 +681,25 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// SP$SAMPLE: Liver extracts
 		def("sp_sample",
-				StringParser.of("SP$SAMPLE")
-				.seq(ref("tagsep"))
-				.seq(
-					CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
-					.flatten()
-			        .map((String value) -> {
-			       		callback.SP_SAMPLE(value);
-			       		return value;
-			       	})
-				)
-				.seq(Token.NEWLINE_PARSER)
-//				.map((List<?> value) -> {
-//					System.out.println(value.toString());
-//					return value;						
-//				})
-			);		
-		
-		
-		
+			StringParser.of("SP$SAMPLE")
+			.seq(ref("tagsep"))
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+			.flatten())
+			.seq(Token.NEWLINE_PARSER)
+			.plus()
+			.map((List<?> value) -> {
+				List<String> sample = new ArrayList<String>();
+				for (int i = 0; i < value.size(); i++) {
+					@SuppressWarnings("unchecked")
+					List<String> tmp = (List<String>) value.get(i);
+					sample.add(tmp.get(1));
+				}
+				callback.SP_SAMPLE(sample);
+				//System.out.println(value);
+				return value;
+			})
+		);		
+
 		
 		// 2.4.1 AC$INSTRUMENT
 		// Commercial Name and Model of (Chromatographic Separation Instrument,

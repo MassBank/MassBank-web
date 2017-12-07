@@ -166,11 +166,13 @@ public class Record {
 		data.put("SP_LINK", value);
 	}
 	
-	public String SP_SAMPLE() {
-		return (String) data.get("SP_SAMPLE");
+	@SuppressWarnings("unchecked")
+	public List<String> SP_SAMPLE() {
+		return (List<String>) data.get("SP_SAMPLE");
 	}
-	public void SP_SAMPLE(String value) {
+	public void SP_SAMPLE(List<String> value) {
 		data.put("SP_SAMPLE", value);
+		
 	}
 	
 	public String AC_INSTRUMENT() {
@@ -223,7 +225,10 @@ public class Record {
 			for(String link : SP_LINK())
 				sb.append("SP$LINK: " + link + "\n");
 		}
-		if (SP_SAMPLE() != null) sb.append("SP$SAMPLE: " + SP_SAMPLE() + "\n");
+		if (SP_SAMPLE() != null) {
+			for(String sample : SP_SAMPLE())
+				sb.append("SP$SAMPLE: " + sample + "\n");
+		}
 		sb.append("AC$INSTRUMENT: " + AC_INSTRUMENT() + "\n");
 
 
