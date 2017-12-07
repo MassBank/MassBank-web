@@ -212,7 +212,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
   <tr>
     <td>SP$SAMPLE</td>
     <td>O</td>
-    <td>U</td>
+    <td>I</td>
     <td>S</td>
     <td>Information of sample preparation</td>
     <td><a href="#2.3.3">2.3.3</a></td>
