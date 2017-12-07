@@ -237,7 +237,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>Type of instrument</td>
     <td><a href="#2.4.2">2.4.2</a></td>
-    <td><a href="#Note 2">Note 2</a></td>
+    <td></td>
   </tr>
   <tr>
     <td>AC$MASS_SPECTROMETRY: MS_TYPE</td>
@@ -349,7 +349,6 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
   
 * General note. Decimal point should be a period, `.`, but not a comma, `,`.  For example, `m/z 425.7`.  No thousand separator is inserted.
 * <a name="Note 1"></a>Note 1. Within each tag, data fields should be arranged by the alphabetical order of subtag names.
-* <a name="Note 2"></a>Note 2. Data field of AC$INSTRUMENT_TYPE consists of `(separation tool type-)ionization method-ion analyzer type(Ion analyzer type)`.  Examples of the data are `ESI-QTOF`, `ESI-QQ`, `GC-EI-EB`, `LC-ESI-ITTOF`.  
 * <a name="Note 3"></a>Note 3. Data field of AC$MASS_SPECTROMETRY: MS_TYPE is either `MS`, `MS2`, `MS3`, `MS4`, , , , .
 * <a name="Note 4"></a>Note 4. Tag AC$CHROMATOGRAPHY: SOLVENT is iterative.
 
@@ -564,8 +563,7 @@ General Type of Instrument. Mandatory
 
 Example: `AC$INSTRUMENT_TYPE: LC-ESI-QTOF`
 
-Format is
-  `(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)`.
+Format is `(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)`.
 Separation tool types are `CE`, `GC`, `LC`.
 Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`.
 Ion analyzer types are `B`, `E`, `FT`, `IT`, `Q`, `TOF`.
