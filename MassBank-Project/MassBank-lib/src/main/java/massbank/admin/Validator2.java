@@ -36,6 +36,7 @@ public class Validator2 {
 			"SP$LINK: NCBI-TAXONOMY 10090\n" +
 			"SP$SAMPLE: Liver extracts\n" +
 			"AC$INSTRUMENT: Bruker maXis ESI-QTOF\n" +
+			"AC$INSTRUMENT_TYPE: LC-ESI-QTOF\n" +
 			"AC$MASS_SPECTROMETRY: MS_TYPE MS2\n" +
 			"AC$MASS_SPECTROMETRY: ION_MODE POSITIVE\n" +
 			"MS$FOCUSED_ION: PRECURSOR_M/Z 410.3\n" +

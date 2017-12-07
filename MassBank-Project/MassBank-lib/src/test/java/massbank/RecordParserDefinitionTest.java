@@ -40,9 +40,9 @@ public class RecordParserDefinitionTest {
 	
 	@Test
 	public void testdate() {
-		assertEquals("[DATE, 2016-01-19, null, \n]", validate("DATE: 2016.01.19\n", "date").toString());
-		assertEquals("[DATE, 2016-01-19, 2012-12-18, \n]", validate("DATE: 2016.01.19 (Created 2012.12.18)\n", "date").toString());
-		assertEquals("[DATE, 2016-01-19, [2012-12-18, 2013-07-16], \n]", validate("DATE: 2016.01.19 (Created 2012.12.18, modified 2013.07.16)\n", "date").toString());
+		assertEquals("[DATE, : , 2016-01-19, null, \n]", validate("DATE: 2016.01.19\n", "date").toString());
+		assertEquals("[DATE, : , 2016-01-19, 2012-12-18, \n]", validate("DATE: 2016.01.19 (Created 2012.12.18)\n", "date").toString());
+		assertEquals("[DATE, : , 2016-01-19, [2012-12-18, 2013-07-16], \n]", validate("DATE: 2016.01.19 (Created 2012.12.18, modified 2013.07.16)\n", "date").toString());
 	}
 
 }

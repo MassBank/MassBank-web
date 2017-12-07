@@ -49,6 +49,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("sp_link").optional())
 			.seq(ref("sp_sample").optional())
 			.seq(ref("ac_instrument"))
+			.seq(ref("ac_instrument_type"))
+			.seq(ref("ac_mass_spectrometry_ms_type"))
 				);/*
 			.seq(ref("endtag"))
 			.map((List<?> value) -> {
@@ -161,7 +163,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		);
 		def("date",
 			StringParser.of("DATE")
-   			.seq(ref("tagsep")).pick(0)
+   			.seq(ref("tagsep"))
    			.seq(ref("date_value"))
     		.seq(
     			ref("date_value")
@@ -172,7 +174,7 @@ public class RecordParserDefinition extends GrammarDefinition {
     		)
     		.seq(Token.NEWLINE_PARSER)
 			.map((List<?> value) -> {
-				callback.DATE((LocalDate) value.get(1));
+				callback.DATE((LocalDate) value.get(2));
 				//System.out.println(value.toString());
 				return value;						
 			})
@@ -294,7 +296,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// COMMENT: [Profile] CA000185.jpg
 		def("comment",
 			StringParser.of("COMMENT")
-			.seq(ref("tagsep")).pick(0)
+			.seq(ref("tagsep"))
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
@@ -303,7 +305,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				for (int i = 0; i < value.size(); i++) {
 					@SuppressWarnings("unchecked")
 					List<String> tmp = (List<String>) value.get(i);
-					comments.add(tmp.get(1));
+					comments.add(tmp.get(2));
 				}
 				callback.COMMENT(comments);
 				//System.out.println(value);
@@ -329,7 +331,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		);
 		def("ch_name", 
 			StringParser.of("CH$NAME")
-			.seq(ref("tagsep")).pick(0)
+			.seq(ref("tagsep"))
 			.seq(ref("ch_name_value"))
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
@@ -338,7 +340,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				for (int i = 0; i < value.size(); i++) {
 					@SuppressWarnings("unchecked")
 					List<String> tmp = (List<String>) value.get(i);
-					ch_name.add(tmp.get(1));
+					ch_name.add(tmp.get(2));
 				}
 				callback.CH_NAME(ch_name);
 				//System.out.println(value);
@@ -692,7 +694,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				for (int i = 0; i < value.size(); i++) {
 					@SuppressWarnings("unchecked")
 					List<String> tmp = (List<String>) value.get(i);
-					sample.add(tmp.get(1));
+					sample.add(tmp.get(2));
 				}
 				callback.SP_SAMPLE(sample);
 				//System.out.println(value);
@@ -719,20 +721,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 				})
 			)
 			.seq(Token.NEWLINE_PARSER)
-			.map((List<?> value) -> {
-				System.out.println(value.toString());
-				return value;						
-			})
+//			.map((List<?> value) -> {
+//				System.out.println(value.toString());
+//				return value;						
+//			})
 		);
 		
-		
-		
-		
-		
-		
-		
 		// 2.4.2 AC$INSTRUMENT_TYPE
-		// General Type of Instrument.  Mandatory
+		// General Type of Instrument. Mandatory
 		// Example
 		// AC$INSTRUMENT_TYPE: LC-ESI-QTOF
 		// Format is:
@@ -749,42 +745,53 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// GC-EI-EB
 		// LC-ESI-ITFT
 		// Cross-reference to mzOntology: Ionization methods [MS:1000008]; APCI [MS:1000070]; APPI [MS:1000382]; EI [MS:1000389]; ESI [MS:1000073]; B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
-		def("ac_instrument_type_value_sep",
-				StringParser.of("CE")
-				.or(StringParser.of("GC"))
-				.or(StringParser.of("LC"))
-				.seq(CharacterParser.of('-'))
-				.pick(0)
-				);
-		def("ac_instrument_type_value_ionisation",
-				StringParser.of("APCI")
-				.or(StringParser.of("APPI"))
-				.or(StringParser.of("EI"))
-				.or(StringParser.of("ESI"))
-				.or(StringParser.of("FAB"))
-				.or(StringParser.of("MALDI"))
-				.seq(CharacterParser.of('-'))
-				.pick(0)
-				);
-		def("ac_instrument_type_value_analyzer",
-				StringParser.of("B")
-				.or(StringParser.of("E"))
-				.or(StringParser.of("FT"))
-				.or(StringParser.of("IT"))
-				.or(StringParser.of("Q"))
-				.or(StringParser.of("TOF"))
-				);
+		def("ac_instrument_type_sep",
+			StringParser.of("CE")
+			.or(StringParser.of("GC"))
+			.or(StringParser.of("LC"))
+			.seq(CharacterParser.of('-'))
+			.pick(0)
+		);
+		def("ac_instrument_type_ionisation",
+			StringParser.of("APCI")
+			.or(StringParser.of("APPI"))
+			.or(StringParser.of("EI"))
+			.or(StringParser.of("ESI"))
+			.or(StringParser.of("FAB"))
+			.or(StringParser.of("MALDI"))
+			.seq(CharacterParser.of('-'))
+			.pick(0)
+		);
+		def("ac_instrument_type_analyzer",
+			StringParser.of("B")
+			.or(StringParser.of("E"))
+			.or(StringParser.of("FT"))
+			.or(StringParser.of("IT"))
+			.or(StringParser.of("Q"))
+			.or(StringParser.of("TOF"))
+		);
 		def("ac_instrument_type_value", 
-				ref("ac_instrument_type_value_sep")
-				.optional()
-				.seq(ref("ac_instrument_type_value_ionisation"))
-				.seq(ref("ac_instrument_type_value_analyzer").plus())
-				);
+			ref("ac_instrument_type_sep")
+			.optional()
+			.seq(ref("ac_instrument_type_ionisation"))
+			.seq(ref("ac_instrument_type_analyzer").plus())
+		);
 		def("ac_instrument_type", 
-				StringParser.of("AC$INSTRUMENT_TYPE")
-				.seq(ref("tagsep"))
-				.seq(ref("ac_instrument_type_value"))
-				);
+			StringParser.of("AC$INSTRUMENT_TYPE")
+			.seq(ref("tagsep"))
+			.seq(
+				ref("ac_instrument_type_value")
+				.map((List<?> value) -> {
+					callback.AC_INSTRUMENT_TYPE((List<?>) value);
+					return value;						
+				})
+			)
+			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//				System.out.println(value.toString());
+//				return value;						
+//			})
+		);
 
 		// 2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE
 		// Data Type.   Mandatory
@@ -797,21 +804,28 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// MS2  is the precursor ion spectrum of MS3
 		// IUPAC Recommendations 2006 (http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
 		def("ac_mass_spectrometry_ms_type_value",
-				StringParser.of("MS4")
-				.or(StringParser.of("MS3"))
-				.or(StringParser.of("MS2"))
-				.or(StringParser.of("MS"))
-				);
+			StringParser.of("MS4")
+			.or(StringParser.of("MS3"))
+			.or(StringParser.of("MS2"))
+			.or(StringParser.of("MS"))
+		);
 		def("ac_mass_spectrometry_ms_type", 
-				StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("MS_TYPE "))
-				.seq(ref("ac_mass_spectrometry_ms_type_value"))
-				);
-		
-		
-		
-		
+			StringParser.of("AC$MASS_SPECTROMETRY")
+			.seq(ref("tagsep"))
+			.seq(StringParser.of("MS_TYPE "))
+			.seq(
+				ref("ac_mass_spectrometry_ms_type_value")
+				.map((String value) -> {
+					callback.AC_MASS_SPECTROMETRY_MS_TYPE(value);
+					return value;						
+				})
+			)
+			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//				System.out.println(value.toString());
+//				return value;						
+//			})
+		);
 		
 	}
 

@@ -182,6 +182,20 @@ public class Record {
 		data.put("AC_INSTRUMENT", value);
 	}
 	
+	public List<?> AC_INSTRUMENT_TYPE() {
+		return (List<?>) data.get("AC_INSTRUMENT_TYPE");
+	}
+	public void AC_INSTRUMENT_TYPE(List<?> value) {
+		data.put("AC_INSTRUMENT_TYPE", value);
+	}
+	
+	public String AC_MASS_SPECTROMETRY_MS_TYPE() {
+		return (String) data.get("AC_MASS_SPECTROMETRY_MS_TYPE");
+	}
+	public void AC_MASS_SPECTROMETRY_MS_TYPE(String value) {
+		data.put("AC_MASS_SPECTROMETRY_MS_TYPE", value);
+	}
+	
 	public String toString() {
 		StringBuilder sb	= new StringBuilder();
 		
@@ -230,10 +244,10 @@ public class Record {
 				sb.append("SP$SAMPLE: " + sample + "\n");
 		}
 		sb.append("AC$INSTRUMENT: " + AC_INSTRUMENT() + "\n");
-
+		sb.append("AC$INSTRUMENT_TYPE: " + AC_INSTRUMENT_TYPE().toString() + "\n");
+		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "\n");
 
 		/*
-		sb.append("AC$INSTRUMENT: " + this.AC$INSTRUMENT + "\n");
 		sb.append("AC$INSTRUMENT_TYPE: " + this.AC$INSTRUMENT_TYPE + "\n");
 		for(String AC$MASS_SPECTROMETRY : this.AC$MASS_SPECTROMETRY)
 			sb.append("AC$MASS_SPECTROMETRY: " + AC$MASS_SPECTROMETRY + "\n");
