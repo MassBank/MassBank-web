@@ -148,6 +148,28 @@ public class Validator2 {
 
 	public static void main(String[] arguments) throws Exception {
 		if (arguments.length==1) recordstring = new String(Files.readAllBytes(Paths.get(arguments[0])));
+		
+		// test non standard ASCII chars
+		for (int i = 0; i < recordstring.length(); i++) {
+			if (recordstring.charAt(i) > 0x7F) {
+				String[] tokens = recordstring.split("\\r?\\n");
+				System.err.println("Non standard ASCII charactet found.");
+				int line = 0, col = 0, offset = 0;
+				for (String token : tokens) {
+					offset = offset + token.length() + 1;
+					if (i < offset) {
+						col = i - (offset - (token.length() + 1));
+						System.err.println(tokens[line]);
+						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
+						error_at.setCharAt(col, '^');
+						System.err.println(error_at);
+						System.exit(1);
+					}
+					line++;
+				}
+	        }
+	    }
+
 		Record record = new Record();
 		Parser recordparser = new RecordParser(record);
 		Result res = null;
@@ -162,16 +184,14 @@ public class Validator2 {
 				offset = offset + token.length() + 1;
 				if (position < offset) {
 					col = position - (offset - (token.length() + 1));
-
-					break;
+					System.err.println(tokens[line]);
+					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
+					error_at.setCharAt(col, '^');
+					System.err.println(error_at);
+					System.exit(1);
 				}
 				line++;
 			}
-			System.err.println(tokens[line]);
-			StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
-			error_at.setCharAt(col, '^');
-			System.err.println(error_at);
-			System.exit(1);
 		}
 		if (arguments.length==0)
 		{
