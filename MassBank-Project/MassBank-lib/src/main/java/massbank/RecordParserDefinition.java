@@ -540,6 +540,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.seq(Token.NEWLINE_PARSER).optional()
 			.seq(StringParser.of("CH$LINK")
+					.seq(ref("tagsep"))
+					.seq(StringParser.of("CAYMAN").trim())
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+					.seq(Token.NEWLINE_PARSER).optional()
+				)
+			.seq(StringParser.of("CH$LINK")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("CHEBI").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
@@ -593,6 +599,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
+			.seq(StringParser.of("CH$LINK")
+					.seq(ref("tagsep"))
+					.seq(StringParser.of("NIKKAJI").trim())
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+					.seq(Token.NEWLINE_PARSER).optional()
+				)
 			.seq(StringParser.of("CH$LINK")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("PUBCHEM").trim())
@@ -653,7 +665,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 //			})
 		);
 
-		// TODO in spec file marged as unique. check!
+		// TODO in spec file marked as unique. check!
 		// 2.3.2 SP$LINK subtag identifier
 		// Identifier of Biological Species in External Databases.  Optional
 		// Example
