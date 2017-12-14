@@ -177,7 +177,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>External database name with identifier</td>
     <td><a href="#2.2.8">2.2.8</a></td>
-    <td><a href="#Note 1">Note 1</a></td>
+    <td></td>
   </tr>
   <tr>
     <td colspan="7">Information of Biological Sample</td>
@@ -504,7 +504,7 @@ CH$CDK_DEPICT_GENERIC_SMILES c1ccc(cc1)/C=C/C(=O)O[R]
 CH$CDK_DEPICT_STRUCTURE_SMILES c1ccc(cc1)/C=C/C(=O)O
 ```
 
-#### <a name="2.2.8"></a>2.2.8 CH$LINK: subtag  identifier
+#### <a name="2.2.8"></a>2.2.8 CH$LINK: subtag identifier
 Identifier and Link of Chemical Compound to External Databases. Optional and Iterative
 
 Example:
@@ -518,6 +518,7 @@ CH$LINK: PUBCHEM SID: 11916 CID:182232
 Currently MassBank records have links to the following external databases:
 ```
 CAS
+CAYMAN
 CHEBI
 CHEMPDB
 CHEMSPIDER
