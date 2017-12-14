@@ -325,7 +325,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
 		def("ch_name_value",
-			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`"))
+			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_"))
 			.plusLazy(Token.NEWLINE_PARSER.or(CharacterParser.of(';')))
 			.flatten()
 		);
@@ -571,10 +571,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(StringParser.of("CH$LINK")
 				.seq(ref("tagsep"))
-				.seq(StringParser.of("INCHIKEY").trim())
+				.seq(StringParser.of("HMDB").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
+			.seq(StringParser.of("CH$LINK")
+					.seq(ref("tagsep"))
+					.seq(StringParser.of("INCHIKEY").trim())
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+					.seq(Token.NEWLINE_PARSER).optional()
+				)
 			.seq(StringParser.of("CH$LINK")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("KEGG").trim())

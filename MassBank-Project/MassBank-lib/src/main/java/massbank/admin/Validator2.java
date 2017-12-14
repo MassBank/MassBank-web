@@ -150,7 +150,7 @@ public class Validator2 {
 		if (arguments.length==1) recordstring = new String(Files.readAllBytes(Paths.get(arguments[0])));
 		
 		// test non standard ASCII chars
-		for (int i = 0; i < recordstring.length(); i++) {
+		/*for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
 				String[] tokens = recordstring.split("\\r?\\n");
 				System.err.println("Non standard ASCII charactet found.");
@@ -168,7 +168,7 @@ public class Validator2 {
 					line++;
 				}
 	        }
-	    }
+	    }*/
 
 		Record record = new Record();
 		Parser recordparser = new RecordParser(record);
