@@ -325,7 +325,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
 		def("ch_name_value",
-			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_"))
+			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?"))
 			.plusLazy(Token.NEWLINE_PARSER.or(CharacterParser.of(';')))
 			.flatten()
 		);
@@ -447,7 +447,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 							if (r.get().equals("N/A")) callback.CH_SMILES(new AtomContainer());
 							else callback.CH_SMILES(new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(r.get()));
 						} catch (InvalidSmilesException e) { 
-							return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.");		 				
+							return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage());		 				
 						}		 			
 					}
 					return r; 
@@ -777,6 +777,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("ESI"))
 			.or(StringParser.of("FAB"))
 			.or(StringParser.of("MALDI"))
+			.or(StringParser.of("FD"))
+			.or(StringParser.of("CI"))
+			.or(StringParser.of("FI"))
 			.seq(CharacterParser.of('-'))
 			.pick(0)
 		);
