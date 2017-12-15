@@ -23,7 +23,7 @@ public class Validator2 {
 			"CH$COMPOUND_CLASS: Natural Product; Alkaloid\n" + 
 			"CH$FORMULA: C27H39NO2\n" +
 			"CH$EXACT_MASS: 409.29807\n" +
-			"CH$SMILES: CC1CC(C(NC1)C(C)C2=C(C3=C(C=C2)C4CC=C5CC(CCC5(C4C3)C)O)C)O\n" +
+			"CH$SMILES: O=C(O)c1cccc2nnnc12\n" +
 			"CH$IUPAC: InChI=1S/C27H39NO2/c1-15-11-25(30)26(28-14-15)17(3)20-7-8-21-22-6-5-18-12-19(29)9-10-27(18,4)24(22)13-23(21)16(20)2/h5,7-8,15,17,19,22,24-26,28-30H,6,9-14H2,1-4H3/t15-,17-,19-,22-,24-,25+,26-,27-/m0/s1\n" +
 			"CH$LINK: CAS 60-70-8\n" + 
 			"CH$LINK: CHEBI 9951\n" + 
@@ -149,27 +149,26 @@ public class Validator2 {
 	public static void main(String[] arguments) throws Exception {
 		if (arguments.length==1) recordstring = new String(Files.readAllBytes(Paths.get(arguments[0])));
 		
-		// test non standard ASCII chars
-		/*for (int i = 0; i < recordstring.length(); i++) {
+		// test non standard ASCII chars and print warnings
+		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
 				String[] tokens = recordstring.split("\\r?\\n");
-				System.err.println("Non standard ASCII charactet found.");
+				System.out.println("Warning: non standard ASCII charactet found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
 				for (String token : tokens) {
 					offset = offset + token.length() + 1;
 					if (i < offset) {
 						col = i - (offset - (token.length() + 1));
-						System.err.println(tokens[line]);
+						System.out.println(tokens[line]);
 						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
 						error_at.setCharAt(col, '^');
-						System.err.println(error_at);
-						System.exit(1);
+						System.out.println(error_at);
+						break;
 					}
 					line++;
 				}
 	        }
-	    }*/
-
+	    }
 		Record record = new Record();
 		Parser recordparser = new RecordParser(record);
 		Result res = null;
