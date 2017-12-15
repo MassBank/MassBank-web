@@ -567,11 +567,15 @@ General Type of Instrument. Mandatory
 Example: `AC$INSTRUMENT_TYPE: LC-ESI-QTOF`
 
 Format is `(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)`.
+
 Separation tool types are `CE`, `GC`, `LC`.
+
 Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`, `FD`.
-Ion analyzer types are `B`, `E`, `FT`, `IT`, `Q`, `TOF`.
-In tandem mass analyzers, no `-` is inserted between ion analyzers.
-`FT` includes `FTICR` and other type analyzers using `FT`, such as Orbitrap(R). `IT` comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap. Other examples of `AC$INSTRUMENT_TYPE` data are as follows.
+
+Ion analyzer types are `B`, `E`, `FT`, `IT`, `Q`, `TOF`. In tandem mass analyzers, no `-` is inserted between ion analyzers.
+`FT` includes `FTICR` and other type analyzers using `FT`, such as Orbitrap(R). `IT` comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap. 
+
+Other examples of `AC$INSTRUMENT_TYPE` data are as follows.
 ```
 ESI-QQ
 ESI-QTOF
