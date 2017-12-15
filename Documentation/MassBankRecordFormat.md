@@ -568,7 +568,7 @@ Example: `AC$INSTRUMENT_TYPE: LC-ESI-QTOF`
 
 Format is `(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)`.
 Separation tool types are `CE`, `GC`, `LC`.
-Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`.
+Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`, `FD`.
 Ion analyzer types are `B`, `E`, `FT`, `IT`, `Q`, `TOF`.
 In tandem mass analyzers, no `-` is inserted between ion analyzers.
 `FT` includes `FTICR` and other type analyzers using `FT`, such as Orbitrap(R). `IT` comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap. Other examples of `AC$INSTRUMENT_TYPE` data are as follows.
@@ -578,7 +578,11 @@ ESI-QTOF
 GC-EI-EB
 LC-ESI-ITFT
 ```
-Cross-reference to mzOntology: Ionization methods [MS:1000008]; APCI [MS:1000070]; APPI [MS:1000382]; EI [MS:1000389]; ESI [MS:1000073]; B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
+Cross-reference to mzOntology: 
+
+Ionization methods [MS:1000008]: APCI [MS:1000070], APPI [MS:1000382], EI [MS:1000389], ESI [MS:1000073], FAB[MS:1000074], MALDI[MS:1000075], FD[MS:1000257]
+
+Ion analyzer types [MS:1000443]: B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
 
 #### <a name="2.4.3"></a>2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE
 Data Type. Mandatory
