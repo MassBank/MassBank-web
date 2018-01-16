@@ -325,7 +325,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
 		def("ch_name_value",
-			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?"))
+			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>"))
 			.plusLazy(Token.NEWLINE_PARSER.or(CharacterParser.of(';')))
 			.flatten()
 		);
@@ -488,13 +488,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 								} 
 								else if (ret != INCHI_RET.OKAY) {
 									// Structure generation failed
-									return r=context.failure("Can not parse INCHI string in \\\"CH$SMILES\\\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "]");
+									return context.failure("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "]");
 								}
 								IAtomContainer m = intostruct.getAtomContainer();
 								callback.CH_IUPAC(m);
 							}
 						} catch (CDKException e) { 
-							return r=context.failure("Can not parse INCHI string in \"CH$SMILES\" field.");		 				
+							return context.failure("\"Can not parse INCHI string in \"CH$IUPAC\" field.");		 				
 						}		 			
 					}
 					return r; 
