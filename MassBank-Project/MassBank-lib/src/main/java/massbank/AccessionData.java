@@ -265,7 +265,7 @@ public class AccessionData{
 	}
 	public static File getFile(String databaseName, String accession){
 		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
-		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH) + databaseName + File.separator + accession + ".txt");
+		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH) + databaseName + File.separator + accession + ".txt");
 		return file;
 	}
 	public static AccessionData getAccessionDataFromFile(String databaseName, String accession){
