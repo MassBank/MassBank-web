@@ -790,7 +790,7 @@ function popupRecView(url) {
 	// 各種パラメータを取得
 	//----------------------------------------------------
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
-	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
 	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	GetConfig conf = new GetConfig(baseUrl);
 	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);

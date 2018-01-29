@@ -173,7 +173,7 @@ function changeSort() {
 	// サーバー側パス取得
 	//---------------------------------------------
 	AdminCommon admin = new AdminCommon();
-	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
 	String outPath = admin.getOutPath();
 	
 	if ( outPath.equals("") ) {

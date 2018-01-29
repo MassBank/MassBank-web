@@ -705,7 +705,7 @@ function selDb() {
 	//---------------------------------------------
 	request.setCharacterEncoding("utf-8");
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
-	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
 	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
 	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;

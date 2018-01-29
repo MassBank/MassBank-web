@@ -38,7 +38,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import massbank.svn.SVNUtils;
+//import massbank.svn.SVNUtils;
 
 @SuppressWarnings("serial")
 public class MultiDispatcher extends HttpServlet {
@@ -214,7 +214,7 @@ public class MultiDispatcher extends HttpServlet {
 				// サーバ監視が行われていなければ無条件にTrueが返ってくる
 				if ( !svrStatus.isServerActive(url, dbName) ) {
 					String backupDbName = svrStatus.get2ndDbName(url, dbName);
-					if ( backupDbName.equals("") || !SVNUtils.checkDBExists(backupDbName) ) {
+					if ( backupDbName.equals("") /*|| !SVNUtils.checkDBExists(backupDbName)*/ ) {
 						continue;
 					}
 					else {

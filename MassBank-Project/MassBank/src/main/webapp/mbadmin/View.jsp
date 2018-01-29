@@ -38,7 +38,7 @@
 <body>
 <pre>
 <%
-	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
 	String fileName = request.getParameter("fname");
 	String dbName = request.getParameter("db");
 	BufferedReader in = null;

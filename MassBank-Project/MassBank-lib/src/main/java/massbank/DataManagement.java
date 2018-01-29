@@ -18,7 +18,7 @@ public class DataManagement {
 	 */
 	public static String toMsp(ResultList resultList, String fileName){
 		// global variables
-		String path		= MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+		String path		= MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
 		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 		GetConfig conf	= new GetConfig(baseUrl);
 		String[] databaseNames	= conf.getDbName();

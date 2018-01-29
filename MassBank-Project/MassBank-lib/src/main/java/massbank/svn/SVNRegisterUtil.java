@@ -72,14 +72,9 @@ public class SVNRegisterUtil {
 		String[] extensions = null;
 		String subDirName = "";
 		if ( isRecord ) {
-			basePath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+			basePath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
 			extensions = new String[]{"txt"};
 			subDirName = "record";
-		}
-		else {
-			basePath = MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
-			extensions = new String[]{"mol", "tsv"};
-			subDirName = "molfile";
 		}
 		String repoDirName = confNames[i];
 		String path1 = basePath + targetDbName;

@@ -126,7 +126,7 @@
 	private boolean modInstrument( DatabaseAccess db, ArrayList<String> msgList, String tmpPath, String hostName, String selDb, GetInstInfo instInfo, String instNo, String instType, String instName)  {
 		
 		String dumpPath = tmpPath + selDb + ".dump";
-		String recPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH) + selDb + File.separator;
+		String recPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH) + selDb + File.separator;
 		String backupPath = tmpPath + "backup" + File.separator;
 		String[] instNoList = instInfo.getNo();
 		String[] instNameList = instInfo.getName();
@@ -904,7 +904,7 @@ function selNo() {
 	//----------------------------------------------------
 	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
-	final String annotationPath = MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH);
+	final String annotationPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
 	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
 	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	GetConfig conf = new GetConfig(baseUrl);

@@ -77,9 +77,6 @@ public class MassBankEnv extends HttpServlet {
 	public static final String KEY_MASSBANK_CONF_PATH	= "path.massbank_conf";		// ex. "/var/www/html/MassBank/massbank.conf"
 	public static final String KEY_ADMIN_CONF_PATH		= "path.admin_conf";		// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/mbadmin/admin.conf"
 	public static final String KEY_DATAROOT_PATH		= "path.data_root";			// ex. "/var/www/html/MassBank/DB/"
-	public static final String KEY_ANNOTATION_PATH		= "path.annotation";		// ex. "/var/www/html/MassBank/DB/annotation/"
-	public static final String KEY_MOLFILE_PATH			= "path.molfile";			// ex. "/var/www/html/MassBank/DB/molfile/"
-	public static final String KEY_PROFILE_PATH			= "path.profile";			// ex. "/var/www/html/MassBank/DB/profile/"
 	// MassBank 環境変数（可変値）取得キー
 	public static final String KEY_PRIMARY_SERVER_URL	= "url.pserver";			// ex. "[サーバ監視用URL]"
 	public static final String KEY_DB_HOST_NAME			= "db.host_name";			// ex. "[DBアクセス用ホスト名]"
@@ -101,9 +98,6 @@ public class MassBankEnv extends HttpServlet {
 	private static String VAL_MASSBANK_CONF_PATH		= "";	// ex. "/var/www/html/MassBank/massbank.conf"
 	private static String VAL_ADMIN_CONF_PATH			= "";	// ex. "/usr/local/tomcat/webapps/ROOT/MassBank/mbadmin/admin.conf"
 	private static String VAL_DATAROOT_PATH				= "";	// ex. "/var/www/html/MassBank/DB/"
-	private static String VAL_ANNOTATION_PATH			= "";	// ex. "/var/www/html/MassBank/DB/annotation/"
-	private static String VAL_MOLFILE_PATH				= "";	// ex. "/var/www/html/MassBank/DB/molfile/"
-	private static String VAL_PROFILE_PATH				= "";	// ex. "/var/www/html/MassBank/DB/profile/"
 	// MassBank 環境変数（可変値）
 	private static String VAL_PRIMARY_SERVER_URL		= "http://www.massbank.jp/";	// ex. "[サーバ監視用URL]"
 	private static String VAL_DB_HOST_NAME				= "127.0.0.1";					// ex. "[DBアクセス用ホスト名]"
@@ -195,21 +189,6 @@ public class MassBankEnv extends HttpServlet {
 		// VAL_DATAROOT_PATH
 		if ( !VAL_APACHE_APPROOT_PATH.equals("") ) {
 			VAL_DATAROOT_PATH = VAL_APACHE_APPROOT_PATH + "DB/";
-		}
-		
-		// VAL_ANNOTATION_PATH
-		if ( !VAL_DATAROOT_PATH.equals("") ) {
-			VAL_ANNOTATION_PATH = VAL_DATAROOT_PATH + "annotation/";
-		}
-		
-		// VAL_MOLFILE_PATH
-		if ( !VAL_DATAROOT_PATH.equals("") ) {
-			VAL_MOLFILE_PATH = VAL_DATAROOT_PATH + "molfile/";
-		}
-		
-		// VAL_PROFILE_PATH
-		if ( !VAL_DATAROOT_PATH.equals("") ) {
-			VAL_PROFILE_PATH = VAL_DATAROOT_PATH + "profile/";
 		}
 		
 		// VAL_PRIMARY_SERVER_URL
@@ -306,15 +285,6 @@ public class MassBankEnv extends HttpServlet {
 		else if ( key.equals(KEY_DATAROOT_PATH) ) {
 			val = VAL_DATAROOT_PATH;
 		}
-		else if ( key.equals(KEY_ANNOTATION_PATH) ) {
-			val = VAL_ANNOTATION_PATH;
-		}
-		else if ( key.equals(KEY_MOLFILE_PATH) ) {
-			val = VAL_MOLFILE_PATH;
-		}
-		else if ( key.equals(KEY_PROFILE_PATH) ) {
-			val = VAL_PROFILE_PATH;
-		}
 		else if ( key.equals(KEY_PRIMARY_SERVER_URL) ) {
 			val = VAL_PRIMARY_SERVER_URL;
 		}
@@ -364,9 +334,6 @@ public class MassBankEnv extends HttpServlet {
 		sb.append(KEY_MASSBANK_CONF_PATH).append("=").append(VAL_MASSBANK_CONF_PATH).append("\n");
 		sb.append(KEY_ADMIN_CONF_PATH).append("=").append(VAL_ADMIN_CONF_PATH).append("\n");
 		sb.append(KEY_DATAROOT_PATH).append("=").append(VAL_DATAROOT_PATH).append("\n");
-		sb.append(KEY_ANNOTATION_PATH).append("=").append(VAL_ANNOTATION_PATH).append("\n");
-		sb.append(KEY_MOLFILE_PATH).append("=").append(VAL_MOLFILE_PATH).append("\n");
-		sb.append(KEY_PROFILE_PATH).append("=").append(VAL_PROFILE_PATH).append("\n");
 		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append("\n");
 		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append("\n");
 		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append("\n");
@@ -446,9 +413,6 @@ public class MassBankEnv extends HttpServlet {
 		sb.append(KEY_MASSBANK_CONF_PATH).append("=").append(VAL_MASSBANK_CONF_PATH).append(ls);
 		sb.append(KEY_ADMIN_CONF_PATH).append("=").append(VAL_ADMIN_CONF_PATH).append(ls);
 		sb.append(KEY_DATAROOT_PATH).append("=").append(VAL_DATAROOT_PATH).append(ls);
-		sb.append(KEY_ANNOTATION_PATH).append("=").append(VAL_ANNOTATION_PATH).append(ls);
-		sb.append(KEY_MOLFILE_PATH).append("=").append(VAL_MOLFILE_PATH).append(ls);
-		sb.append(KEY_PROFILE_PATH).append("=").append(VAL_PROFILE_PATH).append(ls);
 		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append(ls);
 		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append(ls);
 		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append(ls);

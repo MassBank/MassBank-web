@@ -70,14 +70,14 @@ public class AdminCommon {
 	public AdminCommon() {
 	}
 	
-	/**
-	 * Molfileルートパス取得
-	 * @deprecated 非推奨メソッド
-	 * @see MassBankEnv#get(String)
-	 */
-	public String getMolRootPath() {
-		return MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
-	}
+//	/**
+//	 * Molfileルートパス取得
+//	 * @deprecated 非推奨メソッド
+//	 * @see MassBankEnv#get(String)
+//	 */
+//	public String getMolRootPath() {
+//		return MassBankEnv.get(MassBankEnv.KEY_MOLFILE_PATH);
+//	}
 	
 	/**
 	 * 出力先パス取得
