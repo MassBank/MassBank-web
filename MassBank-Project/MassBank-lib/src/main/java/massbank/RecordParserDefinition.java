@@ -51,7 +51,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("ac_instrument"))
 			.seq(ref("ac_instrument_type"))
 			.seq(ref("ac_mass_spectrometry_ms_type"))
-				);/*
+			.seq(ref("ac_mass_spectrometry_ion_mode"))
+			.seq(ref("ac_mass_spectrometry").optional())
+		);/*
 			.seq(ref("endtag"))
 			.map((List<?> value) -> {
 				value.remove(value.size()-1);
@@ -544,7 +546,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(StringParser.of("CAYMAN").trim())
 					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 					.seq(Token.NEWLINE_PARSER).optional()
-				)
+			)
 			.seq(StringParser.of("CH$LINK")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("CHEBI").trim())
@@ -580,13 +582,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(StringParser.of("INCHIKEY").trim())
 					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 					.seq(Token.NEWLINE_PARSER).optional()
-				)
+			)
 			.seq(StringParser.of("CH$LINK")
 					.seq(ref("tagsep"))
 					.seq(StringParser.of("KAPPAVIEW").trim())
 					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 					.seq(Token.NEWLINE_PARSER).optional()
-				)
+			)
 			.seq(StringParser.of("CH$LINK")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("KEGG").trim())
@@ -616,7 +618,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(StringParser.of("NIKKAJI").trim())
 					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 					.seq(Token.NEWLINE_PARSER).optional()
-				)
+			)
 			.seq(StringParser.of("CH$LINK")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("PUBCHEM").trim())
@@ -853,6 +855,154 @@ public class RecordParserDefinition extends GrammarDefinition {
 //				return value;						
 //			})
 		);
+		
+		// 2.4.4 AC$MASS_SPECTROMETRY: ION_MODE
+		// Polarity of Ion Detection. Mandatory
+		// Example: AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
+		// Either of POSITIVE or NEGATIVE is allowed. Cross-reference to mzOntology: POSITIVE [MS:1000030] 
+		// or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+		def("ac_mass_spectrometry_ion_mode_value",
+			StringParser.of("POSITIVE")
+			.or(StringParser.of("NEGATIVE"))
+		);
+		def("ac_mass_spectrometry_ion_mode", 
+			StringParser.of("AC$MASS_SPECTROMETRY")
+			.seq(ref("tagsep"))
+			.seq(StringParser.of("ION_MODE "))
+			.seq(
+				ref("ac_mass_spectrometry_ion_mode_value")
+				.map((String value) -> {
+					callback.AC_MASS_SPECTROMETRY_ION_MODE(value);
+					return value;						
+				})
+			)
+			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//			System.out.println(value.toString());
+//			return value;						
+//			})
+		);		
+		
+		// 2.4.5 AC$MASS_SPECTROMETRY: subtag Description
+		// Other Optional Experimental Methods and Conditions of Mass Spectrometry.
+		// Description is a list of numerical values with/without unit or a sentence. 
+		// AC$MASS_SPECTROMETRY fields should be arranged by the alphabetical order of subtag names.
+		// 2.4.5 Subtag: COLLISION_ENERGY
+		// Collision Energy for Dissociation.
+		// Example 1: AC$MASS_SPECTROMETRY: COLLISION_ENERGY 20 kV 
+		// Example 2: AC$MASS_SPECTROMETRY: COLLISION_ENERGY Ramp 10-50 kV
+		// 2.4.5 Subtag: COLLISION_GAS
+		// Name of Collision Gas.
+		// Example: AC$MASS_SPECTROMETRY: COLLISION_GAS N2
+		// Cross-reference to mzOntology: Collision gas [MS:1000419]
+		// 2.4.5 Subtag: DATE
+		// Date of Analysis.
+		// 2.4.5 Subtag: DESOLVATION_GAS_FLOW
+		// Flow Rate of Desolvation Gas.
+		// Example: AC$MASS_SPECTROMETRY: DESOLVATION_GAS_FLOW 600.0 l/h
+		// 2.4.5 Subtag: DESOLVATION_TEMPERATURE
+		// Temperature of Desolvation Gas.
+		// Example: AC$MASS_SPECTROMETRY: DESOLVATION_TEMPERATURE 400 C
+		// 2.4.5 Subtag: IONIZATION_ENERGY
+		// Energy of Ionization.
+		// Example: AC$MASS_SPECTROMETRY: IONIZATION_ENERGY 70 eV
+		// 2.4.5 Subtag: LASER
+		// Desorption /Ionization Conditions in MALDI.
+		// Example: AC$MASS_SPECTROMETRY: LASER 337 nm nitrogen laser, 20 Hz, 10 nsec
+		// 2.4.5 Subtag: MATRIX
+		// Matrix Used in MALDI and FAB.
+		// Example: AC$MASS_SPECTROMETRY: MATRIX 1-2 uL m-NBA
+		// 2.4.5. Subtag : MASS_ACCURACY
+		// Relative Mass Accuracy.
+		// Example: AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000
+		// 2.4.5 Subtag: REAGENT_GAS
+		// Name of Reagent Gas.
+		// Example: AC$MASS_SPECTROMETRY: REAGENT_GAS ammonia
+		// 2.4.5 Subtag: SCANNING
+		// Scan Cycle and Range.
+		// Example: AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)
+		def("ac_mass_spectrometry", 
+			StringParser.of("AC$MASS_SPECTROMETRY")
+			.seq(ref("tagsep"))
+			.seq(StringParser.of("COLLISION_ENERGY").trim())
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER).optional()
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("COLLISION_GAS").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("DATE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("DESOLVATION_GAS_FLOW").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("DESOLVATION_TEMPERATURE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("IONIZATION_ENERGY").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("LASER").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("MATRIX").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("MASS_ACCURACY").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("REAGENT_GAS").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("CH$LINK")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("SCANNING").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.map((List<?> value) -> {
+				List<String> subtag = new ArrayList<String>();
+				for (int i = 0; i < value.size(); i++) {
+					if (value.get(i) == null) continue;
+					@SuppressWarnings("unchecked")
+					List<String> tmp = (List<String>) value.get(i);
+					subtag.add(tmp.get(2) + " " + tmp.get(3));
+				}
+				callback.AC_MASS_SPECTROMETRY(subtag);
+				//System.out.println(value.toString());
+				return value;
+			})
+		);	
+			
+			
+			
 		
 	}
 

@@ -23,8 +23,8 @@ public class Validator2 {
 			"CH$COMPOUND_CLASS: Natural Product; Alkaloid\n" + 
 			"CH$FORMULA: C27H39NO2\n" +
 			"CH$EXACT_MASS: 409.29807\n" +
-			"CH$SMILES: O=C(O)c1cccc2nnnc12\n" +
-			"CH$IUPAC: InChI=1S/C27H39NO2/c1-15-11-25(30)26(28-14-15)17(3)20-7-8-21-22-6-5-18-12-19(29)9-10-27(18,4)24(22)13-23(21)16(20)2/h5,7-8,15,17,19,22,24-26,28-30H,6,9-14H2,1-4H3/t15-,17-,19-,22-,24-,25+,26-,27-/m0/s1\n" +
+			"CH$SMILES: N/A\n" +
+			"CH$IUPAC: N/A\n" +
 			"CH$LINK: CAS 60-70-8\n" + 
 			"CH$LINK: CHEBI 9951\n" + 
 			"CH$LINK: CHEMSPIDER 5845\n" +
@@ -148,7 +148,7 @@ public class Validator2 {
 
 	public static void main(String[] arguments) throws Exception {
 		if (arguments.length==1) recordstring = new String(Files.readAllBytes(Paths.get(arguments[0])));
-		
+
 		// test non standard ASCII chars and print warnings
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
@@ -176,7 +176,7 @@ public class Validator2 {
 		if (res.isFailure()) {
 			System.err.println(res.getMessage());
 			int position = res.getPosition();
-			String[] tokens = recordstring.split("\\r?\\n");
+			String[] tokens = recordstring.split("\\n");
 
 			int line = 0, col = 0, offset = 0;
 			for (String token : tokens) {

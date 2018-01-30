@@ -135,7 +135,6 @@ public class Record {
 		data.put("CH_IUPAC", value);
 	}
 	
-	
 	@SuppressWarnings("unchecked")
 	public List<String> CH_LINK() {
 		return (List<String>) data.get("CH_LINK");
@@ -196,6 +195,21 @@ public class Record {
 		data.put("AC_MASS_SPECTROMETRY_MS_TYPE", value);
 	}
 	
+	public String AC_MASS_SPECTROMETRY_ION_MODE() {
+		return (String) data.get("AC_MASS_SPECTROMETRY_ION_MODE");
+	}
+	public void AC_MASS_SPECTROMETRY_ION_MODE(String value) {
+		data.put("AC_MASS_SPECTROMETRY_ION_MODE", value);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> AC_MASS_SPECTROMETRY() {
+		return (List<String>) data.get("AC_MASS_SPECTROMETRY");
+	}
+	public void AC_MASS_SPECTROMETRY(List<String> value) {
+		data.put("AC_MASS_SPECTROMETRY", value);
+	}
+	
 	public String toString() {
 		StringBuilder sb	= new StringBuilder();
 		
@@ -246,7 +260,12 @@ public class Record {
 		sb.append("AC$INSTRUMENT: " + AC_INSTRUMENT() + "\n");
 		sb.append("AC$INSTRUMENT_TYPE: " + AC_INSTRUMENT_TYPE().toString() + "\n");
 		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "\n");
-
+		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "\n");
+		if (AC_MASS_SPECTROMETRY() != null) {
+			for(String link : AC_MASS_SPECTROMETRY())
+				sb.append("AC_MASS_SPECTROMETRY: " + link + "\n");
+		}
+		
 		/*
 		sb.append("AC$INSTRUMENT_TYPE: " + this.AC$INSTRUMENT_TYPE + "\n");
 		for(String AC$MASS_SPECTROMETRY : this.AC$MASS_SPECTROMETRY)
