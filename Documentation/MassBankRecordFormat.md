@@ -264,7 +264,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>S</td>
     <td>Analytical conditions of mass spectrometry</td>
     <td><a href="#2.4.5">2.4.5</a></td>
-    <td><a href="#Note 1">Note 1</a></td>
+    <td></td>
   </tr>
   <tr>
     <td>AC$CHROMATOGRAPHY: subtag</td>
