@@ -1,7 +1,7 @@
 # MassBank Record Format 2.13 (draft)
 MassBank Consortium (July 19, 2017)
 #### Updated
-- **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS_RTI added to provide relative retention time information.
+- **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
 - **June 2017**: CH$LINK: COMPTOX added to link the CompTox Chemistry Dashboard
 - **March 2016**: The default Creative Commons license of MassBank record is defined as CC BY. Two new tags are added, CH$LINK: INCHIKEY and PK$SPLASH. InChI key in CH$LINK: INCHIKEY is a hashed version of InChI code and used as an optional, common link based on chemical structures.  SPLASH in PK$SPLASH (Section 2.6.1) is a mandatory, hashed identifier of mass spectra.
 
@@ -105,7 +105,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td><a href="#2.1.8">2.1.8</a></td>
   </tr>
   <tr>
-    <td colspan="6">Information of Chemical Compound Analyzed</td>
+    <td colspan="6"><b>Information of Chemical Compound Analyzed</b></td>
   </tr>
   <tr>
     <td>CH$NAME</td>
@@ -164,7 +164,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td><a href="#2.2.8">2.2.8</a></td>
   </tr>
   <tr>
-    <td colspan="6">Information of Biological Sample</td>
+    <td colspan="6"><b>Information of Biological Sample</b></td>
   </tr>
   <tr>
     <td>SP$SCIENTIFIC_NAME</td>
@@ -199,7 +199,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td><a href="#2.3.4">2.3.4</a></td>
   </tr>
   <tr>
-    <td colspan="6">Analytical Methods and Conditions</td>
+    <td colspan="6"><b>Analytical Methods and Conditions</b></td>
   </tr>
   <tr>
     <td>AC$INSTRUMENT</td>
@@ -250,7 +250,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td><a href="#2.4.6">2.4.6</a></td>
   </tr>
   <tr>
-    <td colspan="6">Description of mass spectral data</td>
+    <td colspan="6"><b>Description of mass spectral data</b></td>
   </tr>
   <tr>
     <td>MS$FOCUSED_ION: subtag</td>
@@ -304,7 +304,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td><a href="#2.6.4">2.6.4</a></td>
   </tr>
   <tr>
-    <td colspan="6">Supplementary Definitions</td>
+    <td colspan="6"><b>Supplementary Definitions</b></td>
   </tr>
   <tr>
     <td colspan="5">Description of isotope-labeled chemical compound</td>
@@ -337,9 +337,9 @@ Identifier of the MassBank Record. Mandatory
 
 Example: `ACCESSION: ZMS00006`
 
-8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank  “Statistics” table (http://www.massbank.jp/en/statistics.html). Rest of the field is decimal letters which are the identifier of the record at each site.
+8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank  “Statistics” table (http://www.massbank.jp/en/statistics.html). Rest of the field are decimal letters which are the identifier of the record at each site.
 
-#### <a name="2.1.2"></a>2.1.2 RECORD_TITLE
+#### <a name="2.1.2"></a>2.1.2 RECORD\_TITLE
 Brief Description of MassBank Record. Mandatory
 
 Example: `RECORD_TITLE: (-)-Nicotine; ESI-QQ; MS2; CE 40 V; [M+H]+`
@@ -420,7 +420,7 @@ CH$NAME: (2S,3S)-Tartaric acid
 ```
 No prosthetic molecule of adducts (HCl, H2SO3, H2O, etc), conjugate ions (Chloride, etc) , and protecting groups (TMS, etc.) is included. Chemical names which are listed in the compound list are recommended.  Synonyms could be added. If chemical compound is a stereoisomer, stereochemistry should be indicated.
 
-#### <a name="2.2.2"></a>2.2.2 CH$COMPOUND_CLASS
+#### <a name="2.2.2"></a>2.2.2 CH$COMPOUND\_CLASS
 Category of Chemical Compound. Mandatory
 
 Example: `CH$COMPOUND_CLASS: Natural Product; Carotenoid; Terpenoid; Lipid`
@@ -434,7 +434,7 @@ Example: `CH$FORMULA: C9H10ClNO3`
 
 It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> `CH$NAME`). Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
 
-#### <a name="2.2.4"></a>2.2.4 CH$EXACT_MASS
+#### <a name="2.2.4"></a>2.2.4 CH$EXACT\_MASS
 Monoisotopic Mass of Chemical Compound. Mandatory
 
 Example: `CH$EXACT_MASS: 430.38108`
@@ -455,7 +455,7 @@ Example: `CH$IUPAC: InChI=1S/C2H5NO2/c3-1-2(4)5/h1,3H2,(H,4,5)`
 
 Not IUPAC name.
 
-#### <a name="2.2.7"></a>2.2.7 CH$CDK_DEPICT
+#### <a name="2.2.7"></a>2.2.7 CH$CDK\_DEPICT
 Displays partially defined structures with CDK depict in record view.  In test phase, advanced users only. Optional and Iterative
 
 Example:
@@ -497,7 +497,7 @@ PUBCHEM
 CH$LINK fields should be arranged by the alphabetical order of database names.
 
 ### 2.3 Information of Biological Sample
-#### <a name="2.3.1"></a>2.3.1 SP$SCIENTIFIC_NAME
+#### <a name="2.3.1"></a>2.3.1 SP$SCIENTIFIC\_NAME
 Scientific Name of biological species, from which the sample was prepared. Optional
 
 Example: `SP$SCIENTIFIC_NAME: Mus musculus`
@@ -528,7 +528,7 @@ Example: `AC$INSTRUMENT: LC-10ADVPmicro HPLC, Shimadzu; LTQ Orbitrap, Thermo Ele
 Cross-reference to mzOntology: Instrument model [MS:1000031]
 All the instruments are given together in a single line. This record is not iterative.
 
-#### <a name="2.4.2"></a>2.4.2 AC$INSTRUMENT_TYPE
+#### <a name="2.4.2"></a>2.4.2 AC$INSTRUMENT\_TYPE
 General Type of Instrument. Mandatory
 
 Example: `AC$INSTRUMENT_TYPE: LC-ESI-QTOF`
@@ -555,7 +555,7 @@ Ionization methods [MS:1000008]: APCI [MS:1000070], APPI [MS:1000382], EI [MS:10
 
 Ion analyzer types [MS:1000443]: B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
 
-#### <a name="2.4.3"></a>2.4.3 AC$MASS_SPECTROMETRY: MS_TYPE
+#### <a name="2.4.3"></a>2.4.3 AC$MASS\_SPECTROMETRY: MS\_TYPE
 Data Type. Mandatory
 
 Example: `AC$MASS_SPECTROMETRY: MS_TYPE MS2`
@@ -567,26 +567,26 @@ Brief definition of terms used in `MS_TYPE`:
 * `MS2` is the precursor ion spectrum of `MS3`
 * [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
 
-#### <a name="2.4.4"></a>2.4.4 AC$MASS_SPECTROMETRY: ION_MODE
+#### <a name="2.4.4"></a>2.4.4 AC$MASS\_SPECTROMETRY: ION\_MODE
 Polarity of Ion Detection. Mandatory
 
 Example: `AC$MASS_SPECTROMETRY: ION_MODE POSITIVE`
 
 Either of POSITIVE or NEGATIVE is allowed. Cross-reference to mzOntology: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
 
-#### <a name="2.4.5"></a>2.4.5 AC$MASS_SPECTROMETRY: subtag Description
+#### <a name="2.4.5"></a>2.4.5 AC$MASS\_SPECTROMETRY: subtag Description
 Other Optional Experimental Methods and Conditions of Mass Spectrometry.
 
 Description is a list of numerical values with/without unit or a sentence.
 `AC$MASS_SPECTROMETRY` fields should be arranged by the alphabetical order of subtag names.
 
-##### 2.4.5 Subtag: COLLISION_ENERGY
+##### 2.4.5 Subtag: COLLISION\_ENERGY
 Collision Energy for Dissociation.
 
 Example 1: `AC$MASS_SPECTROMETRY: COLLISION_ENERGY 20 kV`
 Example 2: `AC$MASS_SPECTROMETRY: COLLISION_ENERGY Ramp 10-50 kV`
 
-##### 2.4.5 Subtag: COLLISION_GAS
+##### 2.4.5 Subtag: COLLISION\_GAS
 Name of Collision Gas.
 
 Example: `AC$MASS_SPECTROMETRY: COLLISION_GAS N2`
@@ -596,12 +596,12 @@ Cross-reference to mzOntology: Collision gas [MS:1000419]
 ##### 2.4.5 Subtag: DATE
 Date of Analysis.
 
-##### 2.4.5 Subtag: DESOLVATION_GAS_FLOW
+##### 2.4.5 Subtag: DESOLVATION\_GAS\_FLOW
 Flow Rate of Desolvation Gas.
 
 Example: `AC$MASS_SPECTROMETRY: DESOLVATION_GAS_FLOW 600.0 l/h`
 
-##### 2.4.5 Subtag: DESOLVATION_TEMPERATURE
+##### 2.4.5 Subtag: DESOLVATION\_TEMPERATURE
 Temperature of Desolvation Gas.
 
 Example: `AC$MASS_SPECTROMETRY: DESOLVATION_TEMPERATURE 400 C`
@@ -612,7 +612,7 @@ Ionization type.
 Example: `AC$MASS_SPECTROMETRY: IONIZATION ESI`
 
 
-##### 2.4.5 Subtag: IONIZATION_ENERGY
+##### 2.4.5 Subtag: IONIZATION\_ENERGY
 Energy of Ionization.
 
 Example: `AC$MASS_SPECTROMETRY: IONIZATION_ENERGY 70 eV`
@@ -627,12 +627,12 @@ Matrix Used in MALDI and FAB.
 
 Example: `AC$MASS_SPECTROMETRY: MATRIX 1-2 uL m-NBA`
 
-##### 2.4.5. Subtag : MASS_ACCURACY
+##### 2.4.5. Subtag : MASS\_ACCURACY
 Relative Mass Accuracy.
 
 Example: `AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000`
 
-##### 2.4.5 Subtag: REAGENT_GAS
+##### 2.4.5 Subtag: REAGENT\_GAS
 Name of Reagent Gas.
 
 Example: `AC$MASS_SPECTROMETRY: REAGENT_GAS ammonia`
@@ -647,33 +647,33 @@ Experimental Method and Conditions of Chromatographic Separation.  Optional
 
 AC$CHROMATOGRAPHY fields should be arranged by the alphabetical order of subtag names.
 
-##### 2.4.6 Subtag: CAPILLARY_VOLTAGE
+##### 2.4.6 Subtag: CAPILLARY\_VOLTAGE
 Voltage Applied to Capillary Electrophoresis or Voltage Applied to the Interface of LC-MS.
 
 Example: `AC$CHROMATOGRAPHY: CAPILLARY_VOLTAGE 4 kV`
 
-##### 2.4.6 Subtag: COLUMN_NAME
+##### 2.4.6 Subtag: COLUMN\_NAME
 Commercial Name of Chromatography Column and Manufacture.
 
 Example of LC: `AC$CHROMATOGRAPHY: COLUMN_NAME Acquity UPLC BEH C18 2.1 by 50 mm (Waters, Milford, MA, USA)`
 Example of CE: `AC$CHROMATOGRAPHY: COLUMN_NAME Fused silica capillary id=50 um L=100 cm (HMT, Tsuruoka, Japan)`
 
-##### 2.4.6 Subtag: COLUMN_TEMPERATURE
+##### 2.4.6 Subtag: COLUMN\_TEMPERATURE
 Column Temperature.
 
 Example: `AC$CHROMATOGRAPHY: COLUMN_TEMPERATURE 40 C`
 
-##### 2.4.6 Subtag: FLOW_GRADIENT
+##### 2.4.6 Subtag: FLOW\_GRADIENT
 Gradient of Elusion Solutions.
 
 Example: `AC$CHROMATOGRAPHY: FLOW_GRADIENT 0/100 at 0 min, 15/85 at 5 min, 21/79 at 20 min, 90/10 at 24 min, 95/5 at 26 min, 0/100, 30 min`
 
-##### 2.4.6 Subtag: FLOW_RATE
+##### 2.4.6 Subtag: FLOW\_RATE
 Flow Rate of Migration Phase.
 
 Example: `AC$CHROMATOGRAPHY: FLOW_RATE 0.25 ml/min`
 
-##### 2.4.6 Subtag: RETENTION_TIME
+##### 2.4.6 Subtag: RETENTION\_TIME
 Retention Time on Chromatography.
 
 Example: `AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min`
@@ -690,7 +690,7 @@ AC$CHROMATOGRAPHY: SOLVENT A acetonitrile-methanol-water (19:19:2) with 0.1% ace
 AC$CHROMATOGRAPHY: SOLVENT B 2-propanol with 0.1% acetic acid and 0.1% ammonium hydroxide (28%)
 ```
 
-##### 2.4.6 Subtag: NAPS_RTI
+##### 2.4.6 Subtag: NAPS\_RTI
 N-alkylpyrinium-3-sulfonate based retention time index.
 
 Reference: http://nparc.cisti-icist.nrc-cnrc.gc.ca/eng/view/object/?id=b4db3589-ae0b-497e-af03-264785d7922f
@@ -698,17 +698,17 @@ Reference: http://nparc.cisti-icist.nrc-cnrc.gc.ca/eng/view/object/?id=b4db3589-
 Example: `AC$CHROMATOGRAPHY: NAPS_RTI 100`
 
 ### 2.5 Description of Mass Spectral Data
-#### <a name="2.5.1"></a>2.5.1 MS$FOCUSED_ION: subtag Description
+#### <a name="2.5.1"></a>2.5.1 MS$FOCUSED\_ION: subtag Description
 Information of Precursor or Molecular Ion. Optional
 
 `MS$FOCUSED_ION` fields should be arranged by the alphabetical order of subtag names.
 
-##### 2.5.1 Subtag: BASE_PEAK
+##### 2.5.1 Subtag: BASE\_PEAK
 m/z of Base Peak.
 
 Example: `MS$FOCUSED_ION: BASE_PEAK 73`
 
-##### 2.5.1 Subtag: DERIVATIVE_FORM
+##### 2.5.1 Subtag: DERIVATIVE\_FORM
 Molecular Formula of Derivative for GC-MS.
 
 Example
@@ -718,43 +718,43 @@ MS$FOCUSED_ION: DERIVATIVE_FORM C19H42O5Si4
 MS$FOCUSED_ION: DERIVATIVE_FORM C{9+3*n}H{16+8*n}NO5Si{n}
 ```
 
-##### 2.5.1 Subtag: DERIVATIVE_MASS
+##### 2.5.1 Subtag: DERIVATIVE\_MASS
 Exact Mass of Derivative for GC-MS.
 
 Example: `MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093`
 
-##### 2.5.1 Subtag: DERIVATIVE_TYPE
+##### 2.5.1 Subtag: DERIVATIVE\_TYPE
 Type of Derivative for GC-MS.
 
 Example: `MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS`
 
-##### 2.5.1 Subtag: ION_TYPE
+##### 2.5.1 Subtag: ION\_TYPE
 Type of Focused Ion.
 
 Example: `MS$FOCUSED_ION: ION_TYPE [M+H]+`
 
 Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`.
 
-##### 2.5.1 Subtag: PRECURSOR_M/Z
+##### 2.5.1 Subtag: PRECURSOR\_M/Z
 m/z of Precursor Ion in MSn spectrum.
 
 Example: `MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123`
 
 Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to mzOntology: precursor m/z [MS:1000504]
 
-##### 2.5.1 Subtag: PRECURSOR_TYPE
+##### 2.5.1 Subtag: PRECURSOR\_TYPE
 Type of Precursor Ion in MSn.
 
 Example: `MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-`
 
 Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`. Cross-reference to mzOntology: Precursor type [MS: 1000792]
 
-#### <a name="2.5.2"></a>2.5.2 MS$DATA_PROCESSING: subtag
+#### <a name="2.5.2"></a>2.5.2 MS$DATA\_PROCESSING: subtag
 Data Processing Method of Peak Detection. Optional
 
 `MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to mzOntology: Data processing [MS:1000543]
 
-##### 2.5.2 Subtag: FIND_PEAK
+##### 2.5.2 Subtag: FIND\_PEAK
 Peak Detection.
 
 Example: `MS$DATA_PROCESSING: FIND_PEAK convexity search; threshold = 9.1`
