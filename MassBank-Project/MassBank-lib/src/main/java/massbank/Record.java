@@ -210,6 +210,37 @@ public class Record {
 		data.put("AC_MASS_SPECTROMETRY", value);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<String> AC_CHROMATOGRAPHY() {
+		return (List<String>) data.get("AC_CHROMATOGRAPHY");
+	}
+	public void AC_CHROMATOGRAPHY(List<String> value) {
+		data.put("AC_CHROMATOGRAPHY", value);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> MS_FOCUSED_ION() {
+		return (List<String>) data.get("MS_FOCUSED_ION");
+	}
+	public void MS_FOCUSED_ION(List<String> value) {
+		data.put("MS_FOCUSED_ION", value);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> MS_DATA_PROCESSING() {
+		return (List<String>) data.get("MS_DATA_PROCESSING");
+	}
+	public void MS_DATA_PROCESSING(List<String> value) {
+		data.put("MS_DATA_PROCESSING", value);
+	}
+	
+	public String PK_SPLASH() {
+		return (String) data.get("PK_SPLASH");
+	}
+	public void PK_SPLASH(String value) {
+		data.put("PK_SPLASH", value);
+	}
+	
 	public String toString() {
 		StringBuilder sb	= new StringBuilder();
 		
@@ -226,7 +257,7 @@ public class Record {
 		}
 		if (CH_NAME() != null) {
 			for(String ch_name : CH_NAME())
-				sb.append("CH_NAME: " + ch_name + "\n");
+				sb.append("CH$NAME: " + ch_name + "\n");
 		}
 		sb.append("CH$COMPOUND_CLASS: " + CH_COMPOUND_CLASS() + "\n");
 		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
@@ -263,20 +294,23 @@ public class Record {
 		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "\n");
 		if (AC_MASS_SPECTROMETRY() != null) {
 			for(String link : AC_MASS_SPECTROMETRY())
-				sb.append("AC_MASS_SPECTROMETRY: " + link + "\n");
+				sb.append("AC$MASS_SPECTROMETRY: " + link + "\n");
 		}
+		if (AC_CHROMATOGRAPHY() != null) {
+			for(String link : AC_CHROMATOGRAPHY())
+				sb.append("AC$CHROMATOGRAPHY: " + link + "\n");
+		}
+		if (MS_FOCUSED_ION() != null) {
+			for(String link : MS_FOCUSED_ION())
+				sb.append("MS$FOCUSED_ION: " + link + "\n");
+		}
+		if (MS_DATA_PROCESSING() != null) {
+			for(String link : MS_DATA_PROCESSING())
+				sb.append("MS$DATA_PROCESSING: " + link + "\n");
+		}
+		sb.append("PK$SPLASH: " + PK_SPLASH() + "\n");
 		
 		/*
-		sb.append("AC$INSTRUMENT_TYPE: " + this.AC$INSTRUMENT_TYPE + "\n");
-		for(String AC$MASS_SPECTROMETRY : this.AC$MASS_SPECTROMETRY)
-			sb.append("AC$MASS_SPECTROMETRY: " + AC$MASS_SPECTROMETRY + "\n");
-		for(String AC$CHROMATOGRAPHY : this.AC$CHROMATOGRAPHY)
-			sb.append("AC$CHROMATOGRAPHY: " + AC$CHROMATOGRAPHY + "\n");
-		for(String MS$FOCUSED_ION : this.MS$FOCUSED_ION)
-			sb.append("MS$FOCUSED_ION: " + MS$FOCUSED_ION + "\n");
-		for(String MS$DATA_PROCESSING : this.MS$DATA_PROCESSING)
-			sb.append("MS$DATA_PROCESSING: " + MS$DATA_PROCESSING + "\n");
-		sb.append("PK$SPLASH: " + this.PK$SPLASH + "\n");
 //		PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
 //		  57.0701 C4H9+ 1 57.0699 4.61
 //		  67.0542 C5H7+ 1 67.0542 0.35

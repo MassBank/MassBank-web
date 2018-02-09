@@ -642,6 +642,10 @@ Scan Cycle and Range.
 
 Example: `AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)`
 
+#### undocumented Subtags
+`ION_SPRAY_VOLTAGE`
+
+
 #### <a name="2.4.6"></a>2.4.6 AC$CHROMATOGRAPHY: subtag Description
 Experimental Method and Conditions of Chromatographic Separation.  Optional
 
@@ -696,6 +700,9 @@ N-alkylpyrinium-3-sulfonate based retention time index.
 Reference: http://nparc.cisti-icist.nrc-cnrc.gc.ca/eng/view/object/?id=b4db3589-ae0b-497e-af03-264785d7922f
 
 Example: `AC$CHROMATOGRAPHY: NAPS_RTI 100`
+
+#### undocumented Subtags
+`COLUMN_PRESSURE`
 
 ### 2.5 Description of Mass Spectral Data
 #### <a name="2.5.1"></a>2.5.1 MS$FOCUSED\_ION: subtag Description
@@ -764,6 +771,12 @@ Whole Process in Single Method / Software.
 
 Example: `MS$DATA_PROCESSING: WHOLE Analyst 1.4.2`
 
+#### undocumented Subtags
+`IGNORE`
+`REANALYZE`
+`RECALIBRATE`
+
+
 ### 2.6 Information of Mass Spectral Peaks
 #### <a name="2.6.1"></a>2.6.1 PK$SPLASH
 Hashed Identifier of Mass Spectra.   Mandatory and Single Line Information
@@ -773,26 +786,31 @@ Example: `PK$SPLASH: splash10-z200000000-87bb3c76b8e5f33dd07f`
 #### <a name="2.6.2"></a>2.6.2 PK$ANNOTATION
 Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
 
-Example 1:
-PK$ANNOTATION: m/z annotation exact_mass error(ppm) formula
-794.76 [PC(18:0,20:4)-CH3]- 794.56998 239 C45H81NO8P
-Example 2
+Example 1: 
+```
+PK$ANNOTATION: m/z annotation exact_mass error(ppm) formula 
+  794.76 [PC(18:0,20:4)-CH3]- 794.56998 239 C45H81NO8P
+```
+
+Example 2: 
+```
 PK$ANNOTATION: m/z {annotation formula exact_mass error(ppm)}
-494.34
-      [lyso PC(alkyl-18:0,-)]- C25H53NO6P 494.36105 -42
-Example 3
+  494.34 [lyso PC(alkyl-18:0,-)]- C25H53NO6P 494.36105 -42
+```
+Example 3:
+```
 PK$ANNOTATION: m/z formula annotation exact_mass error(ppm) 
-167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
-168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
+  167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
+    168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
+```
 Line 1 defines the record format of the annotation blocks. Contributors freely define the record format by using appropriate terms.
 Line 2 or later：sequence of multiple line annotation blocks.
-The first line of each annotation block should be indented by space space.  The second or later line in each annotation block should be indented by space space space space .
+The first line of each annotation block should be indented by `space space`.  The second or later line in each annotation block should be indented by `space space space space`.
 See Section 2.7.2 about more details of Example 3. 
 
-2.6.3 PK$NUM_PEAK *
-Total Number of Peaks in PK$PEAK (2.6.3) .  Mandatory
-Example
-PK$NUM_PEAK 86
+#### <a name="2.6.3"></a>2.6.3 PK$NUM\_PEAK
+Total Number of Peaks in PK$PEAK (2.6.4). Mandatory
+Example `PK$NUM_PEAK 86`
 
 2.6.4 PK$PEAK *
 Peak Data.  Mandatory and Multiple line Information

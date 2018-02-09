@@ -27,6 +27,7 @@ import net.sf.jniinchi.INCHI_RET;
 
 public class RecordParserDefinition extends GrammarDefinition {
 
+	@SuppressWarnings("unchecked")
 	public RecordParserDefinition(Record callback) {
 		def("start",
 			ref("accession")
@@ -53,6 +54,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("ac_mass_spectrometry_ms_type"))
 			.seq(ref("ac_mass_spectrometry_ion_mode"))
 			.seq(ref("ac_mass_spectrometry").optional())
+			.seq(ref("ac_chromatography").optional())
+			.seq(ref("ms_focused_ion").optional())
+			.seq(ref("ms_data_processing").optional())
+			.seq(ref("pk_splash"))
 		);/*
 			.seq(ref("endtag"))
 			.map((List<?> value) -> {
@@ -90,14 +95,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.or(letter().times(3).seq(digit().times(5)))
 				.flatten()
 				.map((String value) -> {
-					//System.out.println(value);
 					callback.ACCESSION(value);
 					return value;
 				})
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -109,7 +113,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("record_title",
 			StringParser.of("RECORD_TITLE")
 			.seq(ref("tagsep"))
-			.pick(0)
 			.seq(
 				ref("ch_name_value")
 				.seq(ref("valuesep"))
@@ -134,9 +137,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 			.map((List<?> value) -> {
-				if (value.get(value.size()-2) == null) callback.RECORD_TITLE(value.subList(1, value.size()-2).toString());
-				else callback.RECORD_TITLE(value.subList(1, value.size()-1).toString());
-				//System.out.println(value.toString());
+				//System.out.println(value);
+				if (value.get(value.size()-2) == null) callback.RECORD_TITLE(value.subList(2, value.size()-2).toString());
+				else callback.RECORD_TITLE(value.subList(2, value.size()-1).toString());
 				return value;						
 			})
 		);
@@ -176,8 +179,8 @@ public class RecordParserDefinition extends GrammarDefinition {
     		)
     		.seq(Token.NEWLINE_PARSER)
 			.map((List<?> value) -> {
+				//System.out.println(value);
 				callback.DATE((LocalDate) value.get(2));
-				//System.out.println(value.toString());
 				return value;						
 			})
 		);
@@ -200,7 +203,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -223,7 +226,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -245,7 +248,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -268,7 +271,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -303,20 +306,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
 			.map((List<?> value) -> {
-				List<String> comments = new ArrayList<String>();
-				for (int i = 0; i < value.size(); i++) {
-					@SuppressWarnings("unchecked")
-					List<String> tmp = (List<String>) value.get(i);
-					comments.add(tmp.get(2));
-				}
-				callback.COMMENT(comments);
 				//System.out.println(value);
+				List<String> comments = new ArrayList<String>();
+				for (Object v : value) comments.add(((List<String>) v).get(2));
+				callback.COMMENT(comments);
 				return value;
 			})
 		);
 		
 		
-		// 2.2 Information of Chemical Compound Analyzed
 		// 2.2.1 CH$NAME
 		// Name of the Chemical Compound Analyzed. Mandatory and Iterative
 		// Example
@@ -326,6 +324,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// protecting groups (TMS, etc.) is included.
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
+		// TODO no ';' in CH$NAME
 		def("ch_name_value",
 			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>"))
 			.plusLazy(Token.NEWLINE_PARSER.or(CharacterParser.of(';')))
@@ -338,14 +337,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
 			.map((List<?> value) -> {
-				List<String> ch_name = new ArrayList<String>();
-				for (int i = 0; i < value.size(); i++) {
-					@SuppressWarnings("unchecked")
-					List<String> tmp = (List<String>) value.get(i);
-					ch_name.add(tmp.get(2));
-				}
-				callback.CH_NAME(ch_name);
 				//System.out.println(value);
+				List<String> ch_name = new ArrayList<String>();
+				for (Object v : value) ch_name.add(((List<String>) v).get(2));
+				callback.CH_NAME(ch_name);
 				return value;						
 			})
 		);
@@ -429,7 +424,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 //			})
 		);
 		
-		// TODO handle empty SMILES better
 		// 2.2.5 CH$SMILES *
 		// SMILES String. Mandatory
 		// Example
@@ -462,7 +456,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 //			})
 		);
 
-		// TODO handle empty InChi better
 		// 2.2.6 CH$IUPAC *
 		// IUPAC International Chemical Identifier (InChI Code). Mandatory
 		// Example
@@ -521,20 +514,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// CH$LINK: INCHIKEY UFFBMTHBGFGIHF-UHFFFAOYSA-N
 		// CH$LINK: KEGG C00037
 		// CH$LINK: PUBCHEM SID: 11916 CID:182232
-		// Currently MassBank records have links to the following external databases :
-		// CAS
-		// CHEBI
-		// CHEMPDB
-		// CHEMSPIDER
-		// COMPTOX
-		// INCHIKEY
-		// KEGG
-		// KNAPSACK
-		// LIPIDBANK
-		// LIPIDMAPS
-		// PUBCHEM
 		// CH$LINK fields should be arranged by the alphabetical order of database names.
-		// InChI Key, a hashed version of InChI code, is a common link by chemical structures.
 		def("ch_link",
 			StringParser.of("CH$LINK")
 			.seq(ref("tagsep"))
@@ -626,19 +606,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(Token.NEWLINE_PARSER).optional()
 			)				
 			.map((List<?> value) -> {
+				// System.out.println(value);
 				List<String> link = new ArrayList<String>();
-				for (int i = 0; i < value.size(); i++) {
-					if (value.get(i) == null) continue;
-					@SuppressWarnings("unchecked")
-					List<String> tmp = (List<String>) value.get(i);
-					link.add(tmp.get(2) + " " + tmp.get(3));
+				for (Object v : value) {
+					if (v == null) continue;
+					link.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
 				}
 				callback.CH_LINK(link);
-				//System.out.println(value.toString());
 				return value;
 			})
 		);
-		
+
 		// 2.3.1 SP$SCIENTIFIC_NAME
 		// Scientific Name of Biological Species, from Which Sample was Prepared.  Optional
 		// Example
@@ -656,11 +634,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
 		
+		// 2.3.2 SP$LINEAGE
+		// Evolutionary lineage of the species, from which the sample was prepared. Optional
+		// Example: SP$LINEAGE: cellular organisms; Eukaryota; Fungi/Metazoa group; Metazoa; Eumetazoa; Bilateria; Coelomata; Deuterostomia; Chordata; Craniata; Vertebrata; Gnathostomata; Teleostomi; Euteleostomi; Sarcopterygii; Tetrapoda; Amniota; Mammalia; Theria; Eutheria; Euarchontoglires; Glires; Rodentia; Sciurognathi; Muroidea; Muridae; Murinae; Mus
 		def("sp_lineage",
 			StringParser.of("SP$LINEAGE")
 			.seq(ref("tagsep"))
@@ -674,64 +655,53 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
 
-		// TODO in spec file marked as unique. check!
-		// 2.3.2 SP$LINK subtag identifier
-		// Identifier of Biological Species in External Databases.  Optional
+		// 2.3.3 SP$LINK subtag identifier
+		// Identifier of Biological Species in External Databases.  Optional and iterative
 		// Example
 		// SP$LINK: NCBI-TAXONOMY 10090
 		def("sp_link",
-				StringParser.of("SP$LINK")
-				.seq(ref("tagsep"))
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER)
-				.plus()
-				.map((List<?> value) -> {
-					List<String> links = new ArrayList<String>();
-					for (int i = 0; i < value.size(); i++) {
-						@SuppressWarnings("unchecked")
-						List<String> tmp = (List<String>) value.get(i);
-						links.add(tmp.get(2));
-					}
-					callback.SP_LINK(links);
-					//System.out.println(value);
-					return value;
-				})
+			StringParser.of("SP$LINK")
+			.seq(ref("tagsep"))
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER)
+			.plus()
+			.map((List<?> value) -> {
+				//System.out.println(value);
+				List<String> links = new ArrayList<String>();
+				for (Object v : value) links.add(((List<String>) v).get(2));
+				callback.SP_LINK(links);
+				return value;
+			})
 		);
 		
-
-		// 2.3.3 SP$SAMPLE
+		// 2.3.4 SP$SAMPLE
 		// Tissue or Cell, from which Sample was Prepared. Optional and iterative
 		// Example
 		// SP$SAMPLE: Liver extracts
 		def("sp_sample",
 			StringParser.of("SP$SAMPLE")
 			.seq(ref("tagsep"))
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
-			.flatten())
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
 			.map((List<?> value) -> {
-				List<String> sample = new ArrayList<String>();
-				for (int i = 0; i < value.size(); i++) {
-					@SuppressWarnings("unchecked")
-					List<String> tmp = (List<String>) value.get(i);
-					sample.add(tmp.get(2));
-				}
-				callback.SP_SAMPLE(sample);
 				//System.out.println(value);
+				List<String> sample = new ArrayList<String>();
+				for (Object v : value) sample.add(((List<String>) v).get(2));
+				callback.SP_SAMPLE(sample);
 				return value;
 			})
 		);		
 
 		
 		// 2.4.1 AC$INSTRUMENT
-		// Commercial Name and Model of (Chromatographic Separation Instrument,
-		// if any were coupled, and) Mass Spectrometer and Manufacturer. Mandatory
+		// Commercial Name and Model of Chromatographic Separation Instrument,
+		// if any were coupled, and Mass Spectrometer and Manufacturer. Mandatory
 		// Example: AC$INSTRUMENT: LC-10ADVPmicro HPLC, Shimadzu; LTQ Orbitrap, Thermo Electron.
 		// Cross-reference to mzOntology: Instrument model [MS:1000031] All the instruments
 		// are given together in a single line. This record is not iterative.
@@ -748,7 +718,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -817,7 +787,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -851,7 +821,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
@@ -878,13 +848,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//			System.out.println(value.toString());
+//			System.out.println(value);
 //			return value;						
 //			})
 		);		
 		
 		// 2.4.5 AC$MASS_SPECTROMETRY: subtag Description
-		// Other Optional Experimental Methods and Conditions of Mass Spectrometry.
+		// Other Experimental Methods and Conditions of Mass Spectrometry. Optional
 		// Description is a list of numerical values with/without unit or a sentence. 
 		// AC$MASS_SPECTROMETRY fields should be arranged by the alphabetical order of subtag names.
 		// 2.4.5 Subtag: COLLISION_ENERGY
@@ -927,82 +897,395 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(StringParser.of("COLLISION_ENERGY").trim())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("COLLISION_GAS").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("DATE").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("DESOLVATION_GAS_FLOW").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("DESOLVATION_TEMPERATURE").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("FRAGMENTATION_MODE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
+					.seq(ref("tagsep"))
+					.seq(StringParser.of("ION_SPRAY_VOLTAGE").trim())
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+					.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("IONIZATION").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("IONIZATION_ENERGY").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("LASER").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("MATRIX").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("MASS_ACCURACY").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("REAGENT_GAS").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
-			.seq(StringParser.of("CH$LINK")
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("RESOLUTION").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("SCANNING").trim())
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
 			.map((List<?> value) -> {
+				// System.out.println(value);
 				List<String> subtag = new ArrayList<String>();
-				for (int i = 0; i < value.size(); i++) {
-					if (value.get(i) == null) continue;
-					@SuppressWarnings("unchecked")
-					List<String> tmp = (List<String>) value.get(i);
-					subtag.add(tmp.get(2) + " " + tmp.get(3));
+				for (Object v : value) {
+					if (v == null) continue;
+					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
 				}
 				callback.AC_MASS_SPECTROMETRY(subtag);
-				//System.out.println(value.toString());
 				return value;
 			})
 		);	
 			
+		// 2.4.6 AC$CHROMATOGRAPHY: subtag Description
+		// Experimental Method and Conditions of Chromatographic Separation. Optional
+		// AC$CHROMATOGRAPHY fields should be arranged by the alphabetical order of subtag names.
+		// 2.4.6 Subtag: CAPILLARY_VOLTAGE
+		// Voltage Applied to Capillary Electrophoresis or Voltage Applied to the Interface of LC-MS.
+		// Example: AC$CHROMATOGRAPHY: CAPILLARY_VOLTAGE 4 kV
+		// 2.4.6 Subtag: COLUMN_NAME
+		// Commercial Name of Chromatography Column and Manufacture.
+		// Example of LC: AC$CHROMATOGRAPHY: COLUMN_NAME Acquity UPLC BEH C18 2.1 by 50 mm (Waters, Milford, MA, USA) Example of CE: AC$CHROMATOGRAPHY: COLUMN_NAME Fused silica capillary id=50 um L=100 cm (HMT, Tsuruoka, Japan)
+		// 2.4.6 Subtag: COLUMN_TEMPERATURE
+		// Column Temperature.
+		// Example: AC$CHROMATOGRAPHY: COLUMN_TEMPERATURE 40 C
+		// 2.4.6 Subtag: FLOW_GRADIENT
+		// Gradient of Elusion Solutions.
+		// Example: AC$CHROMATOGRAPHY: FLOW_GRADIENT 0/100 at 0 min, 15/85 at 5 min, 21/79 at 20 min, 90/10 at 24 min, 95/5 at 26 min, 0/100, 30 min
+		// 2.4.6 Subtag: FLOW_RATE
+		// Flow Rate of Migration Phase.
+		// Example: AC$CHROMATOGRAPHY: FLOW_RATE 0.25 ml/min
+		// 2.4.6 Subtag: RETENTION_TIME
+		// Retention Time on Chromatography.
+		// Example: AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min
+		// Cross-reference to mzOntology: Retention time [MS:1000016]
+		// 2.4.6 Subtag: SOLVENT
+		// Chemical Composition of Buffer Solution. Iterative
+		// Example:
+		// AC$CHROMATOGRAPHY: SOLVENT A acetonitrile-methanol-water (19:19:2) with 0.1% acetic acid
+		// AC$CHROMATOGRAPHY: SOLVENT B 2-propanol with 0.1% acetic acid and 0.1% ammonium hydroxide (28%)
+		// 2.4.6 Subtag: NAPS_RTI
+		// N-alkylpyrinium-3-sulfonate based retention time index.
+		// Reference: http://nparc.cisti-icist.nrc-cnrc.gc.ca/eng/view/object/?id=b4db3589-ae0b-497e-af03-264785d7922f
+		// Example: AC$CHROMATOGRAPHY: NAPS_RTI 100	
+		def("ac_chromatography", 
+			StringParser.of("AC$CHROMATOGRAPHY")
+			.seq(ref("tagsep"))
+			.seq(StringParser.of("CAPILLARY_VOLTAGE").trim())
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER).optional()
 			
-			
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("COLUMN_NAME").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("COLUMN_PRESSURE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("COLUMN_TEMPERATURE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("FLOW_GRADIENT").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("FLOW_RATE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("RETENTION_TIME").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("SOLVENT").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).plus().optional()
+			)
+			.seq(StringParser.of("AC$CHROMATOGRAPHY")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("NAPS_RTI").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.map((List<?> value) -> {
+				//System.out.println(value);
+				List<String> subtag = new ArrayList<String>();
+				// the first 6 lines go directly to subtag if existing
+				for (Object v : value.subList(0,6)) {
+					if (v == null) continue;
+					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
+				}
+				// 7th element of parse tree might be AC$CHROMATOGRAPHY: SOLVENT with multiple lines
+				// need to be unnested
+				if (value.get(7) != null) {
+					for (Object v : (List<?>) value.get(7)) {
+						subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
+					}
+				}
+				for (Object v : value.subList(8,value.size())) {
+					if (v == null) continue;
+					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
+				}
+				callback.AC_MASS_SPECTROMETRY(subtag);
+				return value;
+			})			
+		);
+		
+		// 2.5.1 MS$FOCUSED_ION: subtag Description
+		// Information of Precursor or Molecular Ion. Optional
+		// MS$FOCUSED_ION fields should be arranged by the alphabetical order of subtag names.
+		// 2.5.1 Subtag: BASE_PEAK
+		// m/z of Base Peak.
+		// Example: MS$FOCUSED_ION: BASE_PEAK 73
+		// 2.5.1 Subtag: DERIVATIVE_FORM
+		// Molecular Formula of Derivative for GC-MS.
+		// Example
+		// MS$FOCUSED_ION: DERIVATIVE_FORM C19H42O5Si4
+		// MS$FOCUSED_ION: DERIVATIVE_FORM C{9+3*n}H{16+8*n}NO5Si{n}
+		// 2.5.1 Subtag: DERIVATIVE_MASS
+		// Exact Mass of Derivative for GC-MS.
+		// Example: MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093
+		// 2.5.1 Subtag: DERIVATIVE_TYPE
+		// Type of Derivative for GC-MS.
+		// Example: MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS
+		// 2.5.1 Subtag: ION_TYPE
+		// Type of Focused Ion.
+		// Example: MS$FOCUSED_ION: ION_TYPE [M+H]+
+		// Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+, [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+, [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-, [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-.
+		// 2.5.1 Subtag: PRECURSOR_M/Z
+		// m/z of Precursor Ion in MSn spectrum.
+		// Example: MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123
+		// Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to mzOntology: precursor m/z [MS:1000504]
+		// 2.5.1 Subtag: PRECURSOR_TYPE
+		// Type of Precursor Ion in MSn.
+		// Example: MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-
+		// Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+,
+		// [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+,
+		// [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-,
+		// [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-. Cross-reference to mzOntology: Precursor type [MS: 1000792]
+		def("precursor_type",
+			StringParser.of("[M]+*")
+			.or(StringParser.of("[M]+"))
+			.or(StringParser.of("[M+H]+"))
+			.or(StringParser.of("[2M+H]+"))
+			.or(StringParser.of("[M+Na]+"))
+			.or(StringParser.of("[M-H+Na]+"))
+			.or(StringParser.of("[2M+Na]+"))
+			.or(StringParser.of("[M+2Na-H]+"))
+			.or(StringParser.of("[(M+NH3)+H]+"))
+			.or(StringParser.of("[M+H-H2O]+"))
+			.or(StringParser.of("[M+H-C6H10O4]+"))
+			.or(StringParser.of("[M+H-C6H10O5]+"))
+			.or(StringParser.of("[M]-"))
+			.or(StringParser.of("[M-H]-"))
+			.or(StringParser.of("[M-2H]-"))
+			.or(StringParser.of("[M-2H+H2O]-"))
+			.or(StringParser.of("[M-H+OH]-"))
+			.or(StringParser.of("[2M-H]-"))
+			.or(StringParser.of("[M+HCOO-]-"))
+			.or(StringParser.of("[(M+CH3COOH)-H]-"))
+			.or(StringParser.of("[2M-H-CO2]-"))
+			.or(StringParser.of("[2M-H-C6H10O5]-"))
+		);
+		
+		def("ms_focused_ion", 
+			StringParser.of("MS$FOCUSED_ION")
+			.seq(ref("tagsep"))
+			.seq(StringParser.of("BASE_PEAK").trim())
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER).optional()
+			.seq(StringParser.of("MS$FOCUSED_ION")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("DERIVATIVE_FORM").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$FOCUSED_ION")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("DERIVATIVE_MASS").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$FOCUSED_ION")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("DERIVATIVE_TYPE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$FOCUSED_ION")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("ION_TYPE "))
+				.seq(ref("precursor_type"))
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$FOCUSED_ION")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("PRECURSOR_M/Z").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$FOCUSED_ION")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("PRECURSOR_TYPE").trim())
+				.seq(ref("precursor_type"))
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.map((List<?> value) -> {
+				// System.out.println(value);
+				List<String> subtag = new ArrayList<String>();
+				for (Object v : value) {
+					if (v == null) continue;
+					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
+				}
+				callback.MS_FOCUSED_ION(subtag);
+				return value;
+			})
+		);
+		
+		// 2.5.3 MS$DATA_PROCESSING: subtag
+		// Data Processing Method of Peak Detection. Optional
+		// MS$DATA_PROCESSING fields should be arranged by the alphabetical order of subtag names. Cross-reference to mzOntology: Data processing [MS:1000543]
+		// 2.5.3 Subtag: FIND_PEAK
+		// Peak Detection.
+		// Example: MS$DATA_PROCESSING: FIND_PEAK convexity search; threshold = 9.1
+		// 2.5.3 Subtag: WHOLE
+		// Whole Process in Single Method / Software.
+		// Example: MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
+		def("ms_data_processing", 
+			StringParser.of("MS$DATA_PROCESSING")
+			.seq(ref("tagsep"))
+			.seq(StringParser.of("FIND_PEAK").trim())
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER).optional()
+			.seq(StringParser.of("MS$DATA_PROCESSING")
+					.seq(ref("tagsep"))
+					.seq(StringParser.of("IGNORE").trim())
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+					.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$DATA_PROCESSING")
+					.seq(ref("tagsep"))
+					.seq(StringParser.of("REANALYZE").trim())
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+					.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$DATA_PROCESSING")
+					.seq(ref("tagsep"))
+					.seq(StringParser.of("RECALIBRATE").trim())
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+					.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.seq(StringParser.of("MS$DATA_PROCESSING")
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("WHOLE").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
+			.map((List<?> value) -> {
+				// System.out.println(value);
+				List<String> subtag = new ArrayList<String>();
+				for (Object v : value) {
+					if (v == null) continue;
+					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
+				}
+				callback.MS_DATA_PROCESSING(subtag);
+				return value;
+			})
+		);
+		
+		// 2.6.1 PK$SPLASH
+		// Hashed Identifier of Mass Spectra. Mandatory and Single Line Information
+		// Example: PK$SPLASH: splash10-z200000000-87bb3c76b8e5f33dd07f
+		def("pk_splash",
+			StringParser.of("PK$SPLASH")
+			.seq(ref("tagsep"))
+			.seq(
+				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+				.flatten()
+				.map((String value) -> {
+					callback.PK_SPLASH(value);
+					return value;
+				})
+			)
+			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//				System.out.println(value.toString());
+//				return value;						
+//			})
+		);
+		
 		
 	}
 
