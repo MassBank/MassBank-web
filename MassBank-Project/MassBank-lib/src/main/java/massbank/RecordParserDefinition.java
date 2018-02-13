@@ -1175,7 +1175,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(Token.NEWLINE_PARSER).optional()
 				)
 			.map((List<?> value) -> {
-				System.out.println(value);
+				//System.out.println(value);
 				List<String> subtag = new ArrayList<String>();
 				// the first 11 lines go directly to subtag if existing
 				for (Object v : value.subList(0,11)) {
