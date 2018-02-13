@@ -1499,7 +1499,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[M+Na]+*"))
 			.or(StringParser.of("[M-H+Na]+*"))
 			.or(StringParser.of("[M+Na]+"))
-			.or(StringParser.of("[M+Na]+"))
+			.or(StringParser.of("[M+K]+"))
 			.or(StringParser.of("[M-H+Na]+"))
 			.or(StringParser.of("[2M+Na]+"))
 			.or(StringParser.of("[M+2Na-H]+"))
@@ -1509,6 +1509,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[M+H-C6H10O4]+"))
 			.or(StringParser.of("[M+H-C6H10O5]+"))
 			.or(StringParser.of("[M+H-C12H20O9]+"))
+			
 			.or(StringParser.of("[M]-"))
 			.or(StringParser.of("[M-H]-/[M-Ser]-"))
 			.or(StringParser.of("[M-H]-"))
