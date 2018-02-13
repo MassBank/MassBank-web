@@ -644,7 +644,18 @@ Example: `AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)`
 
 #### undocumented Subtags
 `ION_SPRAY_VOLTAGE`
-
+`CAPILLARY_VOLTAGE`
+`FRAGMENTATION_METHOD`
+`FRAGMENTATION_MODE`
+`NEBULIZER`
+`DATAFORMAT`
+`SOURCE_TEMPERATURE`
+`SCAN_RANGE_M/Z`
+`ION_SOURCE_TEMPERATURE`
+`GAS_PRESSURE`
+`RESOLUTION`
+`ATOM_GUN_CURRENT`
+`BOMBARDMENT`
 
 #### <a name="2.4.6"></a>2.4.6 AC$CHROMATOGRAPHY: subtag Description
 Experimental Method and Conditions of Chromatographic Separation.  Optional
@@ -703,6 +714,10 @@ Example: `AC$CHROMATOGRAPHY: NAPS_RTI 100`
 
 #### undocumented Subtags
 `COLUMN_PRESSURE`
+`INJECTION_TEMPERATURE`
+`OVEN_TEMPERATURE`
+`SAMPLING_CONE`
+`TRANSFARLINE_TEMPERATURE`
 
 ### 2.5 Description of Mass Spectral Data
 #### <a name="2.5.1"></a>2.5.1 MS$FOCUSED\_ION: subtag Description
@@ -775,6 +790,7 @@ Example: `MS$DATA_PROCESSING: WHOLE Analyst 1.4.2`
 `IGNORE`
 `REANALYZE`
 `RECALIBRATE`
+`DEPROFILE`
 
 
 ### 2.6 Information of Mass Spectral Peaks
