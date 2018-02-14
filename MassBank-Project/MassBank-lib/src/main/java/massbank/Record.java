@@ -241,6 +241,21 @@ public class Record {
 		data.put("PK_SPLASH", value);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<String> PK_ANNOTATION() {
+		return (List<String>) data.get("PK_ANNOTATION");
+	}
+	public void PK_ANNOTATION(List<String> value) {
+		data.put("PK_ANNOTATION", value);
+	}
+	
+	public Integer PK_NUM_PEAK() {
+		return (Integer) data.get("PK_NUM_PEAK");
+	}
+	public void PK_NUM_PEAK(Integer value) {
+		data.put("PK_NUM_PEAK", value);
+	}
+	
 	public String toString() {
 		StringBuilder sb	= new StringBuilder();
 		
@@ -309,7 +324,11 @@ public class Record {
 				sb.append("MS$DATA_PROCESSING: " + link + "\n");
 		}
 		sb.append("PK$SPLASH: " + PK_SPLASH() + "\n");
-		
+		if (PK_ANNOTATION() != null) {
+			for(String link : PK_ANNOTATION())
+				sb.append("PK$ANNOTATION: " + link + "\n");
+		}
+		sb.append("PK$NUM_PEAK: " + PK_NUM_PEAK() + "\n");
 		/*
 //		PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
 //		  57.0701 C4H9+ 1 57.0699 4.61

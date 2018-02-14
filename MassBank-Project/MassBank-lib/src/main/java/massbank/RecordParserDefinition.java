@@ -58,6 +58,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("ms_focused_ion").optional())
 			.seq(ref("ms_data_processing").optional())
 			.seq(ref("pk_splash"))
+			.seq(ref("pk_annotation").optional())
+			.seq(ref("pk_num_peak").optional())
 		);/*
 			.seq(ref("endtag"))
 			.map((List<?> value) -> {
@@ -480,6 +482,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 								if (ret == INCHI_RET.WARNING) {
 									// Structure generated, but with warning message
 									System.out.println("InChI warning: " + intostruct.getMessage());
+									System.out.println(callback.ACCESSION());
 								} 
 								else if (ret != INCHI_RET.OKAY) {
 									// Structure generation failed
@@ -1674,12 +1677,49 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
-//				System.out.println(value.toString());
+//				System.out.println(value);
 //				return value;						
 //			})
 		);
 		
+		// 2.6.2 PK$ANNOTATION
+		// Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
+		// TODO call callback function
+		def("pk_annotation",
+			StringParser.of("PK$ANNOTATION")
+			.seq(ref("tagsep"))
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER)
+			.seq(StringParser.of("  "))
+			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER)
+			.seq(StringParser.of("    ")
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).plus().optional()
+			)
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
 		
+		def("pk_num_peak",
+			StringParser.of("PK$NUM_PEAK")
+			.seq(ref("tagsep"))
+			.seq(
+				digit().plus().flatten()
+				.map((String value) -> {
+	        		Integer i = Integer.parseUnsignedInt(value);
+	        		callback.PK_NUM_PEAK(i);
+	        		return value;
+	        	})
+			)
+			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//				System.out.println(value.toString());
+//				return value;						
+//			})
+		);
 	}
 
 }
