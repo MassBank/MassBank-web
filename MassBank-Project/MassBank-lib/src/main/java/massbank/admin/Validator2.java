@@ -156,10 +156,8 @@ public class Validator2 {
 			" 411.3 1871 5\n" +
 			" 414.3 9233 24\n" +
 			"//";
-
-	public static void main(String[] arguments) throws Exception {
-		if (arguments.length==1) recordstring = new String(Files.readAllBytes(Paths.get(arguments[0])));
-
+	
+	public static Record validate(String recordstring) {
 		// test non standard ASCII chars and print warnings
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
@@ -178,13 +176,15 @@ public class Validator2 {
 					}
 					line++;
 				}
-	        }
-	    }
+			}
+		}
+
 		Record record = new Record();
 		Parser recordparser = new RecordParser(record);
 		Result res = null;
 		res = recordparser.parse(recordstring);
 		if (res.isFailure()) {
+			System.err.println();
 			System.err.println(res.getMessage());
 			int position = res.getPosition();
 			String[] tokens = recordstring.split("\\n");
@@ -198,15 +198,32 @@ public class Validator2 {
 					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
 					error_at.setCharAt(col, '^');
 					System.err.println(error_at);
-					System.exit(1);
+					record = new Record();
+					break;
 				}
 				line++;
 			}
 		}
-		if (arguments.length==0)
-		{
-			//System.out.println(res.get().toString());
+		return record;
+	}
+
+	public static void main(String[] arguments) throws Exception {
+		boolean haserror = false;
+		if (arguments.length==0) {
+			Record record = validate(recordstring);
 			System.out.println(record.toString());
 		}
+		else {
+			for (String filename : arguments) {
+				recordstring = new String(Files.readAllBytes(Paths.get(filename)));
+				Record record = validate(recordstring);
+				if (record.ACCESSION() == null) {
+					System.err.println("Error in " + filename);
+					haserror = true;
+				}
+			}
+			
+		}
+		if (haserror) System.exit(1);
 	}
 }
