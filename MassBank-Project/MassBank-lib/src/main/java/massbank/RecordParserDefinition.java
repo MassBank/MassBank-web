@@ -1494,6 +1494,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("[M]+*")
 			.or(StringParser.of("[M]++"))
 			.or(StringParser.of("[M]+"))
+			.or(StringParser.of("[M+H]+,[M-H2O+H]+"))
 			.or(StringParser.of("[M+H]+"))
 			.or(StringParser.of("[M+2H]++"))
 			.or(StringParser.of("[2M+H]+"))
@@ -1504,6 +1505,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[M+Na]+"))
 			.or(StringParser.of("[M+K]+"))
 			.or(StringParser.of("[M+K]+"))
+			.or(StringParser.of("[M-H2O+H]+,[M-2H2O+H]+"))
 			.or(StringParser.of("[M-H2O+H]+"))
 			.or(StringParser.of("[M+15]+"))
 			.or(StringParser.of("[M-H+Na]+"))
@@ -1512,9 +1514,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[(M+NH3)+H]+"))
 			.or(StringParser.of("[M+NH4]+"))
 			.or(StringParser.of("[M+H-H2O]+"))
+			.or(StringParser.of("[M-2H2O+H]+,[M-H2O+H]+"))
+			.or(StringParser.of("[M-2H2O+H]+"))
 			.or(StringParser.of("[M+H-C6H10O4]+"))
 			.or(StringParser.of("[M+H-C6H10O5]+"))
 			.or(StringParser.of("[M+H-C12H20O9]+"))
+			
+			.or(StringParser.of("[M-3]+,[M-H2O+H]+"))
 			
 			.or(StringParser.of("[M]-"))
 			.or(StringParser.of("[M-H]-/[M-Ser]-"))
@@ -1536,6 +1542,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[M+CH3COO]-"))
 			.or(StringParser.of("[2M-H-CO2]-"))
 			.or(StringParser.of("[2M-H-C6H10O5]-"))
+			.or(StringParser.of("[M-H-CO2-2HF]-"))
 		);
 		
 		def("ms_focused_ion", 
