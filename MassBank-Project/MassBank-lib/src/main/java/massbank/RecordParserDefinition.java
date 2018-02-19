@@ -59,15 +59,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("ms_data_processing").optional())
 			.seq(ref("pk_splash"))
 			.seq(ref("pk_annotation").optional())
-			.seq(ref("pk_num_peak").optional())
-		);/*
+			.seq(ref("pk_num_peak"))
+			.seq(ref("pk_peak"))
 			.seq(ref("endtag"))
-			.map((List<?> value) -> {
-				value.remove(value.size()-1);
-				return value;
-			})
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
 			.end()
-		);*/
+		);
 		
 		// 1.1 Syntax Rules
 		// Single line information is either one of the followings:
@@ -1727,6 +1727,26 @@ public class RecordParserDefinition extends GrammarDefinition {
 //				return value;						
 //			})
 		);
+		
+		def("pk_peak",
+			StringParser.of("PK$PEAK")
+			.seq(ref("tagsep"))
+			.seq(StringParser.of("m/z int. rel.int."))
+			.seq(Token.NEWLINE_PARSER)
+			.seq(
+				StringParser.of("  ")
+				.seq(CharacterParser.any().plusLazy(CharacterParser.whitespace()).flatten())
+				.seq(CharacterParser.whitespace())
+				.seq(CharacterParser.any().plusLazy(CharacterParser.whitespace()))
+				.seq(CharacterParser.whitespace())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER))
+				.seq(Token.NEWLINE_PARSER).plus()
+			)
+				.map((List<?> value) -> {
+					System.out.println(value);
+					return value;						
+				})
+			);
 	}
 
 }

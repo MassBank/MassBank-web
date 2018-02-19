@@ -853,17 +853,20 @@ Example: `PK$SPLASH: splash10-z200000000-87bb3c76b8e5f33dd07f`
 Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
 
 Example 1: 
+
 ```
 PK$ANNOTATION: m/z annotation exact_mass error(ppm) formula 
   794.76 [PC(18:0,20:4)-CH3]- 794.56998 239 C45H81NO8P
 ```
 
 Example 2: 
+
 ```
 PK$ANNOTATION: m/z {annotation formula exact_mass error(ppm)}
   494.34 [lyso PC(alkyl-18:0,-)]- C25H53NO6P 494.36105 -42
 ```
 Example 3:
+
 ```
 PK$ANNOTATION: m/z formula annotation exact_mass error(ppm) 
   167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
@@ -878,19 +881,24 @@ See Section 2.7.2 about more details of Example 3.
 Total Number of Peaks in PK$PEAK (2.6.4). Mandatory
 Example `PK$NUM_PEAK 86`
 
-2.6.4 PK$PEAK *
+#### <a name="2.6.4"></a>2.6.4 PK$PEAK
 Peak Data.  Mandatory and Multiple line Information
-Example
+Example:
+
+```
 PK$PEAK: m/z int. rel.int.
-     326.65 5.3 5
-328.28 7.6 7
-・	Line 1:  fixed string which denotes the format of Line 2 or later.
-PK$PEAK:  m/z int. rel.int.
-・	Format of Line 2 or later: space space MZ space INT space REL
-－	MZ: m/z of the peak.
-－	INT: intensity of the peak.
-－	REL: an integer from 1 to 999 which denotes relative intensity of the peak.
-・Peaks are arranged in the ascending order of m/z.
+  326.65 5.3 5
+  328.28 7.6 7
+```
+Line 1:  fixed string which denotes the format of Line 2 or later.
+`PK$PEAK: m/z int. rel.int.`
+
+Line 2 or later: `space` `space` `MZ` `space` `INT` `space` `REL`
+- MZ: m/z of the peak.
+- INT: intensity of the peak.
+- REL: an integer from 1 to 999 which denotes relative intensity of the peak.
+
+Peaks are arranged in the ascending order of m/z.
 
 2.7 Supplementary Definitions
 2.7.1 Description of Isotope-Labeled Compounds

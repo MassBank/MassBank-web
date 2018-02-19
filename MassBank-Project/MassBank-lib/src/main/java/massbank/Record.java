@@ -1,6 +1,7 @@
 package massbank;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -256,6 +257,12 @@ public class Record {
 		data.put("PK_NUM_PEAK", value);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<List<String>> PK_PEAK() {
+		return (List<List<String>>) data.get("PK_PEAK");
+	}
+	
+		
 	public String toString() {
 		StringBuilder sb	= new StringBuilder();
 		
@@ -329,6 +336,7 @@ public class Record {
 				sb.append("PK$ANNOTATION: " + link + "\n");
 		}
 		sb.append("PK$NUM_PEAK: " + PK_NUM_PEAK() + "\n");
+		
 		/*
 //		PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
 //		  57.0701 C4H9+ 1 57.0699 4.61
