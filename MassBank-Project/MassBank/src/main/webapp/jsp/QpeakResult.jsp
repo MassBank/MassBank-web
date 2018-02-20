@@ -498,10 +498,12 @@
 		param += paramCondition;
 		ArrayList<String> result = null;
 		if ( siteNo == -1 ) {
-			result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+			//result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
+			result = mbcommon.execDispatcher(typeName, request, conf);
 		}
 		else {
-			result = mbcommon.execDispatcher( serverUrl, typeName, param, false, String.valueOf(siteNo) );
+			//result = mbcommon.execDispatcher( serverUrl, typeName, param, false, String.valueOf(siteNo) );
+			result = mbcommon.execDispatcher(typeName, request, conf);
 		}
 		
 		out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
@@ -565,12 +567,12 @@
 				// データ切り出し
 				String rec = (String)result.get(i);
 				String[] fields = rec.split("\t");
-				String name    = fields[0];  
-				String id      = fields[1];
-				String ion     = fields[2];
-				String formula = fields[3];
-				String hitScore= fields[4];
-				String site    = fields[5];
+				String name    = fields[1];  
+				String id      = fields[0];
+				String ion     = fields[3];
+				String formula = fields[4];
+				String hitScore= fields[2];
+				String site    = "0";
 				
 				// ヒットピーク数、スコア
 				String score = "";

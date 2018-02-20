@@ -67,7 +67,7 @@
 	/** 1行に表示する項目数 **/
 	private static final int[] itemNumOfLine = { 3, 3, 5, 2, 2, 6 };
 	/** 取得結果のヘッダー **/
-	private static final String[] header = { "INSTRUMENT", "MS", "MERGED", "ION", "COMPOUND" };
+	private static final String[] header = { "INSTRUMENT", "MS", "MERGED", "ION", "COMPOUND", "SITE" };
 %>
 <%
 	ServletContext context = getServletContext();
@@ -91,8 +91,9 @@
 	// 検索実行・結果取得
 	//-------------------------------------
 	MassBankCommon mbcommon = new MassBankCommon();
-	String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
-	ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
+	//String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
+	//ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
+	ArrayList<String> result = mbcommon.execDispatcher("idxcnt",request,conf);
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();
@@ -106,17 +107,17 @@
 		String line = (String)result.get(i);
 		if ( line.equals("") ) { continue; }
 		String[] fields = line.split("\t");
-		int siteNo = Integer.parseInt(fields[fields.length - 1]);
+		//int siteNo = Integer.parseInt(fields[fields.length - 1]);
 		String key = fields[0].split(":")[0];
 		String val = "";
-		if ( key.equals(indexType[0]) ) {
-			val = siteNameList[siteNo] + "\t" + siteNo;
-		}
-		else {
+		//if ( key.equals(indexType[0]) ) {
+		//	val = siteNameList[siteNo] + "\t" + siteNo;
+		//}
+		//else {
 			val = fields[0].split(":")[1];
-		}
+		//}
 		int count = Integer.parseInt( fields[1] );
-		if ( key.equals("site") ) {			// Contributor
+		if ( key.equals(header[5]) ) {			// Contributor
 			if ( !cntSiteMap.containsKey(val) ) { cntSiteMap.put(val, count); }
 			else { cntSiteMap.put(val, cntSiteMap.get(val)+count); }
 		}
@@ -217,7 +218,7 @@
 	Set<String> siteKeys = cntSiteMap.keySet();
 	for (Iterator i = siteKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
-		int siteNum = Integer.parseInt(val.split("\t")[1]);
+		//int siteNum = Integer.parseInt(val.split("\t")[1]);
 		int count = cntSiteMap.get(val);
 		
 		// テーブル行終了・開始
@@ -228,15 +229,17 @@
 		siteItemCnt++;
 		
 		// テーブルデータ
-		linkName = siteNameList[siteNum];
+		// linkName = siteNameList[siteNum];
 		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
-				   + indexType[0] + "&srchkey=" + String.valueOf(siteNum) + "&sortKey=name&sortAction=1&pageNo=1&exec=";
-		toolTipName = siteLongNameList[siteNum];
+				   + indexType[0] + "&srchkey=" + val + "&sortKey=name&sortAction=1&pageNo=1&exec=";
+		// toolTipName = siteLongNameList[siteNum];
 		countStr = "(" + numFormat.format(count) + ")";
 		//countStr = "(" + "<a href=\"" + DataManagement.toMsp(DataManagement.search(indexType[0], String.valueOf(siteNum), "name", "1", ""), toolTipName + ".msp") + "\" title=\"Download " + numFormat.format(count) + " record(s) in NIST *.msp format\"><img src=\"./image/download_icon.png\" title=\"Download " + numFormat.format(count) + " record(s) in NIST *.msp format\" width=\"16\" height=\"16\" />" + numFormat.format(count) + "</a>" + ")";
 		out.println( "<td>" );
-		out.println( "<a href=\"" + linkUrl + "\" title=\"" + toolTipName.replaceAll(" ", "&nbsp;") + "\" target=\"_self\">" + linkName.replaceAll(" ", "&nbsp;") + "</a>"
-				   + "&nbsp;&nbsp;" + countStr + "&nbsp;&nbsp;" );
+		//out.println( "<a href=\"" + linkUrl + "\" title=\"" + toolTipName.replaceAll(" ", "&nbsp;") + "\" target=\"_self\">" + linkName.replaceAll(" ", "&nbsp;") + "</a>"
+		//		   + "&nbsp;&nbsp;" + countStr + "&nbsp;&nbsp;" );
+		out.println( "<a href=\"" + linkUrl + "\" title=\"" + val.replaceAll(" ", "&nbsp;") + "\" target=\"_self\">" + val.replaceAll(" ", "&nbsp;") + "</a>"
+				+ "&nbsp;&nbsp;" + countStr + "&nbsp;&nbsp;" );
 		out.println( "</td>" );
 		
 		// グラフ用データ収集

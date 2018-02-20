@@ -59,7 +59,7 @@
 		}
 	}
 	
-	if(databaseName != null && databaseName.equals("") && accession != null && !accession.equals("")){
+/*	if(databaseName != null && databaseName.equals("") && accession != null && !accession.equals("")){
 		databaseName	= AccessionData.getDatabaseOfAccession(accession);
 		
 		// redirect from URL without database parameter to URL with database parameter
@@ -69,7 +69,7 @@
 		
 		response.sendRedirect(redirectUrl);
 		return;
-	}
+	}*/
 	
 	// ##################################################################################################
 	// error handling

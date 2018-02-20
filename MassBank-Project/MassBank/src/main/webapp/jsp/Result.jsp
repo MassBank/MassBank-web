@@ -573,8 +573,10 @@
 		out.println( " <tr>" );
 		
 		if ( pIdxtype.equals("site") ) {		// Site
+			//out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Contributor: <b>"
+			//	+ siteLongName[Integer.parseInt(pSrchkey)] + "</b></td>" );
 			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Contributor: <b>"
-				+ siteLongName[Integer.parseInt(pSrchkey)] + "</b></td>" );
+					+ pSrchkey + "</b></td>" );
 		}
 		else if ( pIdxtype.equals("inst") ) {	// Instrument Type
 			out.println( "  <td>&nbsp;&nbsp;&nbsp;&nbsp;Instrument Type: <b>" + pSrchkey + "</b></td>" );
@@ -744,11 +746,18 @@
 	
 	// 検索実行
 	// execute search
-	if ( isMulti ) {;
-		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
+	if (typeName.compareTo("quick") == 0) {
+		list = mbcommon.execDispatcherResult(typeName, request, conf);
+	} else if (typeName.compareTo("rcdidx") == 0) {
+		list = mbcommon.execDispatcherResult(typeName, request, conf);
 	}
 	else {
-		list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
+		if ( isMulti ) {
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
+		}
+		else {
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
+		}
 	}
 	
 	out.println( "<span id=\"menu\"></span>");

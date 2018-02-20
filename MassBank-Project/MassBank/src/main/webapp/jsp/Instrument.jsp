@@ -118,7 +118,7 @@
 	}
 	
 	//-------------------------------------------
-	// パラメータ取得
+	// パラメータ取得 ()
 	//-------------------------------------------
 	boolean isFirst = true;
 	String first = request.getParameter("first");
@@ -195,21 +195,22 @@
 	}
 	
 	//-------------------------------------------
-	// Instrument Type, MS Typeを取得
+	// Aquire (を取得) Instrument Type, MS Type
 	//-------------------------------------------
-	GetInstInfo instInfo = null;
-	if ( !isPeakAdv ) {
-		instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
-	}
-	else {
-		instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL), 2, true);
-	}
+	GetInstInfo instInfo = new GetInstInfo(request);
+//	GetInstInfo instInfo = null;
+//	if ( !isPeakAdv ) {
+//		instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+//	}
+//	else {
+//		instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL), 2, true);
+//	}
 	Map<String, List<String>> instGroup = instInfo.getTypeGroup();
 	Iterator instIt = instGroup.keySet().iterator();
 	String[] msInfo = instInfo.getMsAll();
 	
 	//--------------------------------------------
-	// Instrument Type チェックボックス表示
+	// Instrument Type check box display (チェックボックス表示)
 	//--------------------------------------------
 	out.println( "\t\t\t\t\t\t<table width=\"340\" class=\"cond\">" );
 	out.println( "\t\t\t\t\t\t\t<tr>" );
