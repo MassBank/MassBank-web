@@ -33,14 +33,16 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class MassBankCommon {
 	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
 	public static final String MULTI_DISPATCHER_NAME = "MultiDispatcher";
 
-	// ＜検索条件数＞
+	// <Number of search conditions> (＜検索条件数＞)
 	public static final int PEAK_SEARCH_PARAM_NUM     = 6;
 	
-	// ＜リクエスト種別＞
+	// <Request type> (＜リクエスト種別＞)
 	public static final String REQ_TYPE_PEAK      = "peak";
 	public static final String REQ_TYPE_PEAKDIFF  = "diff";
 	public static final String REQ_TYPE_DISP      = "disp";
@@ -72,11 +74,11 @@ public class MassBankCommon {
 	public static final String REQ_TYPE_GETCINFO  = "gcinfo";
 	public static final String REQ_TYPE_GETFORMULA = "gform";
 	
-	// ＜CGIテーブルインデックス＞
-	public static final int CGI_TBL_NUM_TYPE = 0;		// CGI種別指定
-	public static final int CGI_TBL_NUM_FILE = 1;		// CGIファイル指定
+	// <CGI table index> (＜CGIテーブルインデックス＞)
+	public static final int CGI_TBL_NUM_TYPE = 0;		// CGI type specification (CGI種別指定)
+	public static final int CGI_TBL_NUM_FILE = 1;		// CGI file specification (CGIファイル指定)
 
-	// ＜CGIテーブル番号＞
+	// <CGI table number> (＜CGIテーブル番号＞)
 	public static final int CGI_TBL_TYPE_PEAK     = 0;
 	public static final int CGI_TBL_TYPE_PDIFF    = 1;
 	public static final int CGI_TBL_TYPE_DISP     = 2;
@@ -109,7 +111,7 @@ public class MassBankCommon {
 	public static final int CGI_TBL_TYPE_GETFORMULA = 29;
 	
 
-	// ＜CGIテーブル＞
+	// <<CGI table> (＜CGIテーブル＞)
 	public static final String[][] CGI_TBL = {
 		{ REQ_TYPE_PEAK,     REQ_TYPE_PEAKDIFF,  REQ_TYPE_DISP,     REQ_TYPE_GDATA,
 		  REQ_TYPE_GDATA2,   REQ_TYPE_SEARCH,    REQ_TYPE_GNAME,    REQ_TYPE_GPEAK,
@@ -135,12 +137,12 @@ public class MassBankCommon {
 
 	
 	/**
-	 * サーブレットMultiDispatcherを実行する
-	 * @param serverUrl 	ベースURL
-	 * @param type		リクエスト種別
-	 * @param param	URLパラメータ（リクエスト種別を含まない）
+	 * Run servlet MultiDispatcher (サーブレットMultiDispatcherを実行する)
+	 * @param serverUrl 	Base URL (ベースURL)
+	 * @param type		Request type (リクエスト種別)
+	 * @param param		URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
 	 * @return
-	 * @deprecated 非推奨メソッド
+	 * @deprecated Deprecated methods (非推奨メソッド)
 	 * @see execDispatcher(String serverUrl, String type, String param, boolean isMulti, String siteNo)
 	 */
 	public ArrayList<String> execMultiDispatcher( String serverUrl, String type, String param ) {
@@ -149,12 +151,12 @@ public class MassBankCommon {
 	
 	
 	/**
-	 * サーブレットMultiDispatcher または、Dispatcher.jspを実行する
-	 * @param serverUrl		サーバーURL
-	 * @param type			リクエスト種別
-	 * @param param			URLパラメータ（リクエスト種別を含まない）
-	 * @param isMulti		マルチフラグ
-	 * @param siteNo		サイトNo.
+	 * Run servlet MultiDispatcher or Dispatcher.jsp (サーブレットMultiDispatcher または、Dispatcher.jspを実行する)
+	 * @param serverUrl		Server URL (サーバーURL)
+	 * @param type			Request type (リクエスト種別)
+	 * @param param			URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
+	 * @param isMulti		Multi Flag (マルチフラグ)
+	 * @param siteNo			Site No. (サイトNo.)
 	 * @return 
 	 */
 	public ArrayList<String> execDispatcher(
@@ -174,7 +176,7 @@ public class MassBankCommon {
 			site = Integer.parseInt(siteNo);
 		}
 		
-		// URLパラメータ生成
+		// URL parameter generation (URLパラメータ生成)
 		String reqParam = "type=" + type;
 		if ( !param.equals("") ) {
 			reqParam += "&" + param;
@@ -192,7 +194,7 @@ public class MassBankCommon {
 			boolean isStartSpace = true;
 			String line = "";
 			while ( ( line = in.readLine() ) != null ) {
-				// 先頭スペースを読み飛ばすため
+				// To skip leading spaces (先頭スペースを読み飛ばすため)
 				if ( isStartSpace ) {
 					if ( line.equals("") ) {
 						continue;
@@ -218,16 +220,41 @@ public class MassBankCommon {
 		return result;
 	 }
 	
+	public ArrayList<String> execDispatcher(
+			String type,
+			HttpServletRequest request,
+			GetConfig conf
+			) {
+		
+		ArrayList<String> result = new ArrayList<String>();
+		
+		if (type.compareTo("inst") == 0) {
+			DatabaseManager db = DatabaseManager.create();
+			result = db.inst(request, conf);
+		}
+		
+		if (type.compareTo("search") == 0) {
+			DatabaseManager db = DatabaseManager.create();
+			result = db.search(request, conf);
+		}
+		
+		if (type.compareTo("idxcnt") == 0) {
+			DatabaseManager db = DatabaseManager.create();
+			result = db.idxcnt(request, conf);
+		}
+		
+		return result;
+	 }	
 
 	/**
-	 * サーブレットMultiDispatcher または、Dispatcher.jspを実行する（検索結果ページ表示用）
-	 * @param serverUrl		サーバーURL
-	 * @param type			リクエスト種別
-	 * @param reqParam		URLパラメータ（リクエスト種別を含まない）
-	 * @param isMulti		マルチフラグ
-	 * @param siteNo		サイトNo.
-	 * @param conf			設定ファイル情報オブジェクト
-	 * @return レコード情報リスト
+	 * Execute Servlet MultiDispatcher or Dispatcher.jsp (for displaying search results page) (サーブレットMultiDispatcher または、Dispatcher.jspを実行する（検索結果ページ表示用）)
+	 * @param serverUrl		Server URL (サーバーURL)
+	 * @param type			Request type (リクエスト種別)
+	 * @param reqParam		URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
+	 * @param isMulti		Multi Flag (マルチフラグ)
+	 * @param siteNo		Site No. (サイトNo.)
+	 * @param conf			Configuration file information object (設定ファイル情報オブジェクト)
+	 * @return Record information list (レコード情報リスト)
 	 */
 	public ResultList execDispatcherResult(
 			String serverUrl,
@@ -247,7 +274,7 @@ public class MassBankCommon {
 			site = Integer.parseInt(siteNo);
 		}
 		
-		// 結果取得
+		// Results obtained (結果取得)
 		ArrayList<String> allLine = new ArrayList<String>();
 		try {
 			URL url = new URL( reqUrl );
@@ -262,7 +289,7 @@ public class MassBankCommon {
 			boolean isStartSpace = true;
 			String line = "";
 			while ( ( line = in.readLine() ) != null ) {
-				// 先頭スペースを読み飛ばすため
+				// To skip leading spaces (先頭スペースを読み飛ばすため)
 				if ( isStartSpace ) {
 					if ( line.equals("") ) {
 						continue;
@@ -287,8 +314,7 @@ public class MassBankCommon {
 			ex.printStackTrace();
 		}
 		
-		// 結果情報レコード生成
-		// Result information record generation
+		// Result information record generation (結果情報レコード生成)
 		ResultList list = new ResultList(conf);
 		ResultRecord record;
 		int nodeGroup = -1;
@@ -303,7 +329,7 @@ public class MassBankCommon {
 			record.setFormula(fields[3]);
 			record.setEmass(fields[4]);
 			record.setContributor(fields[fields.length-1]);
-			// ノードグループ設定
+			// Node group setting (ノードグループ設定)
 			if (!nodeCount.containsKey(record.getName())) {
 				nodeGroup++;
 				nodeCount.put(record.getName(), nodeGroup);
@@ -315,7 +341,7 @@ public class MassBankCommon {
 			list.addRecord(record);
 		}
 		
-		// ソートキー取得
+		// Get sort key (ソートキー取得)
 		String sortKey = ResultList.SORT_KEY_NAME;
 		if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_FORMULA) != -1) {
 			sortKey = ResultList.SORT_KEY_FORMULA;
@@ -327,14 +353,151 @@ public class MassBankCommon {
 			sortKey = ResultList.SORT_KEY_ID;
 		}
 		
-		// ソートアクション取得
+		// Acquire sort action (ソートアクション取得)
 		int sortAction = ResultList.SORT_ACTION_ASC;
 		if (reqParam.indexOf("sortAction=" + ResultList.SORT_ACTION_DESC) != -1) {
 			sortAction = ResultList.SORT_ACTION_DESC;
 		}
 		
-		// レコードソート
+		// Record sort (レコードソート)
 		list.sortList(sortKey, sortAction);
+		
+		
+		return list;
+	 }
+	
+	public ResultList execDispatcherResult(
+			String type,
+			HttpServletRequest request,
+			GetConfig conf
+			) {
+		
+		ArrayList<String> allLine = new ArrayList<String>();
+		if (type.compareTo("quick") == 0) {
+			DatabaseManager db = DatabaseManager.create();
+			allLine = db.quick(request, conf);
+		}
+		
+		if (type.compareTo("rcdidx") == 0) {
+			DatabaseManager db = DatabaseManager.create();
+			allLine = db.rcdidx(request, conf);
+		}
+
+//		String reqUrl = "";
+//		int site = 0;
+//		if ( isMulti ) {
+//			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
+//		}
+//		else {
+//			reqUrl = serverUrl + "jsp/" + DISPATCHER_NAME;
+//			site = Integer.parseInt(siteNo);
+//		}
+//		
+//		// Results obtained (結果取得)
+////		ArrayList<String> allLine = new ArrayList<String>();
+//		try {
+//			URL url = new URL( reqUrl );
+//			URLConnection con = url.openConnection();
+//			if ( !reqParam.equals("") ) {
+//				con.setDoOutput(true);
+//				PrintStream psm = new PrintStream( con.getOutputStream() );
+//				psm.print( reqParam );
+//			}
+//
+//			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
+//			boolean isStartSpace = true;
+//			String line = "";
+//			while ( ( line = in.readLine() ) != null ) {
+//				// To skip leading spaces (先頭スペースを読み飛ばすため)
+//				if ( isStartSpace ) {
+//					if ( line.equals("") ) {
+//						continue;
+//					}
+//					else {
+//						isStartSpace = false;
+//					}
+//				}
+//				
+//				if ( !line.equals("") ) {
+//					if ( isMulti ) {
+//						allLine.add(line);
+//					}
+//					else {
+//						allLine.add(line + "\t" + Integer.toString(site) );
+//					}
+//				}
+//			}
+//			in.close();
+//		}
+//		catch ( Exception ex ) {
+//			ex.printStackTrace();
+//		}
+		
+		// Result information record generation (結果情報レコード生成)
+		ResultList list = new ResultList(conf);
+		ResultRecord record;
+		int nodeGroup = -1;
+		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();
+		String[] fields;
+		for (int i=0; i<allLine.size(); i++) {
+			fields = allLine.get(i).split("\t");
+			record = new ResultRecord();
+			record.setInfo(fields[0]);
+			record.setId(fields[1]);
+			record.setIon(fields[2]);
+			record.setFormula(fields[3]);
+			record.setEmass(fields[4]);
+//			record.setContributor(fields[fields.length-1]); 					need to set it to a fixed value because there are no more sites
+			record.setContributor("0");
+			// Node group setting (ノードグループ設定)
+			if (!nodeCount.containsKey(record.getName())) {
+				nodeGroup++;
+				nodeCount.put(record.getName(), nodeGroup);
+				record.setNodeGroup(nodeGroup);
+			}
+			else {
+				record.setNodeGroup(nodeCount.get(record.getName()));
+			}
+			list.addRecord(record);
+		}
+		
+		// Get sort key (ソートキー取得)
+		String sortKey = ResultList.SORT_KEY_NAME;
+		if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_FORMULA) == 0) {
+			sortKey = ResultList.SORT_KEY_FORMULA;
+		} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_EMASS) == 0) {
+			sortKey = ResultList.SORT_KEY_EMASS;
+		} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_ID) == 0) {
+			sortKey = ResultList.SORT_KEY_ID;
+		}
+		
+		// Acquire sort action (ソートアクション取得)
+		int sortAction = ResultList.SORT_ACTION_ASC;
+		if (request.getParameter("sortAction").compareTo(String.valueOf(ResultList.SORT_ACTION_DESC)) == 0) {
+			sortAction = ResultList.SORT_ACTION_DESC;
+		}
+		
+		// Record sort (レコードソート)
+		list.sortList(sortKey, sortAction);
+		
+//		if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_FORMULA) != -1) {
+//			sortKey = ResultList.SORT_KEY_FORMULA;
+//		}
+//		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_EMASS) != -1) {
+//			sortKey = ResultList.SORT_KEY_EMASS;
+//		}
+//		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_ID) != -1) {
+//			sortKey = ResultList.SORT_KEY_ID;
+//		}
+//		
+//		// Acquire sort action (ソートアクション取得)
+//		int sortAction = ResultList.SORT_ACTION_ASC;
+//		if (reqParam.indexOf("sortAction=" + ResultList.SORT_ACTION_DESC) != -1) {
+//			sortAction = ResultList.SORT_ACTION_DESC;
+//		}
+//		
+//		// Record sort (レコードソート)
+//		list.sortList(sortKey, sortAction);
 		
 		
 		return list;

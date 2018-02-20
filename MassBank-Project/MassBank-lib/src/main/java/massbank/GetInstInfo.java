@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class GetInstInfo {
 	ArrayList<String>[] instNo   = null;
 	ArrayList<String>[] instType = null;
@@ -39,9 +41,9 @@ public class GetInstInfo {
 	private int index = 0;
 
 	/**
-	 * コンストラクタ
-	 * レコードフォーマットバージョン2の
-	 * INSTRUMENT情報とMS情報を取得するコンストラクタ
+	 * Constructor (コンストラクタ)
+	 * Record format version 2 (レコードフォーマットバージョン2の)
+	 * Constructor that acquires INSTRUMENT information and MS information (INSTRUMENT情報とMS情報を取得するコンストラクタ)
 	 * @param baseUrl ベースURL
 	 */
 	public GetInstInfo( String baseUrl ) {
@@ -50,12 +52,12 @@ public class GetInstInfo {
 	}
 
 	/**
-	 * コンストラクタ
-	 * レコードフォーマットバージョンとPeakSearchAdvancedフラグを指定して
-	 * INSTRUMENT情報とMS情報を取得するコンストラクタ
+	 * Constructor (コンストラクタ)
+	 * Specify record format version and PeakSearchAdvanced flag (レコードフォーマットバージョンとPeakSearchAdvancedフラグを指定して)
+	 * Constructor that acquires INSTRUMENT information and MS information (INSTRUMENT情報とMS情報を取得するコンストラクタ)
 	 * @param baseUrl ベースURL
-	 * @param formatVer MassBankレコードフォーマットバージョン
-	 * @param isPeakAdv PeakSearchAdvancedフラグ
+	 * @param formatVer MassBank record format version (MassBankレコードフォーマットバージョン)
+	 * @param isPeakAdv PeakSearchAdvanced flag (PeakSearchAdvancedフラグ)
 	 */
 	public GetInstInfo( String baseUrl, int formatVer, boolean isPeakAdv ) {
 		String urlParam = "ver=" + formatVer;
@@ -65,10 +67,17 @@ public class GetInstInfo {
 		getInformation(baseUrl, urlParam);
 	}
 	
+	private HttpServletRequest request;
+	
+	public GetInstInfo( HttpServletRequest request) {
+		this.request = request;
+		getInformation(null,null);
+	}
+	
 	/**
-	 * 装置種別、MS種別情報取得
+	 * Device type, MS type information acquisition (装置種別、MS種別情報取得)
 	 * @param baseUrl ベースURL
-	 * @param urlParam CGI実行時のパラメータ
+	 * @param urlParam Parameters when executing CGI (CGI実行時のパラメータ)
 	 */
 	private void getInformation( String baseUrl, String urlParam ) {
 		
@@ -78,7 +87,11 @@ public class GetInstInfo {
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
+//		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
+		ArrayList<String> resultAll = mbcommon.execDispatcher(typeName, request, conf);
+		
+		new DevLogger();
+		DevLogger.printToDBLog(resultAll.toString());
 		
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];
@@ -97,15 +110,19 @@ public class GetInstInfo {
 		for ( int i = 0; i < resultAll.size(); i++ ) {
 			String line = resultAll.get(i).trim();
 			
+			if ( line.startsWith("INSTRUMENT_INFORMATION") ) { isInst = true; isMs = false; continue; }
+			if ( line.startsWith("MS_INFORMATION") ) { isInst = false; isMs = true; continue; }
+			
 			if ( line.equals("") ) { continue; }
 			String[] item = line.split("\t");
-			int siteNo = Integer.parseInt( item[item.length-1] );
+//			int siteNo = Integer.parseInt( item[item.length-1] );       we make a static site no
+			int siteNo = 0;
 			if ( prevSiteNo != siteNo) {
 				prevSiteNo = siteNo;
 				isInst = true; isMs = false;
 			}
-			if ( line.startsWith("INSTRUMENT_INFORMATION") ) { isInst = true; isMs = false; continue; }
-			if ( line.startsWith("MS_INFORMATION") ) { isInst = false; isMs = true; continue; }
+//			if ( line.startsWith("INSTRUMENT_INFORMATION") ) { isInst = true; isMs = false; continue; }
+//			if ( line.startsWith("MS_INFORMATION") ) { isInst = false; isMs = true; continue; }
 			if ( isInst ) {
 				instNo[siteNo].add( item[0] );
 				instType[siteNo].add( item[1] );
@@ -118,35 +135,35 @@ public class GetInstInfo {
 	}
 	
 	/**
-	 * サイトインデックスをセット
+	 * Set site index (サイトインデックスをセット)
 	 */ 
 	public void setIndex(int index) {
 		this.index = index;
 	}
 
 	/**
-	 * INSTRUMENT_TYPE_NOを取得
+	 * Get INSTRUMENT_TYPE_NO (INSTRUMENT_TYPE_NOを取得)
 	 */ 
 	public String[] getNo() {
 		return (String[])this.instNo[this.index].toArray( new String[0] );
 	}
-
+	
 	/**
-	 * INSTRUMENT_NAMEを取得
+	 * Get INSTRUMENT_NAME (INSTRUMENT_NAMEを取得)
 	 */
 	public String[] getName() {
 		return (String[])this.instName[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_TYPEを取得
+	 * Get INSTRUMENT_TYPE (INSTRUMENT_TYPEを取得)
 	 */
 	public String[] getType() {
 		return (String[])this.instType[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_TYPEを取得（重複なしで全サイト分を取得）
+	 * Get INSTRUMENT_TYPE (Acquire all sites without duplication) (INSTRUMENT_TYPEを取得（重複なしで全サイト分を取得）)
 	 */
 	public String[] getTypeAll() {
 		ArrayList<String> instTypeList = new ArrayList<String>();
@@ -158,13 +175,13 @@ public class GetInstInfo {
 				}
 			}
 		}
-		// 名前順でソート
+		// Sort by name (名前順でソート)
 		Collections.sort( instTypeList );
 		return (String[])instTypeList.toArray( new String[0] );
 	}
 
 	/**
-	 * INSTRUMENT_TYPEのグループ情報を取得
+	 * Get group information of INSTRUMENT_TYPE (INSTRUMENT_TYPEのグループ情報を取得)
 	 */
 	public Map<String, List<String>> getTypeGroup() {
 		final String[] baseGroup = { "ESI", "EI", "Others" };
@@ -200,14 +217,14 @@ public class GetInstInfo {
 	}
 	
 	/**
-	 * MS_TYPEを取得
+	 * Get MS_TYPE (MS_TYPEを取得)
 	 */
 	public String[] getMsType() {
 		return (String[])this.msType[this.index].toArray( new String[0] );
 	}
 
 	/**
-	 * MS_TYPEを取得（重複なしで全サイト分を取得）
+	 * Obtain MS_TYPE (Acquire all sites without duplication) (MS_TYPEを取得（重複なしで全サイト分を取得）)
 	 */
 	public String[] getMsAll() {
 		ArrayList<String> msTypeList = new ArrayList<String>();
@@ -219,7 +236,7 @@ public class GetInstInfo {
 				}
 			}
 		}
-		// 名前順でソート
+		// Sort by name (名前順でソート)
 		Collections.sort( msTypeList );
 		return (String[])msTypeList.toArray( new String[0] );
 	}
