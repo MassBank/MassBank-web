@@ -1,7 +1,8 @@
 package massbank.admin;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
@@ -53,6 +54,11 @@ public class Validator2 {
 			"MS$FOCUSED_ION: PRECURSOR_M/Z 410.3\n" +
 			"MS$FOCUSED_ION: PRECURSOR_TYPE [M+H]+\n" +
 			"PK$SPLASH: splash10-0002-0960000000-77302b0326a418630a84\n" +
+			"PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)\n" +
+			"  134.0594 C8H8NO+ 2 134.0600 -4.77\n" +
+			//"  134.0594 C8H8NO+ 2 134.0600 -4.77\n" +
+			"  135.0618 C7[13]CH8NO+  135.0632 10.37\n" +
+			"  140.016 C6H6NOS+ 1 140.0165 -3.22\n" +
 			"PK$NUM_PEAK: 100\n" +
 			"PK$PEAK: m/z int. rel.int.\n" +
 			"  84.1 12461 32\n" +
@@ -194,8 +200,8 @@ public class Validator2 {
 				if (position < offset) {
 					col = position - (offset - (token.length() + 1));
 					System.err.println(tokens[line]);
-					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
-					error_at.setCharAt(col, '^');
+					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
+					error_at.append('^');
 					System.err.println(error_at);
 					record = new Record();
 					break;
@@ -210,18 +216,20 @@ public class Validator2 {
 		boolean haserror = false;
 		if (arguments.length==0) {
 			Record record = validate(recordstring);
-			System.out.println(record.toString());
+			if (record.ACCESSION() == null) System.err.println("Error.");
+			else System.out.println(record.toString());
 		}
 		else {
 			for (String filename : arguments) {
-				recordstring = new String(Files.readAllBytes(Paths.get(filename)));
+				//System.out.print("Validating " + filename + " ... ");
+				recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
 				Record record = validate(recordstring);
 				if (record.ACCESSION() == null) {
 					System.err.println("Error in " + filename);
 					haserror = true;
 				}
+				//else System.out.println("ok");
 			}
-			
 		}
 		if (haserror) System.exit(1);
 	}

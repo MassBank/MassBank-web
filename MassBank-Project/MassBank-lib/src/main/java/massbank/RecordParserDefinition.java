@@ -79,7 +79,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Last line of a MassBank Record is // .
 		def("tagsep", StringParser.of(": "));
 		def("valuesep", StringParser.of("; "));
-		def("endtag", StringParser.of("//"));
+		def("endtag", StringParser.of("//").trim());
 
 		// 2.1 Record Specific Information
 		// 2.1.1 ACCESSION
@@ -1695,14 +1695,60 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("pk_annotation",
 			StringParser.of("PK$ANNOTATION")
 			.seq(ref("tagsep"))
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
-			.seq(StringParser.of("  "))
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
-			.seq(StringParser.of("    ")
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).plus().optional()
+			.seq(
+				CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<>"))
+				.plus()
+				.flatten()
+				.trim(CharacterParser.of(' '))
+				.map((String value) -> {
+					//System.out.println(value);
+					callback.ADD_PK_ANNOTATION_HEADER_ITEM(value);
+					return value;						
+				})
+				.plus()
+				.seq(Token.NEWLINE_PARSER)
+			)
+			.seq(
+				StringParser.of("  ")
+				.map((String value) -> {
+					//System.out.println(value);
+					callback.ADD_PK_ANNOTATION_LINE();
+					return value;						
+				})
+				.seq(
+					CharacterParser.word().or(CharacterParser.anyOf("-+=,()[]{}/.:$^'`_*?<>"))
+					.plus()
+					.flatten()
+					.trim(CharacterParser.of(' '))
+					.map((String value) -> {
+						//System.out.println(value);
+						callback.ADD_PK_ANNOTATION_ITEM(value);
+						return value;						
+					})
+					.plus()
+					.seq(Token.NEWLINE_PARSER)
+					// call a Continuation Parser to validate the count of PK$ANNOTATION items per line
+					.callCC((Function<Context, Result> continuation, Context context) -> {
+						Result r = continuation.apply(context);
+						if (r.isSuccess()) {
+							List<String> pk_annotation_header = callback.PK_ANNOTATION_HEADER();
+							List<List<String>> pk_annotation = callback.PK_ANNOTATION();
+							if (pk_annotation_header.size() != pk_annotation.get(pk_annotation.size() - 1).size()) {
+								StringBuilder sb = new StringBuilder();
+								sb.append("Incorrect number of fields per PK$ANNOTATION line. ");
+								sb.append(pk_annotation_header.size() + " fields expected, but " + pk_annotation.get(pk_annotation.size() - 1).size() + " fields found.\n");
+								sb.append("Defined by:\n");
+								sb.append("PK$ANNOTATION:");
+								for (String annotation_header_item : callback.PK_ANNOTATION_HEADER())
+									sb.append(" " + annotation_header_item);
+								System.out.println(sb.toString());
+								return context.failure(sb.toString());
+							}
+						}
+						return r; 
+					})
+				)
+				.plus()
 			)
 //			.map((List<?> value) -> {
 //				System.out.println(value);
@@ -1742,10 +1788,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER))
 				.seq(Token.NEWLINE_PARSER).plus()
 			)
-				.map((List<?> value) -> {
-					System.out.println(value);
-					return value;						
-				})
+//				.map((List<?> value) -> {
+//					System.out.println(value);
+//					return value;						
+//				})
 			);
 	}
 
