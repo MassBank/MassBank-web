@@ -91,15 +91,15 @@
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-                        <groupId>org.openscience.cdk</groupId>
-                        <artifactId>cdk-smiles</artifactId>
-                        <version>${cdk.version}</version>
-                </dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-smiles</artifactId>
+			<version>${cdk.version}</version>
+		</dependency>
 		<dependency>
-                        <groupId>org.openscience.cdk</groupId>
-                        <artifactId>cdk-interfaces</artifactId>
-                        <version>${cdk.version}</version>
-                </dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-interfaces</artifactId>
+			<version>${cdk.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-depict</artifactId>
@@ -121,10 +121,10 @@
 			<version>2.1.0</version>
 		</dependency>
 		<dependency>
-                        <groupId>net.sf.jni-inchi</groupId>
-                        <artifactId>jni-inchi</artifactId>
-                        <version>0.8</version>
-                </dependency>
+			<groupId>net.sf.jni-inchi</groupId>
+			<artifactId>jni-inchi</artifactId>
+			<version>0.8</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
