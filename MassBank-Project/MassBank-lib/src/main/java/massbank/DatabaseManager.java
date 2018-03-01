@@ -1,22 +1,18 @@
 package massbank;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 public class DatabaseManager {
 	
@@ -116,6 +112,23 @@ public class DatabaseManager {
 	private final PreparedStatement statementUpdatePEAKs;
 	private final PreparedStatement statementInsertANNOTATION_HEADER;
 		
+	public static void init_db() throws SQLException, IOException {
+		Connection connection = DriverManager.getConnection("jdbc:mariadb://" + dbHostName + "/" + "?user=" + user + "&password=" + password);
+		Statement stmt = connection.createStatement();
+
+		stmt.executeUpdate("DROP DATABASE IF EXISTS MassBank;");
+		stmt.executeUpdate("CREATE DATABASE MassBank CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
+		stmt.executeUpdate("USE MassBank;");
+		
+		ClassLoader classLoader = DatabaseManager.class.getClassLoader();
+		File file = new File(classLoader.getResource("create_massbank_scheme.sql").getFile());
+		ScriptRunner runner = new ScriptRunner(connection, false, false);
+		runner.runScript(new BufferedReader(new FileReader(file)));
+		
+		stmt.close();
+		connection.close();
+	}
+	
 	public static DatabaseManager create(String dbName) {
 		try {
 			return new DatabaseManager(dbName);
@@ -125,12 +138,12 @@ public class DatabaseManager {
 	}
 	
 	public static DatabaseManager create() {
-		return create("MassBankNew");
+		return create("MassBank");
 	}
 	
 	public DatabaseManager(String dbName) throws SQLException {
 		this.databaseName = dbName;
-		this.connectUrl = "jdbc:mysql://" + dbHostName + "/" + databaseName + "?rewriteBatchedStatements=true";
+		this.connectUrl = "jdbc:mariadb://" + dbHostName + "/" + databaseName + "?rewriteBatchedStatements=true";
 			this.openConnection();
 			statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
 			statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
@@ -152,16 +165,16 @@ public class DatabaseManager {
 			statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
 			statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
 			
-			statementInsertCompound = this.con.prepareStatement(insertCompound);
-			statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class);
+			statementInsertCompound = this.con.prepareStatement(insertCompound, Statement.RETURN_GENERATED_KEYS);
+			statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class, Statement.RETURN_GENERATED_KEYS);
 			statementInsertCompound_Compound_Class = this.con.prepareStatement(insertCompound_Compound_Class);
-			statementInsertName = this.con.prepareStatement(insertName);
+			statementInsertName = this.con.prepareStatement(insertName, Statement.RETURN_GENERATED_KEYS);
 			statementInsertCompound_Name = this.con.prepareStatement(insertCompound_Name);
 			statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
-			statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE);
+			statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);
 			statementInsertSP_LINK = this.con.prepareStatement(insertSP_LINK);
 			statementInsertSP_SAMPLE = this.con.prepareStatement(insertSP_SAMPLE);
-			statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT);
+			statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS);
 			statementInsertRECORD = this.con.prepareStatement(insertRECORD);
 			statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
 			statementInsertAC_MASS_SPECTROMETRY = this.con.prepareStatement(insertAC_MASS_SPECTROMETRY);

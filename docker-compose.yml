@@ -2,7 +2,7 @@ version: '2'
 
 services:
   mariadb:
-    image: mariadb:10.1
+    image: mariadb:latest
     container_name: massbank_mariadb
     volumes:
       - /mariadb:/var/lib/mysql
