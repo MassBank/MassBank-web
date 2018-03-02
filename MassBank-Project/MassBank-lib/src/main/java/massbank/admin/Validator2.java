@@ -56,8 +56,7 @@ public class Validator2 {
 			"PK$SPLASH: splash10-0002-0960000000-77302b0326a418630a84\n" +
 			"PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)\n" +
 			"  134.0594 C8H8NO+ 2 134.0600 -4.77\n" +
-			//"  134.0594 C8H8NO+ 2 134.0600 -4.77\n" +
-			"  135.0618 C7[13]CH8NO+  135.0632 10.37\n" +
+			"  135.0618 C7[13]CH8NO+ 2 135.0632 10.37\n" +
 			"  140.016 C6H6NOS+ 1 140.0165 -3.22\n" +
 			"PK$NUM_PEAK: 100\n" +
 			"PK$PEAK: m/z int. rel.int.\n" +

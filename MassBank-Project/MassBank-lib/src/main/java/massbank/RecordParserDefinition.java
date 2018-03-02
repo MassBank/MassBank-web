@@ -403,17 +403,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$EXACT_MASS: 430.38108
 		// A value with 5 digits after the decimal point is recommended.
+		def("number",
+			digit().plus()
+			.seq(
+		       	CharacterParser.of('.')
+		       	.seq(digit().plus()).optional()
+			)
+		    .seq(
+		    	CharacterParser.anyOf("eE")
+		    	.seq(digit().plus()).optional()
+		    ).flatten()	
+		);
+		
 		def("ch_exact_mass",
 			StringParser.of("CH$EXACT_MASS")
 			.seq(ref("tagsep"))
 			.seq(
-				digit().plus()
-				.seq(
-		        	CharacterParser.of('.')
-		        	.seq(digit().plus()).optional()
-	        	)
-		        .flatten()
-		        .map((String value) -> {
+				ref("number")
+				.map((String value) -> {
 	        		Double d = Double.parseDouble(value);
 	        		callback.CH_EXACT_MASS(d);
 	        		return value;
@@ -1781,13 +1788,54 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER)
 			.seq(
 				StringParser.of("  ")
-				.seq(CharacterParser.any().plusLazy(CharacterParser.whitespace()).flatten())
+				.map((String value) -> {
+					//System.out.println(value);
+					callback.ADD_PK_PEAK_LINE();
+					return value;						
+				})
+				.seq(
+					ref("number")
+					.map((String value) -> {
+						Double d = Double.parseDouble(value);
+			        	callback.ADD_PK_PEAK_ITEM(d);
+			        	return value;
+			        })
+				)
 				.seq(CharacterParser.whitespace())
-				.seq(CharacterParser.any().plusLazy(CharacterParser.whitespace()))
+				.seq(
+					ref("number")
+					.map((String value) -> {
+						Double d = Double.parseDouble(value);
+				       	callback.ADD_PK_PEAK_ITEM(d);
+				       	return value;
+				    })
+				)
 				.seq(CharacterParser.whitespace())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER))
+				.seq(
+					ref("number")
+					.map((String value) -> {
+						Double d = Double.parseDouble(value);
+						callback.ADD_PK_PEAK_ITEM(d);
+					    return value;
+					})
+				)
 				.seq(Token.NEWLINE_PARSER).plus()
 			)
+			// call a Continuation Parser to validate the number of peaks in the peaklist
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				Result r = continuation.apply(context);
+				if (r.isSuccess()) {
+					Integer num_peak= callback.PK_NUM_PEAK();
+					List<List<Double>> pk_peak = callback.PK_PEAK();
+					if (pk_peak.size() != num_peak) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("Incorrect number of peaks in peaklist. ");
+						sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
+						return context.failure(sb.toString());
+					}
+				}
+				return r; 
+			})
 //				.map((List<?> value) -> {
 //					System.out.println(value);
 //					return value;						

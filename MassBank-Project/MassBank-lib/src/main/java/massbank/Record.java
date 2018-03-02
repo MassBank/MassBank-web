@@ -313,15 +313,34 @@ public class Record {
 	public Integer PK_NUM_PEAK() {
 		return (Integer) data.get("PK_NUM_PEAK");
 	}
-
 	public void PK_NUM_PEAK(Integer value) {
 		data.put("PK_NUM_PEAK", value);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<List<String>> PK_PEAK() {
-		return (List<List<String>>) data.get("PK_PEAK");
+	// PK_PEAK is a two-dimensional List
+	public List<List<Double>> PK_PEAK() {
+		return (List<List<Double>>) data.get("PK_PEAK");
 	}
+	public void ADD_PK_PEAK_LINE() {
+		List<List<Double>> pk_peak = PK_PEAK();
+		if (pk_peak == null) {
+			ArrayList<ArrayList<Double>> new_pk_peak = new ArrayList<ArrayList<Double>>();
+			data.put("PK_PEAK", new_pk_peak);
+			pk_peak = PK_PEAK();
+		}
+		pk_peak.add(new ArrayList<Double>());
+	}
+
+	public void ADD_PK_PEAK_ITEM(Double value) {
+		List<List<Double>> pk_peak = PK_PEAK();
+		if (pk_peak == null) {
+			ADD_PK_PEAK_LINE();
+			pk_peak = PK_PEAK();
+		}
+		pk_peak.get(pk_peak.size() - 1).add(value);
+	}
+	
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -402,15 +421,22 @@ public class Record {
 				sb.append(" " + annotation_header_item);
 			sb.append("\n");
 			for (List<String> annotation_line :  PK_ANNOTATION()) {
-				sb.append("  ");
+				sb.append(" ");
 				for (String annotation_item : annotation_line )
-					sb.append(annotation_item + " ");
+					sb.append(" " + annotation_item);
 				sb.append("\n");
 			}
-			
 		}
 
 		sb.append("PK$NUM_PEAK: " + PK_NUM_PEAK() + "\n");
+		sb.append("PK$PEAK: m/z int. rel.int.\n");
+		for (List<Double> peak_line :  PK_PEAK()) {
+			sb.append(" ");
+			for (Double peak_line_item : peak_line )
+				sb.append(" " + peak_line_item.toString());
+			sb.append("\n");
+		}
+		
 
 		/*
 		 * // PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm) //
