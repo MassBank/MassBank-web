@@ -195,6 +195,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("authors",
 			StringParser.of("AUTHORS")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -218,6 +219,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("license",
 			StringParser.of("LICENSE")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -240,6 +242,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("copyright",
 			StringParser.of("COPYRIGHT")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -263,6 +266,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("publication",
 			StringParser.of("PUBLICATION")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -304,6 +308,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("comment",
 			StringParser.of("COMMENT")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
@@ -328,14 +333,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
 		// TODO no ';' in CH$NAME
 		def("ch_name_value",
-			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>"))
-			.plusLazy(Token.NEWLINE_PARSER.or(CharacterParser.of(';')))
-			.flatten()
+			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>#;"))
+			.plusLazy(ref("valuesep").or(Token.NEWLINE_PARSER)).flatten()
 		);
 		def("ch_name", 
 			StringParser.of("CH$NAME")
 			.seq(ref("tagsep"))
-			.seq(ref("ch_name_value"))
+			.seq(
+				ref("ch_name_value")
+			)
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
 			.map((List<?> value) -> {
@@ -356,6 +362,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ch_compound_class",
 			StringParser.of("CH$COMPOUND_CLASS")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -381,6 +388,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ch_formula",
 			StringParser.of("CH$FORMULA")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -473,6 +481,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ch_iupac",
 			StringParser.of("CH$IUPAC")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -634,6 +643,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("sp_scientific_name",
 			StringParser.of("SP$SCIENTIFIC_NAME")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -655,6 +665,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("sp_lineage",
 			StringParser.of("SP$LINEAGE")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -677,6 +688,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("sp_link",
 			StringParser.of("SP$LINK")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
@@ -696,6 +708,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("sp_sample",
 			StringParser.of("SP$SAMPLE")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.seq(Token.NEWLINE_PARSER)
 			.plus()
@@ -718,6 +731,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ac_instrument",
 			StringParser.of("AC$INSTRUMENT")
 			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
@@ -1081,11 +1095,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
 			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-                                .seq(ref("tagsep"))
-                                .seq(StringParser.of("ISOLATION_WIDTH").trim())
-                                .seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-                                .seq(Token.NEWLINE_PARSER).optional()
-                        )
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("ISOLATION_WIDTH").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
 			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("IT_SIDE_OCTOPOLES_BIAS_VOLTAGE").trim())
@@ -1171,11 +1185,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(Token.NEWLINE_PARSER).optional()
 			)
 			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-                                .seq(ref("tagsep"))
-                                .seq(StringParser.of("PEAK_WIDTH").trim())
-                                .seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-                                .seq(Token.NEWLINE_PARSER).optional()
-                        )
+				.seq(ref("tagsep"))
+				.seq(StringParser.of("PEAK_WIDTH").trim())
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				.seq(Token.NEWLINE_PARSER).optional()
+			)
 			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
 				.seq(ref("tagsep"))
 				.seq(StringParser.of("PROBE_TIP").trim())
