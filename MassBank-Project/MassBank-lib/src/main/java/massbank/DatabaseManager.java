@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringJoiner;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class DatabaseManager {
@@ -137,6 +139,7 @@ public class DatabaseManager {
 		}
 	}
 	
+	// TODO change MassBank to MassBankNew ?
 	public static DatabaseManager create() {
 		return create("MassBank");
 	}
@@ -1137,6 +1140,297 @@ public class DatabaseManager {
 		
 		return resList;
 	}
+
+	// TODO insert functionality of peak search peak by mz (replaces PeakSearch2.cgi)
+	public ArrayList<String> peak(HttpServletRequest request, GetConfig conf) {
+		
+		String[] inst = request.getParameterValues("inst");
+		String[] ms = request.getParameterValues("ms");
+		String ion = request.getParameter("ion");
+//		int num = Integer.parseInt(request.getParameter("num"));
+		int num = 0;
+		for (int i=0; i < 6; i++) {
+			if (!request.getParameter("mz"+i).isEmpty()) {
+				num = num + 1;
+			}
+		}
+		String[] op = new String[num];
+		String[] mz = new String[num];
+		String[] fom = new String[num];
+		for (int i = 0; i < num; i++) {
+			op[i] = request.getParameter("op" + i);
+			mz[i] = request.getParameter("mz" + i);
+//			 TODO PeakSearch2.cgi does not consider the formula at all
+			fom[i] = request.getParameter("fom" + i);
+		}
+		String tol = request.getParameter("tol");
+		String intens = request.getParameter("int");
+		// TODO this parameter is necessary?
+		String mode = request.getParameter("mode");
+				
+		ArrayList<String> resList = new ArrayList<String>();
+		
+		String sql;
+		PreparedStatement stmnt;
+		ResultSet res;
+		HashMap<String,ArrayList<Boolean>> hits = new HashMap<String,ArrayList<Boolean>>(); 
+		for (int i = 0; i < num; i++) {
+			sql = "SELECT RECORD "
+					+ "FROM PEAK "
+					+ "WHERE ? <= PK_PEAK_MZ AND PK_PEAK_MZ <= ? AND PK_PEAK_RELATIVE > ?";
+			try {
+				stmnt = con.prepareStatement(sql);
+				stmnt.setDouble(1, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
+				stmnt.setDouble(2, Double.parseDouble(mz[i]) + Double.parseDouble(tol));
+				stmnt.setInt(3, Integer.parseInt(intens));
+//				stmnt.setDouble(1, 166.0795);
+//				stmnt.setDouble(2, 166.0795);
+//				stmnt.setInt(3, 1);
+				res = stmnt.executeQuery();
+				while (res.next()) {
+					String id = res.getString("RECORD");
+					if (hits.containsKey(id)) {
+						hits.get(id).add(i, true);
+					} else {
+						ArrayList<Boolean> newEl = new ArrayList<Boolean>();
+						newEl.add(i, true);
+						hits.put(id, newEl);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		ArrayList<String> finIds = new ArrayList<String>();
+		for (String key : hits.keySet()) {
+			boolean expr = false;
+			ArrayList<Boolean> val = hits.get(key); 
+			for (int i = 0; i < num; i++) {
+				if (val.get(i) == null) {
+					val.set(i, false);
+				}
+				if (i == 0) {
+					expr = val.get(i);
+				} else {
+					if (op[i].compareTo("or") == 0) {
+						expr = expr || val.get(i);
+					}
+					if (op[i].compareTo("and") == 0) {
+						expr = expr && val.get(i);
+					}
+				}
+			}
+			if (expr) {
+				finIds.add(key);
+			}
+		}
+		
+		sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS "
+				+ "FROM RECORD, INSTRUMENT, COMPOUND "
+				+ "WHERE RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(sql);
+		sb.append(" AND RECORD.ACCESSION IN (");
+		StringJoiner joiner = new StringJoiner(", ");
+		for (String acc : finIds) {
+			joiner.add("'" + acc + "'");
+		}
+		sb.append(joiner.toString());
+		sb.append(")");
+		sb.append(" AND (");
+		for (int i = 0; i < inst.length; i++) {
+			sb.append("instrument.ac_instrument_type = ?");
+			if (i < inst.length-1) {
+				sb.append(" OR ");
+			}
+		}
+		sb.append(") AND (");
+		for (int i = 0; i < ms.length; i++) {
+			sb.append("record.ac_mass_spectrometry_ms_type = ?");
+			if (i < ms.length-1) {
+				sb.append(" OR ");
+			}
+		}
+		sb.append(")");
+		if (Integer.parseInt(ion) != 0) {
+			sb.append(" AND record.ac_mass_spectrometry_ion_mode = ?");
+		}		
+		
+		try {
+			stmnt = con.prepareStatement(sb.toString().toUpperCase());
+			int idx = 1;
+			for (int i = 0; i < inst.length; i++) {
+				stmnt.setString(idx, inst[i]);
+				idx++;
+			}
+			for (int i = 0; i < ms.length; i++) {
+				stmnt.setString(idx, ms[i]);
+				idx++;
+			}
+			if (Integer.parseInt(ion) == 1) {
+				stmnt.setString(idx, "POSITIVE");
+			}
+			if (Integer.parseInt(ion) == -1) {
+				stmnt.setString(idx, "NEGATIVE");
+			}
+			res = stmnt.executeQuery();
+			while(res.next()) {
+				resList.add(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
+//				System.out.println(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+		}		
+		
+		return resList;
+	}
+	
+	// TODO insert functionality of peak search diff by mz (replaces PeakSearch2.cgi)
+	public ArrayList<String> diff(HttpServletRequest request, GetConfig conf) {
+		String[] inst = request.getParameterValues("inst");
+		String[] ms = request.getParameterValues("ms");
+		String ion = request.getParameter("ion");
+//		int num = Integer.parseInt(request.getParameter("num"));
+		int num = 0;
+		for (int i=0; i < 6; i++) {
+			if (!request.getParameter("mz"+i).isEmpty()) {
+				num = num + 1;
+			}
+		}
+		String[] op = new String[num];
+		String[] mz = new String[num];
+		String[] fom = new String[num];
+		for (int i = 0; i < num; i++) {
+			op[i] = request.getParameter("op" + i);
+			mz[i] = request.getParameter("mz" + i);
+//			 TODO PeakSearch2.cgi does not consider the formula at all
+			fom[i] = request.getParameter("fom" + i);
+		}
+		String tol = request.getParameter("tol");
+		String intens = request.getParameter("int");
+		// TODO this parameter is necessary?
+		String mode = request.getParameter("mode");
+		
+		ArrayList<String> resList = new ArrayList<String>();
+		
+		String sql;
+		PreparedStatement stmnt;
+		ResultSet res;
+		HashMap<String,ArrayList<Boolean>> hits = new HashMap<String,ArrayList<Boolean>>(); 
+		for (int i = 0; i < num; i++) {
+			sql = "SELECT T1.RECORD "
+					+ "FROM (SELECT * FROM PEAK WHERE PK_PEAK_RELATIVE > ?) AS T1 LEFT JOIN (SELECT * FROM PEAK WHERE PK_PEAK_RELATIVE > ?) AS T2 ON T1.RECORD = T2.RECORD "
+					+ "WHERE (T1.PK_PEAK_MZ BETWEEN T2.PK_PEAK_MZ + ? AND T2.PK_PEAK_MZ + ?)";
+			try {
+				stmnt = con.prepareStatement(sql);
+				stmnt.setInt(1, Integer.parseInt(intens));
+				stmnt.setInt(2, Integer.parseInt(intens));				
+				stmnt.setDouble(3, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
+				stmnt.setDouble(4, Double.parseDouble(mz[i]) + Double.parseDouble(tol));
+				res = stmnt.executeQuery();
+				while (res.next()) {
+					String id = res.getString("RECORD");
+					if (hits.containsKey(id)) {
+						hits.get(id).add(i, true);
+					} else {
+						ArrayList<Boolean> newEl = new ArrayList<Boolean>();
+						newEl.add(i, true);
+						hits.put(id, newEl);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		ArrayList<String> finIds = new ArrayList<String>();
+		for (String key : hits.keySet()) {
+			boolean expr = false;
+			ArrayList<Boolean> val = hits.get(key); 
+			for (int i = 0; i < num; i++) {
+				if (val.get(i) == null) {
+					val.set(i, false);
+				}
+				if (i == 0) {
+					expr = val.get(i);
+				} else {
+					if (op[i].compareTo("or") == 0) {
+						expr = expr || val.get(i);
+					}
+					if (op[i].compareTo("and") == 0) {
+						expr = expr && val.get(i);
+					}
+				}
+			}
+			if (expr) {
+				finIds.add(key);
+			}
+		}
+		
+		sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS "
+				+ "FROM RECORD, INSTRUMENT, COMPOUND "
+				+ "WHERE RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(sql);
+		sb.append(" AND RECORD.ACCESSION IN (");
+		StringJoiner joiner = new StringJoiner(", ");
+		for (String acc : finIds) {
+			joiner.add("'" + acc + "'");
+		}
+		sb.append(joiner.toString());
+		sb.append(")");
+		sb.append(" AND (");
+		for (int i = 0; i < inst.length; i++) {
+			sb.append("instrument.ac_instrument_type = ?");
+			if (i < inst.length-1) {
+				sb.append(" OR ");
+			}
+		}
+		sb.append(") AND (");
+		for (int i = 0; i < ms.length; i++) {
+			sb.append("record.ac_mass_spectrometry_ms_type = ?");
+			if (i < ms.length-1) {
+				sb.append(" OR ");
+			}
+		}
+		sb.append(")");
+		if (Integer.parseInt(ion) != 0) {
+			sb.append(" AND record.ac_mass_spectrometry_ion_mode = ?");
+		}		
+		
+		try {
+			stmnt = con.prepareStatement(sb.toString().toUpperCase());
+			int idx = 1;
+			for (int i = 0; i < inst.length; i++) {
+				stmnt.setString(idx, inst[i]);
+				idx++;
+			}
+			for (int i = 0; i < ms.length; i++) {
+				stmnt.setString(idx, ms[i]);
+				idx++;
+			}
+			if (Integer.parseInt(ion) == 1) {
+				stmnt.setString(idx, "POSITIVE");
+			}
+			if (Integer.parseInt(ion) == -1) {
+				stmnt.setString(idx, "NEGATIVE");
+			}
+			res = stmnt.executeQuery();
+			while(res.next()) {
+				resList.add(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
+//				System.out.println(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+		}		
+		
+		return resList;
+	}	
 	
 	public static void main (String[] args) throws SQLException {
 //		ArrayList<String> res = new DatabaseManager("MassBankNew").idxcnt(null,null);

@@ -750,6 +750,10 @@
 		list = mbcommon.execDispatcherResult(typeName, request, conf);
 	} else if (typeName.compareTo("rcdidx") == 0) {
 		list = mbcommon.execDispatcherResult(typeName, request, conf);
+	} else if (typeName.compareTo("peak") == 0) {
+		list = mbcommon.execDispatcherResult(typeName, request, conf);	
+	} else if (typeName.compareTo("diff") == 0) {
+		list = mbcommon.execDispatcherResult(typeName, request, conf);
 	}
 	else {
 		if ( isMulti ) {

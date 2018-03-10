@@ -383,6 +383,16 @@ public class MassBankCommon {
 			allLine = db.rcdidx(request, conf);
 		}
 
+		if (type.compareTo("peak") == 0) {
+			DatabaseManager db = DatabaseManager.create();
+			allLine = db.peak(request, conf);
+		}
+		
+		if (type.compareTo("diff") == 0) {
+			DatabaseManager db = DatabaseManager.create();
+			allLine = db.diff(request, conf);
+		}
+		
 //		String reqUrl = "";
 //		int site = 0;
 //		if ( isMulti ) {
