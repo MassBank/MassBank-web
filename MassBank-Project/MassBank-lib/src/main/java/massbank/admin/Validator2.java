@@ -10,7 +10,7 @@ import massbank.Record;
 import massbank.RecordParser;
 
 public class Validator2 {
-	public static String recordstring = "ACCESSION: BS000001\n" +
+	public static String recordstring = "ACCESSION: BSU00002\n" +
 			"RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n" +
 			"DATE: 2016.01.19 (Created 2012.12.18, modified 2013.07.16)\n" +
 			"AUTHORS: Chandler, C. and Habig, J. Boise State University\n" +
@@ -35,6 +35,7 @@ public class Validator2 {
 			"SP$SCIENTIFIC_NAME: Mus musculus\n" +
 			"SP$LINK: NCBI-TAXONOMY 10090\n" +
 			"SP$LINK: NCBI-TAXONOMY 10090\n" +
+			"SP$SAMPLE: Liver extracts\n" +
 			"SP$SAMPLE: Liver extracts\n" +
 			"AC$INSTRUMENT: Bruker maXis ESI-QTOF\n" +
 			"AC$INSTRUMENT_TYPE: LC-ESI-QTOF\n" +
@@ -161,6 +162,7 @@ public class Validator2 {
 			"  411.3 1871 5\n" +
 			"  414.3 9233 24\n" +
 			"//";	
+	
 	public static Record validate(String recordstring) {
 		// test non standard ASCII chars and print warnings
 		for (int i = 0; i < recordstring.length(); i++) {

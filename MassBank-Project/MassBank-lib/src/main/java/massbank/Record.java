@@ -34,12 +34,20 @@ public class Record {
 	private IMolecularFormula ch_formula;
 	private Double ch_exact_mass;
 	private IAtomContainer ch_smiles;
-	
+	private IAtomContainer ch_iupac;
 	private List<Pair<String, String>> ch_link;
-	
-	List<Pair<String, String>> ac_mass_spectrometry;
-	List<Pair<String, String>> ac_chromatography;
-
+	private String sp_scientific_name;
+	private String sp_lineage;
+	private List<Pair<String, String>> sp_link;
+	private List<String> sp_sample;
+	private String ac_instrument;
+	private List<?> ac_instrument_type;
+	private String ac_mass_spectrometry_ms_type;
+	private String ac_mass_spectrometry_ion_mode;
+	private List<Pair<String, String>> ac_mass_spectrometry;
+	private List<Pair<String, String>> ac_chromatography;
+	private List<Pair<String, String>> ms_focused_ion;
+	private List<Pair<String, String>> ms_data_processing;
 	
 	public String ACCESSION_CODE() {
 		return accession_code;
@@ -164,10 +172,9 @@ public class Record {
 
 	
 	public String CH_IUPAC() throws CDKException {
-		if (((IAtomContainer) data.get("CH_IUPAC")).isEmpty())
-			return "N/A";
+		if (ch_iupac.isEmpty()) return "N/A";
 		InChIGenerator gen = InChIGeneratorFactory.getInstance()
-				.getInChIGenerator((IAtomContainer) data.get("CH_IUPAC"));
+				.getInChIGenerator(ch_iupac);
 		INCHI_RET ret = gen.getReturnStatus();
 		if (ret == INCHI_RET.WARNING) {
 			// Structure generated, but with warning message
@@ -179,9 +186,11 @@ public class Record {
 		}
 		return gen.getInchi();
 	}
-
+	public IAtomContainer CH_IUPAC1() {
+		return ch_smiles;
+	}
 	public void CH_IUPAC(IAtomContainer value) {
-		data.put("CH_IUPAC", value);
+		ch_iupac=value;
 	}
 
 	
@@ -194,70 +203,66 @@ public class Record {
 
 	
 	public String SP_SCIENTIFIC_NAME() {
-		return (String) data.get("SP_SCIENTIFIC_NAME");
+		return sp_scientific_name;
 	}
-
 	public void SP_SCIENTIFIC_NAME(String value) {
-		data.put("SP_SCIENTIFIC_NAME", value);
+		sp_scientific_name=value;
 	}
 
+	
 	public String SP_LINEAGE() {
-		return (String) data.get("SP_LINEAGE");
+		return sp_lineage;
 	}
-
 	public void SP_LINEAGE(String value) {
-		data.put("SP_LINEAGE", value);
+		sp_lineage=value;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<String> SP_LINK() {
-		return (List<String>) data.get("SP_LINK");
+ 
+	public List<Pair<String, String>> SP_LINK() {
+		return sp_link;
 	}
-
-	public void SP_LINK(List<String> value) {
-		data.put("SP_LINK", value);
+	public void SP_LINK(List<Pair<String, String>>  value) {
+		sp_link=value;
 	}
+	
 
-	@SuppressWarnings("unchecked")
 	public List<String> SP_SAMPLE() {
-		return (List<String>) data.get("SP_SAMPLE");
+		return sp_sample;
 	}
-
 	public void SP_SAMPLE(List<String> value) {
-		data.put("SP_SAMPLE", value);
-
+		sp_sample=value;
 	}
 
+	
 	public String AC_INSTRUMENT() {
-		return (String) data.get("AC_INSTRUMENT");
+		return ac_instrument;
 	}
-
 	public void AC_INSTRUMENT(String value) {
-		data.put("AC_INSTRUMENT", value);
+		ac_instrument=value;
 	}
 
+	
 	public List<?> AC_INSTRUMENT_TYPE() {
-		return (List<?>) data.get("AC_INSTRUMENT_TYPE");
+		return ac_instrument_type;
 	}
-
 	public void AC_INSTRUMENT_TYPE(List<?> value) {
-		data.put("AC_INSTRUMENT_TYPE", value);
+		ac_instrument_type=value;
 	}
 
+	
 	public String AC_MASS_SPECTROMETRY_MS_TYPE() {
-		return (String) data.get("AC_MASS_SPECTROMETRY_MS_TYPE");
+		return ac_mass_spectrometry_ms_type;
 	}
-
 	public void AC_MASS_SPECTROMETRY_MS_TYPE(String value) {
-		data.put("AC_MASS_SPECTROMETRY_MS_TYPE", value);
+		ac_mass_spectrometry_ms_type=value;
 	}
 
+	
 	public String AC_MASS_SPECTROMETRY_ION_MODE() {
-		return (String) data.get("AC_MASS_SPECTROMETRY_ION_MODE");
+		return ac_mass_spectrometry_ion_mode;
 	}
-
 	public void AC_MASS_SPECTROMETRY_ION_MODE(String value) {
-		data.put("AC_MASS_SPECTROMETRY_ION_MODE", value);
+		ac_mass_spectrometry_ion_mode=value;
 	}
 
 	
@@ -277,22 +282,20 @@ public class Record {
 	}
 	
 
-	@SuppressWarnings("unchecked")
-	public List<String> MS_FOCUSED_ION() {
-		return (List<String>) data.get("MS_FOCUSED_ION");
+	public List<Pair<String, String>> MS_FOCUSED_ION() {
+		return ms_focused_ion;
+	}
+	public void MS_FOCUSED_ION(List<Pair<String, String>> value) {
+		ms_focused_ion=value;
+	}
+	
+
+	public List<Pair<String, String>> MS_DATA_PROCESSING() {
+		return ms_data_processing;
 	}
 
-	public void MS_FOCUSED_ION(List<String> value) {
-		data.put("MS_FOCUSED_ION", value);
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<String> MS_DATA_PROCESSING() {
-		return (List<String>) data.get("MS_DATA_PROCESSING");
-	}
-
-	public void MS_DATA_PROCESSING(List<String> value) {
-		data.put("MS_DATA_PROCESSING", value);
+	public void MS_DATA_PROCESSING(List<Pair<String, String>> value) {
+		ms_data_processing=value;
 	}
 
 	public String PK_SPLASH() {
@@ -416,8 +419,8 @@ public class Record {
 		if (SP_LINEAGE() != null)
 			sb.append("SP$LINEAGE: " + SP_LINEAGE() + "\n");
 		if (SP_LINK() != null) {
-			for (String link : SP_LINK())
-				sb.append("SP$LINK: " + link + "\n");
+			for (Pair<String,String> link : SP_LINK())
+				sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		}
 		if (SP_SAMPLE() != null) {
 			for (String sample : SP_SAMPLE())
@@ -428,20 +431,20 @@ public class Record {
 		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "\n");
 		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "\n");
 		if (AC_MASS_SPECTROMETRY() != null) {
-			for (Pair<String,String> mass_spectrometry : AC_MASS_SPECTROMETRY())
-				sb.append("AC$MASS_SPECTROMETRY: " + mass_spectrometry.getKey() + " " + mass_spectrometry.getValue() + "\n");
+			for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
+				sb.append("AC$MASS_SPECTROMETRY: " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "\n");
 		}
 		if (AC_CHROMATOGRAPHY() != null) {
-			for (Pair<String,String> chromatography : AC_CHROMATOGRAPHY())
-				sb.append("AC$MASS_SPECTROMETRY: " + chromatography.getKey() + " " + chromatography.getValue() + "\n");
+			for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
+				sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "\n");
 		}
 		if (MS_FOCUSED_ION() != null) {
-			for (String link : MS_FOCUSED_ION())
-				sb.append("MS$FOCUSED_ION: " + link + "\n");
+			for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
+				sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "\n");
 		}
 		if (MS_DATA_PROCESSING() != null) {
-			for (String link : MS_DATA_PROCESSING())
-				sb.append("MS$DATA_PROCESSING: " + link + "\n");
+			for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
+				sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "\n");
 		}
 		sb.append("PK$SPLASH: " + PK_SPLASH() + "\n");
 		

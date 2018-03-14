@@ -4,7 +4,6 @@ import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -31,7 +30,6 @@ import net.sf.jniinchi.INCHI_RET;
 
 public class RecordParserDefinition extends GrammarDefinition {
 
-	@SuppressWarnings("unchecked")
 	public RecordParserDefinition(Record callback) {
 		def("start",
 			ref("accession")
@@ -109,19 +107,19 @@ public class RecordParserDefinition extends GrammarDefinition {
 						return value;
 					})	
 				)
-			)
-			.or(
-				letter().times(3).flatten()
-				.map((String value) -> {
-					callback.ACCESSION_CODE(value);
-					return value;
-				})
-				.seq(
-					digit().times(5).flatten()
+				.or(
+					letter().times(3).flatten()
 					.map((String value) -> {
-						callback.ACCESSION_NUMBER(value);
+						callback.ACCESSION_CODE(value);
 						return value;
-					})	
+					})
+					.seq(
+						digit().times(5).flatten()
+						.map((String value) -> {
+							callback.ACCESSION_NUMBER(value);
+							return value;
+						})	
+					)
 				)
 			)
 			.seq(Token.NEWLINE_PARSER)
@@ -333,13 +331,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
+			.seq(Token.NEWLINE_PARSER).pick(3)
 			.plus()
-			.map((List<?> value) -> {
-				//System.out.println(value);
-				List<String> comments = new ArrayList<String>();
-				for (Object v : value) comments.add(((List<String>) v).get(3));
-				callback.COMMENT(comments);
+			.map((List<String> value) -> {
+				callback.COMMENT(value);
 				return value;
 			})
 		);
@@ -365,13 +360,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				ref("ch_name_value")
 			)
-			.seq(Token.NEWLINE_PARSER)
+			.seq(Token.NEWLINE_PARSER).pick(2)
 			.plus()
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
 				//System.out.println(value);
-				List<String> ch_name = new ArrayList<String>();
-				for (Object v : value) ch_name.add(((List<String>) v).get(2));
-				callback.CH_NAME(ch_name);
+				callback.CH_NAME(value);
 				return value;						
 			})
 		);
@@ -578,16 +571,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("CH$LINK")
 			.seq(ref("tagsep"))
 			.seq(ref("ch_link_subtag"))
-			.seq(Token.NEWLINE_PARSER.not())
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).plus()				
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()		
+			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
-				List<Pair<String,String>> ch_link = new ArrayList<Pair<String,String>>();
-				for (Object v : value) {
-					ch_link.add(Pair.of(((List<String>) v).get(2), ((List<String>) v).get(4)));
-				}
-				callback.CH_LINK(ch_link);
+				callback.CH_LINK(value);
 				return value;
 			})
 		);
@@ -645,14 +638,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("SP$LINK")
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
+			.seq(CharacterParser.any().plusLazy(CharacterParser.whitespace()).flatten())
+			.seq(CharacterParser.whitespace()).pick(3)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()
-			.map((List<?> value) -> {
+			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
-				List<String> links = new ArrayList<String>();
-				for (Object v : value) links.add(((List<String>) v).get(2));
-				callback.SP_LINK(links);
+				callback.SP_LINK(value);
 				return value;
 			})
 		);
@@ -666,13 +662,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
+			.seq(Token.NEWLINE_PARSER).pick(3)
 			.plus()
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
 				//System.out.println(value);
-				List<String> sample = new ArrayList<String>();
-				for (Object v : value) sample.add(((List<String>) v).get(2));
-				callback.SP_SAMPLE(sample);
+				callback.SP_SAMPLE(value);
 				return value;
 			})
 		);		
@@ -935,16 +929,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("AC$MASS_SPECTROMETRY")
 			.seq(ref("tagsep"))
 			.seq(ref("ac_mass_spectrometry_subtag"))
-			.seq(Token.NEWLINE_PARSER.not())
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).plus()				
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()		
+			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
-				List<Pair<String,String>> ac_mass_spectrometry = new ArrayList<Pair<String,String>>();
-				for (Object v : value) {
-					ac_mass_spectrometry.add(Pair.of(((List<String>) v).get(2), ((List<String>) v).get(4)));
-				}
-				callback.AC_MASS_SPECTROMETRY(ac_mass_spectrometry);
+				callback.AC_MASS_SPECTROMETRY(value);
 				return value;
 			})
 		);
@@ -1011,22 +1005,21 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("AC$CHROMATOGRAPHY")
 			.seq(ref("tagsep"))
 			.seq(ref("ac_chromatography_subtag"))
-			.seq(Token.NEWLINE_PARSER.not())
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).plus()				
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()
+			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
-				List<Pair<String,String>> ac_chromatography = new ArrayList<Pair<String,String>>();
-				for (Object v : value) {
-					ac_chromatography.add(Pair.of(((List<String>) v).get(2), ((List<String>) v).get(4)));
-				}
-				callback.AC_CHROMATOGRAPHY(ac_chromatography);
+				callback.AC_CHROMATOGRAPHY(value);
 				return value;
 			})
 		);
 
 
-		
 		// 2.5.1 MS$FOCUSED_ION: subtag Description
 		// Information of Precursor or Molecular Ion. Optional
 		// MS$FOCUSED_ION fields should be arranged by the alphabetical order of subtag names.
@@ -1059,6 +1052,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+,
 		// [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-,
 		// [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-. Cross-reference to mzOntology: Precursor type [MS: 1000792]
+		
 		def("precursor_type",
 			StringParser.of("[M]+*")
 			.or(StringParser.of("[M]++"))
@@ -1113,66 +1107,53 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[2M-H-C6H10O5]-"))
 			.or(StringParser.of("[M-H-CO2-2HF]-"))
 		);
+		def ("ms_focused_ion_subtag",
+			StringParser.of("BASE_PEAK ")
+			.or(StringParser.of("DERIVATIVE_FORM "))
+			.or(StringParser.of("DERIVATIVE_MASS "))
+			.or(StringParser.of("DERIVATIVE_TYPE "))
+			.or(StringParser.of("FULL_SCAN_FRAGMENT_ION_PEAK "))
+			.or(StringParser.of("PRECURSOR_M/Z "))
+		);
 		
-		def("ms_focused_ion", 
+		def("ms_focused_ion",
 			StringParser.of("MS$FOCUSED_ION")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("BASE_PEAK").trim())
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("MS$FOCUSED_ION")
+			.seq(StringParser.of("ION_TYPE ")).pick(2)
+			.seq(ref("precursor_type"))
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.or(
+				StringParser.of("MS$FOCUSED_ION")
 				.seq(ref("tagsep"))
-				.seq(StringParser.of("DERIVATIVE_FORM").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DERIVATIVE_MASS").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DERIVATIVE_TYPE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FULL_SCAN_FRAGMENT_ION_PEAK"))
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ION_TYPE "))
+				.seq(StringParser.of("PRECURSOR_TYPE ")).pick(2)
 				.seq(ref("precursor_type"))
-				.seq(Token.NEWLINE_PARSER).optional()
+				.map((List<String> value) -> {
+					return Pair.of(value.get(0).trim(), value.get(1));
+				})
+				.seq(Token.NEWLINE_PARSER).pick(0)
 			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
+			.or(
+				StringParser.of("MS$FOCUSED_ION")
 				.seq(ref("tagsep"))
-				.seq(StringParser.of("PRECURSOR_M/Z").trim())
+				.seq(ref("ms_focused_ion_subtag"))
+				.seq(Token.NEWLINE_PARSER.not()).pick(2)
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
+				.map((List<String> value) -> {
+					return Pair.of(value.get(0).trim(), value.get(1));
+				})
+				.seq(Token.NEWLINE_PARSER).pick(0)
 			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PRECURSOR_TYPE").trim())
-				.seq(ref("precursor_type"))
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.map((List<?> value) -> {
-				// System.out.println(value);
-				List<String> subtag = new ArrayList<String>();
-				for (Object v : value) {
-					if (v == null) continue;
-					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				callback.MS_FOCUSED_ION(subtag);
+			.plus()
+			.map((List<Pair<String,String>> value) -> {
+				//System.out.println(value);
+				callback.MS_FOCUSED_ION(value);
 				return value;
 			})
 		);
+
 		
 		// 2.5.3 MS$DATA_PROCESSING: subtag
 		// Data Processing Method of Peak Detection. Optional
@@ -1183,56 +1164,30 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.5.3 Subtag: WHOLE
 		// Whole Process in Single Method / Software.
 		// Example: MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
+		def ("ms_data_processing_subtag",
+			StringParser.of("DEPROFILE ")
+			.or(StringParser.of("FIND_PEAK "))
+			.or(StringParser.of("IGNORE "))
+			.or(StringParser.of("REANALYZE "))
+			.or(StringParser.of("RECALIBRATE "))
+			.or(StringParser.of("RELATIVE_M/Z "))
+			.or(StringParser.of("WHOLE "))
+		);
 		def("ms_data_processing", 
 			StringParser.of("MS$DATA_PROCESSING")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("DEPROFILE").trim())
+			.seq(ref("ms_data_processing_subtag"))
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FIND_PEAK").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("IGNORE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("REANALYZE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RECALIBRATE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RELATIVE_M/Z").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("WHOLE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.map((List<?> value) -> {
-				// System.out.println(value);
-				List<String> subtag = new ArrayList<String>();
-				for (Object v : value) {
-					if (v == null) continue;
-					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				callback.MS_DATA_PROCESSING(subtag);
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()
+			
+			.map((List<Pair<String,String>> value) -> {
+				//System.out.println(value);
+				callback.MS_DATA_PROCESSING(value);
 				return value;
 			})
 		);
@@ -1398,11 +1353,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 				return r; 
 			})
-//				.map((List<?> value) -> {
-//					System.out.println(value);
-//					return value;						
-//				})
-			);
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
 	}
 
 }
