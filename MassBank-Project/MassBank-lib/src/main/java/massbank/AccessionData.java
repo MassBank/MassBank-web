@@ -86,13 +86,19 @@ public class AccessionData {
 	
 	public static AccessionData getAccessionDataFromDatabase(String accessionId) {
 		DatabaseManager db = DatabaseManager.create();
-		if (db != null) {
-			return db.getAccessionData(accessionId);
-		} else {
+		if (db == null) {
+			System.out.println("Instantiation of DatabaseManager failed!");
 			return null;
 		}
+		
+		AccessionData acc	= db.getAccessionData(accessionId);
+		if(acc == null) {
+			System.out.println("Instantiation of accession " + accessionId + " failed!");
+			return null;
+		}
+		return acc;
 	}
-			
+	
 	public void add(String tag, String subtag, String value) {
 		this.tag.add(tag);
 		this.subtag.add(subtag);

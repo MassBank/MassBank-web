@@ -1,5 +1,6 @@
 package massbank;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import net.sf.jniinchi.INCHI_RET;
 
 public class Record {
+	private final String contributor;
+	
 	private Map<String, Object> data = new HashMap<>();
 	private String accession_code;
 	private String accession_number;
@@ -30,7 +33,7 @@ public class Record {
 	private String publication;
 	private List<String> comment;
 	private List<String> ch_name;
-	private String ch_compound_class;
+	private List<String> ch_compound_class;
 	private IMolecularFormula ch_formula;
 	private Double ch_exact_mass;
 	private IAtomContainer ch_smiles;
@@ -42,12 +45,33 @@ public class Record {
 	private List<String> sp_sample;
 	private String ac_instrument;
 	private List<?> ac_instrument_type;
+	private String ac_instrument_type_konkat;
 	private String ac_mass_spectrometry_ms_type;
 	private String ac_mass_spectrometry_ion_mode;
 	private List<Pair<String, String>> ac_mass_spectrometry;
 	private List<Pair<String, String>> ac_chromatography;
 	private List<Pair<String, String>> ms_focused_ion;
 	private List<Pair<String, String>> ms_data_processing;
+	
+	public Record(String contributor) {
+		this.contributor	= contributor;
+	}
+	
+	public void persist() throws SQLException {
+//		this.contributor = contributor;
+		DatabaseManager db  = DatabaseManager.create();
+		if (db != null) {
+			db.persistAccessionFile(this);
+		} else {
+			DevLogger.printToDBLog("Could not persist file because no connction to the database could be established" );
+		}
+	}
+	public String CONTRIBUTOR() {
+		return contributor;
+	}
+//	public void CONTRIBUTOR(String value) {
+//		contributor=value;
+//	}
 	
 	public String ACCESSION_CODE() {
 		return accession_code;
@@ -131,10 +155,10 @@ public class Record {
 	}
 	
 
-	public String CH_COMPOUND_CLASS() {
+	public List<String> CH_COMPOUND_CLASS() {
 		return ch_compound_class;
 	}
-	public void CH_COMPOUND_CLASS(String value) {
+	public void CH_COMPOUND_CLASS(List<String> value) {
 		ch_compound_class=value;
 	}
 
@@ -241,12 +265,28 @@ public class Record {
 		ac_instrument=value;
 	}
 
-	
+	public String AC_INSTRUMENT_TYPE_konkat() {
+		return ac_instrument_type_konkat;
+	}
+	public void AC_INSTRUMENT_TYPE_konkat(String value) {
+		this.ac_instrument_type_konkat	= value;
+	}
 	public List<?> AC_INSTRUMENT_TYPE() {
 		return ac_instrument_type;
 	}
 	public void AC_INSTRUMENT_TYPE(List<?> value) {
 		ac_instrument_type=value;
+		
+		List<String> list	= new ArrayList<String>();
+		for(int idx = 0; idx < this.ac_instrument_type.size(); idx++) {
+			if(this.ac_instrument_type.get(idx) instanceof String)
+				// string
+				list.add((String) this.ac_instrument_type.get(idx));
+			else
+				// list of strings
+				list.addAll((List<String>) this.ac_instrument_type.get(idx));
+		}
+		this.ac_instrument_type_konkat	= String.join("-", list.toArray(new String[list.size()]));
 	}
 
 	

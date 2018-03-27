@@ -378,21 +378,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ch_compound_class",
 			StringParser.of("CH$COMPOUND_CLASS")
 			.seq(ref("tagsep"))
-			.seq(Token.NEWLINE_PARSER.not())
-			.seq(
-				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
-				.flatten()
-				.map((String value) -> {
-					callback.CH_COMPOUND_CLASS(value);
-					return value;
-				})
+			.seq(CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten())
+			.seq(ref("valuesep")
+				.seq(CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten()).pick(1).star()			
 			)
 			.seq(Token.NEWLINE_PARSER)
-//			.map((List<?> value) -> {
-//				System.out.println(value.toString());
-//				return value;						
-//			})
+			.map((List<?> value) -> {
+				@SuppressWarnings("unchecked")
+				List<String> list = (List<String>) value.get(3);
+				list.add(0, (String) value.get(2));
+				callback.CH_COMPOUND_CLASS(list);
+				return value;						
+			})
 		);
+		
 		
 		// 2.2.3 CH$FORMULA
 		// Molecular Formula of Chemical Compound. Mandatory
