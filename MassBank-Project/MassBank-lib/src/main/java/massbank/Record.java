@@ -282,7 +282,7 @@ public class Record {
 			if(this.ac_instrument_type.get(idx) instanceof String)
 				// string
 				list.add((String) this.ac_instrument_type.get(idx));
-			else
+			if(this.ac_instrument_type.get(idx) instanceof List)
 				// list of strings
 				list.addAll((List<String>) this.ac_instrument_type.get(idx));
 		}

@@ -58,7 +58,7 @@ public class DevLoadData {
 //					}
 //				}
 //				if(mod) {
-//					FileUtils.writeStringToFile(recordFile, String.join("\n", sa), StandardCharsets.UTF_8, false);
+//					FileUtils.writeStringToFile(recordFile, String.join("\n", sa) + "\n", StandardCharsets.UTF_8, false);
 //					System.out.println("### " + recordFile);
 //				}
 				
