@@ -13,7 +13,7 @@ import org.petitparser.parser.Parser;
  */
 public class RecordParserDefinitionTest {
 
-	private final Record record = new Record();
+	private final Record record = new Record("");
 	private final RecordParserDefinition recordparser = new RecordParserDefinition(record);
 	
 	private <T> T validate(String source, String production) {
