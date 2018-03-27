@@ -4,6 +4,7 @@ import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -25,6 +26,12 @@ import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
 import org.petitparser.tools.GrammarDefinition;
 
+import edu.ucdavis.fiehnlab.spectra.hash.core.Spectrum;
+import edu.ucdavis.fiehnlab.spectra.hash.core.Splash;
+import edu.ucdavis.fiehnlab.spectra.hash.core.SplashFactory;
+import edu.ucdavis.fiehnlab.spectra.hash.core.types.Ion;
+import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
+import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
 import net.sf.jniinchi.INCHI_RET;
 
 
@@ -1350,6 +1357,21 @@ public class RecordParserDefinition extends GrammarDefinition {
 						StringBuilder sb = new StringBuilder();
 						sb.append("Incorrect number of peaks in peaklist. ");
 						sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
+						return context.failure(sb.toString());
+					}
+					
+					List<Ion> ions = new ArrayList<Ion>();
+					for (List<Double> peak_line :  pk_peak) {
+						ions.add(new Ion(peak_line.get(0), peak_line.get(1)));
+					}
+					Splash splashFactory = SplashFactory.create();
+					Spectrum spectrum = new SpectrumImpl(ions, SpectraType.MS);
+					String splash_from_peaks = splashFactory.splashIt(spectrum);
+					String splash_from_record = callback.PK_SPLASH();
+					if (!splash_from_peaks.equals(splash_from_record)) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("SPLASH from record file does not match SPLASH calculated from peaklist. ");
+						sb.append(splash_from_record + " defined in record file, but " + splash_from_peaks + " calculated from peaks.\n");
 						return context.failure(sb.toString());
 					}
 				}
