@@ -225,9 +225,10 @@ public class Validator2 {
 		else {
 			for (String filename : arguments) {
 				//System.out.print("Validating " + filename + " ... ");
-				String contributor	= (new File(filename)).getParentFile().getName();
+//				String contributor	= (new File(filename)).getParentFile().getName();
 				recordstringExample = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
-				Record record = validate(recordstringExample, contributor);
+//				Record record = validate(recordstringExample, contributor);
+				Record record = validate(recordstringExample, "");
 				if (record == null) {
 					System.err.println("Error in " + filename);
 					haserror = true;
