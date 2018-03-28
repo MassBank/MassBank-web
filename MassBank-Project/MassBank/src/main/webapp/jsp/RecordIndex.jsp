@@ -142,6 +142,7 @@
 			else { cntCmpdMap.put(val, cntCmpdMap.get(val)+count); }
 		}
 	}
+	
 %>
 <html>
 <head>
@@ -216,6 +217,7 @@
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[0] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
 	Set<String> siteKeys = cntSiteMap.keySet();
+	
 	for (Iterator i = siteKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
 		//int siteNum = Integer.parseInt(val.split("\t")[1]);
@@ -243,14 +245,14 @@
 		out.println( "</td>" );
 		
 		// グラフ用データ収集
-		siteData.put(linkName, count);
+		siteData.put(val, count);
 		totalSiteNum += count;
 	}
+	
 	if ( cntSiteMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
-	
 	
 	//---------------------------
 	// Instrument Type
@@ -428,6 +430,9 @@
 	out.println( "<hr size=\"1\">" );
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"12\" cellspacing=\"12\">" );
 	
+	//---------------------------
+	// construct and show pie charts
+	//---------------------------
 	// グラフデータセットオブジェクト
 	DefaultPieDataset siteGraphData = new DefaultPieDataset();
 	DefaultPieDataset instGraphData = new DefaultPieDataset();
