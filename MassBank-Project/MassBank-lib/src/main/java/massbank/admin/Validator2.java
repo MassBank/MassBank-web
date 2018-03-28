@@ -233,7 +233,10 @@ public class Validator2 {
 					System.err.println("Error in " + filename);
 					haserror = true;
 				}
-				//else System.out.println("ok");
+				else {
+					System.out.println("ok");
+					System.out.println(record.toString());
+				}
 			}
 		}
 		if (haserror) System.exit(1);

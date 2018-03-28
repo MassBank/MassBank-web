@@ -397,7 +397,7 @@ public class DatabaseManager {
 					try {
 						persistAccessionFile(acc, true);
 					} catch (Exception e) {
-//						e.printStackTrace();
+						e.printStackTrace();
 					}
 //				} else {
 //				}
@@ -416,15 +416,6 @@ public class DatabaseManager {
 //		String insertCompound = "INSERT INTO COMPOUND VALUES(?,?,?,?,?,?,?,?)";
 //		PreparedStatement stmnt = con.prepareStatement(insertCompound);
 		
-		try {
-			String sql = "INSERT INTO CONTRIBUTOR (ACRONYM, SHORT_NAME, FULL_NAME) VALUES (NULL,?,NULL)";
-			PreparedStatement stmnt = con.prepareStatement(sql);
-			stmnt.setString(1, acc.CONTRIBUTOR());
-			stmnt.executeUpdate();
-		} catch (SQLException e1) {
-//			 e1.printStackTrace();
-		}
-		
 		Integer conId = -1;
 		try {
 			String sql = "SELECT ID FROM CONTRIBUTOR WHERE SHORT_NAME = ?";
@@ -436,6 +427,29 @@ public class DatabaseManager {
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
+		}
+		
+		if(conId == -1) {
+			try {
+				String sql = "INSERT INTO CONTRIBUTOR (ACRONYM, SHORT_NAME, FULL_NAME) VALUES (NULL,?,NULL)";
+				PreparedStatement stmnt = con.prepareStatement(sql);
+				stmnt.setString(1, acc.CONTRIBUTOR());
+				stmnt.executeUpdate();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			
+			try {
+				String sql = "SELECT ID FROM CONTRIBUTOR WHERE SHORT_NAME = ?";
+				PreparedStatement stmnt = con.prepareStatement(sql);
+				stmnt.setString(1, acc.CONTRIBUTOR());
+				ResultSet res = stmnt.executeQuery();
+				if (res.next()) {
+					conId = res.getInt(1);
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 		try {
@@ -587,7 +601,7 @@ public class DatabaseManager {
 		//System.out.println(System.nanoTime());
 		statementInsertINSTRUMENT.setNull(1, java.sql.Types.INTEGER);
 		statementInsertINSTRUMENT.setString(2, acc.AC_INSTRUMENT());
-		statementInsertINSTRUMENT.setString(3, acc.AC_INSTRUMENT_TYPE_konkat());
+		statementInsertINSTRUMENT.setString(3, acc.AC_INSTRUMENT_TYPE());
 		statementInsertINSTRUMENT.executeUpdate();
 		set = statementInsertINSTRUMENT.getGeneratedKeys();
 		set.next();

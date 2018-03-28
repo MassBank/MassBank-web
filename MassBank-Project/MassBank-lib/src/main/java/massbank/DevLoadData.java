@@ -31,14 +31,14 @@ public class DevLoadData {
 		Path dir = FileSystems.getDefault().getPath("/var/www/html/MassBank/DB");
 		System.out.println(dir);
 		DirectoryStream<Path> stream = Files.newDirectoryStream(dir);
-		for (Path contributorPath : stream) {
+		contributors: for (Path contributorPath : stream) {
 			if (!contributorPath.toFile().isDirectory()) continue;
 			if (contributorPath.endsWith(".git")) continue;
 			if (contributorPath.endsWith(".scripts")) continue;
 			contributorPath = Paths.get(contributorPath.toString());
 			contributor = contributorPath.getFileName().toString();
 			DirectoryStream<Path> stream2 = Files.newDirectoryStream(contributorPath);
-			for (Path recordPath : stream2) {
+			records: for (Path recordPath : stream2) {
 				File recordFile = recordPath.toFile();
 				System.out.println(recordFile.toString());
 				String recordAsString	= FileUtils.readFileToString(recordFile, StandardCharsets.UTF_8);
@@ -78,6 +78,9 @@ public class DevLoadData {
 						e.printStackTrace();
 					}
 //				}
+				
+//				System.out.println(record.toString());
+//				break contributors;
 			}
 			stream2.close();
 		}

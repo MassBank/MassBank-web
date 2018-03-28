@@ -585,7 +585,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()		
 			.map((List<Pair<String,String>> value) -> {
-				//System.out.println(value);
+//				System.out.println(value);
 				callback.CH_LINK(value);
 				return value;
 			})
@@ -761,7 +761,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				ref("ac_instrument_type_value")
 				.map((List<?> value) -> {
-					callback.AC_INSTRUMENT_TYPE((List<?>) value);
+//					System.out.println(value);
+					
+					List<String> list	= new ArrayList<String>();
+					for(int idx = 0; idx < value.size(); idx++) {
+						if(value.get(idx) instanceof String)
+							// string
+							list.add((String) value.get(idx));
+						if(value.get(idx) instanceof List)
+							// list of strings
+							list.addAll((List<String>) value.get(idx));
+					}
+					String ac_instrument_type_konkat	= String.join("-", list.toArray(new String[list.size()]));
+					
+					callback.AC_INSTRUMENT_TYPE(ac_instrument_type_konkat);
 					return value;						
 				})
 			)
@@ -1232,32 +1245,32 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.plus()
 				.flatten()
 				.trim(CharacterParser.of(' '))
-				.map((String value) -> {
-					//System.out.println(value);
-					callback.ADD_PK_ANNOTATION_HEADER_ITEM(value);
+				.plus()
+				.map((List<String> value) -> {
+//					System.out.println(value);
+					callback.PK_ANNOTATION_HEADER(value);
 					return value;						
 				})
-				.plus()
 				.seq(Token.NEWLINE_PARSER)
 			)
 			.seq(
 				StringParser.of("  ")
-				.map((String value) -> {
-					//System.out.println(value);
-					callback.ADD_PK_ANNOTATION_LINE();
-					return value;						
-				})
+//				.map((String value) -> {
+//					//System.out.println(value);
+//					callback.ADD_PK_ANNOTATION_LINE();
+//					return value;						
+//				})
 				.seq(
 					CharacterParser.word().or(CharacterParser.anyOf("-+=,()[]{}/.:$^'`_*?<>"))
 					.plus()
 					.flatten()
 					.trim(CharacterParser.of(' '))
-					.map((String value) -> {
-						//System.out.println(value);
-						callback.ADD_PK_ANNOTATION_ITEM(value);
+					.plus()
+					.map((List<String> value) -> {
+//						System.out.println(value);
+						callback.PK_ANNOTATION_ADD_LINE(value);
 						return value;						
 					})
-					.plus()
 					.seq(Token.NEWLINE_PARSER)
 					// call a Continuation Parser to validate the count of PK$ANNOTATION items per line
 					.callCC((Function<Context, Result> continuation, Context context) -> {
@@ -1282,10 +1295,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 				)
 				.plus()
 			)
-//			.map((List<?> value) -> {
-//				System.out.println(value);
-//				return value;						
-//			})
 		);
 		
 		def("pk_num_peak",
@@ -1300,10 +1309,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 	        	})
 			)
 			.seq(Token.NEWLINE_PARSER)
-//			.map((List<?> value) -> {
-//				System.out.println(value.toString());
-//				return value;						
-//			})
 		);
 		
 		def("pk_peak",
@@ -1313,37 +1318,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER)
 			.seq(
 				StringParser.of("  ")
-				.map((String value) -> {
-					//System.out.println(value);
-					callback.ADD_PK_PEAK_LINE();
-					return value;						
+				.seq(
+					ref("number").trim()
+				)
+				.pick(1)
+				.seq(
+					ref("number").trim()
+				)
+				.seq(
+					ref("number")
+				)
+				.map((List<String> value) -> {
+//					System.out.println(value);
+					List<Double> list	= new ArrayList<Double>();
+					for(String val : value)
+						list.add(Double.parseDouble(val));
+					callback.PK_PEAK_ADD_LINE(list);
+					return value;
 				})
-				.seq(
-					ref("number")
-					.map((String value) -> {
-						Double d = Double.parseDouble(value);
-			        	callback.ADD_PK_PEAK_ITEM(d);
-			        	return value;
-			        })
-				)
-				.seq(CharacterParser.whitespace())
-				.seq(
-					ref("number")
-					.map((String value) -> {
-						Double d = Double.parseDouble(value);
-				       	callback.ADD_PK_PEAK_ITEM(d);
-				       	return value;
-				    })
-				)
-				.seq(CharacterParser.whitespace())
-				.seq(
-					ref("number")
-					.map((String value) -> {
-						Double d = Double.parseDouble(value);
-						callback.ADD_PK_PEAK_ITEM(d);
-					    return value;
-					})
-				)
 				.seq(Token.NEWLINE_PARSER).plus()
 			)
 			// call a Continuation Parser to validate the number of peaks in the peaklist

@@ -3,9 +3,7 @@ package massbank;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.exception.CDKException;
@@ -22,7 +20,6 @@ import net.sf.jniinchi.INCHI_RET;
 public class Record {
 	private final String contributor;
 	
-	private Map<String, Object> data = new HashMap<>();
 	private String accession_code;
 	private String accession_number;
 	private String record_title;
@@ -44,21 +41,43 @@ public class Record {
 	private List<Pair<String, String>> sp_link;
 	private List<String> sp_sample;
 	private String ac_instrument;
-	private List<?> ac_instrument_type;
-	private String ac_instrument_type_konkat;
+	private String ac_instrument_type;
 	private String ac_mass_spectrometry_ms_type;
 	private String ac_mass_spectrometry_ion_mode;
 	private List<Pair<String, String>> ac_mass_spectrometry;
 	private List<Pair<String, String>> ac_chromatography;
 	private List<Pair<String, String>> ms_focused_ion;
 	private List<Pair<String, String>> ms_data_processing;
+	private String PK_SPLASH;
+	private List<String> PK_ANNOTATION_HEADER;
+	private final List<List<String>> PK_ANNOTATION;
+	private int PK_NUM_PEAK;
+	private final List<List<Double>> PK_PEAK;
 	
 	public Record(String contributor) {
 		this.contributor	= contributor;
+		
+		// set default values for optional fields
+		copyright				= null;
+		publication				= null;
+		comment					= new ArrayList<String>();
+		ch_link					= new ArrayList<Pair<String, String>>();
+		sp_scientific_name		= null;
+		sp_lineage				= null;
+		sp_link					= new ArrayList<Pair<String, String>>();
+		sp_sample				= new ArrayList<String>();
+		ac_mass_spectrometry	= new ArrayList<Pair<String, String>>();
+		ac_chromatography		= new ArrayList<Pair<String, String>>();
+		ms_focused_ion			= new ArrayList<Pair<String, String>>();
+		ms_data_processing		= new ArrayList<Pair<String, String>>();
+		PK_ANNOTATION			= new ArrayList<List<String>>();
+		
+		// set default values for mandatory fields
+		PK_NUM_PEAK				= -1;
+		PK_PEAK					= new ArrayList<List<Double>>();
 	}
 	
 	public void persist() throws SQLException {
-//		this.contributor = contributor;
 		DatabaseManager db  = DatabaseManager.create();
 		if (db != null) {
 			db.persistAccessionFile(this);
@@ -69,9 +88,6 @@ public class Record {
 	public String CONTRIBUTOR() {
 		return contributor;
 	}
-//	public void CONTRIBUTOR(String value) {
-//		contributor=value;
-//	}
 	
 	public String ACCESSION_CODE() {
 		return accession_code;
@@ -89,7 +105,6 @@ public class Record {
 		if (accession_code==null || accession_number==null) return null;
 		return accession_code+accession_number;
 	}
-
 	
 	public String RECORD_TITLE() {
 		return record_title;
@@ -98,14 +113,12 @@ public class Record {
 		this.record_title = value;
 	}
 	
-
 	public LocalDate DATE() {
 		return date;
 	}
 	public void DATE(LocalDate value) {
 		date=value;
 	}
-
 	
 	public String AUTHORS() {
 		return authors;
@@ -113,7 +126,6 @@ public class Record {
 	public void AUTHORS(String value) {
 		authors=value;
 	}
-
 	
 	public String LICENSE() {
 		return license;
@@ -121,7 +133,6 @@ public class Record {
 	public void LICENSE(String value) {
 		license=value;
 	}
-
 	
 	public String COPYRIGHT() {
 		return copyright;
@@ -129,7 +140,6 @@ public class Record {
 	public void COPYRIGHT(String value) {
 		copyright= value;
 	}
-
 	
 	public String PUBLICATION() {
 		return publication;
@@ -138,14 +148,12 @@ public class Record {
 		publication=value;
 	}
 	
-
 	public List<String> COMMENT() {
 		return comment;
 	}
 	public void COMMENT(List<String> value) {
 		comment=value;
 	}
-
 	
 	public List<String> CH_NAME() {
 		return ch_name;
@@ -154,14 +162,12 @@ public class Record {
 		ch_name=value;
 	}
 	
-
 	public List<String> CH_COMPOUND_CLASS() {
 		return ch_compound_class;
 	}
 	public void CH_COMPOUND_CLASS(List<String> value) {
 		ch_compound_class=value;
 	}
-
 	
 	public String CH_FORMULA() {
 		return MolecularFormulaManipulator.getString(ch_formula);
@@ -173,7 +179,6 @@ public class Record {
 		ch_formula=value;
 	}
 	
-
 	public Double CH_EXACT_MASS() {
 		return ch_exact_mass;
 	}
@@ -181,7 +186,6 @@ public class Record {
 		ch_exact_mass=value;
 	}
 	
-
 	public String CH_SMILES() throws CDKException {
 		if (ch_smiles.isEmpty()) return "N/A";
 		SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Isomeric);
@@ -193,12 +197,10 @@ public class Record {
 	public void CH_SMILES(IAtomContainer value) {
 		ch_smiles=value;
 	}
-
 	
 	public String CH_IUPAC() throws CDKException {
 		if (ch_iupac.isEmpty()) return "N/A";
-		InChIGenerator gen = InChIGeneratorFactory.getInstance()
-				.getInChIGenerator(ch_iupac);
+		InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(ch_iupac);
 		INCHI_RET ret = gen.getReturnStatus();
 		if (ret == INCHI_RET.WARNING) {
 			// Structure generated, but with warning message
@@ -216,7 +218,6 @@ public class Record {
 	public void CH_IUPAC(IAtomContainer value) {
 		ch_iupac=value;
 	}
-
 	
 	public List<Pair<String, String>> CH_LINK() {
 		return ch_link;
@@ -225,14 +226,12 @@ public class Record {
 		ch_link=value;
 	}
 
-	
 	public String SP_SCIENTIFIC_NAME() {
 		return sp_scientific_name;
 	}
 	public void SP_SCIENTIFIC_NAME(String value) {
 		sp_scientific_name=value;
 	}
-
 	
 	public String SP_LINEAGE() {
 		return sp_lineage;
@@ -240,7 +239,6 @@ public class Record {
 	public void SP_LINEAGE(String value) {
 		sp_lineage=value;
 	}
-
  
 	public List<Pair<String, String>> SP_LINK() {
 		return sp_link;
@@ -248,7 +246,6 @@ public class Record {
 	public void SP_LINK(List<Pair<String, String>>  value) {
 		sp_link=value;
 	}
-	
 
 	public List<String> SP_SAMPLE() {
 		return sp_sample;
@@ -256,7 +253,6 @@ public class Record {
 	public void SP_SAMPLE(List<String> value) {
 		sp_sample=value;
 	}
-
 	
 	public String AC_INSTRUMENT() {
 		return ac_instrument;
@@ -265,30 +261,12 @@ public class Record {
 		ac_instrument=value;
 	}
 
-	public String AC_INSTRUMENT_TYPE_konkat() {
-		return ac_instrument_type_konkat;
-	}
-	public void AC_INSTRUMENT_TYPE_konkat(String value) {
-		this.ac_instrument_type_konkat	= value;
-	}
-	public List<?> AC_INSTRUMENT_TYPE() {
+	public String AC_INSTRUMENT_TYPE() {
 		return ac_instrument_type;
 	}
-	public void AC_INSTRUMENT_TYPE(List<?> value) {
-		ac_instrument_type=value;
-		
-		List<String> list	= new ArrayList<String>();
-		for(int idx = 0; idx < this.ac_instrument_type.size(); idx++) {
-			if(this.ac_instrument_type.get(idx) instanceof String)
-				// string
-				list.add((String) this.ac_instrument_type.get(idx));
-			if(this.ac_instrument_type.get(idx) instanceof List)
-				// list of strings
-				list.addAll((List<String>) this.ac_instrument_type.get(idx));
-		}
-		this.ac_instrument_type_konkat	= String.join("-", list.toArray(new String[list.size()]));
+	public void AC_INSTRUMENT_TYPE(String value) {
+		this.ac_instrument_type	= value;
 	}
-
 	
 	public String AC_MASS_SPECTROMETRY_MS_TYPE() {
 		return ac_mass_spectrometry_ms_type;
@@ -296,7 +274,6 @@ public class Record {
 	public void AC_MASS_SPECTROMETRY_MS_TYPE(String value) {
 		ac_mass_spectrometry_ms_type=value;
 	}
-
 	
 	public String AC_MASS_SPECTROMETRY_ION_MODE() {
 		return ac_mass_spectrometry_ion_mode;
@@ -304,7 +281,6 @@ public class Record {
 	public void AC_MASS_SPECTROMETRY_ION_MODE(String value) {
 		ac_mass_spectrometry_ion_mode=value;
 	}
-
 	
 	public List<Pair<String, String>> AC_MASS_SPECTROMETRY() {
 		return ac_mass_spectrometry;
@@ -313,7 +289,6 @@ public class Record {
 		ac_mass_spectrometry=value;
 	}
 
-
 	public List<Pair<String, String>> AC_CHROMATOGRAPHY() {
 		return ac_chromatography;
 	}
@@ -321,7 +296,6 @@ public class Record {
 		ac_chromatography=value;
 	}
 	
-
 	public List<Pair<String, String>> MS_FOCUSED_ION() {
 		return ms_focused_ion;
 	}
@@ -329,91 +303,49 @@ public class Record {
 		ms_focused_ion=value;
 	}
 	
-
 	public List<Pair<String, String>> MS_DATA_PROCESSING() {
 		return ms_data_processing;
 	}
-
 	public void MS_DATA_PROCESSING(List<Pair<String, String>> value) {
 		ms_data_processing=value;
 	}
 
 	public String PK_SPLASH() {
-		return (String) data.get("PK_SPLASH");
+		return PK_SPLASH;
 	}
-
 	public void PK_SPLASH(String value) {
-		data.put("PK_SPLASH", value);
+		PK_SPLASH	= value;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<String> PK_ANNOTATION_HEADER() {
-		return (List<String>) data.get("PK_ANNOTATION_HEADER");
+		return PK_ANNOTATION_HEADER;
 	}
-	public void ADD_PK_ANNOTATION_HEADER_ITEM(String value) {
-		List<String> pk_annotation_header = PK_ANNOTATION_HEADER();
-		if (pk_annotation_header == null) {
-			pk_annotation_header = new ArrayList<>();
-			data.put("PK_ANNOTATION_HEADER", pk_annotation_header);
-		}
-		pk_annotation_header.add(value);
+	public void PK_ANNOTATION_HEADER(List<String> value) {
+		PK_ANNOTATION_HEADER	= value;
 	}
 
-	@SuppressWarnings("unchecked")
 	// PK_ANNOTATION is a two-dimensional List
 	public List<List<String>> PK_ANNOTATION() {
-		return (List<List<String>>) data.get("PK_ANNOTATION");
+		return PK_ANNOTATION;
 	}
-	public void ADD_PK_ANNOTATION_LINE() {
-		List<List<String>> pk_annotation = PK_ANNOTATION();
-		if (pk_annotation == null) {
-			ArrayList<ArrayList<String>> new_pk_annotation = new ArrayList<ArrayList<String>>();
-			data.put("PK_ANNOTATION", new_pk_annotation);
-			pk_annotation = PK_ANNOTATION();
-		}
-		pk_annotation.add(new ArrayList<String>());
-	}
-
-	public void ADD_PK_ANNOTATION_ITEM(String value) {
-		List<List<String>> pk_annotation = PK_ANNOTATION();
-		if (pk_annotation == null) {
-			ADD_PK_ANNOTATION_LINE();
-			pk_annotation = PK_ANNOTATION();
-		}
-		pk_annotation.get(pk_annotation.size() - 1).add(value);
+	public void PK_ANNOTATION_ADD_LINE(List<String> value) {
+		PK_ANNOTATION.add(value);
 	}
 
 	public Integer PK_NUM_PEAK() {
-		return (Integer) data.get("PK_NUM_PEAK");
+		return PK_NUM_PEAK;
 	}
 	public void PK_NUM_PEAK(Integer value) {
-		data.put("PK_NUM_PEAK", value);
+		PK_NUM_PEAK	= value;
 	}
 
-	@SuppressWarnings("unchecked")
 	// PK_PEAK is a two-dimensional List
 	public List<List<Double>> PK_PEAK() {
-		return (List<List<Double>>) data.get("PK_PEAK");
+		return PK_PEAK;
 	}
-	public void ADD_PK_PEAK_LINE() {
-		List<List<Double>> pk_peak = PK_PEAK();
-		if (pk_peak == null) {
-			ArrayList<ArrayList<Double>> new_pk_peak = new ArrayList<ArrayList<Double>>();
-			data.put("PK_PEAK", new_pk_peak);
-			pk_peak = PK_PEAK();
-		}
-		pk_peak.add(new ArrayList<Double>());
+	public void PK_PEAK_ADD_LINE(List<Double> value) {
+		PK_PEAK.add(value);
 	}
-
-	public void ADD_PK_PEAK_ITEM(Double value) {
-		List<List<Double>> pk_peak = PK_PEAK();
-		if (pk_peak == null) {
-			ADD_PK_PEAK_LINE();
-			pk_peak = PK_PEAK();
-		}
-		pk_peak.get(pk_peak.size() - 1).add(value);
-	}
-	
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
