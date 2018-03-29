@@ -22,7 +22,6 @@ public class Validator2 {
 			"COMMENT: Data obtained from a veratramine standard purchased from Logan Natural Products, Logan, Utah USA.\n" +
 			"CH$NAME: Veratramine\n" + 
 			"CH$NAME: {(3beta,23R)-14,15,16,17-Tetradehydroveratraman-3,23-diol\n" +
-//			"CH$COMPOUND_CLASS: Natural Product; Alkaloid; blah\n" + 
 			"CH$COMPOUND_CLASS: N/A; Environmental Standard\n" +
 			"CH$FORMULA: C27H39NO2\n" +
 			"CH$EXACT_MASS: 409.29807\n" +
@@ -170,7 +169,8 @@ public class Validator2 {
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
 				String[] tokens = recordstring.split("\\r?\\n");
-				System.out.println("Warning: non standard ASCII charactet found. This might be an error. Please check carefully.");
+				System.out.println(
+						"Warning: non standard ASCII charactet found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
 				for (String token : tokens) {
 					offset = offset + token.length() + 1;
@@ -205,7 +205,6 @@ public class Validator2 {
 					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 					error_at.append('^');
 					System.err.println(error_at);
-//					record = new Record();
 					break;
 				}
 				line++;
@@ -218,24 +217,21 @@ public class Validator2 {
 	public static void main(String[] arguments) throws Exception {
 		boolean haserror = false;
 		if (arguments.length==0) {
-			Record record = validate(recordstringExample, "Boise State University");
+			Record record = validate(recordstringExample, "");
 			if (record == null) System.err.println("Error.");
 			else System.out.println(record.toString());
 		}
 		else {
 			for (String filename : arguments) {
-				//System.out.print("Validating " + filename + " ... ");
-//				String contributor	= (new File(filename)).getParentFile().getName();
 				recordstringExample = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
-//				Record record = validate(recordstringExample, contributor);
 				Record record = validate(recordstringExample, "");
 				if (record == null) {
 					System.err.println("Error in " + filename);
 					haserror = true;
 				}
 				else {
-					System.out.println("ok");
-					System.out.println(record.toString());
+					//System.out.println("ok");
+					//System.out.println(record.toString());
 				}
 			}
 		}
