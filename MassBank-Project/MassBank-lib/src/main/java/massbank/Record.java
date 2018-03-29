@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.exception.CDKException;
@@ -20,8 +22,7 @@ import net.sf.jniinchi.INCHI_RET;
 public class Record {
 	private final String contributor;
 	
-	private String accession_code;
-	private String accession_number;
+	private String accession;
 	private String record_title;
 	private LocalDate date;
 	private String authors;
@@ -89,21 +90,11 @@ public class Record {
 		return contributor;
 	}
 	
-	public String ACCESSION_CODE() {
-		return accession_code;
-	}
-	public void ACCESSION_CODE(String value) {
-		accession_code=value;
-	}
-	public String ACCESSION_NUMBER() {
-		return accession_number;
-	}
-	public void ACCESSION_NUMBER(String value) {
-		accession_number=value;
-	}
 	public String ACCESSION() {
-		if (accession_code==null || accession_number==null) return null;
-		return accession_code+accession_number;
+		return accession;
+	}
+	public void ACCESSION(String value) {
+		accession	= value;
 	}
 	
 	public String RECORD_TITLE() {
@@ -455,5 +446,22 @@ public class Record {
 
 		return sb.toString();
 	}
-
+	public static class Structure{
+		public final String CH_SMILES;
+		public final String CH_IUPAC;
+		public Structure(String CH_SMILES, String CH_IUPAC) {
+			this.CH_SMILES	= CH_SMILES;
+			this.CH_IUPAC	= CH_IUPAC;
+		}
+	}
+	public static class Contributor{
+		public final String ACRONYM;
+		public final String SHORT_NAME;
+		public final String FULL_NAME;
+		public Contributor(String ACRONYM, String SHORT_NAME, String FULL_NAME) {
+			this.ACRONYM	= ACRONYM;
+			this.SHORT_NAME	= SHORT_NAME;
+			this.FULL_NAME	= FULL_NAME;
+		}
+	}
 }

@@ -229,7 +229,7 @@ public class AccessionData {
 //		}
 	}
 	
-}
+//}
 
 //public class AccessionData{
 //	public final String ACCESSION;
@@ -507,15 +507,15 @@ public class AccessionData {
 //		
 //		return databaseName;
 //	}
-//	public static boolean existsFile(String databaseName, String accession){
-//		File file	= AccessionData.getFile(databaseName, accession);
-//		return file.exists();
-//	}
-//	public static File getFile(String databaseName, String accession){
-//		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
-//		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_ANNOTATION_PATH) + databaseName + File.separator + accession + ".txt");
-//		return file;
-//	}
+	public static boolean existsFile(String databaseName, String accession){
+		File file	= AccessionData.getFile(databaseName, accession);
+		return file.exists();
+	}
+	public static File getFile(String databaseName, String accession){
+		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
+		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH) + databaseName + File.separator + accession + ".txt");
+		return file;
+	}
 //	public static AccessionData getAccessionDataFromFile(String databaseName, String accession){
 //		if(!AccessionData.existsFile(databaseName, accession))
 //			return null;
@@ -800,4 +800,4 @@ public class AccessionData {
 //		
 //		return accessionData;
 //	}
-// }
+ }

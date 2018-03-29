@@ -103,30 +103,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("tagsep"))
 			.seq(
 				letter().times(2).flatten()
-				.map((String value) -> {
-					callback.ACCESSION_CODE(value);
-					return value;
-				})
 				.seq(
 					digit().times(6).flatten()
-					.map((String value) -> {
-						callback.ACCESSION_NUMBER(value);
-						return value;
-					})	
 				)
+				.map((List<String> value) -> {
+					callback.ACCESSION(value.get(0) + value.get(1));
+					return value;
+				})
 				.or(
 					letter().times(3).flatten()
-					.map((String value) -> {
-						callback.ACCESSION_CODE(value);
-						return value;
-					})
 					.seq(
 						digit().times(5).flatten()
-						.map((String value) -> {
-							callback.ACCESSION_NUMBER(value);
-							return value;
-						})	
 					)
+					.map((List<String> value) -> {
+						callback.ACCESSION(value.get(0) + value.get(1));
+						return value;
+					})
 				)
 			)
 			.seq(Token.NEWLINE_PARSER)
@@ -482,7 +474,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 							if (r.get().equals("N/A")) callback.CH_SMILES(new AtomContainer());
 							else callback.CH_SMILES(new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(r.get()));
 						} catch (InvalidSmilesException e) { 
-							return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage());		 				
+							return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage() + " for " + r.get());		 				
 						}		 			
 					}
 					return r; 
@@ -524,7 +516,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 								} 
 								else if (ret != INCHI_RET.OKAY) {
 									// Structure generation failed
-									return context.failure("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "]");
+									return context.failure("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + r.get());
 								}
 								IAtomContainer m = intostruct.getAtomContainer();
 								callback.CH_IUPAC(m);

@@ -1,3 +1,4 @@
+<%@page import="massbank.DatabaseManager"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
 /*******************************************************************************
@@ -34,7 +35,6 @@
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankEnv" %>
-<%@ page import="massbank.AccessionData" %>
 <%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.StructureToSvgStringGenerator" %>
 <%@ page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData" %>
@@ -79,30 +79,30 @@
 		databaseName	= null;
 	
 	if(accession == null){
-		System.out.println("Error: Missing argument 'id'");
+		String error	= "Error: Missing argument 'id'";
+		System.out.println(error);
 		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
-		String error	= "Error: Missing argument 'id'";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
 		response.sendRedirect(redirectUrl);
 		return;
 	}
 	if(databaseName == null){
-		System.out.println("Error: Missing argument 'dsn'");
+		String error	= "Error: Missing argument 'dsn'";
+		System.out.println(error);
 		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
-		String error	= "Error: Missing argument 'dsn'";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
 		response.sendRedirect(redirectUrl);
 		return;
 	}
-	if(!AccessionData.existsFile(databaseName, accession)){
-		System.out.println("Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.");
+	if(!FileUtil.existsFile(databaseName, accession)){
+		String error	= "Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.";
+		System.out.println(error);
 		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
 		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
-		String error	= "Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
 		response.sendRedirect(redirectUrl);
@@ -132,7 +132,10 @@
 	boolean ac	= false;
 	boolean ms	= false;
 	boolean pk	= false;
-	for(String line : list){
+	int PK_PEAK_idx	= -1;
+	
+	for(int lineIdx = 0; lineIdx < list.size(); lineIdx++){
+		String line	= list.get(lineIdx);
 		int delimiterIndex	= line.indexOf(delimiter);
 		if(delimiterIndex == -1){
 			sb.append(line + "\n");
@@ -252,11 +255,23 @@
 		case "PK$SPLASH":
 			sb.append("PK$SPLASH: " + "<a href=\"http://mona.fiehnlab.ucdavis.edu/#/spectra/splash/" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
 			break;
+		case "PK$PEAK":{
+			PK_PEAK_idx	= lineIdx;
+			sb.append(line + "\n");
+		}
 		default:
 			sb.append(line + "\n");
 			break;
 		}
 	}
+	
+	// get peaks for specktackle
+	StringBuilder sbPeaks	= new StringBuilder();
+	for(int lineIdx = PK_PEAK_idx + 1; lineIdx < list.size() - 1; lineIdx++){
+		String[] tokens	= list.get(lineIdx).trim().split(" ");
+		sbPeaks.append(tokens[0] + "," + tokens[2] + "@");
+	}
+	String peaks	= sbPeaks.toString();
 	
 	if(recordTitle == null)
 		recordTitle	= "NA";
@@ -322,7 +337,7 @@
 				<td valign="top">
 					<font style="font-size:10pt;" color="dimgray">Mass Spectrum</font>
 					<br>
-					<div id="spectrum_canvas" style="height: 200px; width: 750px; background-color: white"></div>
+					<div id="spectrum_canvas" peaks="<%=peaks%>" style="height: 200px; width: 750px; background-color: white"></div>
 				</td>
 				<td valign="top">
 					<font style="font-size:10pt;" color="dimgray">Chemical Structure</font><br>

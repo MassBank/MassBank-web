@@ -66,42 +66,42 @@ public class StructureToSvgStringGenerator {
 		);
 	}
 	
-	public static ClickablePreviewImageData createClickablePreviewImage(
-			String databaseName, String accession, String tmpFileFolder, String tmpUrlFolder,
-			int sizeSmall, int sizeMedium, int sizeBig
-	){
-		// fetch accession data
-//		DatabaseManager dbManager	= new DatabaseManager(databaseName);
-//		AccessionData accData	= dbManager.getAccessionData(accession);
-//		dbManager.closeConnection();
-		
-		AccessionData accData	= AccessionData.getAccessionDataFromDatabase(accession);
-		if(accData == null)
-			return null;
-		
-		return createClickablePreviewImage(
-				accData, tmpFileFolder, tmpUrlFolder,
-				sizeSmall, sizeMedium, sizeBig
-		);
-	}
-	
-	public static ClickablePreviewImageData createClickablePreviewImage(
-			AccessionData accData, 
-			String tmpFileFolder, String tmpUrlFolder,
-			int sizeSmall, int sizeMedium, int sizeBig
-	){
-		// fetch structure
-		
-		String accession	= accData.get("ACCESSION").get(0)[2];
-		String inchi		= accData.get("CH$IUPAC").get(0)[2];
-		String smiles		= accData.get("CH$SMILES").get(0)[2];
-		
-		return StructureToSvgStringGenerator.createClickablePreviewImage(
-				accession, inchi, smiles, 
-				tmpFileFolder, tmpUrlFolder, 
-				sizeSmall, sizeMedium, sizeBig
-		);
-	}
+//	public static ClickablePreviewImageData createClickablePreviewImage(
+//			String databaseName, String accession, String tmpFileFolder, String tmpUrlFolder,
+//			int sizeSmall, int sizeMedium, int sizeBig
+//	){
+//		// fetch accession data
+////		DatabaseManager dbManager	= new DatabaseManager(databaseName);
+////		AccessionData accData	= dbManager.getAccessionData(accession);
+////		dbManager.closeConnection();
+//		
+//		AccessionData accData	= AccessionData.getAccessionDataFromDatabase(accession);
+//		if(accData == null)
+//			return null;
+//		
+//		return createClickablePreviewImage(
+//				accData, tmpFileFolder, tmpUrlFolder,
+//				sizeSmall, sizeMedium, sizeBig
+//		);
+//	}
+//	
+//	public static ClickablePreviewImageData createClickablePreviewImage(
+//			AccessionData accData, 
+//			String tmpFileFolder, String tmpUrlFolder,
+//			int sizeSmall, int sizeMedium, int sizeBig
+//	){
+//		// fetch structure
+//		
+//		String accession	= accData.get("ACCESSION").get(0)[2];
+//		String inchi		= accData.get("CH$IUPAC").get(0)[2];
+//		String smiles		= accData.get("CH$SMILES").get(0)[2];
+//		
+//		return StructureToSvgStringGenerator.createClickablePreviewImage(
+//				accession, inchi, smiles, 
+//				tmpFileFolder, tmpUrlFolder, 
+//				sizeSmall, sizeMedium, sizeBig
+//		);
+//	}
 	
 	public static ClickablePreviewImageData createClickablePreviewImage(
 			String accession, String inchi, String smiles,

@@ -12,12 +12,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.inchi.InChIGeneratorFactory;
+import org.openscience.cdk.inchi.InChIToStructure;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
+
+import net.sf.jniinchi.INCHI_RET;
 
 public class DatabaseManager {
 	
@@ -53,6 +64,10 @@ public class DatabaseManager {
 	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE SAMPLE = ?";
 	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE SAMPLE = ?";
 	private final static String sqlANNOTATION_HEADER = "SELECT * FROM ANNOTATION_HEADER WHERE RECORD = ?";
+	private final static String sqlGetContributorFromAccession = 
+			"SELECT CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME " +
+			"FROM CONTRIBUTOR INNER JOIN RECORD ON RECORD.CONTRIBUTOR=CONTRIBUTOR.ID " +
+			"WHERE RECORD.ACCESSION = ?";
 	
 	private final PreparedStatement statementAC_CHROMATOGRAPHY;
 	private final PreparedStatement statementAC_MASS_SPECTROMETRY;
@@ -73,6 +88,7 @@ public class DatabaseManager {
 	private final PreparedStatement statementSP_LINK;
 	private final PreparedStatement statementSP_SAMPLE;
 	private final PreparedStatement statementANNOTATION_HEADER;
+	private final PreparedStatement statementGetContributorFromAccession;
 
 	private final static String insertCompound = "INSERT INTO COMPOUND VALUES(?,?,?,?,?,?,?,?)";
 	private final static String insertCompound_Class = "INSERT INTO COMPOUND_CLASS VALUES(?,?,?,?)";
@@ -170,6 +186,7 @@ public class DatabaseManager {
 			statementSP_LINK = this.con.prepareStatement(sqlSP_LINK);
 			statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
 			statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
+			statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
 			
 			statementInsertCompound = this.con.prepareStatement(insertCompound, Statement.RETURN_GENERATED_KEYS);
 			statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class, Statement.RETURN_GENERATED_KEYS);
@@ -207,36 +224,36 @@ public class DatabaseManager {
 			this.con = con;
 	}
 
-	private void closeConnection() {
+	public void closeConnection() {
 		try {
 			if ( this.con != null ) this.con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}	
-
-	public AccessionData getAccessionData(String accessionId) {
-		AccessionData acc = new AccessionData();
+	
+	public Record getAccessionData(String accessionId, String contributor) {
+		Record acc = new Record(contributor);
 		try {
 			this.statementRECORD.setString(1, accessionId);
 			ResultSet set = this.statementRECORD.executeQuery();
-			int fkCH = -1;
-			int fkSP = -1;
-			int fkAC_INSTRUMENT = -1;
-			while (set.next()) {
-				acc.add("ACCESSION", null, set.getString("ACCESSION"));
-				acc.add("RECORD_TITLE", null, set.getString("RECORD_TITLE"));
-				acc.add("DATE", null, set.getString("DATE"));
-				acc.add("AUTHORS", null, set.getString("AUTHORS"));
-				acc.add("LICENSE", null, set.getString("LICENSE"));
-				acc.add("COPYRIGHT", null, set.getString("COPYRIGHT"));
-				acc.add("PUBLICATION", null, set.getString("PUBLICATION"));
-				fkCH = set.getInt("CH");
-				fkSP = set.getInt("SP");
-				fkAC_INSTRUMENT = set.getInt("AC_INSTRUMENT");
-				acc.add("AC$MASS_SPECTROMETRY", "MS_TYPE", set.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
-				acc.add("AC$MASS_SPECTROMETRY", "ION_MODE", set.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
-				acc.add("PK$SPLASH", null, set.getString("PK_SPLASH"));
+			int compoundID = -1;
+			int sampleID = -1;
+			int instrumentID = -1;
+			if (set.next()) {
+				acc.ACCESSION(set.getString("ACCESSION"));
+				acc.RECORD_TITLE(set.getString("RECORD_TITLE"));
+				acc.DATE(set.getDate("DATE").toLocalDate());
+				acc.AUTHORS(set.getString("AUTHORS"));
+				acc.LICENSE(set.getString("LICENSE"));
+				acc.COPYRIGHT(set.getString("COPYRIGHT"));
+				acc.PUBLICATION(set.getString("PUBLICATION"));
+				compoundID = set.getInt("CH");
+				sampleID = set.getInt("SP");
+				instrumentID = set.getInt("AC_INSTRUMENT");
+				acc.AC_MASS_SPECTROMETRY_MS_TYPE(set.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
+				acc.AC_MASS_SPECTROMETRY_ION_MODE(set.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+				acc.PK_SPLASH(set.getString("PK_SPLASH"));
 				this.statementAC_CHROMATOGRAPHY.setString(1, set.getString("ACCESSION"));
 				this.statementAC_MASS_SPECTROMETRY.setString(1, set.getString("ACCESSION"));
 				this.statementMS_DATA_PROCESSING.setString(1, set.getString("ACCESSION"));
@@ -244,103 +261,166 @@ public class DatabaseManager {
 				this.statementCOMMENT.setString(1, set.getString("ACCESSION"));
 				this.statementPEAK.setString(1, set.getString("ACCESSION"));
 				this.statementPK_NUM_PEAK.setString(1, set.getString("ACCESSION"));
+				this.statementANNOTATION_HEADER.setString(1, accessionId);
+				
 				ResultSet tmp = this.statementAC_CHROMATOGRAPHY.executeQuery();
-				while (tmp.next()) {
-					acc.add("AC$CHROMATOGRAPHY", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
-				}
+				List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.AC_CHROMATOGRAPHY(tmpList);
+				
 				tmp = this.statementAC_MASS_SPECTROMETRY.executeQuery();
-				while (tmp.next()) {
-					acc.add("AC$MASS_SPECTROMETRY", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
-				}
+				tmpList.clear();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.AC_MASS_SPECTROMETRY(tmpList);
+				
 				tmp = this.statementMS_DATA_PROCESSING.executeQuery();
-				while (tmp.next()) {
-					acc.add("MS$DATA_PROCESSING", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
-				}
+				tmpList.clear();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.MS_DATA_PROCESSING(tmpList);
+				
 				tmp = this.statementMS_FOCUSED_ION.executeQuery();
-				while (tmp.next()) {
-					acc.add("MS$FOCUSED_ION", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
-				}
+				tmpList.clear();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.MS_FOCUSED_ION(tmpList);
+				
 				tmp = this.statementCOMMENT.executeQuery();
-				while (tmp.next()) {
-					acc.add("COMMENT", null, tmp.getString("COMMENT"));
+				List<String> tmpList2	= new ArrayList<String>();
+				while (tmp.next())
+					tmpList2.add(tmp.getString("COMMENT"));
+				acc.COMMENT(tmpList2);
+				
+				tmp = this.statementANNOTATION_HEADER.executeQuery();
+//				int PK_ANNOTATION_HEADER_numberOfTokens	= -1;
+				if (tmp.next()) {
+					String PK_ANNOTATION_HEADER	= tmp.getString("HEADER");
+					String[] PK_ANNOTATION_HEADER_tokens	= PK_ANNOTATION_HEADER.split(" ");
+					acc.PK_ANNOTATION_HEADER(Arrays.asList(PK_ANNOTATION_HEADER_tokens));
+//					PK_ANNOTATION_HEADER_numberOfTokens	= PK_ANNOTATION_HEADER_tokens.length;
 				}
+				
 				tmp = this.statementPEAK.executeQuery();
 //				acc.add("PK$PEAK", null, "m/z int. rel.int.");
 				while (tmp.next()) {
-					acc.add("PK$PEAK", null, tmp.getDouble("PK_PEAK_MZ") + " " + tmp.getFloat("PK_PEAK_INTENSITY") + " " + tmp.getShort("PK_PEAK_RELATIVE"));
-					acc.add("PK$ANNOTATION", null, tmp.getString("PK_ANNOTATION"));
-				}
-				this.statementANNOTATION_HEADER.setString(1, accessionId);
-				tmp = this.statementANNOTATION_HEADER.executeQuery();
-				while (tmp.next()) {
-					acc.annotationHeader = tmp.getString("HEADER");
+					acc.PK_PEAK_ADD_LINE(Arrays.asList((Double) tmp.getDouble("PK_PEAK_MZ"), (Double) (double) tmp.getFloat("PK_PEAK_INTENSITY"), (Double) (double) tmp.getShort("PK_PEAK_RELATIVE")));
+					String PK_ANNOTATION	= tmp.getString("PK_ANNOTATION");
+					if(PK_ANNOTATION != null)
+						acc.PK_ANNOTATION_ADD_LINE(Arrays.asList(PK_ANNOTATION.split(" ")));
 				}
 				tmp = this.statementPK_NUM_PEAK.executeQuery();
 				while (tmp.next()) {
-					acc.add("PK$NUM_PEAK", null, Integer.valueOf(tmp.getInt("PK_NUM_PEAK")).toString());
+					acc.PK_NUM_PEAK(Integer.valueOf(tmp.getInt("PK_NUM_PEAK")));
 				}
-			}
-			if (fkCH == -1)
-				return null;
-			if (fkCH != -1)
-				this.statementCOMPOUND.setInt(1, fkCH);
+			} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+			if (compoundID == -1)
+				throw new IllegalStateException("compoundID is not set");
+			this.statementCOMPOUND.setInt(1, compoundID);
 			set = this.statementCOMPOUND.executeQuery();
 			while (set.next()) {
-				acc.add("CH$FORMULA", null, set.getString("CH_FORMULA"));
-				acc.add("CH$EXACT_MASS", null, set.getString("CH_EXACT_MASS"));
-				acc.add("CH$SMILES", null, set.getString("CH_SMILES"));
-				acc.add("CH$IUPAC", null, set.getString("CH_IUPAC"));
-				acc.add("CH$CDK_DEPICT_SMILES", null, set.getString("CH_CDK_DEPICT_SMILES"));
-				acc.add("CH$CDK_DEPICT_GENERIC_SMILES", null, set.getString("CH_CDK_DEPICT_GENERIC_SMILES"));
-				acc.add("CH$CDK_DEPICT_STRUCTURE_SMILES", null, set.getString("CH_CDK_DEPICT_STRUCTURE_SMILES"));
+				String formulaString	= set.getString("CH_FORMULA");
+				IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(formulaString, DefaultChemObjectBuilder.getInstance());
+				acc.CH_FORMULA(m);
+				acc.CH_EXACT_MASS(set.getDouble("CH_EXACT_MASS"));
+				
+				String smilesString	= set.getString("CH_SMILES");
+				if (smilesString.equals("N/A")) acc.CH_SMILES(new AtomContainer());
+				else {
+					IAtomContainer c	= new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(smilesString);
+					acc.CH_SMILES(c);
+				}
+				
+				String iupacString	= set.getString("CH_IUPAC");
+				if (iupacString.equals("N/A")) acc.CH_IUPAC(new AtomContainer());
+				else {
+					// Get InChIToStructure
+					InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(iupacString, DefaultChemObjectBuilder.getInstance());
+					INCHI_RET ret = intostruct.getReturnStatus();
+					if (ret == INCHI_RET.WARNING) {
+						// Structure generated, but with warning message
+						System.out.println(acc.ACCESSION() + ": InChI warning: " + intostruct.getMessage());
+					} 
+					else if (ret != INCHI_RET.OKAY) {
+						// Structure generation failed
+						throw new IllegalArgumentException("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + iupacString);
+					}
+					IAtomContainer iupac = intostruct.getAtomContainer();
+					acc.CH_IUPAC(iupac);
+				}
+				
+				// TODO CH$CDK_DEPICT_SMILES
+				// TODO CH$CDK_DEPICT_GENERIC_SMILES
+				// TODO CH$CDK_DEPICT_STRUCTURE_SMILES
+//				acc.add("CH$CDK_DEPICT_SMILES", null, set.getString("CH_CDK_DEPICT_SMILES"));
+//				acc.add("CH$CDK_DEPICT_GENERIC_SMILES", null, set.getString("CH_CDK_DEPICT_GENERIC_SMILES"));
+//				acc.add("CH$CDK_DEPICT_STRUCTURE_SMILES", null, set.getString("CH_CDK_DEPICT_STRUCTURE_SMILES"));
 			}
-			this.statementCH_LINK.setInt(1, fkCH);
+			this.statementCH_LINK.setInt(1, compoundID);
 			set = this.statementCH_LINK.executeQuery();
+			List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
 			while (set.next()) {
-				acc.add("CH$LINK", set.getString("DATABASE_NAME"), set.getString("DATABASE_ID"));
+				tmpList.add(Pair.of(set.getString("DATABASE_NAME"), set.getString("DATABASE_ID")));
 			}
-			this.statementCOMPOUND_COMPOUND_CLASS.setInt(1, fkCH);
+			acc.CH_LINK(tmpList);
+			
+			this.statementCOMPOUND_COMPOUND_CLASS.setInt(1, compoundID);
 			set = this.statementCOMPOUND_COMPOUND_CLASS.executeQuery();
+			List<String> tmpList2	= new ArrayList<String>();
 			while (set.next()) {
 				this.statementCOMPOUND_CLASS.setInt(1, set.getInt("CLASS"));
 				ResultSet tmp = this.statementCOMPOUND_CLASS.executeQuery();
 				while (tmp.next()) {
-					acc.add("CH$COMPOUND_CLASS", null, tmp.getString("CH_COMPOUND_CLASS"));
+					tmpList2.add(tmp.getString("CH_COMPOUND_CLASS"));
 				}
 			}
-			this.statementCOMPOUND_NAME.setInt(1, fkCH);
+			acc.CH_COMPOUND_CLASS(tmpList2);
+			
+			this.statementCOMPOUND_NAME.setInt(1, compoundID);
 			set = this.statementCOMPOUND_NAME.executeQuery();
+			tmpList2.clear();
 			while (set.next()) {
 				this.statementNAME.setInt(1, set.getInt("NAME"));
 				ResultSet tmp = this.statementNAME.executeQuery();
 				while (tmp.next()) {
-					acc.add("CH$NAME", null, tmp.getString("CH_NAME"));
+					tmpList2.add(tmp.getString("CH_NAME"));
 				}
 			}
-			this.statementSAMPLE.setInt(1,fkSP);
+			acc.CH_NAME(tmpList2);
+			
+			this.statementSAMPLE.setInt(1,sampleID);
 			set = this.statementSAMPLE.executeQuery();
-			while (set.next()) {
-				acc.add("SP$SCIENTIFIC_NAME",null,set.getString("SP_SCIENTIFIC_NAME"));
-				acc.add("SP_LINEAGE", null, set.getString("SP_LINEAGE"));
+			if (set.next()) {
+				acc.SP_SCIENTIFIC_NAME(set.getString("SP_SCIENTIFIC_NAME"));
+				acc.SP_LINEAGE(set.getString("SP_LINEAGE"));
+				
 				this.statementSP_LINK.setInt(1,set.getInt("ID"));
-				this.statementSP_SAMPLE.setInt(1, set.getInt("ID"));
 				ResultSet tmp = this.statementSP_LINK.executeQuery();
+				tmpList.clear();
 				while (tmp.next()) {
-					acc.add("SP$LINK", null, tmp.getString("SP_LINK"));
+					String spLink	= tmp.getString("SP_LINK");
+					String[] tokens	= spLink.split(" ");
+					tmpList.add(Pair.of(tokens[0], tokens[1]));
 				}
+				acc.SP_LINK(tmpList);
+				
+				this.statementSP_SAMPLE.setInt(1, set.getInt("ID"));
 				tmp = this.statementSP_SAMPLE.executeQuery();
+				tmpList2.clear();
 				while (tmp.next()) {
-					acc.add("SP$SAMPLE", null, tmp.getString("SP_SAMPLE"));
+					tmpList2.add(tmp.getString("SP_SAMPLE"));
 				}
+				acc.SP_SAMPLE(tmpList2);
 			}
-			if (fkAC_INSTRUMENT != -1)
-				this.statementINSTRUMENT.setInt(1, fkAC_INSTRUMENT);
+			if (instrumentID == -1)	throw new IllegalStateException("instrumentID is not set");
+			this.statementINSTRUMENT.setInt(1, instrumentID);
 			set = this.statementINSTRUMENT.executeQuery();
-			while (set.next()) {
-				acc.add("AC$INSTRUMENT", null, set.getString("AC_INSTRUMENT"));
-				acc.add("AC$INSTRUMENT_TYPE", null, set.getString("AC_INSTRUMENT_TYPE"));
-			}	
-		} catch (SQLException e) {
+			if (set.next()) {
+				acc.AC_INSTRUMENT(set.getString("AC_INSTRUMENT"));
+				acc.AC_INSTRUMENT_TYPE(set.getString("AC_INSTRUMENT_TYPE"));
+			} else	throw new IllegalStateException("instrumentID is not in database");
+		} catch (Exception e) {
 			System.out.println("error: " + accessionId);
 			e.printStackTrace();
 			return null;
@@ -349,6 +429,172 @@ public class DatabaseManager {
 		
 		return acc;
 	}
+	public Record.Structure getStructureOfAccession(String accessionId) {
+		String CH_SMILES	= null;
+		String CH_IUPAC		= null;
+		
+		try {
+			this.statementRECORD.setString(1, accessionId);
+			ResultSet set = this.statementRECORD.executeQuery();
+			int compoundID = -1;
+			if (set.next()) {
+				compoundID = set.getInt("CH");
+			} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+			
+			if (compoundID == -1)
+				throw new IllegalStateException("compoundID is not set");
+			this.statementCOMPOUND.setInt(1, compoundID);
+			set = this.statementCOMPOUND.executeQuery();
+			while (set.next()) {
+				String smilesString	= set.getString("CH_SMILES");
+				if (!smilesString.equals("N/A")) CH_SMILES	= smilesString;
+				
+				String iupacString	= set.getString("CH_IUPAC");
+				if (!iupacString.equals("N/A")) CH_IUPAC	= iupacString;
+			}
+		} catch (Exception e) {
+			System.out.println("error: " + accessionId);
+			e.printStackTrace();
+			return null;
+		}
+		
+		return new Record.Structure(CH_SMILES, CH_IUPAC);
+	}
+	
+//	public AccessionData getAccessionData(String accessionId) {
+//		AccessionData acc = new AccessionData();
+//		try {
+//			this.statementRECORD.setString(1, accessionId);
+//			ResultSet set = this.statementRECORD.executeQuery();
+//			int fkCH = -1;
+//			int fkSP = -1;
+//			int fkAC_INSTRUMENT = -1;
+//			while (set.next()) {
+//				acc.add("ACCESSION", null, set.getString("ACCESSION"));
+//				acc.add("RECORD_TITLE", null, set.getString("RECORD_TITLE"));
+//				acc.add("DATE", null, set.getString("DATE"));
+//				acc.add("AUTHORS", null, set.getString("AUTHORS"));
+//				acc.add("LICENSE", null, set.getString("LICENSE"));
+//				acc.add("COPYRIGHT", null, set.getString("COPYRIGHT"));
+//				acc.add("PUBLICATION", null, set.getString("PUBLICATION"));
+//				fkCH = set.getInt("CH");
+//				fkSP = set.getInt("SP");
+//				fkAC_INSTRUMENT = set.getInt("AC_INSTRUMENT");
+//				acc.add("AC$MASS_SPECTROMETRY", "MS_TYPE", set.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
+//				acc.add("AC$MASS_SPECTROMETRY", "ION_MODE", set.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+//				acc.add("PK$SPLASH", null, set.getString("PK_SPLASH"));
+//				this.statementAC_CHROMATOGRAPHY.setString(1, set.getString("ACCESSION"));
+//				this.statementAC_MASS_SPECTROMETRY.setString(1, set.getString("ACCESSION"));
+//				this.statementMS_DATA_PROCESSING.setString(1, set.getString("ACCESSION"));
+//				this.statementMS_FOCUSED_ION.setString(1, set.getString("ACCESSION"));
+//				this.statementCOMMENT.setString(1, set.getString("ACCESSION"));
+//				this.statementPEAK.setString(1, set.getString("ACCESSION"));
+//				this.statementPK_NUM_PEAK.setString(1, set.getString("ACCESSION"));
+//				ResultSet tmp = this.statementAC_CHROMATOGRAPHY.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("AC$CHROMATOGRAPHY", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
+//				}
+//				tmp = this.statementAC_MASS_SPECTROMETRY.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("AC$MASS_SPECTROMETRY", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
+//				}
+//				tmp = this.statementMS_DATA_PROCESSING.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("MS$DATA_PROCESSING", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
+//				}
+//				tmp = this.statementMS_FOCUSED_ION.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("MS$FOCUSED_ION", tmp.getString("SUBTAG"), tmp.getString("VALUE"));
+//				}
+//				tmp = this.statementCOMMENT.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("COMMENT", null, tmp.getString("COMMENT"));
+//				}
+//				tmp = this.statementPEAK.executeQuery();
+////				acc.add("PK$PEAK", null, "m/z int. rel.int.");
+//				while (tmp.next()) {
+//					acc.add("PK$PEAK", null, tmp.getDouble("PK_PEAK_MZ") + " " + tmp.getFloat("PK_PEAK_INTENSITY") + " " + tmp.getShort("PK_PEAK_RELATIVE"));
+//					acc.add("PK$ANNOTATION", null, tmp.getString("PK_ANNOTATION"));
+//				}
+//				this.statementANNOTATION_HEADER.setString(1, accessionId);
+//				tmp = this.statementANNOTATION_HEADER.executeQuery();
+//				while (tmp.next()) {
+//					acc.annotationHeader = tmp.getString("HEADER");
+//				}
+//				tmp = this.statementPK_NUM_PEAK.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("PK$NUM_PEAK", null, Integer.valueOf(tmp.getInt("PK_NUM_PEAK")).toString());
+//				}
+//			}
+//			if (fkCH == -1)
+//				return null;
+//			if (fkCH != -1)
+//				this.statementCOMPOUND.setInt(1, fkCH);
+//			set = this.statementCOMPOUND.executeQuery();
+//			while (set.next()) {
+//				acc.add("CH$FORMULA", null, set.getString("CH_FORMULA"));
+//				acc.add("CH$EXACT_MASS", null, set.getString("CH_EXACT_MASS"));
+//				acc.add("CH$SMILES", null, set.getString("CH_SMILES"));
+//				acc.add("CH$IUPAC", null, set.getString("CH_IUPAC"));
+//				acc.add("CH$CDK_DEPICT_SMILES", null, set.getString("CH_CDK_DEPICT_SMILES"));
+//				acc.add("CH$CDK_DEPICT_GENERIC_SMILES", null, set.getString("CH_CDK_DEPICT_GENERIC_SMILES"));
+//				acc.add("CH$CDK_DEPICT_STRUCTURE_SMILES", null, set.getString("CH_CDK_DEPICT_STRUCTURE_SMILES"));
+//			}
+//			this.statementCH_LINK.setInt(1, fkCH);
+//			set = this.statementCH_LINK.executeQuery();
+//			while (set.next()) {
+//				acc.add("CH$LINK", set.getString("DATABASE_NAME"), set.getString("DATABASE_ID"));
+//			}
+//			this.statementCOMPOUND_COMPOUND_CLASS.setInt(1, fkCH);
+//			set = this.statementCOMPOUND_COMPOUND_CLASS.executeQuery();
+//			while (set.next()) {
+//				this.statementCOMPOUND_CLASS.setInt(1, set.getInt("CLASS"));
+//				ResultSet tmp = this.statementCOMPOUND_CLASS.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("CH$COMPOUND_CLASS", null, tmp.getString("CH_COMPOUND_CLASS"));
+//				}
+//			}
+//			this.statementCOMPOUND_NAME.setInt(1, fkCH);
+//			set = this.statementCOMPOUND_NAME.executeQuery();
+//			while (set.next()) {
+//				this.statementNAME.setInt(1, set.getInt("NAME"));
+//				ResultSet tmp = this.statementNAME.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("CH$NAME", null, tmp.getString("CH_NAME"));
+//				}
+//			}
+//			this.statementSAMPLE.setInt(1,fkSP);
+//			set = this.statementSAMPLE.executeQuery();
+//			while (set.next()) {
+//				acc.add("SP$SCIENTIFIC_NAME",null,set.getString("SP_SCIENTIFIC_NAME"));
+//				acc.add("SP_LINEAGE", null, set.getString("SP_LINEAGE"));
+//				this.statementSP_LINK.setInt(1,set.getInt("ID"));
+//				this.statementSP_SAMPLE.setInt(1, set.getInt("ID"));
+//				ResultSet tmp = this.statementSP_LINK.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("SP$LINK", null, tmp.getString("SP_LINK"));
+//				}
+//				tmp = this.statementSP_SAMPLE.executeQuery();
+//				while (tmp.next()) {
+//					acc.add("SP$SAMPLE", null, tmp.getString("SP_SAMPLE"));
+//				}
+//			}
+//			if (fkAC_INSTRUMENT != -1)
+//				this.statementINSTRUMENT.setInt(1, fkAC_INSTRUMENT);
+//			set = this.statementINSTRUMENT.executeQuery();
+//			while (set.next()) {
+//				acc.add("AC$INSTRUMENT", null, set.getString("AC_INSTRUMENT"));
+//				acc.add("AC$INSTRUMENT_TYPE", null, set.getString("AC_INSTRUMENT_TYPE"));
+//			}	
+//		} catch (SQLException e) {
+//			System.out.println("error: " + accessionId);
+//			e.printStackTrace();
+//			return null;
+//		}
+////		this.openConnection();
+//		
+//		return acc;
+//	}
 	
 	private static String getDbHostName() {
 		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
@@ -403,7 +649,7 @@ public class DatabaseManager {
 //				}
 			}
 		}
-		this.closeConnection();
+//		this.closeConnection();
 	}
 	
 	public void persistAccessionFile(Record acc) {
@@ -802,7 +1048,7 @@ public class DatabaseManager {
 //			}
 			this.closeConnection();
 		}
-		this.closeConnection();
+//		this.closeConnection();
 	}
 //	public void persistAccessionFile(Record acc, boolean bulk) {
 ////		this.openConnection();
@@ -1517,12 +1763,27 @@ public class DatabaseManager {
 		
 		return resList;
 	}
-	
+	public Record.Contributor getContributorFromAccession(String accessionId) throws SQLException {
+//		String accessionId	= "OUF01001";
+		this.statementGetContributorFromAccession.setString(1, accessionId);
+		ResultSet tmp = this.statementGetContributorFromAccession.executeQuery();
+		
+		if (!tmp.next()) throw new IllegalStateException("Accession '" + accessionId + "' is not in database");
+		
+		// CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME
+//		System.out.println(tmp.getString("CONTRIBUTOR.ACRONYM"));
+//		System.out.println(tmp.getString("CONTRIBUTOR.SHORT_NAME"));
+//		System.out.println(tmp.getString("CONTRIBUTOR.FULL_NAME"));
+		return new Record.Contributor(
+				tmp.getString("CONTRIBUTOR.ACRONYM"), 
+				tmp.getString("CONTRIBUTOR.SHORT_NAME"), 
+				tmp.getString("CONTRIBUTOR.FULL_NAME")
+		);
+	}
 	public static void main (String[] args) throws SQLException {
-//		ArrayList<String> res = new DatabaseManager("MassBankNew").idxcnt(null,null);
-//		for (String s : res) {
-//			System.out.println(s);
-//		}
+//		DatabaseManager dbMan	= create();
+//		dbMan.test();
+//		dbMan.closeConnection();
 	}
 }
 

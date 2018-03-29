@@ -41,6 +41,8 @@
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.FileUtil" %>
+<%@ page import="massbank.DatabaseManager" %>
+<%@ page import="massbank.Record" %>
 <%@ page import="massbank.MassBankEnv" %>
 <%@ include file="./Common.jsp"%>
 <%!
@@ -563,6 +565,7 @@
 			// 結果表示
 			//-------------------------------------
 			out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
+			DatabaseManager dbManager	= DatabaseManager.create();
 			for ( int i = 0; i < hitCnt; i++ ) {
 				// データ切り出し
 				String rec = (String)result.get(i);
@@ -637,8 +640,10 @@
 				String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
 				//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
 				String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+				
+				Record.Structure structure	= dbManager.getStructureOfAccession(accession);
 				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
-						databaseName, accession, tmpFileFolder, tmpUrlFolder,
+						accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
 						80, 250, 436
 				);
 				
@@ -673,6 +678,7 @@
 				out.println( "  <td class=\"treeLayout2\" width=\"" + width[5] + "\">&nbsp;&nbsp;" + score + "&nbsp;</td>" );
 				out.println( " </tr>" );
 			}
+			dbManager.closeConnection();
 			out.println( "</table>" );
 			out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayoutEnd\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
 			out.println( " <tr>" );

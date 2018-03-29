@@ -43,4 +43,13 @@ public class FileUtil {
 		}
 		return list;
 	}
+	public static boolean existsFile(String databaseName, String accession){
+		File file	= FileUtil.getFile(databaseName, accession);
+		return file.exists();
+	}
+	public static File getFile(String databaseName, String accession){
+		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
+		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH) + databaseName + File.separator + accession + ".txt");
+		return file;
+	}
 }
