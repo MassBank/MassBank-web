@@ -258,6 +258,7 @@
 		case "PK$PEAK":{
 			PK_PEAK_idx	= lineIdx;
 			sb.append(line + "\n");
+			break;
 		}
 		default:
 			sb.append(line + "\n");

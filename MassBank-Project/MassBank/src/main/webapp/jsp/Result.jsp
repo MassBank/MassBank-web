@@ -146,6 +146,7 @@
 	String exec = (request.getParameter("exec") != null) ? (String)request.getParameter("exec") : "";
 	while ( names.hasMoreElements() ) {
 		String key = (String)names.nextElement();
+		
 		if ( exec.equals("sort") || exec.equals("page")) {
 			// ソートまたはページ変更の場合はチェックボックスの値を保持しない
 			if ( key.equals("chkAll") || key.equals("pid") || key.equals("id") ) {
