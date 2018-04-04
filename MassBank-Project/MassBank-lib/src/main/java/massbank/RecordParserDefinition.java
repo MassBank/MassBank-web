@@ -903,6 +903,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("IONIZATION "))
 			.or(StringParser.of("IONIZATION_ENERGY "))
 			.or(StringParser.of("IONIZATION_POTENTIAL "))
+			.or(StringParser.of("IONIZATION_VOLTAGE "))
 			.or(StringParser.of("ION_GUIDE_PEAK_VOLTAGE "))
 			.or(StringParser.of("ION_GUIDE_VOLTAGE "))
 			.or(StringParser.of("ION_SOURCE_TEMPERATURE "))
@@ -935,6 +936,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("SCAN_RANGE_M/Z "))
 			.or(StringParser.of("SKIMMER_VOLTAGE "))
 			.or(StringParser.of("SOURCE_TEMPERATURE "))
+			.or(StringParser.of("SPRAY_CURRENT "))
 			.or(StringParser.of("SPRAY_VOLTAGE "))
 			.or(StringParser.of("TUBE_LENS_VOLTAGE "))
 		);
@@ -1181,6 +1183,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("DEPROFILE ")
 			.or(StringParser.of("FIND_PEAK "))
 			.or(StringParser.of("IGNORE "))
+			.or(StringParser.of("INTENSITY CUTOFF "))
 			.or(StringParser.of("REANALYZE "))
 			.or(StringParser.of("RECALIBRATE "))
 			.or(StringParser.of("RELATIVE_M/Z "))
