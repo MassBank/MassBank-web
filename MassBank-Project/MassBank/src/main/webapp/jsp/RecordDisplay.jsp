@@ -33,6 +33,7 @@
 <%@ page import="java.util.Enumeration" %>
 <%@ page import="java.util.regex.Matcher" %>
 <%@ page import="java.util.regex.Pattern" %>
+<%@ page import="java.util.Arrays" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankEnv" %>
 <%@ page import="massbank.FileUtil" %>
@@ -122,6 +123,10 @@
 	List<String> list	= FileUtil.readFromFile(file);
 	
 	// process record
+	// TODO property="schema:fileFormat"
+	// TODO property="schema:isAccessibleForFree"
+	// TODO property="schema:keywords"
+	// TODO property="schema:publisher"
 	final String delimiter	= ": ";
 	StringBuilder sb	= new StringBuilder();
 	String inchi	= null;
@@ -152,12 +157,103 @@
 		if(tag.startsWith("PK$") && (!pk))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	pk	= true;	}
 		
 		switch(tag){
+		case "ACCESSION":
+			// TODO schema:identifier
+			sb.append(tag + ": " + value + "\n");
+			
+			break;
 		case "RECORD_TITLE":
-			sb.append("RECORD_TITLE: " + value + "\n");
+			// sb.append(tag + ": " + value + "\n");
+			sb.append(tag + ": <span property=\"schema:headline\">" + value + "</span>\n");
 			recordTitle	= value;
 			break;
+		case "DATE":
+			//sb.append(tag + ": " + value + "\n");
+			
+			// property="schema:dateCreated"
+			// property="schema:dateModified"
+			// property="schema:datePublished"
+			
+			// DATE: 2016.01.19 (Created 2010.10.06, modified 2011.05.11)
+			String datePublished	= null;
+			String dateCreated		= null;
+			String dateModified		= null;
+			
+			String[] tokens	= value.split(" ");
+			datePublished	= tokens[0];
+			if(tokens.length > 1){
+				tokens	= value.substring(datePublished.length()).replaceAll("\\(", "").replaceAll("\\)", "").trim().split(", ");
+				for(int i = 0; i < tokens.length; i++){
+					if(tokens[i].startsWith("Created"))		dateCreated		= tokens[i].split(" ")[1];
+					if(tokens[i].startsWith("modified"))	dateModified	= tokens[i].split(" ")[1];
+				}
+			}
+			
+			sb.append(tag + ": <span property=\"schema:datePublished\">" + datePublished + "</span>");
+			if(dateCreated != null || dateModified != null)
+				sb.append(" (");
+			if(dateCreated != null)
+				sb.append("<span property=\"schema:dateCreated\">" + dateCreated + "</span>");
+			if(dateModified != null){
+				if(dateCreated != null)
+					sb.append(", ");
+				sb.append("<span property=\"schema:dateModified\">" + dateModified + "</span>");
+			}
+			if(dateCreated != null || dateModified != null)
+				sb.append(")");
+			
+			sb.append("\n");
+			break;
+		case "AUTHORS":
+			//sb.append(tag + ": " + value + "\n");
+			String[] authorTokens	= value.split(", ");
+			
+			// check which tokens are authors
+			int lastAuthorIdx	= -1;
+			for(int i = 0; i < authorTokens.length; i++){
+				// check if string is author like 'Akimoto AV'
+				boolean isAuthor	= authorTokens[i].matches("\\w+ \\w+");
+				if(isAuthor){
+					// 2nd word is initials?
+					String[] initials	= authorTokens[i].split(" ")[1].split("");
+					for(int j = 0; j < initials.length; j++)
+						if(!Character.isUpperCase(initials[j].toCharArray()[0])){
+							isAuthor	= false;
+							break;
+						}
+				}
+				if(isAuthor){
+					lastAuthorIdx	= i;
+				}
+			}
+			
+			// create affiliation
+			int numberOfAuthors	= lastAuthorIdx + 1;
+			String affiliation	= String.join(", ", Arrays.copyOfRange(authorTokens, numberOfAuthors, authorTokens.length));
+			
+			// create authors
+			String[] authors	= new String[numberOfAuthors];
+			for(int i = 0; i < numberOfAuthors; i++)
+				authors[i]	= 
+						"<span property=\"schema:author\" typeof=\"schema:Person\">" +
+							"<span property=\"schema:name\">" + authorTokens[i] + "</span>" +
+							//((affiliation.length() > 0) ?"<span property=\"schema:affiliation\" style=\"visibility:hidden\">" + affiliation + "</span>" : "") +
+							((affiliation.length() > 0) ?"<span property=\"schema:affiliation\" style=\"display:none\">" + affiliation + "</span>" : "") +
+						"</span>";
+			
+			// paste
+			sb.append(tag + ": ");
+			sb.append(String.join(", ", authors));
+			if(affiliation.length() > 0)
+				sb.append(", " + affiliation);
+			sb.append("\n");
+			break;
 		case "LICENSE":
-			sb.append("LICENSE: " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + value + "</a>" + "\n");
+			// sb.append(tag + ": " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + value + "</a>" + "\n");
+			sb.append(tag + ": " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + value + "</a>" + "\n");
+			break;
+		case "COPYRIGHT":
+			sb.append(tag + ": " + value + "\n");
 			break;
 		case "PUBLICATION":
 			String regex_pmid	= "PMID:[ ]?\\d{8,8}";
@@ -186,17 +282,33 @@
 		    	String doi	= value.substring(matcher_doi.start(1), matcher_doi.end(1));
 		    	value			= value.replaceAll(doi, "<a href=\"http:\\/\\/dx.doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
 		    }
-			sb.append("PUBLICATION: " + value + "\n");
+			
+		    //sb.append(tag + ": " + value + "\n");
+			sb.append(tag + ": <span property=\"schema:citation\" typeof=\"schema:ScholarlyArticle\">" + "<span property=\"schema:name\">" + value + "</span>" + "</span>\n");
+			break;
+		case "COMMENT":
+			// property="schema:text" / property="schema:comment"
+			sb.append(tag + ": <span property=\"schema:comment\">" + value + "</span>\n");
+			break;
+		case "CH$NAME":
+			// TODO property="schema:name"
+			// TODO property="schema:alternateName"
+			sb.append(tag + ": " + value + "\n");
+			//sb.append(tag + ": <span property=\"schema:alternateName\">" + value + "</span>\n");
+			break;
+		case "CH$COMPOUND_CLASS":
+			sb.append(tag + ": " + value + "\n");
 			break;
 		case "CH$FORMULA":
-			sb.append("CH$FORMULA: " + "<a href=\"http://www.chemspider.com/Search.aspx?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n");
+			sb.append(tag + ": " + "<a href=\"http://www.chemspider.com/Search.aspx?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n");
 			break;
+		// CH$EXACT_MASS
 		case "CH$SMILES":
-			sb.append("CH$SMILES: " + value + "\n");
+			sb.append(tag + ": " + value + "\n");
 			smiles	= value;
 			break;
 		case "CH$IUPAC":
-			sb.append("CH$IUPAC: " + value + "\n");
+			sb.append(tag + ": " + value + "\n");
 			inchi	= value;
 			break;
 		case "CH$CDK_DEPICT_SMILES":
@@ -217,7 +329,7 @@
 			int delimiterIndex2	= value.indexOf(delimiter2);
 			
 			if(delimiterIndex2 == -1){
-				sb.append("CH$LINK: " + value + "\n");
+				sb.append(tag + ": " + value + "\n");
 				break;
 			}
 			
@@ -250,11 +362,21 @@
 				}
 			}
 			
-			sb.append("CH$LINK: " + CH$LINK_NAME + delimiter2 + CH$LINK_ID + "\n");
+			sb.append(tag + ": " + CH$LINK_NAME + delimiter2 + CH$LINK_ID + "\n");
 			break;
+		// AC$INSTRUMENT
+		case "AC$INSTRUMENT_TYPE":
+			// TODO property="schema:measurementTechnique"
+			sb.append(tag + ": <span property=\"schema:measurementTechnique\">" + value + "</span>\n");
+			break;
+		// AC$MASS_SPECTROMETRY
+		// AC$CHROMATOGRAPHY
+		// MS$FOCUSED_ION
+		// MS$DATA_PROCESSING
 		case "PK$SPLASH":
-			sb.append("PK$SPLASH: " + "<a href=\"http://mona.fiehnlab.ucdavis.edu/#/spectra/splash/" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
+			sb.append(tag + ": " + "<a href=\"http://mona.fiehnlab.ucdavis.edu/#/spectra/splash/" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
 			break;
+		// PK$NUM_PEAK
 		case "PK$PEAK":{
 			PK_PEAK_idx	= lineIdx;
 			sb.append(line + "\n");
@@ -320,7 +442,8 @@
 		<script type="text/javascript" src="../script/massbank_specktackle.js"></script>
 		<title><%=shortName%> Mass Spectrum</title>
 	</head>
-	<body style="font-family:Times;">
+	<body style="font-family:Times;" typeof="schema:WebPage">
+	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/jsp/RecordDisplay.jsp?id=<%=accession%>&dsn=<%=databaseName%>" typeof="schema:Dataset" <!-- id="content" -->>
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 				<td>
@@ -358,5 +481,6 @@
 </pre>
 		<hr size=1>
 		<iframe src="../copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+	</main>
 	</body>
 </html>
