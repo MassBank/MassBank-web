@@ -1187,6 +1187,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("REANALYZE "))
 			.or(StringParser.of("RECALIBRATE "))
 			.or(StringParser.of("RELATIVE_M/Z "))
+			.or(StringParser.of("REMOVE_PEAK "))
 			.or(StringParser.of("WHOLE "))
 		);
 		def("ms_data_processing", 
