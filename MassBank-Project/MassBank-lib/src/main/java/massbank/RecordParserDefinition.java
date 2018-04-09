@@ -1180,7 +1180,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Whole Process in Single Method / Software.
 		// Example: MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
 		def ("ms_data_processing_subtag",
-			StringParser.of("DEPROFILE ")
+			StringParser.of("CHARGE_DECONVOLUTION ")
+			.or(StringParser.of("DEPROFILE "))
 			.or(StringParser.of("FIND_PEAK "))
 			.or(StringParser.of("IGNORE "))
 			.or(StringParser.of("INTENSITY CUTOFF "))
