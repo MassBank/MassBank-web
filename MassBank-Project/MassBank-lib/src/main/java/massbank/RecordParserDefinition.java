@@ -1240,7 +1240,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("PK$ANNOTATION")
 			.seq(ref("tagsep"))
 			.seq(
-				CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<>"))
+				CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
 				.plus()
 				.flatten()
 				.trim(CharacterParser.of(' '))
@@ -1260,7 +1260,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 //					return value;						
 //				})
 				.seq(
-					CharacterParser.word().or(CharacterParser.anyOf("-+=,()[]{}/.:$^'`_*?<>"))
+					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
 					.plus()
 					.flatten()
 					.trim(CharacterParser.of(' '))
