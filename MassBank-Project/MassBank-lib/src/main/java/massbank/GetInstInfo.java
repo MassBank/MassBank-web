@@ -90,8 +90,7 @@ public class GetInstInfo {
 //		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
 		ArrayList<String> resultAll = mbcommon.execDispatcher(typeName, request, conf);
 		
-		new DevLogger();
-		DevLogger.printToDBLog(resultAll.toString());
+		System.out.println(resultAll.toString());
 		
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];

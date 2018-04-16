@@ -31,11 +31,11 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.5.0-b01</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>javax.mail</groupId> -->
+<!-- 			<artifactId>mail</artifactId> -->
+<!-- 			<version>1.5.0-b01</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -56,11 +56,11 @@
 			<artifactId>commons-configuration2</artifactId>
 			<version>2.2</version>
 		</dependency>
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.3</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>commons-beanutils</groupId> -->
+<!-- 			<artifactId>commons-beanutils</artifactId> -->
+<!-- 			<version>1.9.3</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-core</artifactId>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>2.2.2</version>
+			<version>2.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.petitparser.java-petitparser</groupId>
@@ -124,7 +124,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>massbank.admin.Validator2</mainClass>
+							<mainClass>massbank.Validator</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
@@ -144,10 +144,6 @@
 		</plugins>
 	</build>
 	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
 		<repository>
 			<id>releases</id>
 			<name>Fiehnlab Public Maven Repository</name>

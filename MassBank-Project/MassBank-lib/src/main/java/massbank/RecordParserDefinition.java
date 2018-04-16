@@ -235,7 +235,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// License of MassBank Record. Mandatory
 		// Example
 		// LICENSE: CC BY
-		// TODO fix format doc
 		def("license",
 			StringParser.of("LICENSE")
 			.seq(ref("tagsep"))
@@ -348,9 +347,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// protecting groups (TMS, etc.) is included.
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
-		// TODO no ';' in CH$NAME
 		def("ch_name_value",
-			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>#;"))
+			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>#"))
 			.plusLazy(ref("valuesep").or(Token.NEWLINE_PARSER)).flatten()
 		);
 		def("ch_name", 
@@ -377,15 +375,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ch_compound_class",
 			StringParser.of("CH$COMPOUND_CLASS")
 			.seq(ref("tagsep"))
+			.seq(
+				CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten()
+				.seq(ref("valuesep"))
+				.pick(0).star()
+			).pick(2)
 			.seq(CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten())
-			.seq(ref("valuesep")
-				.seq(CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten()).pick(1).star()			
-			)
 			.seq(Token.NEWLINE_PARSER)
 			.map((List<?> value) -> {
+				//System.out.println(value.toString());
 				@SuppressWarnings("unchecked")
-				List<String> list = (List<String>) value.get(3);
-				list.add(0, (String) value.get(2));
+				List<String> list = (List<String>) value.get(0);
+				list.add((String) value.get(1));
 				callback.CH_COMPOUND_CLASS(list);
 				return value;						
 			})
@@ -745,28 +746,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 			ref("ac_instrument_type_sep")
 			.optional()
 			.seq(ref("ac_instrument_type_ionisation"))
-			.seq(ref("ac_instrument_type_analyzer").plus())
+			.seq(ref("ac_instrument_type_analyzer").plus().flatten())
 		);
 		def("ac_instrument_type", 
 			StringParser.of("AC$INSTRUMENT_TYPE")
 			.seq(ref("tagsep"))
 			.seq(
 				ref("ac_instrument_type_value")
-				.map((List<?> value) -> {
-//					System.out.println(value);
-					
-					List<String> list	= new ArrayList<String>();
-					for(int idx = 0; idx < value.size(); idx++) {
-						if(value.get(idx) instanceof String)
-							// string
-							list.add((String) value.get(idx));
-						if(value.get(idx) instanceof List)
-							// list of strings
-							list.addAll((List<String>) value.get(idx));
-					}
-					String ac_instrument_type_konkat	= String.join("-", list.toArray(new String[list.size()]));
-					
-					callback.AC_INSTRUMENT_TYPE(ac_instrument_type_konkat);
+				.map((List<String> value) -> {
+					callback.AC_INSTRUMENT_TYPE(String.join("-", value));
 					return value;						
 				})
 			)
@@ -1235,7 +1223,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 		
 		// 2.6.2 PK$ANNOTATION
 		// Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
-		// TODO call callback function
 		def("pk_annotation",
 			StringParser.of("PK$ANNOTATION")
 			.seq(ref("tagsep"))
@@ -1254,11 +1241,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(
 				StringParser.of("  ")
-//				.map((String value) -> {
-//					//System.out.println(value);
-//					callback.ADD_PK_ANNOTATION_LINE();
-//					return value;						
-//				})
 				.seq(
 					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
 					.plus()

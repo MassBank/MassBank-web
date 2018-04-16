@@ -4,9 +4,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -26,7 +23,7 @@ public class Record {
 	private String record_title;
 	private LocalDate date;
 	private String authors;
-	private String license;
+	private String license;	
 	private String copyright;
 	private String publication;
 	private List<String> comment;
@@ -49,11 +46,11 @@ public class Record {
 	private List<Pair<String, String>> ac_chromatography;
 	private List<Pair<String, String>> ms_focused_ion;
 	private List<Pair<String, String>> ms_data_processing;
-	private String PK_SPLASH;
-	private List<String> PK_ANNOTATION_HEADER;
-	private final List<List<String>> PK_ANNOTATION;
-	private int PK_NUM_PEAK;
-	private final List<List<Double>> PK_PEAK;
+	private String pk_splash;
+	private List<String> pk_annotation_header;
+	private final List<List<String>> pk_annotation;
+	private int pk_num_peak;
+	private final List<List<Double>> pk_peak;
 	
 	public Record(String contributor) {
 		this.contributor	= contributor;
@@ -71,11 +68,11 @@ public class Record {
 		ac_chromatography		= new ArrayList<Pair<String, String>>();
 		ms_focused_ion			= new ArrayList<Pair<String, String>>();
 		ms_data_processing		= new ArrayList<Pair<String, String>>();
-		PK_ANNOTATION			= new ArrayList<List<String>>();
+		pk_annotation			= new ArrayList<List<String>>();
 		
 		// set default values for mandatory fields
-		PK_NUM_PEAK				= -1;
-		PK_PEAK					= new ArrayList<List<Double>>();
+		pk_num_peak				= -1;
+		pk_peak					= new ArrayList<List<Double>>();
 	}
 	
 	public void persist() throws SQLException {
@@ -83,7 +80,7 @@ public class Record {
 		if (db != null) {
 			db.persistAccessionFile(this);
 		} else {
-			DevLogger.printToDBLog("Could not persist file because no connction to the database could be established" );
+			System.out.println("Could not persist file because no connction to the database could be established" );
 		}
 	}
 	public String CONTRIBUTOR() {
@@ -302,40 +299,40 @@ public class Record {
 	}
 
 	public String PK_SPLASH() {
-		return PK_SPLASH;
+		return pk_splash;
 	}
 	public void PK_SPLASH(String value) {
-		PK_SPLASH	= value;
+		pk_splash=value;
 	}
 
 	public List<String> PK_ANNOTATION_HEADER() {
-		return PK_ANNOTATION_HEADER;
+		return pk_annotation_header;
 	}
 	public void PK_ANNOTATION_HEADER(List<String> value) {
-		PK_ANNOTATION_HEADER	= value;
+		pk_annotation_header=value;
 	}
 
 	// PK_ANNOTATION is a two-dimensional List
 	public List<List<String>> PK_ANNOTATION() {
-		return PK_ANNOTATION;
+		return pk_annotation;
 	}
 	public void PK_ANNOTATION_ADD_LINE(List<String> value) {
-		PK_ANNOTATION.add(value);
+		pk_annotation.add(value);
 	}
 
 	public Integer PK_NUM_PEAK() {
-		return PK_NUM_PEAK;
+		return pk_num_peak;
 	}
 	public void PK_NUM_PEAK(Integer value) {
-		PK_NUM_PEAK	= value;
+		pk_num_peak	= value;
 	}
 
 	// PK_PEAK is a two-dimensional List
 	public List<List<Double>> PK_PEAK() {
-		return PK_PEAK;
+		return pk_peak;
 	}
 	public void PK_PEAK_ADD_LINE(List<Double> value) {
-		PK_PEAK.add(value);
+		pk_peak.add(value);
 	}
 
 	public String toString() {
@@ -358,7 +355,13 @@ public class Record {
 			for (String ch_name : CH_NAME())
 				sb.append("CH$NAME: " + ch_name + "\n");
 		}
-		sb.append("CH$COMPOUND_CLASS: " + CH_COMPOUND_CLASS() + "\n");
+		
+		sb.append("CH$COMPOUND_CLASS: " + CH_COMPOUND_CLASS().get(0));
+		for (String ch_compound_class : CH_COMPOUND_CLASS().subList(1, CH_COMPOUND_CLASS().size())) {
+			sb.append("; " + ch_compound_class );
+		}
+		sb.append("\n");
+				
 		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
 		try {
@@ -390,7 +393,7 @@ public class Record {
 				sb.append("SP$SAMPLE: " + sample + "\n");
 		}
 		sb.append("AC$INSTRUMENT: " + AC_INSTRUMENT() + "\n");
-		sb.append("AC$INSTRUMENT_TYPE: " + AC_INSTRUMENT_TYPE().toString() + "\n");
+		sb.append("AC$INSTRUMENT_TYPE: " + AC_INSTRUMENT_TYPE() + "\n");
 		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "\n");
 		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "\n");
 		if (AC_MASS_SPECTROMETRY() != null) {
@@ -433,15 +436,6 @@ public class Record {
 			sb.append("\n");
 		}
 		
-
-		/*
-		 * // PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm) //
-		 * 57.0701 C4H9+ 1 57.0699 4.61 // 67.0542 C5H7+ 1 67.0542 0.35 // 69.0336
-		 * C4H5O+ 1 69.0335 1.14 sb.append("PK$NUM_PEAK: " + this.PK$PEAK_MZ.length +
-		 * "\n"); sb.append("PK$PEAK: m/z int. rel.int." + "\n"); for(int idx = 0; idx <
-		 * this.PK$PEAK_MZ.length; idx++) sb.append("  " + this.PK$PEAK_MZ[idx] + " " +
-		 * this.PK$PEAK_INT[idx] + " " + this.PK$PEAK_REL[idx] + "\n");
-		 */
 		sb.append("//");
 
 		return sb.toString();

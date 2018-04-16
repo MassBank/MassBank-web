@@ -134,7 +134,8 @@ public class DatabaseManager {
 	private final PreparedStatement statementInsertANNOTATION_HEADER;
 		
 	public static void init_db() throws SQLException, IOException {
-		Connection connection = DriverManager.getConnection("jdbc:mariadb://" + dbHostName + "/" + "?user=" + user + "&password=" + password);
+		//Connection connection = DriverManager.getConnection("jdbc:mariadb://" + dbHostName + "/" + "?user=" + user + "&password=" + password);
+		Connection connection = DriverManager.getConnection("jdbc:mariadb://" + dbHostName + "/" + "?user=" + user );
 		Statement stmt = connection.createStatement();
 
 		stmt.executeUpdate("DROP DATABASE IF EXISTS MassBank;");
@@ -215,7 +216,8 @@ public class DatabaseManager {
 		Connection con	= null;
 		try {
 			Class.forName(DatabaseManager.driver);
-			con = DriverManager.getConnection(this.connectUrl, DatabaseManager.user, DatabaseManager.password);
+			con = DriverManager.getConnection(this.connectUrl, DatabaseManager.user, null);
+			//con = DriverManager.getConnection(this.connectUrl, DatabaseManager.user);
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 		} catch (Exception e) {
@@ -1008,7 +1010,7 @@ public class DatabaseManager {
 				tmp.append(el.toString());
 				tmp.append("\n");
 			}
-			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
+			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
 //			try {
 //				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.ACCESSION() + ".txt")));
 //			} catch (FileNotFoundException e1) {
@@ -1023,7 +1025,7 @@ public class DatabaseManager {
 				tmp.append(el.toString());
 				tmp.append("\n");
 			}
-			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
+			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
 //			System.out.println(acc.ACCESSION());
 //			System.out.println(acc.get("PK$PEAK").size());
 //			System.out.println(acc.get("PK$ANNOTATION").size());
@@ -1040,7 +1042,7 @@ public class DatabaseManager {
 				tmp.append(el.toString());
 				tmp.append("\n");
 			}
-			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
+			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
 //			try {
 //				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.ACCESSION() + ".txt")));
 //			} catch (FileNotFoundException e1) {

@@ -12,15 +12,12 @@ import java.sql.SQLException;
 
 import org.apache.commons.io.FileUtils;
 
-import massbank.admin.Validator2;
-
-public class DevLoadData {
+public class RefreshDatabase {
 	
-	public DevLoadData() throws IOException {
+	public RefreshDatabase() throws IOException {
 		System.out.println("RecordFormat");
 		new RecordFormat();
 		System.out.println("DevLogger");
-		new DevLogger();
 		System.out.println("init_db");
 		try {
 			DatabaseManager.init_db();
@@ -62,7 +59,7 @@ public class DevLoadData {
 //					System.out.println("### " + recordFile);
 //				}
 				
-				Record record = Validator2.validate(recordAsString, contributor);
+				Record record = Validator.validate(recordAsString, contributor);
 //				AccessionFile acc = AccessionFile.getAccessionDataFromFile(recordFile, contributor);
 				if (record == null) {
 					System.out.println("Error reading and validating record " + recordFile.getName());
@@ -88,7 +85,7 @@ public class DevLoadData {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		new DevLoadData();
+		new RefreshDatabase();
 	}
 	
 }

@@ -109,10 +109,10 @@ public class ServerStatus {
 		this.pollInterval = conf.getPollInterval();
 
 		// 監視対象サーバのURLとDB名を格納
-		List<String> svrNameList = new ArrayList();
-		List<String> urlList = new ArrayList();
-		List<String> dbNameList = new ArrayList();
-		List<String> db2NameList = new ArrayList();
+		List<String> svrNameList = new ArrayList<String>();
+		List<String> urlList = new ArrayList<String>();
+		List<String> dbNameList = new ArrayList<String>();
+		List<String> db2NameList = new ArrayList<String>();
 		for ( int i = 0; i < urls.length; i++ ) {
 			// ミドルサーバまたは、フロントサーバと同一URLの場合は対象外
 			if ( i != GetConfig.MYSVR_INFO_NUM && !urls[i].equals(serverUrl) ) {
@@ -349,8 +349,8 @@ public class ServerStatus {
 		}
 
 		// プロパティリスト取得
-		Map list = new TreeMap();
-		Enumeration names = proper.propertyNames();
+		Map<String, String> list = new TreeMap<String, String>();
+		Enumeration<?> names = proper.propertyNames();
 		while ( names.hasMoreElements() ) {
 			String key = (String)names.nextElement();
 			if ( key.indexOf(SERVER_KEY_NAME) >= 0 ) {
@@ -365,7 +365,7 @@ public class ServerStatus {
 		int num = list.size();
 		if ( num > 0 ) {
 			isActiveList = new boolean[num];
-			Iterator it = list.keySet().iterator();
+			Iterator<String> it = list.keySet().iterator();
 			for ( int i = 0; i < num; i++ ) {
 				if ( !it.hasNext() ) {
 					break;
