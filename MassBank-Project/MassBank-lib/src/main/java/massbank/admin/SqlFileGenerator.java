@@ -27,9 +27,12 @@ package massbank.admin;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import massbank.GetConfig;
 import massbank.GetInstInfo;
@@ -67,8 +70,10 @@ public class SqlFileGenerator {
 	 * @param baseUrl ベースURL
 	 * @param selDbName DB名
 	 * @param ver レコードフォーマットバージョン
+	 * @throws ConfigurationException 
+	 * @throws SQLException 
 	 */ 
-	public SqlFileGenerator( String baseUrl, String selDbName, int ver) {
+	public SqlFileGenerator( String baseUrl, String selDbName, int ver) throws ConfigurationException, SQLException {
 		
 		// レコードフォーマットバージョン退避
 		this.ver = ver;

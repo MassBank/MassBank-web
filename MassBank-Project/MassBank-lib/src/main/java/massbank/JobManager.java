@@ -55,11 +55,7 @@ public class JobManager {
 	 * コンストラクタ
 	 */
 	public JobManager() {
-		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
-		if ( !MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME).equals("") ) {
-			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
-		}
-		this.connectUrl = "jdbc:mysql://" + dbHostName + "/" + DB_NAME;
+		this.connectUrl = "jdbc:mariadb://127.0.0.1/" + DB_NAME;
 		// DB接続
 		connectDB();
 	}
@@ -213,7 +209,6 @@ public class JobManager {
 		if ( entryList == null ) {
 			return true;
 		}
-		int cnt = 0;
 		for ( int i = 0; i < entryList.size(); i++ ) {
 			JobInfo jobInfo = (JobInfo)entryList.get(i);
 			String sessionId = jobInfo.getSessionId();

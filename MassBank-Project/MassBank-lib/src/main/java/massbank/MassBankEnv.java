@@ -79,13 +79,10 @@ public class MassBankEnv extends HttpServlet {
 	public static final String KEY_DATAROOT_PATH		= "path.data_root";			// ex. "/var/www/html/MassBank/DB/"
 	// MassBank 環境変数（可変値）取得キー
 	public static final String KEY_PRIMARY_SERVER_URL	= "url.pserver";			// ex. "[サーバ監視用URL]"
-	public static final String KEY_DB_HOST_NAME			= "db.host_name";			// ex. "[DBアクセス用ホスト名]"
-	public static final String KEY_DB_MASTER_NAME		= "db.master_name";			// ex. "[ロードバランス用マスタDB名]"
 	public static final String KEY_BATCH_SMTP			= "mail.batch.smtp";		// ex. "[BatchService用メールSMTPサーバ名]"
 	public static final String KEY_BATCH_NAME			= "mail.batch.name";		// ex. "[BatchService用メール送信者名]"
 	public static final String KEY_BATCH_FROM			= "mail.batch.from";		// ex. "[BatchService用メール送信アドレス]"
-	public static final String KEY_DB_USER				= "db.user";
-	public static final String KEY_DB_PASSWORD			= "db.password";
+
 	
 	// MassBank 環境変数（固定値）	
 	private static String VAL_BASE_URL					= "";	// ex. "http://massbank.eu/MassBank/"
@@ -100,13 +97,9 @@ public class MassBankEnv extends HttpServlet {
 	private static String VAL_DATAROOT_PATH				= "";	// ex. "/var/www/html/MassBank/DB/"
 	// MassBank 環境変数（可変値）
 	private static String VAL_PRIMARY_SERVER_URL		= "http://www.massbank.jp/";	// ex. "[サーバ監視用URL]"
-	private static String VAL_DB_HOST_NAME				= "127.0.0.1";					// ex. "[DBアクセス用ホスト名]"
-	private static String VAL_DB_MASTER_NAME			= "";	// ex. "[ロードバランス用マスタDB名]"
 	private static String VAL_BATCH_SMTP				= "";	// ex. "[BatchService用メールSMTPサーバ名]"
 	private static String VAL_BATCH_NAME				= "";	// ex. "[BatchService用メール送信者名]"
 	private static String VAL_BATCH_FROM				= "";	// ex. "[BatchService用メール送信アドレス]"
-	private static String VAL_DB_USER					= "";
-	private static String VAL_DB_PASSWORD				= "";
 	
 	// Apache 接続リトライ回数
 	// HTTP server connection retry count
@@ -200,15 +193,6 @@ public class MassBankEnv extends HttpServlet {
 			VAL_PRIMARY_SERVER_URL = tmpPrimaryServerUrl;
 		}
 		
-		// VAL_DB_HOST_NAME
-		String tmpDbHostName = getAdminConf(VAL_ADMIN_CONF_PATH, "db_host_name");
-		if ( !tmpDbHostName.equals("") ) {
-			VAL_DB_HOST_NAME = tmpDbHostName;
-		}
-		
-		// VAL_DB_MASTER_NAME
-		VAL_DB_MASTER_NAME = getAdminConf(VAL_ADMIN_CONF_PATH, "master_db");
-		
 		// VAL_BATCH_SMTP
 		VAL_BATCH_SMTP = getAdminConf(VAL_ADMIN_CONF_PATH, "mail_batch_smtp");
 		
@@ -217,10 +201,6 @@ public class MassBankEnv extends HttpServlet {
 		
 		// VAL_BATCH_FROM
 		VAL_BATCH_FROM = getAdminConf(VAL_ADMIN_CONF_PATH, "mail_batch_from");
-		
-		// VAL_DB_USER, VAL_DB_PASSWORD
-		VAL_DB_USER		= getServletContext().getInitParameter("user");
-		VAL_DB_PASSWORD	= getServletContext().getInitParameter("password");
 		
 		// ログ出力
 		envListLog();
@@ -288,12 +268,6 @@ public class MassBankEnv extends HttpServlet {
 		else if ( key.equals(KEY_PRIMARY_SERVER_URL) ) {
 			val = VAL_PRIMARY_SERVER_URL;
 		}
-		else if ( key.equals(KEY_DB_HOST_NAME) ) {
-			val = VAL_DB_HOST_NAME;
-		}
-		else if ( key.equals(KEY_DB_MASTER_NAME) ) {
-			val = VAL_DB_MASTER_NAME;
-		}
 		else if ( key.equals(KEY_BATCH_SMTP) ) {
 			val = VAL_BATCH_SMTP;
 		}
@@ -302,12 +276,6 @@ public class MassBankEnv extends HttpServlet {
 		}
 		else if ( key.equals(KEY_BATCH_FROM) ) {
 			val = VAL_BATCH_FROM;
-		}
-		else if ( key.equals(KEY_DB_USER) ) {
-			val = VAL_DB_USER;
-		}
-		else if ( key.equals(KEY_DB_PASSWORD) ) {
-			val = VAL_DB_PASSWORD;
 		}
 		else {
 			val = "-1";
@@ -335,8 +303,6 @@ public class MassBankEnv extends HttpServlet {
 		sb.append(KEY_ADMIN_CONF_PATH).append("=").append(VAL_ADMIN_CONF_PATH).append("\n");
 		sb.append(KEY_DATAROOT_PATH).append("=").append(VAL_DATAROOT_PATH).append("\n");
 		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append("\n");
-		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append("\n");
-		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append("\n");
 		sb.append(KEY_BATCH_SMTP).append("=").append(VAL_BATCH_SMTP).append("\n");
 		sb.append(KEY_BATCH_NAME).append("=").append(VAL_BATCH_NAME).append("\n");
 		sb.append(KEY_BATCH_FROM).append("=").append(VAL_BATCH_FROM).append("\n");
@@ -414,8 +380,6 @@ public class MassBankEnv extends HttpServlet {
 		sb.append(KEY_ADMIN_CONF_PATH).append("=").append(VAL_ADMIN_CONF_PATH).append(ls);
 		sb.append(KEY_DATAROOT_PATH).append("=").append(VAL_DATAROOT_PATH).append(ls);
 		sb.append(KEY_PRIMARY_SERVER_URL).append("=").append(VAL_PRIMARY_SERVER_URL).append(ls);
-		sb.append(KEY_DB_HOST_NAME).append("=").append(VAL_DB_HOST_NAME).append(ls);
-		sb.append(KEY_DB_MASTER_NAME).append("=").append(VAL_DB_MASTER_NAME).append(ls);
 		sb.append(KEY_BATCH_SMTP).append("=").append(VAL_BATCH_SMTP).append(ls);
 		sb.append(KEY_BATCH_NAME).append("=").append(VAL_BATCH_NAME).append(ls);
 		sb.append(KEY_BATCH_FROM).append("=").append(VAL_BATCH_FROM).append(ls);

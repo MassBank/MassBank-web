@@ -30,10 +30,13 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class MassBankCommon {
 	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
@@ -222,25 +225,24 @@ public class MassBankCommon {
 	
 	public ArrayList<String> execDispatcher(
 			String type,
-			HttpServletRequest request,
-			GetConfig conf
-			) {
+			HttpServletRequest request
+			) throws ConfigurationException, SQLException {
 		
 		ArrayList<String> result = new ArrayList<String>();
 		
 		if (type.compareTo("inst") == 0) {
-			DatabaseManager db = DatabaseManager.create();
-			result = db.inst(request, conf);
+			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			result = db.inst(request);
 		}
 		
 		if (type.compareTo("search") == 0) {
-			DatabaseManager db = DatabaseManager.create();
-			result = db.search(request, conf);
+			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			result = db.search(request);
 		}
 		
 		if (type.compareTo("idxcnt") == 0) {
-			DatabaseManager db = DatabaseManager.create();
-			result = db.idxcnt(request, conf);
+			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			result = db.idxcnt(request);
 		}
 		
 		return result;
@@ -255,14 +257,15 @@ public class MassBankCommon {
 	 * @param siteNo		Site No. (サイトNo.)
 	 * @param conf			Configuration file information object (設定ファイル情報オブジェクト)
 	 * @return Record information list (レコード情報リスト)
+	 * @throws ConfigurationException 
 	 */
 	public ResultList execDispatcherResult(
 			String serverUrl,
 			String type,
 			String reqParam,
 			boolean isMulti,
-			String siteNo,
-			GetConfig conf ) {
+			String siteNo
+			) throws ConfigurationException {
 		
 		String reqUrl = "";
 		int site = 0;
@@ -315,7 +318,7 @@ public class MassBankCommon {
 		}
 		
 		// Result information record generation (結果情報レコード生成)
-		ResultList list = new ResultList(conf);
+		ResultList list = new ResultList();
 		ResultRecord record;
 		int nodeGroup = -1;
 		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();
@@ -368,19 +371,18 @@ public class MassBankCommon {
 	
 	public ResultList execDispatcherResult(
 			String type,
-			HttpServletRequest request,
-			GetConfig conf
-			) {
+			HttpServletRequest request
+			) throws ConfigurationException, SQLException {
 		
 		ArrayList<String> allLine = new ArrayList<String>();
 		if (type.compareTo("quick") == 0) {
-			DatabaseManager db = DatabaseManager.create();
-			allLine = db.quick(request, conf);
+			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			allLine = db.quick(request);
 		}
 		
 		if (type.compareTo("rcdidx") == 0) {
-			DatabaseManager db = DatabaseManager.create();
-			allLine = db.rcdidx(request, conf);
+			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			allLine = db.rcdidx(request);
 		}
 
 //		String reqUrl = "";
@@ -434,7 +436,7 @@ public class MassBankCommon {
 //		}
 		
 		// Result information record generation (結果情報レコード生成)
-		ResultList list = new ResultList(conf);
+		ResultList list = new ResultList();
 		ResultRecord record;
 		int nodeGroup = -1;
 		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();

@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 
 public class DataManagement {
@@ -92,7 +93,7 @@ public class DataManagement {
 		
 		return tmpUrl;
 	}
-	public static ResultList search(String idxtype, String srchkey, String sortKey, String sortAction, String exec) throws UnsupportedEncodingException{
+	public static ResultList search(String idxtype, String srchkey, String sortKey, String sortAction, String exec) throws UnsupportedEncodingException, ConfigurationException{
 		Hashtable<String, Object> reqParams	= new Hashtable<String, Object>();
 		reqParams.put("idxtype",	idxtype);
 		reqParams.put("srchkey",	srchkey);
@@ -102,7 +103,7 @@ public class DataManagement {
 		
 		return search(reqParams);
 	}
-	public static ResultList search(Hashtable<String, Object> reqParams) throws UnsupportedEncodingException{
+	public static ResultList search(Hashtable<String, Object> reqParams) throws UnsupportedEncodingException, ConfigurationException{
 		// sanity checks
 		if(reqParams.get("idxtype") == null)
 			throw new IllegalArgumentException();
@@ -191,10 +192,10 @@ public class DataManagement {
 		// execute search
 		MassBankCommon mbcommon = new MassBankCommon();
 		if ( isMulti ) {;
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null );
 		}
 		else {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo) );
 		}
 		
 		return list;

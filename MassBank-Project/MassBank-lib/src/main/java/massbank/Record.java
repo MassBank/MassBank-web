@@ -1,9 +1,9 @@
 package massbank;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -16,7 +16,12 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import net.sf.jniinchi.INCHI_RET;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class Record {
+	private static final Logger logger = LogManager.getLogger(Record.class);
+
 	private final String contributor;
 	
 	private String accession;
@@ -75,14 +80,6 @@ public class Record {
 		pk_peak					= new ArrayList<List<Double>>();
 	}
 	
-	public void persist() throws SQLException {
-		DatabaseManager db  = DatabaseManager.create();
-		if (db != null) {
-			db.persistAccessionFile(this);
-		} else {
-			System.out.println("Could not persist file because no connction to the database could be established" );
-		}
-	}
 	public String CONTRIBUTOR() {
 		return contributor;
 	}
@@ -192,7 +189,7 @@ public class Record {
 		INCHI_RET ret = gen.getReturnStatus();
 		if (ret == INCHI_RET.WARNING) {
 			// Structure generated, but with warning message
-			System.out.println("InChI warning: " + gen.getMessage());
+			logger.warn("InChI warning: " + gen.getMessage());
 		} else if (ret != INCHI_RET.OKAY) {
 			// Structure generation failed
 			throw new IllegalStateException(
@@ -367,14 +364,14 @@ public class Record {
 		try {
 			sb.append("CH$SMILES: " + CH_SMILES() + "\n");
 		} catch (CDKException e) {
-			System.err.println(e.getMessage());
-			sb.append("CH$SMILES: null\n");
+			logger.error(e.getMessage());
+			sb.append("CH$SMILES: N/A\n");
 		}
 		try {
 			sb.append("CH$IUPAC: " + CH_IUPAC() + "\n");
 		} catch (CDKException e) {
-			System.err.println(e.getMessage());
-			sb.append("CH$IUPAC: null\n");
+			logger.error(e.getMessage());
+			sb.append("CH$IUPAC: N/A\n");
 		}
 		if (CH_LINK() != null) {
 			for (Pair<String,String> link : CH_LINK())
@@ -440,6 +437,7 @@ public class Record {
 
 		return sb.toString();
 	}
+	
 	public static class Structure{
 		public final String CH_SMILES;
 		public final String CH_IUPAC;
@@ -448,6 +446,7 @@ public class Record {
 			this.CH_IUPAC	= CH_IUPAC;
 		}
 	}
+	
 	public static class Contributor{
 		public final String ACRONYM;
 		public final String SHORT_NAME;

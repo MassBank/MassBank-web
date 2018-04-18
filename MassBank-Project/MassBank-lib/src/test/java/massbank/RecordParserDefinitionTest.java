@@ -36,8 +36,8 @@ public class RecordParserDefinitionTest {
 	
 	@Test
 	public void testtitle() {
-		assertEquals("[RECORD_TITLE, : , Veratramine, [LC, ESI, [Q, TOF]], MS2, null, \n]", validate("RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2\n", "record_title").toString());
-		assertEquals("[RECORD_TITLE, : , Veratramine, [LC, ESI, [Q, TOF]], MS2, CE: 50 V, \n]", validate("RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n", "record_title").toString());
+		assertEquals("[RECORD_TITLE, : , Veratramine, [LC, ESI, QTOF], MS2, null, \n]", validate("RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2\n", "record_title").toString());
+		assertEquals("[RECORD_TITLE, : , Veratramine, [LC, ESI, QTOF], MS2, CE: 50 V, \n]", validate("RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n", "record_title").toString());
 	}
 	
 	@Test

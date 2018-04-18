@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 public class ResultList {
 	
 	/** ソートアクション（昇順） */
@@ -61,25 +63,18 @@ public class ResultList {
 	/** レコードリスト */
 	private ArrayList<ResultRecord> list = new ArrayList<ResultRecord>();
 	
-	/**
-	 * コンストラクタ（設定ファイル情報未使用）
-	 * @deprecated replaced by {@link #ResultList(GetConfig conf)}
-	 */
-	public ResultList() {
-		this.DISP_LINK_NUM = 10;							// デフォルト
-		this.DISP_NODE_NUM = 25;							// デフォルト
-	}
 	
 	/**
 	 * コンストラクタ（設定ファイル情報使用）
 	 * @param conf 設定ファイル情報オブジェクト
+	 * @throws ConfigurationException 
 	 */
-	public ResultList(GetConfig conf) {
+	public ResultList() throws ConfigurationException {
 		// ページリンク表示数
 		int linkNum = 10;									// デフォルト
 		try {
-			if ( Integer.parseInt(conf.getDispLinkNum()) > 0 ) {
-				linkNum =  Integer.parseInt(conf.getDispLinkNum());
+			if ( Integer.parseInt(Config.getInstance().get_LinkNum()) > 0 ) {
+				linkNum =  Integer.parseInt(Config.getInstance().get_LinkNum());
 			}
 		}
 		catch (NumberFormatException e) {
@@ -88,8 +83,8 @@ public class ResultList {
 		// 親ノード表示数
 		int nodeNum = 25;									// デフォルト
 		try {
-			if ( Integer.parseInt(conf.getDispNodeNum()) > 0 ) {
-				nodeNum =  Integer.parseInt(conf.getDispNodeNum());
+			if ( Integer.parseInt(Config.getInstance().get_NodeNum()) > 0 ) {
+				nodeNum =  Integer.parseInt(Config.getInstance().get_NodeNum());
 			}
 		}
 		catch (NumberFormatException e) {

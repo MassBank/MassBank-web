@@ -2,8 +2,10 @@ package massbank;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -13,11 +15,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -29,20 +31,19 @@ import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import net.sf.jniinchi.INCHI_RET;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
+/**
+* @author rmeier
+* @version 0.1, 18-04-2018
+* This class is used to manipulate SQL databases.
+*/
 public class DatabaseManager {
+	private static final Logger logger = LogManager.getLogger(DatabaseManager.class);
 	
-	private final static String driver = "org.mariadb.jdbc.Driver";
-//	private final static String user = MassBankEnv.get(MassBankEnv.KEY_DB_USER);
-//	private final static String password = MassBankEnv.get(MassBankEnv.KEY_DB_PASSWORD);
-	private final static String user = "root";
-	private final static String password = "bird2006";
-//	private final static String databaseName = "MassBankNew";
 	private String databaseName;
-	private final static String dbHostName = getDbHostName();
-//	private final static String connectUrl = "jdbc:mysql://" + dbHostName;
 	private final String connectUrl;
-//	private final static String connectUrl = "jdbc:mysql://" + dbHostName + "/" + databaseName;
 	private Connection con;
 
 	private final static String sqlAC_CHROMATOGRAPHY = "SELECT * FROM AC_CHROMATOGRAPHY WHERE RECORD = ?";
@@ -106,9 +107,7 @@ public class DatabaseManager {
 	private final static String insertAC_CHROMATOGRAPHY = "INSERT INTO AC_CHROMATOGRAPHY VALUES(?,?,?)";
 	private final static String insertMS_FOCUSED_ION = "INSERT INTO MS_FOCUSED_ION VALUES(?,?,?)";
 	private final static String insertMS_DATA_PROCESSING = "INSERT INTO MS_DATA_PROCESSING VALUES(?,?,?)";
-//	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?,?,?,?)";
 	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?)";
-//	private final static String updatePEAK = "UPDATE PEAK SET PK_ANNOTATION_TENTATIVE_FORMULA = ?, PK_ANNOTATION_FORMULA_COUNT = ?, PK_ANNOTATION_THEORETICAL_MASS = ?, PK_ANNTOATION_ERROR_PPM = ? WHERE RECORD = ? AND PK_PEAK_MZ = ?";
 	private final static String updatePEAKs = "UPDATE PEAK SET PK_ANNOTATION = ? WHERE RECORD = ? AND PK_PEAK_MZ = ?";
 	private final static String insertANNOTATION_HEADER = "INSERT INTO ANNOTATION_HEADER VALUES(?,?)";
 	
@@ -129,45 +128,95 @@ public class DatabaseManager {
 	private final PreparedStatement statementInsertMS_FOCUSED_ION;
 	private final PreparedStatement statementInsertMS_DATA_PROCESSING;
 	private final PreparedStatement statementInsertPEAK;
-//	private final PreparedStatement statementUpdatePEAK;
 	private final PreparedStatement statementUpdatePEAKs;
 	private final PreparedStatement statementInsertANNOTATION_HEADER;
 		
-	public static void init_db() throws SQLException, IOException {
-		//Connection connection = DriverManager.getConnection("jdbc:mariadb://" + dbHostName + "/" + "?user=" + user + "&password=" + password);
-		Connection connection = DriverManager.getConnection("jdbc:mariadb://" + dbHostName + "/" + "?user=" + user );
-		Statement stmt = connection.createStatement();
-
-		stmt.executeUpdate("DROP DATABASE IF EXISTS MassBank;");
-		stmt.executeUpdate("CREATE DATABASE MassBank CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
-		stmt.executeUpdate("USE MassBank;");
+	/**
+	 * Create a database with the MassBank database scheme.
+	 * @param dbName the name of the new database
+	 */
+	public static void init_db(String dbName) throws SQLException, ConfigurationException, FileNotFoundException, IOException {
+		String link="jdbc:mariadb://" 
+				+ Config.getInstance().get_dbHostName() + ":3306/" 
+				+ "?user=root" 
+				+ "&password=" + Config.getInstance().get_dbPassword();
+		logger.trace("Opening database connection with url\"" + link + "\".");
+		Connection connection = DriverManager.getConnection(link);
 		
-		ClassLoader classLoader = DatabaseManager.class.getClassLoader();
-		File file = new File(classLoader.getResource("create_massbank_scheme.sql").getFile());
+		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
+		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
+		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
+		stmt.executeUpdate("USE " + dbName + ";");
+		
+		File file = new File(DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql").getFile());
+		logger.trace("Executing sql statements in file \"" + file + "\".");		
 		ScriptRunner runner = new ScriptRunner(connection, false, false);
 		runner.runScript(new BufferedReader(new FileReader(file)));
 		
 		stmt.close();
+		logger.trace("Closing connection with url\"" + link + "\".");
 		connection.close();
 	}
 	
-	public static DatabaseManager create(String dbName) {
-		try {
-			return new DatabaseManager(dbName);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+	
+	
+	public static void activate_new_db() throws ConfigurationException, SQLException, IOException {
+		String sqlTemplate = 
+			"DROP TABLE existingDatabase.table_name;" +
+			"RENAME TABLE newDatabase.table_name TO existingDatabase.table_name;";
+		String[] table_names    = new String[] {
+			"PEAK",
+			"SPECTRUM",
+			"TREE",
+			"RECORD",
+			"CH_NAME",
+			"CH_LINK",
+			"INSTRUMENT",
+			"MOLFILE"
+		};
+		
+		StringBuilder sb = new StringBuilder();
+		for(String table_name : table_names) {
+			String sqlCmd = sqlTemplate
+				.replaceAll("existingDatabase", Config.getInstance().get_dbName())
+				.replaceAll("newDatabase", Config.getInstance().get_tmpdbName())
+				.replaceAll("table_name", table_name);
+          sb.append(sqlCmd + "\n");//NEW_LINE);
 		}
+		sb.append("DROP DATABASE " + Config.getInstance().get_tmpdbName() + ";\n");
+		
+		Connection connection = DriverManager.getConnection("jdbc:mariadb://" 
+			+ Config.getInstance().get_dbHostName() + "/" 
+			+ "?user=root" 
+			+ "&password=" + Config.getInstance().get_dbPassword());
+				
+		ScriptRunner runner = new ScriptRunner(connection, false, false);
+		runner.runScript(new StringReader(sb.toString()));
+		connection.close();
 	}
 	
-	public static DatabaseManager create() {
-		return create("MassBank");
-	}
 	
-	public DatabaseManager(String dbName) throws SQLException {
+//	public static DatabaseManager create(String dbName) throws ConfigurationException {
+//		try {
+//			return new DatabaseManager(dbName);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//	}
+
+//	public static DatabaseManager create() throws ConfigurationException {
+//		return create("MassBank");
+//	}
+	
+	public DatabaseManager(String dbName) throws SQLException, ConfigurationException {
 		this.databaseName = dbName;
-		this.connectUrl = "jdbc:mariadb://" + dbHostName + "/" + databaseName + "?rewriteBatchedStatements=true";
-			this.openConnection();
+		this.connectUrl = "jdbc:mariadb://" + Config.getInstance().get_dbHostName() + ":3306/" 
+			+ databaseName + "?rewriteBatchedStatements=true"
+			+ "&user=root" 
+			+ "&password=" + Config.getInstance().get_dbPassword();
+		this.openConnection();
 			statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
 			statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
 			statementCH_LINK = this.con.prepareStatement(sqlCH_LINK);
@@ -215,15 +264,19 @@ public class DatabaseManager {
 	private void openConnection() {
 		Connection con	= null;
 		try {
-			Class.forName(DatabaseManager.driver);
-			con = DriverManager.getConnection(this.connectUrl, DatabaseManager.user, null);
-			//con = DriverManager.getConnection(this.connectUrl, DatabaseManager.user);
+//			con = DriverManager.getConnection("jdbc:mariadb://" 
+//				+ Config.getInstance().get_dbHostName() + "/" 
+//				+ "?user=root" 
+//				+ "&password=" + Config.getInstance().get_dbPassword()
+//				+ "&rewriteBatchedStatements=true"
+//				);
+			con = DriverManager.getConnection(connectUrl);
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-			this.con = con;
+		this.con = con;
 	}
 
 	public void closeConnection() {
@@ -598,22 +651,22 @@ public class DatabaseManager {
 //		return acc;
 //	}
 	
-	private static String getDbHostName() {
-		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
-		if ( !MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME).equals("") ) {
-			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
-		}
-		return dbHostName;
-	}
+//	private static String getDbHostName() {
+//		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+//		if ( !MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME).equals("") ) {
+//			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
+//		}
+//		return dbHostName;
+//	}
 	
-	private HashMap<String,String> getDatabaseOfAccessions() {
+	/*private HashMap<String,String> getDatabaseOfAccessions() {
 		GetConfig config = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		String[] dbNames = config.getDbName();
 		HashMap<String,String> dbMapping = new HashMap<String,String>();
 		Connection con	= null;
 		try {
 			Class.forName(driver);
-			con = DriverManager.getConnection(connectUrl, user, password);
+			con = DriverManager.getConnection(connectUrl, Config.getInstance().get_dbUser(), Config.getInstance().get_dbPassword());
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 			for (String db : dbNames) {
@@ -636,7 +689,7 @@ public class DatabaseManager {
 				}
 		}
 		return dbMapping;
-	}
+	}*/
 	
 	public void batchPersist(ArrayList<Record> accs) {
 		for (Record acc : accs) {
@@ -1431,7 +1484,7 @@ public class DatabaseManager {
 //		}
 //		this.closeConnection();
 //	}
-	public ArrayList<String> quick(HttpServletRequest request, GetConfig conf) {
+	public ArrayList<String> quick(HttpServletRequest request) {
 		String compound = request.getParameter("compound");
 		String op1 = request.getParameter("op1");
 		String mz = request.getParameter("mz");
@@ -1522,7 +1575,7 @@ public class DatabaseManager {
 		return resList;
 	}
 	
-	public ArrayList<String> inst(HttpServletRequest request, GetConfig conf) {		
+	public ArrayList<String> inst(HttpServletRequest request) {		
 		ArrayList<String> resList = new ArrayList<String>();
 		
 		String sqlInst = "select AC_INSTRUMENT, AC_INSTRUMENT_TYPE "
@@ -1557,7 +1610,7 @@ public class DatabaseManager {
 		return resList;
 	}
 	
-	public ArrayList<String> search(HttpServletRequest request, GetConfig conf) {
+	public ArrayList<String> search(HttpServletRequest request) {
 		ArrayList<String> resList = new ArrayList<String>();
 		Search search = new Search(request, con);
 		resList = search.getResult();
@@ -1565,7 +1618,7 @@ public class DatabaseManager {
 	}
 	
 	// TODO remove sql queries from within the function
-	public ArrayList<String> idxcnt(HttpServletRequest request, GetConfig conf) {
+	public ArrayList<String> idxcnt(HttpServletRequest request) {
 		ArrayList<String> resList = new ArrayList<String>();
 		// TODO check if this site information is still necessary for parsing reasons
 //		resList.add("site\t0");
@@ -1676,7 +1729,7 @@ public class DatabaseManager {
 	}
 	
 	// TODO remove sql queries from within the function
-	public ArrayList<String> rcdidx(HttpServletRequest request, GetConfig conf) {
+	public ArrayList<String> rcdidx(HttpServletRequest request) {
 		ArrayList<String> resList = new ArrayList<String>();
 		
 		String idxtype = request.getParameter("idxtype");
@@ -1782,11 +1835,11 @@ public class DatabaseManager {
 				tmp.getString("CONTRIBUTOR.FULL_NAME")
 		);
 	}
-	public static void main (String[] args) throws SQLException {
+//	public static void main (String[] args) throws SQLException {
 //		DatabaseManager dbMan	= create();
 //		dbMan.test();
 //		dbMan.closeConnection();
-	}
+//	}
 }
 
 //private DatabaseManager(String dbName) throws SQLException {

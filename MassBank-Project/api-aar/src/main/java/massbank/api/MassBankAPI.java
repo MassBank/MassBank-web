@@ -44,6 +44,7 @@ import massbank.MassBankEnv;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class MassBankAPI {
 
@@ -98,8 +99,9 @@ public class MassBankAPI {
 
 	/**
 	 * 分析機器種別を取得する
+	 * @throws ConfigurationException 
 	 */
-	public String[] getInstrumentTypes() {
+	public String[] getInstrumentTypes() throws ConfigurationException {
 		GetInstInfo instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		String[] instTypes = instInfo.getTypeAll();
 		return (String[])instTypes;
