@@ -159,56 +159,63 @@ public class DatabaseManager {
 		connection.close();
 	}
 	
-	
-	
-	public static void activate_new_db() throws ConfigurationException, SQLException, IOException {
-		String sqlTemplate = 
-			"DROP TABLE existingDatabase.table_name;" +
-			"RENAME TABLE newDatabase.table_name TO existingDatabase.table_name;";
-		String[] table_names    = new String[] {
-			"PEAK",
-			"SPECTRUM",
-			"TREE",
-			"RECORD",
-			"CH_NAME",
-			"CH_LINK",
-			"INSTRUMENT",
-			"MOLFILE"
-		};
+	/**
+	 * Move all tables from MassBankNew to MassBank,
+	 */
+	public static void move_temp_db_to_main_massbank() throws ConfigurationException, SQLException, IOException {
+		String link="jdbc:mariadb://" 
+				+ Config.getInstance().get_dbHostName() + ":3306/" 
+				+ "?user=root" 
+				+ "&password=" + Config.getInstance().get_dbPassword();
+		logger.trace("Opening database connection with url\"" + link + "\".");
+		Connection connection = DriverManager.getConnection(link);
 		
+		// remove trigger
 		StringBuilder sb = new StringBuilder();
-		for(String table_name : table_names) {
-			String sqlCmd = sqlTemplate
-				.replaceAll("existingDatabase", Config.getInstance().get_dbName())
-				.replaceAll("newDatabase", Config.getInstance().get_tmpdbName())
-				.replaceAll("table_name", table_name);
-          sb.append(sqlCmd + "\n");//NEW_LINE);
-		}
-		sb.append("DROP DATABASE " + Config.getInstance().get_tmpdbName() + ";\n");
+		sb.append("DROP TRIGGER MassBank.upd_check;\n");
+		sb.append("DROP TRIGGER MassBankNew.upd_check;\n");
 		
-		Connection connection = DriverManager.getConnection("jdbc:mariadb://" 
-			+ Config.getInstance().get_dbHostName() + "/" 
-			+ "?user=root" 
-			+ "&password=" + Config.getInstance().get_dbPassword());
-				
+		// get all tables
+		Statement stmt = connection.createStatement();
+		List<String> table_names = new ArrayList<String>();
+		ResultSet result = stmt.executeQuery("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA ='MassBankNew'");
+		while (result.next()) {
+			table_names.add(result.getString(1));
+        }
+		stmt.close();
+		
+		// create MassBankBackup database
+		sb.append("CREATE DATABASE MassBankBackup;\n");
+		
+		// move MassBankNew to MassBank and MassBank to MassBankBackup
+		sb.append("RENAME TABLE");
+		for(String table_name : table_names) {
+			sb.append(" MassBank."+table_name+" to MassBankBackup."+table_name+",");
+			sb.append(" MassBankNew."+table_name+" to MassBank."+table_name+",");
+		}
+		sb.setLength(sb.length() - 1);
+		sb.append(";\n");
+		
+		// drop MassBankNew and MassBankBackup 
+		sb.append("DROP DATABASE " + Config.getInstance().get_tmpdbName() + ";\n");
+		sb.append("DROP DATABASE MassBankBackup;\n");
+		
+		// add trigger to MassBank
+		sb.append(	"USE MassBank;\n" +
+					"delimiter //\n" + 
+					"CREATE TRIGGER upd_check BEFORE INSERT ON SAMPLE\n" + 
+					"	FOR EACH ROW\n" + 
+					"	BEGIN\n" + 
+					"	IF ((NEW.SP_SCIENTIFIC_NAME IS NULL) AND (NEW.SP_LINEAGE IS NULL)) THEN\n" + 
+					"		SET NEW.ID = -1;\n" + 
+					"	END IF;\n" + 
+					"END;//");
+
+		logger.trace("Running sql commands:\n" + sb.toString());
 		ScriptRunner runner = new ScriptRunner(connection, false, false);
 		runner.runScript(new StringReader(sb.toString()));
 		connection.close();
 	}
-	
-	
-//	public static DatabaseManager create(String dbName) throws ConfigurationException {
-//		try {
-//			return new DatabaseManager(dbName);
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//	}
-
-//	public static DatabaseManager create() throws ConfigurationException {
-//		return create("MassBank");
-//	}
 	
 	public DatabaseManager(String dbName) throws SQLException, ConfigurationException {
 		this.databaseName = dbName;
@@ -890,12 +897,14 @@ public class DatabaseManager {
 		
 		//System.out.println(System.nanoTime());
 		for (String el : acc.SP_SAMPLE()) {
+			System.out.println(sampleId+" "+el);
 			statementInsertSP_SAMPLE.setInt(1, sampleId);
 			statementInsertSP_SAMPLE.setString(2, el);
 //			statementInsertSP_SAMPLE.executeUpdate();
 			statementInsertSP_SAMPLE.addBatch();
 		}
 		if (!bulk) {
+			
 			statementInsertSP_SAMPLE.executeBatch();
 		}
 		
@@ -1835,11 +1844,11 @@ public class DatabaseManager {
 				tmp.getString("CONTRIBUTOR.FULL_NAME")
 		);
 	}
-//	public static void main (String[] args) throws SQLException {
-//		DatabaseManager dbMan	= create();
-//		dbMan.test();
-//		dbMan.closeConnection();
-//	}
+	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
+		init_db("MassBank");
+		init_db("MassBankNew");
+		//move_temp_db_to_main_massbank();
+	}
 }
 
 //private DatabaseManager(String dbName) throws SQLException {

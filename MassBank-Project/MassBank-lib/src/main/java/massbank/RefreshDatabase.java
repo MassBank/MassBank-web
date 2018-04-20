@@ -2,11 +2,17 @@ package massbank;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
+
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 
 
@@ -20,7 +26,7 @@ import org.apache.commons.io.FileUtils;
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, SQLException, ConfigurationException, IOException {
 		try {
 			logger.trace("Creating a new database \""+ Config.getInstance().get_tmpdbName() +"\" and initialize a MassBank database scheme.");
 			DatabaseManager.init_db(Config.getInstance().get_tmpdbName());
@@ -28,7 +34,7 @@ public class RefreshDatabase {
 			logger.trace("Creating a DatabaseManager for \"" + Config.getInstance().get_tmpdbName() + "\".");
 			DatabaseManager db  = new DatabaseManager(Config.getInstance().get_tmpdbName());
 			
-			logger.trace("Opening DataRootPath \"" + Config.getInstance().get_DataRootPath() + "\" and iterate over content.");
+			logger.info("Opening DataRootPath \"" + Config.getInstance().get_DataRootPath() + "\" and iterate over content.");
 			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.getInstance().get_DataRootPath()));
 			for (Path contributorPath : path) {
 				if (!Files.isDirectory(contributorPath)) continue;
@@ -39,7 +45,7 @@ public class RefreshDatabase {
 				logger.trace("Opening contributor path \"" + contributor + "\" and iterate over content.");
 				DirectoryStream<Path> path2 = Files.newDirectoryStream(contributorPath);
 				for (Path recordPath : path2) {
-					logger.trace("Validating \"" + recordPath + "\".");
+					logger.info("Validating \"" + recordPath + "\".");
 					String recordAsString	= FileUtils.readFileToString(recordPath.toFile(), StandardCharsets.UTF_8);
 					Record record = Validator.validate(recordAsString, contributor);
 					if (record == null) {
@@ -53,7 +59,7 @@ public class RefreshDatabase {
 			}
 			path.close();
 			logger.trace("Moving new database to MassBank database.");
-			DatabaseManager.activate_new_db();
+			DatabaseManager.move_temp_db_to_main_massbank();
 		}
 		catch (Exception e) {
 			logger.fatal(e);
