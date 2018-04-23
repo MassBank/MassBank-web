@@ -885,30 +885,6 @@ public class DatabaseManager {
 		}
 		
 		//System.out.println(System.nanoTime());
-		for (Pair<String, String> el : acc.SP_LINK()) {
-			statementInsertSP_LINK.setInt(1, sampleId);
-			statementInsertSP_LINK.setString(2, el.getLeft() + " " + el.getRight());
-//			statementInsertSP_LINK.executeUpdate();
-			statementInsertSP_LINK.addBatch();
-		}
-		if (!bulk) {
-			statementInsertSP_LINK.executeBatch();
-		}
-		
-		//System.out.println(System.nanoTime());
-		for (String el : acc.SP_SAMPLE()) {
-			System.out.println(sampleId+" "+el);
-			statementInsertSP_SAMPLE.setInt(1, sampleId);
-			statementInsertSP_SAMPLE.setString(2, el);
-//			statementInsertSP_SAMPLE.executeUpdate();
-			statementInsertSP_SAMPLE.addBatch();
-		}
-		if (!bulk) {
-			
-			statementInsertSP_SAMPLE.executeBatch();
-		}
-		
-		//System.out.println(System.nanoTime());
 		statementInsertINSTRUMENT.setNull(1, java.sql.Types.INTEGER);
 		statementInsertINSTRUMENT.setString(2, acc.AC_INSTRUMENT());
 		statementInsertINSTRUMENT.setString(3, acc.AC_INSTRUMENT_TYPE());
@@ -949,6 +925,28 @@ public class DatabaseManager {
 		statementInsertRECORD.setString(13, acc.PK_SPLASH());
 		statementInsertRECORD.setInt(14, conId);
 		statementInsertRECORD.executeUpdate();
+		
+		//System.out.println(System.nanoTime());
+		for (String el : acc.SP_SAMPLE()) {
+			statementInsertSP_SAMPLE.setString(1, acc.ACCESSION());
+			statementInsertSP_SAMPLE.setString(2, el);
+//			statementInsertSP_SAMPLE.executeUpdate();
+			statementInsertSP_SAMPLE.addBatch();
+		}
+		if (!bulk) {
+			statementInsertSP_SAMPLE.executeBatch();
+		}
+		//System.out.println(System.nanoTime());
+		for (Pair<String, String> el : acc.SP_LINK()) {
+			statementInsertSP_LINK.setString(1, acc.ACCESSION());
+			statementInsertSP_LINK.setString(2, el.getLeft() + " " + el.getRight());
+//			statementInsertSP_LINK.executeUpdate();
+			statementInsertSP_LINK.addBatch();
+		}
+		if (!bulk) {
+			statementInsertSP_LINK.executeBatch();
+		}
+		
 //		set = statementInsertRECORD.getGeneratedKeys();
 //		set.next();
 		String accession = acc.ACCESSION();
@@ -1845,7 +1843,9 @@ public class DatabaseManager {
 		);
 	}
 	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
+		System.out.println("Init massbank");
 		init_db("MassBank");
+		System.out.println("Init massbanknew");
 		init_db("MassBankNew");
 		//move_temp_db_to_main_massbank();
 	}
