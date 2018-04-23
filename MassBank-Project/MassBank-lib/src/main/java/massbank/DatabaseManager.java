@@ -62,8 +62,8 @@ public class DatabaseManager {
 	private final static String sqlPK_NUM_PEAK = "SELECT * FROM PK_NUM_PEAK WHERE RECORD = ?";
 	private final static String sqlRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
 	private final static String sqlSAMPLE = "SELECT * FROM SAMPLE WHERE ID = ?";
-	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE SAMPLE = ?";
-	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE SAMPLE = ?";
+	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE RECORD = ?";
+	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE RECORD = ?";
 	private final static String sqlANNOTATION_HEADER = "SELECT * FROM ANNOTATION_HEADER WHERE RECORD = ?";
 	private final static String sqlGetContributorFromAccession = 
 			"SELECT CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME " +
@@ -456,25 +456,26 @@ public class DatabaseManager {
 			if (set.next()) {
 				acc.SP_SCIENTIFIC_NAME(set.getString("SP_SCIENTIFIC_NAME"));
 				acc.SP_LINEAGE(set.getString("SP_LINEAGE"));
-				
-				this.statementSP_LINK.setInt(1,set.getInt("ID"));
-				ResultSet tmp = this.statementSP_LINK.executeQuery();
-				tmpList.clear();
-				while (tmp.next()) {
-					String spLink	= tmp.getString("SP_LINK");
-					String[] tokens	= spLink.split(" ");
-					tmpList.add(Pair.of(tokens[0], tokens[1]));
-				}
-				acc.SP_LINK(tmpList);
-				
-				this.statementSP_SAMPLE.setInt(1, set.getInt("ID"));
-				tmp = this.statementSP_SAMPLE.executeQuery();
-				tmpList2.clear();
-				while (tmp.next()) {
-					tmpList2.add(tmp.getString("SP_SAMPLE"));
-				}
-				acc.SP_SAMPLE(tmpList2);
 			}
+			
+			this.statementSP_LINK.setString(1,acc.ACCESSION());
+			set = this.statementSP_LINK.executeQuery();
+			tmpList.clear();
+			while (set.next()) {
+				String spLink	= set.getString("SP_LINK");
+				String[] tokens	= spLink.split(" ");
+				tmpList.add(Pair.of(tokens[0], tokens[1]));
+			}
+			acc.SP_LINK(tmpList);
+				
+			this.statementSP_SAMPLE.setString(1,acc.ACCESSION());
+			set = this.statementSP_SAMPLE.executeQuery();
+			tmpList2.clear();
+			while (set.next()) {
+				tmpList2.add(set.getString("SP_SAMPLE"));
+			}
+			acc.SP_SAMPLE(tmpList2);
+			
 			if (instrumentID == -1)	throw new IllegalStateException("instrumentID is not set");
 			this.statementINSTRUMENT.setInt(1, instrumentID);
 			set = this.statementINSTRUMENT.executeQuery();
