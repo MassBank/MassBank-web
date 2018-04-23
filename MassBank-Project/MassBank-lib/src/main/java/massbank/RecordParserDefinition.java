@@ -5,6 +5,7 @@ import static org.petitparser.parser.primitive.CharacterParser.letter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -1221,11 +1222,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 //			})
 		);
 		
+		
 		// 2.6.2 PK$ANNOTATION
 		// Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
 		def("pk_annotation",
 			StringParser.of("PK$ANNOTATION")
 			.seq(ref("tagsep"))
+			.seq(StringParser.of("m/z")
+				.flatten()
+				.trim(CharacterParser.of(' '))	
+			)
 			.seq(
 				CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
 				.plus()
@@ -1233,7 +1239,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.trim(CharacterParser.of(' '))
 				.plus()
 				.map((List<String> value) -> {
-//					System.out.println(value);
+					//System.out.println(value);
+					value.add(0,"m/z");
 					callback.PK_ANNOTATION_HEADER(value);
 					return value;						
 				})
@@ -1241,39 +1248,46 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(
 				StringParser.of("  ")
+				.seq(ref("number").trim())
+				.pick(1)
 				.seq(
 					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
 					.plus()
 					.flatten()
 					.trim(CharacterParser.of(' '))
 					.plus()
-					.map((List<String> value) -> {
-//						System.out.println(value);
-						callback.PK_ANNOTATION_ADD_LINE(value);
-						return value;						
-					})
-					.seq(Token.NEWLINE_PARSER)
-					// call a Continuation Parser to validate the count of PK$ANNOTATION items per line
-					.callCC((Function<Context, Result> continuation, Context context) -> {
-						Result r = continuation.apply(context);
-						if (r.isSuccess()) {
-							List<String> pk_annotation_header = callback.PK_ANNOTATION_HEADER();
-							List<List<String>> pk_annotation = callback.PK_ANNOTATION();
-							if (pk_annotation_header.size() != pk_annotation.get(pk_annotation.size() - 1).size()) {
-								StringBuilder sb = new StringBuilder();
-								sb.append("Incorrect number of fields per PK$ANNOTATION line. ");
-								sb.append(pk_annotation_header.size() + " fields expected, but " + pk_annotation.get(pk_annotation.size() - 1).size() + " fields found.\n");
-								sb.append("Defined by:\n");
-								sb.append("PK$ANNOTATION:");
-								for (String annotation_header_item : callback.PK_ANNOTATION_HEADER())
-									sb.append(" " + annotation_header_item);
-								System.out.println(sb.toString());
-								return context.failure(sb.toString());
-							}
-						}
-						return r; 
-					})
 				)
+				.map((List<?> value) -> {
+					//System.out.println(value.toString());
+					@SuppressWarnings("unchecked")
+					List<String> list = (List<String>) value.subList(0, 1);
+					@SuppressWarnings("unchecked")
+					List<String> list2 = (List<String>) value. get(1);
+					list.addAll(list2);
+					callback.PK_ANNOTATION_ADD_LINE(list);
+					return value;						
+				})
+				// call a Continuation Parser to validate the count of PK$ANNOTATION items per line
+				.callCC((Function<Context, Result> continuation, Context context) -> {
+					Result r = continuation.apply(context);
+					if (r.isSuccess()) {
+						List<String> pk_annotation_header = callback.PK_ANNOTATION_HEADER();
+						List<List<String>> pk_annotation = callback.PK_ANNOTATION();
+						if (pk_annotation_header.size() != pk_annotation.get(pk_annotation.size() - 1).size()) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("Incorrect number of fields per PK$ANNOTATION line. ");
+							sb.append(pk_annotation_header.size() + " fields expected, but " + pk_annotation.get(pk_annotation.size() - 1).size() + " fields found.\n");
+							sb.append("Defined by:\n");
+							sb.append("PK$ANNOTATION:");
+							for (String annotation_header_item : callback.PK_ANNOTATION_HEADER())
+								sb.append(" " + annotation_header_item);
+							System.out.println(sb.toString());
+							return context.failure(sb.toString());
+						}
+					}
+					return r; 
+				})
+				.seq(Token.NEWLINE_PARSER)
 				.plus()
 			)
 		);
