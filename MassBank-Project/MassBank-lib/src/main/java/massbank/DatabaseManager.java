@@ -21,7 +21,7 @@ public class DatabaseManager {
 	private final static String driver = "org.mariadb.jdbc.Driver";
 //	private final static String user = MassBankEnv.get(MassBankEnv.KEY_DB_USER);
 //	private final static String password = MassBankEnv.get(MassBankEnv.KEY_DB_PASSWORD);
-	private final static String user = "root";
+	private final static String user = "bird";
 	private final static String password = "bird2006";
 //	private final static String databaseName = "MassBankNew";
 	private String databaseName;
