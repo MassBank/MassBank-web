@@ -25,7 +25,13 @@
  ******************************************************************************/
 package massbank;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+
 import javax.xml.parsers.*;
+
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.w3c.dom.*;
 
 public class GetConfig {
@@ -291,4 +297,13 @@ public class GetConfig {
 		}
 		return val;
 	}
+	
+	/*public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
+		GetConfig conf=new GetConfig("/var/www/html/MassBank/");
+		String[] dbNameList = conf.getDbName();
+		for ( int i = 0; i < dbNameList.length; i++ ) {
+			System.out.println(dbNameList[i]);
+		}
+		
+	}*/
 }

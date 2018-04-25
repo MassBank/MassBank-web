@@ -51,7 +51,7 @@ public class FileUtil {
 	}
 	public static File getFile(String databaseName, String accession) throws ConfigurationException{
 		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
-		File file	= new File(Config.getInstance().get_DataRootPath() + databaseName + File.separator + accession + ".txt");
+		File file	= new File(Config.get().DataRootPath() + databaseName + File.separator + accession + ".txt");
 		return file;
 	}
 }

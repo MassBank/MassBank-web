@@ -28,14 +28,14 @@ public class RefreshDatabase {
 	
 	public static void main(String[] args) throws FileNotFoundException, SQLException, ConfigurationException, IOException {
 		try {
-			logger.trace("Creating a new database \""+ Config.getInstance().get_tmpdbName() +"\" and initialize a MassBank database scheme.");
-			DatabaseManager.init_db(Config.getInstance().get_tmpdbName());
+			logger.trace("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
+			DatabaseManager.init_db(Config.get().tmpdbName());
 			
-			logger.trace("Creating a DatabaseManager for \"" + Config.getInstance().get_tmpdbName() + "\".");
-			DatabaseManager db  = new DatabaseManager(Config.getInstance().get_tmpdbName());
+			logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
+			DatabaseManager db  = new DatabaseManager(Config.get().tmpdbName());
 			
-			logger.info("Opening DataRootPath \"" + Config.getInstance().get_DataRootPath() + "\" and iterate over content.");
-			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.getInstance().get_DataRootPath()));
+			logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
+			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.get().DataRootPath()));
 			for (Path contributorPath : path) {
 				if (!Files.isDirectory(contributorPath)) continue;
 				if (contributorPath.endsWith(".git")) continue;

@@ -35,7 +35,7 @@
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="massbank.GetConfig" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.StructureToSvgStringGenerator" %>
 <%@ page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData" %>
@@ -82,7 +82,7 @@
 	if(accession == null){
 		String error	= "Error: Missing argument 'id'";
 		System.out.println(error);
-		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String baseUrl	= Config.get().BASE_URL();
 		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
@@ -92,7 +92,7 @@
 	if(databaseName == null){
 		String error	= "Error: Missing argument 'dsn'";
 		System.out.println(error);
-		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String baseUrl	= Config.get().BASE_URL();
 		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
@@ -102,7 +102,7 @@
 	if(!FileUtil.existsFile(databaseName, accession)){
 		String error	= "Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.";
 		System.out.println(error);
-		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String baseUrl	= Config.get().BASE_URL();
 		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
@@ -111,15 +111,15 @@
 	}
 	
 	// paths
-	String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
+	String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//Config.get().BASE_URL() + "temp";
 	//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";// ${ctx}
-	String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+	String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 	
 	// ##################################################################################################
 	// get accession data
 	
 	// read file
-	File file	= new File(MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH) + databaseName + File.separator + accession + ".txt");
+	File file	= new File(Config.get().DataRootPath() + databaseName + File.separator + accession + ".txt");
 	List<String> list	= FileUtil.readFromFile(file);
 	
 	// process record

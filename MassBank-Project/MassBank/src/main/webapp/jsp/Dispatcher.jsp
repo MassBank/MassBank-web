@@ -1,4 +1,3 @@
-<%@page import="massbank.MassBankEnv"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
 /*******************************************************************************
@@ -47,6 +46,7 @@
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.MassBankLog" %>
+<%@ page import="massbank.Config" %>
 <%!
 	final int MYSVR_INFO_NUM = 0;
 %>
@@ -104,7 +104,7 @@
 	if(typeNum == MassBankCommon.CGI_TBL_TYPE_DISP){
 		// ###############################################################################
 		// redirect to jsp/RecordDisplay.jsp instead of using disp.cgi
-		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String baseUrl	= Config.get().BASE_URL();
 		String urlStub	= baseUrl + "jsp/RecordDisplay.jsp";
 		String redirectUrl	= urlStub + "?id=" + params.get("id") + "&dsn=" + dbName;
 		

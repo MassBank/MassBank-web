@@ -36,6 +36,9 @@ import java.util.TreeMap;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.logging.*;
+
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import java.text.DecimalFormat;
 import massbank.GetConfig;
 import massbank.ServerStatusInfo;
@@ -60,20 +63,23 @@ public class ServerStatus {
 
 	/**
 	 * デフォルトコンストラクタ
+	 * @throws ConfigurationException 
 	 */
-	public ServerStatus() {
+	public ServerStatus() throws ConfigurationException {
 		// 管理ファイルのパスをセット
-		this.filePath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPPSERV_PATH) + PROF_FILE_NAME;
+		//this.filePath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPPSERV_PATH) + PROF_FILE_NAME;
+		this.filePath = Config.get().TOMCAT_APPPSERV_PATH() + PROF_FILE_NAME;
 		setBaseInfo();
 	}
 	
 	/**
 	 * コンストラクタ
 	 * @param baseUrl ベースURL
+	 * @throws ConfigurationException 
 	 * @deprecated 非推奨コンストラクタ
 	 * @see ServerStatus#ServerStatus()
 	 */
-	public ServerStatus(String baseUrl) {
+	public ServerStatus(String baseUrl) throws ConfigurationException {
 //		int pos1 = baseUrl.indexOf( "/", (new String("http://")).length() );
 //		int pos2 = baseUrl.lastIndexOf( "/" );
 //		String subDir = "";
@@ -91,10 +97,12 @@ public class ServerStatus {
 
 	/**
 	 * ベース情報をセット
+	 * @throws ConfigurationException 
 	 */
-	public void setBaseInfo() {
+	public void setBaseInfo() throws ConfigurationException {
 		// 設定ファイル読込み
-		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+		//GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+		GetConfig conf = new GetConfig(Config.get().BASE_URL());
 		// URLリストを取得
 		String[] urls = conf.getSiteUrl();
 		// DB名リストを取得
@@ -140,8 +148,9 @@ public class ServerStatus {
 
 	/**
 	 * 管理ファイルを整合する
+	 * @throws ConfigurationException 
 	 */
-	public void clean() {
+	public void clean() throws ConfigurationException {
 		setBaseInfo();
 
 		// 管理ファイルを読込み、サーバの状態を取得する

@@ -28,6 +28,7 @@ package massbank;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.SQLException;
@@ -231,17 +232,17 @@ public class MassBankCommon {
 		ArrayList<String> result = new ArrayList<String>();
 		
 		if (type.compareTo("inst") == 0) {
-			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			DatabaseManager db = new DatabaseManager(Config.get().dbName());
 			result = db.inst(request);
 		}
 		
 		if (type.compareTo("search") == 0) {
-			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			DatabaseManager db = new DatabaseManager(Config.get().dbName());
 			result = db.search(request);
 		}
 		
 		if (type.compareTo("idxcnt") == 0) {
-			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			DatabaseManager db = new DatabaseManager(Config.get().dbName());
 			result = db.idxcnt(request);
 		}
 		
@@ -376,12 +377,12 @@ public class MassBankCommon {
 		
 		ArrayList<String> allLine = new ArrayList<String>();
 		if (type.compareTo("quick") == 0) {
-			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			DatabaseManager db = new DatabaseManager(Config.get().dbName());
 			allLine = db.quick(request);
 		}
 		
 		if (type.compareTo("rcdidx") == 0) {
-			DatabaseManager db = new DatabaseManager(Config.getInstance().get_dbName());
+			DatabaseManager db = new DatabaseManager(Config.get().dbName());
 			allLine = db.rcdidx(request);
 		}
 

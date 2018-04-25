@@ -29,7 +29,7 @@
 
 <%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.FileReader" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 
 <html>
 <head>
@@ -38,7 +38,7 @@
 <body>
 <pre>
 <%
-	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
+	String dbRootPath = Config.get().DataRootPath();
 	String fileName = request.getParameter("fname");
 	String dbName = request.getParameter("db");
 	BufferedReader in = null;

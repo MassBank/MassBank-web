@@ -34,7 +34,7 @@ import massbank.admin.CmdResult;
 public class FileUtil {
 	
 	/** OS名 */
-	private static String OS_NAME = System.getProperty("os.name");
+	//private static String OS_NAME = System.getProperty("os.name");
 
 	/**
 	 * ZIP形式の圧縮ファイルを作成する
@@ -181,12 +181,7 @@ public class FileUtil {
 		String main = "mysql" + opHost + " --user=bird --password=bird2006 \"" + db + "\" < \"" + file + "\"";
 		
 		String[] cmd = null;
-		if(OS_NAME.indexOf("Windows") != -1){
-			cmd = new String[]{ "cmd", "/c", main };
-		}
-		else {
-			cmd = new String[]{ "sh", "-c", main };
-		}
+		cmd = new String[]{ "sh", "-c", main };
 		
 		return command( cmd, true );
 	}
@@ -213,12 +208,7 @@ public class FileUtil {
 		String main = "mysqldump" + opHost + " --user=bird --password=bird2006 \"" + db + "\"" + strTable.toString() + " > \"" + file + "\"";
 		
 		String[] cmd = null;
-		if(OS_NAME.indexOf("Windows") != -1){
-			cmd = new String[]{ "cmd", "/c", main };
-		}
-		else {
-			cmd = new String[]{ "sh", "-c", main };
-		}
+		cmd = new String[]{ "sh", "-c", main };
 		
 		return command( cmd, true );
 	}

@@ -73,8 +73,8 @@ public class ResultList {
 		// ページリンク表示数
 		int linkNum = 10;									// デフォルト
 		try {
-			if ( Integer.parseInt(Config.getInstance().get_LinkNum()) > 0 ) {
-				linkNum =  Integer.parseInt(Config.getInstance().get_LinkNum());
+			if ( Integer.parseInt(Config.get().LinkNum()) > 0 ) {
+				linkNum =  Integer.parseInt(Config.get().LinkNum());
 			}
 		}
 		catch (NumberFormatException e) {
@@ -83,8 +83,8 @@ public class ResultList {
 		// 親ノード表示数
 		int nodeNum = 25;									// デフォルト
 		try {
-			if ( Integer.parseInt(Config.getInstance().get_NodeNum()) > 0 ) {
-				nodeNum =  Integer.parseInt(Config.getInstance().get_NodeNum());
+			if ( Integer.parseInt(Config.get().NodeNum()) > 0 ) {
+				nodeNum =  Integer.parseInt(Config.get().NodeNum());
 			}
 		}
 		catch (NumberFormatException e) {

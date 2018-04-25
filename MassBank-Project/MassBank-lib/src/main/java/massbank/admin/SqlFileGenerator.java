@@ -34,9 +34,10 @@ import java.util.Hashtable;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
+import massbank.Config;
 import massbank.GetConfig;
 import massbank.GetInstInfo;
-import massbank.MassBankEnv;
+//import massbank.MassBankEnv;
 
 public class SqlFileGenerator {
 
@@ -79,7 +80,7 @@ public class SqlFileGenerator {
 		this.ver = ver;
 		
 		// INSTRUMENT情報を取得
-		GetInstInfo instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+		GetInstInfo instInfo = new GetInstInfo(Config.get().BASE_URL());
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] dbNameList = conf.getDbName();
 		int dbIndex = 0;

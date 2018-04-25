@@ -31,7 +31,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import massbank.MassBankEnv;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
+import massbank.Config;
+
+//import massbank.MassBankEnv;
 
 /**
  * 管理者設定共通クラス
@@ -81,8 +85,9 @@ public class AdminCommon {
 	
 	/**
 	 * 出力先パス取得
+	 * @throws ConfigurationException 
 	 */
-	public String getOutPath() {
+	public String getOutPath() throws ConfigurationException {
 		String outPath = getSetting( "out_path" );
 		if ( !outPath.equals("") ) {
 			// パス末尾にファイルの区切り文字なければ付加する
@@ -96,8 +101,9 @@ public class AdminCommon {
 
 	/**
 	 * ポータルサイトフラグ取得
+	 * @throws ConfigurationException 
 	 */
-	public boolean isPortal() {
+	public boolean isPortal() throws ConfigurationException {
 		boolean ret = false;
 		String portalFlag = getSetting( "portal" );
 		if ( portalFlag.toLowerCase().equals("true") ) {
@@ -108,8 +114,9 @@ public class AdminCommon {
 
 	/**
 	 * 管理者権限フラグ取得
+	 * @throws ConfigurationException 
 	 */
-	public boolean isAdmin() {
+	public boolean isAdmin() throws ConfigurationException {
 		boolean ret = false;
 		String adminFlag = getSetting( "auth_root" );
 		if ( adminFlag.toLowerCase().equals("true") ) {
@@ -120,8 +127,9 @@ public class AdminCommon {
 	
 	/**
 	 * Peak Search（Molecular Formula）表示フラグ取得
+	 * @throws ConfigurationException 
 	 */
-	public boolean isPeakAdv() {
+	public boolean isPeakAdv() throws ConfigurationException {
 		boolean ret = false;
 		String peakAdvFlag = getSetting( "service_peakadv" );
 		if ( peakAdvFlag.toLowerCase().equals("true") ) {
@@ -132,8 +140,9 @@ public class AdminCommon {
 	
 	/**
 	 * Batch Service表示フラグ取得
+	 * @throws ConfigurationException 
 	 */
-	public boolean isBatch() {
+	public boolean isBatch() throws ConfigurationException {
 		boolean ret = false;
 		String batchFlag = getSetting( "service_batch" );
 		if ( batchFlag.toLowerCase().equals("true") ) {
@@ -144,8 +153,9 @@ public class AdminCommon {
 
 	/**
 	 * Substructure Search（KNApSAcK）表示フラグ取得
+	 * @throws ConfigurationException 
 	 */
-	public boolean isKnapsack() {
+	public boolean isKnapsack() throws ConfigurationException {
 		boolean ret = false;
 		String knapsackFlag = getSetting( "service_knapsack" );
 		if ( knapsackFlag.toLowerCase().equals("true") ) {
@@ -156,8 +166,9 @@ public class AdminCommon {
 	
 	/**
 	 * Advanced Search表示フラグ取得
+	 * @throws ConfigurationException 
 	 */
-	public boolean isAdvanced() {
+	public boolean isAdvanced() throws ConfigurationException {
 		boolean ret = false;
 		String advancedFlag = getSetting( "service_advanced" );
 		if ( advancedFlag.toLowerCase().equals("true") ) {
@@ -168,8 +179,9 @@ public class AdminCommon {
 	
 	/**
 	 * WEB-API提供フラグ取得
+	 * @throws ConfigurationException 
 	 */
-	public boolean isApi() {
+	public boolean isApi() throws ConfigurationException {
 		boolean ret = false;
 		String apiFlag = getSetting( "service_api" );
 		if ( apiFlag.toLowerCase().equals("true") ) {
@@ -180,8 +192,9 @@ public class AdminCommon {
 	
 	/**
 	 * スケジュール取得
+	 * @throws ConfigurationException 
 	 */
-	public ArrayList<String> getSchedule() {
+	public ArrayList<String> getSchedule() throws ConfigurationException {
 		String[] tmp = getSetting( "schedule" ).split("\t");
 		ArrayList<String> vals = new ArrayList<String>();
 		for (String val : tmp) {
@@ -197,9 +210,10 @@ public class AdminCommon {
 	 * 「#」で始まる行はコメント行とする
 	 * @param key キー名
 	 * @return 値
+	 * @throws ConfigurationException 
 	 */
-	private String getSetting( String key ) {
-		String adminConfPath = MassBankEnv.get(MassBankEnv.KEY_ADMIN_CONF_PATH);
+	private String getSetting( String key ) throws ConfigurationException {
+		String adminConfPath = Config.get().ADMIN_CONF_PATH();
 		String val = "";
 		BufferedReader br = null;
 		try {

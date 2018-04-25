@@ -39,7 +39,7 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="massbank.MassBankCommon" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="java.awt.Color" %>
 <%@ page import="java.awt.Font" %>
@@ -71,7 +71,8 @@
 %>
 <%
 	ServletContext context = getServletContext();
-	int pos = -1;
+
+int pos = -1;
 	
 	//-------------------------------------------
 	// システム情報を取得
@@ -81,7 +82,7 @@
 	//-------------------------------------------
 	// 環境設定ファイルからURLリストを取得
 	//-------------------------------------------
-	String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	String baseUrl = Config.get().BASE_URL();
 	GetConfig conf = new GetConfig(baseUrl);
 	String serverUrl = conf.getServerUrl();
 	String[] siteNameList = conf.getSiteName();
@@ -93,7 +94,7 @@
 	MassBankCommon mbcommon = new MassBankCommon();
 	//String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
 	//ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
-	ArrayList<String> result = mbcommon.execDispatcher("idxcnt",request,conf);
+	ArrayList<String> result = mbcommon.execDispatcher("idxcnt",request);
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();
@@ -631,7 +632,7 @@
 			fileName = "massbank_" + key + "_Graph.jpg";
 			fileName = Pattern.compile("[ ]*top[ ]*[0-9]*").matcher(fileName).replaceAll("");
 			
-			filePath = MassBankEnv.get( MassBankEnv.KEY_TOMCAT_APPTEMP_PATH ) + fileName;
+			filePath = Config.get().TOMCAT_TEMP_PATH(context) + fileName;
 			BufferedOutputStream outStream = null;
 			try {
 				outStream = new BufferedOutputStream(new FileOutputStream(filePath));
@@ -654,9 +655,11 @@
 			// グラフの表示
 			out.println( "<tr>" );
 			out.println( "<td>" );
-			out.println( "<img src=\"" + MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp/" + fileName + "\" alt=\"\" border=\"0\">" );
+			//out.println( "<img src=\"" + Config.get().BASE_URL() + "temp/" + fileName + "\" alt=\"\" border=\"0\">" );
+			out.println( "<img src=\"" + Config.get().TOMCAT_TEMP_URL() + fileName + "\" alt=\"\" border=\"0\">" );
 			out.println( "</td>" );
 			out.println( "</tr>" );
+			
 		}
 	}
 	catch ( NoClassDefFoundError nc ) {	// for linux...(a transitional program)

@@ -43,7 +43,7 @@
 <%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.DatabaseManager" %>
 <%@ page import="massbank.Record" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -463,7 +463,7 @@
 		//-------------------------------------------
 		// 設定ファイル内容を取得
 		//-------------------------------------------
-		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+		GetConfig conf = new GetConfig(Config.get().BASE_URL());
 		String serverUrl = conf.getServerUrl();
 		String[] dbNameList = conf.getDbName();
 		String[] urlList = conf.getSiteUrl();
@@ -501,11 +501,11 @@
 		ArrayList<String> result = null;
 		if ( siteNo == -1 ) {
 			//result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
-			result = mbcommon.execDispatcher(typeName, request, conf);
+			result = mbcommon.execDispatcher(typeName, request);
 		}
 		else {
 			//result = mbcommon.execDispatcher( serverUrl, typeName, param, false, String.valueOf(siteNo) );
-			result = mbcommon.execDispatcher(typeName, request, conf);
+			result = mbcommon.execDispatcher(typeName, request);
 		}
 		
 		out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
@@ -565,7 +565,7 @@
 			// 結果表示
 			//-------------------------------------
 			out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
-			DatabaseManager dbManager	= DatabaseManager.create();
+			DatabaseManager dbManager	= new DatabaseManager("MassBank");
 			for ( int i = 0; i < hitCnt; i++ ) {
 				// データ切り出し
 				String rec = (String)result.get(i);
@@ -637,9 +637,9 @@
 				String databaseName		= conf.getDbName()[Integer.parseInt(site)];
 				String accession		= id;
 				
-				String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
+				String tmpUrlFolder		= Config.get().BASE_URL() + "temp";
 				//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
-				String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+				String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 				
 				Record.Structure structure	= dbManager.getStructureOfAccession(accession);
 				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(

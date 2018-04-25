@@ -43,12 +43,10 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Locale" %>
-
 <%@ page import="massbank.admin.AdminCommon" %>
-<%@ page import="massbank.admin.Validator" %>
 <%@ page import="massbank.admin.SqlFileGenerator" %>
 <%@ page import="massbank.GetConfig" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%!
 	//** ファイル出力先ディレクトリ **
 	private static final String DEF_OUT_DIR = System.getProperty("java.io.tmpdir") + File.separator;
@@ -158,7 +156,7 @@ function changeSort() {
 	String reqUrl = request.getRequestURL().toString();
 	String find = "mbadmin/";
 	int pos1 = reqUrl.indexOf( find );
-	String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	String baseUrl = Config.get().BASE_URL();
 	String jspName = reqUrl.substring( pos1 + find.length() );
 	String url = "";
 	
@@ -173,7 +171,7 @@ function changeSort() {
 	// サーバー側パス取得
 	//---------------------------------------------
 	AdminCommon admin = new AdminCommon();
-	String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
+	String dbRootPath = Config.get().DataRootPath();
 	String outPath = admin.getOutPath();
 	
 	if ( outPath.equals("") ) {

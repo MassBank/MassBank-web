@@ -27,14 +27,10 @@
  ******************************************************************************/
 %>
 
-<%@ page import="massbank.admin.AdminCommon" %>
 <%
 	//----------------------------------------------------
 	// パラメータ取得
 	//----------------------------------------------------
-	AdminCommon admin = new AdminCommon();
-	boolean isBatch = admin.isBatch();
-	boolean isAdvanced = admin.isAdvanced();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
@@ -61,34 +57,10 @@
 &nbsp;&nbsp;
 <a href="./index.html" target="_parent" title="MassBank">Home</a>
 |
-<!-- <a href="./SearchPage.html" target="_parent" title="Spectrum Search">Spectrum</a>
-| -->
 <a href="./QuickSearch.html" target="_parent" title="Quick Search">Quick Search</a>
 |
 <a href="./PeakSearch.html" target="_parent" title="Peak Search">Peak Search</a>
 |
-<!-- <a href="./StructureSearch.html" target="_parent" title="Substructure Search">Substructure</a>
-| -->
-<%
-	if ( isAdvanced ) {
-%>
-<!-- <a href="./AdvancedSearch.html" target="_parent" title="Advanced Search">Advanced</a>
-| -->
-<%
-	}
-%>
-<!-- <a href="./PackageView.html" target="_parent" title="Spectral Browser">Browser</a>
-| -->
-<%
-	if ( isBatch ) {
-%>
-<!-- <a href="http://www.massbank.jp/BatchSearch.html" target="_blank" title="Batch Service at MassBank Japan">Batch</a>
-| -->
-<%
-	}
-%>
-<!-- <a href="./BrowsePage.html" target="_parent" title="Browse Page">Browse</a>
-| -->
 <a href="./RecordIndex.html" target="_parent" title="Record Index">Record Index</a>
 |
 <a href="./Statistics.html" target="_blank" title="Record and Compounds Statistics">Statistics</a>

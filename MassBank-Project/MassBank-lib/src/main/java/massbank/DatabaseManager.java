@@ -137,9 +137,9 @@ public class DatabaseManager {
 	 */
 	public static void init_db(String dbName) throws SQLException, ConfigurationException, FileNotFoundException, IOException {
 		String link="jdbc:mariadb://" 
-				+ Config.getInstance().get_dbHostName() + ":3306/" 
+				+ Config.get().dbHostName() + ":3306/" 
 				+ "?user=root" 
-				+ "&password=" + Config.getInstance().get_dbPassword();
+				+ "&password=" + Config.get().dbPassword();
 		logger.trace("Opening database connection with url\"" + link + "\".");
 		Connection connection = DriverManager.getConnection(link);
 		
@@ -164,9 +164,9 @@ public class DatabaseManager {
 	 */
 	public static void move_temp_db_to_main_massbank() throws ConfigurationException, SQLException, IOException {
 		String link="jdbc:mariadb://" 
-				+ Config.getInstance().get_dbHostName() + ":3306/" 
+				+ Config.get().dbHostName() + ":3306/" 
 				+ "?user=root" 
-				+ "&password=" + Config.getInstance().get_dbPassword();
+				+ "&password=" + Config.get().dbPassword();
 		logger.trace("Opening database connection with url\"" + link + "\".");
 		Connection connection = DriverManager.getConnection(link);
 		
@@ -197,7 +197,7 @@ public class DatabaseManager {
 		sb.append(";\n");
 		
 		// drop MassBankNew and MassBankBackup 
-		sb.append("DROP DATABASE " + Config.getInstance().get_tmpdbName() + ";\n");
+		sb.append("DROP DATABASE " + Config.get().tmpdbName() + ";\n");
 		sb.append("DROP DATABASE MassBankBackup;\n");
 		
 		// add trigger to MassBank
@@ -219,10 +219,10 @@ public class DatabaseManager {
 	
 	public DatabaseManager(String dbName) throws SQLException, ConfigurationException {
 		this.databaseName = dbName;
-		this.connectUrl = "jdbc:mariadb://" + Config.getInstance().get_dbHostName() + ":3306/" 
+		this.connectUrl = "jdbc:mariadb://" + Config.get().dbHostName() + ":3306/" 
 			+ databaseName + "?rewriteBatchedStatements=true"
 			+ "&user=root" 
-			+ "&password=" + Config.getInstance().get_dbPassword();
+			+ "&password=" + Config.get().dbPassword();
 		this.openConnection();
 			statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
 			statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
@@ -271,12 +271,7 @@ public class DatabaseManager {
 	private void openConnection() {
 		Connection con	= null;
 		try {
-//			con = DriverManager.getConnection("jdbc:mariadb://" 
-//				+ Config.getInstance().get_dbHostName() + "/" 
-//				+ "?user=root" 
-//				+ "&password=" + Config.getInstance().get_dbPassword()
-//				+ "&rewriteBatchedStatements=true"
-//				);
+			Class.forName("org.mariadb.jdbc.Driver");
 			con = DriverManager.getConnection(connectUrl);
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
@@ -1844,143 +1839,11 @@ public class DatabaseManager {
 		);
 	}
 	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
-		System.out.println("Init massbank");
-		init_db("MassBank");
-		System.out.println("Init massbanknew");
-		init_db("MassBankNew");
+		
+		DatabaseManager db = new DatabaseManager(Config.get().dbName());
+		System.out.println(db);
+		db.closeConnection();
 		//move_temp_db_to_main_massbank();
 	}
 }
 
-//private DatabaseManager(String dbName) throws SQLException {
-//	this.databaseName = dbName;
-////	this.connectUrl = "jdbc:mysql://" + this.dbHostName + "/" + this.databaseName;
-////	PreparedStatement statementAC_CHROMATOGRAPHY = null;
-////	PreparedStatement statementAC_MASS_SPECTROMETRY = null;
-////	PreparedStatement statementCH_LINK = null;
-////	PreparedStatement statementCOMMENT = null;
-////	PreparedStatement statementCOMPOUND = null;
-////	PreparedStatement statementCOMPOUND_CLASS = null;
-////	PreparedStatement statementCOMPOUND_COMPOUND_CLASS = null;
-////	PreparedStatement statementCOMPOUND_NAME = null;
-////	PreparedStatement statementINSTRUMENT = null;
-////	PreparedStatement statementMS_DATA_PROCESSING = null;
-////	PreparedStatement statementMS_FOCUSED_ION = null;
-////	PreparedStatement statementNAME = null;
-////	PreparedStatement statementPEAK = null;
-////	PreparedStatement statementPK_NUM_PEAK = null;
-////	PreparedStatement statementRECORD = null;
-////	PreparedStatement statementSAMPLE = null;
-////	PreparedStatement statementSP_LINK = null;
-////	PreparedStatement statementSP_SAMPLE = null;	
-////	PreparedStatement statementANNOTATION_HEADER = null;
-////	
-////	PreparedStatement statementInsertCompound = null;
-////	PreparedStatement statementInsertCompound_Class = null;
-////	PreparedStatement statementInsertCompound_Compound_Class = null;
-////	PreparedStatement statementInsertName = null;
-////	PreparedStatement statementInsertCompound_Name = null;
-////	PreparedStatement statementInsertCH_LINK = null;
-////	PreparedStatement statementInsertSAMPLE = null;
-////	PreparedStatement statementInsertSP_LINK = null;
-////	PreparedStatement statementInsertSP_SAMPLE = null;
-////	PreparedStatement statementInsertINSTRUMENT = null;
-////	PreparedStatement statementInsertRECORD = null;
-////	PreparedStatement statementInsertCOMMENT = null;
-////	PreparedStatement statementInsertAC_MASS_SPECTROMETRY = null;
-////	PreparedStatement statementInsertAC_CHROMATOGRAPHY = null;
-////	PreparedStatement statementInsertMS_FOCUSED_ION = null;
-////	PreparedStatement statementInsertMS_DATA_PROCESSING = null;
-////	PreparedStatement statementInsertPEAK = null;
-////	PreparedStatement statementUpdatePEAK = null;
-////	PreparedStatement statementUpdatePEAKs = null;
-////	PreparedStatement statementInsertANNOTATION_HEADER = null;
-//	
-////	try {
-//		this.openConnection();
-//		statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
-//		statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
-//		statementCH_LINK = this.con.prepareStatement(sqlCH_LINK);
-//		statementCOMMENT = this.con.prepareStatement(sqlCOMMENT);
-//		statementCOMPOUND = this.con.prepareStatement(sqlCOMPOUND);
-//		statementCOMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_CLASS);
-//		statementCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_COMPOUND_CLASS);
-//		statementCOMPOUND_NAME = this.con.prepareStatement(sqlCOMPOUND_NAME);
-//		statementINSTRUMENT = this.con.prepareStatement(sqlINSTRUMENT);
-//		statementMS_DATA_PROCESSING = this.con.prepareStatement(sqlMS_DATA_PROCESSING);
-//		statementMS_FOCUSED_ION = this.con.prepareStatement(sqlMS_FOCUSED_ION);
-//		statementNAME = this.con.prepareStatement(sqlNAME);
-//		statementPEAK = this.con.prepareStatement(sqlPEAK);
-//		statementPK_NUM_PEAK = this.con.prepareStatement(sqlPK_NUM_PEAK);
-//		statementRECORD = this.con.prepareStatement(sqlRECORD);
-//		statementSAMPLE = this.con.prepareStatement(sqlSAMPLE);
-//		statementSP_LINK = this.con.prepareStatement(sqlSP_LINK);
-//		statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
-//		statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
-//		
-//		statementInsertCompound = this.con.prepareStatement(insertCompound);
-//		statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class);
-//		statementInsertCompound_Compound_Class = this.con.prepareStatement(insertCompound_Compound_Class);
-//		statementInsertName = this.con.prepareStatement(insertName);
-//		statementInsertCompound_Name = this.con.prepareStatement(insertCompound_Name);
-//		statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
-//		statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE);
-//		statementInsertSP_LINK = this.con.prepareStatement(insertSP_LINK);
-//		statementInsertSP_SAMPLE = this.con.prepareStatement(insertSP_SAMPLE);
-//		statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT);
-//		statementInsertRECORD = this.con.prepareStatement(insertRECORD);
-//		statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
-//		statementInsertAC_MASS_SPECTROMETRY = this.con.prepareStatement(insertAC_MASS_SPECTROMETRY);
-//		statementInsertAC_CHROMATOGRAPHY = this.con.prepareStatement(insertAC_CHROMATOGRAPHY);
-//		statementInsertMS_FOCUSED_ION = this.con.prepareStatement(insertMS_FOCUSED_ION);
-//		statementInsertMS_DATA_PROCESSING = this.con.prepareStatement(insertMS_DATA_PROCESSING);
-////		statementInsertPEAK = this.con.prepareStatement(insertPEAK);
-////		statementUpdatePEAK = this.con.prepareStatement(updatePEAK);
-//		statementUpdatePEAKs = this.con.prepareStatement(updatePEAKs);
-//		statementInsertANNOTATION_HEADER = this.con.prepareStatement(insertANNOTATION_HEADER);
-////	} catch (SQLException e) {
-////		e.printStackTrace();
-////	} finally {
-//////		this.closeConnection();
-////		this.statementAC_CHROMATOGRAPHY = statementAC_CHROMATOGRAPHY;
-////		this.statementAC_MASS_SPECTROMETRY = statementAC_MASS_SPECTROMETRY;
-////		this.statementCH_LINK = statementCH_LINK;
-////		this.statementCOMMENT = statementCOMMENT;
-////		this.statementCOMPOUND = statementCOMPOUND;
-////		this.statementCOMPOUND_CLASS = statementCOMPOUND_CLASS;
-////		this.statementCOMPOUND_COMPOUND_CLASS = statementCOMPOUND_COMPOUND_CLASS;
-////		this.statementCOMPOUND_NAME = statementCOMPOUND_NAME;
-////		this.statementINSTRUMENT = statementINSTRUMENT;
-////		this.statementMS_DATA_PROCESSING = statementMS_DATA_PROCESSING;
-////		this.statementMS_FOCUSED_ION = statementMS_FOCUSED_ION;
-////		this.statementNAME = statementNAME;
-////		this.statementPEAK = statementPEAK;
-////		this.statementPK_NUM_PEAK = statementPK_NUM_PEAK;
-////		this.statementRECORD = statementRECORD;
-////		this.statementSAMPLE = statementSAMPLE;
-////		this.statementSP_LINK = statementSP_LINK;
-////		this.statementSP_SAMPLE = statementSP_SAMPLE;
-////		this.statementANNOTATION_HEADER = statementANNOTATION_HEADER;
-////		
-////		this.statementInsertCompound = statementInsertCompound;
-////		this.statementInsertCompound_Class = statementInsertCompound_Class;
-////		this.statementInsertCompound_Compound_Class = statementInsertCompound_Compound_Class;
-////		this.statementInsertName = statementInsertName;
-////		this.statementInsertCompound_Name = statementInsertCompound_Name;
-////		this.statementInsertCH_LINK = statementInsertCH_LINK;
-////		this.statementInsertSAMPLE = statementInsertSAMPLE;
-////		this.statementInsertSP_LINK = statementInsertSP_LINK;
-////		this.statementInsertSP_SAMPLE = statementInsertSP_SAMPLE;
-////		this.statementInsertINSTRUMENT = statementInsertINSTRUMENT;
-////		this.statementInsertRECORD = statementInsertRECORD;
-////		this.statementInsertCOMMENT = statementInsertCOMMENT;
-////		this.statementInsertAC_MASS_SPECTROMETRY = statementInsertAC_MASS_SPECTROMETRY;
-////		this.statementInsertAC_CHROMATOGRAPHY = statementInsertAC_CHROMATOGRAPHY;
-////		this.statementInsertMS_FOCUSED_ION = statementInsertMS_FOCUSED_ION;
-////		this.statementInsertMS_DATA_PROCESSING = statementInsertMS_DATA_PROCESSING;
-////		this.statementInsertPEAK = statementInsertPEAK;
-////		this.statementUpdatePEAK = statementUpdatePEAK;
-////		this.statementUpdatePEAKs = statementUpdatePEAKs;
-////		this.statementInsertANNOTATION_HEADER = statementInsertANNOTATION_HEADER;
-////	}
-//}

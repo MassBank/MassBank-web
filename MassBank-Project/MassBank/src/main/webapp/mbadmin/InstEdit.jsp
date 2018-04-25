@@ -50,13 +50,12 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.GetInstInfo" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%@ page import="massbank.Sanitizer" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
 <%@ page import="org.apache.commons.io.FileUtils" %>
-<%@ page import="massbank.svn.MSDBUpdater" %>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -126,7 +125,7 @@
 	private boolean modInstrument( DatabaseAccess db, ArrayList<String> msgList, String tmpPath, String hostName, String selDb, GetInstInfo instInfo, String instNo, String instType, String instName)  {
 		
 		String dumpPath = tmpPath + selDb + ".dump";
-		String recPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH) + selDb + File.separator;
+		String recPath = Config.get().DataRootPath() + selDb + File.separator;
 		String backupPath = tmpPath + "backup" + File.separator;
 		String[] instNoList = instInfo.getNo();
 		String[] instNameList = instInfo.getName();
@@ -902,10 +901,10 @@ function selNo() {
 	//----------------------------------------------------
 	// 各種パラメータを取得
 	//----------------------------------------------------
-	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
-	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
-	final String annotationPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
-	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String baseUrl = Config.get().BASE_URL();
+	final String tomcatTmpPath = Config.get().TOMCAT_TEMP_PATH(getServletContext());
+	final String annotationPath = Config.get().DataRootPath();
+	final String dbHostName = Config.get().dbHostName();
 	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	GetConfig conf = new GetConfig(baseUrl);
 	GetInstInfo instInfo = null;

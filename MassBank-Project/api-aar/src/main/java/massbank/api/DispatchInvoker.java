@@ -27,9 +27,12 @@ package massbank.api;
 
 import java.util.ArrayList;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
+import massbank.Config;
 import massbank.GetConfig;
 import massbank.MassBankCommon;
-import massbank.MassBankEnv;
+//import massbank.MassBankEnv;
 
 
 public class DispatchInvoker {
@@ -39,9 +42,10 @@ public class DispatchInvoker {
 
 	/**
 	 * コンストラクタ
+	 * @throws ConfigurationException 
 	 */
-	public DispatchInvoker() {
-		GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	public DispatchInvoker() throws ConfigurationException {
+		GetConfig conf = new GetConfig(Config.get().BASE_URL());
 		this.serverUrl = conf.getServerUrl();
 	}
 
