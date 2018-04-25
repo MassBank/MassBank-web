@@ -70,8 +70,9 @@ public class RecordFormat {
 			add("PK$ANNOTATION", false, false, false, true);
 			add("PK$NUM_PEAK", false, true, false, false);
 			add("PK$PEAK", false, true, false, true);
+			
+			RecordFormat.initialized = true;
 		}
-		RecordFormat.initialized = true;
 	}
 	
 	private static void add(String tag, boolean allowsSubtags, boolean isMandatory, boolean isIterative, boolean isMultiline) {

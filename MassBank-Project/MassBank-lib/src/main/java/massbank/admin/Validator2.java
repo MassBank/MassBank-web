@@ -10,7 +10,8 @@ import massbank.Record;
 import massbank.RecordParser;
 
 public class Validator2 {
-	public static String recordstring = "ACCESSION: BS000001\n" +
+	public static String recordstringExample = 
+			"ACCESSION: BSU00002\n" +
 			"RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n" +
 			"DATE: 2016.01.19 (Created 2012.12.18, modified 2013.07.16)\n" +
 			"AUTHORS: Chandler, C. and Habig, J. Boise State University\n" +
@@ -21,7 +22,7 @@ public class Validator2 {
 			"COMMENT: Data obtained from a veratramine standard purchased from Logan Natural Products, Logan, Utah USA.\n" +
 			"CH$NAME: Veratramine\n" + 
 			"CH$NAME: {(3beta,23R)-14,15,16,17-Tetradehydroveratraman-3,23-diol\n" +
-			"CH$COMPOUND_CLASS: Natural Product; Alkaloid\n" + 
+			"CH$COMPOUND_CLASS: N/A; Environmental Standard\n" +
 			"CH$FORMULA: C27H39NO2\n" +
 			"CH$EXACT_MASS: 409.29807\n" +
 			"CH$SMILES: N/A\n" +
@@ -35,6 +36,7 @@ public class Validator2 {
 			"SP$SCIENTIFIC_NAME: Mus musculus\n" +
 			"SP$LINK: NCBI-TAXONOMY 10090\n" +
 			"SP$LINK: NCBI-TAXONOMY 10090\n" +
+			"SP$SAMPLE: Liver extracts\n" +
 			"SP$SAMPLE: Liver extracts\n" +
 			"AC$INSTRUMENT: Bruker maXis ESI-QTOF\n" +
 			"AC$INSTRUMENT_TYPE: LC-ESI-QTOF\n" +
@@ -161,12 +163,14 @@ public class Validator2 {
 			"  411.3 1871 5\n" +
 			"  414.3 9233 24\n" +
 			"//";	
-	public static Record validate(String recordstring) {
+	
+	public static Record validate(String recordstring, String contributor) {
 		// test non standard ASCII chars and print warnings
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
 				String[] tokens = recordstring.split("\\r?\\n");
-				System.out.println("Warning: non standard ASCII charactet found. This might be an error. Please check carefully.");
+				System.out.println(
+						"Warning: non standard ASCII charactet found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
 				for (String token : tokens) {
 					offset = offset + token.length() + 1;
@@ -182,11 +186,10 @@ public class Validator2 {
 				}
 			}
 		}
-
-		Record record = new Record();
+		
+		Record record = new Record(contributor);
 		Parser recordparser = new RecordParser(record);
-		Result res = null;
-		res = recordparser.parse(recordstring);
+		Result res = recordparser.parse(recordstring);
 		if (res.isFailure()) {
 			System.err.println();
 			System.err.println(res.getMessage());
@@ -202,32 +205,34 @@ public class Validator2 {
 					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 					error_at.append('^');
 					System.err.println(error_at);
-					record = new Record();
 					break;
 				}
 				line++;
 			}
-		}
-		return record;
+			return null;
+		} else
+			return record;
 	}
 
 	public static void main(String[] arguments) throws Exception {
 		boolean haserror = false;
 		if (arguments.length==0) {
-			Record record = validate(recordstring);
-			if (record.ACCESSION() == null) System.err.println("Error.");
+			Record record = validate(recordstringExample, "");
+			if (record == null) System.err.println("Error.");
 			else System.out.println(record.toString());
 		}
 		else {
 			for (String filename : arguments) {
-				//System.out.print("Validating " + filename + " ... ");
-				recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
-				Record record = validate(recordstring);
-				if (record.ACCESSION() == null) {
+				recordstringExample = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
+				Record record = validate(recordstringExample, "");
+				if (record == null) {
 					System.err.println("Error in " + filename);
 					haserror = true;
 				}
-				//else System.out.println("ok");
+				else {
+					//System.out.println("ok");
+					//System.out.println(record.toString());
+				}
 			}
 		}
 		if (haserror) System.exit(1);

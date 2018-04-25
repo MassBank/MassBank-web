@@ -1,11 +1,14 @@
 package massbank;
 
+import static org.petitparser.parser.primitive.CharacterParser.digit;
+import static org.petitparser.parser.primitive.CharacterParser.letter;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.time.LocalDate;
-import static org.petitparser.parser.primitive.CharacterParser.digit;
-import static org.petitparser.parser.primitive.CharacterParser.letter;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -22,12 +25,18 @@ import org.petitparser.context.Token;
 import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
 import org.petitparser.tools.GrammarDefinition;
+
+import edu.ucdavis.fiehnlab.spectra.hash.core.Spectrum;
+import edu.ucdavis.fiehnlab.spectra.hash.core.Splash;
+import edu.ucdavis.fiehnlab.spectra.hash.core.SplashFactory;
+import edu.ucdavis.fiehnlab.spectra.hash.core.types.Ion;
+import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
+import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
 import net.sf.jniinchi.INCHI_RET;
 
 
 public class RecordParserDefinition extends GrammarDefinition {
 
-	@SuppressWarnings("unchecked")
 	public RecordParserDefinition(Record callback) {
 		def("start",
 			ref("accession")
@@ -80,6 +89,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("tagsep", StringParser.of(": "));
 		def("valuesep", StringParser.of("; "));
 		def("endtag", StringParser.of("//").trim());
+		def("multiline_start", StringParser.of("  "));
 
 		// 2.1 Record Specific Information
 		// 2.1.1 ACCESSION
@@ -91,15 +101,25 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("accession", 
 			StringParser.of("ACCESSION")
 			.seq(ref("tagsep"))
-			// parse accession and put it in the record
 			.seq(
-				letter().times(2).seq(digit().times(6))
-				.or(letter().times(3).seq(digit().times(5)))
-				.flatten()
-				.map((String value) -> {
-					callback.ACCESSION(value);
+				letter().times(2).flatten()
+				.seq(
+					digit().times(6).flatten()
+				)
+				.map((List<String> value) -> {
+					callback.ACCESSION(value.get(0) + value.get(1));
 					return value;
 				})
+				.or(
+					letter().times(3).flatten()
+					.seq(
+						digit().times(5).flatten()
+					)
+					.map((List<String> value) -> {
+						callback.ACCESSION(value.get(0) + value.get(1));
+						return value;
+					})
+				)
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
@@ -310,13 +330,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
+			.seq(Token.NEWLINE_PARSER).pick(3)
 			.plus()
-			.map((List<?> value) -> {
-				//System.out.println(value);
-				List<String> comments = new ArrayList<String>();
-				for (Object v : value) comments.add(((List<String>) v).get(2));
-				callback.COMMENT(comments);
+			.map((List<String> value) -> {
+				callback.COMMENT(value);
 				return value;
 			})
 		);
@@ -342,13 +359,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				ref("ch_name_value")
 			)
-			.seq(Token.NEWLINE_PARSER)
+			.seq(Token.NEWLINE_PARSER).pick(2)
 			.plus()
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
 				//System.out.println(value);
-				List<String> ch_name = new ArrayList<String>();
-				for (Object v : value) ch_name.add(((List<String>) v).get(2));
-				callback.CH_NAME(ch_name);
+				callback.CH_NAME(value);
 				return value;						
 			})
 		);
@@ -362,21 +377,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ch_compound_class",
 			StringParser.of("CH$COMPOUND_CLASS")
 			.seq(ref("tagsep"))
-			.seq(Token.NEWLINE_PARSER.not())
-			.seq(
-				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
-				.flatten()
-				.map((String value) -> {
-					callback.CH_COMPOUND_CLASS(value);
-					return value;
-				})
+			.seq(CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten())
+			.seq(ref("valuesep")
+				.seq(CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten()).pick(1).star()			
 			)
 			.seq(Token.NEWLINE_PARSER)
-//			.map((List<?> value) -> {
-//				System.out.println(value.toString());
-//				return value;						
-//			})
+			.map((List<?> value) -> {
+				@SuppressWarnings("unchecked")
+				List<String> list = (List<String>) value.get(3);
+				list.add(0, (String) value.get(2));
+				callback.CH_COMPOUND_CLASS(list);
+				return value;						
+			})
 		);
+		
 		
 		// 2.2.3 CH$FORMULA
 		// Molecular Formula of Chemical Compound. Mandatory
@@ -460,7 +474,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 							if (r.get().equals("N/A")) callback.CH_SMILES(new AtomContainer());
 							else callback.CH_SMILES(new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(r.get()));
 						} catch (InvalidSmilesException e) { 
-							return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage());		 				
+							return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage() + " for " + r.get());		 				
 						}		 			
 					}
 					return r; 
@@ -502,7 +516,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 								} 
 								else if (ret != INCHI_RET.OKAY) {
 									// Structure generation failed
-									return context.failure("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "]");
+									return context.failure("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + r.get());
 								}
 								IAtomContainer m = intostruct.getAtomContainer();
 								callback.CH_IUPAC(m);
@@ -534,104 +548,37 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// CH$LINK: KEGG C00037
 		// CH$LINK: PUBCHEM SID: 11916 CID:182232
 		// CH$LINK fields should be arranged by the alphabetical order of database names.
+		def("ch_link_subtag",
+			StringParser.of("CAS ")
+			.or(StringParser.of("CAYMAN "))
+			.or(StringParser.of("CHEBI "))
+			.or(StringParser.of("CHEMPDB "))
+			.or(StringParser.of("CHEMSPIDER "))
+			.or(StringParser.of("COMPTOX "))
+			.or(StringParser.of("HMDB "))
+			.or(StringParser.of("INCHIKEY "))
+			.or(StringParser.of("KAPPAVIEW "))
+			.or(StringParser.of("KEGG "))
+			.or(StringParser.of("KNAPSACK "))
+			.or(StringParser.of("LIPIDBANK "))
+			.or(StringParser.of("LIPIDMAPS "))
+			.or(StringParser.of("NIKKAJI "))
+			.or(StringParser.of("PUBCHEM "))
+		);
 		def("ch_link",
 			StringParser.of("CH$LINK")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("CAS").trim())
+			.seq(ref("ch_link_subtag"))
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CAYMAN").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CHEBI").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CHEMPDB").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CHEMSPIDER").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("COMPTOX").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("HMDB").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-					.seq(ref("tagsep"))
-					.seq(StringParser.of("INCHIKEY").trim())
-					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-					.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-					.seq(ref("tagsep"))
-					.seq(StringParser.of("KAPPAVIEW").trim())
-					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-					.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("KEGG").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("KNAPSACK").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("LIPIDBANK").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("LIPIDMAPS").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-					.seq(ref("tagsep"))
-					.seq(StringParser.of("NIKKAJI").trim())
-					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-					.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("CH$LINK")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PUBCHEM").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)				
-			.map((List<?> value) -> {
-				// System.out.println(value);
-				List<String> link = new ArrayList<String>();
-				for (Object v : value) {
-					if (v == null) continue;
-					link.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				callback.CH_LINK(link);
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()		
+			.map((List<Pair<String,String>> value) -> {
+//				System.out.println(value);
+				callback.CH_LINK(value);
 				return value;
 			})
 		);
@@ -689,14 +636,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("SP$LINK")
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
+			.seq(CharacterParser.any().plusLazy(CharacterParser.whitespace()).flatten())
+			.seq(CharacterParser.whitespace()).pick(3)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()
-			.map((List<?> value) -> {
+			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
-				List<String> links = new ArrayList<String>();
-				for (Object v : value) links.add(((List<String>) v).get(2));
-				callback.SP_LINK(links);
+				callback.SP_LINK(value);
 				return value;
 			})
 		);
@@ -710,13 +660,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER)
+			.seq(Token.NEWLINE_PARSER).pick(3)
 			.plus()
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
 				//System.out.println(value);
-				List<String> sample = new ArrayList<String>();
-				for (Object v : value) sample.add(((List<String>) v).get(2));
-				callback.SP_SAMPLE(sample);
+				callback.SP_SAMPLE(value);
 				return value;
 			})
 		);		
@@ -805,7 +753,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				ref("ac_instrument_type_value")
 				.map((List<?> value) -> {
-					callback.AC_INSTRUMENT_TYPE((List<?>) value);
+//					System.out.println(value);
+					
+					List<String> list	= new ArrayList<String>();
+					for(int idx = 0; idx < value.size(); idx++) {
+						if(value.get(idx) instanceof String)
+							// string
+							list.add((String) value.get(idx));
+						if(value.get(idx) instanceof List)
+							// list of strings
+							list.addAll((List<String>) value.get(idx));
+					}
+					String ac_instrument_type_konkat	= String.join("-", list.toArray(new String[list.size()]));
+					
+					callback.AC_INSTRUMENT_TYPE(ac_instrument_type_konkat);
 					return value;						
 				})
 			)
@@ -915,377 +876,88 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.4.5 Subtag: SCANNING
 		// Scan Cycle and Range.
 		// Example: AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)
-		def("ac_mass_spectrometry", 
+		def("ac_mass_spectrometry_subtag",
+			StringParser.of("ACTIVATION_PARAMETER ")
+			.or(StringParser.of("ACTIVATION_TIME "))
+			.or(StringParser.of("ATOM_GUN_CURRENT "))
+			.or(StringParser.of("AUTOMATIC_GAIN_CONTROL "))
+			.or(StringParser.of("BOMBARDMENT "))
+			.or(StringParser.of("CAPILLARY_TEMPERATURE "))
+			.or(StringParser.of("CAPILLARY_VOLTAGE "))
+			.or(StringParser.of("CDL_SIDE_OCTOPOLES_BIAS_VOLTAGE "))
+			.or(StringParser.of("CDL_TEMPERATURE "))
+			.or(StringParser.of("COLLISION_ENERGY "))
+			.or(StringParser.of("COLLISION_GAS "))
+			.or(StringParser.of("DATAFORMAT "))
+			.or(StringParser.of("DATE "))
+			.or(StringParser.of("DESOLVATION_GAS_FLOW "))
+			.or(StringParser.of("DESOLVATION_TEMPERATURE "))
+			.or(StringParser.of("DRY_GAS_FLOW "))
+			.or(StringParser.of("DRY_GAS_TEMP "))
+			.or(StringParser.of("FRAGMENTATION_METHOD "))
+			.or(StringParser.of("FRAGMENTATION_MODE "))
+			.or(StringParser.of("FRAGMENT_VOLTAGE "))
+			.or(StringParser.of("GAS_PRESSURE "))
+			.or(StringParser.of("HELIUM_FLOW "))
+			.or(StringParser.of("INTERFACE_VOLTAGE "))
+			.or(StringParser.of("IONIZATION "))
+			.or(StringParser.of("IONIZATION_ENERGY "))
+			.or(StringParser.of("IONIZATION_POTENTIAL "))
+			.or(StringParser.of("IONIZATION_VOLTAGE "))
+			.or(StringParser.of("ION_GUIDE_PEAK_VOLTAGE "))
+			.or(StringParser.of("ION_GUIDE_VOLTAGE "))
+			.or(StringParser.of("ION_SOURCE_TEMPERATURE "))
+			.or(StringParser.of("ION_SPRAY_VOLTAGE "))
+			.or(StringParser.of("ISOLATION_WIDTH "))
+			.or(StringParser.of("IT_SIDE_OCTOPOLES_BIAS_VOLTAGE "))
+			.or(StringParser.of("LASER "))
+			.or(StringParser.of("LENS_VOLTAGE "))
+			.or(StringParser.of("MASS_ACCURACY "))
+			.or(StringParser.of("MASS_RANGE_M/Z "))
+			.or(StringParser.of("MATRIX "))
+			.or(StringParser.of("MASS_ACCURACY "))
+			.or(StringParser.of("NEBULIZER "))
+			.or(StringParser.of("NEBULIZING_GAS "))
+			.or(StringParser.of("NEEDLE_VOLTAGE "))
+			.or(StringParser.of("OCTPOLE_VOLTAGE "))
+			.or(StringParser.of("ORIFICE_TEMP "))
+			.or(StringParser.of("ORIFICE_TEMPERATURE "))
+			.or(StringParser.of("ORIFICE_VOLTAGE "))
+			.or(StringParser.of("PEAK_WIDTH "))
+			.or(StringParser.of("PROBE_TIP "))
+			.or(StringParser.of("REAGENT_GAS "))
+			.or(StringParser.of("RESOLUTION "))
+			.or(StringParser.of("RESOLUTION_SETTING "))
+			.or(StringParser.of("RING_VOLTAGE "))
+			.or(StringParser.of("SAMPLE_DRIPPING "))
+			.or(StringParser.of("SCANNING "))
+			.or(StringParser.of("SCANNING_CYCLE "))
+			.or(StringParser.of("SCANNING_RANGE "))
+			.or(StringParser.of("SCAN_RANGE_M/Z "))
+			.or(StringParser.of("SKIMMER_VOLTAGE "))
+			.or(StringParser.of("SOURCE_TEMPERATURE "))
+			.or(StringParser.of("SPRAY_CURRENT "))
+			.or(StringParser.of("SPRAY_VOLTAGE "))
+			.or(StringParser.of("TUBE_LENS_VOLTAGE "))
+		);
+		def("ac_mass_spectrometry",
 			StringParser.of("AC$MASS_SPECTROMETRY")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("ACTIVATION_PARAMETER").trim())
+			.seq(ref("ac_mass_spectrometry_subtag"))
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ACTIVATION_TIME").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ATOM_GUN_CURRENT").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("AUTOMATIC_GAIN_CONTROL").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("BOMBARDMENT").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CAPILLARY_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CAPILLARY_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CDL_SIDE_OCTOPOLES_BIAS_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CDL_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)			
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("COLLISION_ENERGY").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("COLLISION_GAS").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DATAFORMAT").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DATE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DESOLVATION_GAS_FLOW").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DESOLVATION_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DRY_GAS_FLOW").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			).seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DRY_GAS_TEMP").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FRAGMENTATION_METHOD").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FRAGMENTATION_MODE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FRAGMENT_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("GAS_PRESSURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("HELIUM_FLOW").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("INTERFACE_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("IONIZATION").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("IONIZATION_ENERGY").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("IONIZATION_POTENTIAL").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ION_GUIDE_PEAK_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ION_GUIDE_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ION_SOURCE_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ION_SPRAY_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ISOLATION_WIDTH").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("IT_SIDE_OCTOPOLES_BIAS_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("LASER").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("LENS_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("MASS_ACCURACY").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("MASS_RANGE_M/Z").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("MATRIX").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("MASS_ACCURACY").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("NEBULIZER").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("NEBULIZING_GAS").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("NEEDLE_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("OCTPOLE_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ORIFICE_TEMP").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ORIFICE_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ORIFICE_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PEAK_WIDTH").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PROBE_TIP").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("REAGENT_GAS").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RESOLUTION").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RESOLUTION_SETTING").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RING_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SAMPLE_DRIPPING").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SCANNING").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SCANNING_CYCLE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SCANNING_RANGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SCAN_RANGE_M/Z").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SKIMMER_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SOURCE_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SPRAY_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$MASS_SPECTROMETRY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("TUBE_LENS_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.map((List<?> value) -> {
-				// System.out.println(value);
-				List<String> subtag = new ArrayList<String>();
-				for (Object v : value) {
-					if (v == null) continue;
-					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				callback.AC_MASS_SPECTROMETRY(subtag);
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()		
+			.map((List<Pair<String,String>> value) -> {
+				//System.out.println(value);
+				callback.AC_MASS_SPECTROMETRY(value);
 				return value;
 			})
 		);
-			
+ 
 		// 2.4.6 AC$CHROMATOGRAPHY: subtag Description
 		// Experimental Method and Conditions of Chromatographic Separation. Optional
 		// AC$CHROMATOGRAPHY fields should be arranged by the alphabetical order of subtag names.
@@ -1317,180 +989,52 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// N-alkylpyrinium-3-sulfonate based retention time index.
 		// Reference: http://nparc.cisti-icist.nrc-cnrc.gc.ca/eng/view/object/?id=b4db3589-ae0b-497e-af03-264785d7922f
 		// Example: AC$CHROMATOGRAPHY: NAPS_RTI 100	
-		def("ac_chromatography", 
+		def("ac_chromatography_subtag",
+			StringParser.of("ANALYTICAL_TIME ")
+			.or(StringParser.of("CAPILLARY_VOLTAGE "))
+			.or(StringParser.of("COLUMN_NAME "))
+			.or(StringParser.of("COLUMN_PRESSURE "))
+			.or(StringParser.of("COLUMN_TEMPERATURE "))
+			.or(StringParser.of("FLOW_GRADIENT "))
+			.or(StringParser.of("FLOW_RATE "))
+			.or(StringParser.of("INJECTION_TEMPERATURE "))
+			.or(StringParser.of("INTERNAL_STANDARD "))
+			.or(StringParser.of("INTERNAL_STANDARD_MT "))
+			.or(StringParser.of("NAPS_RTI "))
+			.or(StringParser.of("MIGRATION_TIME "))
+			.or(StringParser.of("OVEN_TEMPERATURE "))
+			.or(StringParser.of("PRECONDITIONING "))
+			.or(StringParser.of("RETENTION_INDEX "))
+			.or(StringParser.of("RETENTION_TIME "))
+			.or(StringParser.of("RUNNING_BUFFER "))
+			.or(StringParser.of("RUNNING_VOLTAGE "))
+			.or(StringParser.of("SAMPLE_INJECTION "))
+			.or(StringParser.of("SAMPLING_CONE "))
+			.or(StringParser.of("SHEATH_LIQUID "))
+			.or(StringParser.of("SOLVENT "))
+			.or(StringParser.of("TIME_PROGRAM "))
+			.or(StringParser.of("TRANSFARLINE_TEMPERATURE "))
+			.or(StringParser.of("WASHING_BUFFER "))
+		);
+		def("ac_chromatography",
 			StringParser.of("AC$CHROMATOGRAPHY")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("ANALYTICAL_TIME").trim())
+			.seq(ref("ac_chromatography_subtag"))
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("CAPILLARY_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("COLUMN_NAME").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("COLUMN_PRESSURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("COLUMN_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FLOW_GRADIENT").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FLOW_RATE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("INJECTION_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("INTERNAL_STANDARD").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("INTERNAL_STANDARD_MT").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("NAPS_RTI").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("MIGRATION_TIME").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("OVEN_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PRECONDITIONING").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RETENTION_INDEX").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RETENTION_TIME").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RUNNING_BUFFER").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RUNNING_VOLTAGE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SAMPLE_INJECTION").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SAMPLING_CONE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SHEATH_LIQUID").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("SOLVENT").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).plus().optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("TIME_PROGRAM").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("TRANSFARLINE_TEMPERATURE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("AC$CHROMATOGRAPHY")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("WASHING_BUFFER").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.map((List<?> value) -> {
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()
+			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
-				List<String> subtag = new ArrayList<String>();
-				// the first 11 lines go directly to subtag if existing
-				for (Object v : value.subList(0,20)) {
-					if (v == null) continue;
-					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				// 12th element of parse tree might be AC$CHROMATOGRAPHY: SOLVENT with multiple lines
-				// need to be unnested
-				if (value.get(21) != null) {
-					for (Object v : (List<?>) value.get(21)) {
-						subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-					}
-				}
-				for (Object v : value.subList(22,value.size())) {
-					if (v == null) continue;
-					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				callback.AC_MASS_SPECTROMETRY(subtag);
+				callback.AC_CHROMATOGRAPHY(value);
 				return value;
-			})			
+			})
 		);
-		
+
+
 		// 2.5.1 MS$FOCUSED_ION: subtag Description
 		// Information of Precursor or Molecular Ion. Optional
 		// MS$FOCUSED_ION fields should be arranged by the alphabetical order of subtag names.
@@ -1523,6 +1067,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+,
 		// [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-,
 		// [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-. Cross-reference to mzOntology: Precursor type [MS: 1000792]
+		
 		def("precursor_type",
 			StringParser.of("[M]+*")
 			.or(StringParser.of("[M]++"))
@@ -1552,6 +1097,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[M+H-C6H10O4]+"))
 			.or(StringParser.of("[M+H-C6H10O5]+"))
 			.or(StringParser.of("[M+H-C12H20O9]+"))
+			.or(StringParser.of("[M-H]+"))
+			.or(StringParser.of("[M-OH]+"))
 			
 			.or(StringParser.of("[M-3]+,[M-H2O+H]+"))
 			
@@ -1577,66 +1124,53 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[2M-H-C6H10O5]-"))
 			.or(StringParser.of("[M-H-CO2-2HF]-"))
 		);
+		def ("ms_focused_ion_subtag",
+			StringParser.of("BASE_PEAK ")
+			.or(StringParser.of("DERIVATIVE_FORM "))
+			.or(StringParser.of("DERIVATIVE_MASS "))
+			.or(StringParser.of("DERIVATIVE_TYPE "))
+			.or(StringParser.of("FULL_SCAN_FRAGMENT_ION_PEAK "))
+			.or(StringParser.of("PRECURSOR_M/Z "))
+		);
 		
-		def("ms_focused_ion", 
+		def("ms_focused_ion",
 			StringParser.of("MS$FOCUSED_ION")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("BASE_PEAK").trim())
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("MS$FOCUSED_ION")
+			.seq(StringParser.of("ION_TYPE ")).pick(2)
+			.seq(ref("precursor_type"))
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.or(
+				StringParser.of("MS$FOCUSED_ION")
 				.seq(ref("tagsep"))
-				.seq(StringParser.of("DERIVATIVE_FORM").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DERIVATIVE_MASS").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("DERIVATIVE_TYPE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FULL_SCAN_FRAGMENT_ION_PEAK"))
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("ION_TYPE "))
+				.seq(StringParser.of("PRECURSOR_TYPE ")).pick(2)
 				.seq(ref("precursor_type"))
-				.seq(Token.NEWLINE_PARSER).optional()
+				.map((List<String> value) -> {
+					return Pair.of(value.get(0).trim(), value.get(1));
+				})
+				.seq(Token.NEWLINE_PARSER).pick(0)
 			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
+			.or(
+				StringParser.of("MS$FOCUSED_ION")
 				.seq(ref("tagsep"))
-				.seq(StringParser.of("PRECURSOR_M/Z").trim())
+				.seq(ref("ms_focused_ion_subtag"))
+				.seq(Token.NEWLINE_PARSER.not()).pick(2)
 				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
+				.map((List<String> value) -> {
+					return Pair.of(value.get(0).trim(), value.get(1));
+				})
+				.seq(Token.NEWLINE_PARSER).pick(0)
 			)
-			.seq(StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PRECURSOR_TYPE").trim())
-				.seq(ref("precursor_type"))
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.map((List<?> value) -> {
-				// System.out.println(value);
-				List<String> subtag = new ArrayList<String>();
-				for (Object v : value) {
-					if (v == null) continue;
-					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				callback.MS_FOCUSED_ION(subtag);
+			.plus()
+			.map((List<Pair<String,String>> value) -> {
+				//System.out.println(value);
+				callback.MS_FOCUSED_ION(value);
 				return value;
 			})
 		);
+
 		
 		// 2.5.3 MS$DATA_PROCESSING: subtag
 		// Data Processing Method of Peak Detection. Optional
@@ -1647,56 +1181,33 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.5.3 Subtag: WHOLE
 		// Whole Process in Single Method / Software.
 		// Example: MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
+		def ("ms_data_processing_subtag",
+			StringParser.of("CHARGE_DECONVOLUTION ")
+			.or(StringParser.of("DEPROFILE "))
+			.or(StringParser.of("FIND_PEAK "))
+			.or(StringParser.of("IGNORE "))
+			.or(StringParser.of("INTENSITY CUTOFF "))
+			.or(StringParser.of("REANALYZE "))
+			.or(StringParser.of("RECALIBRATE "))
+			.or(StringParser.of("RELATIVE_M/Z "))
+			.or(StringParser.of("REMOVE_PEAK "))
+			.or(StringParser.of("WHOLE "))
+		);
 		def("ms_data_processing", 
 			StringParser.of("MS$DATA_PROCESSING")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("DEPROFILE").trim())
+			.seq(ref("ms_data_processing_subtag"))
+			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-			.seq(Token.NEWLINE_PARSER).optional()
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("FIND_PEAK").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("IGNORE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("REANALYZE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RECALIBRATE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("RELATIVE_M/Z").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.seq(StringParser.of("MS$DATA_PROCESSING")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("WHOLE").trim())
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.seq(Token.NEWLINE_PARSER).optional()
-			)
-			.map((List<?> value) -> {
-				// System.out.println(value);
-				List<String> subtag = new ArrayList<String>();
-				for (Object v : value) {
-					if (v == null) continue;
-					subtag.add(((List<String>) v).get(2) + " " + ((List<String>) v).get(3));
-				}
-				callback.MS_DATA_PROCESSING(subtag);
+			.map((List<String> value) -> {
+				return Pair.of(value.get(0).trim(), value.get(1));
+			})
+			.seq(Token.NEWLINE_PARSER).pick(0)
+			.plus()
+			
+			.map((List<Pair<String,String>> value) -> {
+				//System.out.println(value);
+				callback.MS_DATA_PROCESSING(value);
 				return value;
 			})
 		);
@@ -1729,36 +1240,36 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("PK$ANNOTATION")
 			.seq(ref("tagsep"))
 			.seq(
-				CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<>"))
+				CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
 				.plus()
 				.flatten()
 				.trim(CharacterParser.of(' '))
-				.map((String value) -> {
-					//System.out.println(value);
-					callback.ADD_PK_ANNOTATION_HEADER_ITEM(value);
+				.plus()
+				.map((List<String> value) -> {
+//					System.out.println(value);
+					callback.PK_ANNOTATION_HEADER(value);
 					return value;						
 				})
-				.plus()
 				.seq(Token.NEWLINE_PARSER)
 			)
 			.seq(
 				StringParser.of("  ")
-				.map((String value) -> {
-					//System.out.println(value);
-					callback.ADD_PK_ANNOTATION_LINE();
-					return value;						
-				})
+//				.map((String value) -> {
+//					//System.out.println(value);
+//					callback.ADD_PK_ANNOTATION_LINE();
+//					return value;						
+//				})
 				.seq(
-					CharacterParser.word().or(CharacterParser.anyOf("-+=,()[]{}/.:$^'`_*?<>"))
+					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
 					.plus()
 					.flatten()
 					.trim(CharacterParser.of(' '))
-					.map((String value) -> {
-						//System.out.println(value);
-						callback.ADD_PK_ANNOTATION_ITEM(value);
+					.plus()
+					.map((List<String> value) -> {
+//						System.out.println(value);
+						callback.PK_ANNOTATION_ADD_LINE(value);
 						return value;						
 					})
-					.plus()
 					.seq(Token.NEWLINE_PARSER)
 					// call a Continuation Parser to validate the count of PK$ANNOTATION items per line
 					.callCC((Function<Context, Result> continuation, Context context) -> {
@@ -1783,10 +1294,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 				)
 				.plus()
 			)
-//			.map((List<?> value) -> {
-//				System.out.println(value);
-//				return value;						
-//			})
 		);
 		
 		def("pk_num_peak",
@@ -1801,10 +1308,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 	        	})
 			)
 			.seq(Token.NEWLINE_PARSER)
-//			.map((List<?> value) -> {
-//				System.out.println(value.toString());
-//				return value;						
-//			})
 		);
 		
 		def("pk_peak",
@@ -1814,37 +1317,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER)
 			.seq(
 				StringParser.of("  ")
-				.map((String value) -> {
-					//System.out.println(value);
-					callback.ADD_PK_PEAK_LINE();
-					return value;						
+				.seq(
+					ref("number").trim()
+				)
+				.pick(1)
+				.seq(
+					ref("number").trim()
+				)
+				.seq(
+					ref("number")
+				)
+				.map((List<String> value) -> {
+//					System.out.println(value);
+					List<Double> list	= new ArrayList<Double>();
+					for(String val : value)
+						list.add(Double.parseDouble(val));
+					callback.PK_PEAK_ADD_LINE(list);
+					return value;
 				})
-				.seq(
-					ref("number")
-					.map((String value) -> {
-						Double d = Double.parseDouble(value);
-			        	callback.ADD_PK_PEAK_ITEM(d);
-			        	return value;
-			        })
-				)
-				.seq(CharacterParser.whitespace())
-				.seq(
-					ref("number")
-					.map((String value) -> {
-						Double d = Double.parseDouble(value);
-				       	callback.ADD_PK_PEAK_ITEM(d);
-				       	return value;
-				    })
-				)
-				.seq(CharacterParser.whitespace())
-				.seq(
-					ref("number")
-					.map((String value) -> {
-						Double d = Double.parseDouble(value);
-						callback.ADD_PK_PEAK_ITEM(d);
-					    return value;
-					})
-				)
 				.seq(Token.NEWLINE_PARSER).plus()
 			)
 			// call a Continuation Parser to validate the number of peaks in the peaklist
@@ -1859,14 +1349,29 @@ public class RecordParserDefinition extends GrammarDefinition {
 						sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
 						return context.failure(sb.toString());
 					}
+					
+					List<Ion> ions = new ArrayList<Ion>();
+					for (List<Double> peak_line :  pk_peak) {
+						ions.add(new Ion(peak_line.get(0), peak_line.get(1)));
+					}
+					Splash splashFactory = SplashFactory.create();
+					Spectrum spectrum = new SpectrumImpl(ions, SpectraType.MS);
+					String splash_from_peaks = splashFactory.splashIt(spectrum);
+					String splash_from_record = callback.PK_SPLASH();
+					if (!splash_from_peaks.equals(splash_from_record)) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("SPLASH from record file does not match SPLASH calculated from peaklist. ");
+						sb.append(splash_from_record + " defined in record file, but " + splash_from_peaks + " calculated from peaks.\n");
+						return context.failure(sb.toString());
+					}
 				}
 				return r; 
 			})
-//				.map((List<?> value) -> {
-//					System.out.println(value);
-//					return value;						
-//				})
-			);
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
 	}
 
 }

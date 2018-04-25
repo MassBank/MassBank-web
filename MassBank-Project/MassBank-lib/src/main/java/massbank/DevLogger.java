@@ -23,9 +23,12 @@ public class DevLogger {
 	
 	public DevLogger() {
 		try {
-			parse = new PrintStream(new FileOutputStream("/home/rmeier/parseLog.txt",true));
-			validate = new PrintStream(new FileOutputStream("/home/rmeier/validateLog.txt",true));
-			db = new PrintStream(new FileOutputStream("/home/rmeier/dbLog.txt",true));
+//			parse = new PrintStream(new FileOutputStream("/home/rmeier/parseLog.txt",true));
+//			validate = new PrintStream(new FileOutputStream("/home/rmeier/validateLog.txt",true));
+//			db = new PrintStream(new FileOutputStream("/home/rmeier/dbLog.txt",true));
+			parse = new PrintStream(new FileOutputStream("/Massbank/logs/parseLog.txt",true));
+			validate = new PrintStream(new FileOutputStream("/Massbank/logs/validateLog.txt",true));
+			db = new PrintStream(new FileOutputStream("/Massbank/logs/dbLog.txt",true));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

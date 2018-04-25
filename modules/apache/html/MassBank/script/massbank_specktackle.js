@@ -160,43 +160,7 @@ function loadData() {
 		} 
 		// if no peak list is specified try to get peak list for a component specified by it's id
 		else {
-			// try to get id from the url
-			var urlVars = getUrlVars();
-			var idURL = urlVars["id"];
-			var dsnURL = urlVars["dsn"];
-			if (idURL !== undefined) {
-				id = idURL;
-			}
-			if (dsnURL !== undefined) {
-				dsn = dsnURL;
-			}
-			if (id !== "" && dsn !== "") {
-				var jqxhr = $.get("../cgi-bin/GetData.cgi?id="+id+"&dsn="+dsn,"text");
-				jqxhr.done(function (data) {
-					spectrum["spectrumId"] = urlVars["id"];
-					dataLines = data.split("\n");
-					for (index = 0; index < dataLines.length; ++index) {
-						if (dataLines[index]) {
-							line = dataLines[index].split("\t");
-							spectrum["peaks"][index] = {"mz":parseFloat(line[0]),"intensity":parseFloat(line[2])};
-							if (index == 0) {
-								mzStart = parseFloat(line[0]);
-								mzStop = parseFloat(line[2]);
-							} else {
-								if (mzStart > parseFloat(line[0])) {
-									mzStart = parseFloat(line[0]);
-								}
-								if (mzStop < parseFloat(line[0])) {
-									mzStop = parseFloat(line[0]);
-								}
-							}
-						}
-					}
-					spectrum["mzStart"] = mzStart;
-					spectrum["mzStop"] = mzStop;
-				});
-				deferreds.push(jqxhr);
-			}
+			// not supported
 		}
 		$.when.apply($,deferreds).done(function () {
 			loadSpectrum(spectrum);

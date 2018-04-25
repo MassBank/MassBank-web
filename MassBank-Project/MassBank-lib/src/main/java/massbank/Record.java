@@ -1,11 +1,13 @@
 package massbank;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -18,125 +20,178 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import net.sf.jniinchi.INCHI_RET;
 
 public class Record {
-	private Map<String, Object> data = new HashMap<>();
-
-	public Record() {
+	private final String contributor;
+	
+	private String accession;
+	private String record_title;
+	private LocalDate date;
+	private String authors;
+	private String license;
+	private String copyright;
+	private String publication;
+	private List<String> comment;
+	private List<String> ch_name;
+	private List<String> ch_compound_class;
+	private IMolecularFormula ch_formula;
+	private Double ch_exact_mass;
+	private IAtomContainer ch_smiles;
+	private IAtomContainer ch_iupac;
+	private List<Pair<String, String>> ch_link;
+	private String sp_scientific_name;
+	private String sp_lineage;
+	private List<Pair<String, String>> sp_link;
+	private List<String> sp_sample;
+	private String ac_instrument;
+	private String ac_instrument_type;
+	private String ac_mass_spectrometry_ms_type;
+	private String ac_mass_spectrometry_ion_mode;
+	private List<Pair<String, String>> ac_mass_spectrometry;
+	private List<Pair<String, String>> ac_chromatography;
+	private List<Pair<String, String>> ms_focused_ion;
+	private List<Pair<String, String>> ms_data_processing;
+	private String PK_SPLASH;
+	private List<String> PK_ANNOTATION_HEADER;
+	private final List<List<String>> PK_ANNOTATION;
+	private int PK_NUM_PEAK;
+	private final List<List<Double>> PK_PEAK;
+	
+	public Record(String contributor) {
+		this.contributor	= contributor;
+		
+		// set default values for optional fields
+		copyright				= null;
+		publication				= null;
+		comment					= new ArrayList<String>();
+		ch_link					= new ArrayList<Pair<String, String>>();
+		sp_scientific_name		= null;
+		sp_lineage				= null;
+		sp_link					= new ArrayList<Pair<String, String>>();
+		sp_sample				= new ArrayList<String>();
+		ac_mass_spectrometry	= new ArrayList<Pair<String, String>>();
+		ac_chromatography		= new ArrayList<Pair<String, String>>();
+		ms_focused_ion			= new ArrayList<Pair<String, String>>();
+		ms_data_processing		= new ArrayList<Pair<String, String>>();
+		PK_ANNOTATION			= new ArrayList<List<String>>();
+		
+		// set default values for mandatory fields
+		PK_NUM_PEAK				= -1;
+		PK_PEAK					= new ArrayList<List<Double>>();
 	}
-
+	
+	public void persist() throws SQLException {
+		DatabaseManager db  = DatabaseManager.create();
+		if (db != null) {
+			db.persistAccessionFile(this);
+		} else {
+			DevLogger.printToDBLog("Could not persist file because no connction to the database could be established" );
+		}
+	}
+	public String CONTRIBUTOR() {
+		return contributor;
+	}
+	
 	public String ACCESSION() {
-		return (String) data.get("ACCESSION");
+		return accession;
 	}
-
 	public void ACCESSION(String value) {
-		data.put("ACCESSION", value);
+		accession	= value;
 	}
-
+	
 	public String RECORD_TITLE() {
-		return (String) data.get("RECORD_TITLE");
+		return record_title;
 	}
-
 	public void RECORD_TITLE(String value) {
-		data.put("RECORD_TITLE", value);
+		this.record_title = value;
 	}
-
+	
 	public LocalDate DATE() {
-		return (LocalDate) data.get("DATE");
+		return date;
 	}
-
 	public void DATE(LocalDate value) {
-		data.put("DATE", value);
+		date=value;
 	}
-
+	
 	public String AUTHORS() {
-		return (String) data.get("AUTHORS");
+		return authors;
 	}
-
 	public void AUTHORS(String value) {
-		data.put("AUTHORS", value);
+		authors=value;
 	}
-
+	
 	public String LICENSE() {
-		return (String) data.get("LICENSE");
+		return license;
 	}
-
 	public void LICENSE(String value) {
-		data.put("LICENSE", value);
+		license=value;
 	}
-
+	
 	public String COPYRIGHT() {
-		return (String) data.get("COPYRIGHT");
+		return copyright;
 	}
-
 	public void COPYRIGHT(String value) {
-		data.put("COPYRIGHT", value);
+		copyright= value;
 	}
-
+	
 	public String PUBLICATION() {
-		return (String) data.get("PUBLICATION");
+		return publication;
 	}
-
 	public void PUBLICATION(String value) {
-		data.put("PUBLICATION", value);
+		publication=value;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public List<String> COMMENT() {
-		return (List<String>) data.get("COMMENT");
+		return comment;
 	}
-
 	public void COMMENT(List<String> value) {
-		data.put("COMMENT", value);
+		comment=value;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public List<String> CH_NAME() {
-		return (List<String>) data.get("CH_NAME");
+		return ch_name;
 	}
-
 	public void CH_NAME(List<String> value) {
-		data.put("CH_NAME", value);
+		ch_name=value;
 	}
-
-	public String CH_COMPOUND_CLASS() {
-		return (String) data.get("CH_COMPOUND_CLASS");
+	
+	public List<String> CH_COMPOUND_CLASS() {
+		return ch_compound_class;
 	}
-
-	public void CH_COMPOUND_CLASS(String value) {
-		data.put("CH_COMPOUND_CLASS", value);
+	public void CH_COMPOUND_CLASS(List<String> value) {
+		ch_compound_class=value;
 	}
-
+	
 	public String CH_FORMULA() {
-		return MolecularFormulaManipulator.getString((IMolecularFormula) data.get("CH_FORMULA"));
+		return MolecularFormulaManipulator.getString(ch_formula);
 	}
-
+	public IMolecularFormula CH_FORMULA1() {
+		return ch_formula;
+	}
 	public void CH_FORMULA(IMolecularFormula value) {
-		data.put("CH_FORMULA", value);
+		ch_formula=value;
 	}
-
+	
 	public Double CH_EXACT_MASS() {
-		return (Double) data.get("CH_EXACT_MASS");
+		return ch_exact_mass;
 	}
-
 	public void CH_EXACT_MASS(Double value) {
-		data.put("CH_EXACT_MASS", value);
+		ch_exact_mass=value;
 	}
-
+	
 	public String CH_SMILES() throws CDKException {
-		if (((IAtomContainer) data.get("CH_SMILES")).isEmpty())
-			return "N/A";
+		if (ch_smiles.isEmpty()) return "N/A";
 		SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Isomeric);
-		return smigen.create((IAtomContainer) data.get("CH_SMILES"));
+		return smigen.create(ch_smiles);
 	}
-
+	public IAtomContainer CH_SMILES1() {
+		return ch_smiles;
+	}
 	public void CH_SMILES(IAtomContainer value) {
-		data.put("CH_SMILES", value);
+		ch_smiles=value;
 	}
-
+	
 	public String CH_IUPAC() throws CDKException {
-		if (((IAtomContainer) data.get("CH_IUPAC")).isEmpty())
-			return "N/A";
-		InChIGenerator gen = InChIGeneratorFactory.getInstance()
-				.getInChIGenerator((IAtomContainer) data.get("CH_IUPAC"));
+		if (ch_iupac.isEmpty()) return "N/A";
+		InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(ch_iupac);
 		INCHI_RET ret = gen.getReturnStatus();
 		if (ret == INCHI_RET.WARNING) {
 			// Structure generated, but with warning message
@@ -148,199 +203,140 @@ public class Record {
 		}
 		return gen.getInchi();
 	}
-
+	public IAtomContainer CH_IUPAC1() {
+		return ch_smiles;
+	}
 	public void CH_IUPAC(IAtomContainer value) {
-		data.put("CH_IUPAC", value);
+		ch_iupac=value;
 	}
-
-	@SuppressWarnings("unchecked")
-	public List<String> CH_LINK() {
-		return (List<String>) data.get("CH_LINK");
+	
+	public List<Pair<String, String>> CH_LINK() {
+		return ch_link;
 	}
-
-	public void CH_LINK(List<String> value) {
-		data.put("CH_LINK", value);
+	public void CH_LINK(List<Pair<String, String>> value) {
+		ch_link=value;
 	}
 
 	public String SP_SCIENTIFIC_NAME() {
-		return (String) data.get("SP_SCIENTIFIC_NAME");
+		return sp_scientific_name;
 	}
-
 	public void SP_SCIENTIFIC_NAME(String value) {
-		data.put("SP_SCIENTIFIC_NAME", value);
+		sp_scientific_name=value;
 	}
-
+	
 	public String SP_LINEAGE() {
-		return (String) data.get("SP_LINEAGE");
+		return sp_lineage;
 	}
-
 	public void SP_LINEAGE(String value) {
-		data.put("SP_LINEAGE", value);
+		sp_lineage=value;
+	}
+ 
+	public List<Pair<String, String>> SP_LINK() {
+		return sp_link;
+	}
+	public void SP_LINK(List<Pair<String, String>>  value) {
+		sp_link=value;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<String> SP_LINK() {
-		return (List<String>) data.get("SP_LINK");
-	}
-
-	public void SP_LINK(List<String> value) {
-		data.put("SP_LINK", value);
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<String> SP_SAMPLE() {
-		return (List<String>) data.get("SP_SAMPLE");
+		return sp_sample;
 	}
-
 	public void SP_SAMPLE(List<String> value) {
-		data.put("SP_SAMPLE", value);
-
+		sp_sample=value;
 	}
-
+	
 	public String AC_INSTRUMENT() {
-		return (String) data.get("AC_INSTRUMENT");
+		return ac_instrument;
 	}
-
 	public void AC_INSTRUMENT(String value) {
-		data.put("AC_INSTRUMENT", value);
+		ac_instrument=value;
 	}
 
-	public List<?> AC_INSTRUMENT_TYPE() {
-		return (List<?>) data.get("AC_INSTRUMENT_TYPE");
+	public String AC_INSTRUMENT_TYPE() {
+		return ac_instrument_type;
 	}
-
-	public void AC_INSTRUMENT_TYPE(List<?> value) {
-		data.put("AC_INSTRUMENT_TYPE", value);
+	public void AC_INSTRUMENT_TYPE(String value) {
+		this.ac_instrument_type	= value;
 	}
-
+	
 	public String AC_MASS_SPECTROMETRY_MS_TYPE() {
-		return (String) data.get("AC_MASS_SPECTROMETRY_MS_TYPE");
+		return ac_mass_spectrometry_ms_type;
 	}
-
 	public void AC_MASS_SPECTROMETRY_MS_TYPE(String value) {
-		data.put("AC_MASS_SPECTROMETRY_MS_TYPE", value);
+		ac_mass_spectrometry_ms_type=value;
 	}
-
+	
 	public String AC_MASS_SPECTROMETRY_ION_MODE() {
-		return (String) data.get("AC_MASS_SPECTROMETRY_ION_MODE");
+		return ac_mass_spectrometry_ion_mode;
 	}
-
 	public void AC_MASS_SPECTROMETRY_ION_MODE(String value) {
-		data.put("AC_MASS_SPECTROMETRY_ION_MODE", value);
+		ac_mass_spectrometry_ion_mode=value;
+	}
+	
+	public List<Pair<String, String>> AC_MASS_SPECTROMETRY() {
+		return ac_mass_spectrometry;
+	}
+	public void AC_MASS_SPECTROMETRY(List<Pair<String, String>> value) {
+		ac_mass_spectrometry=value;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<String> AC_MASS_SPECTROMETRY() {
-		return (List<String>) data.get("AC_MASS_SPECTROMETRY");
+	public List<Pair<String, String>> AC_CHROMATOGRAPHY() {
+		return ac_chromatography;
 	}
-
-	public void AC_MASS_SPECTROMETRY(List<String> value) {
-		data.put("AC_MASS_SPECTROMETRY", value);
+	public void AC_CHROMATOGRAPHY(List<Pair<String, String>> value) {
+		ac_chromatography=value;
 	}
-
-	@SuppressWarnings("unchecked")
-	public List<String> AC_CHROMATOGRAPHY() {
-		return (List<String>) data.get("AC_CHROMATOGRAPHY");
+	
+	public List<Pair<String, String>> MS_FOCUSED_ION() {
+		return ms_focused_ion;
 	}
-
-	public void AC_CHROMATOGRAPHY(List<String> value) {
-		data.put("AC_CHROMATOGRAPHY", value);
+	public void MS_FOCUSED_ION(List<Pair<String, String>> value) {
+		ms_focused_ion=value;
 	}
-
-	@SuppressWarnings("unchecked")
-	public List<String> MS_FOCUSED_ION() {
-		return (List<String>) data.get("MS_FOCUSED_ION");
+	
+	public List<Pair<String, String>> MS_DATA_PROCESSING() {
+		return ms_data_processing;
 	}
-
-	public void MS_FOCUSED_ION(List<String> value) {
-		data.put("MS_FOCUSED_ION", value);
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<String> MS_DATA_PROCESSING() {
-		return (List<String>) data.get("MS_DATA_PROCESSING");
-	}
-
-	public void MS_DATA_PROCESSING(List<String> value) {
-		data.put("MS_DATA_PROCESSING", value);
+	public void MS_DATA_PROCESSING(List<Pair<String, String>> value) {
+		ms_data_processing=value;
 	}
 
 	public String PK_SPLASH() {
-		return (String) data.get("PK_SPLASH");
+		return PK_SPLASH;
 	}
-
 	public void PK_SPLASH(String value) {
-		data.put("PK_SPLASH", value);
+		PK_SPLASH	= value;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<String> PK_ANNOTATION_HEADER() {
-		return (List<String>) data.get("PK_ANNOTATION_HEADER");
+		return PK_ANNOTATION_HEADER;
 	}
-	public void ADD_PK_ANNOTATION_HEADER_ITEM(String value) {
-		List<String> pk_annotation_header = PK_ANNOTATION_HEADER();
-		if (pk_annotation_header == null) {
-			pk_annotation_header = new ArrayList<>();
-			data.put("PK_ANNOTATION_HEADER", pk_annotation_header);
-		}
-		pk_annotation_header.add(value);
+	public void PK_ANNOTATION_HEADER(List<String> value) {
+		PK_ANNOTATION_HEADER	= value;
 	}
 
-	@SuppressWarnings("unchecked")
 	// PK_ANNOTATION is a two-dimensional List
 	public List<List<String>> PK_ANNOTATION() {
-		return (List<List<String>>) data.get("PK_ANNOTATION");
+		return PK_ANNOTATION;
 	}
-	public void ADD_PK_ANNOTATION_LINE() {
-		List<List<String>> pk_annotation = PK_ANNOTATION();
-		if (pk_annotation == null) {
-			ArrayList<ArrayList<String>> new_pk_annotation = new ArrayList<ArrayList<String>>();
-			data.put("PK_ANNOTATION", new_pk_annotation);
-			pk_annotation = PK_ANNOTATION();
-		}
-		pk_annotation.add(new ArrayList<String>());
-	}
-
-	public void ADD_PK_ANNOTATION_ITEM(String value) {
-		List<List<String>> pk_annotation = PK_ANNOTATION();
-		if (pk_annotation == null) {
-			ADD_PK_ANNOTATION_LINE();
-			pk_annotation = PK_ANNOTATION();
-		}
-		pk_annotation.get(pk_annotation.size() - 1).add(value);
+	public void PK_ANNOTATION_ADD_LINE(List<String> value) {
+		PK_ANNOTATION.add(value);
 	}
 
 	public Integer PK_NUM_PEAK() {
-		return (Integer) data.get("PK_NUM_PEAK");
+		return PK_NUM_PEAK;
 	}
 	public void PK_NUM_PEAK(Integer value) {
-		data.put("PK_NUM_PEAK", value);
+		PK_NUM_PEAK	= value;
 	}
 
-	@SuppressWarnings("unchecked")
 	// PK_PEAK is a two-dimensional List
 	public List<List<Double>> PK_PEAK() {
-		return (List<List<Double>>) data.get("PK_PEAK");
+		return PK_PEAK;
 	}
-	public void ADD_PK_PEAK_LINE() {
-		List<List<Double>> pk_peak = PK_PEAK();
-		if (pk_peak == null) {
-			ArrayList<ArrayList<Double>> new_pk_peak = new ArrayList<ArrayList<Double>>();
-			data.put("PK_PEAK", new_pk_peak);
-			pk_peak = PK_PEAK();
-		}
-		pk_peak.add(new ArrayList<Double>());
+	public void PK_PEAK_ADD_LINE(List<Double> value) {
+		PK_PEAK.add(value);
 	}
-
-	public void ADD_PK_PEAK_ITEM(Double value) {
-		List<List<Double>> pk_peak = PK_PEAK();
-		if (pk_peak == null) {
-			ADD_PK_PEAK_LINE();
-			pk_peak = PK_PEAK();
-		}
-		pk_peak.get(pk_peak.size() - 1).add(value);
-	}
-	
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -378,16 +374,16 @@ public class Record {
 			sb.append("CH$IUPAC: null\n");
 		}
 		if (CH_LINK() != null) {
-			for (String link : CH_LINK())
-				sb.append("CH$LINK: " + link + "\n");
+			for (Pair<String,String> link : CH_LINK())
+				sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		}
 		if (SP_SCIENTIFIC_NAME() != null)
 			sb.append("SP$SCIENTIFIC_NAME: " + SP_SCIENTIFIC_NAME() + "\n");
 		if (SP_LINEAGE() != null)
 			sb.append("SP$LINEAGE: " + SP_LINEAGE() + "\n");
 		if (SP_LINK() != null) {
-			for (String link : SP_LINK())
-				sb.append("SP$LINK: " + link + "\n");
+			for (Pair<String,String> link : SP_LINK())
+				sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		}
 		if (SP_SAMPLE() != null) {
 			for (String sample : SP_SAMPLE())
@@ -398,20 +394,20 @@ public class Record {
 		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "\n");
 		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "\n");
 		if (AC_MASS_SPECTROMETRY() != null) {
-			for (String link : AC_MASS_SPECTROMETRY())
-				sb.append("AC$MASS_SPECTROMETRY: " + link + "\n");
+			for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
+				sb.append("AC$MASS_SPECTROMETRY: " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "\n");
 		}
 		if (AC_CHROMATOGRAPHY() != null) {
-			for (String link : AC_CHROMATOGRAPHY())
-				sb.append("AC$CHROMATOGRAPHY: " + link + "\n");
+			for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
+				sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "\n");
 		}
 		if (MS_FOCUSED_ION() != null) {
-			for (String link : MS_FOCUSED_ION())
-				sb.append("MS$FOCUSED_ION: " + link + "\n");
+			for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
+				sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "\n");
 		}
 		if (MS_DATA_PROCESSING() != null) {
-			for (String link : MS_DATA_PROCESSING())
-				sb.append("MS$DATA_PROCESSING: " + link + "\n");
+			for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
+				sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "\n");
 		}
 		sb.append("PK$SPLASH: " + PK_SPLASH() + "\n");
 		
@@ -450,5 +446,22 @@ public class Record {
 
 		return sb.toString();
 	}
-
+	public static class Structure{
+		public final String CH_SMILES;
+		public final String CH_IUPAC;
+		public Structure(String CH_SMILES, String CH_IUPAC) {
+			this.CH_SMILES	= CH_SMILES;
+			this.CH_IUPAC	= CH_IUPAC;
+		}
+	}
+	public static class Contributor{
+		public final String ACRONYM;
+		public final String SHORT_NAME;
+		public final String FULL_NAME;
+		public Contributor(String ACRONYM, String SHORT_NAME, String FULL_NAME) {
+			this.ACRONYM	= ACRONYM;
+			this.SHORT_NAME	= SHORT_NAME;
+			this.FULL_NAME	= FULL_NAME;
+		}
+	}
 }

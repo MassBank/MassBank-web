@@ -1,3 +1,4 @@
+<%@page import="massbank.DatabaseManager"%>
 <%@page import="massbank.StructureToSvgStringGenerator"%>
 <%@page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData"%>
 
@@ -43,6 +44,7 @@
 <%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.ResultList" %>
 <%@ page import="massbank.ResultRecord" %>
+<%@ page import="massbank.Record" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
 <%@ include file="./Common.jsp"%>
@@ -144,6 +146,7 @@
 	String exec = (request.getParameter("exec") != null) ? (String)request.getParameter("exec") : "";
 	while ( names.hasMoreElements() ) {
 		String key = (String)names.nextElement();
+		
 		if ( exec.equals("sort") || exec.equals("page")) {
 			// ソートまたはページ変更の場合はチェックボックスの値を保持しない
 			if ( key.equals("chkAll") || key.equals("pid") || key.equals("id") ) {
@@ -842,8 +845,6 @@
 	
 	if ( list.getResultNum() > 0 ) {
 		int[] pageIndex = list.getDispPageIndex(totalPage, pageNo);
-		
-		
 		//-------------------------------------
 		// ページリンク（上部）タグ出力
 		//-------------------------------------
@@ -1000,6 +1001,7 @@
 
 			// 化学構造式表示情報を一括取得する
 			ResultRecord rec;
+			DatabaseManager dbManager	= DatabaseManager.create();
 			for (int i=startIndex; i<=endIndex; i++) {
 				rec = list.getRecord(i);
 				// ツリー表示用ID、およびイメージ名生成
@@ -1033,9 +1035,10 @@
 				// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
 				else if( refQuick || refRecIndex || refStruct ) {
 					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
-					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
+					//url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
+					String contributor	= dbManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
+					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + contributor;
 				}
-				
 				
 				//------------------------------------
 				// ツリータグ出力
@@ -1093,8 +1096,10 @@
 					String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
 					//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
 					String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+					
+					Record.Structure structure	= dbManager.getStructureOfAccession(accession);
 					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
-							databaseName, accession, tmpFileFolder, tmpUrlFolder,
+							accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
 							80, 250, 436
 					);
 					
@@ -1177,6 +1182,7 @@
 					out.println( "</table>" );
 				}
 			}
+			dbManager.closeConnection();
 			out.println( "<a name=\"resultsEnd\"></a>" );
 			
 			
