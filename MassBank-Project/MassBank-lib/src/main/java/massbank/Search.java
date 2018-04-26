@@ -67,7 +67,7 @@ public class Search {
 	public Search(HttpServletRequest request, Connection con) {
 		this.request = request;	
 		this.con = con;
-		new DevLogger();
+//		new DevLogger();
 		execute();
 	}
 	
@@ -131,15 +131,15 @@ public class Search {
 					sql = "SELECT RECORD_TITLE, AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS "
 							+ "FROM RECORD R, COMPOUND C "
 							+ "WHERE R.ACCESSION = '" + resScore.id + "' AND R.CH = C.ID";
-					DevLogger.printToDBLog(sql);
+//					//DevLogger.printToDBLog(sql);
 				}
 				else if ( isInteg ) {
 					sql = "select NAME, ION, ID from PARENT_SPECTRUM where SPECTRUM_NO=" + resScore.id;
-					DevLogger.printToDBLog(sql);
+//					//DevLogger.printToDBLog(sql);
 				}
 				else {
 					sql = "select RECORD_TITLE as NAME, AC_MASS_SPECTROMETRY_ION_MODE as ION from RECORD where ACCESSION ='" + resScore.id + "'";
-					DevLogger.printToDBLog(sql);
+//					//DevLogger.printToDBLog(sql);
 				}			
 	//			if ( isQuick || isAPI ) {
 	//				sprintf( sql, "select NAME, ION, FORMULA, EXACT_MASS from SPECTRUM S, RECORD R"
@@ -210,7 +210,7 @@ public class Search {
 		}
 		new DevLogger();
 		for (String s : result) {
-			DevLogger.printToDBLog(s);
+			//DevLogger.printToDBLog(s);
 		}
 	}
 	
@@ -277,17 +277,17 @@ public class Search {
 						// TODO
 						sql = "select MZ, RELATIVE from PARENT_PEAK where SPECTRUM_NO = " + strId + " and RELATIVE >= " + queryParam.cutoff;
 						stmnt = con.prepareStatement(sql);
-						DevLogger.printToDBLog(sql);
+						//DevLogger.printToDBLog(sql);
 					}
 					else {
 						sql = "select PK_PEAK_MZ, PK_PEAK_RELATIVE from PEAK where RECORD = ? and PK_PEAK_RELATIVE >= ?";
 						stmnt = con.prepareStatement(sql);
-						DevLogger.printToDBLog(sql);
+						//DevLogger.printToDBLog(sql);
 						stmnt.setString(1, strId);
 						stmnt.setInt(2, queryParam.cutoff);
 					}
 				} catch (SQLException e) {
-					DevLogger.printToDBLog("catch block at line 277");
+					//DevLogger.printToDBLog("catch block at line 277");
 					stmnt = null;
 					e.printStackTrace();
 				}
@@ -476,7 +476,7 @@ public class Search {
 			sql = "show columns from RECORD like 'AC_MASS_SPECTROMETRY_MS_TYPE'";
 			try {
 				stmnt = con.prepareStatement(sql);
-				DevLogger.printToDBLog(sql);
+				//DevLogger.printToDBLog(sql);
 				resMySql = stmnt.executeQuery();
 				while (resMySql.next()) {
 					isMsType = true;
@@ -491,7 +491,7 @@ public class Search {
 					sqlw2 = sqlw2.substring(0, sqlw2.length()-1) + ")";
 				}
 			} catch (SQLException e) {
-				DevLogger.printToDBLog("catch block of line 475");
+				//DevLogger.printToDBLog("catch block of line 475");
 				return false;
 			}
 		}
@@ -555,7 +555,7 @@ public class Search {
 					}
 					
 					// TODO does this have to be here
-					DevLogger.printToDBLog(sql);
+					//DevLogger.printToDBLog(sql);
 					resMySql = stmnt.executeQuery();
 					boolean isEmpty = true;
 					isFilter = true;
@@ -576,7 +576,7 @@ public class Search {
 					resMySql.close();
 					
 				} catch (SQLException e) {
-					DevLogger.printToDBLog("catch block of line 558");
+					//DevLogger.printToDBLog("catch block of line 558");
 					return false;
 				}
 				// ·ë²Ì¥»¥Ã¥È²òÊü
@@ -605,7 +605,7 @@ public class Search {
 			ArrayList<String> instNo = new ArrayList<String>();
 			try {
 				stmnt = con.prepareStatement(sql);
-				DevLogger.printToDBLog(sql);
+				////DevLogger.printToDBLog(sql);
 				int paramIdx = 1;
 				for (String s : vecInstType) {
 					stmnt.setString(paramIdx, s);
@@ -621,7 +621,7 @@ public class Search {
 					instNo.add(resMySql.getString(1));
 				}
 				for (String s : instNo) {
-					DevLogger.printToDBLog(s);
+					////DevLogger.printToDBLog(s);
 				}
 				// ·ë²Ì¥»¥Ã¥È²òÊü
 				resMySql.close();
@@ -630,7 +630,7 @@ public class Search {
 					return false;
 				}
 			} catch (SQLException e) {
-				DevLogger.printToDBLog("catch block of line 609");
+				//DevLogger.printToDBLog("catch block of line 609");
 				return false;
 			}
 			
@@ -666,7 +666,7 @@ public class Search {
 			
 			try {
 				stmnt = con.prepareStatement(sql);
-				DevLogger.printToDBLog(sql);
+				//DevLogger.printToDBLog(sql);
 				int paramIdx = 1;
 				if (queryParam.ion.equals("0")) {
 					for (String s : instNo) {
@@ -728,7 +728,7 @@ public class Search {
 					return false;
 				}
 			} catch(SQLException e) {
-				DevLogger.printToDBLog("catch block of line 703");
+				//DevLogger.printToDBLog("catch block of line 703");
 				return false;
 			}
 		}		
@@ -900,7 +900,7 @@ public class Search {
 			sql += sqlw;
 			try {
 				stmnt = con.prepareStatement(sql);
-				DevLogger.printToDBLog(sql);
+				//DevLogger.printToDBLog(sql);
 				resMySql = stmnt.executeQuery();					
 //			if ( isInteg ) {
 //				sql = "select SPECTRUM_NO, max(RELATIVE), MZ from PARENT_PEAK where ";
@@ -1019,7 +1019,7 @@ public class Search {
 				// ·ë²Ì¥»¥Ã¥È²òÊü
 				resMySql.close();
 		 	} catch (SQLException e) {
-		 		DevLogger.printToDBLog("catch block of line 988");
+		 		//DevLogger.printToDBLog("catch block of line 988");
 		 		return false;
 		 	}
 		}
