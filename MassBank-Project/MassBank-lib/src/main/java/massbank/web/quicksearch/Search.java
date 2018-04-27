@@ -1,4 +1,4 @@
-package massbank;
+package massbank.web.quicksearch;
 
 import java.awt.List;
 import java.io.BufferedReader;
@@ -117,7 +117,7 @@ public class Search {
 	}
 
 	private void outResult() {
-		new DevLogger();
+		//new DevLogger();
 		String sql = "";
 		PreparedStatement stmnt;
 //		char sql[1000];
@@ -208,7 +208,7 @@ public class Search {
 		} catch(SQLException e) {
 			//TODO exepction handling
 		}
-		new DevLogger();
+		//new DevLogger();
 		for (String s : result) {
 			//DevLogger.printToDBLog(s);
 		}
@@ -216,7 +216,7 @@ public class Search {
 	
 	private void setScore() {
 		{
-			new DevLogger();
+			//new DevLogger();
 			String sql;
 			PreparedStatement stmnt;
 			ArrayList<SearchHitPeak> vecHitPeak = new ArrayList<SearchHitPeak>();
@@ -433,7 +433,7 @@ public class Search {
 	}
 	
 	private boolean searchPeak() {
-		new DevLogger();
+		//new DevLogger();
 		String sql = "";
 		PreparedStatement stmnt;
 //		string sql;

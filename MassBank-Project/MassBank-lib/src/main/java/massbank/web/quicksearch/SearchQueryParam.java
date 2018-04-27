@@ -1,4 +1,4 @@
-package massbank;
+package massbank.web.quicksearch;
 
 public class SearchQueryParam {
 	public int start;
