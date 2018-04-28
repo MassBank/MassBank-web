@@ -14,23 +14,9 @@ import massbank.GetConfig;
 import massbank.ResultList;
 import massbank.ResultRecord;
 import massbank.web.Database;
+import massbank.web.SearchFunction;
 
-public class PeakSearchByPeak {
-
-private Database database = null;
-	
-	private Connection connection = null;
-	
-	private HttpServletRequest request = null;
-	
-	private GetConfig conf = null;
-	
-	public PeakSearchByPeak(HttpServletRequest request, GetConfig conf) {
-		this.database = new Database(); 
-		this.connection = this.database.getConnection();
-		this.request = request;
-		this.conf = conf;
-	}
+public class PeakSearchByPeak implements SearchFunction {
 	
 	private String[] inst;
 	
@@ -52,13 +38,13 @@ private Database database = null;
 	
 	private String mode;
 	
-	private void getParameters() {
-		this.inst = this.request.getParameterValues("inst");
-		this.ms = this.request.getParameterValues("ms");
-		this.ion = this.request.getParameter("ion");
+	public void getParameters(HttpServletRequest request) {
+		this.inst = request.getParameterValues("inst");
+		this.ms = request.getParameterValues("ms");
+		this.ion = request.getParameter("ion");
 		this.num = 0;
 		for (int i=0; i < 6; i++) {
-			if (!this.request.getParameter("mz"+i).isEmpty()) {
+			if (!request.getParameter("mz"+i).isEmpty()) {
 				this.num = this.num + 1;
 			}
 		}
@@ -66,24 +52,19 @@ private Database database = null;
 		this.mz = new String[this.num];
 		this.fom = new String[this.num];
 		for (int i = 0; i < this.num; i++) {
-			this.op[i] = this.request.getParameter("op" + i);
-			this.mz[i] = this.request.getParameter("mz" + i);
+			this.op[i] = request.getParameter("op" + i);
+			this.mz[i] = request.getParameter("mz" + i);
 //			TODO PeakSearch2.cgi does not consider the formula at all
-			this.fom[i] = this.request.getParameter("fom" + i);
+			this.fom[i] = request.getParameter("fom" + i);
 		}
-		this.tol = this.request.getParameter("tol");
-		this.intens = this.request.getParameter("int");
+		this.tol = request.getParameter("tol");
+		this.intens = request.getParameter("int");
 //		TODO this parameter is necessary?
-		this.mode = this.request.getParameter("mode");
+		this.mode = request.getParameter("mode");
 	}	
 	
-	public ResultList exec() {
-		this.getParameters();
-		return this.toResultList(this.peak());
-	}
-	
 	// TODO insert functionality of peak search peak by mz (replaces PeakSearch2.cgi)
-	public ArrayList<String> peak() {
+	public ArrayList<String> search(Connection connection) {
 		ArrayList<String> resList = new ArrayList<String>();
 		
 		String sql;
@@ -205,76 +186,5 @@ private Database database = null;
 		}		
 		
 		return resList;
-	}
-	
-	private ResultList toResultList(ArrayList<String> allLine) {
-		// Result information record generation (結果情報レコード生成)
-				ResultList list = new ResultList(conf);
-				ResultRecord record;
-				int nodeGroup = -1;
-				HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();
-				String[] fields;
-				for (int i=0; i<allLine.size(); i++) {
-					fields = allLine.get(i).split("\t");
-					record = new ResultRecord();
-					record.setInfo(fields[0]);
-					record.setId(fields[1]);
-					record.setIon(fields[2]);
-					record.setFormula(fields[3]);
-					record.setEmass(fields[4]);
-//					record.setContributor(fields[fields.length-1]); 					need to set it to a fixed value because there are no more sites
-					record.setContributor("0");
-					// Node group setting (ノードグループ設定)
-					if (!nodeCount.containsKey(record.getName())) {
-						nodeGroup++;
-						nodeCount.put(record.getName(), nodeGroup);
-						record.setNodeGroup(nodeGroup);
-					}
-					else {
-						record.setNodeGroup(nodeCount.get(record.getName()));
-					}
-					list.addRecord(record);
-				}
-				
-				// Get sort key (ソートキー取得)
-				String sortKey = ResultList.SORT_KEY_NAME;
-				if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_FORMULA) == 0) {
-					sortKey = ResultList.SORT_KEY_FORMULA;
-				} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_EMASS) == 0) {
-					sortKey = ResultList.SORT_KEY_EMASS;
-				} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_ID) == 0) {
-					sortKey = ResultList.SORT_KEY_ID;
-				}
-				
-				// Acquire sort action (ソートアクション取得)
-				int sortAction = ResultList.SORT_ACTION_ASC;
-				if (request.getParameter("sortAction").compareTo(String.valueOf(ResultList.SORT_ACTION_DESC)) == 0) {
-					sortAction = ResultList.SORT_ACTION_DESC;
-				}
-				
-				// Record sort (レコードソート)
-				list.sortList(sortKey, sortAction);
-				
-//				if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_FORMULA) != -1) {
-//					sortKey = ResultList.SORT_KEY_FORMULA;
-//				}
-//				else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_EMASS) != -1) {
-//					sortKey = ResultList.SORT_KEY_EMASS;
-//				}
-//				else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_ID) != -1) {
-//					sortKey = ResultList.SORT_KEY_ID;
-//				}
-//				
-//				// Acquire sort action (ソートアクション取得)
-//				int sortAction = ResultList.SORT_ACTION_ASC;
-//				if (reqParam.indexOf("sortAction=" + ResultList.SORT_ACTION_DESC) != -1) {
-//					sortAction = ResultList.SORT_ACTION_DESC;
-//				}
-//				
-//				// Record sort (レコードソート)
-//				list.sortList(sortKey, sortAction);
-				
-				
-				return list;
 	}
 }

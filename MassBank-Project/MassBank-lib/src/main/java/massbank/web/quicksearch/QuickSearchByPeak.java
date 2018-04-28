@@ -8,30 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import massbank.GetConfig;
 import massbank.web.quicksearch.Search;
 import massbank.web.Database;
+import massbank.web.SearchFunction;
 
-public class QuickSearchByPeak {
+public class QuickSearchByPeak implements SearchFunction {
 	
-	private Database database = null;
-	
-	private Connection connection = null;
-	
-	private HttpServletRequest request = null;
-	
-	private GetConfig conf = null;
-	
-	public QuickSearchByPeak(HttpServletRequest request, GetConfig conf) {
-		this.database = new Database(); 
-		this.connection = this.database.getConnection();
-		this.request = request;
-		this.conf = conf;
+	public void getParameters(HttpServletRequest request) {
+		
 	}
 	
-	public ArrayList<String> exec() {
-//		this.getParameters();
-		return this.search();
-	}
-	
-	public ArrayList<String> search() {
+	public ArrayList<String> search(Connection connnection) {
 		ArrayList<String> resList = new ArrayList<String>();
 		Search search = new Search(request, connection);
 		resList = search.getResult();

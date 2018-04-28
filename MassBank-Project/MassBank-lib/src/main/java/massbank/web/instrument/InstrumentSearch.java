@@ -10,29 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.GetConfig;
 import massbank.web.Database;
+import massbank.web.SearchFunction;
 
-public class InstrumentSearch {
-
-	private Database database = null;
+public class InstrumentSearch implements SearchFunction {
 	
-	private Connection connection = null;
-	
-	private HttpServletRequest request = null;
-	
-	private GetConfig conf = null;
-	
-	public InstrumentSearch(HttpServletRequest request, GetConfig conf) {
-		this.database = new Database(); 
-		this.connection = this.database.getConnection();
-		this.request = request;
-		this.conf = conf;
+	public void getParameters(HttpServletRequest request) {
+		
 	}
 	
-	public ArrayList<String> exec() {
-		return this.inst();
-	}
-	
-	public ArrayList<String> inst() {		
+	public ArrayList<String> search(Connection connection) {
 		ArrayList<String> resList = new ArrayList<String>();
 		
 		String sqlInst = "select AC_INSTRUMENT, AC_INSTRUMENT_TYPE "
@@ -49,7 +35,6 @@ public class InstrumentSearch {
 			while(res.next()) {
 				resList.add(instNo + "\t" + res.getString("AC_INSTRUMENT_TYPE") + "\t" + res.getString("AC_INSTRUMENT"));
 				instNo++;
-//				System.out.println(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

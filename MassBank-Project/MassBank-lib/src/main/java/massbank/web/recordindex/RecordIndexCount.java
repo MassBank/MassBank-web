@@ -10,30 +10,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.GetConfig;
 import massbank.web.Database;
+import massbank.web.SearchFunction;
 
-public class RecordIndexCount {
+public class RecordIndexCount implements SearchFunction {
 
-	private Database database = null;
-	
-	private Connection connection = null;
-	
-	private HttpServletRequest request = null;
-	
-	private GetConfig conf = null;
-	
-	public RecordIndexCount(HttpServletRequest request, GetConfig conf) {
-		this.database = new Database(); 
-		this.connection = this.database.getConnection();
-		this.request = request;
-		this.conf = conf;
-	}	
-	
-	public ArrayList<String> exec() {
-		return this.idxcnt();
+	public void getParameters(HttpServletRequest request) {
+		
 	}
 	
 	// TODO remove sql queries from within the function
-		public ArrayList<String> idxcnt() {
+		public ArrayList<String> search(Connection connection) {
 			ArrayList<String> resList = new ArrayList<String>();
 			// TODO check if this site information is still necessary for parsing reasons
 //			resList.add("site\t0");
