@@ -10,7 +10,7 @@ import massbank.GetConfig;
 public class SearchExecution {
 	private Database database = null;
 	
-	private Connection connection = null;
+//	private Connection connection = null;
 	
 	private HttpServletRequest request = null;
 	
@@ -18,13 +18,15 @@ public class SearchExecution {
 	
 	public SearchExecution(HttpServletRequest request, GetConfig conf) {
 		this.database = new Database(); 
-		this.connection = this.database.getConnection();
+//		this.connection = this.database.getConnection();
 		this.request = request;
 		this.conf = conf;
 	}
 	
 	public ArrayList<String> exec(SearchFunction function) {
 		function.getParameters(this.request);
-		return function.search(this.connection);
+		ArrayList<String> result = function.search(this.database.getConnection());
+		this.database.closeConnection();
+		return result;
 	}
 }
