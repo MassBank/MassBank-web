@@ -47,6 +47,12 @@
 <%@ page import="massbank.Record" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ page import="massbank.web.peaksearch.PeakSearchByPeakDifference" %>
+<%@ page import="massbank.web.peaksearch.PeakSearchByPeak" %>
+<%@ page import="massbank.web.quicksearch.QuickSearchByKeyword" %>
+<%@ page import="massbank.web.recordindex.RecordIndexByCategory" %>
+<%@ page import="massbank.web.SearchExecution" %>
+<%@ page import="massbank.web.QueryToResultList" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -749,14 +755,19 @@
 	
 	// 検索実行
 	// execute search
+	ArrayList<String> result = null;
 	if (typeName.compareTo("quick") == 0) {
-		list = mbcommon.execDispatcherResult(typeName, request, conf);
+		//list = mbcommon.execDispatcherResult(typeName, request, conf);
+		result = new SearchExecution(request, conf).exec(new QuickSearchByKeyword());
 	} else if (typeName.compareTo("rcdidx") == 0) {
-		list = mbcommon.execDispatcherResult(typeName, request, conf);
+		//list = mbcommon.execDispatcherResult(typeName, request, conf);
+		result = new SearchExecution(request, conf).exec(new RecordIndexByCategory());
 	} else if (typeName.compareTo("peak") == 0) {
-		list = mbcommon.execDispatcherResult(typeName, request, conf);	
+		//list = mbcommon.execDispatcherResult(typeName, request, conf);	
+		result = new SearchExecution(request, conf).exec(new PeakSearchByPeak());
 	} else if (typeName.compareTo("diff") == 0) {
-		list = mbcommon.execDispatcherResult(typeName, request, conf);
+		//list = mbcommon.execDispatcherResult(typeName, request, conf);
+		result = new SearchExecution(request, conf).exec(new PeakSearchByPeakDifference());
 	}
 	else {
 		if ( isMulti ) {
@@ -766,6 +777,8 @@
 			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
 		}
 	}
+	
+	list = QueryToResultList.toResultList(result, request, conf);
 	
 	out.println( "<span id=\"menu\"></span>");
 	out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
