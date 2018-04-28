@@ -10,41 +10,37 @@ import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.GetConfig;
-import massbank.ResultList;
-import massbank.ResultRecord;
-import massbank.web.Database;
 import massbank.web.SearchFunction;
 
 public class PeakSearchByPeakDifference implements SearchFunction {
-	
+
 	private String[] inst;
-	
+
 	private String[] ms;
-	
+
 	private String ion;
-	
+
 	private int num;
-	
+
 	private String[] op;
-	
+
 	private String[] mz;
-	
+
 	private String[] fom;
-	
+
 	private String tol;
-	
+
 	private String intens;
-	
+
 	private String mode;
-	
+
 	public void getParameters(HttpServletRequest request) {
 		this.inst = request.getParameterValues("inst");
 		this.ms = request.getParameterValues("ms");
 		this.ion = request.getParameter("ion");
 		this.num = 0;
-		for (int i=0; i < 6; i++) {
-			if (!request.getParameter("mz"+i).isEmpty()) {
+		for (int i = 0; i < 6; i++) {
+			if (!request.getParameter("mz" + i).isEmpty()) {
 				this.num = this.num + 1;
 			}
 		}
@@ -54,22 +50,21 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 		for (int i = 0; i < this.num; i++) {
 			this.op[i] = request.getParameter("op" + i);
 			this.mz[i] = request.getParameter("mz" + i);
-//			TODO PeakSearch2.cgi does not consider the formula at all
+			// TODO PeakSearch2.cgi does not consider the formula at all
 			this.fom[i] = request.getParameter("fom" + i);
 		}
 		this.tol = request.getParameter("tol");
 		this.intens = request.getParameter("int");
-//		TODO this parameter is necessary?
+		// TODO this parameter is necessary?
 		this.mode = request.getParameter("mode");
 	}
 
-	
 	public ArrayList<String> search(Connection connection) {
 		ArrayList<String> resList = new ArrayList<String>();
 		String sql;
 		PreparedStatement stmnt;
 		ResultSet res;
-		HashMap<String,ArrayList<Boolean>> hits = new HashMap<String,ArrayList<Boolean>>(); 
+		HashMap<String, ArrayList<Boolean>> hits = new HashMap<String, ArrayList<Boolean>>();
 		for (int i = 0; i < num; i++) {
 			sql = "SELECT T1.RECORD "
 					+ "FROM (SELECT * FROM PEAK WHERE PK_PEAK_RELATIVE > ?) AS T1 LEFT JOIN (SELECT * FROM PEAK WHERE PK_PEAK_RELATIVE > ?) AS T2 ON T1.RECORD = T2.RECORD "
@@ -77,7 +72,7 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 			try {
 				stmnt = connection.prepareStatement(sql);
 				stmnt.setInt(1, Integer.parseInt(intens));
-				stmnt.setInt(2, Integer.parseInt(intens));				
+				stmnt.setInt(2, Integer.parseInt(intens));
 				stmnt.setDouble(3, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
 				stmnt.setDouble(4, Double.parseDouble(mz[i]) + Double.parseDouble(tol));
 				res = stmnt.executeQuery();
@@ -88,7 +83,7 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 					} else {
 						ArrayList<Boolean> newEl = new ArrayList<Boolean>();
 						for (int j = 0; j < num; j++) {
-							newEl.add(j,false);
+							newEl.add(j, false);
 						}
 						newEl.add(i, true);
 						hits.put(id, newEl);
@@ -99,11 +94,11 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 				e.printStackTrace();
 			}
 		}
-		
+
 		ArrayList<String> finIds = new ArrayList<String>();
 		for (String key : hits.keySet()) {
 			boolean expr = false;
-			ArrayList<Boolean> val = hits.get(key); 
+			ArrayList<Boolean> val = hits.get(key);
 			for (int i = 0; i < num; i++) {
 				if (val.get(i) == null) {
 					val.set(i, false);
@@ -123,7 +118,7 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 				finIds.add(key);
 			}
 		}
-		
+
 		sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS "
 				+ "FROM RECORD, INSTRUMENT, COMPOUND "
 				+ "WHERE RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
@@ -139,25 +134,25 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 		sb.append(")");
 		sb.append(" AND (");
 		for (int i = 0; i < inst.length; i++) {
-			sb.append("instrument.ac_instrument_type = ?");
-			if (i < inst.length-1) {
+			sb.append("INSTRUMENT.AC_INSTRUMENT_TYPE = ?");
+			if (i < inst.length - 1) {
 				sb.append(" OR ");
 			}
 		}
 		sb.append(") AND (");
 		for (int i = 0; i < ms.length; i++) {
-			sb.append("record.ac_mass_spectrometry_ms_type = ?");
-			if (i < ms.length-1) {
+			sb.append("RECORD.AC_MASS_SPECTROMETRY_MS_TYPE = ?");
+			if (i < ms.length - 1) {
 				sb.append(" OR ");
 			}
 		}
 		sb.append(")");
 		if (Integer.parseInt(ion) != 0) {
-			sb.append(" AND record.ac_mass_spectrometry_ion_mode = ?");
-		}		
-		
+			sb.append(" AND RECORD.AC_MASS_SPECTROMETRY_ION_MODE = ?");
+		}
+
 		try {
-			stmnt = connection.prepareStatement(sb.toString().toUpperCase());
+			stmnt = connection.prepareStatement(sb.toString());
 			int idx = 1;
 			for (int i = 0; i < inst.length; i++) {
 				stmnt.setString(idx, inst[i]);
@@ -174,13 +169,15 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 				stmnt.setString(idx, "NEGATIVE");
 			}
 			res = stmnt.executeQuery();
-			while(res.next()) {
-				resList.add(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
+			while (res.next()) {
+				resList.add(res.getString("RECORD_TITLE") + "\t" + res.getString("ACCESSION") + "\t"
+						+ res.getString("AC_MASS_SPECTROMETRY_ION_MODE") + "\t" + res.getString("CH_FORMULA") + "\t"
+						+ res.getDouble("CH_EXACT_MASS"));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-		}		
-		
+		}
+
 		return resList;
-	}	
+	}
 }

@@ -5,34 +5,28 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.GetConfig;
-import massbank.ResultList;
-import massbank.ResultRecord;
-import massbank.web.Database;
 import massbank.web.SearchFunction;
 
 public class QuickSearchByKeyword implements SearchFunction {
-	
+
 	private String compound;
-	
+
 	private String op1;
-	
+
 	private String mz;
-	
+
 	private String tol;
-	
+
 	private String op2;
-	
+
 	private String formula;
-	
+
 	private String[] inst;
-	
+
 	private String[] ms;
-	
+
 	private String ion;
 
 	public void getParameters(HttpServletRequest request) {
@@ -46,48 +40,47 @@ public class QuickSearchByKeyword implements SearchFunction {
 		this.ms = request.getParameterValues("ms");
 		this.ion = request.getParameter("ion");
 	}
-	
-	public ArrayList<String> search(Connection connection) {		
+
+	public ArrayList<String> search(Connection connection) {
 		ArrayList<String> resList = new ArrayList<String>();
-		
-		String sql = "select record.accession, record.record_title, record.ac_mass_spectrometry_ms_type, record.ac_mass_spectrometry_ion_mode, instrument.ac_instrument_type, ch_formula, ch_exact_mass, ch_name "
-				+ "from record,instrument,compound,compound_name,name "
-				+ "where compound.id = compound_name.compound AND compound_name.name = name.id AND record.ch = compound.id AND record.ac_instrument = instrument.id";
+
+		String sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS, CH_NAME "
+				+ "FROM RECORD,INSTRUMENT,COMPOUND,COMPOUND_NAME,NAME "
+				+ "WHERE COMPOUND.ID = COMPOUND_NAME.COMPOUND AND COMPOUND_NAME.NAME = NAME.ID AND RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 		StringBuilder sb = new StringBuilder();
 		sb.append(sql);
-		sb.append(" AND (name.ch_name = ? ");
+		sb.append(" AND (NAME.CH_NAME = ? ");
 		if (mz.compareTo("") != 0 && tol.compareTo("") != 0)
-			sb.append(op1 + " (? <= ch_exact_mass <= ?) ");
+			sb.append(op1 + " (? <= CH_EXACT_MASS <= ?) ");
 		if (formula.compareTo("") != 0)
-			sb.append(op2 + " ch_formula = ? " );
+			sb.append(op2 + " CH_FORMULA = ? ");
 		sb.append(") AND (");
 		for (int i = 0; i < inst.length; i++) {
-			sb.append("instrument.ac_instrument_type = ?");
-			if (i < inst.length-1) {
+			sb.append("INSTRUMENT.AC_INSTRUMENT_TYPE = ?");
+			if (i < inst.length - 1) {
 				sb.append(" OR ");
 			}
 		}
 		sb.append(") AND (");
 		for (int i = 0; i < ms.length; i++) {
-			sb.append("record.ac_mass_spectrometry_ms_type = ?");
-			if (i < ms.length-1) {
+			sb.append("RECORD.AC_MASS_SPECTROMETRY_MS_TYPE = ?");
+			if (i < ms.length - 1) {
 				sb.append(" OR ");
 			}
 		}
 		sb.append(")");
 		if (Integer.parseInt(ion) != 0) {
-			sb.append(" AND record.ac_mass_spectrometry_ion_mode = ?");
+			sb.append(" AND RECORD.AC_MASS_SPECTROMETRY_ION_MODE = ?");
 		}
-//		System.out.println(sb.toString());
 		try {
-			PreparedStatement stmnt = connection.prepareStatement(sb.toString().toUpperCase());
+			PreparedStatement stmnt = connection.prepareStatement(sb.toString());
 			int idx = 1;
 			stmnt.setString(idx, compound);
 			idx++;
 			if (mz.compareTo("") != 0 && tol.compareTo("") != 0) {
-				stmnt.setDouble(idx, Double.parseDouble(mz)-Double.parseDouble(tol));
+				stmnt.setDouble(idx, Double.parseDouble(mz) - Double.parseDouble(tol));
 				idx++;
-				stmnt.setDouble(idx, Double.parseDouble(mz)+Double.parseDouble(tol));
+				stmnt.setDouble(idx, Double.parseDouble(mz) + Double.parseDouble(tol));
 				idx++;
 			}
 			if (formula.compareTo("") != 0) {
@@ -109,12 +102,14 @@ public class QuickSearchByKeyword implements SearchFunction {
 				stmnt.setString(idx, "NEGATIVE");
 			}
 			ResultSet res = stmnt.executeQuery();
-			while(res.next()) {
-				resList.add(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
-//				System.out.println(res.getString("record_title") + "\t" + res.getString("accession") + "\t" + res.getString("ac_mass_spectrometry_ion_mode") + "\t" + res.getString("ch_formula") + "\t" + res.getDouble("ch_exact_mass"));
+			while (res.next()) {
+				resList.add(res.getString("RECORD_TITLE") + "\t" + res.getString("ACCESSION") + "\t"
+						+ res.getString("AC_MASS_SPECTROMETRY_ION_MODE") + "\t" + res.getString("CH_FORMULA") + "\t"
+						+ res.getDouble("CH_EXACT_MASS"));
 			}
 		} catch (SQLException e) {
-		}		
+			// TODO
+		}
 		return resList;
-	}	
+	}
 }
