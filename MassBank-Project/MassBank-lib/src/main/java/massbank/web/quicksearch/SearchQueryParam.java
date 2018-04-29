@@ -17,7 +17,8 @@ public class SearchQueryParam {
 	public String ion;
 	public int precursor;
 	public String mstype;
-	
-	public SearchQueryParam() {}
+
+	public SearchQueryParam() {
+	}
 
 }

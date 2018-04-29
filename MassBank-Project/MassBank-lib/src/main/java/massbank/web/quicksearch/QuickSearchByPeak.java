@@ -5,9 +5,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.GetConfig;
 import massbank.web.quicksearch.Search;
-import massbank.web.Database;
 import massbank.web.SearchFunction;
 
 public class QuickSearchByPeak implements SearchFunction {

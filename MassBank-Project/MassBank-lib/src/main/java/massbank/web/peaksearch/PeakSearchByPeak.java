@@ -50,12 +50,10 @@ public class PeakSearchByPeak implements SearchFunction {
 		for (int i = 0; i < this.num; i++) {
 			this.op[i] = request.getParameter("op" + i);
 			this.mz[i] = request.getParameter("mz" + i);
-			// TODO PeakSearch2.cgi does not consider the formula at all
 			this.fom[i] = request.getParameter("fom" + i);
 		}
 		this.tol = request.getParameter("tol");
 		this.intens = request.getParameter("int");
-		// TODO this parameter is necessary?
 		this.mode = request.getParameter("mode");
 	}
 
