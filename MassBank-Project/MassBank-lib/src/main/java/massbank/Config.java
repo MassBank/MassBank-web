@@ -75,10 +75,6 @@ public class Config {
 		return config.getString("BASE_URL");
 	}
 	
-	public String ADMIN_CONF_PATH() {
-		return config.getString("ADMIN_CONF_PATH");
-	}
-	
 	public String TOMCAT_TEMP_PATH(ServletContext context) {
 		return context.getRealPath("/") + "temp/";
 	}

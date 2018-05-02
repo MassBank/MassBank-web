@@ -443,7 +443,7 @@
 		<title><%=shortName%> Mass Spectrum</title>
 	</head>
 	<body style="font-family:Times;" typeof="schema:WebPage">
-	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/jsp/RecordDisplay.jsp?id=<%=accession%>&dsn=<%=databaseName%>" typeof="schema:Dataset" <!-- id="content" -->>
+	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/jsp/RecordDisplay.jsp?id=<%=accession%>&dsn=<%=databaseName%>" typeof="schema:Dataset" >
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 				<td>

@@ -42,6 +42,7 @@ public class GetInstInfo {
 	ArrayList<String>[] instName = null;
 	ArrayList<String>[] msType = null;
 	private int index = 0;
+	private HttpServletRequest request;
 
 	/**
 	 * Constructor (コンストラクタ)
@@ -52,33 +53,12 @@ public class GetInstInfo {
 	 * @throws SQLException 
 	 */
 	public GetInstInfo( String baseUrl ) throws ConfigurationException, SQLException {
-		String urlParam = "ver=2";
-		getInformation(baseUrl, urlParam);
+		getInformation(baseUrl);
 	}
 
-	/**
-	 * Constructor (コンストラクタ)
-	 * Specify record format version and PeakSearchAdvanced flag (レコードフォーマットバージョンとPeakSearchAdvancedフラグを指定して)
-	 * Constructor that acquires INSTRUMENT information and MS information (INSTRUMENT情報とMS情報を取得するコンストラクタ)
-	 * @param baseUrl ベースURL
-	 * @param formatVer MassBank record format version (MassBankレコードフォーマットバージョン)
-	 * @param isPeakAdv PeakSearchAdvanced flag (PeakSearchAdvancedフラグ)
-	 * @throws ConfigurationException 
-	 * @throws SQLException 
-	 */
-	public GetInstInfo( String baseUrl, int formatVer, boolean isPeakAdv ) throws ConfigurationException, SQLException {
-		String urlParam = "ver=" + formatVer;
-		if ( isPeakAdv ) {
-			urlParam += "&padv=1";
-		}
-		getInformation(baseUrl, urlParam);
-	}
-	
-	private HttpServletRequest request;
-	
 	public GetInstInfo( HttpServletRequest request) throws ConfigurationException, SQLException {
 		this.request = request;
-		getInformation(null,null);
+		getInformation(Config.get().BASE_URL());
 	}
 	
 	/**
@@ -88,7 +68,7 @@ public class GetInstInfo {
 	 * @throws ConfigurationException 
 	 * @throws SQLException 
 	 */
-	private void getInformation( String baseUrl, String urlParam ) throws ConfigurationException, SQLException {
+	private void getInformation( String baseUrl) throws ConfigurationException, SQLException {
 		
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] urlList = conf.getSiteUrl();
@@ -96,10 +76,7 @@ public class GetInstInfo {
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-//		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
 		ArrayList<String> resultAll = mbcommon.execDispatcher(typeName, request);
-		
-		System.out.println(resultAll.toString());
 		
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];

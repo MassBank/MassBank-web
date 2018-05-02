@@ -510,8 +510,8 @@
 	}
 %>
 <%
-	AdminCommon admin = new AdminCommon();
-	boolean isKnapsack = admin.isKnapsack();
+// 	AdminCommon admin = new AdminCommon();
+// 	boolean isKnapsack = admin.isKnapsack();
 	
 	this.req = request;
 	
@@ -543,22 +543,22 @@
 <meta name="keywords" content="Structure,compound,chemical">
 <meta name="revisit_after" content="30 days">
 <link rel="stylesheet" type="text/css" href="./css/Common.css">
-<%if ( isKnapsack ) {%>
-<link rel="stylesheet" type="text/css" href="./Knapsack/css/jquery-ui-1.7.2.custom.css">
-<%}%>
+<%-- <%if ( isKnapsack ) {%> --%>
+<!-- <link rel="stylesheet" type="text/css" href="./Knapsack/css/jquery-ui-1.7.2.custom.css"> -->
+<%-- <%}%> --%>
 <title>MassBank | Database | Substructure Search</title>
 <script type="text/javascript" src="./script/Common.js"></script>
 <script type="text/javascript" src="./script/StructSearch.js"></script>
 <script type="text/javascript" src="./script/jquery.js"></script>
-<%if ( isKnapsack ) {%>
-<script type="text/javascript" src="./Knapsack/script/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript">
-$(function(){
-	var $tabs = $('#struct_search').tabs();
-	$tabs.tabs('select', <%= tabIndex %>);
-});
-</script>
-<%}%>
+<%-- <%if ( isKnapsack ) {%> --%>
+<!-- <script type="text/javascript" src="./Knapsack/script/jquery-ui-1.7.2.custom.min.js"></script> -->
+<!-- <script type="text/javascript"> -->
+// $(function(){
+// 	var $tabs = $('#struct_search').tabs();
+<%-- 	$tabs.tabs('select', <%= tabIndex %>); --%>
+// });
+<!-- </script> -->
+<%-- <%}%> --%>
 <style type="text/css">
 <!--
 table.form-box-M {
@@ -586,25 +586,25 @@ table.form-box-K {
 </table>
 <iframe src="./menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
-<%if ( isKnapsack ) {%>
-<div id="struct_search">
-	<ul>
-		<li><a href="#massbank" onmouseout="changeTab(true);">Search MassBank</a></li>
-		<li><a href="#knapsack" onmouseout="changeTab(false);">Search KNApSAcK</a></li>
-	</ul>
+<%-- <%if ( isKnapsack ) {%> --%>
+<!-- <div id="struct_search"> -->
+<!-- 	<ul> -->
+<!-- 		<li><a href="#massbank" onmouseout="changeTab(true);">Search MassBank</a></li> -->
+<!-- 		<li><a href="#knapsack" onmouseout="changeTab(false);">Search KNApSAcK</a></li> -->
+<!-- 	</ul> -->
 
-	<div id="massbank">
+<!-- 	<div id="massbank"> -->
+<%-- 		<jsp:include page="../pserver/ServerInfo.jsp" /> --%>
+<%-- 		<%= getHtml(mapParam, true) %> --%>
+<!-- 	</div> -->
+<!-- 	<div id="knapsack"> -->
+<%-- 		<%= getHtml(mapParam, false) %> --%>
+<!-- 	</div> -->
+<!-- </div> -->
+<%-- <%} else { %> --%>
 		<jsp:include page="../pserver/ServerInfo.jsp" />
 		<%= getHtml(mapParam, true) %>
-	</div>
-	<div id="knapsack">
-		<%= getHtml(mapParam, false) %>
-	</div>
-</div>
-<%} else { %>
-		<jsp:include page="../pserver/ServerInfo.jsp" />
-		<%= getHtml(mapParam, true) %>
-<%}%>
+<%-- <%}%> --%>
 <br>
 <hr size="1">
 <iframe src="./copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
