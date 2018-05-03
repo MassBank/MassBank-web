@@ -4,21 +4,34 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import massbank.MassBankEnv;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
+import massbank.Config;
 
 public class Database {
 
 	private final static String driver = "org.mariadb.jdbc.Driver";
-	private final static String user = MassBankEnv.get(MassBankEnv.KEY_DB_USER);
-	private final static String password = MassBankEnv.get(MassBankEnv.KEY_DB_PASSWORD);
-	private final static String databaseName ="MassBank";
-	private final static String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
-	private final static String connectUrl = "jdbc:mariadb://" + dbHostName + "/" + databaseName + "?rewriteBatchedStatements=true&pool";
-	private final Connection connection;
+	private static String user;
+	private static String password;
+	private static String databaseName;
+	private static String dbHostName;
+	private static String connectUrl;
+	private Connection connection;
 	
 	public Database() {
 		this.connection = this.openConnection();
-		
+		Config config = null;
+		try {
+			config = Config.get();
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Database.user = "";
+		Database.password = config.dbPassword();
+		Database.databaseName = config.dbName();
+		Database.dbHostName = config.dbHostName();
+		Database.connectUrl = "jdbc:mariadb://" + dbHostName + "/" + databaseName + "?rewriteBatchedStatements=true&pool";
 	}
 
 	private Connection openConnection() {
