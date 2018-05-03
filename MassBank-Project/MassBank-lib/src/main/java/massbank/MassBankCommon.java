@@ -28,12 +28,16 @@ package massbank;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class MassBankCommon {
 	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
@@ -229,14 +233,15 @@ public class MassBankCommon {
 	 * @param siteNo		Site No. (サイトNo.)
 	 * @param conf			Configuration file information object (設定ファイル情報オブジェクト)
 	 * @return Record information list (レコード情報リスト)
+	 * @throws ConfigurationException 
 	 */
 	public ResultList execDispatcherResult(
 			String serverUrl,
 			String type,
 			String reqParam,
 			boolean isMulti,
-			String siteNo,
-			GetConfig conf ) {
+			String siteNo
+			) throws ConfigurationException {
 		
 		String reqUrl = "";
 		int site = 0;
@@ -289,7 +294,7 @@ public class MassBankCommon {
 		}
 		
 		// Result information record generation (結果情報レコード生成)
-		ResultList list = new ResultList(conf);
+		ResultList list = new ResultList();
 		ResultRecord record;
 		int nodeGroup = -1;
 		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();
@@ -339,4 +344,5 @@ public class MassBankCommon {
 		
 		return list;
 	 }
+
 }

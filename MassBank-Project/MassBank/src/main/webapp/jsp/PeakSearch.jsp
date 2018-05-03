@@ -37,8 +37,8 @@
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ include file="./Common.jsp"%>
 <%
-	AdminCommon admin = new AdminCommon();
-	boolean isPeakAdv = admin.isPeakAdv();
+	//AdminCommon admin = new AdminCommon();
+	//boolean isPeakAdv = admin.isPeakAdv();
 	
 	//-------------------------------------
 	// リクエストパラメータ取得
@@ -185,9 +185,9 @@
 	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
 	<script type="text/javascript" src="./script/Common.js"></script>
 	<script type="text/javascript" src="./script/jquery.js"></script>
-<% if ( isPeakAdv ) { %>
-	<script type="text/javascript" src="./script/FormulaSuggest.js"></script>
-<% } %>
+<%-- <% if ( isPeakAdv ) { %> --%>
+<!-- 	<script type="text/javascript" src="./script/FormulaSuggest.js"></script> -->
+<%-- <% } %> --%>
 	<script type="text/javascript" src="./script/AtomicMass.js"></script>
 	<script type="text/javascript" src="./script/PeakSearch.js"></script>
 	<title>MassBank | Database | Peak Search</title>
@@ -229,26 +229,26 @@
 				<td></td>
 				<td id="underbar2" height="4"<% if(type.equals("diff")){out.print(" bgcolor=\"DarkOrchid\"");}else if(type.equals("neutral")){out.print(" bgcolor=\"DarkGreen\"");} %>></td>
 			</tr>
-<% if ( isPeakAdv ) { %>
-			<tr>
-				<td><b>Search by</b></td>
-				<td>
-					<input type="radio" name="searchby" value="mz" tabindex="3" onClick="return changeSearchType('','mz');"<% if(searchBy.equals("mz")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('','mz')"><b><i>m/z</i>-Value</b></span></i></b>
-				</td>
-				<td></td>
-				<td>
-					<input type="radio" name="searchby" value="formula" tabindex="4" onClick="return changeSearchType('','formula');"<% if(searchBy.equals("formula")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('','formula')">Molecular&nbsp;Formula</span></i></b>
-				</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td id="underbar3" height="4"<% if(type.equals("peak")){out.print(" bgcolor=\"OliveDrab\"");}else if(type.equals("product")){out.print(" bgcolor=\"MidnightBlue\"");} %>></td>
-				<td></td>
-				<td id="underbar4" height="4"<% if(type.equals("diff")){out.print(" bgcolor=\"DarkOrchid\"");}else if(type.equals("neutral")){out.print(" bgcolor=\"DarkGreen\"");} %>></td>
-			</tr>
-<% } else { %>
+<%-- <% if ( isPeakAdv ) { %> --%>
+<!-- 			<tr> -->
+<!-- 				<td><b>Search by</b></td> -->
+<!-- 				<td> -->
+<%-- 					<input type="radio" name="searchby" value="mz" tabindex="3" onClick="return changeSearchType('','mz');"<% if(searchBy.equals("mz")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('','mz')"><b><i>m/z</i>-Value</b></span></i></b> --%>
+<!-- 				</td> -->
+<!-- 				<td></td> -->
+<!-- 				<td> -->
+<%-- 					<input type="radio" name="searchby" value="formula" tabindex="4" onClick="return changeSearchType('','formula');"<% if(searchBy.equals("formula")) out.print(" checked"); %>><b><i><span name="typeLbl" onclick="return changeSearchType('','formula')">Molecular&nbsp;Formula</span></i></b> --%>
+<!-- 				</td> -->
+<!-- 			</tr> -->
+<!-- 			<tr> -->
+<!-- 				<td></td> -->
+<%-- 				<td id="underbar3" height="4"<% if(type.equals("peak")){out.print(" bgcolor=\"OliveDrab\"");}else if(type.equals("product")){out.print(" bgcolor=\"MidnightBlue\"");} %>></td> --%>
+<!-- 				<td></td> -->
+<%-- 				<td id="underbar4" height="4"<% if(type.equals("diff")){out.print(" bgcolor=\"DarkOrchid\"");}else if(type.equals("neutral")){out.print(" bgcolor=\"DarkGreen\"");} %>></td> --%>
+<!-- 			</tr> -->
+<%-- <% } else { %> --%>
 			<input type="hidden" name ="searchby" value="mz">
-<% } %>
+<%-- <% } %> --%>
 		</table>
 		<hr size="1">
 		

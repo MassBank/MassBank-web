@@ -48,7 +48,7 @@
 <%@ page import="org.apache.poi.ss.usermodel.*" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.MassBankCommon" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
 <head>
@@ -63,7 +63,7 @@
 <%
 	// ベースUrl, JSP名をセット
 	String reqUrl = request.getRequestURL().toString();
-	String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+	String baseUrl = Config.get().BASE_URL();
 	String jspName = reqUrl.substring( reqUrl.lastIndexOf("/")+1 );
 	
 	// 環境設定ファイルからURLリスト、DB名リストを取得
@@ -213,7 +213,7 @@
 		sheet.addMergedRegion( new CellRangeAddress(0, 0, (short)(headline.length-1), (short)(colspan+1)) );
 		
 		//** 保存
-		String outPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH) + dbNameList[siteNum] + "_list.xls";
+		String outPath = Config.get().TOMCAT_TEMP_PATH(getServletContext()) + dbNameList[siteNum] + "_list.xls";
 		FileOutputStream fso = new FileOutputStream(outPath);
 		wb.write(fso);
 		fso.close();

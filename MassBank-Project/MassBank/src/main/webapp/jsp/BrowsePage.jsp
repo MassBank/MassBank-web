@@ -37,7 +37,7 @@
 	//-------------------------------------------
 	// 環境設定ファイルからURLリストを取得
 	//-------------------------------------------
-	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	GetConfig conf = new GetConfig(Config.get().BASE_URL());
 	String [] siteName = conf.getSiteName();			// サイト名取得
 	String [] siteLongName = conf.getSiteLongName();	// ロングサイト名取得
 	String [] browseMode = conf.getBrowseMode();		// BrowseMode取得
@@ -86,7 +86,7 @@
 <%
 	String[] urlList    = conf.getSiteUrl();
 	String[] dbNameList = conf.getDbName();
-	ServerStatus svrStatus = new ServerStatus(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	ServerStatus svrStatus = new ServerStatus(Config.get().BASE_URL());
 	for ( int i = 0; i < siteName.length; i++ ) {
 		// 連携サーバ障害有無チェック(サーバ監視が行われていなければ無条件にTrueが返ってくる)
 		if ( !svrStatus.isServerActive(urlList[i], dbNameList[i]) ) {

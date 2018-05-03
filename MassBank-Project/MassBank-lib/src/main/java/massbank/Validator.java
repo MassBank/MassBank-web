@@ -1,4 +1,4 @@
-package massbank.admin;
+package massbank;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -6,10 +6,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
-import massbank.Record;
-import massbank.RecordParser;
 
-public class Validator2 {
+public class Validator {
 	public static String recordstringExample = 
 			"ACCESSION: BSU00002\n" +
 			"RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n" +
@@ -22,7 +20,7 @@ public class Validator2 {
 			"COMMENT: Data obtained from a veratramine standard purchased from Logan Natural Products, Logan, Utah USA.\n" +
 			"CH$NAME: Veratramine\n" + 
 			"CH$NAME: {(3beta,23R)-14,15,16,17-Tetradehydroveratraman-3,23-diol\n" +
-			"CH$COMPOUND_CLASS: N/A; Environmental Standard\n" +
+			"CH$COMPOUND_CLASS: N/A; Environmental Standard; grr\n" +
 			"CH$FORMULA: C27H39NO2\n" +
 			"CH$EXACT_MASS: 409.29807\n" +
 			"CH$SMILES: N/A\n" +

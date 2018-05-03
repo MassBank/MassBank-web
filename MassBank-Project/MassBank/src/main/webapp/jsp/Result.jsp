@@ -796,10 +796,10 @@
 	}
 	else {
 		if ( isMulti ) {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null);
 		}
 		else {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo));
 		}
 	}
 	
@@ -1040,7 +1040,7 @@
 
 			// 化学構造式表示情報を一括取得する
 			ResultRecord rec;
-			DatabaseManager dbManager	= DatabaseManager.create();
+			DatabaseManager dbManager	= new DatabaseManager("MassBank");
 			for (int i=startIndex; i<=endIndex; i++) {
 				rec = list.getRecord(i);
 				// ツリー表示用ID、およびイメージ名生成
@@ -1132,9 +1132,9 @@
 					String databaseName		= conf.getDbName()[Integer.parseInt(rec.getContributor())];
 					String accession		= rec.getId();
 					
-					String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
+					String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//.get().BASE_URL() + "temp";
 					//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
-					String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
+					String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 					
 					Record.Structure structure	= dbManager.getStructureOfAccession(accession);
 					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(

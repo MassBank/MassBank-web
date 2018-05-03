@@ -25,6 +25,7 @@
  ******************************************************************************/
 package massbank;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.SearchExecution;
 import massbank.web.instrument.InstrumentSearch;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class GetInstInfo {
 	ArrayList<String>[] instNo   = null;
@@ -42,47 +44,33 @@ public class GetInstInfo {
 	ArrayList<String>[] instName = null;
 	ArrayList<String>[] msType = null;
 	private int index = 0;
+	private HttpServletRequest request;
 
 	/**
 	 * Constructor (コンストラクタ)
 	 * Record format version 2 (レコードフォーマットバージョン2の)
 	 * Constructor that acquires INSTRUMENT information and MS information (INSTRUMENT情報とMS情報を取得するコンストラクタ)
 	 * @param baseUrl ベースURL
+	 * @throws ConfigurationException 
+	 * @throws SQLException 
 	 */
-	public GetInstInfo( String baseUrl ) {
-		String urlParam = "ver=2";
-		getInformation(baseUrl, urlParam);
+	public GetInstInfo( String baseUrl ) throws ConfigurationException, SQLException {
+		getInformation(baseUrl);
 	}
 
-	/**
-	 * Constructor (コンストラクタ)
-	 * Specify record format version and PeakSearchAdvanced flag (レコードフォーマットバージョンとPeakSearchAdvancedフラグを指定して)
-	 * Constructor that acquires INSTRUMENT information and MS information (INSTRUMENT情報とMS情報を取得するコンストラクタ)
-	 * @param baseUrl ベースURL
-	 * @param formatVer MassBank record format version (MassBankレコードフォーマットバージョン)
-	 * @param isPeakAdv PeakSearchAdvanced flag (PeakSearchAdvancedフラグ)
-	 */
-	public GetInstInfo( String baseUrl, int formatVer, boolean isPeakAdv ) {
-		String urlParam = "ver=" + formatVer;
-		if ( isPeakAdv ) {
-			urlParam += "&padv=1";
-		}
-		getInformation(baseUrl, urlParam);
-	}
-	
-	private HttpServletRequest request;
-	
-	public GetInstInfo( HttpServletRequest request) {
+	public GetInstInfo( HttpServletRequest request) throws ConfigurationException, SQLException {
 		this.request = request;
-		getInformation(null,null);
+		getInformation(Config.get().BASE_URL());
 	}
 	
 	/**
 	 * Device type, MS type information acquisition (装置種別、MS種別情報取得)
 	 * @param baseUrl ベースURL
 	 * @param urlParam Parameters when executing CGI (CGI実行時のパラメータ)
+	 * @throws ConfigurationException 
+	 * @throws SQLException 
 	 */
-	private void getInformation( String baseUrl, String urlParam ) {
+	private void getInformation( String baseUrl) throws ConfigurationException, SQLException {
 		
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] urlList = conf.getSiteUrl();
@@ -90,13 +78,8 @@ public class GetInstInfo {
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-//		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
-//		ArrayList<String> resultAll = mbcommon.execDispatcher(typeName, request, conf);
+
 		ArrayList<String> resultAll = new SearchExecution(request, conf).exec(new InstrumentSearch());
-		
-		
-//		new DevLogger();
-//		DevLogger.printToDBLog(resultAll.toString());
 		
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];

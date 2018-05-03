@@ -24,8 +24,6 @@
 %>
 
 <%@ page import="java.util.Enumeration" %>
-<%@ page import="massbank.GetConfig" %>
-<%@ page import="massbank.MassBankEnv" %>
 <%
 	// ##################################################################################################
 	// get parameters

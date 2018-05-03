@@ -1,9 +1,12 @@
 package massbank;
 
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -13,12 +16,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -30,20 +33,19 @@ import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import net.sf.jniinchi.INCHI_RET;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
+/**
+* @author rmeier
+* @version 0.1, 18-04-2018
+* This class is used to manipulate SQL databases.
+*/
 public class DatabaseManager {
+	private static final Logger logger = LogManager.getLogger(DatabaseManager.class);
 	
-	private final static String driver = "org.mariadb.jdbc.Driver";
-//	private final static String user = MassBankEnv.get(MassBankEnv.KEY_DB_USER);
-//	private final static String password = MassBankEnv.get(MassBankEnv.KEY_DB_PASSWORD);
-	private final static String user = "bird";
-	private final static String password = "bird2006";
-//	private final static String databaseName = "MassBankNew";
 	private String databaseName;
-	private final static String dbHostName = getDbHostName();
-//	private final static String connectUrl = "jdbc:mysql://" + dbHostName;
 	private final String connectUrl;
-//	private final static String connectUrl = "jdbc:mysql://" + dbHostName + "/" + databaseName;
 	private Connection con;
 
 	private final static String sqlAC_CHROMATOGRAPHY = "SELECT * FROM AC_CHROMATOGRAPHY WHERE RECORD = ?";
@@ -62,8 +64,8 @@ public class DatabaseManager {
 	private final static String sqlPK_NUM_PEAK = "SELECT * FROM PK_NUM_PEAK WHERE RECORD = ?";
 	private final static String sqlRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
 	private final static String sqlSAMPLE = "SELECT * FROM SAMPLE WHERE ID = ?";
-	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE SAMPLE = ?";
-	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE SAMPLE = ?";
+	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE RECORD = ?";
+	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE RECORD = ?";
 	private final static String sqlANNOTATION_HEADER = "SELECT * FROM ANNOTATION_HEADER WHERE RECORD = ?";
 	private final static String sqlGetContributorFromAccession = 
 			"SELECT CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME " +
@@ -107,9 +109,7 @@ public class DatabaseManager {
 	private final static String insertAC_CHROMATOGRAPHY = "INSERT INTO AC_CHROMATOGRAPHY VALUES(?,?,?)";
 	private final static String insertMS_FOCUSED_ION = "INSERT INTO MS_FOCUSED_ION VALUES(?,?,?)";
 	private final static String insertMS_DATA_PROCESSING = "INSERT INTO MS_DATA_PROCESSING VALUES(?,?,?)";
-//	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?,?,?,?)";
 	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?)";
-//	private final static String updatePEAK = "UPDATE PEAK SET PK_ANNOTATION_TENTATIVE_FORMULA = ?, PK_ANNOTATION_FORMULA_COUNT = ?, PK_ANNOTATION_THEORETICAL_MASS = ?, PK_ANNTOATION_ERROR_PPM = ? WHERE RECORD = ? AND PK_PEAK_MZ = ?";
 	private final static String updatePEAKs = "UPDATE PEAK SET PK_ANNOTATION = ? WHERE RECORD = ? AND PK_PEAK_MZ = ?";
 	private final static String insertANNOTATION_HEADER = "INSERT INTO ANNOTATION_HEADER VALUES(?,?)";
 	
@@ -130,44 +130,102 @@ public class DatabaseManager {
 	private final PreparedStatement statementInsertMS_FOCUSED_ION;
 	private final PreparedStatement statementInsertMS_DATA_PROCESSING;
 	private final PreparedStatement statementInsertPEAK;
-//	private final PreparedStatement statementUpdatePEAK;
 	private final PreparedStatement statementUpdatePEAKs;
 	private final PreparedStatement statementInsertANNOTATION_HEADER;
 		
-	public static void init_db() throws SQLException, IOException {
-		Connection connection = DriverManager.getConnection("jdbc:mariadb://" + dbHostName + "/" + "?user=" + user + "&password=" + password);
-		Statement stmt = connection.createStatement();
-
-		stmt.executeUpdate("DROP DATABASE IF EXISTS MassBank;");
-		stmt.executeUpdate("CREATE DATABASE MassBank CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
-		stmt.executeUpdate("USE MassBank;");
+	/**
+	 * Create a database with the MassBank database scheme.
+	 * @param dbName the name of the new database
+	 */
+	public static void init_db(String dbName) throws SQLException, ConfigurationException, FileNotFoundException, IOException {
+		String link="jdbc:mariadb://" 
+				+ Config.get().dbHostName() + ":3306/" 
+				+ "?user=root" 
+				+ "&password=" + Config.get().dbPassword();
+		logger.trace("Opening database connection with url\"" + link + "\".");
+		Connection connection = DriverManager.getConnection(link);
 		
-		ClassLoader classLoader = DatabaseManager.class.getClassLoader();
-		File file = new File(classLoader.getResource("create_massbank_scheme.sql").getFile());
+		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
+		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
+		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
+		stmt.executeUpdate("USE " + dbName + ";");
+		
+		
+		logger.trace("Executing sql statements in file at: \"" + DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql") + "\".");
 		ScriptRunner runner = new ScriptRunner(connection, false, false);
-		runner.runScript(new BufferedReader(new FileReader(file)));
+		runner.runScript(new InputStreamReader(DatabaseManager.class.getClassLoader().getResourceAsStream("create_massbank_scheme.sql")));
 		
 		stmt.close();
+		logger.trace("Closing connection with url\"" + link + "\".");
 		connection.close();
 	}
 	
-	public static DatabaseManager create(String dbName) {
-		try {
-			return new DatabaseManager(dbName);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+	/**
+	 * Move all tables from MassBankNew to MassBank,
+	 */
+	public static void move_temp_db_to_main_massbank() throws ConfigurationException, SQLException, IOException {
+		String link="jdbc:mariadb://" 
+				+ Config.get().dbHostName() + ":3306/" 
+				+ "?user=root" 
+				+ "&password=" + Config.get().dbPassword();
+		logger.trace("Opening database connection with url\"" + link + "\".");
+		Connection connection = DriverManager.getConnection(link);
+		
+		// remove trigger
+		StringBuilder sb = new StringBuilder();
+		sb.append("DROP TRIGGER MassBank.upd_check;\n");
+		sb.append("DROP TRIGGER MassBankNew.upd_check;\n");
+		
+		// get all tables
+		Statement stmt = connection.createStatement();
+		List<String> table_names = new ArrayList<String>();
+		ResultSet result = stmt.executeQuery("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA ='MassBankNew'");
+		while (result.next()) {
+			table_names.add(result.getString(1));
+        }
+		stmt.close();
+		
+		// create MassBankBackup database
+		sb.append("CREATE DATABASE MassBankBackup;\n");
+		
+		// move MassBankNew to MassBank and MassBank to MassBankBackup
+		sb.append("RENAME TABLE");
+		for(String table_name : table_names) {
+			sb.append(" MassBank."+table_name+" to MassBankBackup."+table_name+",");
+			sb.append(" MassBankNew."+table_name+" to MassBank."+table_name+",");
 		}
+		sb.setLength(sb.length() - 1);
+		sb.append(";\n");
+		
+		// drop MassBankNew and MassBankBackup 
+		sb.append("DROP DATABASE " + Config.get().tmpdbName() + ";\n");
+		sb.append("DROP DATABASE MassBankBackup;\n");
+		
+		// add trigger to MassBank
+		sb.append(	"USE MassBank;\n" +
+					"delimiter //\n" + 
+					"CREATE TRIGGER upd_check BEFORE INSERT ON SAMPLE\n" + 
+					"	FOR EACH ROW\n" + 
+					"	BEGIN\n" + 
+					"	IF ((NEW.SP_SCIENTIFIC_NAME IS NULL) AND (NEW.SP_LINEAGE IS NULL)) THEN\n" + 
+					"		SET NEW.ID = -1;\n" + 
+					"	END IF;\n" + 
+					"END;//");
+
+		logger.trace("Running sql commands:\n" + sb.toString());
+		ScriptRunner runner = new ScriptRunner(connection, false, false);
+		runner.runScript(new StringReader(sb.toString()));
+		connection.close();
 	}
 	
-	public static DatabaseManager create() {
-		return create("MassBank");
-	}
-	
-	public DatabaseManager(String dbName) throws SQLException {
+	public DatabaseManager(String dbName) throws SQLException, ConfigurationException {
 		this.databaseName = dbName;
-		this.connectUrl = "jdbc:mariadb://" + dbHostName + "/" + databaseName + "?rewriteBatchedStatements=true";
-			this.openConnection();
+		this.connectUrl = "jdbc:mariadb://" + Config.get().dbHostName() + ":3306/" 
+			+ databaseName + "?rewriteBatchedStatements=true"
+			+ "&user=root" 
+			+ "&password=" + Config.get().dbPassword();
+		this.openConnection();
 			statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
 			statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
 			statementCH_LINK = this.con.prepareStatement(sqlCH_LINK);
@@ -215,14 +273,14 @@ public class DatabaseManager {
 	private void openConnection() {
 		Connection con	= null;
 		try {
-			Class.forName(DatabaseManager.driver);
-			con = DriverManager.getConnection(this.connectUrl, DatabaseManager.user, DatabaseManager.password);
+			Class.forName("org.mariadb.jdbc.Driver");
+			con = DriverManager.getConnection(connectUrl);
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-			this.con = con;
+		this.con = con;
 	}
 
 	public void closeConnection() {
@@ -395,25 +453,26 @@ public class DatabaseManager {
 			if (set.next()) {
 				acc.SP_SCIENTIFIC_NAME(set.getString("SP_SCIENTIFIC_NAME"));
 				acc.SP_LINEAGE(set.getString("SP_LINEAGE"));
-				
-				this.statementSP_LINK.setInt(1,set.getInt("ID"));
-				ResultSet tmp = this.statementSP_LINK.executeQuery();
-				tmpList.clear();
-				while (tmp.next()) {
-					String spLink	= tmp.getString("SP_LINK");
-					String[] tokens	= spLink.split(" ");
-					tmpList.add(Pair.of(tokens[0], tokens[1]));
-				}
-				acc.SP_LINK(tmpList);
-				
-				this.statementSP_SAMPLE.setInt(1, set.getInt("ID"));
-				tmp = this.statementSP_SAMPLE.executeQuery();
-				tmpList2.clear();
-				while (tmp.next()) {
-					tmpList2.add(tmp.getString("SP_SAMPLE"));
-				}
-				acc.SP_SAMPLE(tmpList2);
 			}
+			
+			this.statementSP_LINK.setString(1,acc.ACCESSION());
+			set = this.statementSP_LINK.executeQuery();
+			tmpList.clear();
+			while (set.next()) {
+				String spLink	= set.getString("SP_LINK");
+				String[] tokens	= spLink.split(" ");
+				tmpList.add(Pair.of(tokens[0], tokens[1]));
+			}
+			acc.SP_LINK(tmpList);
+				
+			this.statementSP_SAMPLE.setString(1,acc.ACCESSION());
+			set = this.statementSP_SAMPLE.executeQuery();
+			tmpList2.clear();
+			while (set.next()) {
+				tmpList2.add(set.getString("SP_SAMPLE"));
+			}
+			acc.SP_SAMPLE(tmpList2);
+			
 			if (instrumentID == -1)	throw new IllegalStateException("instrumentID is not set");
 			this.statementINSTRUMENT.setInt(1, instrumentID);
 			set = this.statementINSTRUMENT.executeQuery();
@@ -597,22 +656,22 @@ public class DatabaseManager {
 //		return acc;
 //	}
 	
-	private static String getDbHostName() {
-		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
-		if ( !MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME).equals("") ) {
-			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
-		}
-		return dbHostName;
-	}
+//	private static String getDbHostName() {
+//		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+//		if ( !MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME).equals("") ) {
+//			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
+//		}
+//		return dbHostName;
+//	}
 	
-	private HashMap<String,String> getDatabaseOfAccessions() {
+	/*private HashMap<String,String> getDatabaseOfAccessions() {
 		GetConfig config = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
 		String[] dbNames = config.getDbName();
 		HashMap<String,String> dbMapping = new HashMap<String,String>();
 		Connection con	= null;
 		try {
 			Class.forName(driver);
-			con = DriverManager.getConnection(connectUrl, user, password);
+			con = DriverManager.getConnection(connectUrl, Config.getInstance().get_dbUser(), Config.getInstance().get_dbPassword());
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 			for (String db : dbNames) {
@@ -635,7 +694,7 @@ public class DatabaseManager {
 				}
 		}
 		return dbMapping;
-	}
+	}*/
 	
 	public void batchPersist(ArrayList<Record> accs) {
 		for (Record acc : accs) {
@@ -824,28 +883,6 @@ public class DatabaseManager {
 		}
 		
 		//System.out.println(System.nanoTime());
-		for (Pair<String, String> el : acc.SP_LINK()) {
-			statementInsertSP_LINK.setInt(1, sampleId);
-			statementInsertSP_LINK.setString(2, el.getLeft() + " " + el.getRight());
-//			statementInsertSP_LINK.executeUpdate();
-			statementInsertSP_LINK.addBatch();
-		}
-		if (!bulk) {
-			statementInsertSP_LINK.executeBatch();
-		}
-		
-		//System.out.println(System.nanoTime());
-		for (String el : acc.SP_SAMPLE()) {
-			statementInsertSP_SAMPLE.setInt(1, sampleId);
-			statementInsertSP_SAMPLE.setString(2, el);
-//			statementInsertSP_SAMPLE.executeUpdate();
-			statementInsertSP_SAMPLE.addBatch();
-		}
-		if (!bulk) {
-			statementInsertSP_SAMPLE.executeBatch();
-		}
-		
-		//System.out.println(System.nanoTime());
 		statementInsertINSTRUMENT.setNull(1, java.sql.Types.INTEGER);
 		statementInsertINSTRUMENT.setString(2, acc.AC_INSTRUMENT());
 		statementInsertINSTRUMENT.setString(3, acc.AC_INSTRUMENT_TYPE());
@@ -886,6 +923,28 @@ public class DatabaseManager {
 		statementInsertRECORD.setString(13, acc.PK_SPLASH());
 		statementInsertRECORD.setInt(14, conId);
 		statementInsertRECORD.executeUpdate();
+		
+		//System.out.println(System.nanoTime());
+		for (String el : acc.SP_SAMPLE()) {
+			statementInsertSP_SAMPLE.setString(1, acc.ACCESSION());
+			statementInsertSP_SAMPLE.setString(2, el);
+//			statementInsertSP_SAMPLE.executeUpdate();
+			statementInsertSP_SAMPLE.addBatch();
+		}
+		if (!bulk) {
+			statementInsertSP_SAMPLE.executeBatch();
+		}
+		//System.out.println(System.nanoTime());
+		for (Pair<String, String> el : acc.SP_LINK()) {
+			statementInsertSP_LINK.setString(1, acc.ACCESSION());
+			statementInsertSP_LINK.setString(2, el.getLeft() + " " + el.getRight());
+//			statementInsertSP_LINK.executeUpdate();
+			statementInsertSP_LINK.addBatch();
+		}
+		if (!bulk) {
+			statementInsertSP_LINK.executeBatch();
+		}
+		
 //		set = statementInsertRECORD.getGeneratedKeys();
 //		set.next();
 		String accession = acc.ACCESSION();
@@ -1009,7 +1068,7 @@ public class DatabaseManager {
 				tmp.append(el.toString());
 				tmp.append("\n");
 			}
-			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
+			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
 //			try {
 //				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.ACCESSION() + ".txt")));
 //			} catch (FileNotFoundException e1) {
@@ -1024,7 +1083,7 @@ public class DatabaseManager {
 				tmp.append(el.toString());
 				tmp.append("\n");
 			}
-			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
+			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
 //			System.out.println(acc.ACCESSION());
 //			System.out.println(acc.get("PK$PEAK").size());
 //			System.out.println(acc.get("PK$ANNOTATION").size());
@@ -1041,7 +1100,7 @@ public class DatabaseManager {
 				tmp.append(el.toString());
 				tmp.append("\n");
 			}
-			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
+			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
 //			try {
 //				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.ACCESSION() + ".txt")));
 //			} catch (FileNotFoundException e1) {
@@ -1447,9 +1506,14 @@ public class DatabaseManager {
 				tmp.getString("CONTRIBUTOR.SHORT_NAME"), 
 				tmp.getString("CONTRIBUTOR.FULL_NAME")
 		);
-	}	
 
-	public static void main (String[] args) throws SQLException {
-
+	}
+	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
+		
+		DatabaseManager db = new DatabaseManager(Config.get().dbName());
+		DatabaseManager.init_db(Config.get().tmpdbName());
+		System.out.println(db);
+		db.closeConnection();
+		//move_temp_db_to_main_massbank();
 	}
 }

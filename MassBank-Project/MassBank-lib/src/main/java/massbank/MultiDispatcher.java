@@ -38,18 +38,23 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-//import massbank.svn.SVNUtils;
 
-@SuppressWarnings("serial")
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 public class MultiDispatcher extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String PROG_NAME = MassBankCommon.MULTI_DISPATCHER_NAME;
 
 	/**
 	 * HTTPリクエスト処理
+	 * @throws IOException 
+	 * @throws ServletException 
 	 */
-	public void service(HttpServletRequest req, HttpServletResponse res)
-		throws ServletException, IOException {
+	public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException{
 
 		ServletContext context = getServletContext();
 		PrintWriter out = res.getWriter();
@@ -76,7 +81,7 @@ public class MultiDispatcher extends HttpServlet {
 		//---------------------------------------------------
 		String type = "";
 		Hashtable<String, Object> params = new Hashtable<String, Object>();
-		Enumeration names = req.getParameterNames();
+		Enumeration<String> names = req.getParameterNames();
 		while ( names.hasMoreElements() ) {
 			String key = (String)names.nextElement();
 			String val = req.getParameter( key );
@@ -113,7 +118,12 @@ public class MultiDispatcher extends HttpServlet {
 		// サーバ・ステータス情報取得
 		// (サーバ監視が行われていなければ未処理で返ってくる)
 		//---------------------------------------------------
-		ServerStatus svrStatus = new ServerStatus(baseUrl);
+		ServerStatus svrStatus;
+		try {
+			svrStatus = new ServerStatus(baseUrl);
+		} catch (ConfigurationException e) {
+			throw new ServletException(e);
+		}
 		
 		//---------------------------------------------------
 		// ディスパッチする

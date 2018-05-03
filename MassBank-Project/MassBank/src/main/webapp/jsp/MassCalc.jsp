@@ -30,7 +30,7 @@
 <%@ page import="java.net.URLConnection" %>
 <%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.InputStreamReader" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%@ page import="massbank.admin.AdminCommon" %>
 <%
 	AdminCommon admin = new AdminCommon();
@@ -42,7 +42,7 @@
 	String copyrightLine = "";
 	BufferedReader br = null;
 	try {
-		URL url = new URL( MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "copyrightline.html" );
+		URL url = new URL( Config.get().BASE_URL() + "copyrightline.html" );
 		URLConnection con = url.openConnection();
 		br = new BufferedReader( new InputStreamReader(con.getInputStream(), "UTF-8") );
 		String line;

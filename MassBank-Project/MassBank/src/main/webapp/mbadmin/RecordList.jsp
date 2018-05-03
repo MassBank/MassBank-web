@@ -51,14 +51,11 @@
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="massbank.GetConfig" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%@ page import="massbank.Sanitizer" %>
 <%@ page import="massbank.admin.DatabaseAccess" %>
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
-<%@ page import="massbank.svn.MSDBUpdater" %>
-<%@ page import="massbank.svn.SVNRegisterUtil" %>
-<%@ page import="massbank.svn.RegistrationCommitter" %>
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -210,7 +207,7 @@
 		
 		// レコードフォーマットバージョン取得
 		Map<String, String> idVersionMap = new HashMap<String, String>();
-		final String cgiUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "cgi-bin/GetRecordInfo.cgi";
+		final String cgiUrl = Config.get().BASE_URL() + "cgi-bin/GetRecordInfo.cgi";
 		final String cgiParam = "dsn=" + selDbName + "&mode=ver&ids=" + idList.toString();
 		String tmpRet = execCgi( cgiUrl, cgiParam );
 		if ( tmpRet == null ) {
@@ -789,11 +786,11 @@ function popupRecView(url) {
 	//----------------------------------------------------
 	// 各種パラメータを取得
 	//----------------------------------------------------
-	final String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
-	final String dbRootPath = MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
-	final String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
+	final String baseUrl = Config.get().BASE_URL();
+	final String dbRootPath = Config.get().DataRootPath();
+	final String dbHostName = Config.get().dbHostName();
 	GetConfig conf = new GetConfig(baseUrl);
-	final String tomcatTmpPath = MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+	final String tomcatTmpPath = Config.get().TOMCAT_TEMP_PATH(getServletContext());
 	final String tmpPath = (new File(tomcatTmpPath + sdf.format(new Date()))).getPath() + File.separator;
 	final String backupPath = tmpPath + "backup" + File.separator;
 	DatabaseAccess db = null;
@@ -994,17 +991,6 @@ function popupRecView(url) {
 				                                   "    url : " + cgiUrl + NEW_LINE +
 				                                   "    param : " + cgiParam );
 			}
-
-			//---------------------------------------------
-			// SVN削除処理
-			//---------------------------------------------
-			if ( RegistrationCommitter.isActive ) {
-				SVNRegisterUtil.updateRecords(selDbName);
-			}
-		}
-		else if ( act.equals("svn") && RegistrationCommitter.isActive ) {
-			SVNRegisterUtil.updateRecords(selDbName);
-			out.println( msgInfo( "Done." ) );
 		}
 	}
 	finally {

@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 public class FileUtil {
 	public static void writeToFile(String svg, String file){
 		try {
@@ -43,13 +45,13 @@ public class FileUtil {
 		}
 		return list;
 	}
-	public static boolean existsFile(String databaseName, String accession){
+	public static boolean existsFile(String databaseName, String accession) throws ConfigurationException{
 		File file	= FileUtil.getFile(databaseName, accession);
 		return file.exists();
 	}
-	public static File getFile(String databaseName, String accession){
+	public static File getFile(String databaseName, String accession) throws ConfigurationException{
 		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
-		File file	= new File(MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH) + databaseName + File.separator + accession + ".txt");
+		File file	= new File(Config.get().DataRootPath() + databaseName + File.separator + accession + ".txt");
 		return file;
 	}
 }

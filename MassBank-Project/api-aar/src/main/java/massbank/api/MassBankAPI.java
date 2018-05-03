@@ -36,14 +36,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import massbank.Config;
 import massbank.GetInstInfo;
 import massbank.JobInfo;
 import massbank.JobManager;
 import massbank.MassBankCommon;
-import massbank.MassBankEnv;
+//import massbank.MassBankEnv;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class MassBankAPI {
 
@@ -56,13 +58,14 @@ public class MassBankAPI {
 
 	/**
 	 * 類似スペクトルの検索を行う
+	 * @throws ConfigurationException 
 	 */
 	public SearchResult searchSpectrum(
 			String[] mzs, String[] intensities,
 			String unit, String tolerance,
 			String cutoff, String[] instrumentTypes,
 			String ionMode, int maxNumResults )
-		throws AxisFault {
+		throws AxisFault, ConfigurationException {
 
 		//---------------------------------------
 		// パラメータチェック
@@ -98,9 +101,16 @@ public class MassBankAPI {
 
 	/**
 	 * 分析機器種別を取得する
+	 * @throws ConfigurationException 
 	 */
-	public String[] getInstrumentTypes() {
-		GetInstInfo instInfo = new GetInstInfo(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	public String[] getInstrumentTypes() throws ConfigurationException {
+		GetInstInfo instInfo = null;
+		try {
+			instInfo = new GetInstInfo(Config.get().BASE_URL());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String[] instTypes = instInfo.getTypeAll();
 		return (String[])instTypes;
 	}
@@ -108,8 +118,9 @@ public class MassBankAPI {
 
 	/**
 	 * レコード情報を取得する
+	 * @throws ConfigurationException 
 	 */
-	public RecordInfo[] getRecordInfo(String[] ids) throws AxisFault {
+	public RecordInfo[] getRecordInfo(String[] ids) throws AxisFault, ConfigurationException {
 		//---------------------------------------
 		// CGI用パラメータをセットする
 		//---------------------------------------
@@ -160,8 +171,9 @@ public class MassBankAPI {
 
 	/**
 	 * ピークデータを取得する
+	 * @throws ConfigurationException 
 	 */
-	public Peak[] getPeak(String[] ids) throws AxisFault {
+	public Peak[] getPeak(String[] ids) throws AxisFault, ConfigurationException {
 		//---------------------------------------
 		// CGI用パラメータをセットする
 		//---------------------------------------
@@ -226,6 +238,7 @@ public class MassBankAPI {
 
 	/**
 	 * ピーク検索を行う
+	 * @throws ConfigurationException 
 	 */
 	public SearchResult searchPeak(
 			String[] mzs,
@@ -234,7 +247,7 @@ public class MassBankAPI {
 			String[] instrumentTypes,
 			String ionMode,
 			int maxNumResults )
-		throws AxisFault {
+		throws AxisFault, ConfigurationException {
 
 		try {
 			SearchResult ret = searchPeakCommon( false,
@@ -251,6 +264,7 @@ public class MassBankAPI {
 
 	/**
 	 * ピーク差検索を行う
+	 * @throws ConfigurationException 
 	 */
 	public SearchResult searchPeakDiff(
 		String[] mzs,
@@ -258,7 +272,7 @@ public class MassBankAPI {
 		String tolerance,
 		String[] instrumentTypes,
 		String ionMode,
-		int maxNumResults ) throws AxisFault {
+		int maxNumResults ) throws AxisFault, ConfigurationException {
 
 		try {
 			SearchResult ret = searchPeakCommon( true,
@@ -440,6 +454,7 @@ public class MassBankAPI {
 
 	/**
 	 * ピーク検索共通処理
+	 * @throws ConfigurationException 
 	 */
 	private SearchResult searchPeakCommon (
 		boolean isDiff,
@@ -448,7 +463,7 @@ public class MassBankAPI {
 		String tolerance,
 		String[] instrumentTypes,
 		String ionMode,
-		int maxNumResults ) throws AxisFault {
+		int maxNumResults ) throws AxisFault, ConfigurationException {
 
 		//---------------------------------------
 		// パラメータチェック

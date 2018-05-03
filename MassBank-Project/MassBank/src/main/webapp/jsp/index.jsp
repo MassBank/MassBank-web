@@ -27,12 +27,12 @@
  ******************************************************************************/
 %>
 <%@ page import="massbank.GetConfig" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%
 	//-------------------------------------------
 	// 設定ファイルから各種情報を取得
 	//-------------------------------------------
-	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	GetConfig conf = new GetConfig(Config.get().BASE_URL());
 	String siteLongName = conf.getSiteLongName()[0];	// サイト名取得
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

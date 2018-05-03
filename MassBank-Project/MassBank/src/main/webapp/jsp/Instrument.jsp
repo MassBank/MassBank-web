@@ -33,7 +33,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.GetInstInfo" %>
-<%@ page import="massbank.MassBankEnv" %>
+<%@ page import="massbank.Config" %>
 <%!
 	/** Cookie名（Common） */
 	private final String COOKIE_COMMON = "Common";
@@ -93,7 +93,7 @@
 	}
 %>
 <%
-	GetConfig conf = new GetConfig(MassBankEnv.get(MassBankEnv.KEY_BASE_URL));
+	GetConfig conf = new GetConfig(Config.get().BASE_URL());
 	
 	//-------------------------------------------
 	// Cookie情報取得

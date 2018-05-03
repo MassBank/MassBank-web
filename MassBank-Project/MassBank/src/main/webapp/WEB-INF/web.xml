@@ -2,28 +2,28 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
   <display-name>MassBank Web Application</display-name>
 	<!-- get this parameters in the code with getServletContext().getInitParameter("user"); -->
-	<context-param>
-		<param-name>user</param-name>
-		<param-value>bird</param-value>
-	</context-param>
-	<context-param>
-		<param-name>password</param-name>
-		<param-value>bird2006</param-value>
-	</context-param>
+<!-- 	<context-param> -->
+<!-- 		<param-name>user</param-name> -->
+<!-- 		<param-value>bird</param-value> -->
+<!-- 	</context-param> -->
+<!-- 	<context-param> -->
+<!-- 		<param-name>password</param-name> -->
+<!-- 		<param-value>bird2006</param-value> -->
+<!-- 	</context-param> -->
 
-	<servlet>
-		<servlet-name>MassBankEnv</servlet-name>
-		<servlet-class>massbank.MassBankEnv</servlet-class>
-		<init-param>
-			<param-name>localUrl</param-name>
-			<param-value>http://localhost/MassBank/</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MassBankEnv</servlet-name>
-		<url-pattern>/MassBankEnv</url-pattern>
-	</servlet-mapping>
+<!-- 	<servlet> -->
+<!-- 		<servlet-name>MassBankEnv</servlet-name> -->
+<!-- 		<servlet-class>massbank.MassBankEnv</servlet-class> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>localUrl</param-name> -->
+<!-- 			<param-value>http://localhost/MassBank/</param-value> -->
+<!-- 		</init-param> -->
+<!-- 		<load-on-startup>1</load-on-startup> -->
+<!-- 	</servlet> -->
+<!-- 	<servlet-mapping> -->
+<!-- 		<servlet-name>MassBankEnv</servlet-name> -->
+<!-- 		<url-pattern>/MassBankEnv</url-pattern> -->
+<!-- 	</servlet-mapping> -->
 
 	<servlet>
 		<servlet-name>MultiDispatcher</servlet-name>
@@ -34,35 +34,4 @@
 		<servlet-name>MultiDispatcher</servlet-name>
 		<url-pattern>/MultiDispatcher</url-pattern>
 	</servlet-mapping>
-
-<!-- 	are these two servlets needed? -->
-<!-- 	<servlet> -->
-<!-- 		<servlet-name>MassBankScheduler</servlet-name> -->
-<!-- 		<servlet-class>massbank.admin.MassBankScheduler</servlet-class> -->
-<!-- 		<load-on-startup>3</load-on-startup> -->
-<!-- 	</servlet> -->
-
-<!-- 	<servlet> -->
-<!-- 		<servlet-name>BatchService</servlet-name> -->
-<!-- 		<servlet-class>massbank.BatchService</servlet-class> -->
-<!-- 		<load-on-startup>4</load-on-startup> -->
-<!-- 	</servlet> -->
-
-<!-- 	<servlet> -->
-<!-- 		<servlet-name>SVNServiceManager</servlet-name> -->
-<!-- 		<servlet-class>massbank.svn.SVNServiceManager</servlet-class> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>URL</param-name> -->
-<!-- 			<param-value>http://www.massbank.jp/SVN/</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>RegistrationCommitter</param-name> -->
-<!-- 			<param-value>false,10,30</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>MSDBUpdater</param-name> -->
-<!-- 			<param-value>false,10,600</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<load-on-startup>10</load-on-startup> -->
-<!-- 	</servlet> -->
 </web-app>

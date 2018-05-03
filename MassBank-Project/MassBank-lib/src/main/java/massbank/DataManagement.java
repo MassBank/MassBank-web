@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 
 public class DataManagement {
@@ -15,84 +16,89 @@ public class DataManagement {
 	 * @param resultList
 	 * @param fileName
 	 * @return
+	 * @throws ConfigurationException 
 	 */
-	public static String toMsp(ResultList resultList, String fileName){
-		// global variables
-		String path		= MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
-		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
-		GetConfig conf	= new GetConfig(baseUrl);
-		String[] databaseNames	= conf.getDbName();
-		
-		// get files
-		File[] files	= new File[resultList.getResultNum()];
-		for(int i = 0; i < files.length; i++){
-			ResultRecord record	= resultList.getRecord(i);
-			String databaseName	= databaseNames[Integer.parseInt(record.getContributor())];
-			String accession	= record.getId();
-			files[i]	= new File(path + databaseName + File.separator + accession + ".txt");
-		}
-		
-		// read and process files
-		StringBuilder sb_recordList	= new StringBuilder();
-		for(File file : files){
-			// read file
-			List<String> list	= FileUtil.readFromFile(file);
-			
-			// process file
-			final String delimiterMB	= ": ";
-			final String delimiterMSP	= ": ";
-			StringBuilder sb_record	= new StringBuilder();
-			boolean peaks	= false;
-			for(String line : list){
-				if(line.equals("//"))
-					continue;
-				
-				// peaks at end of entry
-				if(peaks){
-					sb_record.append(line.trim() + "\n");
-					continue;
-				}
-				
-				// disassemble tag and value
-				int delimiterIndex	= line.indexOf(delimiterMB);
-				if(delimiterIndex == -1){
-					sb_record.append("COMMENT" + delimiterMSP + line + "\n");
-					continue;
-				}
-				
-				String tag		= line.substring(0, delimiterIndex);
-				String value	= line.substring(delimiterIndex + delimiterMB.length());
-				String tag2		= tag.contains("$") ? tag.substring(tag.indexOf("$") + "$".length()) : tag;
-				
-				// process record entries
-				if(tag.equals("CH$IUPAC"))	tag2	= "INCHI";
-				if(tag.equals("CH$LINK")){
-					String delimiter2	= " ";
-					int delimiterIndex2	= value.indexOf(delimiter2);
-					if(delimiterIndex2 != -1){
-						tag2	= value.substring(0, delimiterIndex2);
-						value	= value.substring(delimiterIndex2 + delimiter2.length());
-					}
-				}
-				if(tag.equals("PK$PEAK"))	peaks	= true;
-				
-				sb_record.append(tag2 + delimiterMSP + value + "\n");
-			}
-			
-			// add
-			sb_recordList.append(sb_record.toString() + "\n");
-		}
-		
-		// write msp
-		String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
-		String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_APPTEMP_PATH);
-		String tmpUrl			= tmpUrlFolder + "/" + fileName;
-		String tmpFile			= (new File(tmpFileFolder + fileName	)).getPath();
-		FileUtil.writeToFile(sb_recordList.toString(),	tmpFile);
-		
-		return tmpUrl;
-	}
-	public static ResultList search(String idxtype, String srchkey, String sortKey, String sortAction, String exec) throws UnsupportedEncodingException{
+//	public static String toMsp(ResultList resultList, String fileName) throws ConfigurationException{
+//		// global variables
+//		//String path		= MassBankEnv.get(MassBankEnv.KEY_DATAROOT_PATH);
+//		String path		= Config.get().DataRootPath();
+//		//String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+//		String baseUrl	= Config.get().BASE_URL();
+//		GetConfig conf	= new GetConfig(baseUrl);
+//		String[] databaseNames	= conf.getDbName();
+//		
+//		// get files
+//		File[] files	= new File[resultList.getResultNum()];
+//		for(int i = 0; i < files.length; i++){
+//			ResultRecord record	= resultList.getRecord(i);
+//			String databaseName	= databaseNames[Integer.parseInt(record.getContributor())];
+//			String accession	= record.getId();
+//			files[i]	= new File(path + databaseName + File.separator + accession + ".txt");
+//		}
+//		
+//		// read and process files
+//		StringBuilder sb_recordList	= new StringBuilder();
+//		for(File file : files){
+//			// read file
+//			List<String> list	= FileUtil.readFromFile(file);
+//			
+//			// process file
+//			final String delimiterMB	= ": ";
+//			final String delimiterMSP	= ": ";
+//			StringBuilder sb_record	= new StringBuilder();
+//			boolean peaks	= false;
+//			for(String line : list){
+//				if(line.equals("//"))
+//					continue;
+//				
+//				// peaks at end of entry
+//				if(peaks){
+//					sb_record.append(line.trim() + "\n");
+//					continue;
+//				}
+//				
+//				// disassemble tag and value
+//				int delimiterIndex	= line.indexOf(delimiterMB);
+//				if(delimiterIndex == -1){
+//					sb_record.append("COMMENT" + delimiterMSP + line + "\n");
+//					continue;
+//				}
+//				
+//				String tag		= line.substring(0, delimiterIndex);
+//				String value	= line.substring(delimiterIndex + delimiterMB.length());
+//				String tag2		= tag.contains("$") ? tag.substring(tag.indexOf("$") + "$".length()) : tag;
+//				
+//				// process record entries
+//				if(tag.equals("CH$IUPAC"))	tag2	= "INCHI";
+//				if(tag.equals("CH$LINK")){
+//					String delimiter2	= " ";
+//					int delimiterIndex2	= value.indexOf(delimiter2);
+//					if(delimiterIndex2 != -1){
+//						tag2	= value.substring(0, delimiterIndex2);
+//						value	= value.substring(delimiterIndex2 + delimiter2.length());
+//					}
+//				}
+//				if(tag.equals("PK$PEAK"))	peaks	= true;
+//				
+//				sb_record.append(tag2 + delimiterMSP + value + "\n");
+//			}
+//			
+//			// add
+//			sb_recordList.append(sb_record.toString() + "\n");
+//		}
+//		
+//		// write msp
+//		//String tmpUrlFolder		= MassBankEnv.get(MassBankEnv.KEY_BASE_URL) + "temp";
+//		String tmpUrlFolder = Config.get().BASE_URL();
+//		//String tmpFileFolder	= MassBankEnv.get(MassBankEnv.KEY_TOMCAT_TEMP_PATH);
+//		String tmpFileFolder = Config.get().TOMCAT_TEMP_PATH();
+//		String tmpUrl			= tmpUrlFolder + "/" + fileName;
+//		String tmpFile			= (new File(tmpFileFolder + fileName	)).getPath();
+//		FileUtil.writeToFile(sb_recordList.toString(),	tmpFile);
+//		
+//		return tmpUrl;
+//	}
+	public static ResultList search(String idxtype, String srchkey, String sortKey, String sortAction, String exec) throws UnsupportedEncodingException, ConfigurationException{
 		Hashtable<String, Object> reqParams	= new Hashtable<String, Object>();
 		reqParams.put("idxtype",	idxtype);
 		reqParams.put("srchkey",	srchkey);
@@ -102,7 +108,7 @@ public class DataManagement {
 		
 		return search(reqParams);
 	}
-	public static ResultList search(Hashtable<String, Object> reqParams) throws UnsupportedEncodingException{
+	public static ResultList search(Hashtable<String, Object> reqParams) throws UnsupportedEncodingException, ConfigurationException{
 		// sanity checks
 		if(reqParams.get("idxtype") == null)
 			throw new IllegalArgumentException();
@@ -165,7 +171,7 @@ public class DataManagement {
 		// 設定ファイルから各種情報を取得
 		// Acquire various information from setting file
 		//-------------------------------------------
-		String baseUrl = MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
+		String baseUrl = Config.get().BASE_URL();
 		GetConfig conf = new GetConfig(baseUrl);
 		String serverUrl = conf.getServerUrl();				// サーバURL取得
 		
@@ -191,10 +197,10 @@ public class DataManagement {
 		// execute search
 		MassBankCommon mbcommon = new MassBankCommon();
 		if ( isMulti ) {;
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null, conf );
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null );
 		}
 		else {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo), conf );
+			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo) );
 		}
 		
 		return list;
