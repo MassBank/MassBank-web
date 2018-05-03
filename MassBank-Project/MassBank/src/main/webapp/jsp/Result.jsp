@@ -50,6 +50,7 @@
 <%@ page import="massbank.web.peaksearch.PeakSearchByPeakDifference" %>
 <%@ page import="massbank.web.peaksearch.PeakSearchByPeak" %>
 <%@ page import="massbank.web.quicksearch.QuickSearchByKeyword" %>
+<%@ page import="massbank.web.quicksearch.QuickSearchByInChIKey" %>
 <%@ page import="massbank.web.recordindex.RecordIndexByCategory" %>
 <%@ page import="massbank.web.SearchExecution" %>
 <%@ page import="massbank.web.QueryToResultList" %>
@@ -82,6 +83,7 @@
 	boolean refQuick    = false;			// QuickSearch
 	boolean refRecIndex = false;			// RecordIndex
 	boolean refStruct   = false;			// Substructure Search
+	boolean refInchi    = false;
 	String title = "";						// タイトル
 	String hTitle = "";						// ヘッダー用タイトル
 	
@@ -139,6 +141,11 @@
 		refStruct = true;
 		title = "Substructure Search Results";
 		hTitle = "Substructure Search Results";
+	}
+	else if (type.equals("inchikey")) {
+		refInchi = true;
+		title = "InChIKey Search Results";
+		hTitle = "InChIKey Search Results";
 	}
 	
 	//-------------------------------------
@@ -378,7 +385,7 @@
 	out.println( "<a name=\"resultsTop\"></a>" );
 	
 	// ◇ PeakSearch／PeakDifferenceSearch／QuickSearchの場合
-	if ( refPeak || refPeakDiff || refQuick ) {
+	if ( refPeak || refPeakDiff || refQuick || refInchi) {
 		
 		out.println( "<b>Search Parameters :</b><br>" );
 		
@@ -459,6 +466,19 @@
 				out.println( "  <td>&nbsp;&nbsp;&nbsp;Formula:&nbsp;&nbsp;<b>" + pFormula + "</b></td>" );
 				out.println( " </tr>" );
 				out.println( "</table>" );
+			}
+		}
+		else if ( refInchi ) {
+			boolean isBinder = false;
+			String inchikey = ((String)request.getParameter("inchikey") != null) ? (String)request.getParameter("inchikey") : ""; 
+			// InChIKey
+			if ( !inchikey.equals("") ) {
+				out.println( "<table width=\"" + tableWidth + "\" cellpadding=\"0\" cellspacing=\"0\">" );
+				out.println( " <tr>" );
+				out.println( "  <td>&nbsp;&nbsp;&nbsp;InChIKey:&nbsp;&nbsp;<b>" + inchikey + "</b></td>" );
+				out.println( " </tr>" );
+				out.println( "</table>" );
+				isBinder = true;
 			}
 		}
 		
@@ -751,6 +771,9 @@
 		else if ( refStruct ) {
 			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_STRUCT];
 		}
+		else if ( refInchi ) {
+			typeName = "inchikey";
+		}
 	}
 	
 	// 検索実行
@@ -768,6 +791,8 @@
 	} else if (typeName.compareTo("diff") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
 		result = new SearchExecution(request, conf).exec(new PeakSearchByPeakDifference());
+	} else if (typeName.compareTo("inchikey") == 0) {
+		result = new SearchExecution(request, conf).exec(new QuickSearchByInChIKey());
 	}
 	else {
 		if ( isMulti ) {
@@ -778,7 +803,8 @@
 		}
 	}
 	
-	list = QueryToResultList.toResultList(result, request, conf);
+	if (result != null) 
+		list = QueryToResultList.toResultList(result, request, conf);
 	
 	out.println( "<span id=\"menu\"></span>");
 	out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
