@@ -1,6 +1,7 @@
 package massbank;
 
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -149,10 +150,10 @@ public class DatabaseManager {
 		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
 		stmt.executeUpdate("USE " + dbName + ";");
 		
-		File file = new File(DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql").getFile());
-		logger.trace("Executing sql statements in file \"" + file + "\".");		
+		
+		logger.trace("Executing sql statements in file at: \"" + DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql") + "\".");
 		ScriptRunner runner = new ScriptRunner(connection, false, false);
-		runner.runScript(new BufferedReader(new FileReader(file)));
+		runner.runScript(new InputStreamReader(DatabaseManager.class.getClassLoader().getResourceAsStream("create_massbank_scheme.sql")));
 		
 		stmt.close();
 		logger.trace("Closing connection with url\"" + link + "\".");
@@ -1841,6 +1842,7 @@ public class DatabaseManager {
 	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
 		
 		DatabaseManager db = new DatabaseManager(Config.get().dbName());
+		DatabaseManager.init_db(Config.get().tmpdbName());
 		System.out.println(db);
 		db.closeConnection();
 		//move_temp_db_to_main_massbank();
