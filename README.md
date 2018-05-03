@@ -105,27 +105,25 @@ There are three parts needed to have a working development environment:
 3. Local Apache tomcat in eclipse
 
 ## Install MariaDB
-Install and configure [docker environment](https://store.docker.com/editions/community/docker-ce-server-ubuntu) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your system-user is in the group 'docker'. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps` for **massbank_mariadb**. Check database with `mysql -u bird -h 127.0.0.1 -p`.
+Install and configure [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your system-user is in the group 'docker'. Adjust your root password for the database. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps` for **massbank_mariadb**. Check database with `mysql -u root -h 127.0.0.1 -p`.
 
 ## Install Apache httpd content
-Install dependencies: apache2 libcgi-pm-perl build-essential libmysqlclient-dev libapache2-mod-jk libdbd-mysql-perl mariadb-client.
+Install dependencies: apache2 libcgi-pm-perl libapache2-mod-jk mariadb-client git.
 Install apache httpd and make sure you have no old projects installed.
+
 ```
 # copy Massbank-web content into folder '/var/www/'
 sudo cp -rp modules/apache/error /var/www/
 sudo cp -rp modules/apache/html /var/www/
 
-# built Search.cgi and copy to '/var/www/html/MassBank/cgi-bin/'
-(cd ./modules/Search.cgi/ ; make clean ; make ) 
-sudo cp -p ./modules/Search.cgi/Search.cgi /var/www/html/MassBank/cgi-bin/
-(cd ./modules/Search.cgi/ ; make clean)
+# clone MassBank-data to local disk
+git clone https://github.com/MassBank/MassBank-data.git
 
-# configure file system rights
+# configure file system rights and link in data repo
 sudo chown -R www-data:www-data /var/www/*
-sudo chown -R $USER /var/www/html/MassBank/DB
-sudo chown -R $USER /var/www/html/MassBank/massbank.conf
+sudo ln -s $PWD/MassBank-data /var/www/html/MassBank/DB
 ```
-Configure apache httpd.
+## Configure apache httpd
 ```
 # write server-name to apache2.conf
 sudo bash -c 'cat >> /etc/apache2/apache2.conf << EOF
@@ -139,16 +137,16 @@ a2enmod rewrite
 a2enmod authz_groupfile
 a2enmod cgid
 a2enmod jk'
-
-# configure htpasswd for mbadmin
-sudo htpasswd -b -c /etc/apache2/.htpasswd massbank bird2006
 ```
 Restart server: `sudo systemctl restart apache2`.
+
+## install massbank.conf
+Adjust settings in massbank.conf and copy it to /etc.
 
 ## Import project into Eclipse
 Download and install the [Eclipse IDE for Java EE Developers](https://www.eclipse.org/downloads) with "Maven Integration for Eclipse" and "Maven Integration for WTP" and extract it to your preferred folder. Start eclipse and import the clones github-project 'Massbank-web': File -> Import -> Existing Maven Project -> Select this repo for import. 
 Download [Apache Tomcat](http://tomcat.apache.org/) and extract it to your preferred folder.
-Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). Edit '/var/www/html/MassBank/massbank.conf' and set `<MiddleServer URL="http://localhost/MassBank/"/>`. Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost/MassBank/](http://localhost/MassBank/).
+Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost/MassBank/](http://localhost/MassBank/).
 
 ## PIWIK log analyser (https://piwik.org/)
 The default MassBank server installation includes the PIWIK log analyser. Consider that user tracking has privacy issues.

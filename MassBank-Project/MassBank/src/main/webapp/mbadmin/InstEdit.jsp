@@ -56,6 +56,8 @@
 <%@ page import="massbank.admin.FileUtil" %>
 <%@ page import="massbank.admin.OperationManager" %>
 <%@ page import="org.apache.commons.io.FileUtils" %>
+<%@ page import="org.apache.commons.configuration2.ex.ConfigurationException" %>
+
 <%!
 	/** 作業ディレクトリ用日時フォーマット */
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss_SSS");
@@ -122,7 +124,7 @@
 	 * @return 更新結果
 	 * @throws IOException 入出力例外
 	 */
-	private boolean modInstrument( DatabaseAccess db, ArrayList<String> msgList, String tmpPath, String hostName, String selDb, GetInstInfo instInfo, String instNo, String instType, String instName)  {
+	private boolean modInstrument( DatabaseAccess db, ArrayList<String> msgList, String tmpPath, String hostName, String selDb, GetInstInfo instInfo, String instNo, String instType, String instName) throws ConfigurationException  {
 		
 		String dumpPath = tmpPath + selDb + ".dump";
 		String recPath = Config.get().DataRootPath() + selDb + File.separator;
