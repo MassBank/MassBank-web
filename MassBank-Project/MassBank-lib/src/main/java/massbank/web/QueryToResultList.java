@@ -5,15 +5,17 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import massbank.GetConfig;
 import massbank.ResultList;
 import massbank.ResultRecord;
 
 public class QueryToResultList {
 
-	public static ResultList toResultList(ArrayList<String> allLine, HttpServletRequest request, GetConfig conf) {
+	public static ResultList toResultList(ArrayList<String> allLine, HttpServletRequest request, GetConfig conf) throws ConfigurationException {
 		// Result information record generation (結果情報レコード生成)
-		ResultList list = new ResultList(conf);
+		ResultList list = new ResultList();
 		ResultRecord record;
 		int nodeGroup = -1;
 		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();

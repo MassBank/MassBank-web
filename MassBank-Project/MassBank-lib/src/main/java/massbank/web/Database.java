@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import massbank.Config;
+
 
 public class Database {
 
@@ -11,8 +13,6 @@ public class Database {
 	private final static String user = "bird";
 	private final static String password = "bird2006";
 	private final static String databaseName ="MassBank";
-	private final static String dbHostName = getDbHostName();
-	private final static String connectUrl = "jdbc:mariadb://" + dbHostName + "/" + databaseName + "?rewriteBatchedStatements=true&pool";
 	private final Connection connection;
 	
 	public Database() {
@@ -22,8 +22,13 @@ public class Database {
 	private Connection openConnection() {
 		Connection connection = null;
 		try {
+			String link="jdbc:mariadb://" 
+					+ Config.get().dbHostName() + ":3306/"
+					+ Config.get().dbName() +
+					"?rewriteBatchedStatements=true&pool";
+			
 			Class.forName(Database.driver);
-			connection = DriverManager.getConnection(Database.connectUrl, Database.user, Database.password);
+			connection = DriverManager.getConnection(link, "root", Config.get().dbPassword());
 			connection.setAutoCommit(false);
 			connection.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 		} catch (Exception e) {
@@ -45,12 +50,5 @@ public class Database {
 	public Connection getConnection() {
 		return this.connection;
 	}
-	
-	private static String getDbHostName() {
-		String dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_HOST_NAME);
-		if ( !MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME).equals("") ) {
-			dbHostName = MassBankEnv.get(MassBankEnv.KEY_DB_MASTER_NAME);
-		}
-		return dbHostName;
-	}
+
 }
