@@ -108,6 +108,7 @@
 	if ( paramCnt > 0 ) {
 		isFirst = false;
 	}
+
 	String instGrp = "";
 	for ( int i=0; i<instGrpList.size(); i++ ) {
 		instGrp += instGrpList.get(i);

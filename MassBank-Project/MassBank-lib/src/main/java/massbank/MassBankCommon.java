@@ -224,6 +224,7 @@ public class MassBankCommon {
 		return result;
 	 }
 	
+
 	/**
 	 * Execute Servlet MultiDispatcher or Dispatcher.jsp (for displaying search results page) (サーブレットMultiDispatcher または、Dispatcher.jspを実行する（検索結果ページ表示用）)
 	 * @param serverUrl		Server URL (サーバーURL)
@@ -344,5 +345,4 @@ public class MassBankCommon {
 		
 		return list;
 	 }
-
 }

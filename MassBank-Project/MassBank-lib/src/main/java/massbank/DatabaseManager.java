@@ -1506,7 +1506,6 @@ public class DatabaseManager {
 				tmp.getString("CONTRIBUTOR.SHORT_NAME"), 
 				tmp.getString("CONTRIBUTOR.FULL_NAME")
 		);
-
 	}
 	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
 		

@@ -165,37 +165,8 @@
 							<goal>single</goal>
 						</goals>
 					</execution>
-
-        		</executions>
-				
-				
-<!-- 				<configuration> -->
-<!-- 					<archive> -->
-<!-- 						<manifest> -->
-<!-- 							<mainClass>massbank.Validator</mainClass> -->
-<!-- 						</manifest> -->
-<!-- 					</archive> -->
-<!-- 					<descriptorRefs> -->
-<!-- 						<descriptorRef>jar-with-dependencies</descriptorRef> -->
-<!-- 					</descriptorRefs> -->
-<!-- 				</configuration> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<id>make-assembly</id> this is used for inheritance merges -->
-<!-- 						<phase>package</phase> bind to the packaging phase -->
-<!-- 						<goals> -->
-<!-- 							<goal>single</goal> -->
-<!-- 						</goals> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
+        			</executions>
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>releases</id>
-			<name>Fiehnlab Public Maven Repository</name>
-			<url>http://gose.fiehnlab.ucdavis.edu:55000/content/groups/public</url>
-		</repository>
-	</repositories>
 </project>
