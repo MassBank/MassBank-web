@@ -50,5 +50,4 @@ public class Database {
 	public Connection getConnection() {
 		return this.connection;
 	}
-
 }
