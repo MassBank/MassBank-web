@@ -34,16 +34,9 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-<<<<<<< HEAD
-import massbank.web.SearchExecution;
-import massbank.web.instrument.InstrumentSearch;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-=======
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import massbank.web.SearchExecution;
 import massbank.web.instrument.InstrumentSearch;
-
->>>>>>> origin/dev
 
 public class GetInstInfo {
 	ArrayList<String>[] instNo   = null;
@@ -85,18 +78,7 @@ public class GetInstInfo {
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-<<<<<<< HEAD
-
 		ArrayList<String> resultAll = new SearchExecution(request, conf).exec(new InstrumentSearch());
-		
-=======
-//		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
-//		ArrayList<String> resultAll = mbcommon.execDispatcher(typeName, request, conf);
-		ArrayList<String> resultAll = new SearchExecution(request, conf).exec(new InstrumentSearch());
-		
-		
-		
->>>>>>> origin/dev
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];
 		instName = new ArrayList[urlList.length];
