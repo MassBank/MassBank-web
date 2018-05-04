@@ -7,19 +7,19 @@
 # you're doing.
 
 # somewhat hackish test for provisioning
-vagrant_arg = ARGV[0]
-if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/virtualbox/*").empty? and vagrant_arg == 'up'
-  variables = %w{MBUSERNAME PASSWORD}
-  missing = variables.find_all { |v| ENV[v] == nil }
-  unless missing.empty?
-    puts "FATAL: The following variables are missing and are needed for provisioning: #{missing.join(', ')}."
-    puts "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
-    puts "this script. On linux use a command like this:"
-    puts "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
-    puts "On Windows you can use the Setup_MassBank.bat"
-    exit
-  end
-end
+#vagrant_arg = ARGV[0]
+#if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/virtualbox/*").empty? and vagrant_arg == 'up'
+#  variables = %w{MBUSERNAME PASSWORD}
+#  missing = variables.find_all { |v| ENV[v] == nil }
+#  unless missing.empty?
+#    puts "FATAL: The following variables are missing and are needed for provisioning: #{missing.join(', ')}."
+#    puts "Please set the environment variables MBUSERNAME and PASSWORD for your site before running"
+#    puts "this script. On linux use a command like this:"
+#    puts "MBUSERNAME=massbankuser PASSWORD=massbankpassword vagrant up"
+#    puts "On Windows you can use the Setup_MassBank.bat"
+#    exit
+#  end
+#end
 
 
 Vagrant.configure(2) do |config|
@@ -30,7 +30,8 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/xenial64"
-  config.vm.provision :shell, path: "bootstrap.sh", env: {"MBUSERNAME" => ENV['MBUSERNAME'], "PASSWORD" => ENV['PASSWORD']}
+#  config.vm.provision :shell, path: "bootstrap.sh", env: {"MBUSERNAME" => ENV['MBUSERNAME'], "PASSWORD" => ENV['PASSWORD']}
+  config.vm.provision :shell, path: "bootstrap.sh"
   
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -55,19 +56,16 @@ Vagrant.configure(2) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.synced_folder '.', '/vagrant', nfs: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
+config.vm.provider "virtualbox" do |vb|
+  vb.memory = 2048
+  vb.cpus = 2
+end
   #
   # View the documentation for the provider you are using for more
   # information on available options.

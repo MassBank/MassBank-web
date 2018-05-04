@@ -35,4 +35,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	 <repositories>
+                <repository>
+                        <id>z</id>
+                        <name>Fiehnlab Public Maven Repository</name>
+                        <url>http://gose.fiehnlab.ucdavis.edu:55000/content/groups/public</url>
+                </repository>
+        </repositories>
 </project>
