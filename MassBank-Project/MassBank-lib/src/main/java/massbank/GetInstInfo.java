@@ -35,6 +35,9 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import massbank.web.SearchExecution;
+import massbank.web.instrument.InstrumentSearch;
+
 
 public class GetInstInfo {
 	ArrayList<String>[] instNo   = null;
@@ -76,7 +79,11 @@ public class GetInstInfo {
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-		ArrayList<String> resultAll = mbcommon.execDispatcher(typeName, request);
+//		ArrayList<String> resultAll = mbcommon.execDispatcher( serverUrl, typeName, urlParam, true, null );
+//		ArrayList<String> resultAll = mbcommon.execDispatcher(typeName, request, conf);
+		ArrayList<String> resultAll = new SearchExecution(request, conf).exec(new InstrumentSearch());
+		
+		
 		
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];

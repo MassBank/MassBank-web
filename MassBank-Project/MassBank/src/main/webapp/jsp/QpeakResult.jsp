@@ -44,6 +44,8 @@
 <%@ page import="massbank.DatabaseManager" %>
 <%@ page import="massbank.Record" %>
 <%@ page import="massbank.Config" %>
+<%@ page import="massbank.web.quicksearch.QuickSearchByPeak" %>
+<%@ page import="massbank.web.SearchExecution" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -501,11 +503,13 @@
 		ArrayList<String> result = null;
 		if ( siteNo == -1 ) {
 			//result = mbcommon.execMultiDispatcher( serverUrl, typeName, param );
-			result = mbcommon.execDispatcher(typeName, request);
+			//result = mbcommon.execDispatcher(typeName, request);
+			result = new SearchExecution(request, conf).exec(new QuickSearchByPeak());
 		}
 		else {
 			//result = mbcommon.execDispatcher( serverUrl, typeName, param, false, String.valueOf(siteNo) );
-			result = mbcommon.execDispatcher(typeName, request);
+			//result = mbcommon.execDispatcher(typeName, request);
+			result = new SearchExecution(request, conf).exec(new QuickSearchByPeak());
 		}
 		
 		out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
@@ -733,3 +737,4 @@
 <span id="menu"></span>
 </body>
 </html>
+

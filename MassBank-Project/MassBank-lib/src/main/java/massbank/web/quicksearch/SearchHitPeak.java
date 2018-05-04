@@ -1,4 +1,4 @@
-package massbank;
+package massbank.web.quicksearch;
 
 public class SearchHitPeak {
 
@@ -6,7 +6,8 @@ public class SearchHitPeak {
 	public double qVal;
 	public String hitMz;
 	public double hitVal;
-	
-	public SearchHitPeak() {}
-	
+
+	public SearchHitPeak() {
+	}
+
 }

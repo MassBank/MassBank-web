@@ -58,6 +58,8 @@
 <%@ page import="org.jfree.ui.RectangleInsets" %>
 <%@ page import="org.jfree.ui.VerticalAlignment" %>
 <%@ page import="org.jfree.util.SortOrder" %>
+<%@ page import="massbank.web.recordindex.RecordIndexCount" %>
+<%@ page import="massbank.web.SearchExecution" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	/** インデックス種別 **/
@@ -94,7 +96,8 @@ int pos = -1;
 	MassBankCommon mbcommon = new MassBankCommon();
 	//String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
 	//ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
-	ArrayList<String> result = mbcommon.execDispatcher("idxcnt",request);
+	//ArrayList<String> result = mbcommon.execDispatcher("idxcnt",request);
+	ArrayList<String> result = new SearchExecution(request, conf).exec(new RecordIndexCount());
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();
