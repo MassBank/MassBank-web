@@ -38,42 +38,48 @@ public class QuickSearchByInChIKey implements SearchFunction {
 		StringBuilder sb = new StringBuilder();
 		sb.append(sql);
 		sb.append(" AND (CH_LINK.DATABASE_ID = ?");
-		sb.append(") AND (");
-		for (int i = 0; i < inst.length; i++) {
-			sb.append("INSTRUMENT.AC_INSTRUMENT_TYPE = ?");
-			if (i < inst.length - 1) {
-				sb.append(" OR ");
+		if (this.inst != null && this.ms != null && this.ion != null) {
+			sb.append(") AND (");
+			for (int i = 0; i < inst.length; i++) {
+				sb.append("INSTRUMENT.AC_INSTRUMENT_TYPE = ?");
+				if (i < inst.length - 1) {
+					sb.append(" OR ");
+				}
 			}
-		}
-		sb.append(") AND (");
-		for (int i = 0; i < ms.length; i++) {
-			sb.append("RECORD.AC_MASS_SPECTROMETRY_MS_TYPE = ?");
-			if (i < ms.length - 1) {
-				sb.append(" OR ");
+			sb.append(") AND (");
+			for (int i = 0; i < ms.length; i++) {
+				sb.append("RECORD.AC_MASS_SPECTROMETRY_MS_TYPE = ?");
+				if (i < ms.length - 1) {
+					sb.append(" OR ");
+				}
 			}
-		}
-		sb.append(")");
-		if (Integer.parseInt(ion) != 0) {
-			sb.append(" AND RECORD.AC_MASS_SPECTROMETRY_ION_MODE = ?");
+			sb.append(")");
+			if (Integer.parseInt(ion) != 0) {
+				sb.append(" AND RECORD.AC_MASS_SPECTROMETRY_ION_MODE = ?");
+			}
+		} else {
+			sb.append(")");
 		}
 		try {
 			PreparedStatement stmnt = connection.prepareStatement(sb.toString());
 			int idx = 1;
 			stmnt.setString(idx, this.inChIKey);
-			idx++;
-			for (int i = 0; i < inst.length; i++) {
-				stmnt.setString(idx, inst[i]);
+			if (this.inst != null && this.ms != null && this.ion != null) {
 				idx++;
-			}
-			for (int i = 0; i < ms.length; i++) {
-				stmnt.setString(idx, ms[i]);
-				idx++;
-			}
-			if (Integer.parseInt(ion) == 1) {
-				stmnt.setString(idx, "POSITIVE");
-			}
-			if (Integer.parseInt(ion) == -1) {
-				stmnt.setString(idx, "NEGATIVE");
+				for (int i = 0; i < inst.length; i++) {
+					stmnt.setString(idx, inst[i]);
+					idx++;
+				}
+				for (int i = 0; i < ms.length; i++) {
+					stmnt.setString(idx, ms[i]);
+					idx++;
+				}
+				if (Integer.parseInt(ion) == 1) {
+					stmnt.setString(idx, "POSITIVE");
+				}
+				if (Integer.parseInt(ion) == -1) {
+					stmnt.setString(idx, "NEGATIVE");
+				}
 			}
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {

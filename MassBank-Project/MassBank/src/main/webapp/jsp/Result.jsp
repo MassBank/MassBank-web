@@ -87,8 +87,13 @@
 	String title = "";						// タイトル
 	String hTitle = "";						// ヘッダー用タイトル
 	
+	if (request.getParameter("inchikey") != null) {
+		refInchi = true;
+		title = "InChIKey Search Results";
+		hTitle = "InChIKey Search Results";
+	}
 	String type = request.getParameter("type");
-	if ( type == null ) {
+	if ( type == null && !refInchi) {
 		out.println( "<html>" );
 		out.println( "<head>" );
 		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
@@ -117,35 +122,37 @@
 		return;
 	}
 	
-	if ( type.equals(MassBankCommon.REQ_TYPE_PEAK) ) {			// 遷移元がPeakSearch
-		refPeak = true;
-		title = "Peak Search Results (Peaks by m/z value)";
-		hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:OliveDrab\">(Peaks by <i>m/z</i> value)</span>";
-	}
-	else if ( type.equals(MassBankCommon.REQ_TYPE_PEAKDIFF) ) {	// 遷移元がPeakDifferenceSearch
-		refPeakDiff = true;
-		title = "Peak Search Results (Peak Differences by m/z value)";
-		hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:DarkOrchid\">(Peak Differences by <i>m/z</i> value)</span>";
-	}
-	else if ( type.equals(MassBankCommon.REQ_TYPE_QUICK) ) {	// 遷移元がQuickSearch
-		refQuick = true;
-		title = "Quick Search Results";
-		hTitle = "Quick Search Results";
-	}
-	else if ( type.equals(MassBankCommon.REQ_TYPE_RCDIDX) ) {	// 遷移元がRecordIndex
-		refRecIndex = true;
-		title = "Record Index Results";
-		hTitle = "Record Index Results";
-	}
-	else if ( type.equals(MassBankCommon.REQ_TYPE_STRUCT) ) {	// 遷移元がSubstructure Search
-		refStruct = true;
-		title = "Substructure Search Results";
-		hTitle = "Substructure Search Results";
-	}
-	else if (type.equals("inchikey")) {
-		refInchi = true;
-		title = "InChIKey Search Results";
-		hTitle = "InChIKey Search Results";
+	if (type != null) {
+		if ( type.equals(MassBankCommon.REQ_TYPE_PEAK) ) {			// 遷移元がPeakSearch
+			refPeak = true;
+			title = "Peak Search Results (Peaks by m/z value)";
+			hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:OliveDrab\">(Peaks by <i>m/z</i> value)</span>";
+		}
+		else if ( type.equals(MassBankCommon.REQ_TYPE_PEAKDIFF) ) {	// 遷移元がPeakDifferenceSearch
+			refPeakDiff = true;
+			title = "Peak Search Results (Peak Differences by m/z value)";
+			hTitle = "Peak Search Results&nbsp;&nbsp;<span style=\"font-size:22px;color:DarkOrchid\">(Peak Differences by <i>m/z</i> value)</span>";
+		}
+		else if ( type.equals(MassBankCommon.REQ_TYPE_QUICK) ) {	// 遷移元がQuickSearch
+			refQuick = true;
+			title = "Quick Search Results";
+			hTitle = "Quick Search Results";
+		}
+		else if ( type.equals(MassBankCommon.REQ_TYPE_RCDIDX) ) {	// 遷移元がRecordIndex
+			refRecIndex = true;
+			title = "Record Index Results";
+			hTitle = "Record Index Results";
+		}
+		else if ( type.equals(MassBankCommon.REQ_TYPE_STRUCT) ) {	// 遷移元がSubstructure Search
+			refStruct = true;
+			title = "Substructure Search Results";
+			hTitle = "Substructure Search Results";
+		}
+		else if (type.equals("inchikey")) {
+			refInchi = true;
+			title = "InChIKey Search Results";
+			hTitle = "InChIKey Search Results";
+		}
 	}
 	
 	//-------------------------------------
@@ -503,6 +510,10 @@
 				break;
 			}
 		}
+		if (type == null && refInchi) {
+			out.println( "  <td><b>All</b></td>" );
+			isInstAll = true;
+		}
 		if ( !isInstAll ) {
 			int instCount = 0;
 			for (int i=0; i<instrument.length; i++) {
@@ -550,6 +561,10 @@
 				isMsAll = true;
 				break;
 			}
+		}
+		if (type == null && refInchi) {
+			out.println( "  <td><b>All</b></td>" );
+			isMsAll = true;
 		}
 		if ( !isMsAll ) {
 			out.print( "  <td>" );

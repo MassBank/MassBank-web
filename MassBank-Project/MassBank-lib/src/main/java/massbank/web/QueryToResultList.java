@@ -42,18 +42,24 @@ public class QueryToResultList {
 
 		// Get sort key (ソートキー取得)
 		String sortKey = ResultList.SORT_KEY_NAME;
-		if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_FORMULA) == 0) {
-			sortKey = ResultList.SORT_KEY_FORMULA;
-		} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_EMASS) == 0) {
-			sortKey = ResultList.SORT_KEY_EMASS;
-		} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_ID) == 0) {
-			sortKey = ResultList.SORT_KEY_ID;
+		if (request.getParameter("sortKey") != null) {
+			if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_FORMULA) == 0) {
+				sortKey = ResultList.SORT_KEY_FORMULA;
+			} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_EMASS) == 0) {
+				sortKey = ResultList.SORT_KEY_EMASS;
+			} else if (request.getParameter("sortKey").compareTo(ResultList.SORT_KEY_ID) == 0) {
+				sortKey = ResultList.SORT_KEY_ID;
+			}
 		}
 
 		// Acquire sort action (ソートアクション取得)
 		int sortAction = ResultList.SORT_ACTION_ASC;
-		if (request.getParameter("sortAction").compareTo(String.valueOf(ResultList.SORT_ACTION_DESC)) == 0) {
-			sortAction = ResultList.SORT_ACTION_DESC;
+		if (request.getParameter("sortAction") != null) {
+			if (request.getParameter("sortAction").compareTo(String.valueOf(ResultList.SORT_ACTION_DESC)) == 0) {
+				sortAction = ResultList.SORT_ACTION_DESC;
+			}
+		} else {
+			
 		}
 
 		// Record sort (レコードソート)
