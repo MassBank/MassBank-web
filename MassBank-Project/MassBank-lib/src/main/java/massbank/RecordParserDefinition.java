@@ -5,11 +5,12 @@ import static org.petitparser.parser.primitive.CharacterParser.letter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -37,6 +38,7 @@ import net.sf.jniinchi.INCHI_RET;
 
 
 public class RecordParserDefinition extends GrammarDefinition {
+	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
 
 	public RecordParserDefinition(Record callback) {
 		def("start",
@@ -522,6 +524,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 								}
 								IAtomContainer m = intostruct.getAtomContainer();
 								callback.CH_IUPAC(m);
+	
+								String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
+								logger.trace("Formula from InChI " + formula_inchi + ".");
+								if (!formula_inchi.equals(callback.CH_FORMULA())) {
+									logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
+									
+									// Formula error in record file
+									return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
+											+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
+								}
 							}
 						} catch (CDKException e) { 
 							return context.failure("\"Can not parse INCHI string in \"CH$IUPAC\" field.");		 				

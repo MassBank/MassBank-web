@@ -4,10 +4,14 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
 public class Validator {
+	private static final Logger logger = LogManager.getLogger(Validator.class);
+	
 	public static String recordstringExample = 
 			"ACCESSION: BSU00002\n" +
 			"RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n" +
@@ -21,10 +25,10 @@ public class Validator {
 			"CH$NAME: Veratramine\n" + 
 			"CH$NAME: {(3beta,23R)-14,15,16,17-Tetradehydroveratraman-3,23-diol\n" +
 			"CH$COMPOUND_CLASS: N/A; Environmental Standard; grr\n" +
-			"CH$FORMULA: C27H39NO2\n" +
+			"CH$FORMULA: C27H41NO2\n" +
 			"CH$EXACT_MASS: 409.29807\n" +
-			"CH$SMILES: N/A\n" +
-			"CH$IUPAC: N/A\n" +
+			"CH$SMILES: CC1CC2C(C(C3(O2)CCC4C5CC=C6CC(CCC6(C5CC4=C3C)C)O)C)NC1\n" + 
+			"CH$IUPAC: InChI=1S/C27H41NO2/c1-15-11-24-25(28-14-15)17(3)27(30-24)10-8-20-21-6-5-18-12-19(29)7-9-26(18,4)23(21)13-22(20)16(27)2/h5,15,17,19-21,23-25,28-29H,6-14H2,1-4H3/t15-,17+,19-,20-,21-,23-,24+,25-,26-,27-/m0/s1\n" +
 			"CH$LINK: CAS 60-70-8\n" + 
 			"CH$LINK: CHEBI 9951\n" + 
 			"CH$LINK: CHEMSPIDER 5845\n" +
@@ -217,7 +221,8 @@ public class Validator {
 		if (arguments.length==0) {
 			Record record = validate(recordstringExample, "");
 			if (record == null) System.err.println("Error.");
-			else System.out.println(record.toString());
+			else logger.trace(record.toString());
+			//System.out.println(record.toString());
 		}
 		else {
 			for (String filename : arguments) {
