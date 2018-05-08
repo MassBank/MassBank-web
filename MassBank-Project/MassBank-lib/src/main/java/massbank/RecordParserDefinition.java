@@ -765,6 +765,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.optional()
 			.seq(ref("ac_instrument_type_ionisation"))
 			.seq(ref("ac_instrument_type_analyzer").plus().flatten())
+			.map((List<?> value) -> {
+				if (value.get(0)==null) value.remove(0);
+				return value;
+			})
 		);
 		def("ac_instrument_type", 
 			StringParser.of("AC$INSTRUMENT_TYPE")

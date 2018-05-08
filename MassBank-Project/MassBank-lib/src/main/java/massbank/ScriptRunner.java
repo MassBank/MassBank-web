@@ -30,10 +30,14 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 /**
  * Tool to run database scripts
  */
 public class ScriptRunner {
+	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
 
     private static final String DEFAULT_DELIMITER = ";";
     /**
@@ -47,9 +51,6 @@ public class ScriptRunner {
     private final boolean stopOnError;
     private final boolean autoCommit;
 
-    private PrintWriter logWriter = null;
-    private PrintWriter errorLogWriter = null;
-
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter = false;
 
@@ -61,52 +62,11 @@ public class ScriptRunner {
         this.connection = connection;
         this.autoCommit = autoCommit;
         this.stopOnError = stopOnError;
-        File logFile = new File("create_db.log");
-        File errorLogFile = new File("create_db_error.log");
-        try {
-            if (logFile.exists()) {
-                logWriter = new PrintWriter(new FileWriter(logFile, true));
-            } else {
-                logWriter = new PrintWriter(new FileWriter(logFile, false));
-            }
-        } catch(IOException e){
-            System.err.println("Unable to access or create the db_create log");
-        }
-        try {
-            if (errorLogFile.exists()) {
-                errorLogWriter = new PrintWriter(new FileWriter(errorLogFile, true));
-            } else {
-                errorLogWriter = new PrintWriter(new FileWriter(errorLogFile, false));
-            }
-        } catch(IOException e){
-            System.err.println("Unable to access or create the db_create error log");
-        }
-        String timeStamp = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss").format(new java.util.Date());
-        println("\n-------\n" + timeStamp + "\n-------\n");
-        printlnError("\n-------\n" + timeStamp + "\n-------\n");
     }
 
     public void setDelimiter(String delimiter, boolean fullLineDelimiter) {
         this.delimiter = delimiter;
         this.fullLineDelimiter = fullLineDelimiter;
-    }
-
-    /**
-     * Setter for logWriter property
-     *
-     * @param logWriter - the new value of the logWriter property
-     */
-    public void setLogWriter(PrintWriter logWriter) {
-        this.logWriter = logWriter;
-    }
-
-    /**
-     * Setter for errorLogWriter property
-     *
-     * @param errorLogWriter - the new value of the errorLogWriter property
-     */
-    public void setErrorLogWriter(PrintWriter errorLogWriter) {
-        this.errorLogWriter = errorLogWriter;
     }
 
     /**
@@ -159,7 +119,7 @@ public class ScriptRunner {
                 } else if (delimMatch.matches()) {
                     setDelimiter(delimMatch.group(2), false);
                 } else if (trimmedLine.startsWith("--")) {
-                    println(trimmedLine);
+                    logger.trace(trimmedLine);
                 } else if (trimmedLine.length() < 1
                         || trimmedLine.startsWith("--")) {
                     // Do nothing
@@ -188,7 +148,6 @@ public class ScriptRunner {
             throw new IOException(String.format("Error executing '%s': %s", command, e.getMessage()), e);
         } finally {
             conn.rollback();
-            flush();
         }
     }
 
@@ -196,7 +155,7 @@ public class ScriptRunner {
                              LineNumberReader lineReader) throws SQLException {
         Statement statement = conn.createStatement();
 
-        println(command);
+        logger.trace(command);
 
         boolean hasResults = false;
         try {
@@ -204,8 +163,7 @@ public class ScriptRunner {
         } catch (SQLException e) {
             final String errText = String.format("Error executing '%s' (line %d): %s",
                     command, lineReader.getLineNumber(), e.getMessage());
-            printlnError(errText);
-            System.err.println(errText);
+            logger.error(errText);
             if (stopOnError) {
                 throw new SQLException(errText, e);
             }
@@ -221,15 +179,13 @@ public class ScriptRunner {
             int cols = md.getColumnCount();
             for (int i = 1; i <= cols; i++) {
                 String name = md.getColumnLabel(i);
-                print(name + "\t");
+                logger.trace(name + "\t");
             }
-            println("");
             while (rs.next()) {
                 for (int i = 1; i <= cols; i++) {
                     String value = rs.getString(i);
-                    print(value + "\t");
+                    logger.trace(value + "\t");
                 }
-                println("");
             }
         }
 
@@ -242,32 +198,5 @@ public class ScriptRunner {
 
     private String getDelimiter() {
         return delimiter;
-    }
-
-    private void print(Object o) {
-        if (logWriter != null) {
-            logWriter.print(o);
-        }
-    }
-
-    private void println(Object o) {
-        if (logWriter != null) {
-            logWriter.println(o);
-        }
-    }
-
-    private void printlnError(Object o) {
-        if (errorLogWriter != null) {
-            errorLogWriter.println(o);
-        }
-    }
-
-    private void flush() {
-        if (logWriter != null) {
-            logWriter.flush();
-        }
-        if (errorLogWriter != null) {
-            errorLogWriter.flush();
-        }
     }
 }
