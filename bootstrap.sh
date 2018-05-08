@@ -69,7 +69,7 @@ cp MassBank-Project/api/target/api.war /var/lib/tomcat8/webapps/
 cp massbank.conf /etc
 
 echo "**update database******************************************************"
-java -jar MassBank-Project/MassBank-lib/target/RefreshDatabase-jar-with-dependencies.jar
+MassBank-Project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
 
 echo "**configure Tomcat if not already done*********************************"
 if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' /var/lib/tomcat8/conf/server.xml ; then

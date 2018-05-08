@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>de.ipb-halle.msbi</groupId>
 		<artifactId>MassBank-Project</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>MassBank</artifactId>
 	<packaging>war</packaging>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>de.ipb-halle.msbi</groupId>
 			<artifactId>MassBank-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

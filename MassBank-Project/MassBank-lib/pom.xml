@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>de.ipb-halle.msbi</groupId>
 		<artifactId>MassBank-Project</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>MassBank-lib</artifactId>
 	<name>MassBank lib</name>
@@ -127,45 +127,20 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.0</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
 				<executions>
 					<execution>
-						<id>Validator</id>
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>massbank.Validator</mainClass>
-								</manifest>
-							</archive>
-              				<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<finalName>Validator</finalName>
-						</configuration>
+						<id>assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 					</execution>
-					
-					<execution>
-						<id>RefreshDatabase</id>
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>massbank.RefreshDatabase</mainClass>
-								</manifest>
-							</archive>
-              				<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<finalName>RefreshDatabase</finalName>
-						</configuration>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-        			</executions>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
