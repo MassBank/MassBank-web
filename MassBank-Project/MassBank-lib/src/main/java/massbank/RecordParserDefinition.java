@@ -530,9 +530,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 								if (!formula_inchi.equals(callback.CH_FORMULA())) {
 									logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
 									
+									// just log an error for now
+									logger.error("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
+											+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"\n" 
+											+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
+											
 									// Formula error in record file
-									return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-											+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
+									//return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
+									//		+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
 								}
 							}
 						} catch (CDKException e) { 
