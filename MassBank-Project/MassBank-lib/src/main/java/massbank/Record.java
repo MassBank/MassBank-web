@@ -2,6 +2,7 @@ package massbank;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,6 +27,8 @@ public class Record {
 	
 	private String accession;
 	private String record_title;
+	private String record_title_name;
+	private String record_title_condition;
 	private LocalDate date;
 	private String authors;
 	private String license;	
@@ -96,6 +99,9 @@ public class Record {
 	}
 	public void RECORD_TITLE(String value) {
 		this.record_title = value;
+		String[] record_title_tokens	= value.split("; ");
+		this.record_title_name		= record_title_tokens[0];
+		this.record_title_condition	= String.join("; ", Arrays.copyOfRange(record_title_tokens, 1, record_title_tokens.length));
 	}
 	
 	public LocalDate DATE() {

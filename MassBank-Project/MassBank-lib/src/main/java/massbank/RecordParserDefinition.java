@@ -163,9 +163,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER)
 			.map((List<?> value) -> {
 				//System.out.println(value);
-				if (value.get(value.size()-2) == null) callback.RECORD_TITLE(value.subList(2, value.size()-2).toString());
-				else callback.RECORD_TITLE(value.subList(2, value.size()-1).toString());
-				return value;						
+				
+				// [RECORD_TITLE, : , 2,6-Cyclolycopene-1,5-diol, [FAB, EBEB], MS2, m/z: 570.44; [M]*+, \n]
+				value	= value.subList(2, value.size()-1);
+				List<String> value2	= new ArrayList<String>();
+				for(Object val : value) {
+					if(val == null)	continue;
+					if(val instanceof List) {
+						value2.add(String.join("-", (String[]) ((List) val).toArray(new String[((List) val).size()])));
+						continue;
+					}
+					value2.add((String) val);
+				}
+				String recordTitle	= String.join("; ", value2.toArray(new String[value2.size()]));
+				callback.RECORD_TITLE(recordTitle);
+				
+//				if (value.get(value.size()-2) == null) callback.RECORD_TITLE(value.subList(2, value.size()-2).toString());
+//				else callback.RECORD_TITLE(value.subList(2, value.size()-1).toString());
+				return value;
 			})
 		);
 		
