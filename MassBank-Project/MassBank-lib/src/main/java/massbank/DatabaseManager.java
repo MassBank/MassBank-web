@@ -289,7 +289,11 @@ public class DatabaseManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}	
+	}
+	
+	public Connection getConnection() {
+		return this.con;
+	}
 	
 	public Record getAccessionData(String accessionId, String contributor) {
 		Record acc = new Record(contributor);

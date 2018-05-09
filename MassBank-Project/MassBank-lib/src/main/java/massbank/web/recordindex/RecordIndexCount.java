@@ -5,11 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
-
-import massbank.GetConfig;
-import massbank.web.Database;
 import massbank.web.SearchFunction;
 
 public class RecordIndexCount implements SearchFunction {

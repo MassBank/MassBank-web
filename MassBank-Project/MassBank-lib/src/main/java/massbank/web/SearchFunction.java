@@ -2,7 +2,6 @@ package massbank.web;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 
 public interface SearchFunction {
