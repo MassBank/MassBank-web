@@ -33,7 +33,7 @@
 	// 設定ファイルから各種情報を取得
 	//-------------------------------------------
 	GetConfig conf = new GetConfig(Config.get().BASE_URL());
-	String siteLongName = conf.getSiteLongName()[0];	// サイト名取得
+	String siteLongName = Config.get().LongName();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "https://www.w3.org/TR/html4/loose.dtd">

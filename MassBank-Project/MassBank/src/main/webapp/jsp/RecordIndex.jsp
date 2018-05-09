@@ -96,7 +96,7 @@
 	//String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
 	//ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
 	//ArrayList<String> result = mbcommon.execDispatcher("idxcnt",request,conf);
-	ArrayList<String> result = new SearchExecution(request, conf).exec(new RecordIndexCount());
+	ArrayList<String> result = new SearchExecution(request).exec(new RecordIndexCount());
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();

@@ -78,7 +78,7 @@ public class GetInstInfo {
 		String serverUrl = conf.getServerUrl();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
-		ArrayList<String> resultAll = new SearchExecution(request, conf).exec(new InstrumentSearch());
+		ArrayList<String> resultAll = new SearchExecution(request).exec(new InstrumentSearch());
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];
 		instName = new ArrayList[urlList.length];

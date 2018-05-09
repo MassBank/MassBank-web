@@ -796,18 +796,18 @@
 	ArrayList<String> result = null;
 	if (typeName.compareTo("quick") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
-		result = new SearchExecution(request, conf).exec(new QuickSearchByKeyword());
+		result = new SearchExecution(request).exec(new QuickSearchByKeyword());
 	} else if (typeName.compareTo("rcdidx") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
-		result = new SearchExecution(request, conf).exec(new RecordIndexByCategory());
+		result = new SearchExecution(request).exec(new RecordIndexByCategory());
 	} else if (typeName.compareTo("peak") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);	
-		result = new SearchExecution(request, conf).exec(new PeakSearchByPeak());
+		result = new SearchExecution(request).exec(new PeakSearchByPeak());
 	} else if (typeName.compareTo("diff") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
-		result = new SearchExecution(request, conf).exec(new PeakSearchByPeakDifference());
+		result = new SearchExecution(request).exec(new PeakSearchByPeakDifference());
 	} else if (typeName.compareTo("inchikey") == 0) {
-		result = new SearchExecution(request, conf).exec(new QuickSearchByInChIKey());
+		result = new SearchExecution(request).exec(new QuickSearchByInChIKey());
 	}
 	else {
 		if ( isMulti ) {
@@ -819,7 +819,7 @@
 	}
 	
 	if (result != null) 
-		list = QueryToResultList.toResultList(result, request, conf);
+		list = QueryToResultList.toResultList(result, request);
 	
 	out.println( "<span id=\"menu\"></span>");
 	out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
