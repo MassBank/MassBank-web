@@ -34,6 +34,7 @@
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.GetInstInfo" %>
 <%@ page import="massbank.Config" %>
+<%@ page import="massbank.SearchDefaults" %>
 <%!
 	/** Cookie名（Common） */
 	private final String COOKIE_COMMON = "Common";
@@ -159,7 +160,7 @@
 		}
 	}
 	if ( !ionMode.equals("1") && !ionMode.equals("0") && !ionMode.equals("-1") ) {
-		ionMode = "1";
+		ionMode = SearchDefaults.ionMode;
 	}
 	
 	String[] chkInstTypeAdv = null;
@@ -191,7 +192,7 @@
 		}
 	}
 	if ( !ionModeAdv.equals("1") && !ionModeAdv.equals("0") && !ionModeAdv.equals("-1") ) {
-		ionModeAdv = "1";
+		ionModeAdv = SearchDefaults.ionMode;
 	}
 	
 	//-------------------------------------------

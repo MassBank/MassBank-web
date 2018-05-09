@@ -35,6 +35,7 @@
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
+<%@ page import="massbank.SearchDefaults" %>
 <%@ include file="./Common.jsp"%>
 <%
 	//AdminCommon admin = new AdminCommon();
@@ -45,12 +46,12 @@
 	//-------------------------------------
 	final int NUM_FORMULA_STD = 6; 
 	final int NUM_FORMULA_ADV = 5;
-	String searchOf = "peak";
-	String searchBy = "mz";
-	String relInte  = "100";
-	String tol  = "0.3";
-	String ionMode  = "1";
-	String ionModeAdv = "1";
+	String searchOf	= "peak";
+	String searchBy	= "mz";
+	String relInte	= SearchDefaults.relInte;
+	String tol		= SearchDefaults.tol;
+	String ionMode	= SearchDefaults.ionMode;
+	String ionModeAdv = SearchDefaults.ionMode;
 	String mode = "and";
 	Map inputFormula= new HashMap();
 	boolean isFirst = true;

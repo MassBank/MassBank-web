@@ -29,6 +29,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetInstInfo" %>
+<%@ page import="massbank.SearchDefaults" %>
 <%@ include file="./Common.jsp"%>
 <%
 	//-------------------------------------------
@@ -58,14 +59,14 @@
 	//-------------------------------------
 	String compound = "";
 	String mass     = "";
-	String tol      = "0.3";
+	String tol      = SearchDefaults.tol;
 	String formula  = "";
 	String op1      = "";
 	String op2      = "";
 	String peakData = "";
-	String cutOff   = "5";
-	String num      = "20";
-	String ionMode  = "1";
+	String cutOff   = SearchDefaults.cutOff;
+	String num      = SearchDefaults.num;
+	String ionMode  = SearchDefaults.ionMode;
 	String inchikey = "";
 	boolean isFirst = true;
 	List instGrpList = new ArrayList<String>();
