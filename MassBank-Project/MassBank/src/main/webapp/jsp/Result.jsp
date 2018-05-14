@@ -819,7 +819,7 @@
 	}
 	
 	if (result != null) 
-		list = QueryToResultList.toResultList(result, request, conf);
+		list = QueryToResultList.toResultList(result, request);
 	
 	out.println( "<span id=\"menu\"></span>");
 	out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );

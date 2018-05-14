@@ -305,7 +305,8 @@
 								<input type="submit" value="Search" onclick="<% if(!isKeyword){out.print("beforeSubmit(); ");} %>return checkSubmit(0);" class="search">
 								<input type="hidden" name="type" value="<% if(!isInChIKey){out.print("quick");}else{out.print("inchikey");} %>">
 								<input type="hidden" name="searchType" value="<% if(isKeyword){out.print("keyword");}else if(isInChIKey){out.print("inchikey");}else{out.print("peak");}%>">
-								<input type="hidden" name="sortKey" value="name">
+								<!-- <input type="hidden" name="sortKey" value="name">  -->
+								<input type="hidden" name="sortKey" value="not">
 								<input type="hidden" name="sortAction" value="1">
 								<input type="hidden" name="pageNo" value="1">
 								<input type="hidden" name="exec" value="">
