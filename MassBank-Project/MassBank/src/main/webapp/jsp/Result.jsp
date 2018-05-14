@@ -89,18 +89,23 @@
 	String title = "";						// タイトル
 	String hTitle = "";						// ヘッダー用タイトル
 	
-	if (request.getParameter("inchikey") != null) {
-		refInchi = true;
-		title = "InChIKey Search Results";
-		hTitle = "InChIKey Search Results";
-	}
-	if (request.getParameter("splash") != null) {
-		refSplash = true;
-		title = "Splash Search Results";
-		hTitle = "Splash Search Results";
-	}
 	String type = request.getParameter("type");
-	if ( type == null && !refInchi && !refSplash) {
+	if (type == null) {
+		if (request.getParameter("inchikey") != null) {
+			type = "inchikey";
+			/*refInchi = true;
+			title = "InChIKey Search Results";
+			hTitle = "InChIKey Search Results";*/
+		}
+		if (request.getParameter("splash") != null) {
+			type = "splash";
+			/*refSplash = true;
+			title = "Splash Search Results";
+			hTitle = "Splash Search Results";*/
+		}
+	}
+	
+	if ( type == null /*&& !refInchi && !refSplash*/) {
 		out.println( "<html>" );
 		out.println( "<head>" );
 		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
@@ -1118,7 +1123,7 @@
 					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor + recordParam;
 				}
 				// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
-				else if( refQuick || refRecIndex || refStruct ) {
+				else if( refQuick || refRecIndex || refStruct || refInchi || refSplash) {
 					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 					//url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
 					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor;
