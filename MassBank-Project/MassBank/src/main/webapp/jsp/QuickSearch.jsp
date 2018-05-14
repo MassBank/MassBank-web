@@ -41,6 +41,8 @@
 	}
 	boolean isKeyword = false;
 	boolean isInChIKey = false;
+	boolean isSplash = false;
+	boolean isPeak = false;
 	String postJspName = "";
 	if ( searchType.equals("keyword") ) {
 		isKeyword = true;
@@ -50,8 +52,16 @@
 		isInChIKey = true;
 		postJspName = "Result.jsp";
 	}
-	else {
+	else if ( searchType.equals("splash")) {
+		isSplash = true;
+		postJspName = "Result.jsp";
+	}
+	else if ( searchType.equals("peak")) {
+		isPeak = true;
 		postJspName = "QpeakResult.jsp";
+	} else {
+		isKeyword = true;
+		postJspName = "Result.jsp";
 	}
 	
 	//-------------------------------------
@@ -68,6 +78,7 @@
 	String num      = SearchDefaults.num;
 	String ionMode  = SearchDefaults.ionMode;
 	String inchikey = "";
+	String splash = "";
 	boolean isFirst = true;
 	List instGrpList = new ArrayList<String>();
 	List instTypeList = new ArrayList<String>();
@@ -104,6 +115,7 @@
 			else if ( key.equals("num") )		num      = val;
 			else if ( key.equals("ion") )		ionMode  = val;
 			else if ( key.equals("inchikey") )   inchikey = val;
+			else if ( key.equals("splash") )		splash = val;
 		}
 	}
 	if ( paramCnt > 0 ) {
@@ -175,15 +187,15 @@
 				<td width="180">
 					<input type="radio" name="searchType" value="keyword" onClick="changeSearchType()"<% if(isKeyword) out.print(" checked"); %>><b><i>Search by Keyword</i></b>
 				</td>
-				<td width="50"></td>
-				<td width="150">
-					<input type="radio" name="searchType" value="peak" onClick="changeSearchType()"<% if(!isKeyword && !isInChIKey) out.print(" checked"); %>><b><i>Search by Peak</i></b>
+				<td width="40"></td>
+				<td width="160">
+					<input type="radio" name="searchType" value="peak" onClick="changeSearchType()"<% if(isPeak) out.print(" checked"); %>><b><i>Search by Peak</i></b>
 				</td>
 			</tr>
 			<tr>
 				<td id="underbar1" height="4"<% if(isKeyword) out.print(" bgcolor=\"IndianRed\""); %>></td>
 				<td></td>
-				<td id="underbar2" height="4"<% if(!isKeyword && !isInChIKey) out.print(" bgcolor=\"Goldenrod\""); %>></td>
+				<td id="underbar2" height="4"<% if(isPeak) out.print(" bgcolor=\"Goldenrod\""); %>></td>
 			</tr>
 			<tr>
 				<td colspan="3" height="10"></td>
@@ -191,10 +203,16 @@
 			<tr>
 				<td width="150">
 					<input type="radio" name="searchType" value="inchikey" onClick="changeSearchType()"<% if(isInChIKey) out.print(" checked"); %>><b><i>Search by InChIKey</i></b>
+				</td>
+				<td width="40"></td>
+				<td width="160">
+					<input type="radio" name="searchType" value="splash" onClick="changeSearchType()"<% if(isSplash) out.print(" checked"); %>><b><i>Search by Splash</i></b>
 				</td>				
 			</tr>
 			<tr>
 				<td id="underbar3" height="4"<% if(isInChIKey) out.print(" bgcolor=\"Goldenrod\""); %>></td>
+				<td></td>
+				<td id="underbar4" height="4"<% if(isSplash) out.print(" bgcolor=\"Goldenrod\""); %>></td>
 			</tr>
 			<tr>
 				<td colspan="3" height="10"></td>
@@ -265,7 +283,23 @@
 						</tr>
 					</table>
 <%
-	} else {
+	} else if ( isSplash ) {
+%>
+					<table border="0" cellpadding="0" cellspacing="15" class="form-box">
+						<tr>
+							<td colspan="2">
+								<b>Splash</b>&nbsp;
+								<input name="splash" type="text" size="47" value="<%= splash %>">
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" align="right">
+								<input type="button" value="Reset" onClick="resetForm();">
+							</td>
+						</tr>
+					</table>					
+<%
+	} else if ( isPeak ) {
 %>
 					<table border="0" cellpadding="0" cellspacing="15" style="background-color:WhiteSmoke;border:1px silver solid;">
 						<tr>
@@ -302,9 +336,31 @@
 					<table>
 						<tr>
 							<td>
-								<input type="submit" value="Search" onclick="<% if(!isKeyword){out.print("beforeSubmit(); ");} %>return checkSubmit(0);" class="search">
-								<input type="hidden" name="type" value="<% if(!isInChIKey){out.print("quick");}else{out.print("inchikey");} %>">
-								<input type="hidden" name="searchType" value="<% if(isKeyword){out.print("keyword");}else if(isInChIKey){out.print("inchikey");}else{out.print("peak");}%>">
+								<input type="submit" value="Search" onclick="<% 
+									if (isPeak) {
+										out.print("beforeSubmit(); ");
+									} 
+								%>return checkSubmit(0);" class="search">
+								<input type="hidden" name="type" value="<% 
+									if (isKeyword || isPeak) {
+										out.print("quick");
+									} else if (isInChIKey) {
+										out.print("inchikey");
+									} else if (isSplash) {
+										out.print("splash");
+									}
+								%>">
+								<input type="hidden" name="searchType" value="<% 
+									if (isKeyword) {
+										out.print("keyword");
+									} else if (isInChIKey) {
+										out.print("inchikey");
+									} else if (isSplash) {
+										out.print("splash");	
+									} else {
+										out.print("peak");
+									}
+								%>">
 								<input type="hidden" name="sortKey" value="name">
 								<input type="hidden" name="sortAction" value="1">
 								<input type="hidden" name="pageNo" value="1">

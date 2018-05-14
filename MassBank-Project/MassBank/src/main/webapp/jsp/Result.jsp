@@ -51,6 +51,7 @@
 <%@ page import="massbank.web.peaksearch.PeakSearchByPeak" %>
 <%@ page import="massbank.web.quicksearch.QuickSearchByKeyword" %>
 <%@ page import="massbank.web.quicksearch.QuickSearchByInChIKey" %>
+<%@ page import="massbank.web.quicksearch.QuickSearchBySplash" %>
 <%@ page import="massbank.web.recordindex.RecordIndexByCategory" %>
 <%@ page import="massbank.web.SearchExecution" %>
 <%@ page import="massbank.web.QueryToResultList" %>
@@ -84,6 +85,7 @@
 	boolean refRecIndex = false;			// RecordIndex
 	boolean refStruct   = false;			// Substructure Search
 	boolean refInchi    = false;
+	boolean refSplash   = false;
 	String title = "";						// タイトル
 	String hTitle = "";						// ヘッダー用タイトル
 	
@@ -92,8 +94,13 @@
 		title = "InChIKey Search Results";
 		hTitle = "InChIKey Search Results";
 	}
+	if (request.getParameter("splash") != null) {
+		refSplash = true;
+		title = "Splash Search Results";
+		hTitle = "Splash Search Results";
+	}
 	String type = request.getParameter("type");
-	if ( type == null && !refInchi) {
+	if ( type == null && !refInchi && !refSplash) {
 		out.println( "<html>" );
 		out.println( "<head>" );
 		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
@@ -152,6 +159,11 @@
 			refInchi = true;
 			title = "InChIKey Search Results";
 			hTitle = "InChIKey Search Results";
+		}
+		else if (type.equals("splash")) {
+			refSplash = true;
+			title = "Splash Search Results";
+			hTitle = "Splash Search Results";
 		}
 	}
 	
@@ -392,7 +404,7 @@
 	out.println( "<a name=\"resultsTop\"></a>" );
 	
 	// ◇ PeakSearch／PeakDifferenceSearch／QuickSearchの場合
-	if ( refPeak || refPeakDiff || refQuick || refInchi) {
+	if ( refPeak || refPeakDiff || refQuick || refInchi || refSplash) {
 		
 		out.println( "<b>Search Parameters :</b><br>" );
 		
@@ -488,6 +500,19 @@
 				isBinder = true;
 			}
 		}
+		else if ( refSplash ) {
+			boolean isBinder = false;
+			String splash = ((String)request.getParameter("splash") != null) ? (String)request.getParameter("splash") : ""; 
+			// Splash
+			if ( !splash.equals("") ) {
+				out.println( "<table width=\"" + tableWidth + "\" cellpadding=\"0\" cellspacing=\"0\">" );
+				out.println( " <tr>" );
+				out.println( "  <td>&nbsp;&nbsp;&nbsp;Splash:&nbsp;&nbsp;<b>" + splash + "</b></td>" );
+				out.println( " </tr>" );
+				out.println( "</table>" );
+				isBinder = true;
+			}
+		}
 		
 		out.println( "<div class=\"divSpacer9px\"></div>" );
 		
@@ -510,7 +535,7 @@
 				break;
 			}
 		}
-		if (type == null && refInchi) {
+		if (type == null && (refInchi || refSplash)) {
 			out.println( "  <td><b>All</b></td>" );
 			isInstAll = true;
 		}
@@ -562,7 +587,7 @@
 				break;
 			}
 		}
-		if (type == null && refInchi) {
+		if (type == null && (refInchi || refSplash)) {
 			out.println( "  <td><b>All</b></td>" );
 			isMsAll = true;
 		}
@@ -789,6 +814,9 @@
 		else if ( refInchi ) {
 			typeName = "inchikey";
 		}
+		else if ( refSplash ) {
+			typeName = "splash";
+		}
 	}
 	
 	// 検索実行
@@ -808,6 +836,8 @@
 		result = new SearchExecution(request).exec(new PeakSearchByPeakDifference());
 	} else if (typeName.compareTo("inchikey") == 0) {
 		result = new SearchExecution(request).exec(new QuickSearchByInChIKey());
+	} else if (typeName.compareTo("splash") == 0) {
+		result = new SearchExecution(request).exec(new QuickSearchBySplash());
 	}
 	else {
 		if ( isMulti ) {
