@@ -361,7 +361,8 @@
 										out.print("peak");
 									}
 								%>">
-								<input type="hidden" name="sortKey" value="name">
+								<!-- <input type="hidden" name="sortKey" value="name">  -->
+								<input type="hidden" name="sortKey" value="not">
 								<input type="hidden" name="sortAction" value="1">
 								<input type="hidden" name="pageNo" value="1">
 								<input type="hidden" name="exec" value="">

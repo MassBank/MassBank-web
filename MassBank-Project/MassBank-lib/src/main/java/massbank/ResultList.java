@@ -42,6 +42,8 @@ public class ResultList {
 	/** ソートアクション（降順） */
 	public static final int SORT_ACTION_DESC = -1;
 	
+	public static final String SORT_NOT = "not";
+	
 	/** ソートキー（化合物名） */
 	public static final String SORT_KEY_NAME = "name";	// デフォルト
 	
@@ -125,7 +127,8 @@ public class ResultList {
 	 * @param sortAction ソートアクション
 	 */
 	public void sortList(String sortKey, int sortAction) {
-		Collections.sort(list, new ListComparator(sortKey, sortAction));
+		if(!sortKey.equals(ResultList.SORT_NOT))
+			Collections.sort(list, new ListComparator(sortKey, sortAction));
 	}
 	
 	/**
