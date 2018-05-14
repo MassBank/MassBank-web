@@ -91,7 +91,6 @@ public class Search {
 					sql = "SELECT RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD WHERE ACCESSION ='"
 							+ resScore.id + "'";
 				}
-
 				stmnt = con.prepareStatement(sql);
 				resMySql = stmnt.executeQuery();
 				while (resMySql.next()) {
@@ -210,7 +209,7 @@ public class Search {
 				}
 
 				double dblScore = 0;
-				if (queryParam.colType == "COSINE") {
+				if (queryParam.colType.equals("COSINE")) {
 					double fCos = 0;
 					for (int i = 0; i < vecHitPeak.size(); i++) {
 						SearchHitPeak pHitPeak = vecHitPeak.get(i);
@@ -258,7 +257,7 @@ public class Search {
 			sqlw1Params.add(pre2);
 			sqlw1 = " AND (T.PRECURSOR_MZ IS NOT NULL AND T.PRECURSOR_MZ BETWEEN ? AND ?)";
 		}
-
+		
 		// ----------------------------------------------------------------
 		// MS TYPE
 		// ----------------------------------------------------------------
@@ -293,7 +292,7 @@ public class Search {
 		ArrayList<String> vecTargetId = new ArrayList<String>();
 		if (queryParam.instType != null || !queryParam.instType.isEmpty() || queryParam.instType.indexOf("ALL") != -1
 				|| queryParam.instType.indexOf("all") != -1) {
-			if (queryParam.ion != "0") {
+			if (!queryParam.ion.equals("0")) {
 				sql = "SELECT T.ID "
 						+ "FROM (SELECT * FROM (SELECT AC_INSTRUMENT AS AC_INSTRUMENT, ACCESSION AS ID, AC_MASS_SPECTROMETRY_MS_TYPE AS MS_TYPE, RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD) AS R, (SELECT RECORD, VALUE FROM MS_FOCUSED_ION WHERE SUBTAG = 'PRECURSOR_M/Z') AS S WHERE R.ID= S.RECORD) AS T "
 						+ "WHERE T.ION = ?";
@@ -306,6 +305,16 @@ public class Search {
 				}
 				sql += " ORDER BY ID";
 				try {
+					/*
+SELECT T.ID 
+FROM 
+	(SELECT * 
+	FROM 
+		(SELECT AC_INSTRUMENT AS AC_INSTRUMENT, ACCESSION AS ID, AC_MASS_SPECTROMETRY_MS_TYPE AS MS_TYPE, RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD) AS R, 
+		(SELECT RECORD, VALUE FROM MS_FOCUSED_ION WHERE SUBTAG = 'PRECURSOR_M/Z') AS S 
+	WHERE R.ID= S.RECORD) AS T 
+WHERE T.ION = ? ORDER BY ID
+					 */
 					int paramIdx = 1;
 					stmnt = con.prepareStatement(sql);
 					if (queryParam.ion.equals("-1")) {
@@ -483,7 +492,7 @@ public class Search {
 				return false;
 			}
 		}
-
+		
 		double fMin;
 		double fMax;
 		String sqlw;
@@ -698,7 +707,7 @@ public class Search {
 
 		if (mapReqParam.containsKey("INTEG")) {
 			String strVal = mapReqParam.get("INTEG").get(0);
-			if (strVal == "true") {
+			if (strVal.equals("true")) {
 				isInteg = true;
 			}
 		}

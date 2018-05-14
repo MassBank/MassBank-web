@@ -1077,6 +1077,7 @@
 				// レコードページ表示用URL生成
 				String url = "";
 				// ◇ PeakSearch／PeakDifferenceSearchの場合
+				String contributor	= dbManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
 				if ( refPeak || refPeakDiff ) {
 					if ( refPeak ) {
 						typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
@@ -1084,14 +1085,13 @@
 					else {
 						typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISPDIFF];
 					}
-					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + recordParam;
+					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor + recordParam;
 				}
 				// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
 				else if( refQuick || refRecIndex || refStruct ) {
 					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 					//url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
-					String contributor	= dbManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
-					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + contributor;
+					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor;
 				}
 				
 				//------------------------------------

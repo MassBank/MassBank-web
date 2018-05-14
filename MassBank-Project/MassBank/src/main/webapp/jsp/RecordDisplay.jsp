@@ -53,6 +53,8 @@
 		String key = (String) names.nextElement();
 		String val = (String) request.getParameter( key );
 		
+		//System.out.println(key + "\t" + val);
+		
 		switch(key){
 			case "id":	accession		= val; break;
 			case "dsn":	databaseName	= val; break;
@@ -119,7 +121,7 @@
 	// get accession data
 	
 	// read file
-	File file	= new File(Config.get().DataRootPath() + databaseName + File.separator + accession + ".txt");
+	File file	= FileUtil.getFile(databaseName, accession);//new File(Config.get().DataRootPath() + databaseName + File.separator + accession + ".txt");
 	List<String> list	= FileUtil.readFromFile(file);
 	
 	// process record
