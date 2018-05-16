@@ -47,6 +47,7 @@
 		id = request.getParameter( "id" ).trim();
 	}
 	
+	/*
 	//-------------------------------------------
 	// 環境設定ファイルからURLリストを取得
 	//-------------------------------------------
@@ -77,10 +78,12 @@
 	}
 	else {
 		String url = "Dispatcher.jsp?type=disp&id=" + id + "&site=" + val[1];
+		*/
+	String url = "Dispatcher.jsp?type=disp&id=" + id;
 %>
 <jsp:forward page="<%= url %>" />
 <%
-	}
+	//}
 %>
 </body>
 </html>

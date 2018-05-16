@@ -36,6 +36,7 @@
 <%@ page import="java.util.Arrays" %>
 <%@ page import="massbank.GetConfig" %>
 <%@ page import="massbank.Config" %>
+<%@ page import="massbank.DatabaseManager"%>
 <%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.StructureToSvgStringGenerator" %>
 <%@ page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData" %>
@@ -62,18 +63,6 @@
 		}
 	}
 	
-/*	if(databaseName != null && databaseName.equals("") && accession != null && !accession.equals("")){
-		databaseName	= AccessionData.getDatabaseOfAccession(accession);
-		
-		// redirect from URL without database parameter to URL with database parameter
-		String baseUrl	= MassBankEnv.get(MassBankEnv.KEY_BASE_URL);
-		String urlStub	= baseUrl + "jsp/RecordDisplay.jsp";
-		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName;
-		
-		response.sendRedirect(redirectUrl);
-		return;
-	}*/
-	
 	// ##################################################################################################
 	// error handling
 	if(accession != null && accession.equals(""))
@@ -92,6 +81,7 @@
 		return;
 	}
 	if(databaseName == null){
+		/*
 		String error	= "Error: Missing argument 'dsn'";
 		System.out.println(error);
 		String baseUrl	= Config.get().BASE_URL();
@@ -100,6 +90,10 @@
 		
 		response.sendRedirect(redirectUrl);
 		return;
+		*/
+		DatabaseManager dbManager	= new DatabaseManager(Config.get().dbName());
+		databaseName	= dbManager.getContributorFromAccession(accession).SHORT_NAME;
+		dbManager.closeConnection();
 	}
 	if(!FileUtil.existsFile(databaseName, accession)){
 		String error	= "Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.";

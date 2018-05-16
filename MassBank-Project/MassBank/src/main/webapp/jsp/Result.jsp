@@ -1,3 +1,4 @@
+<%@page import="massbank.Config" %>
 <%@page import="massbank.DatabaseManager"%>
 <%@page import="massbank.StructureToSvgStringGenerator"%>
 <%@page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData"%>
@@ -1090,7 +1091,7 @@
 
 			// 化学構造式表示情報を一括取得する
 			ResultRecord rec;
-			DatabaseManager dbManager	= new DatabaseManager("MassBank");
+			DatabaseManager dbManager	= new DatabaseManager(Config.get().dbName());
 			for (int i=startIndex; i<=endIndex; i++) {
 				rec = list.getRecord(i);
 				// ツリー表示用ID、およびイメージ名生成
