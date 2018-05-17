@@ -98,111 +98,111 @@ public class DataManagement {
 //		
 //		return tmpUrl;
 //	}
-	public static ResultList search(String idxtype, String srchkey, String sortKey, String sortAction, String exec) throws UnsupportedEncodingException, ConfigurationException{
-		Hashtable<String, Object> reqParams	= new Hashtable<String, Object>();
-		reqParams.put("idxtype",	idxtype);
-		reqParams.put("srchkey",	srchkey);
-		reqParams.put("sortKey",	sortKey);
-		reqParams.put("sortAction",	sortAction);
-		reqParams.put("exec",		exec);
-		
-		return search(reqParams);
-	}
-	public static ResultList search(Hashtable<String, Object> reqParams) throws UnsupportedEncodingException, ConfigurationException{
-		// sanity checks
-		if(reqParams.get("idxtype") == null)
-			throw new IllegalArgumentException();
-		if(reqParams.get("srchkey") == null)
-			throw new IllegalArgumentException();
-		if(reqParams.get("exec") == null)
-			throw new IllegalArgumentException();
-		
-		// defaults
-//		if ( reqParams.get("pageNo") == null ) {
-//			reqParams.put("pageNo", "1");
+//	public static ResultList search(String idxtype, String srchkey, String sortKey, String sortAction, String exec) throws UnsupportedEncodingException, ConfigurationException{
+//		Hashtable<String, Object> reqParams	= new Hashtable<String, Object>();
+//		reqParams.put("idxtype",	idxtype);
+//		reqParams.put("srchkey",	srchkey);
+//		reqParams.put("sortKey",	sortKey);
+//		reqParams.put("sortAction",	sortAction);
+//		reqParams.put("exec",		exec);
+//		
+//		return search(reqParams);
+//	}
+//	public static ResultList search(Hashtable<String, Object> reqParams) throws UnsupportedEncodingException, ConfigurationException{
+//		// sanity checks
+//		if(reqParams.get("idxtype") == null)
+//			throw new IllegalArgumentException();
+//		if(reqParams.get("srchkey") == null)
+//			throw new IllegalArgumentException();
+//		if(reqParams.get("exec") == null)
+//			throw new IllegalArgumentException();
+//		
+//		// defaults
+////		if ( reqParams.get("pageNo") == null ) {
+////			reqParams.put("pageNo", "1");
+////		}
+//		
+//		if ( reqParams.get("type") == null ) {
+//			reqParams.put("type", "rcdidx");
 //		}
-		
-		if ( reqParams.get("type") == null ) {
-			reqParams.put("type", "rcdidx");
-		}
-		if ( reqParams.get("sortKey") == null ) {
-			reqParams.put("sortKey", ResultList.SORT_KEY_NAME);
-		}
-		if ( reqParams.get("sortAction") == null ) {
-			reqParams.put("sortAction", String.valueOf(ResultList.SORT_ACTION_ASC));
-		}
-		
-		//-------------------------------------
-		// リクエストパラメータ加工、及びURLパラメータ生成
-		// Request parameter processing and URL parameter generation
-		//-------------------------------------
-		String searchParam = "";				// URLパラメータ（検索実行用）
-		
-		// URLパラメータ（検索実行用）生成
-		// Parameter generation (for search execution)
-		for ( Enumeration<String> keys = reqParams.keys(); keys.hasMoreElements(); ){
-			String key = (String)keys.nextElement();
-			if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
-				// キーがInstrumentType,MSType以外の場合はStringパラメータ
-				String val = (String)reqParams.get(key);
-				if ( key.indexOf("site") != -1 && val.equals("-1") ) {
-					continue;
-				}
-				else if ( !val.equals("") ) {
-					searchParam += key + "=" + URLEncoder.encode(val,"utf-8") + "&";
-				}
-			}
-			else {
-				String[] vals = null;
-				try {
-					vals = (String[])reqParams.get(key);
-				}
-				catch (ClassCastException cce) {
-					vals = new String[]{ (String)reqParams.get(key) };
-				}
-				for ( int i=0; i<vals.length; i++ ) {
-					searchParam += key + "=" + URLEncoder.encode(vals[i], "utf-8") + "&";
-				}
-			}
-		}
-		searchParam = StringUtils.chop(searchParam);
-		
-		//-------------------------------------------
-		// 設定ファイルから各種情報を取得
-		// Acquire various information from setting file
-		//-------------------------------------------
-		String baseUrl = Config.get().BASE_URL();
-		GetConfig conf = new GetConfig(baseUrl);
-		String serverUrl = Config.get().BASE_URL();
-		
-		//-------------------------------------
-		// 検索実行・結果取得
-		// execute search and acquire results
-		//-------------------------------------
-		String typeName = "";
-		ResultList list = null;
-		boolean isMulti = true;
-		int siteNo = -1;
-		
-		// ◇ RecordIndexの場合
-		try { siteNo = Integer.parseInt(String.valueOf(reqParams.get( "srchkey" ))); } catch (NumberFormatException nfe) {}
-		String pIdxtype = ((String)reqParams.get( "idxtype" ) != null) ? (String)reqParams.get( "idxtype" ) : "";
-		if ( pIdxtype.equals("site") ) {
-			isMulti = false;
-			searchParam = searchParam.replaceAll( "srchkey", "site" );
-		}
-		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_RCDIDX];
-		
-		// 検索実行
-		// execute search
-		MassBankCommon mbcommon = new MassBankCommon();
-		if ( isMulti ) {;
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null );
-		}
-		else {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo) );
-		}
-		
-		return list;
-	}
+//		if ( reqParams.get("sortKey") == null ) {
+//			reqParams.put("sortKey", ResultList.SORT_KEY_NAME);
+//		}
+//		if ( reqParams.get("sortAction") == null ) {
+//			reqParams.put("sortAction", String.valueOf(ResultList.SORT_ACTION_ASC));
+//		}
+//		
+//		//-------------------------------------
+//		// リクエストパラメータ加工、及びURLパラメータ生成
+//		// Request parameter processing and URL parameter generation
+//		//-------------------------------------
+//		String searchParam = "";				// URLパラメータ（検索実行用）
+//		
+//		// URLパラメータ（検索実行用）生成
+//		// Parameter generation (for search execution)
+//		for ( Enumeration<String> keys = reqParams.keys(); keys.hasMoreElements(); ){
+//			String key = (String)keys.nextElement();
+//			if ( !key.equals("inst_grp") && !key.equals("inst") && !key.equals("ms") && !key.equals("inst_grp_adv") && !key.equals("inst_adv") && !key.equals("ms_adv") ) {
+//				// キーがInstrumentType,MSType以外の場合はStringパラメータ
+//				String val = (String)reqParams.get(key);
+//				if ( key.indexOf("site") != -1 && val.equals("-1") ) {
+//					continue;
+//				}
+//				else if ( !val.equals("") ) {
+//					searchParam += key + "=" + URLEncoder.encode(val,"utf-8") + "&";
+//				}
+//			}
+//			else {
+//				String[] vals = null;
+//				try {
+//					vals = (String[])reqParams.get(key);
+//				}
+//				catch (ClassCastException cce) {
+//					vals = new String[]{ (String)reqParams.get(key) };
+//				}
+//				for ( int i=0; i<vals.length; i++ ) {
+//					searchParam += key + "=" + URLEncoder.encode(vals[i], "utf-8") + "&";
+//				}
+//			}
+//		}
+//		searchParam = StringUtils.chop(searchParam);
+//		
+//		//-------------------------------------------
+//		// 設定ファイルから各種情報を取得
+//		// Acquire various information from setting file
+//		//-------------------------------------------
+//		String baseUrl = Config.get().BASE_URL();
+//		GetConfig conf = new GetConfig(baseUrl);
+//		String serverUrl = Config.get().BASE_URL();
+//		
+//		//-------------------------------------
+//		// 検索実行・結果取得
+//		// execute search and acquire results
+//		//-------------------------------------
+//		String typeName = "";
+//		ResultList list = null;
+//		boolean isMulti = true;
+//		int siteNo = -1;
+//		
+//		// ◇ RecordIndexの場合
+//		try { siteNo = Integer.parseInt(String.valueOf(reqParams.get( "srchkey" ))); } catch (NumberFormatException nfe) {}
+//		String pIdxtype = ((String)reqParams.get( "idxtype" ) != null) ? (String)reqParams.get( "idxtype" ) : "";
+//		if ( pIdxtype.equals("site") ) {
+//			isMulti = false;
+//			searchParam = searchParam.replaceAll( "srchkey", "site" );
+//		}
+//		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_RCDIDX];
+//		
+//		// 検索実行
+//		// execute search
+//		MassBankCommon mbcommon = new MassBankCommon();
+//		if ( isMulti ) {;
+//			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null );
+//		}
+//		else {
+//			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo) );
+//		}
+//		
+//		return list;
+//	}
 }

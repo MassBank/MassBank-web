@@ -91,9 +91,6 @@
 	// 検索実行・結果取得
 	//-------------------------------------
 	MassBankCommon mbcommon = new MassBankCommon();
-	//String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_IDXCNT];
-	//ArrayList<String> result = mbcommon.execMultiDispatcher( serverUrl, typeName, "allcat=1" );
-	//ArrayList<String> result = mbcommon.execDispatcher("idxcnt",request,conf);
 	ArrayList<String> result = new SearchExecution(request).exec(new RecordIndexCount());
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
@@ -108,15 +105,9 @@
 		String line = (String)result.get(i);
 		if ( line.equals("") ) { continue; }
 		String[] fields = line.split("\t");
-		//int siteNo = Integer.parseInt(fields[fields.length - 1]);
 		String key = fields[0].split(":")[0];
-		String val = "";
-		//if ( key.equals(indexType[0]) ) {
-		//	val = siteNameList[siteNo] + "\t" + siteNo;
-		//}
-		//else {
-			val = fields[0].split(":")[1];
-		//}
+		String val = fields[0].split(":")[1];
+		
 		int count = Integer.parseInt( fields[1] );
 		if ( key.equals(header[5]) ) {			// Contributor
 			if ( !cntSiteMap.containsKey(val) ) { cntSiteMap.put(val, count); }

@@ -47,43 +47,8 @@
 		id = request.getParameter( "id" ).trim();
 	}
 	
-	/*
-	//-------------------------------------------
-	// 環境設定ファイルからURLリストを取得
-	//-------------------------------------------
-	String path = request.getRequestURL().toString();
-	int pos = path.indexOf("/jsp");
-	String baseUrl = path.substring( 0, pos+1 ) ;
-	GetConfig conf = new GetConfig(baseUrl);
-	String serverUrl = conf.getServerUrl();
-	
-	MassBankCommon mbcommon = new MassBankCommon();
-	String typeName = mbcommon.CGI_TBL[mbcommon.CGI_TBL_NUM_TYPE][mbcommon.CGI_TBL_TYPE_RECORD];
-	ArrayList result = mbcommon.execMultiDispatcher( serverUrl, typeName, "id=" + id );
-	String line = "";
-	Boolean isFound = false;
-	String[] val = null;
-	for ( int i = 0; i < result.size(); i++ ) {
-		line = (String)result.get(i);
-		if ( !line.equals("") ) {
-			val = line.split("\t");
-			if ( val[0].equals(id) ) {
-				isFound = true;
-				break;
-			}
-		}
-	}
-	if ( !isFound ) {
-		out.println( "<h1>" + id + " Record Not Found</h1>" );
-	}
-	else {
-		String url = "Dispatcher.jsp?type=disp&id=" + id + "&site=" + val[1];
-		*/
 	String url = "Dispatcher.jsp?type=disp&id=" + id;
 %>
 <jsp:forward page="<%= url %>" />
-<%
-	//}
-%>
 </body>
 </html>
