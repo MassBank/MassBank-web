@@ -105,7 +105,7 @@
 		// ###############################################################################
 		// redirect to jsp/RecordDisplay.jsp instead of using disp.cgi
 		String baseUrl	= Config.get().BASE_URL();
-		String urlStub	= baseUrl + "jsp/RecordDisplay.jsp";
+		String urlStub	= baseUrl + "RecordDisplay.jsp";
 		String redirectUrl	= urlStub + "?id=" + params.get("id") + "&dsn=" + dbName;
 		
 		response.sendRedirect(redirectUrl);
@@ -148,7 +148,7 @@
 	// 連携サーバーの場合、Dispatcher.jspを介してアクセス
 	//---------------------------------------------------
 	else {
-		reqStr += "jsp/" + MassBankCommon.DISPATCHER_NAME;
+		reqStr += MassBankCommon.DISPATCHER_NAME;
 		params.put( "type", type );
 		if ( typeNum != MassBankCommon.CGI_TBL_TYPE_GNAME
 		  && typeNum != MassBankCommon.CGI_TBL_TYPE_GSON  ) {

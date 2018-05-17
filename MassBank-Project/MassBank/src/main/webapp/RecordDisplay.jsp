@@ -74,7 +74,7 @@
 		String error	= "Error: Missing argument 'id'";
 		System.out.println(error);
 		String baseUrl	= Config.get().BASE_URL();
-		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
+		String urlStub	= baseUrl + "NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
 		response.sendRedirect(redirectUrl);
@@ -99,7 +99,7 @@
 		String error	= "Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.";
 		System.out.println(error);
 		String baseUrl	= Config.get().BASE_URL();
-		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
+		String urlStub	= baseUrl + "NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
 		response.sendRedirect(redirectUrl);
@@ -424,22 +424,22 @@
 		<meta name="variableMeasured" content="m/z">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
-		<link rel="stylesheet" type="text/css" href="../css/Common.css">
-		<script type="text/javascript" src="../script/Common.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/Common.css">
+		<script type="text/javascript" src="script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
 		<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script>
-		<script type="text/javascript" src="../script/StructurePreview.js"></script>
+		<script type="text/javascript" src="script/StructurePreview.js"></script>
 		<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
-		<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
 		<!-- SpeckTackle style sheet-->
-		<link rel="stylesheet" href="../css/st.css" type="text/css" />
+		<link rel="stylesheet" href="css/st.css" type="text/css" />
 		<!-- SpeckTackle MassBank loading script-->
-		<script type="text/javascript" src="../script/massbank_specktackle.js"></script>
+		<script type="text/javascript" src="script/massbank_specktackle.js"></script>
 		<title><%=shortName%> Mass Spectrum</title>
 	</head>
 	<body style="font-family:Times;" typeof="schema:WebPage">
-	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/jsp/RecordDisplay.jsp?id=<%=accession%>&dsn=<%=databaseName%>" typeof="schema:Dataset" >
+	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/RecordDisplay.jsp?id=<%=accession%>&dsn=<%=databaseName%>" typeof="schema:Dataset" >
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 				<td>
@@ -447,7 +447,7 @@
 				</td>
 			</tr>
 		</table>
-		<iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+		<iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 		<hr size="1">
 		<br>
 		<font size="+1" style="background-color:LightCyan">&nbsp;<%=recordTitle%>&nbsp;</font>
@@ -467,7 +467,7 @@
 						<%=svgMedium%><%
 					} else {
 						// no structure there or svg generation failed%>
-						<img src="../image/not_available_s.gif" width="200" height="200" style="margin:0px;">
+						<img src="image/not_available_s.gif" width="200" height="200" style="margin:0px;">
 					<%}%></td>
 			</tr>
 		</table>
@@ -476,7 +476,7 @@
 <%=recordString%>
 </pre>
 		<hr size=1>
-		<iframe src="../copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+		<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 	</main>
 	</body>
 </html>

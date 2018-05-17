@@ -63,13 +63,13 @@
 		<meta name="hreflang" content="en">
 		<meta name="variableMeasured" content="m/z">
 		<meta http-equiv="Content-Style-Type" content="text/css">
-		<link rel="stylesheet" type="text/css" href="../css/Common.css">
+		<link rel="stylesheet" type="text/css" href="css/Common.css">
 		<title>No Mass Spectrum</title>
 	</head>
 	<body style="font-family:Times;">
 		No MassBank record can be displayed for accession <%=accession%> in database <%=databaseName%>.<br>
 		Error: <b><%=error%></b></b>
 		<hr size=1>
-		<iframe src="../copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+		<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 	</body>
 </html>

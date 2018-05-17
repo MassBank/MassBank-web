@@ -55,9 +55,9 @@
 	private static final String[] width = { "28", "562", "142", "102", "40", "70" };
 	
 	// イメージファイルURL
-	private final String strucOffGif = "../image/strucOff.gif";
-	private final String strucOverGif = "../image/strucOver.gif";
-	private final String strucOnGif = "../image/strucOn.gif";
+	private final String strucOffGif = "image/strucOff.gif";
+	private final String strucOverGif = "image/strucOver.gif";
+	private final String strucOnGif = "image/strucOn.gif";
 
 	/**
 	 * 構造式情報を一括取得する
@@ -250,9 +250,9 @@
 		out.println( " <meta name=\"description\" content=\"Mass Spectrum Quick Search Results\">" );
 		out.println( " <meta name=\"keywords\" content=\"Results\">" );
 		out.println( " <meta name=\"revisit_after\" content=\"10 days\">" );
-		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
-		out.println( " <script type=\"text/javascript\" src=\"../script/Common.js\"></script>" );
-		out.println( " <script type=\"text/javascript\" src=\"../script/QpeakResult.js\"></script>" );
+		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"css/Common.css\">" );
+		out.println( " <script type=\"text/javascript\" src=\"script/Common.js\"></script>" );
+		out.println( " <script type=\"text/javascript\" src=\"script/QpeakResult.js\"></script>" );
 		out.println( " <title>MassBank | Database | Quick Search Results</title>" );
 		out.println( "</head>" );
 		out.println( "<body class=\"msbkFont cursorDefault\">" );
@@ -260,12 +260,12 @@
 		out.println( "  <tr>" );
 		out.println( "   <td><h1>Quick Search Results</h1></td>" );
 		out.println( "   <td align=\"right\" class=\"font12px\">" );
-		out.println( "    <img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "    <img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + RESULT_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "    <img src=\"img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "    <img src=\"img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + RESULT_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
-		out.println( "<iframe src=\"../menu.html\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<iframe src=\"menu.jsp\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<table width=\"900\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
@@ -289,7 +289,7 @@
 		out.println( "<input type=\"hidden\" name=\"searchType\" value=\"peak\">" );
 		out.println( "</form>" );
 		out.println( "<hr size=\"1\">" );
-		out.println( "<iframe src=\"../copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<iframe src=\"copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		out.println( "</body>" );
 		out.println( "</html>" );
 		return;
@@ -402,22 +402,22 @@
 <meta name="description" content="Mass Spectrum Quick Search Results">
 <meta name="keywords" content="Results">
 <meta name="revisit_after" content="10 days">
-<link rel="stylesheet" type="text/css" href="../css/Common.css">
-<link rel="stylesheet" type="text/css" href="../css/QpeakResult.css">
-<link rel="stylesheet" type="text/css" href="../css/QpeakResultMenu.css">
-<script type="text/javascript" src="../script/Common.js"></script>
-<script type="text/javascript" src="../script/QpeakResult.js"></script>
-<script type="text/javascript" src="../script/QpeakResultMenu.js"></script>
+<link rel="stylesheet" type="text/css" href="css/Common.css">
+<link rel="stylesheet" type="text/css" href="css/QpeakResult.css">
+<link rel="stylesheet" type="text/css" href="css/QpeakResultMenu.css">
+<script type="text/javascript" src="script/Common.js"></script>
+<script type="text/javascript" src="script/QpeakResult.js"></script>
+<script type="text/javascript" src="script/QpeakResultMenu.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script>
-<script type="text/javascript" src="../script/StructurePreview.js"></script>
+<script type="text/javascript" src="script/StructurePreview.js"></script>
 <!-- SpeckTackle dependencies-->
 <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 <!-- SpeckTackle library-->
-<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
 <!-- SpeckTackle style sheet-->
-<link rel="stylesheet" href="../css/st.css" type="text/css" />	
+<link rel="stylesheet" href="css/st.css" type="text/css" />	
 <!-- SpeckTackle MassBank loading script-->
-<script type="text/javascript" src="../script/massbank_specktackle.js"></script>
+<script type="text/javascript" src="script/massbank_specktackle.js"></script>
 <title>MassBank | Database | Quick Search Results</title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -425,15 +425,15 @@
 		<tr>
 			<td><h1>Quick Search Results</h1></td>
 			<td align="right" class="font12px">
-				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
-<iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
-<jsp:include page="../pserver/ServerInfo.jsp" />
+<jsp:include page="pserver/ServerInfo.jsp" />
 <%
 	if ( isError ) {
 		//-------------------------------------------
@@ -662,7 +662,7 @@
 					out.println( "  </a>" );
 				} else {
 					// no structure there or svg generation failed
-					out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" style=\"margin:0px;\">");
+					out.println( "   <img src=\"image/not_available_s.gif\" width=\"80\" height=\"80\" style=\"margin:0px;\">");
 				}
 				out.println( "</td>" );
 				
@@ -724,7 +724,7 @@
 %>
 </form>
 <hr size="1">
-<iframe src="../copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <span id="menu"></span>
 </body>
 </html>

@@ -47,7 +47,7 @@ function submitShowSpectra() {
  */
 function submitSearchPage() {
 	if ( submitFormCheck() ) {
-		document.resultForm.action = "../SearchPage.html";
+		document.resultForm.action = "SearchPage.jsp";
 		document.resultForm.submit();
 	}
 }
@@ -418,18 +418,18 @@ function allTreeCtrl() {
 	isOpen = false;
 	if ( document.resultForm.treeCtrl.value.indexOf("Close") == -1 ) {
 		image1 = "plus.png";
-		image2 = "../image/minus.png";
+		image2 = "image/minus.png";
 		imageTree1 = "treeline0.gif";
-		imageTree2 = "../image/treeline1.gif";
+		imageTree2 = "image/treeline1.gif";
 		type = "";
 		document.resultForm.treeCtrl.value = "Close All Tree";
 		isOpen = true;
 	}
 	else {
 		image1 = "minus.png";
-		image2 = "../image/plus.png";
+		image2 = "image/plus.png";
 		imageTree1 = "treeline1.gif";
-		imageTree2 = "../image/treeline0.gif";
+		imageTree2 = "image/treeline0.gif";
 		type = "none";
 		document.resultForm.treeCtrl.value = "Open All Tree";
 		isOpen = false;
@@ -513,7 +513,7 @@ function treeMenu(parentId) {
 	else {
 		imgAfter = imageP;
 	}
-	imgBefore.src = "../image/" + imgAfter;
+	imgBefore.src = "image/" + imgAfter;
 	
 	childId = parentId + "child";
 	if (ns4) {											//NS4
@@ -540,7 +540,7 @@ function treeMenu(parentId) {
 	else {
 		imgAfter = image0;
 	}
-	imgBefore.src = "../image/" + imgAfter;
+	imgBefore.src = "image/" + imgAfter;
 }
 
 /**
@@ -694,16 +694,16 @@ function getType() {
  */
 function parameterResetting(type) {
 	if (type == "peak" || type == "diff") {
-		document.resultForm.action = "../PeakSearch.html";
+		document.resultForm.action = "PeakSearch.jsp";
 	}
 	else if (type == "quick") {
-		document.resultForm.action = "../QuickSearch.html";
+		document.resultForm.action = "QuickSearch.jsp";
 	}
 	else if (type == "rcdidx") {
-		document.resultForm.action = "../RecordIndex.html";
+		document.resultForm.action = "RecordIndex.jsp";
 	}
 	else if (type == "struct") {
-		document.resultForm.action = "../StructureSearch.html";
+		document.resultForm.action = "StructureSearch.jsp";
 	}
 	document.resultForm.target = "_self";
 	document.resultForm.submit();
@@ -714,7 +714,7 @@ function parameterResetting(type) {
  * SubstructureSearchパラメータ入力画面に戻る
  */
 function prevStructSearch() {
-	document.resultForm.action = "../StructureSearch.html";
+	document.resultForm.action = "StructureSearch.jsp";
 	document.resultForm.target = "_self";
 	document.resultForm.submit();
 	return false;
@@ -724,7 +724,7 @@ function prevStructSearch() {
  * PeakSearchパラメータ入力画面に戻る
  */
 function prevPeakSearchAdv() {
-	document.resultForm.action = "../PeakSearch.html";
+	document.resultForm.action = "PeakSearch.jsp";
 	document.resultForm.target = "_self";
 	document.resultForm.submit();
 	return false;

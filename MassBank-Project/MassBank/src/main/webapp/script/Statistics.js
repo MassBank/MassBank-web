@@ -62,7 +62,7 @@ function toSite(siteName) {
 	}
 	
 	// 要求指定
-	httpObj.open( "GET" , "../jsp/Published.jsp?name=" + encodeURIComponent(siteName), true );
+	httpObj.open( "GET" , "Published.jsp?name=" + encodeURIComponent(siteName), true );
 	
 	//受信時に起動するイベント
 	httpObj.onreadystatechange = function() {
@@ -71,7 +71,7 @@ function toSite(siteName) {
 			// コールバック
 			var siteNo = httpObj.responseText;
 			if ( siteNo != -1 && siteNo != -2 ) {
-				location.href = "../jsp/Result.jsp?type=rcdidx&idxtype=site&srchkey=" + siteNo;
+				location.href = "Result.jsp?type=rcdidx&idxtype=site&srchkey=" + siteNo;
 			}
 			else {
 				alert("The server is temporarily unavailable.");

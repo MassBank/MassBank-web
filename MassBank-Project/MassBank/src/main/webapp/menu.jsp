@@ -45,25 +45,25 @@
 		<meta name="rating" content="general" />
 		<meta name="copyright" content="Copyright (c) since 2006 JST-BIRD MassBank" />
 		<meta name="ROBOTS" content="NOINDEX,FOLLOW">
-		<link rel="stylesheet" type="text/css" href="./css/Common.css">
+		<link rel="stylesheet" type="text/css" href="css/Common.css">
 		<title>MassBank | Menu Link</title>
-		<script type="text/javascript" src="./script/Piwik.js"></script>
+		<script type="text/javascript" src="script/Piwik.js"></script>
 		</head>
 	<body class="msbkFont">
-		<form method="post" action="./jsp/FwdRecord.jsp" target="_blank" class="formStyle">
+		<form method="post" action="FwdRecord.jsp" target="_blank" class="formStyle">
 			<table  border="0" cellpadding="0" cellspacing="0" width="980" class="menuFont">
 				<tr>
 					<td>
 &nbsp;&nbsp;
-<a href="./index.html" target="_parent" title="MassBank">Home</a>
+<a href="index.jsp" target="_parent" title="MassBank">Home</a>
 |
-<a href="./QuickSearch.html" target="_parent" title="Quick Search">Quick Search</a>
+<a href="QuickSearch.jsp" target="_parent" title="Quick Search">Quick Search</a>
 |
-<a href="./PeakSearch.html" target="_parent" title="Peak Search">Peak Search</a>
+<a href="PeakSearch.jsp" target="_parent" title="Peak Search">Peak Search</a>
 |
-<a href="./RecordIndex.html" target="_parent" title="Record Index">Record Index</a>
+<a href="RecordIndex.jsp" target="_parent" title="Record Index">Record Index</a>
 |
-<a href="./Statistics.html" target="_blank" title="Record and Compounds Statistics">Statistics</a>
+<a href="Statistics.jsp" target="_blank" title="Record and Compounds Statistics">Statistics</a>
 |
 &nbsp;&nbsp;&nbsp;MassBank ID:&nbsp;<input name="id" type="text" size="10" value="" maxlength="8">&nbsp;<input type="submit" value=" Go ">
 					</td>

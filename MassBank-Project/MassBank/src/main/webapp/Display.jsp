@@ -93,8 +93,8 @@
 		html.add( "\t\t<meta name=\"description\" content=\"Multiple Display\">" );
 		html.add( "\t\t<meta name=\"keywords\" content=\"Multiple,Display\">" );
 		html.add( "\t\t<meta name=\"revisit_after\" content=\"30 days\">" );
-		html.add( "\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
-		html.add( "\t\t<script type=\"text/javascript\" src=\"../script/Common.js\"></script>" );
+		html.add( "\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"css/Common.css\">" );
+		html.add( "\t\t<script type=\"text/javascript\" src=\"script/Common.js\"></script>" );
 		html.add( "\t\t<title>MassBank | Database | Multiple Display</title>" );
 		html.add( "\t</head>" );
 		html.add( "\t<body class=\"msbkFont\">" );
@@ -104,15 +104,15 @@
 		html.add( "\t\t\t\t\t<h1>Multiple Display</h1>" );
 		html.add( "\t\t\t\t</td>" );
 		html.add( "\t\t\t\t<td align=\"right\" class=\"font12px\">" );
-		html.add( "\t\t\t\t\t<img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		html.add( "\t\t\t\t\t<img src=\"../img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + MULTI_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		html.add( "\t\t\t\t\t<img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		html.add( "\t\t\t\t\t<img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + MULTI_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		html.add( "\t\t\t\t</td>" );
 		html.add( "\t\t\t</tr>" );
 		html.add( "\t\t</table>" );
-		html.add( "\t\t<iframe src=\"../menu.html\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		html.add( "\t\t<iframe src=\"menu.jsp\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		html.add( "\t\t<hr size=\"1\">" );
 		html.add( "\t\t<br>" );
-		html.add( "\t\t<applet code=\"DisplayAll.class\" archive=\"../applet/DisplayAll2.jar\""
+		html.add( "\t\t<applet code=\"DisplayAll.class\" archive=\"applet/DisplayAll2.jar\""
 						+ " width=\"980\" height=\"" + Integer.toString(262*num) + "\">" );
 		paramName = "id";
 		String pnum = "";
@@ -253,7 +253,7 @@
 		}
 
 		html.add( "\t\t<hr size=\"1\">" );
-		html.add( "\t\t<iframe src=\"../copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		html.add( "\t\t<iframe src=\"copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		html.add( "\t</body>" );
 		html.add( "</html>" );
 		if ( multi.equals("") ) {

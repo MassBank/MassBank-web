@@ -65,11 +65,11 @@
 	private static final String[] width = { "28", "28", "422", "142", "102", "122", "100" };
 	
 	// イメージファイルURL
-	private final String minuspng = "../image/minus.png";
-	private final String pluspng = "../image/plus.png";
-	private final String defaultGif = "../image/default.gif";
-	private final String ascGif = "../image/asc.gif";
-	private final String descGif = "../image/desc.gif";
+	private final String minuspng = "image/minus.png";
+	private final String pluspng = "image/plus.png";
+	private final String defaultGif = "image/default.gif";
+	private final String ascGif = "image/asc.gif";
+	private final String descGif = "image/desc.gif";
 
 %>
 <%
@@ -109,12 +109,12 @@
 	if ( type == null /*&& !refInchi && !refSplash*/) {
 		out.println( "<html>" );
 		out.println( "<head>" );
-		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/Common.css\">" );
+		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"css/Common.css\">" );
 		out.println( " <title>MassBank | Database | Results</title>" );
 		out.println( "</head>" );
 		out.println( "<body class=\"msbkFont cursorDefault\">" );
 		out.println( "<h1>Results</h1>" );
-		out.println( "<iframe src=\"../menu.html\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<iframe src=\"menu.jsp\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<b>Search Parameters :</b><br>" );
 		out.println( "<div class=\"divSpacer9px\"></div>" );
@@ -129,7 +129,7 @@
 		out.println( "</table>" );
 		out.println( "</form>" );
 		out.println( "<hr size=\"1\">" );
-		out.println( "<iframe src=\"../copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<iframe src=\"copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		out.println( "</body>" );
 		out.println( "</html>" );
 		return;
@@ -361,25 +361,25 @@
 	<meta name="description" content="Mass Spectrum Search Results">
 	<meta name="keywords" content="Results">
 	<meta name="revisit_after" content="10 days">
-	<link rel="stylesheet" type="text/css" href="../css/Common.css">
-	<link rel="stylesheet" type="text/css" href="../css/Result.css">
-	<link rel="stylesheet" type="text/css" href="../css/ResultMenu.css">
-	<script type="text/javascript" src="../script/Common.js"></script>
-	<script type="text/javascript" src="../script/Result.js"></script>
-	<script type="text/javascript" src="../script/ResultMenu.js"></script>
-	<script type="text/javascript" src="../script/StructSearch.js"></script>
-	<!--script type="text/javascript" src="../script/jquery.js"></script-->
+	<link rel="stylesheet" type="text/css" href="css/Common.css">
+	<link rel="stylesheet" type="text/css" href="css/Result.css">
+	<link rel="stylesheet" type="text/css" href="css/ResultMenu.css">
+	<script type="text/javascript" src="script/Common.js"></script>
+	<script type="text/javascript" src="script/Result.js"></script>
+	<script type="text/javascript" src="script/ResultMenu.js"></script>
+	<script type="text/javascript" src="script/StructSearch.js"></script>
+	<!--script type="text/javascript" src="script/jquery.js"></script-->
 	<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script>
-	<script type="text/javascript" src="../script/StructurePreview.js"></script>
+	<script type="text/javascript" src="script/StructurePreview.js"></script>
 	<!-- SpeckTackle dependencies-->
 	<!--script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script-->
 	<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 	<!-- SpeckTackle library-->
-	<script type="text/javascript" src="../script/st.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
 	<!-- SpeckTackle style sheet-->
-	<link rel="stylesheet" href="../css/st.css" type="text/css" />	
+	<link rel="stylesheet" href="css/st.css" type="text/css" />	
 	<!-- SpeckTackle MassBank loading script-->
-	<script type="text/javascript" src="../script/massbank_specktackle.js"></script>	
+	<script type="text/javascript" src="script/massbank_specktackle.js"></script>	
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -387,12 +387,12 @@
 		<tr>
 			<td><h1><%=hTitle%></h1></td>
 			<td align="right" class="font12px">
-				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="../img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
-<iframe src="../menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
 <%
 	/*
@@ -401,7 +401,7 @@
 		Exists only on the primary server (it does not cause an error even if there is no file)
 	*/
 %>
-<jsp:include page="../pserver/ServerInfo.jsp" />
+<jsp:include page="pserver/ServerInfo.jsp" />
 <%
 	//-------------------------------------
 	// 検索条件パラメータ表示
@@ -697,7 +697,7 @@
 					
 					out.println( "<td>" );
 					out.println( "<b>Query" + String.valueOf(n+1) + "</b><br>" );
-					out.println( "<applet code=\"MolView.class\" archive=\"../applet/MolView.jar\" width=\"200\" height=\"200\">" );
+					out.println( "<applet code=\"MolView.class\" archive=\"applet/MolView.jar\" width=\"200\" height=\"200\">" );
 					out.println( " <param name=\"moldata\" value=\"" + moldata + "\">" );
 					out.println( "</applet>" );
 					out.println( "</td>" );
@@ -751,7 +751,7 @@
 		
 		out.println( "</tr>" );
 		out.println( "<tr>");
-		out.println( "<td>&nbsp;&nbsp;<a href=\"../StructureSearch.html\" class=\"pageLink\" onClick=\"return prevStructSearch()\">Edit / Resubmit Query</a></td>" );
+		out.println( "<td>&nbsp;&nbsp;<a href=\"StructureSearch.jsp\" class=\"pageLink\" onClick=\"return prevStructSearch()\">Edit / Resubmit Query</a></td>" );
 		out.println( "</tr>" );
 		out.println( "</table>" );
 		
@@ -767,7 +767,7 @@
 			out.println( "</tr>" );
 			out.println( "</table>" );
 			out.println( "<hr size=\"1\">" );
-			out.println( "<iframe src=\"../copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+			out.println( "<iframe src=\"copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 			out.println( "</body>" );
 			out.println( "</html>" );
 			
@@ -1152,7 +1152,7 @@
 					out.println( "</td>" );
 					out.print( "  <td class=\"treeLayout2\" width=\"" + (Integer.parseInt(width[1]) - 8) + "\" valign=\"top\">");
 					out.print( "&nbsp;&nbsp;<img class=\"cursorLink\" src=\"" + pluspng + "\" onclick=\"treeMenu("
-						+ tParentId + ")\" name=\"" + tParentImgName + "\" alt=\"\"><br>&nbsp;&nbsp;&nbsp;<img src=\"../image/treeline0.gif\" align=\"middle\" name=\"" + tParentImgName2 + "\">" );
+						+ tParentId + ")\" name=\"" + tParentImgName + "\" alt=\"\"><br>&nbsp;&nbsp;&nbsp;<img src=\"image/treeline0.gif\" align=\"middle\" name=\"" + tParentImgName2 + "\">" );
 					out.println( "</td>" );
 
 					out.print( "  <td class=\"treeLayout1\" width=\"" + (Integer.parseInt(width[2]) + 8) + "\" valign=\"top\">");
@@ -1213,7 +1213,7 @@
 						out.println( "  </a>" );
 					} else {
 						// no structure there or svg generation failed
-						out.println( "   <img src=\"../image/not_available_s.gif\" width=\"80\" height=\"80\" style=\"margin:0px;\">");
+						out.println( "   <img src=\"image/not_available_s.gif\" width=\"80\" height=\"80\" style=\"margin:0px;\">");
 					}
 					
 					out.println( "  </td>" );
@@ -1248,7 +1248,7 @@
 				}
 
 				out.println( "  <td class=\"treeLayout2\" width=\"" + width[1] + "\" valign=\"top\">"
-					+ "&nbsp;&nbsp;&nbsp;<img src=\"../image/" + gifLine + "\" align=\"absmiddle\" border=\"0\"></td>" );
+					+ "&nbsp;&nbsp;&nbsp;<img src=\"image/" + gifLine + "\" align=\"absmiddle\" border=\"0\"></td>" );
 				out.print( "  <td class=\"treeLayout1\" width=\"" + width[2] + "\" valign=\"top\">" );
 				out.print( "<a href=\"" + url + "\" target=\"_blank\">&nbsp;" + rec.getChildLink() + "</a>" );
 				out.println( "</td>" );
@@ -1335,6 +1335,6 @@
 </form>
 
 <hr size="1">
-<iframe src="../copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 </body>
 </html>

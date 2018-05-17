@@ -49,7 +49,7 @@
 <title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
 <link rel="stylesheet" type="text/css" href="css/Common.css">
 <link rel="stylesheet" type="text/css" href="css/Personal.css">
-<script type="text/javascript" src="./script/Piwik.js"></script>
+<script type="text/javascript" src="script/Piwik.js"></script>
 </head>
 <body class="msbkFont" bgcolor="#ECECEC">
 <div align="center">
@@ -82,10 +82,10 @@
 												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
 													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
 														<!-- <tr> -->
-															<!-- <td><a href="SearchPage.html" style="font-weight:bold;" class="bullet_link" target="_self">Spectrum Search</a></td> -->
+															<!-- <td><a href="SearchPage.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Spectrum Search</a></td> -->
 														<!-- </tr> -->
 														<!-- <tr> -->
-															<!-- <td align="center"><A href="SearchPage.html" target="_self"><img src="img/search.gif" alt="Spectrum Search" width="170" border="0"></a></td> -->
+															<!-- <td align="center"><A href="SearchPage.jsp" target="_self"><img src="image/search.gif" alt="Spectrum Search" width="170" border="0"></a></td> -->
 														<!-- </tr> -->
 													<!-- </table> -->
 												<!-- </td> -->
@@ -95,10 +95,10 @@
 												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
 													<table border="0" cellspacing="0" cellpadding="5" width="190">
 														<tr>
-															<td><a href="QuickSearch.html" style="font-weight:bold;" class="bullet_link" target="_self">Quick Search</a></td>
+															<td><a href="QuickSearch.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Quick Search</a></td>
 														</tr>
 														<tr>
-															<td align="center"><a href="QuickSearch.html" target="_self"><img src="img/quick.gif" alt="Quick Search" width="170" border="0"></a></td>
+															<td align="center"><a href="QuickSearch.jsp" target="_self"><img src="image/quick.gif" alt="Quick Search" width="170" border="0"></a></td>
 														</tr>
 													</table>
 												</td>
@@ -108,10 +108,10 @@
 												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
 													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
 														<!-- <tr> -->
-															<!-- <td><a href="StructureSearch.html" style="font-weight:bold;" class="bullet_link" target="_self">Substructure Search</a></td> -->
+															<!-- <td><a href="StructureSearch.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Substructure Search</a></td> -->
 														<!-- </tr> -->
 														<!-- <tr> -->
-															<!-- <td align="center"><a href="StructureSearch.html" target="_self"><img src="img/substructure.gif" alt="Substructure Search" width="170" border="0"></a></td> -->
+															<!-- <td align="center"><a href="StructureSearch.jsp" target="_self"><img src="image/substructure.gif" alt="Substructure Search" width="170" border="0"></a></td> -->
 														<!-- </tr> -->
 													<!-- </table> -->
 												<!-- </td> -->
@@ -122,10 +122,10 @@
 												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
 													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
 														<!-- <tr> -->
-															<!-- <td><a href="BrowsePage.html" style="font-weight:bold;" class="bullet_link" target="_self">Browse Page</a></td> -->
+															<!-- <td><a href="BrowsePage.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Browse Page</a></td> -->
 														<!-- </tr> -->
 														<!-- <tr> -->
-															<!-- <td align="center"><a href="BrowsePage.html" target="_self"><img src="img/browse.gif" alt="Browse Page" width="170" border="0"></a></td> -->
+															<!-- <td align="center"><a href="BrowsePage.jsp" target="_self"><img src="image/browse.gif" alt="Browse Page" width="170" border="0"></a></td> -->
 														<!-- </tr> -->
 													<!-- </table> -->
 												<!-- </td> -->
@@ -135,10 +135,10 @@
 												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
 													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
 														<!-- <tr> -->
-															<!-- <td><a href="PeakSearch.html" style="font-weight:bold;" class="bullet_link" target="_self">Peak Search</a></td> -->
+															<!-- <td><a href="PeakSearch.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Peak Search</a></td> -->
 														<!-- </tr> -->
 														<!-- <tr> -->
-															<!-- <td align="center"><a href="PeakSearch.html" target="_self"><img src="img/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td> -->
+															<!-- <td align="center"><a href="PeakSearch.jsp" target="_self"><img src="image/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td> -->
 														<!-- </tr> -->
 													<!-- </table> -->
 												<!-- </td> -->
@@ -148,10 +148,10 @@
 												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
 													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
 														<!-- <tr> -->
-															<!-- <td><a href="PackageView.html" style="font-weight:bold;" class="bullet_link" target="_self">Spectral Browser</a></td> -->
+															<!-- <td><a href="PackageView.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Spectral Browser</a></td> -->
 														<!-- </tr> -->
 														<!-- <tr> -->
-															<!-- <td align="center"><a href="PackageView.html" target="_self"><img src="img/package.gif" alt="Spectral Browser" width="170" border="0"></a></td> -->
+															<!-- <td align="center"><a href="PackageView.jsp" target="_self"><img src="image/package.gif" alt="Spectral Browser" width="170" border="0"></a></td> -->
 														<!-- </tr> -->
 													<!-- </table> -->
 												<!-- </td> -->
@@ -163,10 +163,10 @@
 												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
 													<table border="0" cellspacing="0" cellpadding="5" width="190">
 														<tr>
-															<td><a href="RecordIndex.html" style="font-weight:bold;" class="bullet_link" target="_self">Record Index</a></td>
+															<td><a href="RecordIndex.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Record Index</a></td>
 														</tr>
 														<tr>
-															<td align="center"><a href="RecordIndex.html" target="_self"><img src="img/list.gif" alt="Record Index" width="170" border="0"></a></td>
+															<td align="center"><a href="RecordIndex.jsp" target="_self"><img src="image/list.gif" alt="Record Index" width="170" border="0"></a></td>
 														</tr>
 													</table>
 												</td>
@@ -174,7 +174,6 @@
 											<tr>
 												<td height="100" colspan="6">
 													<ul>
-														<!-- <li><a href="./mbadmin/">MassBank Administration Tool</a></li><br /><br /> -->
 														<li><a href="./api/services/MassBankAPI?wsdl" target="_blank">WEB-API WSDL</a></li>
 													</ul>	
 												</td>
@@ -201,7 +200,7 @@
 			<table width="800" border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td>
-						<iframe src="./copyrightline.html" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="width:400px; height:60px; padding-left:30px;"></iframe>
+						<iframe src="copyrightline.html" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="width:400px; height:60px; padding-left:30px;"></iframe>
 					</td>
 					<td>
 						<span class="version">system version 1.8.1</span>

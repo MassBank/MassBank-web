@@ -163,9 +163,9 @@
 	//-------------------------------------
 	// ポスト先
 	//-------------------------------------
-	String formAction = "./jsp/Result.jsp";
+	String formAction = "Result.jsp";
 	if ( searchBy.equals("formula")) {
-		formAction = "./jsp/ResultAdv.jsp";
+		formAction = "ResultAdv.jsp";
 	}
 %>
 <html>
@@ -184,15 +184,12 @@
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
 	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
-	<script type="text/javascript" src="./script/Common.js"></script>
-	<script type="text/javascript" src="./script/jquery.js"></script>
-<%-- <% if ( isPeakAdv ) { %> --%>
-<!-- 	<script type="text/javascript" src="./script/FormulaSuggest.js"></script> -->
-<%-- <% } %> --%>
-	<script type="text/javascript" src="./script/AtomicMass.js"></script>
-	<script type="text/javascript" src="./script/PeakSearch.js"></script>
+	<script type="text/javascript" src="script/Common.js"></script>
+	<script type="text/javascript" src="script/jquery.js"></script>
+	<script type="text/javascript" src="script/AtomicMass.js"></script>
+	<script type="text/javascript" src="script/PeakSearch.js"></script>
 	<title>MassBank | Database | Peak Search</title>
-	<script type="text/javascript" src="./script/Piwik.js"></script>
+	<script type="text/javascript" src="script/Piwik.js"></script>
 	</head>
 <body class="msbkFont backgroundImg cursorDefault" onload="loadCheck('<%=searchOf%>', '<%=searchBy%>');">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -201,16 +198,16 @@
 				<h1>Peak Search</h1>
 			</td>
 			<td align="right" class="font12px">
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=PEAK_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=PEAK_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
-	<iframe src="menu.html" width="860" height="30" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+	<iframe src="menu.jsp" width="860" height="30" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 	<hr size="1">
 
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
-	<jsp:include page="../pserver/ServerInfo.jsp" />
+	<jsp:include page="pserver/ServerInfo.jsp" />
 
 	<form name="form_query" method="post" action="<%=formAction%>" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0">
@@ -396,7 +393,7 @@
 		condition = "<span class=\"logic\">OR</span>";
 	}
 	else if ( mode.equals("seq") ) {
-		condition = "<img src=\"./image/arrow_neutral.gif\">";
+		condition = "<img src=\"image/arrow_neutral.gif\">";
 	}
 
 	out.println("\t\t\t\t\t\t\t\t\t\t<tr><br>");

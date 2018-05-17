@@ -39,7 +39,7 @@ function clickShowSpectra() {
  */
 function submitSearchPage() {
 	if ( submitFormCheck() ) {
-		document.resultForm.action = "../SearchPage.html";
+		document.resultForm.action = "SearchPage.jsp";
 		document.resultForm.submit();
 	}
 }
@@ -280,7 +280,7 @@ function outBgColor(obj, color, id) {
  * 再検索処理
  */
 function parameterResetting() {
-	document.resultForm.action = "../QuickSearch.html";
+	document.resultForm.action = "QuickSearch.jsp";
 	document.resultForm.target = "_self";
 	document.resultForm.submit();
 	return false;

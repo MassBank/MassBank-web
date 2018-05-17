@@ -158,10 +158,10 @@
 	<meta name="keywords" content="Quick,Compound,ExactMass,Formula">
 	<meta name="revisit_after" content="30 days">
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
-	<script type="text/javascript" src="./script/Common.js"></script>
-	<script type="text/javascript" src="./script/QuickSearch.js"></script>
+	<script type="text/javascript" src="script/Common.js"></script>
+	<script type="text/javascript" src="script/QuickSearch.js"></script>
 	<title>MassBank | Database | Quick Search</title>
-	<script type="text/javascript" src="./script/Piwik.js"></script>
+	<script type="text/javascript" src="script/Piwik.js"></script>
 	</head>
 <body class="msbkFont backgroundImg cursorDefault" onload="initFocus();">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -170,16 +170,16 @@
 				<h1>Quick Search</h1>
 			</td>
 			<td align="right" class="font12px">
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="./img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=QUICK_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=QUICK_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
-	<iframe src="menu.html" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+	<iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 	<hr size="1">
 
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
-	<jsp:include page="../pserver/ServerInfo.jsp" />
+	<jsp:include page="pserver/ServerInfo.jsp" />
 
 	<form name="change" method="post" action="QuickSearch.html" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0" cellspacing="0">
