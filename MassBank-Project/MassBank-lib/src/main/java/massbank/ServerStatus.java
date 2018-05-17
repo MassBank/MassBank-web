@@ -114,7 +114,7 @@ public class ServerStatus {
 		// フロントサーバURLを取得
 		String serverUrl = conf.getServerUrl();
 		// ポーリング周期を取得
-		this.pollInterval = conf.getPollInterval();
+		this.pollInterval = Config.get().PollingInterval();
 
 		// 監視対象サーバのURLとDB名を格納
 		List<String> svrNameList = new ArrayList<String>();

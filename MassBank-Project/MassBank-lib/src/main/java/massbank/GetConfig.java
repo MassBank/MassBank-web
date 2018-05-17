@@ -146,46 +146,6 @@ public class GetConfig {
 	}
 
 	/**
-	 * ページリンク表示数取得
-	 */ 
-	public String getDispLinkNum() {
-		return getValByTagName( "LinkNum" );
-	}
-	
-	/**
-	 * 親ノード表示数取得する
-	 */ 
-	public String getDispNodeNum() {
-		return getValByTagName( "NodeNum" );
-	}
-	
-	/**
-	 * Cookie有効フラグ
-	 */ 
-	public boolean isCookie() {
-		// デフォルト
-		boolean val = false;
-		String ret = getValByTagName( "Cookie" );
-		if ( ret.equals("true") ) {
-			val = true;
-		}
-		return val;
-	}
-	
-	/**
-	 * サーバ監視のポーリング周期を取得する
-	 */
-	public int getPollInterval() {
-		// デフォルト30分
-		int val = 30;
-		String ret = getValByTagName( "PollingInterval" );
-		if ( !ret.equals("") ) {
-			val = Integer.parseInt(ret);
-		}
-		return val;
-	}
-	
-	/**
 	 * 
 	 */
 	private String[] getSetting( String tagName ) {

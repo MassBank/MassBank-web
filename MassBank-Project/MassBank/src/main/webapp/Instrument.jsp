@@ -102,7 +102,7 @@
 	Cookie commonCookie = null;
 	Cookie peakAdvCookie = null;
 	// massbank.conf でクッキー有効の場合のみ取得
-	if ( conf.isCookie() ) {
+	if ( Config.get().Cookie() ) {
 		final Cookie[] allCookies = request.getCookies();
 		if ( allCookies != null ) {
 			for (int i=0; i<allCookies.length; i++) {
@@ -231,7 +231,7 @@
 		out.println( "\t\t\t\t\t\t\t\t\t<td width=\"80\" style=\"padding:5px;\">" );
 		if ( !isPeakAdv ) {
 			out.print( "\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"inst_grp\" id=\"inst_grp_" + key + "\""
-					   + " value=\"" + key + "\" onClick=\"selBoxGrp('" + key + "', " + grpList.size() + ", 0); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
+					   + " value=\"" + key + "\" onClick=\"selBoxGrp('" + key + "', " + grpList.size() + ", 0); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
 			if ( isFirst && commonCookie == null ) {
 				if ( key.equals("ESI") ) {
 					out.print( " checked" );
@@ -250,7 +250,7 @@
 		}
 		else {
 			out.print( "\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"inst_grp_adv\" id=\"inst_grp_adv_" + key + "\""
-					   + " value=\"" + key + "\" onClick=\"selBoxGrp('" + key + "', " + grpList.size() + ", 1); setCookie('" + conf.isCookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
+					   + " value=\"" + key + "\" onClick=\"selBoxGrp('" + key + "', " + grpList.size() + ", 1); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
 			if ( isFirst && peakAdvCookie == null ) {
 				if ( key.equals("ESI") ) {
 					out.print( " checked" );
@@ -274,7 +274,7 @@
 				String val = grpList.get(j);
 				if ( !isPeakAdv ) {
 					out.print( "\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"inst\" id=\"inst_" + key + j + "\""
-							 + " value=\"" + val + "\" onClick=\"selBoxInst('" + key + "'," + grpList.size() + ", 0); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
+							 + " value=\"" + val + "\" onClick=\"selBoxInst('" + key + "'," + grpList.size() + ", 0); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
 					if ( isFirst && commonCookie == null ) {
 						if ( key.equals("ESI") ) {
 							out.print( " checked" );
@@ -293,7 +293,7 @@
 				}
 				else {
 					out.print( "\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"inst_adv\" id=\"inst_adv_" + key + j + "\""
-							 + " value=\"" + val + "\" onClick=\"selBoxInst('" + key + "'," + grpList.size() + ", 1); setCookie('" + conf.isCookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
+							 + " value=\"" + val + "\" onClick=\"selBoxInst('" + key + "'," + grpList.size() + ", 1); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
 					if ( isFirst && peakAdvCookie == null ) {
 						if ( key.equals("ESI") ) {
 							out.print( " checked" );
@@ -352,7 +352,7 @@
 					}
 				}
 			}
-			out.println( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms\" id=\"ms_MS0\" value=\"all\" onClick=\"selAllMs(" + msInfo.length + ", 0); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" + allCheked + ">All&nbsp;&nbsp;&nbsp;" );
+			out.println( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms\" id=\"ms_MS0\" value=\"all\" onClick=\"selAllMs(" + msInfo.length + ", 0); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" + allCheked + ">All&nbsp;&nbsp;&nbsp;" );
 		}
 		else {
 			if ( isFirst && peakAdvCookie == null ) {
@@ -368,7 +368,7 @@
 					}
 				}
 			}
-			out.println( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms_adv\" id=\"ms_adv_MS0\" value=\"all\" onClick=\"selAllMs(" + msInfo.length + ", 1); setCookie('" + conf.isCookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" + allCheked + ">All&nbsp;&nbsp;&nbsp;" );
+			out.println( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms_adv\" id=\"ms_adv_MS0\" value=\"all\" onClick=\"selAllMs(" + msInfo.length + ", 1); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" + allCheked + ">All&nbsp;&nbsp;&nbsp;" );
 		}
 	}
 	else {
@@ -377,7 +377,7 @@
 	for ( int i=0; i<msInfo.length; i++ ) {
 		if ( !isPeakAdv ) {
 			out.print( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms\" id=\"ms_MS" + (i+1) + "\""
-					 + " value=\"" + msInfo[i] + "\" onClick=\"selMs(" + msInfo.length + ", 0); setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
+					 + " value=\"" + msInfo[i] + "\" onClick=\"selMs(" + msInfo.length + ", 0); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
 			if ( isFirst && commonCookie == null ) {
 				out.print( " checked" );
 			}
@@ -394,7 +394,7 @@
 		}
 		else {
 			out.print( "\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"ms_adv\" id=\"ms_adv_MS" + (i+1) + "\""
-					 + " value=\"" + msInfo[i] + "\" onClick=\"selMs(" + msInfo.length + ", 1); setCookie('" + conf.isCookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
+					 + " value=\"" + msInfo[i] + "\" onClick=\"selMs(" + msInfo.length + ", 1); setCookie('" + Config.get().Cookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
 			if ( isFirst && chkMsTypeAdv == null ) {
 				out.print( " checked" );
 			}
@@ -432,13 +432,13 @@
 	String[] ionStr = { "Positive&nbsp;&nbsp;", "Negative&nbsp;&nbsp;&nbsp;&nbsp;", "Both" };
 	for ( int i = 0; i < ionVal.length; i++ ) {
 		if ( !isPeakAdv ) {
-			out.print( "\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"ion\" value=\"" + ionVal[i] + "\" onClick=\"setCookie('" + conf.isCookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
+			out.print( "\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"ion\" value=\"" + ionVal[i] + "\" onClick=\"setCookie('" + Config.get().Cookie() + "', '" + COOKIE_COMMON + "', '" + COOKIE_INSTGRP + "', '" + COOKIE_INST + "', '" + COOKIE_MS + "', '" + COOKIE_ION + "', 0);\"" );
 			if ( ionMode.equals(ionVal[i]) ) {
 				out.print( " checked" );
 			}
 		}
 		else {
-			out.print( "\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"ion_adv\" value=\"" + ionVal[i] + "\" onClick=\"setCookie('" + conf.isCookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
+			out.print( "\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"ion_adv\" value=\"" + ionVal[i] + "\" onClick=\"setCookie('" + Config.get().Cookie() + "', '" + COOKIE_PEAKADV + "', '" + COOKIE_INSTGRP_ADV + "', '" + COOKIE_INST_ADV + "', '" + COOKIE_MS_ADV + "', '" + COOKIE_ION_ADV + "', 1);\"" );
 			if ( ionModeAdv.equals(ionVal[i]) ) {
 				out.print( " checked" );
 			}
