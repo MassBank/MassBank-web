@@ -1,37 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
-  <display-name>MassBank Web Application</display-name>
-	<!-- get this parameters in the code with getServletContext().getInitParameter("user"); -->
-<!-- 	<context-param> -->
-<!-- 		<param-name>user</param-name> -->
-<!-- 		<param-value>bird</param-value> -->
-<!-- 	</context-param> -->
-<!-- 	<context-param> -->
-<!-- 		<param-name>password</param-name> -->
-<!-- 		<param-value>bird2006</param-value> -->
-<!-- 	</context-param> -->
-
-<!-- 	<servlet> -->
-<!-- 		<servlet-name>MassBankEnv</servlet-name> -->
-<!-- 		<servlet-class>massbank.MassBankEnv</servlet-class> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>localUrl</param-name> -->
-<!-- 			<param-value>http://localhost/MassBank/</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<load-on-startup>1</load-on-startup> -->
-<!-- 	</servlet> -->
-<!-- 	<servlet-mapping> -->
-<!-- 		<servlet-name>MassBankEnv</servlet-name> -->
-<!-- 		<url-pattern>/MassBankEnv</url-pattern> -->
-<!-- 	</servlet-mapping> -->
-
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+	<display-name>MassBank Web Application</display-name>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	<!-- get parameters in the code with getServletContext().getInitParameter("xxx"); -->
 	<servlet>
-		<servlet-name>MultiDispatcher</servlet-name>
-		<servlet-class>massbank.MultiDispatcher</servlet-class>
-		<load-on-startup>2</load-on-startup>
+		<servlet-name>default</servlet-name>
+		<servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>listings</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>MultiDispatcher</servlet-name>
-		<url-pattern>/MultiDispatcher</url-pattern>
-	</servlet-mapping>
 </web-app>
