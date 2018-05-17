@@ -37,7 +37,8 @@ public class QuickSearchBySplash implements SearchFunction {
 				+ "WHERE RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 		StringBuilder sb = new StringBuilder();
 		sb.append(sql);
-		sb.append(" AND (RECORD.PK_SPLASH = ?");
+		//sb.append(" AND (RECORD.PK_SPLASH = ?");
+		sb.append(" AND (UPPER(RECORD.PK_SPLASH) like UPPER(?) ");
 		if (this.inst != null && this.ms != null && this.ion != null) {
 			sb.append(") AND (");
 			for (int i = 0; i < inst.length; i++) {
@@ -63,7 +64,8 @@ public class QuickSearchBySplash implements SearchFunction {
 		try {
 			PreparedStatement stmnt = connection.prepareStatement(sb.toString());
 			int idx = 1;
-			stmnt.setString(idx, this.splash);
+			String splashAsSubstring	= "%" + this.splash + "%";
+			stmnt.setString(idx, splashAsSubstring);
 			if (this.inst != null && this.ms != null && this.ion != null) {
 				idx++;
 				for (int i = 0; i < inst.length; i++) {
