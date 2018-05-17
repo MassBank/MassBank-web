@@ -207,7 +207,7 @@
 	<hr size="1">
 
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
-	<jsp:include page="pserver/ServerInfo.jsp" />
+<%-- 	<jsp:include page="pserver/ServerInfo.jsp" /> --%>
 
 	<form name="form_query" method="post" action="<%=formAction%>" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0">

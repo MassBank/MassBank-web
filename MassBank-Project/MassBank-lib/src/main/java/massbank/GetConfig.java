@@ -48,13 +48,13 @@ public class GetConfig {
 			DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
 
 			// ドキュメントビルダーを生成
-			DocumentBuilder builder = dbfactory.newDocumentBuilder();
+			//DocumentBuilder builder = dbfactory.newDocumentBuilder();
 
 			// パースを実行してDocumentオブジェクトを取得
-			Document doc = builder.parse( url );
+			//Document doc = builder.parse( url );
 
 			// ルート要素を取得
-			m_root = doc.getDocumentElement();
+			//m_root = doc.getDocumentElement();
 		}
 		catch ( Exception e ) {
 			e.printStackTrace();
@@ -62,24 +62,14 @@ public class GetConfig {
 	}
 
 	/**
-	 * サイトのフル名称を取得する
-	 */ 
-	public String[] getSiteLongName() {
-		return  getSetting("LongName");
-	}
-
-	/**
-	 * Browseアプレットの動作モードを取得する
-	 */ 
-	public String[] getBrowseMode() {
-		return getSetting("BrowseMode");
-	}
-
-	/**
 	 * DB名を取得する
+	 * @throws ConfigurationException 
 	 */ 
-	public String[] getDbName() {
-		return getSetting("DB");
+	public String[] getDbName() throws ConfigurationException {
+		String[] infoList = null;
+		infoList = new String[1];
+		infoList[0] = Config.get().dbName();
+		return infoList;
 	}
 
 	/**
@@ -99,18 +89,14 @@ public class GetConfig {
 
 	/**
 	 * サイトURLを取得する
+	 * @throws ConfigurationException 
 	 */ 
-	public String[] getSiteUrl() {
-		return getSetting("URL");
+	public String[] getSiteUrl() throws ConfigurationException {
+		String[] infoList = null;
+		infoList = new String[1];
+		infoList[0] = Config.get().BASE_URL();
+		return infoList;
 	}
-	
-	/**
-	 * サイト名称を取得する
-	 */ 
-	public String[] getSiteName() {
-		return getSetting("Name");
-	}
-
 	
 	/**
 	 * Get the DocumentRoot folder of Apache HTTPD.
@@ -257,13 +243,4 @@ public class GetConfig {
 		}
 		return val;
 	}
-	
-	/*public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
-		GetConfig conf=new GetConfig("/var/www/html/MassBank/");
-		String[] dbNameList = conf.getDbName();
-		for ( int i = 0; i < dbNameList.length; i++ ) {
-			System.out.println(dbNameList[i]);
-		}
-		
-	}*/
 }

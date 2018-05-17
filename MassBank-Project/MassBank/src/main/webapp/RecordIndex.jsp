@@ -84,10 +84,8 @@
 	// 環境設定ファイルからURLリストを取得
 	//-------------------------------------------
 	String baseUrl = Config.get().BASE_URL();
-	GetConfig conf = new GetConfig(baseUrl);
-	String serverUrl = conf.getServerUrl();
-	String[] siteNameList = conf.getSiteName();
-	String[] siteLongNameList = conf.getSiteLongName();
+	String serverUrl = Config.get().BASE_URL();
+
 	
 	//-------------------------------------
 	// 検索実行・結果取得
@@ -183,7 +181,7 @@
 	<hr size="1">
 
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
-	<jsp:include page="pserver/ServerInfo.jsp" />
+<%-- 	<jsp:include page="pserver/ServerInfo.jsp" /> --%>
 
 	<form>
 <%

@@ -75,7 +75,7 @@ public class GetInstInfo {
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] urlList = conf.getSiteUrl();
 
-		String serverUrl = conf.getServerUrl();
+		String serverUrl = Config.get().BASE_URL();
 		MassBankCommon mbcommon = new MassBankCommon();
 		String typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_INST];
 		ArrayList<String> resultAll = new SearchExecution(request).exec(new InstrumentSearch());

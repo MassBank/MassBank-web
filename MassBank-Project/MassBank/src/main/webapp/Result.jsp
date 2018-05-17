@@ -337,8 +337,8 @@
 	String path = request.getRequestURL().toString();
 	String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
 	GetConfig conf = new GetConfig(baseUrl);
-	String serverUrl = conf.getServerUrl();				// サーバURL取得
-	String [] siteLongName = conf.getSiteLongName();	// サイト名取得
+	String serverUrl = Config.get().BASE_URL();
+	//String [] siteLongName = conf.getSiteLongName();	// サイト名取得
 	String[] dbNameList = conf.getDbName();
 	String[] urlList = conf.getSiteUrl();
 
@@ -401,7 +401,7 @@
 		Exists only on the primary server (it does not cause an error even if there is no file)
 	*/
 %>
-<jsp:include page="pserver/ServerInfo.jsp" />
+<%-- <jsp:include page="pserver/ServerInfo.jsp" /> --%>
 <%
 	//-------------------------------------
 	// 検索条件パラメータ表示

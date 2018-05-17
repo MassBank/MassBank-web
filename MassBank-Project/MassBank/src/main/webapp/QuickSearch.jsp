@@ -179,9 +179,9 @@
 	<hr size="1">
 
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
-	<jsp:include page="pserver/ServerInfo.jsp" />
+<%-- 	<jsp:include page="pserver/ServerInfo.jsp" /> --%>
 
-	<form name="change" method="post" action="QuickSearch.html" style="display:inline" onSubmit="doWait('Searching...')">
+	<form name="change" method="post" action="QuickSearch.jsp" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td width="180">

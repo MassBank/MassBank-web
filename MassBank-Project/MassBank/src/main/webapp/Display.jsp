@@ -163,7 +163,7 @@
 		String path = request.getRequestURL().toString();
 		String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
 		GetConfig conf = new GetConfig(baseUrl);
-		String serverUrl = conf.getServerUrl();				// サーバURL取得
+		String serverUrl = Config.get().BASE_URL();				// サーバURL取得
 		String param = "id=";
 		String[] idList = new String[ids.length];
 		for ( int i = 0; i < ids.length; i++ ) {

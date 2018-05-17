@@ -173,7 +173,7 @@ public class DataManagement {
 		//-------------------------------------------
 		String baseUrl = Config.get().BASE_URL();
 		GetConfig conf = new GetConfig(baseUrl);
-		String serverUrl = conf.getServerUrl();				// サーバURL取得
+		String serverUrl = Config.get().BASE_URL();
 		
 		//-------------------------------------
 		// 検索実行・結果取得

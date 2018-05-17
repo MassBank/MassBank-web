@@ -433,7 +433,7 @@
 <iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
-<jsp:include page="pserver/ServerInfo.jsp" />
+<%-- <jsp:include page="pserver/ServerInfo.jsp" /> --%>
 <%
 	if ( isError ) {
 		//-------------------------------------------
@@ -466,7 +466,7 @@
 		// 設定ファイル内容を取得
 		//-------------------------------------------
 		GetConfig conf = new GetConfig(Config.get().BASE_URL());
-		String serverUrl = conf.getServerUrl();
+		String serverUrl = Config.get().BASE_URL();
 		String[] dbNameList = conf.getDbName();
 		String[] urlList = conf.getSiteUrl();
 		
