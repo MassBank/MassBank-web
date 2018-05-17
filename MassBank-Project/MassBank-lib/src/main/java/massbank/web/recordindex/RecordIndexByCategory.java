@@ -15,8 +15,8 @@ public class RecordIndexByCategory implements SearchFunction {
 	private String srchkey;
 
 	public void getParameters(HttpServletRequest request) {
-		this.idxtype = request.getParameter("idxtype");
-		this.srchkey = request.getParameter("srchkey");
+		this.idxtype	= request.getParameter("idxtype");
+		this.srchkey	= request.getParameter("srchkey");
 	}
 
 	public ArrayList<String> search(Connection connection) {

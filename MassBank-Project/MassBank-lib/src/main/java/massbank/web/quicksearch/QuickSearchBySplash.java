@@ -22,10 +22,10 @@ public class QuickSearchBySplash implements SearchFunction {
 	
 	@Override
 	public void getParameters(HttpServletRequest request) {
-		this.splash = request.getParameter("splash");
-		this.inst = request.getParameterValues("inst");
-		this.ms = request.getParameterValues("ms");
-		this.ion = request.getParameter("ion");
+		this.splash	= request.getParameter("splash").trim();
+		this.inst	= request.getParameterValues("inst");
+		this.ms		= request.getParameterValues("ms");
+		this.ion	= request.getParameter("ion");
 	}
 
 	@Override

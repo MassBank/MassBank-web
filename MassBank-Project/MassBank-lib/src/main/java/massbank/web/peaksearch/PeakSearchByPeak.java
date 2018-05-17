@@ -35,26 +35,25 @@ public class PeakSearchByPeak implements SearchFunction {
 	private String mode;
 
 	public void getParameters(HttpServletRequest request) {
-		this.inst = request.getParameterValues("inst");
-		this.ms = request.getParameterValues("ms");
-		this.ion = request.getParameter("ion");
-		this.num = 0;
-		for (int i = 0; i < 6; i++) {
-			if (!request.getParameter("mz" + i).isEmpty()) {
-				this.num = this.num + 1;
-			}
-		}
-		this.op = new String[this.num];
-		this.mz = new String[this.num];
-		this.fom = new String[this.num];
+		this.inst	= request.getParameterValues("inst");
+		this.ms		= request.getParameterValues("ms");
+		this.ion	= request.getParameter("ion");
+		this.num	= 0;
+		for (int i = 0; i < 6; i++)
+			if (!request.getParameter("mz" + i).isEmpty())
+				this.num++;
+		
+		this.op		= new String[this.num];
+		this.mz		= new String[this.num];
+		this.fom	= new String[this.num];
 		for (int i = 0; i < this.num; i++) {
-			this.op[i] = request.getParameter("op" + i);
-			this.mz[i] = request.getParameter("mz" + i);
-			this.fom[i] = request.getParameter("fom" + i);
+			this.op[i]	= request.getParameter("op" + i);
+			this.mz[i]	= request.getParameter("mz" + i).trim();
+			this.fom[i]	= request.getParameter("fom" + i).trim();
 		}
-		this.tol = request.getParameter("tol");
-		this.intens = request.getParameter("int");
-		this.mode = request.getParameter("mode");
+		this.tol	= request.getParameter("tol").trim();
+		this.intens	= request.getParameter("int").trim();
+		this.mode	= request.getParameter("mode");
 	}
 
 	public ArrayList<String> search(Connection connection) {

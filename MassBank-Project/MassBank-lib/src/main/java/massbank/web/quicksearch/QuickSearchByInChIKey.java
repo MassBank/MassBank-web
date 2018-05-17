@@ -22,10 +22,10 @@ public class QuickSearchByInChIKey implements SearchFunction {
 	
 	@Override
 	public void getParameters(HttpServletRequest request) {
-		this.inChIKey = request.getParameter("inchikey");
-		this.inst = request.getParameterValues("inst");
-		this.ms = request.getParameterValues("ms");
-		this.ion = request.getParameter("ion");
+		this.inChIKey	= request.getParameter("inchikey").trim();
+		this.inst		= request.getParameterValues("inst");
+		this.ms			= request.getParameterValues("ms");
+		this.ion		= request.getParameter("ion");
 	}
 	
 	@Override
