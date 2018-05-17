@@ -176,7 +176,7 @@ public class MassBankCommon {
 			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
 		}
 		else {
-			reqUrl = serverUrl + "jsp/" + DISPATCHER_NAME;
+			reqUrl = serverUrl + DISPATCHER_NAME;
 			site = Integer.parseInt(siteNo);
 		}
 		
@@ -250,7 +250,7 @@ public class MassBankCommon {
 			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
 		}
 		else {
-			reqUrl = serverUrl + "jsp/" + DISPATCHER_NAME;
+			reqUrl = serverUrl + DISPATCHER_NAME;
 			site = Integer.parseInt(siteNo);
 		}
 		

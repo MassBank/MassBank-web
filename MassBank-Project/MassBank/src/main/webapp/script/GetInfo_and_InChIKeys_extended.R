@@ -112,8 +112,7 @@ ifelse(length(PRECURSOR_TYPE_TRUE)==1, wantedmat[i,'PRECURSOR_TYPE'] <- substrin
 ifelse(length(SPLASH_TRUE)==1, wantedmat[i,'SPLASH'] <- substring(grep('PK$SPLASH:',record, value = TRUE, fixed = TRUE),12), wantedmat[i,'SPLASH'] <- SPLASH_FALSE)
 
 ## The deep links
-wantedmat[i,'EULINK'] <- paste("http://massbank.eu/MassBank/jsp/FwdRecord.jsp?id=", substring(grep('ACCESSION:',record, value = TRUE, fixed = TRUE),12), sep="")
-wantedmat[i,'JPLINK'] <- paste("http://www.massbank.jp/jsp/FwdRecord.jsp?id=", substring(grep('ACCESSION:',record, value = TRUE, fixed = TRUE),12), sep="")
+wantedmat[i,'EULINK'] <- paste("http://massbank.eu/MassBank/FwdRecord.jsp?id=", substring(grep('ACCESSION:',record, value = TRUE, fixed = TRUE),12), sep="")
 }
 
 ## Write the csv file

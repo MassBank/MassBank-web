@@ -118,7 +118,7 @@ function changeSearchType(searchof, searchby) {
 	if ( isByMz ) {
 		elementSt.className = "showObj";
 		elementAd.className = "hidObj";
-		f1.action = "./jsp/Result.jsp";
+		f1.action = "Result.jsp";
 		if ( isOfPeak ) {
 			f1.type.value = "peak";
 			elementMz.innerHTML = "<i>m/z</i>";
@@ -144,7 +144,7 @@ function changeSearchType(searchof, searchby) {
 		var elementCondIonTitle = document.getElementById( "condIonTitleAdv" );
 		elementSt.className = "hidObj";
 		elementAd.className = "showObj";
-		f1.action = "./jsp/ResultAdv.jsp";
+		f1.action = "ResultAdv.jsp";
 		if ( isOfPeak ) {
 			elementCondInstTitle.className = "cond-title-product";
 			elementCondMsTitle.className = "cond-title-product";

@@ -219,7 +219,7 @@
 			</tr>
 		</table>
 	</form>
-	<form name="form_query" method="post" action="jsp/<% out.print(postJspName); %>" style="display:inline" onSubmit="doWait('Searching...')">
+	<form name="form_query" method="post" action="<% out.print(postJspName); %>" style="display:inline" onSubmit="doWait('Searching...')">
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
