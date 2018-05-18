@@ -23,6 +23,7 @@ apt-get install -y
 docker-ce # docker environment
 #apache2 apache2-utils # apache
 tomcat8 # tomcat8
+default-jdk
 maven # maven
 git
 )
