@@ -138,21 +138,6 @@ public class MassBankCommon {
 		  "GetFormula.cgi"
 		}
 	};
-
-	
-	/**
-	 * Run servlet MultiDispatcher (サーブレットMultiDispatcherを実行する)
-	 * @param serverUrl 	Base URL (ベースURL)
-	 * @param type		Request type (リクエスト種別)
-	 * @param param		URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
-	 * @return
-	 * @deprecated Deprecated methods (非推奨メソッド)
-	 * @see execDispatcher(String serverUrl, String type, String param, boolean isMulti, String siteNo)
-	 */
-	public ArrayList<String> execMultiDispatcher( String serverUrl, String type, String param ) {
-		return execDispatcher( serverUrl, type, param, true, null );
-	}
-	
 	
 	/**
 	 * Run servlet MultiDispatcher or Dispatcher.jsp (サーブレットMultiDispatcher または、Dispatcher.jspを実行する)
