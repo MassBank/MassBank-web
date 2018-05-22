@@ -1183,8 +1183,7 @@
 					String databaseName		= conf.getDbName()[Integer.parseInt(rec.getContributor())];
 					String accession		= rec.getId();
 					
-					String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//.get().BASE_URL() + "temp";
-					//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
+					String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 					String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 					
 					Record.Structure structure	= dbManager.getStructureOfAccession(accession);

@@ -103,6 +103,18 @@
 													</table>
 												</td>
  												<td width="20" bgcolor="white"></td>
+ 												<!-- Peak Search -->
+ 												<td width="2" bgcolor="gold"></td>
+												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
+													<table border="0" cellspacing="0" cellpadding="5" width="190">
+														<tr>
+															<td><a href="PeakSearch.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Peak Search</a></td>
+														</tr>
+														<tr>
+															<td align="center"><a href="PeakSearch.html" target="_self"><img src="image/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td>
+														</tr>
+													</table>
+												</td>
 												<!-- Substructure Search -->
 												<!-- <td width="2" bgcolor="BlueViolet"></td> -->
 												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
