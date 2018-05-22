@@ -1499,7 +1499,8 @@ public class DatabaseManager {
 		this.statementGetContributorFromAccession.setString(1, accessionId);
 		ResultSet tmp = this.statementGetContributorFromAccession.executeQuery();
 		
-		if (!tmp.next()) throw new IllegalStateException("Accession '" + accessionId + "' is not in database");
+		//if (!tmp.next()) throw new IllegalStateException("Accession '" + accessionId + "' is not in database");
+		if (!tmp.next()) return null;
 		
 		// CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME
 //		System.out.println(tmp.getString("CONTRIBUTOR.ACRONYM"));
