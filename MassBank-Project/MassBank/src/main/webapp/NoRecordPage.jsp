@@ -67,8 +67,8 @@
 		<title>No Mass Spectrum</title>
 	</head>
 	<body style="font-family:Times;">
-		No MassBank record can be displayed for accession <%=accession%> in database <%=databaseName%>.<br>
-		Error: <b><%=error%></b></b>
+		No MassBank record exists for accession <%=accession%> from contributor <%=databaseName%>:<br>
+		<b><%=error%></b></b>
 		<hr size=1>
 		<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 	</body>
