@@ -77,19 +77,6 @@
 									<div align="center">
 										<table width="670" border="0" cellspacing="10" cellpadding="1" bgcolor="#FFFFFF">
 											<tr>
-												<!-- Spectrum Search -->
-												<!-- <td width="2" bgcolor="blue"></td> -->
-												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
-													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
-														<!-- <tr> -->
-															<!-- <td><a href="SearchPage.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Spectrum Search</a></td> -->
-														<!-- </tr> -->
-														<!-- <tr> -->
-															<!-- <td align="center"><A href="SearchPage.jsp" target="_self"><img src="image/search.gif" alt="Spectrum Search" width="170" border="0"></a></td> -->
-														<!-- </tr> -->
-													<!-- </table> -->
-												<!-- </td> -->
-												<!-- <td width="20" bgcolor="white"></td> -->
 												<!-- Quick Search -->
 												<td width="2" bgcolor="green"></td>
 												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
@@ -115,61 +102,6 @@
 														</tr>
 													</table>
 												</td>
-												<!-- Substructure Search -->
-												<!-- <td width="2" bgcolor="BlueViolet"></td> -->
-												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
-													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
-														<!-- <tr> -->
-															<!-- <td><a href="StructureSearch.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Substructure Search</a></td> -->
-														<!-- </tr> -->
-														<!-- <tr> -->
-															<!-- <td align="center"><a href="StructureSearch.jsp" target="_self"><img src="image/substructure.gif" alt="Substructure Search" width="170" border="0"></a></td> -->
-														<!-- </tr> -->
-													<!-- </table> -->
-												<!-- </td> -->
-											<!-- </tr> -->
-											<!-- <tr> -->
-												<!--// Browse Page -->
-												<!-- <td width="2" bgcolor="red"></td> -->
-												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
-													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
-														<!-- <tr> -->
-															<!-- <td><a href="BrowsePage.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Browse Page</a></td> -->
-														<!-- </tr> -->
-														<!-- <tr> -->
-															<!-- <td align="center"><a href="BrowsePage.jsp" target="_self"><img src="image/browse.gif" alt="Browse Page" width="170" border="0"></a></td> -->
-														<!-- </tr> -->
-													<!-- </table> -->
-												<!-- </td> -->
-												<!-- <td width="20" bgcolor="white"></td> -->
-												<!-- Peak Search -->
-												<!-- <td width="2" bgcolor="gold"></td> -->
-												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
-													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
-														<!-- <tr> -->
-															<!-- <td><a href="PeakSearch.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Peak Search</a></td> -->
-														<!-- </tr> -->
-														<!-- <tr> -->
-															<!-- <td align="center"><a href="PeakSearch.jsp" target="_self"><img src="image/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td> -->
-														<!-- </tr> -->
-													<!-- </table> -->
-												<!-- </td> -->
-												<!-- <td width="20" bgcolor="white"></td> -->
-												<!-- Spectral Browser -->
-												<!-- <td width="2" bgcolor="Chocolate"></td> -->
-												<!-- <td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;"> -->
-													<!-- <table border="0" cellspacing="0" cellpadding="5" width="190"> -->
-														<!-- <tr> -->
-															<!-- <td><a href="PackageView.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Spectral Browser</a></td> -->
-														<!-- </tr> -->
-														<!-- <tr> -->
-															<!-- <td align="center"><a href="PackageView.jsp" target="_self"><img src="image/package.gif" alt="Spectral Browser" width="170" border="0"></a></td> -->
-														<!-- </tr> -->
-													<!-- </table> -->
-												<!-- </td> -->
-												<!-- <td width="20" bgcolor="white"></td> -->
-											<!-- </tr> -->
-											<!-- <tr>  -->
 												<!--// Record Index -->
 												<td width="2" bgcolor="DeepPink"></td>
 												<td align="center" bgcolor="#F1F1F1" style="border: 1px #EEE solid;">
