@@ -105,7 +105,8 @@
 		// ###############################################################################
 		// redirect to jsp/RecordDisplay.jsp instead of using disp.cgi
 		String baseUrl	= Config.get().BASE_URL();
-		String urlStub	= baseUrl + "RecordDisplay.jsp";
+		//String urlStub	= baseUrl + "RecordDisplay.jsp";
+		String urlStub	= "RecordDisplay.jsp";
 		String redirectUrl	= urlStub + "?id=" + params.get("id") + "&dsn=" + dbName;
 		
 		response.sendRedirect(redirectUrl);
