@@ -38,6 +38,7 @@
 <%@ page import="massbank.Config" %>
 <%@ page import="massbank.DatabaseManager"%>
 <%@ page import="massbank.FileUtil" %>
+<%@ page import="massbank.Record" %>
 <%@ page import="massbank.StructureToSvgStringGenerator" %>
 <%@ page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData" %>
 <%
@@ -81,22 +82,26 @@
 		return;
 	}
 	if(databaseName == null){
-		/*
-		String error	= "Error: Missing argument 'dsn'";
+		DatabaseManager dbManager	= new DatabaseManager(Config.get().dbName());
+		Record.Contributor contributorObj	= dbManager.getContributorFromAccession(accession);
+		dbManager.closeConnection();
+		if(contributorObj != null)
+			databaseName	= contributorObj.SHORT_NAME;
+	}
+	if(databaseName == null){
+		String error	= "Error: Argument 'dsn' is missing or empty";
 		System.out.println(error);
 		String baseUrl	= Config.get().BASE_URL();
-		String urlStub	= baseUrl + "jsp/NoRecordPage.jsp";
+		String urlStub	= baseUrl + "NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
 		
 		response.sendRedirect(redirectUrl);
 		return;
-		*/
-		DatabaseManager dbManager	= new DatabaseManager(Config.get().dbName());
-		databaseName	= dbManager.getContributorFromAccession(accession).SHORT_NAME;
-		dbManager.closeConnection();
 	}
 	if(!FileUtil.existsFile(databaseName, accession)){
-		String error	= "Error: accession '" + accession + "' in database '" + databaseName + "' does not exist.";
+		String error	= "Error: accession '" + accession + "'" + 
+							(databaseName != null ? " in database '" + databaseName + "'" : "") + 
+							" does not exist.";
 		System.out.println(error);
 		String baseUrl	= Config.get().BASE_URL();
 		String urlStub	= baseUrl + "NoRecordPage.jsp";

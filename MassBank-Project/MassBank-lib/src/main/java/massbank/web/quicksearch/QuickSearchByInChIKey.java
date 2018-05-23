@@ -37,7 +37,8 @@ public class QuickSearchByInChIKey implements SearchFunction {
 				+ "WHERE COMPOUND.ID = CH_LINK.COMPOUND AND RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 		StringBuilder sb = new StringBuilder();
 		sb.append(sql);
-		sb.append(" AND (CH_LINK.DATABASE_ID = ?");
+		//sb.append(" AND (CH_LINK.DATABASE_ID = ?");
+		sb.append(" AND (UPPER(CH_LINK.DATABASE_ID) like UPPER(?) ");
 		if (this.inst != null && this.ms != null && this.ion != null) {
 			sb.append(") AND (");
 			for (int i = 0; i < inst.length; i++) {
@@ -63,7 +64,8 @@ public class QuickSearchByInChIKey implements SearchFunction {
 		try {
 			PreparedStatement stmnt = connection.prepareStatement(sb.toString());
 			int idx = 1;
-			stmnt.setString(idx, this.inChIKey);
+			String inchiKeyAsSubstring	= "%" + this.inChIKey + "%";
+			stmnt.setString(idx, inchiKeyAsSubstring);
 			if (this.inst != null && this.ms != null && this.ion != null) {
 				idx++;
 				for (int i = 0; i < inst.length; i++) {
