@@ -1,0 +1,36 @@
+html {
+	min-height: 100%;
+	max-width:800px;
+	height:auto;
+	margin:auto;
+	background:#ececec;
+}
+
+html, body, h1, h2, h3, h4, h5, h6 {
+	font-family: Arial, 'MS UI Gothic', sans-serif, monospace;
+}
+
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -webkit-linear-gradient(#ececec , #ffffff 75%)
+}
+
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -moz-linear-gradient(#ececec , #ffffff 75%)
+}
+
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -o-linear-gradient(#ececec , #ffffff 75%)
+}
+
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -ms-linear-gradient(#ececec , #ffffff 75%)
+}
+
+.w3-theme-gradient {
+	color: #000 !important;
+	background: linear-gradient(#ececec 25%, #ffffff 75%)
+}
