@@ -250,7 +250,6 @@
 			sb.append("\n");
 			break;
 		case "LICENSE":
-			// sb.append(tag + ": " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + value + "</a>" + "\n");
 			sb.append(tag + ": " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + value + "</a>" + "\n");
 			break;
 		case "COPYRIGHT":
@@ -432,9 +431,9 @@
 		<link rel="stylesheet" type="text/css" href="css/Common.css">
 		<script type="text/javascript" src="script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
-		<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.min.js" ></script>
+		<script type="text/javascript" src="script/jquery-1.8.3.min.js" ></script>
 		<script type="text/javascript" src="script/StructurePreview.js"></script>
-		<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+		<script type="text/javascript" src="script/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
 		<!-- SpeckTackle style sheet-->

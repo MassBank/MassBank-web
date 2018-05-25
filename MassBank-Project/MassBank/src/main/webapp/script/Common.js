@@ -411,7 +411,7 @@ function openMassCalc() {
 	else {
 		url = url.substring(0, url.indexOf("/jsp") + 1);
 	}
-	url += "MassCalc.html";
+	url += "MassCalc.jsp";
 	if ( ie ) {
 		leftX = window.screenLeft + document.body.clientWidth - 350;
 		topY =  window.screenTop + 20;

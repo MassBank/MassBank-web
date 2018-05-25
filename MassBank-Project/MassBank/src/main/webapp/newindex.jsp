@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
 <%
 /*******************************************************************************
  *
@@ -29,8 +28,7 @@
 %>
 <!DOCTYPE html>
 <html lang="en">
-<title>MassBank | <%=siteLongName%> Mass Spectral DataBase
-</title>
+<title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
 
 <head>
 <meta charset="UTF-8">
@@ -38,12 +36,8 @@
 <meta name="description" content="Mass Spectral DataBase">
 <meta name="keywords" content="Mass,Spectral,Database,MassBank">
 
-
-<link rel="stylesheet" type="text/css" href="css/w3.css">
-<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-<link rel="stylesheet" type="text/css" href="css/massbank.css">
-<!-- <script type="text/javascript" src="script/Piwik.js"></script> -->
-
+<script src="script/html-imports.min.js"></script>
+<link rel="import" href="common.html"></link>
 
 </head>
 
@@ -56,13 +50,12 @@
 		</h2>
 	</header>
 
-
-	<div class="w3-row w3-white w3-round" style="max-width:700px;height:auto;margin:auto;">
+	<div class="w3-row w3-white w3-round" style="max-width:90%;height:auto;margin:auto;">
 		<div class="w3-third w3-panel w3-white">
 			<div class="w3-panel w3-leftbar w3-border-teal w3-light-grey w3-text-blue w3-round">
 				<h5>
-					<a href="QuickSearch.jsp"><b>Quick Search</b></a>
-					<a href="QuickSearch.jsp"><img src="image/quick.gif" style="width:100%;"></a>
+					<a href="newsearch.jsp"><b>Quick Search</b></a>
+					<a href="newsearch.jsp"><img src="image/quick.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
@@ -86,10 +79,9 @@
 				</h5>
 			</div>
 		</div>
-
 	</div>
 
-	<div class="w3-container w3-large" style="max-width:700px;height:auto;margin:auto;">
+	<div class="w3-container w3-large" style="max-width:90%;height:auto;margin:auto;">
 		<ul class="w3-text-blue">
 			<li><a href="./api/services/MassBankAPI?wsdl" target="_blank">WEB-API WSDL</a></li>
 		</ul>
@@ -102,14 +94,8 @@
 		inconvience.
 		</p>
 	</div>
+	
+	<div id="copyrightline"></div>
 
-	<footer class="w3-row w3-border-top w3-border-dark-grey w3-panel" style="max-width:800px;height:auto;margin:auto;">
-		<div class="w3-half w3-text-grey w3-left-align">
-			<p>Copyright &copy; 2006 MassBank Project</p>
-		</div>
-		<div class="w3-half w3-text-grey w3-right-align">
-			<p>system version 2.0</p>
-		</div>
-	</footer>
 </body>
 </html>

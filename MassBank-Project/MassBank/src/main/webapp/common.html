@@ -1,0 +1,25 @@
+
+<meta name="author" content="MassBank">
+<link rel="stylesheet" type="text/css" href="css/w3.css">
+<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
+<link rel="stylesheet" type="text/css" href="css/massbank.css">
+
+<script src="script/Common.js"></script>
+<script src="script/jquery-3.3.1.min.js"></script>
+<script>
+	$(document).ready(function(){
+		$.get("newmenu.html", function(data) {
+			$("#menu").html(data);
+		});
+	});
+</script>
+<script>
+	$(document).ready(function(){
+		$.get("newcopyrightline.html", function(data) {
+			$("#copyrightline").html(data);
+		});
+	});
+</script>
+
+<!-- <script type="text/javascript" src="script/Piwik.js"></script> -->    
+<!-- <script type="text/javascript" src="script/QuickSearch.js"></script> -->
