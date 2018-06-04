@@ -65,51 +65,51 @@ public class Search {
 
 	public void execute() {
 		
-		System.out.println();
-		System.out.println("PARAM_WEIGHT_LINEAR: " + PARAM_WEIGHT_LINEAR);
-		System.out.println("PARAM_WEIGHT_SQUARE: " + PARAM_WEIGHT_SQUARE);
-		System.out.println("PARAM_NORM_LOG: " + PARAM_NORM_LOG);
-		System.out.println("PARAM_NORM_SQRT: " + PARAM_NORM_SQRT);
-		System.out.println("isQuick: " + isQuick);
-		System.out.println("isInteg: " + isInteg);
-		System.out.println("isAPI: " + isAPI);
-		
-		System.out.println();
-		System.out.println("getReqParam");
+//		System.out.println();
+//		System.out.println("PARAM_WEIGHT_LINEAR: " + PARAM_WEIGHT_LINEAR);
+//		System.out.println("PARAM_WEIGHT_SQUARE: " + PARAM_WEIGHT_SQUARE);
+//		System.out.println("PARAM_NORM_LOG: " + PARAM_NORM_LOG);
+//		System.out.println("PARAM_NORM_SQRT: " + PARAM_NORM_SQRT);
+//		System.out.println("isQuick: " + isQuick);
+//		System.out.println("isInteg: " + isInteg);
+//		System.out.println("isAPI: " + isAPI);
+//		
+//		System.out.println();
+//		System.out.println("getReqParam");
 		getReqParam();		// fill HashMap<String, ArrayList<String>> mapReqParam (in case of POST method)
-		System.out.println("mapReqParam: " + mapReqParam.size());
-		System.out.println(mapReqParam);
-		System.out.println();
-		System.out.println("setQueryParam");
+//		System.out.println("mapReqParam: " + mapReqParam.size());
+//		System.out.println(mapReqParam);
+//		System.out.println();
+//		System.out.println("setQueryParam");
 		setQueryParam();	// fill SearchQueryParam queryParam from HashMap<String, ArrayList<String>> mapReqParam
-		System.out.println("queryParam: " + queryParam);
-		System.out.println();
-		System.out.println("setQueryPeak");
+//		System.out.println("queryParam: " + queryParam);
+//		System.out.println();
+//		System.out.println("setQueryPeak");
 		setQueryPeak();		// fill queryMz, queryVal, m_fLen, m_fSum, m_iCnt from queryParam
-		System.out.println("queryMz: " + queryMz.size() + "\t" + queryMz);
-		System.out.println("queryVal: " + queryVal.size() + "\t" + queryVal);
-		System.out.println(m_fLen);
-		System.out.println(m_fSum);
-		System.out.println(m_iCnt);
-		System.out.println();
-		System.out.println("searchPeak");
+//		System.out.println("queryMz: " + queryMz.size() + "\t" + queryMz);
+//		System.out.println("queryVal: " + queryVal.size() + "\t" + queryVal);
+//		System.out.println(m_fLen);
+//		System.out.println(m_fSum);
+//		System.out.println(m_iCnt);
+//		System.out.println();
+//		System.out.println("searchPeak");
 		searchPeak();		// get hits from DB filling HashMap<String, ArrayList<SearchHitPeak>> mapHitPeak and HashMap<String, Integer> mapMzCnt
-		System.out.println("mapHitPeak: " + mapHitPeak.size());
-		System.out.println(mapHitPeak);
-//		for(Entry<String, ArrayList<SearchHitPeak>> entry : mapHitPeak.entrySet())
-//			System.out.println(entry.getKey() + "\t" + entry.getValue());
-		System.out.println("mapMzCnt: " + mapMzCnt.size());
-		System.out.println(mapMzCnt);
-		System.out.println();
-		System.out.println("setScore");
+//		System.out.println("mapHitPeak: " + mapHitPeak.size());
+//		System.out.println(mapHitPeak);
+////		for(Entry<String, ArrayList<SearchHitPeak>> entry : mapHitPeak.entrySet())
+////			System.out.println(entry.getKey() + "\t" + entry.getValue());
+//		System.out.println("mapMzCnt: " + mapMzCnt.size());
+//		System.out.println(mapMzCnt);
+//		System.out.println();
+//		System.out.println("setScore");
 		setScore();			// score hits filling ArrayList<SearchResScore> vecScore
-		System.out.println("vecScore: " + vecScore.size());
-		System.out.println(vecScore);
-		System.out.println();
-		System.out.println("outResult");
+//		System.out.println("vecScore: " + vecScore.size());
+//		System.out.println(vecScore);
+//		System.out.println();
+//		System.out.println("outResult");
 		outResult();		// aggregate results filling ArrayList<String> result
-		System.out.println("result: " + result.size());
-		System.out.println(result);
+//		System.out.println("result: " + result.size());
+//		System.out.println(result);
 	}
 
 	private ArrayList<String> result = new ArrayList<String>();
