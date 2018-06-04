@@ -421,23 +421,12 @@
 				String[] fields = rec.split("\t");
 				String name    = fields[1];  
 				String id      = fields[0];
-				String ion     = fields[3];
-				String formula = fields[4];
-				String hitScore= fields[2];
+				String ion     = fields[4];
+				String formula = fields[5];
+				String hit     = fields[2];
+				String score   = fields[3];
 				String site    = "0";
 				
-				// ヒットピーク数、スコア
-				String score = "";
-				String hit = "";
-				int pos1 = hitScore.indexOf(".");
-				if ( pos1 > 0 ) { 
-					score = "0" + hitScore.substring(pos1);
-					hit = hitScore.substring( 0, pos1 );
-				}
-				else {
-					score = "0";
-					hit = hitScore;
-				}
 				// スコアを小数第5位で四捨五入
 				if ( score.length() > 7 ) {
 					BigDecimal bdScore = new BigDecimal( score );

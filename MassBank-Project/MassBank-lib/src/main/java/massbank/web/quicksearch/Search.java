@@ -123,9 +123,9 @@ public class Search {
 		SearchResScore[] resultObjects	= vecScore.toArray(new SearchResScore[vecScore.size()]);
 		Arrays.sort(resultObjects, new Comparator<SearchResScore>() {
 			public int compare(SearchResScore arg0, SearchResScore arg1) {
-				if(arg1.score - arg0.score == 0)
+				if(arg1.hitScore - arg0.hitScore == 0)
 					return 0;
-				if(arg1.score - arg0.score > 0)
+				if(arg1.hitScore - arg0.hitScore > 0)
 					return 1;
 				else
 					return -1;
@@ -163,7 +163,8 @@ public class Search {
 //					System.out.println(resScore.id + ": " + strName);
 					
 					StringBuilder sb = new StringBuilder();
-					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
+//					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
+					sb.append(strId + "\t" + strName + "\t" + resScore.hitNumber + "\t" + resScore.hitScore + "\t" + strIon);
 					if (isQuick || isAPI) {
 						String formula = resMySql.getString(3);
 						sb.append("\t" + formula);
@@ -287,7 +288,9 @@ public class Search {
 				}
 				SearchResScore resScore = new SearchResScore();
 				resScore.id = strId;
-				resScore.score = iHitNum + dblScore;
+//				resScore.score = iHitNum + dblScore;
+				resScore.hitNumber = iHitNum;
+				resScore.hitScore = dblScore;
 				vecScore.add(resScore);
 			}
 		}
@@ -930,14 +933,16 @@ WHERE T.ION = ? ORDER BY ID
 	public static class SearchResScore{
 
 		public String id;
-		public double score;
+		public int hitNumber;
+		public double hitScore;
 
 		SearchResScore() {
 		}
 		public String toString() {
 			return 
 					"id=" + id + "; " +
-					"score=" + score;
+					"hitNumber=" + hitNumber + "; " +
+					"hitScore=" + hitScore;
 		}
 	}
 }
