@@ -98,7 +98,7 @@
 															<td><a href="PeakSearch.jsp" style="font-weight:bold;" class="bullet_link" target="_self">Peak Search</a></td>
 														</tr>
 														<tr>
-															<td align="center"><a href="PeakSearch.html" target="_self"><img src="image/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td>
+															<td align="center"><a href="PeakSearch.jsp" target="_self"><img src="image/peak.gif" alt="Peak Search Page" width="170" border="0"></a></td>
 														</tr>
 													</table>
 												</td>
@@ -126,7 +126,7 @@
 												<td colspan="100">
 												<b>Announcement<br><br></b>
 												Dear customers,<br>
-												The Java applet technology was deprecated. Therefore many services of MassBank are out of service (e.g. spectral search). The main services quick search, record index and record display are working properly. Our apologies for any inconvience.
+												The Java applet technology was deprecated. Therefore many services of MassBank are out of service (e.g. spectral search). The main services quick search, peak search, record index and record display are working properly. Our apologies for any inconvience.
 												
 												</td>
 											</tr>

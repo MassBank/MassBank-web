@@ -1009,6 +1009,7 @@
 		String formulaSortImg = defaultGif;
 		String emassSortImg = defaultGif;
 		String idSortImg = defaultGif;
+		String notSortImg = defaultGif;
 		String sortKey = (String)reqParams.get( "sortKey" );
 		int sortAction = Integer.parseInt((String)reqParams.get( "sortAction" ));
 		switch ( sortAction ) {
@@ -1025,6 +1026,9 @@
 				else if (sortKey.equals(ResultList.SORT_KEY_ID)) {
 					idSortImg = ascGif;
 				}
+				else if (sortKey.equals(ResultList.SORT_NOT)) {
+					notSortImg = ascGif;
+				}
 				break;
 			case ResultList.SORT_ACTION_DESC:
 				if (sortKey.equals(ResultList.SORT_KEY_NAME)) {
@@ -1038,6 +1042,9 @@
 				}
 				else if (sortKey.equals(ResultList.SORT_KEY_ID)) {
 					idSortImg = descGif;
+				}
+				else if (sortKey.equals(ResultList.SORT_NOT)) {
+					notSortImg = descGif;
 				}
 				break;
 		}

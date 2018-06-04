@@ -317,6 +317,9 @@ public class MassBankCommon {
 		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_ID) != -1) {
 			sortKey = ResultList.SORT_KEY_ID;
 		}
+		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_NOT) != -1) {
+			sortKey = ResultList.SORT_NOT;
+		}
 		
 		// Acquire sort action (ソートアクション取得)
 		int sortAction = ResultList.SORT_ACTION_ASC;

@@ -5,11 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections.comparators.ComparableComparator;
 
 public class Search {
 
@@ -60,12 +64,52 @@ public class Search {
 	}
 
 	public void execute() {
-		getReqParam();
-		setQueryParam();
-		setQueryPeak();
-		searchPeak();
-		setScore();
-		outResult();
+		
+		System.out.println();
+		System.out.println("PARAM_WEIGHT_LINEAR: " + PARAM_WEIGHT_LINEAR);
+		System.out.println("PARAM_WEIGHT_SQUARE: " + PARAM_WEIGHT_SQUARE);
+		System.out.println("PARAM_NORM_LOG: " + PARAM_NORM_LOG);
+		System.out.println("PARAM_NORM_SQRT: " + PARAM_NORM_SQRT);
+		System.out.println("isQuick: " + isQuick);
+		System.out.println("isInteg: " + isInteg);
+		System.out.println("isAPI: " + isAPI);
+		
+		System.out.println();
+		System.out.println("getReqParam");
+		getReqParam();		// fill HashMap<String, ArrayList<String>> mapReqParam (in case of POST method)
+		System.out.println("mapReqParam: " + mapReqParam.size());
+		System.out.println(mapReqParam);
+		System.out.println();
+		System.out.println("setQueryParam");
+		setQueryParam();	// fill SearchQueryParam queryParam from HashMap<String, ArrayList<String>> mapReqParam
+		System.out.println("queryParam: " + queryParam);
+		System.out.println();
+		System.out.println("setQueryPeak");
+		setQueryPeak();		// fill queryMz, queryVal, m_fLen, m_fSum, m_iCnt from queryParam
+		System.out.println("queryMz: " + queryMz.size() + "\t" + queryMz);
+		System.out.println("queryVal: " + queryVal.size() + "\t" + queryVal);
+		System.out.println(m_fLen);
+		System.out.println(m_fSum);
+		System.out.println(m_iCnt);
+		System.out.println();
+		System.out.println("searchPeak");
+		searchPeak();		// get hits from DB filling HashMap<String, ArrayList<SearchHitPeak>> mapHitPeak and HashMap<String, Integer> mapMzCnt
+		System.out.println("mapHitPeak: " + mapHitPeak.size());
+		System.out.println(mapHitPeak);
+//		for(Entry<String, ArrayList<SearchHitPeak>> entry : mapHitPeak.entrySet())
+//			System.out.println(entry.getKey() + "\t" + entry.getValue());
+		System.out.println("mapMzCnt: " + mapMzCnt.size());
+		System.out.println(mapMzCnt);
+		System.out.println();
+		System.out.println("setScore");
+		setScore();			// score hits filling ArrayList<SearchResScore> vecScore
+		System.out.println("vecScore: " + vecScore.size());
+		System.out.println(vecScore);
+		System.out.println();
+		System.out.println("outResult");
+		outResult();		// aggregate results filling ArrayList<String> result
+		System.out.println("result: " + result.size());
+		System.out.println(result);
 	}
 
 	private ArrayList<String> result = new ArrayList<String>();
@@ -75,11 +119,24 @@ public class Search {
 	}
 
 	private void outResult() {
+		// sort by score
+		SearchResScore[] resultObjects	= vecScore.toArray(new SearchResScore[vecScore.size()]);
+		Arrays.sort(resultObjects, new Comparator<SearchResScore>() {
+			public int compare(SearchResScore arg0, SearchResScore arg1) {
+				if(arg1.score - arg0.score == 0)
+					return 0;
+				if(arg1.score - arg0.score > 0)
+					return 1;
+				else
+					return -1;
+			}
+		});
+		
 		String sql = "";
 		PreparedStatement stmnt;
 		try {
-			for (int i = 0; i < vecScore.size(); i++) {
-				SearchResScore resScore = vecScore.get(i);
+			for (int i = 0; i < resultObjects.length; i++) {
+				SearchResScore resScore = resultObjects[i];
 
 				if (isQuick || isAPI) {
 					sql = "SELECT RECORD_TITLE, AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS "
@@ -102,7 +159,9 @@ public class Search {
 					} else {
 						strId = resScore.id;
 					}
-
+					
+//					System.out.println(resScore.id + ": " + strName);
+					
 					StringBuilder sb = new StringBuilder();
 					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
 					if (isQuick || isAPI) {
@@ -114,11 +173,11 @@ public class Search {
 						sb.append("\t" + emass);
 					}
 					result.add(sb.toString());
-					resMySql.close();
 				}
+				resMySql.close();
 			}
 		} catch (SQLException e) {
-			// TODO exepction handling
+			e.printStackTrace();
 		}
 	}
 
@@ -261,6 +320,8 @@ public class Search {
 		// ----------------------------------------------------------------
 		// MS TYPE
 		// ----------------------------------------------------------------
+		
+		// SHOW COLUMNS FROM RECORD LIKE 'AC_MASS_SPECTROMETRY_MS_TYPE'
 		String sqlw2 = "";
 		ArrayList<String> sqlw2Params = new ArrayList<String>();
 		boolean isMsType = false;
@@ -284,14 +345,21 @@ public class Search {
 					sqlw2 = sqlw2.substring(0, sqlw2.length() - 1) + ")";
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return false;
 			}
 		}
 
+		// ####################################################################################
+		// get accessions with right instrument type, MS type, precursor m/z
 		boolean isFilter = false;
 		ArrayList<String> vecTargetId = new ArrayList<String>();
-		if (queryParam.instType != null || !queryParam.instType.isEmpty() || queryParam.instType.indexOf("ALL") != -1
-				|| queryParam.instType.indexOf("all") != -1) {
+		if (
+				queryParam.instType != null || 
+				!queryParam.instType.isEmpty() || 
+				queryParam.instType.indexOf("ALL") != -1 || 
+				queryParam.instType.indexOf("all") != -1
+		) {
 			if (!queryParam.ion.equals("0")) {
 				sql = "SELECT T.ID "
 						+ "FROM (SELECT * FROM (SELECT AC_INSTRUMENT AS AC_INSTRUMENT, ACCESSION AS ID, AC_MASS_SPECTROMETRY_MS_TYPE AS MS_TYPE, RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD) AS R, (SELECT RECORD, VALUE FROM MS_FOCUSED_ION WHERE SUBTAG = 'PRECURSOR_M/Z') AS S WHERE R.ID= S.RECORD) AS T "
@@ -354,12 +422,14 @@ WHERE T.ION = ? ORDER BY ID
 					resMySql.close();
 
 				} catch (SQLException e) {
+					e.printStackTrace();
 					return false;
 				}
 			}
 		} else {
 			// ------------------------------------------------------------
 			// (1)
+			// instrument type restrictions
 			// ------------------------------------------------------------
 			String[] vecInstType = queryParam.instType.split(",");
 			String strInstType = "";
@@ -389,13 +459,14 @@ WHERE T.ION = ? ORDER BY ID
 					isEmpty = false;
 					instNo.add(resMySql.getString(1));
 				}
-				for (String s : instNo) {
-				}
+//				for (String s : instNo) {
+//				}
 				resMySql.close();
 				if (isEmpty) {
 					return false;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return false;
 			}
 
@@ -489,6 +560,7 @@ WHERE T.ION = ? ORDER BY ID
 					return false;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return false;
 			}
 		}
@@ -506,6 +578,7 @@ WHERE T.ION = ? ORDER BY ID
 				fMin = fMz - fTolerance;
 				fMax = fMz + fTolerance;
 			} else {
+				// PPM
 				fMin = fMz * (1 - fTolerance / 1000000);
 				fMax = fMz * (1 + fTolerance / 1000000);
 			}
@@ -580,6 +653,7 @@ WHERE T.ION = ? ORDER BY ID
 				}
 				resMySql.close();
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return false;
 			}
 		}
@@ -796,16 +870,6 @@ WHERE T.ION = ? ORDER BY ID
 		return true;
 	}
 	
-	public static class SearchHitPeak {
-
-		public String qMz;
-		public double qVal;
-		public String hitMz;
-		public double hitVal;
-
-		public SearchHitPeak() {
-		}
-	}
 	public static class SearchQueryParam {
 		public int start;
 		public int num;
@@ -823,16 +887,57 @@ WHERE T.ION = ? ORDER BY ID
 		public String ion;
 		public int precursor;
 		public String mstype;
-
+		
 		public SearchQueryParam() {
 		}
+		public String toString() {
+			return 
+					"start=" + start + "; " + 
+					"num=" + num + "; " + 
+					"floor=" + floor + "; " + 
+					"celing=" + celing + "; " + 
+					"threshold=" + threshold + "; " + 
+					"cutoff=" + cutoff + "; " + 
+					"tolerance=" + tolerance + "; " + 
+					"colType=" + colType + "; " + 
+					"weight=" + weight + "; " + 
+					"norm=" + norm + "; " + 
+					"tolUnit=" + tolUnit + "; " + 
+					"val=" + val + "; " +
+					"instType=" + instType + "; " +
+					"ion=" + ion + "; " +
+					"precursor=" + precursor + "; " +
+					"mstype=" + mstype;
+		}
 	}
-	public static class SearchResScore {
+	public static class SearchHitPeak {
+
+		public String qMz;
+		public double qVal;
+		public String hitMz;
+		public double hitVal;
+
+		public SearchHitPeak() {
+		}
+		public String toString() {
+			return 
+					"qMz=" + qMz + "; " +
+					"qVal=" + qVal + "; " +
+					"hitMz=" + hitMz + "; " +
+					"hitVal=" + hitVal;
+		}
+	}
+	public static class SearchResScore{
 
 		public String id;
 		public double score;
 
 		SearchResScore() {
+		}
+		public String toString() {
+			return 
+					"id=" + id + "; " +
+					"score=" + score;
 		}
 	}
 }

@@ -387,6 +387,9 @@ public class ResultList {
 					}
 				}
 			}
+			else if (sortKey == SORT_NOT) {
+				// not compared
+			}
 			
 			return ret;
 		}
