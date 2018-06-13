@@ -1,6 +1,5 @@
 html {
 	min-height: 100%;
-	max-width:900px;
 	height:auto;
 	margin:auto;
 	background:#ececec;
@@ -33,4 +32,12 @@ html, body, h1, h2, h3, h4, h5, h6 {
 .w3-theme-gradient {
 	color: #000 !important;
 	background: linear-gradient(#ececec 25%, #ffffff 75%)
+}
+
+.w3-input-h {
+	padding:8px;
+	display: inline-block;
+	border:none;
+	border-bottom:1px solid #ccc;
+    width: auto
 }

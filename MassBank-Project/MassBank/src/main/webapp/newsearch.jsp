@@ -37,7 +37,8 @@
 <link rel="import" href="common.html"></link>
 </head>
 
-<body class="w3-theme-gradient" onload="myFunction()">
+<body class="w3-theme-gradient" onload="initSearch()">
+	
 	<header class="w3-cell-row w3-text-grey">
 		<div class="w3-container w3-cell w3-mobile" style="width:60%">
 			<h1>
@@ -51,58 +52,88 @@
 			<img src="image/bullet_link.gif">&nbsp;<b><a class="text" href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>
 		</div>
 	</header>
-
-	<div id="menu"></div>
 	
-		<div class="w3-bar">
-		<div class="w3-bar-item w3-round w3-bottombar w3-border-red">
-			<input class="w3-radio" onclick="openSearch(event,'Keyword')" type="radio"
-			value="Keyword" name="search_keyword" checked>
-		 	<label>Search by Keyword</label>
+	<div class="w3-border-bottom w3-border-dark-grey w3-padding-16" id="menu"></div>
+	
+	<div class="w3-container">
+		<div class="w3-bar w3-margin-top w3-margin-bottom">
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-red w3-blue" onclick="openSearch(event,'Keyword')">Search by Keyword</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" onclick="openSearch(event,'Peak')">Search by Peak</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" onclick="openSearch(event,'InChIKey')">Search by Peak</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" onclick="openSearch(event,'Splash')">Search by Peak</button>
 		</div>
-		<div class="w3-bar-item w3-round w3-bottombar w3-border-amber">
-			<input class="w3-radio" onclick="openSearch(event,'Peak')" type="radio"
-			value="Peak" name="search_keyword">
-		 	<label>Search by Peak</label>
-		</div>
-		<div class="w3-bar-item w3-round w3-bottombar w3-border-deep-purple">
-			<input class="w3-radio" onclick="openSearch(event,'InChIKey')" type="radio"
-			value="InChIKey" name="search_keyword">
-			<label>Search by InChIKey</label>
-		</div>
-		<div class="w3-bar-item w3-round w3-bottombar w3-border-cyan">
-			<input class="w3-radio" onclick="openSearch(event,'Splash')" type="radio"
-			value="Splash" name="search_keyword">
-			<label>Search by Splash</label>
-		</div>
-	</div>
-  
-  	<div class="w3-row">
-		<div class="w3-half">
-			<div id="Keyword" class="w3-container w3-animate-opacity search_keyword">
-				<h2>Keyword</h2>
+	  
+	  	<div class="w3-row">
+			<div class="w3-twothird w3-margin-top w3-margin-bottom">
+				<div id="Keyword" class="w3-container w3-card-4 w3-animate-opacity search_keyword">
+					<div class="w3-container w3-margin-top w3-margin-bottom">
+						<label><b>Compound Name</b></label>
+						<input class="w3-input w3-border" name="compound" type="text">
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-cell-bottom" style="width:55px">
+								<select class="w3-select" name="op1">
+									<option value="and">AND</option>
+									<option value="or">OR</option>
+								</select>
+							</div>
+							<div class="w3-cell w3-cell-bottom">
+								<label><b>Exact Mass</b></label>
+								<input class="w3-input w3-border" name="mz" type="text" size="10">
+							</div>
+							<div class="w3-cell w3-cell-bottom">
+								<label><b>Tolerance</b></label>
+								<input class="w3-input w3-border" name="tol" type="text" size="6">
+							</div>
+						</div>
+						
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-cell-bottom" style="width:55px">
+								<select class="w3-select" name="op2">
+									<option value="and">AND</option>
+									<option value="or">OR</option>
+								</select>
+							</div>
+							<div class="w3-cell w3-cell-bottom">
+								<label><b>Formula</b></label>
+								<input class="w3-input w3-border" name="formula" type="text" size="14">
+							</div>
+						</div>
+
+						<div class="w3-bar">
+							<div class="w3-cell w3-right">
+  								<input type="button" value="Reset" onClick="resetForm();">
+  							</div> 
+						</div> 
+					</div>
+				</div>
+			
+				<div id="Peak" class="w3-container w3-animate-opacity search_keyword" style="display:none">
+					<h2>Peak</h2>
+				</div>
+			
+				<div id="InChIKey" class="w3-container w3-animate-opacity search_keyword" style="display:none">
+					<h2>InChIKey</h2>
+				</div>
+			
+				<div id="Splash" class="w3-container w3-animate-opacity search_keyword" style="display:none">
+					<h2>Splash</h2>
+				</div>
 			</div>
-		
-			<div id="Peak" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-				<h2>Peak</h2>
+			<div class="w3-half">
+			
 			</div>
-		
-			<div id="InChIKey" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-				<h2>InChIKey</h2>
-			</div>
-		
-			<div id="Splash" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-				<h2>Splash</h2>
-			</div>
-		</div>
-		<div class="w3-half">
-		
 		</div>
 	</div>
   
 	<script>
 	function openSearch(evt, searchName) {
 		var i, x;
+		x = document.getElementsByClassName("search_button");
+		for (i = 0; i < x.length; i++) {
+			x[i].className = x[i].className.replace(" w3-blue", "");
+		}
+		evt.currentTarget.className += " w3-blue";
+				
 		x = document.getElementsByClassName("search_keyword");
 		for (i = 0; i < x.length; i++) {
 			x[i].style.display = "none";
@@ -110,14 +141,14 @@
 		document.getElementById(searchName).style.display = "block";
 	}
 	
-	function myFunction() {
-		var i, x;
-		x = document.getElementsByClassName("search_keyword");
-		for (i = 0; i < x.length; i++) {
-			x[i].style.display = "none";
-		}
-		document.getElementById(document.querySelector('input[name="search_keyword"]:checked').value).style.display = "block";
-	}
+// 	function initSearch() {
+// 		var i, x;
+// 		x = document.getElementsByClassName("search_keyword");
+// 		for (i = 0; i < x.length; i++) {
+// 			x[i].style.display = "none";
+// 		}
+// 		document.getElementById(document.querySelector('input[name="search_keyword"]:checked').value).style.display = "block";
+// 	}
 	</script>
 
 

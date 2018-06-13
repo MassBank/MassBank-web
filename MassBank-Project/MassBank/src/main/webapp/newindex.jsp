@@ -27,7 +27,7 @@
 	String siteLongName = Config.get().LongName();
 %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="max-width:900px">
 <title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
 
 <head>
