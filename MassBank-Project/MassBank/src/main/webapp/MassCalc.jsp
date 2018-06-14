@@ -31,10 +31,10 @@
 <%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.InputStreamReader" %>
 <%@ page import="massbank.Config" %>
-<%@ page import="massbank.admin.AdminCommon" %>
 <%
-	AdminCommon admin = new AdminCommon();
-	boolean isPeakAdv = admin.isPeakAdv();
+	//AdminCommon admin = new AdminCommon();
+	//boolean isPeakAdv = admin.isPeakAdv();
+	boolean isPeakAdv = false;
 	
 	//-------------------------------------
 	// Copyright読み込み
