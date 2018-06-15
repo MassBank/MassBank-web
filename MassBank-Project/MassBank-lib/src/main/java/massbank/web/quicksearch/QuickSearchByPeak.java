@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.quicksearch.Search;
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class QuickSearchByPeak implements SearchFunction<String> {
@@ -19,7 +20,7 @@ public class QuickSearchByPeak implements SearchFunction<String> {
 		this.request = request;
 	}
 
-	public ArrayList<String> search(Connection connection) {
+	public ArrayList<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 //		System.out.println("############################################");
 //		System.out.println(this.request);
@@ -31,7 +32,7 @@ public class QuickSearchByPeak implements SearchFunction<String> {
 //			String[] strVal = e.getValue();
 //			System.out.println(strKey + "\t" + Arrays.toString(strVal));
 //		}
-		Search search = new Search(this.request, connection);
+		Search search = new Search(this.request, databaseManager.getConnection());
 		resList = search.getResult();
 		return resList;
 	}

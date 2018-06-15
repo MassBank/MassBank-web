@@ -10,6 +10,7 @@ import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class PeakSearchByPeak implements SearchFunction<String> {
@@ -56,7 +57,7 @@ public class PeakSearchByPeak implements SearchFunction<String> {
 		this.mode	= request.getParameter("mode");
 	}
 
-	public ArrayList<String> search(Connection connection) {
+	public ArrayList<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 
 		String sql;
@@ -67,7 +68,7 @@ public class PeakSearchByPeak implements SearchFunction<String> {
 			sql = "SELECT RECORD " + "FROM PEAK "
 					+ "WHERE ? <= PK_PEAK_MZ AND PK_PEAK_MZ <= ? AND PK_PEAK_RELATIVE > ?";
 			try {
-				stmnt = connection.prepareStatement(sql);
+				stmnt = databaseManager.getConnection().prepareStatement(sql);
 				stmnt.setDouble(1, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
 				stmnt.setDouble(2, Double.parseDouble(mz[i]) + Double.parseDouble(tol));
 				stmnt.setInt(3, Integer.parseInt(intens));
@@ -86,7 +87,6 @@ public class PeakSearchByPeak implements SearchFunction<String> {
 					}
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -148,7 +148,7 @@ public class PeakSearchByPeak implements SearchFunction<String> {
 		}
 
 		try {
-			stmnt = connection.prepareStatement(sb.toString());
+			stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			for (int i = 0; i < inst.length; i++) {
 				stmnt.setString(idx, inst[i]);
@@ -171,7 +171,7 @@ public class PeakSearchByPeak implements SearchFunction<String> {
 						+ res.getDouble("CH_EXACT_MASS"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return resList;

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class QuickSearchByInChIKey implements SearchFunction<String> {
@@ -29,7 +30,7 @@ public class QuickSearchByInChIKey implements SearchFunction<String> {
 	}
 	
 	@Override
-	public ArrayList<String> search(Connection connection) {
+	public ArrayList<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 
 		String sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS "
@@ -62,7 +63,7 @@ public class QuickSearchByInChIKey implements SearchFunction<String> {
 			sb.append(")");
 		}
 		try {
-			PreparedStatement stmnt = connection.prepareStatement(sb.toString());
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			String inchiKeyAsSubstring	= "%" + this.inChIKey + "%";
 			stmnt.setString(idx, inchiKeyAsSubstring);

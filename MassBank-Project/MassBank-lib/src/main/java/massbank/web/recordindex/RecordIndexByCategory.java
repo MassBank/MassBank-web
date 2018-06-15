@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class RecordIndexByCategory implements SearchFunction<String> {
@@ -19,7 +20,7 @@ public class RecordIndexByCategory implements SearchFunction<String> {
 		this.srchkey	= request.getParameter("srchkey");
 	}
 
-	public ArrayList<String> search(Connection connection) {
+	public ArrayList<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 
 		String sql = "";
@@ -71,7 +72,7 @@ public class RecordIndexByCategory implements SearchFunction<String> {
 						+ "WHERE REC.CH = COMPOUND.ID";
 			}
 
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			if (idxtype.compareTo("merged") != 0) {
 				if (idxtype.compareTo("ion") != 0 && idxtype.compareTo("cmpd") != 0) {
 					stmnt.setString(1, srchkey);

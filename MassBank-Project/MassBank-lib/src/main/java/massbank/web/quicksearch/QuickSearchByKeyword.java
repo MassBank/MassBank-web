@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class QuickSearchByKeyword implements SearchFunction<String> {
@@ -35,7 +36,7 @@ public class QuickSearchByKeyword implements SearchFunction<String> {
 		this.ion		= request.getParameter("ion");
 	}
 
-	public ArrayList<String> search(Connection connection) {
+	public ArrayList<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 		
 		// SELECT * FROM NAME WHERE UPPER(NAME.CH_NAME) like UPPER("%BENzENE%") ORDER BY LENGTH(NAME.CH_NAME);
@@ -72,7 +73,7 @@ public class QuickSearchByKeyword implements SearchFunction<String> {
 		
 		try {
 			
-			PreparedStatement stmnt = connection.prepareStatement(sb.toString());
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			String compoundAsSubstring	= "%" + compound + "%";
 			//stmnt.setString(idx, compound);

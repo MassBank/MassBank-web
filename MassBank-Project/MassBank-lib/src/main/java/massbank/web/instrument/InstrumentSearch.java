@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class InstrumentSearch implements SearchFunction<String> {
@@ -16,7 +17,7 @@ public class InstrumentSearch implements SearchFunction<String> {
 
 	}
 
-	public ArrayList<String> search(Connection connection) {
+	public ArrayList<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 
 		String sqlInst = "SELECT AC_INSTRUMENT, AC_INSTRUMENT_TYPE FROM INSTRUMENT "
@@ -25,7 +26,7 @@ public class InstrumentSearch implements SearchFunction<String> {
 
 		resList.add("INSTRUMENT_INFORMATION");
 		try {
-			PreparedStatement stmnt = connection.prepareStatement(sqlInst);
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sqlInst);
 			ResultSet res = stmnt.executeQuery();
 			int instNo = 1;
 			while (res.next()) {
@@ -38,7 +39,7 @@ public class InstrumentSearch implements SearchFunction<String> {
 		}
 		resList.add("MS_INFORMATION");
 		try {
-			PreparedStatement stmnt = connection.prepareStatement(sqlMs);
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sqlMs);
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
 				resList.add(res.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));

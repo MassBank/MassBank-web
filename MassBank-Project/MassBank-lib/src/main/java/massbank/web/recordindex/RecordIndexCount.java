@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.Record;
 import massbank.web.SearchFunction;
 
@@ -16,7 +17,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 
 	}
 
-	public ArrayList<String> search(Connection connection) {
+	public ArrayList<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 		PreparedStatement stmnt;
 		ResultSet res;
@@ -24,7 +25,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 		String sql = "SELECT SHORT_NAME AS CONTRIBUTOR, COUNT FROM (SELECT CONTRIBUTOR, COUNT(*) AS COUNT "
 				+ "FROM RECORD GROUP BY CONTRIBUTOR) AS C, CONTRIBUTOR " + "WHERE CONTRIBUTOR = ID";
 		try {
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				resList.add("SITE:" + res.getString(1) + "\t" + res.getString("COUNT"));
@@ -35,7 +36,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 
 		sql = "SELECT AC_INSTRUMENT_TYPE as INSTRUMENT, COUNT(*) as COUNT FROM INSTRUMENT GROUP BY AC_INSTRUMENT_TYPE";
 		try {
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				resList.add("INSTRUMENT:" + res.getString("INSTRUMENT") + "\t" + res.getString("COUNT"));
@@ -46,7 +47,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 
 		sql = "SELECT AC_MASS_SPECTROMETRY_MS_TYPE AS TYPE, COUNT(*) AS COUNT FROM RECORD GROUP BY AC_MASS_SPECTROMETRY_MS_TYPE";
 		try {
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				resList.add("MS:" + res.getString("TYPE") + "\t" + res.getString("COUNT"));
@@ -57,7 +58,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 
 		sql = "SELECT AC_MASS_SPECTROMETRY_ION_MODE AS MODE, COUNT(*) AS COUNT FROM RECORD GROUP BY AC_MASS_SPECTROMETRY_ION_MODE";
 		try {
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				resList.add("ION:" + res.getString("MODE") + "\t" + res.getString("COUNT"));
@@ -68,7 +69,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 
 		sql = "SELECT FIRST AS COMPOUND, COUNT(*) AS COUNT FROM (SELECT SUBSTRING(UPPER(RECORD_TITLE),1,1) AS FIRST FROM RECORD) AS T GROUP BY FIRST";
 		try {
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			Integer numCnt = 0;
 			Integer othCnt = 0;
@@ -90,7 +91,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 
 		sql = "SELECT COUNT(*) AS COUNT FROM RECORD WHERE INSTR(RECORD_TITLE,'MERGED') = 0";
 		try {
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				resList.add("MERGED:Normal\t" + res.getString("COUNT"));
@@ -101,7 +102,7 @@ public class RecordIndexCount implements SearchFunction<String> {
 
 		sql = "SELECT COUNT(*) AS COUNT FROM RECORD WHERE INSTR(RECORD_TITLE,'MERGED') > 0";
 		try {
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				resList.add("MERGED:Merged\t" + res.getString("COUNT"));
