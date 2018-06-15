@@ -63,65 +63,148 @@
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" onclick="openSearch(event,'Splash')">Search by Peak</button>
 		</div>
 	  
-	  	<div class="w3-row">
-			<div class="w3-twothird w3-margin-top w3-margin-bottom">
-				<div id="Keyword" class="w3-container w3-card-4 w3-animate-opacity search_keyword">
-					<div class="w3-container w3-margin-top w3-margin-bottom">
-						<label><b>Compound Name</b></label>
-						<input class="w3-input w3-border" name="compound" type="text">
-						<div class="w3-cell-row">
-							<div class="w3-cell w3-cell-bottom" style="width:55px">
-								<select class="w3-select" name="op1">
-									<option value="and">AND</option>
-									<option value="or">OR</option>
-								</select>
-							</div>
-							<div class="w3-cell w3-cell-bottom">
-								<label><b>Exact Mass</b></label>
-								<input class="w3-input w3-border" name="mz" type="text" size="10">
-							</div>
-							<div class="w3-cell w3-cell-bottom">
-								<label><b>Tolerance</b></label>
-								<input class="w3-input w3-border" name="tol" type="text" size="6">
-							</div>
-						</div>
-						
-						<div class="w3-cell-row">
-							<div class="w3-cell w3-cell-bottom" style="width:55px">
-								<select class="w3-select" name="op2">
-									<option value="and">AND</option>
-									<option value="or">OR</option>
-								</select>
-							</div>
-							<div class="w3-cell w3-cell-bottom">
-								<label><b>Formula</b></label>
-								<input class="w3-input w3-border" name="formula" type="text" size="14">
-							</div>
-						</div>
-
-						<div class="w3-bar">
-							<div class="w3-cell w3-right">
-  								<input type="button" value="Reset" onClick="resetForm();">
-  							</div> 
-						</div> 
+		<div id="Keyword" class="w3-animate-opacity search_keyword">
+			<div class="w3-container w3-card-4 w3-padding-small">
+				<h5>Compound Information</h5>
+				<div class="w3-cell-row w3-border  w3-padding-small">
+					<div class="w3-cell w3-mobile" style="width:75%">
+						<label><b>Compound name</b></label>
+						<input class="w3-input w3-round w3-border" name="compound" type="text">
+					</div>
+					<div class="w3-cell w3-mobile w3-cell-bottom">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" style="width:80px;float:right">
 					</div>
 				</div>
-			
-				<div id="Peak" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-					<h2>Peak</h2>
+				
+				<div class="w3-cell-row w3-border w3-padding-small">
+					<div class="w3-cell w3-cell-bottom" style="width:60px;padding-right:5px;">
+						<select class="w3-select w3-round w3-border" name="op1">
+							<option value="and">AND</option>
+							<option value="or">OR</option>
+						</select>
+					</div>
+					<div class="w3-cell w3-mobile">
+						<label><b>Exact Mass</b></label>
+						<input class="w3-input w3-round w3-border" name="mz" type="text" size="10">
+					</div>
+					<div class="w3-cell w3-mobile" style="width:25%">
+						<label><b>Tolerance</b></label>
+						<input class="w3-input w3-round w3-border" name="tol" type="text" size="6" value="0.3">
+					</div>
 				</div>
-			
-				<div id="InChIKey" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-					<h2>InChIKey</h2>
-				</div>
-			
-				<div id="Splash" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-					<h2>Splash</h2>
+				
+				<div class="w3-cell-row w3-border w3-padding-small">
+					<div class="w3-cell w3-cell-bottom" style="width:60px;padding-right:5px;">
+						<select class="w3-select w3-round w3-border" name="op2">
+							<option value="and">AND</option>
+							<option value="or">OR</option>
+						</select>
+					</div>
+					<div class="w3-cell">
+						<label><b>Formula ( e.g. C6H7N5, C5H*N5, C5* )</b></label>
+						<input class="w3-input w3-round w3-border" name="formula" type="text" size="14">
+					</div>
 				</div>
 			</div>
-			<div class="w3-half">
+			<br>
 			
+			<div class="w3-container w3-card-4 w3-padding-small">
+				<h5>Mass Spectrometry Information</h5>
+				<div class="w3-border w3-padding-small">
+					<b>Instrument Type</b><br>
+					<div class="w3-cell-row">
+						<div class="w3-cell w3-mobile">
+							<div class="w3-cell-row">
+								<div class="w3-cell">
+									<input class="w3-check" type="checkbox" name="inst_grp" value="EI">EI
+								</div>
+								<div class="w3-cell">
+									<input class="w3-check" type="checkbox" name="inst" value="EI-B">EI-B<br>
+									<input class="w3-check" type="checkbox" name="inst" value="EI-EBEB">EI-EBEB<br>
+									<input class="w3-check" type="checkbox" name="inst" value="GC-EI-Q">GC-EI-Q<br>
+									<input class="w3-check" type="checkbox" name="inst" value="GC-EI-QQ">GC-EI-QQ<br>
+									<input class="w3-check" type="checkbox" name="inst" value="GC-EI-TOF">GC-EI-TOF<br>
+								</div>
+							</div>
+						</div>
+						<div class="w3-cell w3-mobile">
+							<div class="w3-cell-row">
+								<div class="w3-cell">
+									<input class="w3-check" type="checkbox" name="inst_grp" value="ESI" checked>ESI
+								</div>
+								<div class="w3-cell">
+									<input class="w3-check" type="checkbox" name="inst" value="CE-ESI-TOF" checked>CE-ESI-TOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="ESI-ITFT" checked>ESI-ITFT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="ESI-ITTOF" checked>ESI-ITTOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="ESI-QTOF" checked>ESI-QTOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="ESI-TOF" checked>ESI-TOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-IT" checked>LC-ESI-IT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-ITFT" checked>LC-ESI-ITFT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-ITTOF" checked>LC-ESI-ITTOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-Q" checked>LC-ESI-Q<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QFT" checked>LC-ESI-QFT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QIT" checked>LC-ESI-QIT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QQ" checked>LC-ESI-QQ<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QTOF" checked>LC-ESI-QTOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-TOF" checked>LC-ESI-TOF<br>
+								</div>
+							</div>
+						</div>
+						<div class="w3-cell w3-mobile">
+							<div class="w3-cell-row">
+								<div class="w3-cell w3-mobile">
+									<input class="w3-check" type="checkbox" name="inst_grp" value="Others" >Others
+								</div>
+								<div class="w3-cell">
+									<input class="w3-check" type="checkbox" name="inst" value="APCI-ITFT">APCI-ITFT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="APCI-ITTOF">APCI-ITTOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="CI-B">CI-B<br>
+									<input class="w3-check" type="checkbox" name="inst" value="FAB-B">FAB-B<br>
+									<input class="w3-check" type="checkbox" name="inst" value="FAB-BE">FAB-BE<br>
+									<input class="w3-check" type="checkbox" name="inst" value="FAB-EB">FAB-EB<br>
+									<input class="w3-check" type="checkbox" name="inst" value="FAB-EBEB">FAB-EBEB<br>
+									<input class="w3-check" type="checkbox" name="inst" value="FD-B">FD-B<br>
+									<input class="w3-check" type="checkbox" name="inst" value="FI-B">FI-B<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-APCI-ITFT">LC-APCI-ITFT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-APCI-Q">LC-APCI-Q<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-APCI-QTOF">LC-APCI-QTOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="LC-APPI-QQ">LC-APPI-QQ<br>
+									<input class="w3-check" type="checkbox" name="inst" value="MALDI-QIT">MALDI-QIT<br>
+									<input class="w3-check" type="checkbox" name="inst" value="MALDI-TOF">MALDI-TOF<br>
+									<input class="w3-check" type="checkbox" name="inst" value="MALDI-TOFTOF">MALDI-TOFTOF<br>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="w3-border w3-padding-small">
+					<b>MS Type</b><br>
+					<input class="w3-check" type="checkbox" name="ms" value="all" checked>All&nbsp;&nbsp;&nbsp;&nbsp;
+					<input class="w3-check" type="checkbox" name="ms" value="MS" checked>MS
+					<input class="w3-check" type="checkbox" name="ms" value="MS2" checked>MS2
+					<input class="w3-check" type="checkbox" name="ms" value="MS3" checked>MS3
+					<input class="w3-check" type="checkbox" name="ms" value="MS4" checked>MS4
+				</div>
+				<div class="w3-border w3-padding-small">
+					<b>Ion Mode</b><br>
+					<input class="w3-check" type="checkbox" name="ion" value="0" checked>Both&nbsp;&nbsp;&nbsp;&nbsp;
+					<input class="w3-check" type="checkbox" name="ion" value="1" checked>Positive
+					<input class="w3-check" type="checkbox" name="ion" value="-1" checked>Negative
+				</div>
 			</div>
+		</div>
+			
+		<div id="Peak" class="w3-container w3-animate-opacity search_keyword" style="display:none">
+			<h2>Peak</h2>
+		</div>
+	
+		<div id="InChIKey" class="w3-container w3-animate-opacity search_keyword" style="display:none">
+			<h2>InChIKey</h2>
+		</div>
+	
+		<div id="Splash" class="w3-container w3-animate-opacity search_keyword" style="display:none">
+			<h2>Splash</h2>
 		</div>
 	</div>
   
@@ -151,335 +234,8 @@
 // 	}
 	</script>
 
-
-     
-
-	
+	<br>
 	<div id="copyrightline"></div>
 		
-</body>
-
-<%@ page import="java.util.*" %>
-<%@ page import="massbank.MassBankCommon" %>
-<%@ page import="massbank.GetInstInfo" %>
-<%@ page import="massbank.SearchDefaults" %>
-<%@ include file="./Common.jsp"%>
-<%
-	//-------------------------------------------
-	// 検索タイプを設定
-	//-------------------------------------------
-	String searchType = (String)request.getParameter( "searchType" );
-	if ( searchType == null ) {
-		searchType = "keyword";
-	}
-	boolean isKeyword = false;
-	boolean isInChIKey = false;
-	boolean isSplash = false;
-	boolean isPeak = false;
-	String postJspName = "";
-	if ( searchType.equals("keyword") ) {
-		isKeyword = true;
-		postJspName = "Result.jsp";
-	}
-	else if ( searchType.equals("inchikey")) {
-		isInChIKey = true;
-		postJspName = "Result.jsp";
-	}
-	else if ( searchType.equals("splash")) {
-		isSplash = true;
-		postJspName = "Result.jsp";
-	}
-	else if ( searchType.equals("peak")) {
-		isPeak = true;
-		postJspName = "QpeakResult.jsp";
-	} else {
-		isKeyword = true;
-		postJspName = "Result.jsp";
-	}
-	
-	//-------------------------------------
-	// リクエストパラメータ取得
-	//-------------------------------------
-	String compound = "";
-	String mass     = "";
-	String tol      = SearchDefaults.tol;
-	String formula  = "";
-	String op1      = "";
-	String op2      = "";
-	String peakData = "";
-	String cutOff   = SearchDefaults.cutOff;
-	String num      = SearchDefaults.num;
-	String ionMode  = SearchDefaults.ionMode;
-	String inchikey = "";
-	String splash = "";
-	boolean isFirst = true;
-	List instGrpList = new ArrayList<String>();
-	List instTypeList = new ArrayList<String>();
-	List msTypeList = new ArrayList<String>();
-	int paramCnt = 0;
-	Enumeration names = request.getParameterNames();
-	while ( names.hasMoreElements() ) {
-		String key = (String)names.nextElement();
-		if ( !key.equals("searchType") ) {
-			paramCnt++;
-		}
-		if ( key.equals("inst_grp") ) {
-			String[] vals = request.getParameterValues( key );
-			instGrpList = Arrays.asList(vals);
-		}
-		else if ( key.equals("inst") ) {
-			String[] vals = request.getParameterValues( key );
-			instTypeList = Arrays.asList(vals);
-		}
-		else if ( key.equals("ms") ) {
-			String[] vals = request.getParameterValues( key );
-			msTypeList = Arrays.asList(vals);
-		}
-		else {
-			String val = request.getParameter( key );
-			if ( key.equals("compound") ) 		compound = val;
-			else if ( key.equals("mz") )		mass     = val;
-			else if ( key.equals("tol") )		tol      = val;
-			else if ( key.equals("formula") ) 	formula  = val;
-			else if ( key.equals("op1") )		op1      = val;
-			else if ( key.equals("op2") )		op2      = val;
-			else if ( key.equals("qpeak") )		peakData = val;
-			else if ( key.equals("CUTOFF") )	cutOff   = val;
-			else if ( key.equals("num") )		num      = val;
-			else if ( key.equals("ion") )		ionMode  = val;
-			else if ( key.equals("inchikey") )   inchikey = val;
-			else if ( key.equals("splash") )		splash = val;
-		}
-	}
-	if ( paramCnt > 0 ) {
-		isFirst = false;
-	}
-
-	String instGrp = "";
-	for ( int i=0; i<instGrpList.size(); i++ ) {
-		instGrp += instGrpList.get(i);
-		if ( i < instGrpList.size() - 1 ) {
-			instGrp += ",";
-		}
-	}
-	String instType = "";
-	for ( int i=0; i<instTypeList.size(); i++ ) {
-		instType += instTypeList.get(i);
-		if ( i < instTypeList.size() - 1 ) {
-			instType += ",";
-		}
-	}
-	String msType = "";
-	for ( int i=0; i<msTypeList.size(); i++ ) {
-		msType += msTypeList.get(i);
-		if ( i < msTypeList.size() - 1 ) {
-			msType += ",";
-		}
-	}
-%>
-
-<body class="msbkFont backgroundImg cursorDefault" onload="initFocus();">
-
-	<form name="change" method="post" action="QuickSearch.jsp" style="display:inline" onSubmit="doWait('Searching...')">
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td width="180">
-					<input type="radio" name="searchType" value="keyword" onClick="changeSearchType()"<% if(isKeyword) out.print(" checked"); %>><b><i>Search by Keyword</i></b>
-				</td>
-				<td width="40"></td>
-				<td width="160">
-					<input type="radio" name="searchType" value="peak" onClick="changeSearchType()"<% if(isPeak) out.print(" checked"); %>><b><i>Search by Peak</i></b>
-				</td>
-			</tr>
-			<tr>
-				<td id="underbar1" height="4"<% if(isKeyword) out.print(" bgcolor=\"IndianRed\""); %>></td>
-				<td></td>
-				<td id="underbar2" height="4"<% if(isPeak) out.print(" bgcolor=\"Goldenrod\""); %>></td>
-			</tr>
-			<tr>
-				<td colspan="3" height="10"></td>
-			</tr>
-			<tr>
-				<td width="150">
-					<input type="radio" name="searchType" value="inchikey" onClick="changeSearchType()"<% if(isInChIKey) out.print(" checked"); %>><b><i>Search by InChIKey</i></b>
-				</td>
-				<td width="40"></td>
-				<td width="160">
-					<input type="radio" name="searchType" value="splash" onClick="changeSearchType()"<% if(isSplash) out.print(" checked"); %>><b><i>Search by Splash</i></b>
-				</td>				
-			</tr>
-			<tr>
-				<td id="underbar3" height="4"<% if(isInChIKey) out.print(" bgcolor=\"Goldenrod\""); %>></td>
-				<td></td>
-				<td id="underbar4" height="4"<% if(isSplash) out.print(" bgcolor=\"Goldenrod\""); %>></td>
-			</tr>
-			<tr>
-				<td colspan="3" height="10"></td>
-			</tr>
-		</table>
-	</form>
-	<form name="form_query" method="post" action="<% out.print(postJspName); %>" style="display:inline" onSubmit="doWait('Searching...')">
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td valign="top">
-<%
-	if ( isKeyword ) {
-%>
-					<table border="0" cellpadding="0" cellspacing="15" class="form-box">
-						<tr>
-							<td colspan="2">
-								<b>Compound Name</b>&nbsp;
-								<input name="compound" type="text" size="47" value="<%= compound %>">
-							</td>
-						</tr>
-						<tr>
-							<td>&nbsp;&nbsp;&nbsp;
-								<select name="op1">
-									<option value="and"<% if(op1.equals("and")) out.print(" selected"); %>>AND</option>
-									<option value="or"<%  if(op1.equals("or"))  out.print(" selected"); %>>OR</option>
-								</select>
-							</td>
-							<td>
-								<b>Exact Mass</b>&nbsp;
-								<input name="mz" type="text" size="10" value="<%= mass %>">
-								&nbsp;&nbsp;&nbsp;<b>Tolerance</b>&nbsp;
-								<input name="tol" type="text" size="6" value="<%= tol %>">
-							</td>
-						</tr>
-						<tr>
-							<td valign="top">&nbsp;&nbsp;&nbsp;
-								<select name="op2">
-									<option value="and"<% if(op2.equals("and")) out.print(" selected"); %>>AND</option>
-									<option value="or"<%  if(op2.equals("or"))  out.print(" selected"); %>>OR</option>
-								</select>
-							</td>
-							<td>
-								<b>Formula</b>&nbsp;
-								<input name="formula" type="text" size="14" value="<%= formula %>"><br>
-								<b><span class="fontNote">&nbsp;&nbsp;&nbsp;&nbsp;( e.g. C6H7N5, C5H*N5, C5* )</span></b>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2" align="right">
-								<input type="button" value="Reset" onClick="resetForm();">
-							</td>
-						</tr>
-					</table>
-<%
-	} else if ( isInChIKey ) {
-%>
-					<table border="0" cellpadding="0" cellspacing="15" class="form-box">
-						<tr>
-							<td colspan="2">
-								<b>InChIKey</b>&nbsp;
-								<input name="inchikey" type="text" size="47" value="<%= inchikey %>">
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2" align="right">
-								<input type="button" value="Reset" onClick="resetForm();">
-							</td>
-						</tr>
-					</table>
-<%
-	} else if ( isSplash ) {
-%>
-					<table border="0" cellpadding="0" cellspacing="15" class="form-box">
-						<tr>
-							<td colspan="2">
-								<b>Splash</b>&nbsp;
-								<input name="splash" type="text" size="47" value="<%= splash %>">
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2" align="right">
-								<input type="button" value="Reset" onClick="resetForm();">
-							</td>
-						</tr>
-					</table>					
-<%
-	} else if ( isPeak ) {
-%>
-					<table border="0" cellpadding="0" cellspacing="15" style="background-color:WhiteSmoke;border:1px silver solid;">
-						<tr>
-							<td>
-								<b>Peak Data</b><br>
-								<textarea name="qpeak" cols="40" rows="10"><%= peakData %></textarea><br>
-								<b><span class="fontNote">* <i>m/z</i> and relative intensities(0-999), delimited by a space.</span></b><br>
-								<input type="button" value="Example1" onClick="insertExample1()">
-								<input type="button" value="Example2" onClick="insertExample2()">
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<hr size=1 color="silver">
-								<b>Cutoff threshold of relative intensities</b>&nbsp;&nbsp;<input name="CUTOFF" type="text" size="4" value="<%= cutOff %>"><br>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<b>Number of Results</b>
-								<select name="num">
-									<option value="20"<%  if(num.equals("20"))  out.print(" selected"); %>>20</option>
-									<option value="50"<%  if(num.equals("50"))  out.print(" selected"); %>>50</option>
-									<option value="100"<% if(num.equals("100")) out.print(" selected"); %>>100</option>
-									<option value="500"<% if(num.equals("500")) out.print(" selected"); %>>500</option>
-								</select>
-							</td>
-						</tr>
-					</table>
-<%
-	}
-%>
-					<br>
-					<table>
-						<tr>
-							<td>
-								<input type="submit" value="Search" onclick="<% 
-									if (isPeak) {
-										out.print("beforeSubmit(); ");
-									} 
-								%>return checkSubmit(0);" class="search">
-								<input type="hidden" name="type" value="<% 
-									if (isKeyword || isPeak) {
-										out.print("quick");
-									} else if (isInChIKey) {
-										out.print("inchikey");
-									} else if (isSplash) {
-										out.print("splash");
-									}
-								%>">
-								<input type="hidden" name="searchType" value="<% 
-									if (isKeyword) {
-										out.print("keyword");
-									} else if (isInChIKey) {
-										out.print("inchikey");
-									} else if (isSplash) {
-										out.print("splash");	
-									} else {
-										out.print("peak");
-									}
-								%>">
-								<!-- <input type="hidden" name="sortKey" value="name">  -->
-								<input type="hidden" name="sortKey" value="not">
-								<input type="hidden" name="sortAction" value="1">
-								<input type="hidden" name="pageNo" value="1">
-								<input type="hidden" name="exec" value="">
-							</td>
-						</tr>
-					</table>
-				</td>
-				<td valign="top" style="padding:0px 15px;">
-					<jsp:include page="Instrument.jsp" flush="true">
-						<jsp:param name="ion" value="<%= ionMode %>" />
-						<jsp:param name="first" value="<%= isFirst %>" />
-						<jsp:param name="inst_grp" value="<%= instGrp %>" />
-						<jsp:param name="inst" value="<%= instType %>" />
-						<jsp:param name="ms" value="<%= msType %>" />
-					</jsp:include>
-				</td>
-			</tr>
-		</table>
-	</form>
 </body>
 </html>
