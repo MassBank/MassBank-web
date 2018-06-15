@@ -25,10 +25,6 @@
  ******************************************************************************/
 package massbank;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-
 import javax.xml.parsers.*;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;

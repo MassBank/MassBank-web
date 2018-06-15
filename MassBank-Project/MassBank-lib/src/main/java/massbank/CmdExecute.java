@@ -23,7 +23,7 @@
  * ver 1.0.4 2009.11.20
  *
  ******************************************************************************/
-package massbank.admin;
+package massbank;
 
 import java.lang.InterruptedException;
 import java.io.IOException;

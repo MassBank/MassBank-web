@@ -23,7 +23,7 @@
  * ver 1.0.1 2008.12.05
  *
  ******************************************************************************/
-package massbank.admin;
+package massbank;
 
 import java.io.Serializable;
 

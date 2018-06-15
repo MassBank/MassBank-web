@@ -1,4 +1,3 @@
-<%@page import="massbank.DataManagement"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%
 /*******************************************************************************
@@ -228,7 +227,6 @@
 				   + indexType[0] + "&srchkey=" + val + "&sortKey=name&sortAction=1&pageNo=1&exec=";
 		// toolTipName = siteLongNameList[siteNum];
 		countStr = "(" + numFormat.format(count) + ")";
-		//countStr = "(" + "<a href=\"" + DataManagement.toMsp(DataManagement.search(indexType[0], String.valueOf(siteNum), "name", "1", ""), toolTipName + ".msp") + "\" title=\"Download " + numFormat.format(count) + " record(s) in NIST *.msp format\"><img src=\"./image/download_icon.png\" title=\"Download " + numFormat.format(count) + " record(s) in NIST *.msp format\" width=\"16\" height=\"16\" />" + numFormat.format(count) + "</a>" + ")";
 		out.println( "<td>" );
 		//out.println( "<a href=\"" + linkUrl + "\" title=\"" + toolTipName.replaceAll(" ", "&nbsp;") + "\" target=\"_self\">" + linkName.replaceAll(" ", "&nbsp;") + "</a>"
 		//		   + "&nbsp;&nbsp;" + countStr + "&nbsp;&nbsp;" );

@@ -24,7 +24,7 @@
  *
  ******************************************************************************/
 
-package massbank.admin;
+package massbank;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

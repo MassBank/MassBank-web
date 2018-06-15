@@ -28,8 +28,9 @@ package massbank.admin;
 import java.io.*;
 import java.net.URL;
 import java.util.logging.*;
-import massbank.admin.CmdExecute;
-import massbank.admin.CmdResult;
+
+import massbank.CmdExecute;
+import massbank.CmdResult;
 
 public class FileUtil {
 	

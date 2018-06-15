@@ -1,10 +1,7 @@
 package massbank;
 
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
@@ -17,10 +14,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.AtomContainer;
