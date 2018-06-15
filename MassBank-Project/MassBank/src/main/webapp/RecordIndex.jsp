@@ -31,6 +31,7 @@
 <%@ page import="java.io.BufferedOutputStream" %>
 <%@ page import="java.io.FileOutputStream" %>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Iterator" %>
@@ -91,7 +92,7 @@
 	// 検索実行・結果取得
 	//-------------------------------------
 	MassBankCommon mbcommon = new MassBankCommon();
-	ArrayList<String> result = new SearchExecution(request).exec(new RecordIndexCount());
+	List<String> result = new SearchExecution(request).exec(new RecordIndexCount());
 	
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();

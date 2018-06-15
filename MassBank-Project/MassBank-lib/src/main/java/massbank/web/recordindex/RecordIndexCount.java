@@ -1,24 +1,24 @@
 package massbank.web.recordindex;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import massbank.DatabaseManager;
-import massbank.Record;
 import massbank.web.SearchFunction;
 
-public class RecordIndexCount implements SearchFunction<String> {
+public class RecordIndexCount implements SearchFunction<List<String>> {
 
 	public void getParameters(HttpServletRequest request) {
 
 	}
 
-	public ArrayList<String> search(DatabaseManager databaseManager) {
-		ArrayList<String> resList = new ArrayList<String>();
+	public List<String> search(DatabaseManager databaseManager) {
+		List<String> resList = new ArrayList<String>();
 		PreparedStatement stmnt;
 		ResultSet res;
 

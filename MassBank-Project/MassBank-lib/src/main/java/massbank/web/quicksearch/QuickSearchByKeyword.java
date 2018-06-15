@@ -1,18 +1,18 @@
 package massbank.web.quicksearch;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
-public class QuickSearchByKeyword implements SearchFunction<String> {
+public class QuickSearchByKeyword implements SearchFunction<List<String>> {
 
 	private String compound;
 	private String op1;
@@ -36,8 +36,8 @@ public class QuickSearchByKeyword implements SearchFunction<String> {
 		this.ion		= request.getParameter("ion");
 	}
 
-	public ArrayList<String> search(DatabaseManager databaseManager) {
-		ArrayList<String> resList = new ArrayList<String>();
+	public List<String> search(DatabaseManager databaseManager) {
+		List<String> resList = new ArrayList<String>();
 		
 		// SELECT * FROM NAME WHERE UPPER(NAME.CH_NAME) like UPPER("%BENzENE%") ORDER BY LENGTH(NAME.CH_NAME);
 		String sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS, CH_NAME "

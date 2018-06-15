@@ -1,11 +1,11 @@
 package massbank.web.peaksearch;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
-public class PeakSearchByPeak implements SearchFunction<String> {
+public class PeakSearchByPeak implements SearchFunction<List<String>> {
 
 	private String[] inst;
 
@@ -57,8 +57,8 @@ public class PeakSearchByPeak implements SearchFunction<String> {
 		this.mode	= request.getParameter("mode");
 	}
 
-	public ArrayList<String> search(DatabaseManager databaseManager) {
-		ArrayList<String> resList = new ArrayList<String>();
+	public List<String> search(DatabaseManager databaseManager) {
+		List<String> resList = new ArrayList<String>();
 
 		String sql;
 		PreparedStatement stmnt;

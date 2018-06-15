@@ -1,18 +1,14 @@
 package massbank.web.quicksearch;
 
-import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.web.quicksearch.Search;
 import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
-public class QuickSearchByPeak implements SearchFunction<String> {
+public class QuickSearchByPeak implements SearchFunction<List<String>> {
 
 	private HttpServletRequest request;
 
@@ -20,8 +16,8 @@ public class QuickSearchByPeak implements SearchFunction<String> {
 		this.request = request;
 	}
 
-	public ArrayList<String> search(DatabaseManager databaseManager) {
-		ArrayList<String> resList = new ArrayList<String>();
+	public List<String> search(DatabaseManager databaseManager) {
+		List<String> resList = new ArrayList<String>();
 //		System.out.println("############################################");
 //		System.out.println(this.request);
 //		System.out.println(this.request.getRequestURL());

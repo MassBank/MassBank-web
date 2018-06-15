@@ -75,7 +75,7 @@ public class GetInstInfo {
 		GetConfig conf = new GetConfig(baseUrl);
 		String[] urlList = conf.getSiteUrl();
 
-		ArrayList<String> resultAll = new SearchExecution(request).exec(new InstrumentSearch());
+		List<String> resultAll = new SearchExecution(request).exec(new InstrumentSearch());
 		instNo = new ArrayList[urlList.length];
 		instType = new ArrayList[urlList.length];
 		instName = new ArrayList[urlList.length];

@@ -1,16 +1,17 @@
 package massbank.web.recordindex;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
-public class RecordIndexByCategory implements SearchFunction<String> {
+public class RecordIndexByCategory implements SearchFunction<List<String>> {
 
 	private String idxtype;
 	private String srchkey;
@@ -20,8 +21,8 @@ public class RecordIndexByCategory implements SearchFunction<String> {
 		this.srchkey	= request.getParameter("srchkey");
 	}
 
-	public ArrayList<String> search(DatabaseManager databaseManager) {
-		ArrayList<String> resList = new ArrayList<String>();
+	public List<String> search(DatabaseManager databaseManager) {
+		List<String> resList = new ArrayList<String>();
 
 		String sql = "";
 		PreparedStatement stmnt;
