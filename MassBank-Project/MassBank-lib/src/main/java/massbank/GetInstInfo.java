@@ -27,24 +27,26 @@ package massbank;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import massbank.web.SearchExecution;
 import massbank.web.instrument.InstrumentSearch;
+import massbank.web.instrument.InstrumentSearch.InstrumentSearchResult;
 
 public class GetInstInfo {
-	ArrayList<String>[] instNo   = null;
-	ArrayList<String>[] instType = null;
-	ArrayList<String>[] instName = null;
-	ArrayList<String>[] msType = null;
-	private int index = 0;
-	private HttpServletRequest request;
+	private final String[] instNo;
+	private final String[] instType;
+	private final String[] instName;
+	private final String[] msType;
 
 	/**
 	 * Constructor (コンストラクタ)
@@ -54,113 +56,43 @@ public class GetInstInfo {
 	 * @throws ConfigurationException 
 	 * @throws SQLException 
 	 */
-	public GetInstInfo( String baseUrl ) throws ConfigurationException, SQLException {
-		getInformation(baseUrl);
-	}
-
 	public GetInstInfo( HttpServletRequest request) throws ConfigurationException, SQLException {
-		this.request = request;
-		getInformation(Config.get().BASE_URL());
+		InstrumentSearchResult result = new SearchExecution(request).exec(new InstrumentSearch());
+		this.instNo		= result.instNo;
+		this.instType	= result.instType;
+		this.instName	= result.instName;
+		this.msType		= result.msType;
 	}
 	
-	/**
-	 * Device type, MS type information acquisition (装置種別、MS種別情報取得)
-	 * @param baseUrl ベースURL
-	 * @param urlParam Parameters when executing CGI (CGI実行時のパラメータ)
-	 * @throws ConfigurationException 
-	 * @throws SQLException 
-	 */
-	private void getInformation( String baseUrl) throws ConfigurationException, SQLException {
-		
-		GetConfig conf = new GetConfig(baseUrl);
-		String[] urlList = conf.getSiteUrl();
-
-		List<String> resultAll = new SearchExecution(request).exec(new InstrumentSearch());
-		instNo = new ArrayList[urlList.length];
-		instType = new ArrayList[urlList.length];
-		instName = new ArrayList[urlList.length];
-		msType = new ArrayList[urlList.length];
-		for ( int i = 0; i < urlList.length; i++ ) {
-			instNo[i]   = new ArrayList<String>();
-			instType[i] = new ArrayList<String>();
-			instName[i] = new ArrayList<String>();
-			msType[i] = new ArrayList<String>();
-		}
-
-		boolean isInst = true;
-		boolean isMs = false;
-		int prevSiteNo = 0;
-		for ( int i = 0; i < resultAll.size(); i++ ) {
-			String line = resultAll.get(i).trim();
-			
-			if ( line.startsWith("INSTRUMENT_INFORMATION") ) { isInst = true; isMs = false; continue; }
-			if ( line.startsWith("MS_INFORMATION") ) { isInst = false; isMs = true; continue; }
-			
-			if ( line.equals("") ) { continue; }
-			String[] item = line.split("\t");
-//			int siteNo = Integer.parseInt( item[item.length-1] );       we make a static site no
-			int siteNo = 0;
-			if ( prevSiteNo != siteNo) {
-				prevSiteNo = siteNo;
-				isInst = true; isMs = false;
-			}
-//			if ( line.startsWith("INSTRUMENT_INFORMATION") ) { isInst = true; isMs = false; continue; }
-//			if ( line.startsWith("MS_INFORMATION") ) { isInst = false; isMs = true; continue; }
-			if ( isInst ) {
-				instNo[siteNo].add( item[0] );
-				instType[siteNo].add( item[1] );
-				instName[siteNo].add( item[2] );
-			}
-			else if ( isMs ) {
-				msType[siteNo].add( item[0] );
-			}
-		}
-	}
-	
-	/**
-	 * Set site index (サイトインデックスをセット)
-	 */ 
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
 	/**
 	 * Get INSTRUMENT_TYPE_NO (INSTRUMENT_TYPE_NOを取得)
 	 */ 
 	public String[] getNo() {
-		return (String[])this.instNo[this.index].toArray( new String[0] );
+		return this.instNo;
 	}
 	
 	/**
 	 * Get INSTRUMENT_NAME (INSTRUMENT_NAMEを取得)
 	 */
 	public String[] getName() {
-		return (String[])this.instName[this.index].toArray( new String[0] );
+		return this.instName;
 	}
 
 	/**
 	 * Get INSTRUMENT_TYPE (INSTRUMENT_TYPEを取得)
 	 */
 	public String[] getType() {
-		return (String[])this.instType[this.index].toArray( new String[0] );
+		return this.instType;
 	}
 
 	/**
 	 * Get INSTRUMENT_TYPE (Acquire all sites without duplication) (INSTRUMENT_TYPEを取得（重複なしで全サイト分を取得）)
 	 */
 	public String[] getTypeAll() {
-		ArrayList<String> instTypeList = new ArrayList<String>();
-		for ( int i = 0; i < this.instType.length; i++ ) {
-			for ( int j = 0; j < instType[i].size(); j++ ) {
-				String type = instType[i].get(j);
-				if ( !instTypeList.contains(type) ) {
-					instTypeList.add( type );
-				}
-			}
-		}
-		// Sort by name (名前順でソート)
-		Collections.sort( instTypeList );
-		return (String[])instTypeList.toArray( new String[0] );
+		Set<String> temp = new HashSet<String>(Arrays.asList(this.instType));
+		String[] instType = temp.toArray(new String[temp.size()]);
+		Arrays.sort(instType);
+		return instType;
 	}
 
 	/**
@@ -170,6 +102,9 @@ public class GetInstInfo {
 		final String[] baseGroup = { "ESI", "EI", "Others" };
 
 		String[] instTypes = getTypeAll();
+		
+		System.out.println(Arrays.toString(instTypes));
+		
 		int num = baseGroup.length;
 		List<String>[] listInstType = new ArrayList[num];
 		for ( int i = 0; i < num; i++ ) {
@@ -203,24 +138,15 @@ public class GetInstInfo {
 	 * Get MS_TYPE (MS_TYPEを取得)
 	 */
 	public String[] getMsType() {
-		return (String[])this.msType[this.index].toArray( new String[0] );
+		return this.msType;
 	}
 
 	/**
 	 * Obtain MS_TYPE (Acquire all sites without duplication) (MS_TYPEを取得（重複なしで全サイト分を取得）)
 	 */
 	public String[] getMsAll() {
-		ArrayList<String> msTypeList = new ArrayList<String>();
-		for ( int i = 0; i < this.msType.length; i++ ) {
-			for ( int j = 0; j < msType[i].size(); j++ ) {
-				String type = msType[i].get(j);
-				if ( !msTypeList.contains(type) ) {
-					msTypeList.add( type );
-				}
-			}
-		}
-		// Sort by name (名前順でソート)
-		Collections.sort( msTypeList );
-		return (String[])msTypeList.toArray( new String[0] );
+		String[] msType	= this.msType.clone();
+		Arrays.sort(msType);
+		return msType;
 	}
 }
