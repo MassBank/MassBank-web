@@ -1,18 +1,19 @@
 package massbank.web.peaksearch;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
-public class PeakSearchByPeak implements SearchFunction {
+public class PeakSearchByPeak implements SearchFunction<List<String>> {
 
 	private String[] inst;
 
@@ -56,8 +57,8 @@ public class PeakSearchByPeak implements SearchFunction {
 		this.mode	= request.getParameter("mode");
 	}
 
-	public ArrayList<String> search(Connection connection) {
-		ArrayList<String> resList = new ArrayList<String>();
+	public List<String> search(DatabaseManager databaseManager) {
+		List<String> resList = new ArrayList<String>();
 
 		String sql;
 		PreparedStatement stmnt;
@@ -67,7 +68,7 @@ public class PeakSearchByPeak implements SearchFunction {
 			sql = "SELECT RECORD " + "FROM PEAK "
 					+ "WHERE ? <= PK_PEAK_MZ AND PK_PEAK_MZ <= ? AND PK_PEAK_RELATIVE > ?";
 			try {
-				stmnt = connection.prepareStatement(sql);
+				stmnt = databaseManager.getConnection().prepareStatement(sql);
 				stmnt.setDouble(1, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
 				stmnt.setDouble(2, Double.parseDouble(mz[i]) + Double.parseDouble(tol));
 				stmnt.setInt(3, Integer.parseInt(intens));
@@ -86,7 +87,6 @@ public class PeakSearchByPeak implements SearchFunction {
 					}
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -148,7 +148,7 @@ public class PeakSearchByPeak implements SearchFunction {
 		}
 
 		try {
-			stmnt = connection.prepareStatement(sb.toString());
+			stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			for (int i = 0; i < inst.length; i++) {
 				stmnt.setString(idx, inst[i]);
@@ -171,7 +171,7 @@ public class PeakSearchByPeak implements SearchFunction {
 						+ res.getDouble("CH_EXACT_MASS"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return resList;

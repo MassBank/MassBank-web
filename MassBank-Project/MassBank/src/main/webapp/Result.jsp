@@ -32,6 +32,7 @@
  *
  ******************************************************************************/
 %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Enumeration" %>
 <%@ page import="java.util.HashMap" %>
@@ -824,7 +825,7 @@
 	
 	// 検索実行
 	// execute search
-	ArrayList<String> result = null;
+	List<String> result = null;
 	if (typeName.compareTo("quick") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
 		result = new SearchExecution(request).exec(new QuickSearchByKeyword());

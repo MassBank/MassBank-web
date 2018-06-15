@@ -1,15 +1,17 @@
 package massbank.web.recordindex;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
-public class RecordIndexByCategory implements SearchFunction {
+public class RecordIndexByCategory implements SearchFunction<List<String>> {
 
 	private String idxtype;
 	private String srchkey;
@@ -19,8 +21,8 @@ public class RecordIndexByCategory implements SearchFunction {
 		this.srchkey	= request.getParameter("srchkey");
 	}
 
-	public ArrayList<String> search(Connection connection) {
-		ArrayList<String> resList = new ArrayList<String>();
+	public List<String> search(DatabaseManager databaseManager) {
+		List<String> resList = new ArrayList<String>();
 
 		String sql = "";
 		PreparedStatement stmnt;
@@ -71,7 +73,7 @@ public class RecordIndexByCategory implements SearchFunction {
 						+ "WHERE REC.CH = COMPOUND.ID";
 			}
 
-			stmnt = connection.prepareStatement(sql);
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			if (idxtype.compareTo("merged") != 0) {
 				if (idxtype.compareTo("ion") != 0 && idxtype.compareTo("cmpd") != 0) {
 					stmnt.setString(1, srchkey);

@@ -1,18 +1,19 @@
 package massbank.web.peaksearch;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 
+import massbank.DatabaseManager;
 import massbank.web.SearchFunction;
 
-public class PeakSearchByPeakDifference implements SearchFunction {
+public class PeakSearchByPeakDifference implements SearchFunction<List<String>> {
 
 	private String[] inst;
 
@@ -56,7 +57,7 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 		this.mode	= request.getParameter("mode");
 	}
 
-	public ArrayList<String> search(Connection connection) {
+	public List<String> search(DatabaseManager databaseManager) {
 		ArrayList<String> resList = new ArrayList<String>();
 		String sql;
 		PreparedStatement stmnt;
@@ -67,7 +68,7 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 					+ "FROM (SELECT * FROM PEAK WHERE PK_PEAK_RELATIVE > ?) AS T1 LEFT JOIN (SELECT * FROM PEAK WHERE PK_PEAK_RELATIVE > ?) AS T2 ON T1.RECORD = T2.RECORD "
 					+ "WHERE (T1.PK_PEAK_MZ BETWEEN T2.PK_PEAK_MZ + ? AND T2.PK_PEAK_MZ + ?)";
 			try {
-				stmnt = connection.prepareStatement(sql);
+				stmnt = databaseManager.getConnection().prepareStatement(sql);
 				stmnt.setInt(1, Integer.parseInt(intens));
 				stmnt.setInt(2, Integer.parseInt(intens));
 				stmnt.setDouble(3, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
@@ -87,7 +88,6 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 					}
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -149,7 +149,7 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 		}
 
 		try {
-			stmnt = connection.prepareStatement(sb.toString());
+			stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			for (int i = 0; i < inst.length; i++) {
 				stmnt.setString(idx, inst[i]);
@@ -172,7 +172,7 @@ public class PeakSearchByPeakDifference implements SearchFunction {
 						+ res.getDouble("CH_EXACT_MASS"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return resList;

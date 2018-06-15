@@ -1,7 +1,7 @@
 package massbank.web;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,7 +12,7 @@ import massbank.ResultRecord;
 
 public class QueryToResultList {
 
-	public static ResultList toResultList(ArrayList<String> allLine, HttpServletRequest request) throws ConfigurationException {
+	public static ResultList toResultList(List<String> allLine, HttpServletRequest request) throws ConfigurationException {
 		// Result information record generation (結果情報レコード生成)
 		ResultList list = new ResultList();
 		ResultRecord record;

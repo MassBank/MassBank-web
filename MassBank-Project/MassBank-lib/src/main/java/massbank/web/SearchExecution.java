@@ -1,9 +1,11 @@
 package massbank.web;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import massbank.DatabaseManager;
 
 
@@ -17,9 +19,9 @@ public class SearchExecution {
 		this.request = request;
 	}
 	
-	public ArrayList<String> exec(SearchFunction function) {
+	public <E> E exec(SearchFunction<E> function) {
 		function.getParameters(this.request);
-		ArrayList<String> result = function.search(this.database.getConnection());
+		E result = function.search(this.database);
 		this.database.closeConnection();
 		return result;
 	}

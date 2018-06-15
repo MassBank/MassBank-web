@@ -362,7 +362,7 @@
 				 + "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 				 + "&CUTOFF=" + pCutoff + "&NUM=0&VAL=" + paramPeak.toString();
 		param += paramCondition;
-		ArrayList<String> result = new SearchExecution(request).exec(new QuickSearchByPeak());
+		List<String> result = new SearchExecution(request).exec(new QuickSearchByPeak());
 		
 		out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
 		
