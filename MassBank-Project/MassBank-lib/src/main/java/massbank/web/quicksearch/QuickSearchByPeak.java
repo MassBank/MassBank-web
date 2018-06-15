@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import massbank.web.quicksearch.Search;
 import massbank.web.SearchFunction;
 
-public class QuickSearchByPeak implements SearchFunction {
+public class QuickSearchByPeak implements SearchFunction<String> {
 
 	private HttpServletRequest request;
 

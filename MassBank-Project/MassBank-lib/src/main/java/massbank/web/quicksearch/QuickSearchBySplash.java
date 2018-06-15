@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.SearchFunction;
 
-public class QuickSearchBySplash implements SearchFunction {
+public class QuickSearchBySplash implements SearchFunction<String> {
 
 	private String splash;
 	

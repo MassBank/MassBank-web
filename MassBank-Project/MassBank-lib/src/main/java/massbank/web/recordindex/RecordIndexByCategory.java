@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.SearchFunction;
 
-public class RecordIndexByCategory implements SearchFunction {
+public class RecordIndexByCategory implements SearchFunction<String> {
 
 	private String idxtype;
 	private String srchkey;

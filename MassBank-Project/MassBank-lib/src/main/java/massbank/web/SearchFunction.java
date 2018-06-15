@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
-public interface SearchFunction {
+public interface SearchFunction<E> {
 	
 	public void getParameters(HttpServletRequest request);
 	
-	public ArrayList<String> search(Connection connection);
+	public ArrayList<E> search(Connection connection);
 
 }

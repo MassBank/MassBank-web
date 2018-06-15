@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.SearchFunction;
 
-public class InstrumentSearch implements SearchFunction {
+public class InstrumentSearch implements SearchFunction<String> {
 
 	public void getParameters(HttpServletRequest request) {
 

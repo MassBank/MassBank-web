@@ -17,9 +17,9 @@ public class SearchExecution {
 		this.request = request;
 	}
 	
-	public ArrayList<String> exec(SearchFunction function) {
+	public <E> ArrayList<E> exec(SearchFunction<E> function) {
 		function.getParameters(this.request);
-		ArrayList<String> result = function.search(this.database.getConnection());
+		ArrayList<E> result = function.search(this.database.getConnection());
 		this.database.closeConnection();
 		return result;
 	}

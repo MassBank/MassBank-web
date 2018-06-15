@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.SearchFunction;
 
-public class QuickSearchByInChIKey implements SearchFunction {
+public class QuickSearchByInChIKey implements SearchFunction<String> {
 
 	private String inChIKey;
 	

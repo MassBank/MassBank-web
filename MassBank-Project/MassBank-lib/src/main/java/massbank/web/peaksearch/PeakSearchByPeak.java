@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.SearchFunction;
 
-public class PeakSearchByPeak implements SearchFunction {
+public class PeakSearchByPeak implements SearchFunction<String> {
 
 	private String[] inst;
 

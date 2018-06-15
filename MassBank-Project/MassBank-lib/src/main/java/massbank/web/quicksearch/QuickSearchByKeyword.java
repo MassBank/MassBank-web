@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.web.SearchFunction;
 
-public class QuickSearchByKeyword implements SearchFunction {
+public class QuickSearchByKeyword implements SearchFunction<String> {
 
 	private String compound;
 	private String op1;

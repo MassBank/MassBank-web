@@ -6,9 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
+
+import massbank.Record;
 import massbank.web.SearchFunction;
 
-public class RecordIndexCount implements SearchFunction {
+public class RecordIndexCount implements SearchFunction<String> {
 
 	public void getParameters(HttpServletRequest request) {
 
