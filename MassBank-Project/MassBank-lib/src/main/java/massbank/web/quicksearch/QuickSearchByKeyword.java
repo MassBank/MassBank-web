@@ -10,9 +10,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import massbank.DatabaseManager;
+import massbank.ResultRecord;
 import massbank.web.SearchFunction;
 
-public class QuickSearchByKeyword implements SearchFunction<List<String>> {
+public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 
 	private String compound;
 	private String op1;
@@ -36,13 +37,18 @@ public class QuickSearchByKeyword implements SearchFunction<List<String>> {
 		this.ion		= request.getParameter("ion");
 	}
 
-	public List<String> search(DatabaseManager databaseManager) {
-		List<String> resList = new ArrayList<String>();
-		
+	public ResultRecord[] search(DatabaseManager databaseManager) {
+		// ###########################################################################################
+		// fetch matching records
 		// SELECT * FROM NAME WHERE UPPER(NAME.CH_NAME) like UPPER("%BENzENE%") ORDER BY LENGTH(NAME.CH_NAME);
-		String sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS, CH_NAME "
-				+ "FROM RECORD,INSTRUMENT,COMPOUND,COMPOUND_NAME,NAME "
-				+ "WHERE COMPOUND.ID = COMPOUND_NAME.COMPOUND AND COMPOUND_NAME.NAME = NAME.ID AND RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
+		String sql = 
+				"SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS, CH_NAME " +
+				"FROM RECORD,INSTRUMENT,COMPOUND,COMPOUND_NAME,NAME " +
+				"WHERE " +
+					"COMPOUND.ID = COMPOUND_NAME.COMPOUND AND " +
+					"COMPOUND_NAME.NAME = NAME.ID AND " +
+					"RECORD.CH = COMPOUND.ID AND " +
+					"RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 		StringBuilder sb = new StringBuilder();
 		sb.append(sql);
 		//sb.append(" AND (NAME.CH_NAME = ? ");
@@ -71,8 +77,10 @@ public class QuickSearchByKeyword implements SearchFunction<List<String>> {
 		}
 		sb.append(" ORDER BY LENGTH(NAME.CH_NAME)");
 		
+		// ###########################################################################################
+		// execute and fetch results
+		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
-			
 			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			String compoundAsSubstring	= "%" + compound + "%";
@@ -107,14 +115,18 @@ public class QuickSearchByKeyword implements SearchFunction<List<String>> {
 			}
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
-				resList.add(res.getString("RECORD_TITLE") + "\t" + res.getString("ACCESSION") + "\t"
-						+ res.getString("AC_MASS_SPECTROMETRY_ION_MODE") + "\t" + res.getString("CH_FORMULA") + "\t"
-						+ res.getDouble("CH_EXACT_MASS"));
+				ResultRecord record = new ResultRecord();
+				record.setInfo(		res.getString("RECORD_TITLE"));
+				record.setId(		res.getString("ACCESSION"));
+				record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+				record.setFormula(	res.getString("CH_FORMULA"));
+				record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
+				resList.add(record);
 			}
 		} catch (SQLException e) {
-			// TODO
+			e.printStackTrace();
 		}
-		return resList;
+		return resList.toArray(new ResultRecord[resList.size()]);
 	}
 	public String toString() {
 		return 

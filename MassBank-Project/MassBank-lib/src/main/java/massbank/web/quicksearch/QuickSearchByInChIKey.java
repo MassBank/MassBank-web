@@ -32,9 +32,10 @@ public class QuickSearchByInChIKey implements SearchFunction<ResultRecord[]> {
 	public ResultRecord[] search(DatabaseManager databaseManager) {
 		// ###########################################################################################
 		// fetch matching records
-		String sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS "
-				+ "FROM RECORD,INSTRUMENT,COMPOUND,CH_LINK "
-				+ "WHERE COMPOUND.ID = CH_LINK.COMPOUND AND RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
+		String sql = 
+				"SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS " +
+				"FROM RECORD,INSTRUMENT,COMPOUND,CH_LINK " +
+				"WHERE COMPOUND.ID = CH_LINK.COMPOUND AND RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 		StringBuilder sb = new StringBuilder();
 		sb.append(sql);
 		//sb.append(" AND (CH_LINK.DATABASE_ID = ?");
@@ -63,7 +64,7 @@ public class QuickSearchByInChIKey implements SearchFunction<ResultRecord[]> {
 		}
 		
 		// ###########################################################################################
-		// fetch data
+		// execute and fetch results
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
 			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
@@ -102,5 +103,4 @@ public class QuickSearchByInChIKey implements SearchFunction<ResultRecord[]> {
 		}
 		return resList.toArray(new ResultRecord[resList.size()]);
 	}
-
 }
