@@ -826,6 +826,7 @@
 	// 検索実行
 	// execute search
 	List<String> result = null;
+	ResultRecord[] records	= null;
 	if (typeName.compareTo("quick") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
 		result = new SearchExecution(request).exec(new QuickSearchByKeyword());
@@ -834,7 +835,7 @@
 		result = new SearchExecution(request).exec(new RecordIndexByCategory());
 	} else if (typeName.compareTo("peak") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);	
-		result = new SearchExecution(request).exec(new PeakSearchByPeak());
+		records = new SearchExecution(request).exec(new PeakSearchByPeak());
 	} else if (typeName.compareTo("diff") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
 		result = new SearchExecution(request).exec(new PeakSearchByPeakDifference());
@@ -854,6 +855,8 @@
 	
 	if (result != null) 
 		list = QueryToResultList.toResultList(result, request);
+	if (records != null) 
+		list = QueryToResultList.toResultList(records, request);
 	
 	out.println( "<span id=\"menu\"></span>");
 	out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );

@@ -11,9 +11,10 @@ import java.util.StringJoiner;
 import javax.servlet.http.HttpServletRequest;
 
 import massbank.DatabaseManager;
+import massbank.ResultRecord;
 import massbank.web.SearchFunction;
 
-public class PeakSearchByPeak implements SearchFunction<List<String>> {
+public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {
 
 	private String[] inst;
 
@@ -57,32 +58,29 @@ public class PeakSearchByPeak implements SearchFunction<List<String>> {
 		this.mode	= request.getParameter("mode");
 	}
 
-	public List<String> search(DatabaseManager databaseManager) {
-		List<String> resList = new ArrayList<String>();
-
-		String sql;
-		PreparedStatement stmnt;
-		ResultSet res;
-		HashMap<String, ArrayList<Boolean>> hits = new HashMap<String, ArrayList<Boolean>>();
-		for (int i = 0; i < num; i++) {
-			sql = "SELECT RECORD " + "FROM PEAK "
-					+ "WHERE ? <= PK_PEAK_MZ AND PK_PEAK_MZ <= ? AND PK_PEAK_RELATIVE > ?";
+	public ResultRecord[] search(DatabaseManager databaseManager) {
+		// ###########################################################################################
+		// fetch matching peaks for each record
+		HashMap<String, boolean[]> hits = new HashMap<String, boolean[]>();
+		for (int peakIndex = 0; peakIndex < num; peakIndex++) {
+			String sql = 
+					"SELECT RECORD " + 
+					"FROM PEAK " + 
+					"WHERE ? <= PK_PEAK_MZ AND PK_PEAK_MZ <= ? AND PK_PEAK_RELATIVE > ?";
 			try {
-				stmnt = databaseManager.getConnection().prepareStatement(sql);
-				stmnt.setDouble(1, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
-				stmnt.setDouble(2, Double.parseDouble(mz[i]) + Double.parseDouble(tol));
+				PreparedStatement stmnt	= databaseManager.getConnection().prepareStatement(sql);
+				stmnt.setDouble(1, Double.parseDouble(mz[peakIndex]) - Double.parseDouble(tol));
+				stmnt.setDouble(2, Double.parseDouble(mz[peakIndex]) + Double.parseDouble(tol));
 				stmnt.setInt(3, Integer.parseInt(intens));
-				res = stmnt.executeQuery();
+				
+				ResultSet res = stmnt.executeQuery();
 				while (res.next()) {
 					String id = res.getString("RECORD");
 					if (hits.containsKey(id)) {
-						hits.get(id).set(i, true);
+						hits.get(id)[peakIndex]	= true;
 					} else {
-						ArrayList<Boolean> newEl = new ArrayList<Boolean>();
-						for (int j = 0; j < num; j++) {
-							newEl.add(j, false);
-						}
-						newEl.set(i, true);
+						boolean[] newEl = new boolean[num];
+						newEl[peakIndex]	= true;
 						hits.put(id, newEl);
 					}
 				}
@@ -90,32 +88,29 @@ public class PeakSearchByPeak implements SearchFunction<List<String>> {
 				e.printStackTrace();
 			}
 		}
-
+		
+		// ###########################################################################################
+		// fetch matching records
 		ArrayList<String> finIds = new ArrayList<String>();
 		for (String key : hits.keySet()) {
-			boolean expr = false;
-			ArrayList<Boolean> val = hits.get(key);
-			for (int i = 0; i < num; i++) {
-				if (val.get(i) == null) {
-					val.set(i, false);
+			boolean[] val = hits.get(key);
+			boolean expr = val[0];
+			for (int i = 1; i < num; i++) {
+				if (op[i].compareTo("or") == 0) {
+					expr = expr || val[i];
 				}
-				if (i == 0) {
-					expr = val.get(i);
-				} else {
-					if (op[i].compareTo("or") == 0) {
-						expr = expr || val.get(i);
-					}
-					if (op[i].compareTo("and") == 0) {
-						expr = expr && val.get(i);
-					}
+				if (op[i].compareTo("and") == 0) {
+					expr = expr && val[i];
 				}
 			}
 			if (expr) {
 				finIds.add(key);
 			}
 		}
-
-		sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS "
+		
+		// ###########################################################################################
+		// fetch records
+		String sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS "
 				+ "FROM RECORD, INSTRUMENT, COMPOUND "
 				+ "WHERE RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 
@@ -146,9 +141,10 @@ public class PeakSearchByPeak implements SearchFunction<List<String>> {
 		if (Integer.parseInt(ion) != 0) {
 			sb.append(" AND RECORD.AC_MASS_SPECTROMETRY_ION_MODE = ?");
 		}
-
+		
+		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			for (int i = 0; i < inst.length; i++) {
 				stmnt.setString(idx, inst[i]);
@@ -164,16 +160,19 @@ public class PeakSearchByPeak implements SearchFunction<List<String>> {
 			if (Integer.parseInt(ion) == -1) {
 				stmnt.setString(idx, "NEGATIVE");
 			}
-			res = stmnt.executeQuery();
+			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
-				resList.add(res.getString("RECORD_TITLE") + "\t" + res.getString("ACCESSION") + "\t"
-						+ res.getString("AC_MASS_SPECTROMETRY_ION_MODE") + "\t" + res.getString("CH_FORMULA") + "\t"
-						+ res.getDouble("CH_EXACT_MASS"));
+				ResultRecord record = new ResultRecord();
+				record.setInfo(		res.getString("RECORD_TITLE"));
+				record.setId(		res.getString("ACCESSION"));
+				record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+				record.setFormula(	res.getString("CH_FORMULA"));
+				record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		return resList;
+		return resList.toArray(new ResultRecord[resList.size()]);
 	}
 }
