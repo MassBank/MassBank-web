@@ -168,6 +168,7 @@ public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {
 				record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
 				record.setFormula(	res.getString("CH_FORMULA"));
 				record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
+				resList.add(record);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
