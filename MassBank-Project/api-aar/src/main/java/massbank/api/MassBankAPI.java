@@ -106,7 +106,8 @@ public class MassBankAPI {
 	public String[] getInstrumentTypes() throws ConfigurationException {
 		GetInstInfo instInfo = null;
 		try {
-			instInfo = new GetInstInfo(Config.get().BASE_URL());
+			//instInfo = new GetInstInfo(Config.get().BASE_URL());
+			instInfo = new GetInstInfo(null);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
