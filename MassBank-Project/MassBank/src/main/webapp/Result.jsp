@@ -842,7 +842,7 @@
 	} else if (typeName.compareTo("inchikey") == 0) {
 		records = new SearchExecution(request).exec(new QuickSearchByInChIKey());
 	} else if (typeName.compareTo("splash") == 0) {
-		result = new SearchExecution(request).exec(new QuickSearchBySplash());
+		records = new SearchExecution(request).exec(new QuickSearchBySplash());
 	}
 	else {
 		if ( isMulti ) {
