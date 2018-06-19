@@ -102,9 +102,6 @@ public class GetInstInfo {
 		final String[] baseGroup = { "ESI", "EI", "Others" };
 
 		String[] instTypes = getTypeAll();
-		
-		System.out.println(Arrays.toString(instTypes));
-		
 		int num = baseGroup.length;
 		List<String>[] listInstType = new ArrayList[num];
 		for ( int i = 0; i < num; i++ ) {

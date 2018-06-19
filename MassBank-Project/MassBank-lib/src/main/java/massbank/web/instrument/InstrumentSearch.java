@@ -20,8 +20,9 @@ public class InstrumentSearch implements SearchFunction<InstrumentSearchResult> 
 
 	public InstrumentSearchResult search(DatabaseManager databaseManager) {
 
-		String sqlInst = "SELECT AC_INSTRUMENT, AC_INSTRUMENT_TYPE FROM INSTRUMENT "
-				+ "GROUP BY AC_INSTRUMENT, AC_INSTRUMENT_TYPE";
+		String sqlInst = 
+				"SELECT AC_INSTRUMENT, AC_INSTRUMENT_TYPE FROM INSTRUMENT " + 
+				"GROUP BY AC_INSTRUMENT, AC_INSTRUMENT_TYPE";
 		String sqlMs = "SELECT DISTINCT AC_MASS_SPECTROMETRY_MS_TYPE FROM RECORD";
 		
 		List<String> instNo		= new ArrayList<String>();
