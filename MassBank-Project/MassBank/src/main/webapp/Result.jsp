@@ -829,7 +829,7 @@
 	ResultRecord[] records	= null;
 	if (typeName.compareTo("quick") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
-		result = new SearchExecution(request).exec(new QuickSearchByKeyword());
+		records = new SearchExecution(request).exec(new QuickSearchByKeyword());
 	} else if (typeName.compareTo("rcdidx") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
 		result = new SearchExecution(request).exec(new RecordIndexByCategory());
@@ -838,9 +838,9 @@
 		records = new SearchExecution(request).exec(new PeakSearchByPeak());
 	} else if (typeName.compareTo("diff") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
-		result = new SearchExecution(request).exec(new PeakSearchByPeakDifference());
+		records = new SearchExecution(request).exec(new PeakSearchByPeakDifference());
 	} else if (typeName.compareTo("inchikey") == 0) {
-		result = new SearchExecution(request).exec(new QuickSearchByInChIKey());
+		records = new SearchExecution(request).exec(new QuickSearchByInChIKey());
 	} else if (typeName.compareTo("splash") == 0) {
 		result = new SearchExecution(request).exec(new QuickSearchBySplash());
 	}

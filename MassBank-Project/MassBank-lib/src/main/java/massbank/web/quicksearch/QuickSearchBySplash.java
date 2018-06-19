@@ -9,9 +9,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import massbank.DatabaseManager;
+import massbank.ResultRecord;
 import massbank.web.SearchFunction;
 
-public class QuickSearchBySplash implements SearchFunction<List<String>> {
+public class QuickSearchBySplash implements SearchFunction<ResultRecord[]> {
 
 	private String splash;
 	
@@ -21,7 +22,6 @@ public class QuickSearchBySplash implements SearchFunction<List<String>> {
 
 	private String ion;
 	
-	@Override
 	public void getParameters(HttpServletRequest request) {
 		this.splash	= request.getParameter("splash").trim();
 		this.inst	= request.getParameterValues("inst");
@@ -29,13 +29,15 @@ public class QuickSearchBySplash implements SearchFunction<List<String>> {
 		this.ion	= request.getParameter("ion");
 	}
 
-	@Override
-	public List<String> search(DatabaseManager databaseManager) {
-		List<String> resList = new ArrayList<String>();
-
-		String sql = "SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS "
-				+ "FROM RECORD,INSTRUMENT,COMPOUND "
-				+ "WHERE RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
+	public ResultRecord[] search(DatabaseManager databaseManager) {
+		// ###########################################################################################
+		// fetch matching records
+		String sql = 
+				"SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS " + 
+				"FROM RECORD,INSTRUMENT,COMPOUND " + 
+				"WHERE " + 
+					"RECORD.CH = COMPOUND.ID AND " + 
+					"RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 		StringBuilder sb = new StringBuilder();
 		sb.append(sql);
 		//sb.append(" AND (RECORD.PK_SPLASH = ?");
@@ -62,6 +64,10 @@ public class QuickSearchBySplash implements SearchFunction<List<String>> {
 		} else {
 			sb.append(")");
 		}
+		
+		// ###########################################################################################
+		// execute and fetch results
+		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
 			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
@@ -86,14 +92,18 @@ public class QuickSearchBySplash implements SearchFunction<List<String>> {
 			}
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
-				resList.add(res.getString("RECORD_TITLE") + "\t" + res.getString("ACCESSION") + "\t"
-						+ res.getString("AC_MASS_SPECTROMETRY_ION_MODE") + "\t" + res.getString("CH_FORMULA") + "\t"
-						+ res.getDouble("CH_EXACT_MASS"));
+				ResultRecord record = new ResultRecord();
+				record.setInfo(		res.getString("RECORD_TITLE"));
+				record.setId(		res.getString("ACCESSION"));
+				record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+				record.setFormula(	res.getString("CH_FORMULA"));
+				record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
+				resList.add(record);
 			}
 		} catch (SQLException e) {
-			// TODO
+			e.printStackTrace();
 		}
-		return resList;
+		return resList.toArray(new ResultRecord[resList.size()]);
 	}
 
 }
