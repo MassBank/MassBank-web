@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.comparators.ComparableComparator;
 
+import massbank.ResultRecord;
+
 public class Search {
 
 	private static boolean PARAM_WEIGHT_LINEAR = true;
@@ -51,7 +53,7 @@ public class Search {
 
 	private boolean isQuick = false;
 
-	private boolean isInteg = false;
+//	private boolean isInteg = false;
 
 	private boolean isAPI = false;
 
@@ -112,10 +114,10 @@ public class Search {
 //		System.out.println(result);
 	}
 
-	private ArrayList<String> result = new ArrayList<String>();
+	private ArrayList<SearchResult> result = new ArrayList<SearchResult>();
 
-	public ArrayList<String> getResult() {
-		return this.result;
+	public SearchResult[] getResult() {
+		return this.result.toArray(new SearchResult[this.result.size()]);
 	}
 
 	private void outResult() {
@@ -142,8 +144,8 @@ public class Search {
 					sql = "SELECT RECORD_TITLE, AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS "
 							+ "FROM RECORD R, COMPOUND C " + "WHERE R.ACCESSION = '" + resScore.id
 							+ "' AND R.CH = C.ID";
-				} else if (isInteg) {
-					sql = "SELECT NAME, ION, ID FROM PARENT_SPECTRUM WHERE SPECTRUM_NO=" + resScore.id;
+//				} else if (isInteg) {
+//					sql = "SELECT NAME, ION, ID FROM PARENT_SPECTRUM WHERE SPECTRUM_NO=" + resScore.id;
 				} else {
 					sql = "SELECT RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD WHERE ACCESSION ='"
 							+ resScore.id + "'";
@@ -151,29 +153,41 @@ public class Search {
 				stmnt = con.prepareStatement(sql);
 				resMySql = stmnt.executeQuery();
 				while (resMySql.next()) {
-					String strName = resMySql.getString(1);
-					String strIon = resMySql.getString(2);
+//					String strName = resMySql.getString(1);
+					String strName = resMySql.getString("RECORD_TITLE");
+//					String strIon = resMySql.getString(2);
+					String strIon = resMySql.getString("AC_MASS_SPECTROMETRY_ION_MODE");
 					String strId;
-					if (isInteg) {
-						strId = resMySql.getString(1);
-					} else {
+//					if (isInteg) {
+////						strId = resMySql.getString(1);
+//						strId = resMySql.getString("NAME");
+//					} else {
 						strId = resScore.id;
-					}
+//					}
 					
 //					System.out.println(resScore.id + ": " + strName);
 					
-					StringBuilder sb = new StringBuilder();
+					// TODO
+					
 //					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
-					sb.append(strId + "\t" + strName + "\t" + resScore.hitNumber + "\t" + resScore.hitScore + "\t" + strIon);
+//					sb.append(strId + "\t" + strName + "\t" + resScore.hitNumber + "\t" + resScore.hitScore + "\t" + strIon);
+					String formula	= null;
 					if (isQuick || isAPI) {
-						String formula = resMySql.getString(3);
-						sb.append("\t" + formula);
+//						String formula = resMySql.getString(3);
+						formula = resMySql.getString("CH_FORMULA");
+//						sb.append("\t" + formula);
 					}
+					double exactMass	= Double.NaN;
 					if (isAPI) {
-						String emass = resMySql.getString(4);
-						sb.append("\t" + emass);
+//						String emass = resMySql.getString(4);
+						String emass = resMySql.getString("CH_EXACT_MASS");
+						exactMass	= Double.parseDouble(emass);
+//						sb.append("\t" + emass);
 					}
-					result.add(sb.toString());
+					
+					SearchResult searchResult	= new SearchResult(strId, strName, resScore.hitNumber, resScore.hitScore, strIon, formula, exactMass);
+//					result.add(sb.toString());
+					result.add(searchResult);
 				}
 				resMySql.close();
 			}
@@ -183,121 +197,118 @@ public class Search {
 	}
 
 	private void setScore() {
-		{
-			String sql;
-			PreparedStatement stmnt;
-			ArrayList<SearchHitPeak> vecHitPeak = new ArrayList<SearchHitPeak>();
+		String sql;
+		PreparedStatement stmnt;
+		ArrayList<SearchHitPeak> vecHitPeak = new ArrayList<SearchHitPeak>();
 
-			String tblName = "PEAK";
-			if (existHeapTable("PEAK_HEAP")) {
-				// TODO
-				tblName = "PEAK_HEAP";
+		String tblName = "PEAK";
+		if (existHeapTable("PEAK_HEAP")) {
+			// TODO
+			tblName = "PEAK_HEAP";
+		}
+
+		Set<Entry<String, ArrayList<SearchHitPeak>>> mapEntrySet = mapHitPeak.entrySet();
+		for (Entry<String, ArrayList<SearchHitPeak>> pIte1 : mapEntrySet) {
+			String strId = pIte1.getKey();
+
+			vecHitPeak.clear();
+			ArrayList<SearchHitPeak> mapValue = mapHitPeak.get(strId);
+			for (SearchHitPeak pIte2 : mapValue) {
+				vecHitPeak.add(pIte2);
 			}
 
-			Set<Entry<String, ArrayList<SearchHitPeak>>> mapEntrySet = mapHitPeak.entrySet();
-			for (Entry<String, ArrayList<SearchHitPeak>> pIte1 : mapEntrySet) {
-				String strId = pIte1.getKey();
+			int iHitNum = vecHitPeak.size();
+			if (iHitNum <= queryParam.threshold) {
+				continue;
+			}
 
-				vecHitPeak.clear();
-				ArrayList<SearchHitPeak> mapValue = mapHitPeak.get(strId);
-				for (SearchHitPeak pIte2 : mapValue) {
-					vecHitPeak.add(pIte2);
-				}
+			double fSum = 0;
+			double fLen = 0;
+			int iCnt = 0;
 
-				int iHitNum = vecHitPeak.size();
-				if (iHitNum <= queryParam.threshold) {
-					continue;
-				}
+			try {
+//				if (isInteg) {
+//					sql = "SELECT MZ, RELATIVE FROM PARENT_PEAK WHERE SPECTRUM_NO = " + strId + " AND RELATIVE >= "
+//							+ queryParam.cutoff;
+//					stmnt = con.prepareStatement(sql);
+//				} else {
+					sql = "SELECT PK_PEAK_MZ, PK_PEAK_RELATIVE FROM PEAK WHERE RECORD = ? AND PK_PEAK_RELATIVE >= ?";
+					stmnt = con.prepareStatement(sql);
+					stmnt.setString(1, strId);
+					stmnt.setInt(2, queryParam.cutoff);
+//				}
+			} catch (SQLException e) {
+				stmnt = null;
+				e.printStackTrace();
+			}
 
-				double fSum = 0;
-				double fLen = 0;
-				int iCnt = 0;
+			try {
+				resMySql = stmnt.executeQuery();
+				while (resMySql.next()) {
+					String strMz = resMySql.getString(1);
+					String strRelInt = resMySql.getString(2);
+					double fMz = Double.parseDouble(strMz);
+					double fVal = Double.parseDouble(strRelInt);
 
-				try {
-					if (isInteg) {
-						sql = "SELECT MZ, RELATIVE FROM PARENT_PEAK WHERE SPECTRUM_NO = " + strId + " AND RELATIVE >= "
-								+ queryParam.cutoff;
-						stmnt = con.prepareStatement(sql);
-					} else {
-						sql = "SELECT PK_PEAK_MZ, PK_PEAK_RELATIVE FROM PEAK WHERE RECORD = ? AND PK_PEAK_RELATIVE >= ?";
-						stmnt = con.prepareStatement(sql);
-						stmnt.setString(1, strId);
-						stmnt.setInt(2, queryParam.cutoff);
+					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
+						fVal *= fMz / 10;
+					} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
+						fVal *= fMz * fMz / 100;
 					}
-				} catch (SQLException e) {
-					stmnt = null;
-					e.printStackTrace();
-				}
-
-				try {
-					resMySql = stmnt.executeQuery();
-					while (resMySql.next()) {
-						String strMz = resMySql.getString(1);
-						String strRelInt = resMySql.getString(2);
-						double fMz = Double.parseDouble(strMz);
-						double fVal = Double.parseDouble(strRelInt);
-
-						if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
-							fVal *= fMz / 10;
-						} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
-							fVal *= fMz * fMz / 100;
-						}
-						if (queryParam.norm == PARAM_NORM_LOG) {
-							fVal = Math.log(fVal);
-						} else if (queryParam.norm == PARAM_NORM_SQRT) {
-							fVal = Math.sqrt(fVal);
-						}
-
-						String key;
-						key = strId + " " + strMz;
-						// TODO cpp initializes key not present with 0 we need to emulate this, but
-						// isn't iMul always one after this what is this good for?
-						if (!mapMzCnt.containsKey(key)) {
-							mapMzCnt.put(key, 1);
-						}
-						int iMul = mapMzCnt.get(key);
-						if (iMul == 0) {
-							iMul = 1;
-						}
-						fLen += fVal * fVal * iMul;
-						fSum += fVal * iMul;
-						iCnt += iMul;
+					if (queryParam.norm == PARAM_NORM_LOG) {
+						fVal = Math.log(fVal);
+					} else if (queryParam.norm == PARAM_NORM_SQRT) {
+						fVal = Math.sqrt(fVal);
 					}
-					resMySql.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 
-				double dblScore = 0;
-				if (queryParam.colType.equals("COSINE")) {
-					double fCos = 0;
-					for (int i = 0; i < vecHitPeak.size(); i++) {
-						SearchHitPeak pHitPeak = vecHitPeak.get(i);
-						fCos += (double) (pHitPeak.qVal * pHitPeak.hitVal);
+					String key;
+					key = strId + " " + strMz;
+					// TODO cpp initializes key not present with 0 we need to emulate this, but
+					// isn't iMul always one after this what is this good for?
+					if (!mapMzCnt.containsKey(key)) {
+						mapMzCnt.put(key, 1);
 					}
-					if (m_fLen * fLen == 0) {
-						dblScore = 0;
-					} else {
-						dblScore = fCos / Math.sqrt(m_fLen * fLen);
+					int iMul = mapMzCnt.get(key);
+					if (iMul == 0) {
+						iMul = 1;
 					}
+					fLen += fVal * fVal * iMul;
+					fSum += fVal * iMul;
+					iCnt += iMul;
 				}
-				if (dblScore >= 0.9999) {
-					dblScore = 0.999999999999;
-				} else if (dblScore < 0) {
+				resMySql.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			double dblScore = 0;
+			if (queryParam.colType.equals("COSINE")) {
+				double fCos = 0;
+				for (int i = 0; i < vecHitPeak.size(); i++) {
+					SearchHitPeak pHitPeak = vecHitPeak.get(i);
+					fCos += (double) (pHitPeak.qVal * pHitPeak.hitVal);
+				}
+				if (m_fLen * fLen == 0) {
 					dblScore = 0;
+				} else {
+					dblScore = fCos / Math.sqrt(m_fLen * fLen);
 				}
-				SearchResScore resScore = new SearchResScore();
-				resScore.id = strId;
-//				resScore.score = iHitNum + dblScore;
-				resScore.hitNumber = iHitNum;
-				resScore.hitScore = dblScore;
-				vecScore.add(resScore);
 			}
+			if (dblScore >= 0.9999) {
+				dblScore = 0.999999999999;
+			} else if (dblScore < 0) {
+				dblScore = 0;
+			}
+			SearchResScore resScore = new SearchResScore();
+			resScore.id = strId;
+//				resScore.score = iHitNum + dblScore;
+			resScore.hitNumber = iHitNum;
+			resScore.hitScore = dblScore;
+			vecScore.add(resScore);
 		}
 	}
 
 	private boolean existHeapTable(String string) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -588,15 +599,15 @@ WHERE T.ION = ? ORDER BY ID
 			fMin -= 0.00001;
 			fMax += 0.00001;
 
-			if (isInteg) {
-				sql = "SELECT SPECTRUM_NO, MAX(PK_PEAK_RELATIVE), MZ FROM PARENT_PEAK WHERE ";
-				sqlw = "PK_PEAK_RELATIVE >= " + queryParam.cutoff + " AND (MZ BETWEEN " + fMin + " AND " + fMax
-						+ ") GROUP BY SPECTRUM_NO";
-			} else {
+//			if (isInteg) {
+//				sql = "SELECT SPECTRUM_NO, MAX(PK_PEAK_RELATIVE), MZ FROM PARENT_PEAK WHERE ";
+//				sqlw = "PK_PEAK_RELATIVE >= " + queryParam.cutoff + " AND (MZ BETWEEN " + fMin + " AND " + fMax
+//						+ ") GROUP BY SPECTRUM_NO";
+//			} else {
 				sql = "SELECT MAX(CONCAT(LPAD(PK_PEAK_RELATIVE, 3, ' '), ' ', RECORD, ' ', PK_PEAK_MZ)) FROM PEAK WHERE ";
 				sqlw = "PK_PEAK_RELATIVE >= " + queryParam.cutoff + " AND (PK_PEAK_MZ BETWEEN " + fMin + " AND " + fMax
 						+ ") GROUP BY RECORD";
-			}
+//			}
 			sql += sqlw;
 			try {
 				stmnt = con.prepareStatement(sql);
@@ -785,7 +796,8 @@ WHERE T.ION = ? ORDER BY ID
 		if (mapReqParam.containsKey("INTEG")) {
 			String strVal = mapReqParam.get("INTEG").get(0);
 			if (strVal.equals("true")) {
-				isInteg = true;
+				throw new IllegalArgumentException("Parameter 'INTEG' not supported (any more)");
+//				isInteg = true;
 			}
 		}
 
@@ -943,6 +955,24 @@ WHERE T.ION = ? ORDER BY ID
 					"id=" + id + "; " +
 					"hitNumber=" + hitNumber + "; " +
 					"hitScore=" + hitScore;
+		}
+	}
+	public static class SearchResult {
+		public final String accession;
+		public final String recordTitle;
+		public final int hitNumber;
+		public final double hitScore;
+		public final String ION_MODE;
+		public final String formula;
+		public final double exactMass;
+		public SearchResult(String accession, String recordTitle, int hitNumber, double hitScore, String ION_MODE, String formula, double exactMass) {
+			this.accession	= accession;
+			this.recordTitle	= recordTitle;
+			this.hitNumber	= hitNumber;
+			this.hitScore	= hitScore;
+			this.ION_MODE	= ION_MODE;
+			this.formula		= formula;
+			this.exactMass	= exactMass;
 		}
 	}
 }

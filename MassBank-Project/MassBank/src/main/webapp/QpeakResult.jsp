@@ -46,6 +46,8 @@
 <%@ page import="massbank.Config" %>
 <%@ page import="massbank.web.quicksearch.QuickSearchByPeak" %>
 <%@ page import="massbank.web.SearchExecution" %>
+<%@ page import="massbank.web.quicksearch.Search" %>
+<%@ page import="massbank.web.quicksearch.Search.SearchResult" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -362,14 +364,14 @@
 				 + "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 				 + "&CUTOFF=" + pCutoff + "&NUM=0&VAL=" + paramPeak.toString();
 		param += paramCondition;
-		List<String> result = new SearchExecution(request).exec(new QuickSearchByPeak());
+		Search.SearchResult[] result = new SearchExecution(request).exec(new QuickSearchByPeak());
 		
 		out.println( "<form method=\"post\" action=\"Display.jsp\" name=\"resultForm\" target=\"_blank\" class=\"formStyle\">" );
 		
 		//-------------------------------------
 		// ヒット数表示
 		//-------------------------------------
-		int hitCnt = result.size();
+		int hitCnt = result.length;
 		int iNum = Integer.parseInt(pNum);
 		if ( iNum != 0 && hitCnt > iNum ) {
 			hitCnt = iNum;
@@ -417,14 +419,15 @@
 			DatabaseManager dbManager	= new DatabaseManager("MassBank");
 			for ( int i = 0; i < hitCnt; i++ ) {
 				// データ切り出し
-				String rec = (String)result.get(i);
-				String[] fields = rec.split("\t");
-				String name    = fields[1];  
-				String id      = fields[0];
-				String ion     = fields[4];
-				String formula = fields[5];
-				String hit     = fields[2];
-				String score   = fields[3];
+				//String rec = (String)result.get(i);
+				//String[] fields = rec.split("\t");
+				String name    = result[i].recordTitle;  
+				String id      = result[i].accession;
+				String ion     = result[i].ION_MODE;
+				String formula = result[i].formula;
+				int hit		   = result[i].hitNumber;
+				String score   = result[i].hitScore + "";
+				//double exactMass	= result[i].exactMass;
 				String site    = "0";
 				
 				// スコアを小数第5位で四捨五入
