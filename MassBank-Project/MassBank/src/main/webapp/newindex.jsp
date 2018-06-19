@@ -54,8 +54,8 @@
 		<div class="w3-third w3-panel w3-white">
 			<div class="w3-panel w3-leftbar w3-border-teal w3-light-grey w3-text-blue w3-round">
 				<h5>
-					<a href="newsearch.jsp"><b>Quick Search</b></a>
-					<a href="newsearch.jsp"><img src="image/quick.gif" style="width:100%;"></a>
+					<a href="newsearch"><b>Quick Search</b></a>
+					<a href="newsearch"><img src="image/quick.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>

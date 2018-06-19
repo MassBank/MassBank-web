@@ -1,27 +1,24 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<%
-/*******************************************************************************
- *
- * Copyright (C) 2010 JST-BIRD MassBank
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- ******************************************************************************/
-%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<!-- Copyright (C) 2010 JST-BIRD MassBank -->
+<!-- Copyright (C) 2017 MassBank consortium -->
+
+<!-- This file is part of MassBank. -->
+
+<!-- MassBank is free software; you can redistribute it and/or -->
+<!-- modify it under the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation; either version 2 -->
+<!-- of the License, or (at your option) any later version. -->
+
+<!-- This program is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with this program; if not, write to the Free Software -->
+<!-- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en">
 <title>MassBank | Database | Quick Search</title>
@@ -62,7 +59,7 @@
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" onclick="openSearch(event,'InChIKey')">Search by Peak</button>
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" onclick="openSearch(event,'Splash')">Search by Peak</button>
 		</div>
-	  
+
 		<div id="Keyword" class="w3-animate-opacity search_keyword">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
@@ -107,84 +104,34 @@
 				</div>
 			</div>
 			<br>
-			
+		
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Mass Spectrometry Information</h5>
 				<div class="w3-border w3-padding-small">
 					<b>Instrument Type</b><br>
 					<div class="w3-cell-row">
+						<c:forEach items="${instrument_info}" var="list">
 						<div class="w3-cell w3-mobile">
 							<div class="w3-cell-row">
 								<div class="w3-cell">
-									<input class="w3-check" type="checkbox" name="inst_grp" value="EI">EI
+									<input class="w3-check" type="checkbox" name="inst_grp" value="${list.key}">${list.key}
 								</div>
 								<div class="w3-cell">
-									<input class="w3-check" type="checkbox" name="inst" value="EI-B">EI-B<br>
-									<input class="w3-check" type="checkbox" name="inst" value="EI-EBEB">EI-EBEB<br>
-									<input class="w3-check" type="checkbox" name="inst" value="GC-EI-Q">GC-EI-Q<br>
-									<input class="w3-check" type="checkbox" name="inst" value="GC-EI-QQ">GC-EI-QQ<br>
-									<input class="w3-check" type="checkbox" name="inst" value="GC-EI-TOF">GC-EI-TOF<br>
+									<c:forEach items="${list.value}" var="instrument_type">
+									<input class="w3-check" type="checkbox" name="inst" value="${instrument_type}">${instrument_type}<br>
+									</c:forEach>
 								</div>
 							</div>
 						</div>
-						<div class="w3-cell w3-mobile">
-							<div class="w3-cell-row">
-								<div class="w3-cell">
-									<input class="w3-check" type="checkbox" name="inst_grp" value="ESI" checked>ESI
-								</div>
-								<div class="w3-cell">
-									<input class="w3-check" type="checkbox" name="inst" value="CE-ESI-TOF" checked>CE-ESI-TOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="ESI-ITFT" checked>ESI-ITFT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="ESI-ITTOF" checked>ESI-ITTOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="ESI-QTOF" checked>ESI-QTOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="ESI-TOF" checked>ESI-TOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-IT" checked>LC-ESI-IT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-ITFT" checked>LC-ESI-ITFT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-ITTOF" checked>LC-ESI-ITTOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-Q" checked>LC-ESI-Q<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QFT" checked>LC-ESI-QFT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QIT" checked>LC-ESI-QIT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QQ" checked>LC-ESI-QQ<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-QTOF" checked>LC-ESI-QTOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-ESI-TOF" checked>LC-ESI-TOF<br>
-								</div>
-							</div>
-						</div>
-						<div class="w3-cell w3-mobile">
-							<div class="w3-cell-row">
-								<div class="w3-cell w3-mobile">
-									<input class="w3-check" type="checkbox" name="inst_grp" value="Others" >Others
-								</div>
-								<div class="w3-cell">
-									<input class="w3-check" type="checkbox" name="inst" value="APCI-ITFT">APCI-ITFT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="APCI-ITTOF">APCI-ITTOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="CI-B">CI-B<br>
-									<input class="w3-check" type="checkbox" name="inst" value="FAB-B">FAB-B<br>
-									<input class="w3-check" type="checkbox" name="inst" value="FAB-BE">FAB-BE<br>
-									<input class="w3-check" type="checkbox" name="inst" value="FAB-EB">FAB-EB<br>
-									<input class="w3-check" type="checkbox" name="inst" value="FAB-EBEB">FAB-EBEB<br>
-									<input class="w3-check" type="checkbox" name="inst" value="FD-B">FD-B<br>
-									<input class="w3-check" type="checkbox" name="inst" value="FI-B">FI-B<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-APCI-ITFT">LC-APCI-ITFT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-APCI-Q">LC-APCI-Q<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-APCI-QTOF">LC-APCI-QTOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="LC-APPI-QQ">LC-APPI-QQ<br>
-									<input class="w3-check" type="checkbox" name="inst" value="MALDI-QIT">MALDI-QIT<br>
-									<input class="w3-check" type="checkbox" name="inst" value="MALDI-TOF">MALDI-TOF<br>
-									<input class="w3-check" type="checkbox" name="inst" value="MALDI-TOFTOF">MALDI-TOFTOF<br>
-								</div>
-							</div>
-						</div>
+						</c:forEach>
 					</div>
 				</div>
-				
 				<div class="w3-border w3-padding-small">
 					<b>MS Type</b><br>
 					<input class="w3-check" type="checkbox" name="ms" value="all" checked>All&nbsp;&nbsp;&nbsp;&nbsp;
-					<input class="w3-check" type="checkbox" name="ms" value="MS" checked>MS
-					<input class="w3-check" type="checkbox" name="ms" value="MS2" checked>MS2
-					<input class="w3-check" type="checkbox" name="ms" value="MS3" checked>MS3
-					<input class="w3-check" type="checkbox" name="ms" value="MS4" checked>MS4
+					<c:forEach items="${ms_info}" var="item">
+					<input class="w3-check" type="checkbox" name="ms" value="${item}" checked>${item}
+					</c:forEach>
 				</div>
 				<div class="w3-border w3-padding-small">
 					<b>Ion Mode</b><br>
