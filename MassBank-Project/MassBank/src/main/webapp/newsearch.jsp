@@ -61,6 +61,7 @@
 		</div>
 
 		<div id="Keyword" class="w3-animate-opacity search_keyword">
+			<form name="form_query" method="get" action="Result.jsp" style="display:inline" onSubmit="doWait('Searching...')">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
 				<div class="w3-cell-row w3-border  w3-padding-small">
@@ -140,6 +141,7 @@
 					<input class="w3-check" type="checkbox" name="ion" value="-1" checked>Negative
 				</div>
 			</div>
+			</form>
 		</div>
 			
 		<div id="Peak" class="w3-container w3-animate-opacity search_keyword" style="display:none">
