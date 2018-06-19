@@ -59,6 +59,7 @@
 <%@ page import="org.jfree.ui.VerticalAlignment" %>
 <%@ page import="org.jfree.util.SortOrder" %>
 <%@ page import="massbank.web.recordindex.RecordIndexCount" %>
+<%@ page import="massbank.web.recordindex.RecordIndexCount.RecordIndexCountResult" %>
 <%@ page import="massbank.web.SearchExecution" %>
 <%@ include file="./Common.jsp"%>
 <%!
@@ -91,8 +92,9 @@
 	// 検索実行・結果取得
 	//-------------------------------------
 	MassBankCommon mbcommon = new MassBankCommon();
-	List<String> result = new SearchExecution(request).exec(new RecordIndexCount());
+	RecordIndexCountResult result = new SearchExecution(request).exec(new RecordIndexCount());
 	
+	/*
 	TreeMap<String, Integer> cntSiteMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntInstMap = new TreeMap<String, Integer>();
 	Map<String, Integer> cntMsMap = new TreeMap<String, Integer>();
@@ -134,6 +136,7 @@
 			else { cntCmpdMap.put(val, cntCmpdMap.get(val)+count); }
 		}
 	}
+	*/
 	
 %>
 <html>
@@ -203,17 +206,17 @@
 	//----------------------------------------------------------------------
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
 	out.println( "<tr valign=\"top\">" );
-	row = (cntSiteMap.size() % itemNumOfLine[0] == 0) ? (cntSiteMap.size() / itemNumOfLine[0]) : (cntSiteMap.size() / itemNumOfLine[0] + 1);
+	row = (result.mapSiteToRecordCount.size() % itemNumOfLine[0] == 0) ? (result.mapSiteToRecordCount.size() / itemNumOfLine[0]) : (result.mapSiteToRecordCount.size() / itemNumOfLine[0] + 1);
 	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
 	else { rowspan = ""; }
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[0] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-	Set<String> siteKeys = cntSiteMap.keySet();
+	Set<String> siteKeys = result.mapSiteToRecordCount.keySet();
 	
 	for (Iterator i = siteKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
 		//int siteNum = Integer.parseInt(val.split("\t")[1]);
-		int count = cntSiteMap.get(val);
+		int count = result.mapSiteToRecordCount.get(val);
 		
 		// テーブル行終了・開始
 		if ( siteItemCnt != 0 && siteItemCnt % itemNumOfLine[0] == 0 ) {
@@ -240,7 +243,7 @@
 		totalSiteNum += count;
 	}
 	
-	if ( cntSiteMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	if ( result.mapSiteToRecordCount.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -250,15 +253,15 @@
 	//---------------------------
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
 	out.println( "<tr valign=\"top\">" );
-	row = (cntInstMap.size() % itemNumOfLine[1] == 0) ? (cntInstMap.size() / itemNumOfLine[1]) : (cntInstMap.size() / itemNumOfLine[1] + 1);
+	row = (result.mapInstrumentToRecordCount.size() % itemNumOfLine[1] == 0) ? (result.mapInstrumentToRecordCount.size() / itemNumOfLine[1]) : (result.mapInstrumentToRecordCount.size() / itemNumOfLine[1] + 1);
 	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
 	else { rowspan = ""; }
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[1] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-	Set<String> instKeys = cntInstMap.keySet();
+	Set<String> instKeys = result.mapInstrumentToRecordCount.keySet();
 	for (Iterator i = instKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
-		int count = cntInstMap.get(val);
+		int count = result.mapInstrumentToRecordCount.get(val);
 		
 		// テーブル行終了・開始
 		if ( instItemCnt != 0 && instItemCnt % itemNumOfLine[1] == 0 ) {
@@ -279,7 +282,7 @@
 		instData.put(val, count);
 		totalInstNum += count;
 	}
-	if ( cntInstMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	if ( result.mapInstrumentToRecordCount.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -289,15 +292,15 @@
 	//---------------------------
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
 	out.println( "<tr valign=\"top\">" );
-	row = (cntMsMap.size() % itemNumOfLine[2] == 0) ? (cntMsMap.size() / itemNumOfLine[2]) : (cntMsMap.size() / itemNumOfLine[2] + 1);
+	row = (result.mapMsTypeToRecordCount.size() % itemNumOfLine[2] == 0) ? (result.mapMsTypeToRecordCount.size() / itemNumOfLine[2]) : (result.mapMsTypeToRecordCount.size() / itemNumOfLine[2] + 1);
 	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
 	else { rowspan = ""; }
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[2] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-	Set<String> msKeys = cntMsMap.keySet();
+	Set<String> msKeys = result.mapMsTypeToRecordCount.keySet();
 	for (Iterator i = msKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
-		int count = cntMsMap.get(val);
+		int count = result.mapMsTypeToRecordCount.get(val);
 		
 		// テーブル行終了・開始
 		if ( msItemCnt != 0 && msItemCnt % itemNumOfLine[2] == 0 ) {
@@ -318,7 +321,7 @@
 		msData.put(val, count);
 		totalMsNum += count;
 	}
-	if ( cntMsMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	if ( result.mapMsTypeToRecordCount.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -329,15 +332,15 @@
 	//---------------------------
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
 	out.println( "<tr valign=\"top\">" );
-	row = (cntMergedMap.size() % itemNumOfLine[3] == 0) ? (cntMergedMap.size() / itemNumOfLine[3]) : (cntMergedMap.size() / itemNumOfLine[3] + 1);
+	row = (result.mapMergedToCount.size() % itemNumOfLine[3] == 0) ? (result.mapMergedToCount.size() / itemNumOfLine[3]) : (result.mapMergedToCount.size() / itemNumOfLine[3] + 1);
 	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
 	else { rowspan = ""; }
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[3] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-	Set<String> mergedKeys = cntMergedMap.keySet();
+	Set<String> mergedKeys = result.mapMergedToCount.keySet();
 	for (Iterator i = mergedKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
-		int count = cntMergedMap.get(val);
+		int count = result.mapMergedToCount.get(val);
 		
 		// テーブルデータ
 		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
@@ -347,7 +350,7 @@
 		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
 		out.println( "</td>" );
 	}
-	if ( cntMergedMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	if ( result.mapMergedToCount.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -358,15 +361,15 @@
 	//---------------------------
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
 	out.println( "<tr valign=\"top\">" );
-	row = (cntIonMap.size() % itemNumOfLine[4] == 0) ? (cntIonMap.size() / itemNumOfLine[4]) : (cntIonMap.size() / itemNumOfLine[4] + 1);
+	row = (result.mapIonModeToRecordCount.size() % itemNumOfLine[4] == 0) ? (result.mapIonModeToRecordCount.size() / itemNumOfLine[4]) : (result.mapIonModeToRecordCount.size() / itemNumOfLine[4] + 1);
 	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
 	else { rowspan = ""; }
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[4] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-	Set<String> ionKeys = cntIonMap.keySet();
+	Set<String> ionKeys = result.mapIonModeToRecordCount.keySet();
 	for (Iterator i = ionKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
-		int count = cntIonMap.get(val);
+		int count = result.mapIonModeToRecordCount.get(val);
 		
 		// テーブルデータ
 		linkUrl = url + "type=" + MassBankCommon.REQ_TYPE_RCDIDX + "&idxtype="
@@ -376,7 +379,7 @@
 		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
 		out.println( "</td>" );
 	}
-	if ( cntIonMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	if ( result.mapIonModeToRecordCount.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );
@@ -387,15 +390,15 @@
 	//---------------------------
 	out.println( "<table width=\"900\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">" );
 	out.println( "<tr valign=\"top\">" );
-	row = (cntCmpdMap.size() % itemNumOfLine[5] == 0) ? (cntCmpdMap.size() / itemNumOfLine[5]) : (cntCmpdMap.size() / itemNumOfLine[5] + 1);
+	row = (result.mapSymbolToCount.size() % itemNumOfLine[5] == 0) ? (result.mapSymbolToCount.size() / itemNumOfLine[5]) : (result.mapSymbolToCount.size() / itemNumOfLine[5] + 1);
 	if ( row > 1 ) { rowspan = " rowspan=\"" + String.valueOf(row) + "\""; }
 	else { rowspan = ""; }
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[5] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-	Set<String> cmpdKeys = cntCmpdMap.keySet();
+	Set<String> cmpdKeys = result.mapSymbolToCount.keySet();
 	for (Iterator i = cmpdKeys.iterator(); i.hasNext();) {
 		String val = (String)i.next();
-		int count = cntCmpdMap.get(val);
+		int count = result.mapSymbolToCount.get(val);
 		
 		// テーブル行終了・開始
 		if ( cmpdItemCnt != 0 && cmpdItemCnt % itemNumOfLine[5] == 0 ) {
@@ -412,7 +415,7 @@
 		out.println( "<a href=\"" + linkUrl + "\" target=\"_self\">" + val + "</a>" + "&nbsp;&nbsp;&nbsp;" + countStr );
 		out.println( "</td>" );
 	}
-	if ( cntCmpdMap.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
+	if ( result.mapSymbolToCount.size() == 0 ) { out.println( "<td>&nbsp;</td>" ); }
 	out.println( "</tr>" );
 	out.println( "</table>" );
 	out.println( "<br>" );

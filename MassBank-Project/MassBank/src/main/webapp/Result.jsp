@@ -825,14 +825,13 @@
 	
 	// 検索実行
 	// execute search
-	List<String> result = null;
 	ResultRecord[] records	= null;
 	if (typeName.compareTo("quick") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
 		records = new SearchExecution(request).exec(new QuickSearchByKeyword());
 	} else if (typeName.compareTo("rcdidx") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);
-		result = new SearchExecution(request).exec(new RecordIndexByCategory());
+		records = new SearchExecution(request).exec(new RecordIndexByCategory());
 	} else if (typeName.compareTo("peak") == 0) {
 		//list = mbcommon.execDispatcherResult(typeName, request, conf);	
 		records = new SearchExecution(request).exec(new PeakSearchByPeak());
@@ -853,8 +852,6 @@
 		}
 	}
 	
-	if (result != null) 
-		list = QueryToResultList.toResultList(result, request);
 	if (records != null) 
 		list = QueryToResultList.toResultList(records, request);
 	
