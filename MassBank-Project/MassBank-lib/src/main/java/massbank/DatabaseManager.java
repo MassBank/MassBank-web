@@ -288,6 +288,13 @@ public class DatabaseManager {
 		return this.con;
 	}
 	
+	/**
+	 * TODO solve 1:1 relations by a single sql statement with joins
+	 * (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff, SP_SCIENTIFIC_NAME, SP_LINEAGE, AC_INSTRUMENT, AC_INSTRUMENT_TYPE)
+	 * @param accessionId
+	 * @param contributor
+	 * @return
+	 */
 	public Record getAccessionData(String accessionId, String contributor) {
 		Record acc = new Record(contributor);
 		try {
