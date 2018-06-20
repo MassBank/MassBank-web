@@ -3,7 +3,8 @@ package massbank.web.recordindex;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -160,6 +161,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		public final int compoundOtherRecordCount;
 		public final int normalRecordCount;
 		public final int mergedRecordCount;
+		public final List<String> symbolList;
 		public final Map<String, Integer> mapSymbolToCount;
 		public final Map<String, Integer> mapMergedToCount;
 		public RecordIndexCountResult(
@@ -185,10 +187,15 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			this.normalRecordCount			= normalRecordCount;
 			this.mergedRecordCount			= mergedRecordCount;
 			
+			this.symbolList	= new ArrayList<String>();
 			this.mapSymbolToCount	= new TreeMap<String, Integer>();
-			for(int i = 0; i < compoundA_Z_symbols.length; i++)
+			for(int i = 0; i < compoundA_Z_symbols.length; i++) {
+				this.symbolList.add(compoundA_Z_symbols[i] + "");
 				this.mapSymbolToCount.put(compoundA_Z_symbols[i] + "", compoundA_ZToRecordCount[i]);
+			}
+			this.symbolList.add("0-9");
 			this.mapSymbolToCount.put("0-9", compound0_9RecordCount);
+			this.symbolList.add("Others");
 			this.mapSymbolToCount.put("Others", compoundOtherRecordCount);
 			
 			this.mapMergedToCount	= new TreeMap<String, Integer>();

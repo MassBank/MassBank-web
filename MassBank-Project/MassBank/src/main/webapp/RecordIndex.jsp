@@ -395,8 +395,8 @@
 	else { rowspan = ""; }
 	out.println( "<td width=\"140\"" + rowspan + " nowrap><b>" + tblName[5] + "</b></td>" );
 	out.println( "<td width=\"10\"" + rowspan + "><b>:</b></td>" );
-	Set<String> cmpdKeys = result.mapSymbolToCount.keySet();
-	for (Iterator i = cmpdKeys.iterator(); i.hasNext();) {
+	//Set<String> cmpdKeys = result.mapSymbolToCount.keySet();
+	for (Iterator i = result.symbolList.iterator(); i.hasNext();) {
 		String val = (String)i.next();
 		int count = result.mapSymbolToCount.get(val);
 		
