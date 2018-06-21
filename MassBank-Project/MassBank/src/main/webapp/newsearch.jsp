@@ -28,13 +28,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="description" content="Search of spectra by chemical name, peak, InChIKey or SPLASH.">
 <meta name="keywords" content="Search,Compound,ExactMass,Formula,InChIKey,SPLASH">
-
-
-<script src="script/html-imports.min.js"></script>
-<link rel="import" href="common.html"></link>
+<meta name="author" content="MassBank">
+<link rel="stylesheet" type="text/css" href="css/w3.css">
+<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
+<link rel="stylesheet" type="text/css" href="css/massbank.css">
+<script src="script/jquery-3.3.1.min.js"></script>
+<script>
+	$(document).ready(function(){
+		$.get("newmenu.html", function(data) {
+			$("#menu").html(data);
+		});
+	});
+	$(document).ready(function(){
+		$.get("newcopyrightline.html", function(data) {
+			$("#copyrightline").html(data);
+		});
+	});
+</script>
 </head>
 
-<body class="w3-theme-gradient" onload="initSearch()">
+<body class="w3-theme-gradient">
 	
 	<header class="w3-cell-row w3-text-grey">
 		<div class="w3-container w3-cell w3-mobile" style="width:60%">
@@ -56,12 +69,12 @@
 		<div class="w3-bar w3-margin-top w3-margin-bottom">
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-red w3-blue" onclick="openSearch(event,'Keyword')">Search by Keyword</button>
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" onclick="openSearch(event,'Peak')">Search by Peak</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" onclick="openSearch(event,'InChIKey')">Search by Peak</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" onclick="openSearch(event,'Splash')">Search by Peak</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" onclick="openSearch(event,'InChIKey')">Search by InChIKey</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" onclick="openSearch(event,'Splash')">Search by SPLASH</button>
 		</div>
 
 		<div id="Keyword" class="w3-animate-opacity search_keyword">
-			<form name="form_query" method="get" action="Result.jsp" style="display:inline" onSubmit="doWait('Searching...')">
+			<form name="keyword_query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
 				<div class="w3-cell-row w3-border  w3-padding-small">
@@ -104,56 +117,103 @@
 					</div>
 				</div>
 			</div>
-			<br>
-		
-			<div class="w3-container w3-card-4 w3-padding-small">
-				<h5>Mass Spectrometry Information</h5>
-				<div class="w3-border w3-padding-small">
-					<b>Instrument Type</b><br>
-					<div class="w3-cell-row">
-						<c:forEach items="${instrument_info}" var="list">
-						<div class="w3-cell w3-mobile">
-							<div class="w3-cell-row">
-								<div class="w3-cell">
-									<input class="w3-check" type="checkbox" name="inst_grp" value="${list.key}">${list.key}
-								</div>
-								<div class="w3-cell">
-									<c:forEach items="${list.value}" var="instrument_type">
-									<input class="w3-check" type="checkbox" name="inst" value="${instrument_type}">${instrument_type}<br>
-									</c:forEach>
-								</div>
-							</div>
-						</div>
-						</c:forEach>
-					</div>
-				</div>
-				<div class="w3-border w3-padding-small">
-					<b>MS Type</b><br>
-					<input class="w3-check" type="checkbox" name="ms" value="all" checked>All&nbsp;&nbsp;&nbsp;&nbsp;
-					<c:forEach items="${ms_info}" var="item">
-					<input class="w3-check" type="checkbox" name="ms" value="${item}" checked>${item}
-					</c:forEach>
-				</div>
-				<div class="w3-border w3-padding-small">
-					<b>Ion Mode</b><br>
-					<input class="w3-check" type="checkbox" name="ion" value="0" checked>Both&nbsp;&nbsp;&nbsp;&nbsp;
-					<input class="w3-check" type="checkbox" name="ion" value="1" checked>Positive
-					<input class="w3-check" type="checkbox" name="ion" value="-1" checked>Negative
-				</div>
-			</div>
+			<input type="hidden" name="type" value="quick">
+			<input type="hidden" name="searchType" value="keyword">
+			<input type="hidden" name="sortKey" value="not">
+			<input type="hidden" name="sortAction" value="1">
+			<input type="hidden" name="pageNo" value="1">
+			<input type="hidden" name="exec" value="">
 			</form>
 		</div>
 			
-		<div id="Peak" class="w3-container w3-animate-opacity search_keyword" style="display:none">
+		<div id="Peak" class="w3-animate-opacity search_keyword" style="display:none">
 			<h2>Peak</h2>
 		</div>
-	
-		<div id="InChIKey" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-			<h2>InChIKey</h2>
+
+		<div id="InChIKey" class="w3-animate-opacity search_keyword" style="display:none">
+			<form name="inchikey_query" action="Result.jsp">
+			<div class="w3-container w3-card-4 w3-padding-small">
+				<h5>InChIKey</h5>
+				<div class="w3-cell-row w3-border  w3-padding-small">
+					<div class="w3-cell w3-mobile" style="width:75%">
+						<label><b>InChIKey (complete or parts)</b></label>
+						<input class="w3-input w3-round w3-border" name="inchikey" type="text">
+					</div>
+					<div class="w3-cell w3-mobile w3-cell-bottom">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" style="width:80px;float:right">
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="type" value="inchikey">
+			<input type="hidden" name="searchType" value="inchikey">
+			<input type="hidden" name="sortKey" value="not">
+			<input type="hidden" name="sortAction" value="1">
+			<input type="hidden" name="pageNo" value="1">
+			<input type="hidden" name="exec" value="">
+			</form>
 		</div>
 	
-		<div id="Splash" class="w3-container w3-animate-opacity search_keyword" style="display:none">
-			<h2>Splash</h2>
+		<div id="Splash" class="w3-animate-opacity search_keyword" style="display:none">
+			<form name="splash_query" action="Result.jsp">
+			<div class="w3-container w3-card-4 w3-padding-small">
+				<h5>SPLASH</h5>
+				<div class="w3-cell-row w3-border  w3-padding-small">
+					<div class="w3-cell w3-mobile" style="width:75%">
+						<label><b>SPLASH</b></label>
+						<input class="w3-input w3-round w3-border" name="splash" type="text">
+					</div>
+					<div class="w3-cell w3-mobile w3-cell-bottom">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" style="width:80px;float:right">
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="type" value="splash">
+			<input type="hidden" name="searchType" value="splash">
+			<input type="hidden" name="sortKey" value="not">
+			<input type="hidden" name="sortAction" value="1">
+			<input type="hidden" name="pageNo" value="1">
+			<input type="hidden" name="exec" value="">
+			</form>
+		</div>
+		
+		<br>
+		
+		<div class="w3-container w3-card-4 w3-padding-small">
+			<form name="ms_information">
+			<h5>Mass Spectrometry Information</h5>
+			<div class="w3-border w3-padding-small">
+				<b>Instrument Type</b><br>
+				<div class="w3-cell-row">
+					<c:forEach items="${instrument_info}" var="list">
+					<div class="w3-cell w3-mobile">
+						<div class="w3-cell-row">
+							<div class="w3-cell">
+								<input class="w3-check" type="checkbox" name="inst_grp" value="${list.key}">${list.key}
+							</div>
+							<div class="w3-cell">
+								<c:forEach items="${list.value}" var="instrument_type">
+								<input class="w3-check" type="checkbox" name="inst" value="${instrument_type}">${instrument_type}<br>
+								</c:forEach>
+							</div>
+						</div>
+					</div>
+					</c:forEach>
+				</div>
+			</div>
+			<div class="w3-border w3-padding-small">
+				<b>MS Type</b><br>
+				<input class="w3-check" type="checkbox" name="ms" value="all" checked>All&nbsp;&nbsp;&nbsp;&nbsp;
+				<c:forEach items="${ms_info}" var="item">
+				<input class="w3-check" type="checkbox" name="ms" value="${item}" checked>${item}
+				</c:forEach>
+			</div>
+			<div class="w3-border w3-padding-small">
+				<b>Ion Mode</b><br>
+				<input class="w3-radio" type="radio" name="ion" value="0" checked>Both&nbsp;&nbsp;&nbsp;&nbsp;
+				<input class="w3-radio" type="radio" name="ion" value="1">Positive
+				<input class="w3-radio" type="radio" name="ion" value="-1">Negative
+			</div>
+			</form>
 		</div>
 	</div>
   
@@ -172,6 +232,23 @@
 		}
 		document.getElementById(searchName).style.display = "block";
 	}
+	
+	// attach values from ms_information form to query form
+	document.forms['keyword_query'].addEventListener("submit", function(e) {
+		var elements = document.forms['ms_information'].elements;
+		var keyword_query = document.forms['keyword_query'];
+		for (i=0; i<elements.length; i++){
+			if (elements[i].checked == true) {
+				var hiddenField = document.createElement("input");
+				hiddenField.setAttribute("type", "hidden"); 
+				hiddenField.setAttribute("name", elements[i].name);
+				hiddenField.setAttribute("value", elements[i].value);
+				// append the newly created control to the form
+				keyword_query.appendChild(hiddenField); 
+			}
+		}
+		return true;
+	}, false);
 	
 // 	function initSearch() {
 // 		var i, x;

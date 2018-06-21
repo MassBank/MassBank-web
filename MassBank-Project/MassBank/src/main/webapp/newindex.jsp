@@ -1,44 +1,51 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<%
-/*******************************************************************************
- *
- * Copyright (C) 2010 JST-BIRD MassBank
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- ******************************************************************************/
-%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ page import="massbank.Config"%>
-<%
-	String siteLongName = Config.get().LongName();
-%>
+<!-- Copyright (C) 2010 JST-BIRD MassBank -->
+<!-- Copyright (C) 2017 MassBank consortium -->
+
+<!-- This file is part of MassBank. -->
+
+<!-- MassBank is free software; you can redistribute it and/or -->
+<!-- modify it under the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation; either version 2 -->
+<!-- of the License, or (at your option) any later version. -->
+
+<!-- This program is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with this program; if not, write to the Free Software -->
+<!-- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
 <!DOCTYPE html>
 <html lang="en" style="max-width:900px">
-<title>MassBank | <%=siteLongName%> Mass Spectral DataBase</title>
+<title>MassBank | ${sitename} Mass Spectral DataBase</title>
 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Mass Spectral DataBase">
 <meta name="keywords" content="Mass,Spectral,Database,MassBank">
-
-<script src="script/html-imports.min.js"></script>
-<link rel="import" href="common.html"></link>
-
+<meta name="author" content="MassBank">
+<link rel="stylesheet" type="text/css" href="css/w3.css">
+<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
+<link rel="stylesheet" type="text/css" href="css/massbank.css">
+<script src="script/jquery-3.3.1.min.js"></script>
+<script>
+	$(document).ready(function(){
+		$.get("newmenu.html", function(data) {
+			$("#menu").html(data);
+		});
+	});
+	$(document).ready(function(){
+		$.get("newcopyrightline.html", function(data) {
+			$("#copyrightline").html(data);
+		});
+	});
+</script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -46,7 +53,7 @@
 	<header class="w3-center w3-text-grey w3-topbar w3-border-light-grey">
 		<img src="image/sub_logo.jpg" alt="MassBank" style="max-width:100%;height:auto;">
 		<h2>
-			<b><%=siteLongName%></b>
+			<b>${sitename}</b>
 		</h2>
 	</header>
 
