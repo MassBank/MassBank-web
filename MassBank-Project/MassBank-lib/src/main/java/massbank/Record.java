@@ -3,7 +3,9 @@ package massbank;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.exception.CDKException;
@@ -38,7 +40,7 @@ public class Record {
 	private List<String> ch_name;
 	private List<String> ch_compound_class;
 	private IMolecularFormula ch_formula;
-	private Double ch_exact_mass;
+	private double ch_exact_mass;
 	private IAtomContainer ch_smiles;
 	private IAtomContainer ch_iupac;
 	private List<Pair<String, String>> ch_link;
@@ -170,10 +172,10 @@ public class Record {
 		ch_formula=value;
 	}
 	
-	public Double CH_EXACT_MASS() {
+	public double CH_EXACT_MASS() {
 		return ch_exact_mass;
 	}
-	public void CH_EXACT_MASS(Double value) {
+	public void CH_EXACT_MASS(double value) {
 		ch_exact_mass=value;
 	}
 	
@@ -212,6 +214,9 @@ public class Record {
 	
 	public List<Pair<String, String>> CH_LINK() {
 		return ch_link;
+	}
+	public Map<String, String> CH_LINK_asMap() {
+		return listToMap(ch_link);
 	}
 	public void CH_LINK(List<Pair<String, String>> value) {
 		ch_link=value;
@@ -276,6 +281,9 @@ public class Record {
 	public List<Pair<String, String>> AC_MASS_SPECTROMETRY() {
 		return ac_mass_spectrometry;
 	}
+	public Map<String, String> AC_MASS_SPECTROMETRY_asMap() {
+		return listToMap(ac_mass_spectrometry);
+	}
 	public void AC_MASS_SPECTROMETRY(List<Pair<String, String>> value) {
 		ac_mass_spectrometry=value;
 	}
@@ -289,6 +297,9 @@ public class Record {
 	
 	public List<Pair<String, String>> MS_FOCUSED_ION() {
 		return ms_focused_ion;
+	}
+	public Map<String, String> MS_FOCUSED_ION_asMap() {
+		return listToMap(ms_focused_ion);
 	}
 	public void MS_FOCUSED_ION(List<Pair<String, String>> value) {
 		ms_focused_ion=value;
@@ -323,10 +334,10 @@ public class Record {
 		pk_annotation.add(value);
 	}
 
-	public Integer PK_NUM_PEAK() {
+	public int PK_NUM_PEAK() {
 		return pk_num_peak;
 	}
-	public void PK_NUM_PEAK(Integer value) {
+	public void PK_NUM_PEAK(int value) {
 		pk_num_peak	= value;
 	}
 
@@ -462,5 +473,14 @@ public class Record {
 			this.SHORT_NAME	= SHORT_NAME;
 			this.FULL_NAME	= FULL_NAME;
 		}
+	}
+	public static Map<String, String> listToMap(List<Pair<String, String>> list) {
+		Map<String, String> map	= new HashMap<String, String>();
+		
+		for (Pair<String, String> pair : list)
+			map.put(pair.getKey(), pair.getValue());
+		
+		return map;
+		
 	}
 }
