@@ -1,23 +1,28 @@
 package massbank.web.export;
 
-import java.time.LocalDate;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IMolecularFormula;
 
+import massbank.DatabaseManager;
 import massbank.Record;
 
 public class RecordExporter {
 	/*
-.ms2 text format:
+.ms2 text format: peptides
 -----------------
 https://skyline.ms/wiki/home/software/BiblioSpec/page.view?name=BiblioSpec%20input%20and%20output%20file%20formats
 This format is recongnized by proteowizard's msconvert and can be converted into other formats such as .mzXML.
-In an .ms2 file there are four types of lines. Lines beginning with 'H' are header lines and contain information about how the data was collected as well as comments. They appear at the beginning of the file. Lines beginning with 'S' are followed by the scan number and the precursor m/z. Lines beginning with 'Z' give the charge state followed by the mass of the ion at that charge state. Lines beginning with 'D' contain information relevant to the preceeding charge state. BlibToMs2's output will include D-lines with the sequence and modified sequence. The file is arranged with these S, Z and D lines for one spectrum followed by a peak list: a pair of values giving each peaks m/z and intensity. Here is an example file 
+In an .ms2 file there are four types of lines. 
+	Lines beginning with 'H' are header lines and contain information about how the data was collected as well as comments. They appear at the beginning of the file. 
+	Lines beginning with 'S' are followed by the scan number and the precursor m/z. 
+	Lines beginning with 'Z' give the charge state followed by the mass of the ion at that charge state. 
+	Lines beginning with 'D' contain information relevant to the preceeding charge state. BlibToMs2's output will include D-lines with the sequence and modified sequence. 
+The file is arranged with these S, Z and D lines for one spectrum followed by a peak list: 
+	a pair of values giving each peaks m/z and intensity. Here is an example file 
 
 H      CreationDate    Mon Apr 12 15:12:14 2010
 H       Extractor       BlibToMs2
@@ -213,17 +218,22 @@ Num Peaks: 7
 		
 		// remaining stuff:
 		/*
+#################################################################
+## legend
 +	exported
 -	not exported
 /	partially exported
 
-
+#################################################################
+## fields
 -	private final String contributor;
 
 +	private String accession;
 -	private String record_title;
 +	private String record_title_name;
-/	private String record_title_condition;						missing: RESOLUTION (-> AC$MASS_SPECTROMETRY)
+/	private String record_title_condition;
+		+ Instrument, MS_TYPE, collision energy
+		- RESOLUTION (-> AC$MASS_SPECTROMETRY)
 -	private LocalDate date;
 -	private String authors;
 -	private String license;	
@@ -236,7 +246,9 @@ Num Peaks: 7
 +	private double ch_exact_mass;
 +	private IAtomContainer ch_smiles;
 +	private IAtomContainer ch_iupac;
-/	private List<Pair<String, String>> ch_link;					INCHIKEY
+/	private List<Pair<String, String>> ch_link;
+		+ INCHIKEY
+		- Rest
 -	private String sp_scientific_name;
 -	private String sp_lineage;
 -	private List<Pair<String, String>> sp_link;
@@ -245,9 +257,13 @@ Num Peaks: 7
 +	private String ac_instrument_type;
 +	private String ac_mass_spectrometry_ms_type;
 +	private String ac_mass_spectrometry_ion_mode;
-/	private List<Pair<String, String>> ac_mass_spectrometry;	COLLISION_ENERGY
+/	private List<Pair<String, String>> ac_mass_spectrometry;
+		+ COLLISION_ENERGY
+		- Rest
 -	private List<Pair<String, String>> ac_chromatography;
-/	private List<Pair<String, String>> ms_focused_ion;			PRECURSOR_TYPE, PRECURSOR_M/Z
+/	private List<Pair<String, String>> ms_focused_ion;
+		+ PRECURSOR_TYPE, PRECURSOR_M/Z
+		- Rest
 -	private List<Pair<String, String>> ms_data_processing;
 +	private String pk_splash;
 -	private List<String> pk_annotation_header;
@@ -255,19 +271,29 @@ Num Peaks: 7
 +	private int pk_num_peak;
 +	private final List<List<Double>> pk_peak;
 		 */
-//		list.add("Comments" + ": " + );
+		
+		/*
+https://chemdata.nist.gov/mass-spc/ftp/mass-spc/PepLib.pdf:
+Comments are composed of a series of space delimited field=value pairs, where values may be embedded within double quotes. 
+All field names are described in Table 3. 
+There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/z required for searching.
+		 */
+		
+		list.add("Comments" + ": " + 
+				"Parent=" + ((record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z")) ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : -1)
+		);
 		//Comments: "accession=ET010001" "author=R. Gulde, E. Schymanski, K. Fenner, Department of Environmental Chemistry, Eawag" "license=CC BY" "copyright=Copyright (C) 2016 Eawag, Duebendorf, Switzerland" "publication=Gulde, Meier, Schymanski, Kohler, Helbling, Derrer, Rentsch & Fenner; ES&T 2016 50(6):2908-2920. DOI: 10.1021/acs.est.5b05186. Systematic Exploration of Biotransformation Reactions of Amine-containing Micropollutants in Activated Sludge" "comment=CONFIDENCE Parent Substance with Reference Standard (Level 1)" "comment=INTERNAL_ID 100" "exact mass=300.1393" "instrument=Q Exactive Orbitrap Thermo Scientific" "instrument type=LC-ESI-QFT" "ms level=MS2" "ionization=ESI" "fragmentation mode=HCD" "collision energy=15, 30, 45, 60, 70 or 90 (nominal)" "resolution=17500" "column=Atlantis T3 3um, 3x150mm, Waters with guard column" "flow gradient=95/5 at 0 min, 5/95 at 15 min, 5/95 at 20 min, 95/5 at 20.1 min, 95/5 at 25 min" "flow rate=300 uL/min" "retention time=14.6 min" "solvent a=water with 0.1% formic acid" "solvent b=methanol with 0.1% formic acid" "precursor m/z=301.1466" "precursor type=[M+H]+" "ionization mode=positive" "mass accuracy=0.007810149499385606" "mass error=-2.351999967231677E-6" "SMILES=CN1CCN(CC1)C(C1=CC=CC=C1)C1=CC=C(Cl)C=C1" "cas=82-93-9" "pubchem cid=2710" "chemspider=2609" "InChI=InChI=1S/C18H21ClN2/c1-20-11-13-21(14-12-20)18(15-5-3-2-4-6-15)16-7-9-17(19)10-8-16/h2-10,18H,11-14H2,1H3" "InChIKey=WFNAKBGANONZEQ-UHFFFAOYSA-N" "molecular formula=C18H21ClN2" "total exact mass=300.13932635199996" "SMILES=CN1CCN(CC1)C(C2=CC=CC=C2)C3=CC=C(C=C3)Cl"
 		
 		list.add("Splash" + ": " + record.PK_SPLASH());
 		list.add("Num Peaks" + ": " + record.PK_NUM_PEAK());
 		
 		for(List<Double> peak : record.PK_PEAK()){
-			StringBuilder peakS	= new StringBuilder();
-			peakS.append(peak.get(0));
-			for(int i = 1; i < peak.size(); i++)
-				peakS.append(" " + peak.get(i));
-			
-			list.add(peakS.toString());
+//			StringBuilder peakS	= new StringBuilder();
+//			peakS.append(peak.get(0));
+//			for(int i = 1; i < peak.size(); i++)
+//				peakS.append(" " + peak.get(i));
+//			list.add(peakS.toString());
+			list.add(peak.get(0) + " " + peak.get(2));
 		}
 		
 		list.add("");
@@ -278,7 +304,16 @@ Num Peaks: 7
 		List<String> list	= new ArrayList<String>();
 		
 		// TODO
+//		return list;
+		throw new IllegalArgumentException("Not supported");
+	}
+	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
+		Record record	= new DatabaseManager("MassBank").getAccessionData("AU100601");
 		
-		return list;
+		System.out.println(record.toString());
+		System.out.println();
+		
+		String[] export	= recordExport(ExportFormat.MSP, record);
+		System.out.println(String.join("\n", export));
 	}
 }
