@@ -145,21 +145,21 @@ public class Record {
 		return comment;
 	}
 	public void COMMENT(List<String> value) {
-		comment=value;
+		comment=new ArrayList<String>(value);
 	}
 	
 	public List<String> CH_NAME() {
 		return ch_name;
 	}
 	public void CH_NAME(List<String> value) {
-		ch_name=value;
+		ch_name=new ArrayList<String>(value);
 	}
 	
 	public List<String> CH_COMPOUND_CLASS() {
 		return ch_compound_class;
 	}
 	public void CH_COMPOUND_CLASS(List<String> value) {
-		ch_compound_class=value;
+		ch_compound_class=new ArrayList<String>(value);
 	}
 	
 	public String CH_FORMULA() {
@@ -219,7 +219,7 @@ public class Record {
 		return listToMap(ch_link);
 	}
 	public void CH_LINK(List<Pair<String, String>> value) {
-		ch_link=value;
+		ch_link=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public String SP_SCIENTIFIC_NAME() {
@@ -240,14 +240,14 @@ public class Record {
 		return sp_link;
 	}
 	public void SP_LINK(List<Pair<String, String>>  value) {
-		sp_link=value;
+		sp_link=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public List<String> SP_SAMPLE() {
 		return sp_sample;
 	}
 	public void SP_SAMPLE(List<String> value) {
-		sp_sample=value;
+		sp_sample=new ArrayList<String>(value);
 	}
 	
 	public String AC_INSTRUMENT() {
@@ -285,14 +285,14 @@ public class Record {
 		return listToMap(ac_mass_spectrometry);
 	}
 	public void AC_MASS_SPECTROMETRY(List<Pair<String, String>> value) {
-		ac_mass_spectrometry=value;
+		ac_mass_spectrometry=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public List<Pair<String, String>> AC_CHROMATOGRAPHY() {
 		return ac_chromatography;
 	}
 	public void AC_CHROMATOGRAPHY(List<Pair<String, String>> value) {
-		ac_chromatography=value;
+		ac_chromatography=new ArrayList<Pair<String, String>>(value);
 	}
 	
 	public List<Pair<String, String>> MS_FOCUSED_ION() {
@@ -302,14 +302,14 @@ public class Record {
 		return listToMap(ms_focused_ion);
 	}
 	public void MS_FOCUSED_ION(List<Pair<String, String>> value) {
-		ms_focused_ion=value;
+		ms_focused_ion=new ArrayList<Pair<String, String>>(value);
 	}
 	
 	public List<Pair<String, String>> MS_DATA_PROCESSING() {
 		return ms_data_processing;
 	}
 	public void MS_DATA_PROCESSING(List<Pair<String, String>> value) {
-		ms_data_processing=value;
+		ms_data_processing=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public String PK_SPLASH() {
@@ -323,7 +323,7 @@ public class Record {
 		return pk_annotation_header;
 	}
 	public void PK_ANNOTATION_HEADER(List<String> value) {
-		pk_annotation_header=value;
+		pk_annotation_header=new ArrayList<String>(value);
 	}
 
 	// PK_ANNOTATION is a two-dimensional List
@@ -331,7 +331,7 @@ public class Record {
 		return pk_annotation;
 	}
 	public void PK_ANNOTATION_ADD_LINE(List<String> value) {
-		pk_annotation.add(value);
+		pk_annotation.add(new ArrayList<String>(value));
 	}
 
 	public int PK_NUM_PEAK() {
@@ -346,7 +346,7 @@ public class Record {
 		return pk_peak;
 	}
 	public void PK_PEAK_ADD_LINE(List<Double> value) {
-		pk_peak.add(value);
+		pk_peak.add(new ArrayList<Double>(value));
 	}
 
 	public String toString() {

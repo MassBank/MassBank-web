@@ -219,47 +219,48 @@ public class DatabaseManager {
 			+ "&user=root" 
 			+ "&password=" + Config.get().dbPassword();
 		this.openConnection();
-			statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
-			statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
-			statementCH_LINK = this.con.prepareStatement(sqlCH_LINK);
-			statementCOMMENT = this.con.prepareStatement(sqlCOMMENT);
-			statementCOMPOUND = this.con.prepareStatement(sqlCOMPOUND);
-			statementCOMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_CLASS);
-			statementCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_COMPOUND_CLASS);
-			statementCOMPOUND_NAME = this.con.prepareStatement(sqlCOMPOUND_NAME);
-			statementINSTRUMENT = this.con.prepareStatement(sqlINSTRUMENT);
-			statementMS_DATA_PROCESSING = this.con.prepareStatement(sqlMS_DATA_PROCESSING);
-			statementMS_FOCUSED_ION = this.con.prepareStatement(sqlMS_FOCUSED_ION);
-			statementNAME = this.con.prepareStatement(sqlNAME);
-			statementPEAK = this.con.prepareStatement(sqlPEAK);
-			statementPK_NUM_PEAK = this.con.prepareStatement(sqlPK_NUM_PEAK);
-			statementRECORD = this.con.prepareStatement(sqlRECORD);
-			statementSAMPLE = this.con.prepareStatement(sqlSAMPLE);
-			statementSP_LINK = this.con.prepareStatement(sqlSP_LINK);
-			statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
-			statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
-			statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
-			
-			statementInsertCompound = this.con.prepareStatement(insertCompound, Statement.RETURN_GENERATED_KEYS);
-			statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class, Statement.RETURN_GENERATED_KEYS);
-			statementInsertCompound_Compound_Class = this.con.prepareStatement(insertCompound_Compound_Class);
-			statementInsertName = this.con.prepareStatement(insertName, Statement.RETURN_GENERATED_KEYS);
-			statementInsertCompound_Name = this.con.prepareStatement(insertCompound_Name);
-			statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
-			statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);
-			statementInsertSP_LINK = this.con.prepareStatement(insertSP_LINK);
-			statementInsertSP_SAMPLE = this.con.prepareStatement(insertSP_SAMPLE);
-			statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS);
-			statementInsertRECORD = this.con.prepareStatement(insertRECORD);
-			statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
-			statementInsertAC_MASS_SPECTROMETRY = this.con.prepareStatement(insertAC_MASS_SPECTROMETRY);
-			statementInsertAC_CHROMATOGRAPHY = this.con.prepareStatement(insertAC_CHROMATOGRAPHY);
-			statementInsertMS_FOCUSED_ION = this.con.prepareStatement(insertMS_FOCUSED_ION);
-			statementInsertMS_DATA_PROCESSING = this.con.prepareStatement(insertMS_DATA_PROCESSING);
-			statementInsertPEAK = this.con.prepareStatement(insertPEAK);
-//			statementUpdatePEAK = this.con.prepareStatement(updatePEAK);
-			statementUpdatePEAKs = this.con.prepareStatement(updatePEAKs);
-			statementInsertANNOTATION_HEADER = this.con.prepareStatement(insertANNOTATION_HEADER);
+		
+		statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
+		statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
+		statementCH_LINK = this.con.prepareStatement(sqlCH_LINK);
+		statementCOMMENT = this.con.prepareStatement(sqlCOMMENT);
+		statementCOMPOUND = this.con.prepareStatement(sqlCOMPOUND);
+		statementCOMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_CLASS);
+		statementCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_COMPOUND_CLASS);
+		statementCOMPOUND_NAME = this.con.prepareStatement(sqlCOMPOUND_NAME);
+		statementINSTRUMENT = this.con.prepareStatement(sqlINSTRUMENT);
+		statementMS_DATA_PROCESSING = this.con.prepareStatement(sqlMS_DATA_PROCESSING);
+		statementMS_FOCUSED_ION = this.con.prepareStatement(sqlMS_FOCUSED_ION);
+		statementNAME = this.con.prepareStatement(sqlNAME);
+		statementPEAK = this.con.prepareStatement(sqlPEAK);
+		statementPK_NUM_PEAK = this.con.prepareStatement(sqlPK_NUM_PEAK);
+		statementRECORD = this.con.prepareStatement(sqlRECORD);
+		statementSAMPLE = this.con.prepareStatement(sqlSAMPLE);
+		statementSP_LINK = this.con.prepareStatement(sqlSP_LINK);
+		statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
+		statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
+		statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
+		
+		statementInsertCompound = this.con.prepareStatement(insertCompound, Statement.RETURN_GENERATED_KEYS);
+		statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class, Statement.RETURN_GENERATED_KEYS);
+		statementInsertCompound_Compound_Class = this.con.prepareStatement(insertCompound_Compound_Class);
+		statementInsertName = this.con.prepareStatement(insertName, Statement.RETURN_GENERATED_KEYS);
+		statementInsertCompound_Name = this.con.prepareStatement(insertCompound_Name);
+		statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
+		statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);
+		statementInsertSP_LINK = this.con.prepareStatement(insertSP_LINK);
+		statementInsertSP_SAMPLE = this.con.prepareStatement(insertSP_SAMPLE);
+		statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS);
+		statementInsertRECORD = this.con.prepareStatement(insertRECORD);
+		statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
+		statementInsertAC_MASS_SPECTROMETRY = this.con.prepareStatement(insertAC_MASS_SPECTROMETRY);
+		statementInsertAC_CHROMATOGRAPHY = this.con.prepareStatement(insertAC_CHROMATOGRAPHY);
+		statementInsertMS_FOCUSED_ION = this.con.prepareStatement(insertMS_FOCUSED_ION);
+		statementInsertMS_DATA_PROCESSING = this.con.prepareStatement(insertMS_DATA_PROCESSING);
+		statementInsertPEAK = this.con.prepareStatement(insertPEAK);
+//		statementUpdatePEAK = this.con.prepareStatement(updatePEAK);
+		statementUpdatePEAKs = this.con.prepareStatement(updatePEAKs);
+		statementInsertANNOTATION_HEADER = this.con.prepareStatement(insertANNOTATION_HEADER);
 
 	}
 		
@@ -286,6 +287,10 @@ public class DatabaseManager {
 	
 	public Connection getConnection() {
 		return this.con;
+	}
+	
+	public Record getAccessionData(String accessionId) {
+		return getAccessionData(accessionId, getContributorFromAccession(accessionId).SHORT_NAME);
 	}
 	
 	/**
@@ -1494,23 +1499,31 @@ public class DatabaseManager {
 //		this.closeConnection();
 //	}
 
-	public Record.Contributor getContributorFromAccession(String accessionId) throws SQLException {
+	public Record.Contributor getContributorFromAccession(String accessionId) {
 //		String accessionId	= "OUF01001";
-		this.statementGetContributorFromAccession.setString(1, accessionId);
-		ResultSet tmp = this.statementGetContributorFromAccession.executeQuery();
-		
-		//if (!tmp.next()) throw new IllegalStateException("Accession '" + accessionId + "' is not in database");
-		if (!tmp.next()) return null;
-		
-		// CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME
-//		System.out.println(tmp.getString("CONTRIBUTOR.ACRONYM"));
-//		System.out.println(tmp.getString("CONTRIBUTOR.SHORT_NAME"));
-//		System.out.println(tmp.getString("CONTRIBUTOR.FULL_NAME"));
-		return new Record.Contributor(
-				tmp.getString("CONTRIBUTOR.ACRONYM"), 
-				tmp.getString("CONTRIBUTOR.SHORT_NAME"), 
-				tmp.getString("CONTRIBUTOR.FULL_NAME")
-		);
+		Record.Contributor contributor	= null;
+		try {
+			this.statementGetContributorFromAccession.setString(1, accessionId);
+			
+			ResultSet tmp = this.statementGetContributorFromAccession.executeQuery();
+			
+			//if (!tmp.next()) throw new IllegalStateException("Accession '" + accessionId + "' is not in database");
+			if (!tmp.next()) return null;
+			
+			// CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME
+//			System.out.println(tmp.getString("CONTRIBUTOR.ACRONYM"));
+//			System.out.println(tmp.getString("CONTRIBUTOR.SHORT_NAME"));
+//			System.out.println(tmp.getString("CONTRIBUTOR.FULL_NAME"));
+			contributor	= new Record.Contributor(
+					tmp.getString("CONTRIBUTOR.ACRONYM"), 
+					tmp.getString("CONTRIBUTOR.SHORT_NAME"), 
+					tmp.getString("CONTRIBUTOR.FULL_NAME")
+			);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return contributor;
 	}
 	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
 		
