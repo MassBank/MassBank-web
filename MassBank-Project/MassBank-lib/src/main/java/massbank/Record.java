@@ -3,7 +3,9 @@ package massbank;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.exception.CDKException;
@@ -38,7 +40,7 @@ public class Record {
 	private List<String> ch_name;
 	private List<String> ch_compound_class;
 	private IMolecularFormula ch_formula;
-	private Double ch_exact_mass;
+	private double ch_exact_mass;
 	private IAtomContainer ch_smiles;
 	private IAtomContainer ch_iupac;
 	private List<Pair<String, String>> ch_link;
@@ -143,21 +145,21 @@ public class Record {
 		return comment;
 	}
 	public void COMMENT(List<String> value) {
-		comment=value;
+		comment=new ArrayList<String>(value);
 	}
 	
 	public List<String> CH_NAME() {
 		return ch_name;
 	}
 	public void CH_NAME(List<String> value) {
-		ch_name=value;
+		ch_name=new ArrayList<String>(value);
 	}
 	
 	public List<String> CH_COMPOUND_CLASS() {
 		return ch_compound_class;
 	}
 	public void CH_COMPOUND_CLASS(List<String> value) {
-		ch_compound_class=value;
+		ch_compound_class=new ArrayList<String>(value);
 	}
 	
 	public String CH_FORMULA() {
@@ -170,10 +172,10 @@ public class Record {
 		ch_formula=value;
 	}
 	
-	public Double CH_EXACT_MASS() {
+	public double CH_EXACT_MASS() {
 		return ch_exact_mass;
 	}
-	public void CH_EXACT_MASS(Double value) {
+	public void CH_EXACT_MASS(double value) {
 		ch_exact_mass=value;
 	}
 	
@@ -213,8 +215,11 @@ public class Record {
 	public List<Pair<String, String>> CH_LINK() {
 		return ch_link;
 	}
+	public Map<String, String> CH_LINK_asMap() {
+		return listToMap(ch_link);
+	}
 	public void CH_LINK(List<Pair<String, String>> value) {
-		ch_link=value;
+		ch_link=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public String SP_SCIENTIFIC_NAME() {
@@ -235,14 +240,14 @@ public class Record {
 		return sp_link;
 	}
 	public void SP_LINK(List<Pair<String, String>>  value) {
-		sp_link=value;
+		sp_link=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public List<String> SP_SAMPLE() {
 		return sp_sample;
 	}
 	public void SP_SAMPLE(List<String> value) {
-		sp_sample=value;
+		sp_sample=new ArrayList<String>(value);
 	}
 	
 	public String AC_INSTRUMENT() {
@@ -276,29 +281,35 @@ public class Record {
 	public List<Pair<String, String>> AC_MASS_SPECTROMETRY() {
 		return ac_mass_spectrometry;
 	}
+	public Map<String, String> AC_MASS_SPECTROMETRY_asMap() {
+		return listToMap(ac_mass_spectrometry);
+	}
 	public void AC_MASS_SPECTROMETRY(List<Pair<String, String>> value) {
-		ac_mass_spectrometry=value;
+		ac_mass_spectrometry=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public List<Pair<String, String>> AC_CHROMATOGRAPHY() {
 		return ac_chromatography;
 	}
 	public void AC_CHROMATOGRAPHY(List<Pair<String, String>> value) {
-		ac_chromatography=value;
+		ac_chromatography=new ArrayList<Pair<String, String>>(value);
 	}
 	
 	public List<Pair<String, String>> MS_FOCUSED_ION() {
 		return ms_focused_ion;
 	}
+	public Map<String, String> MS_FOCUSED_ION_asMap() {
+		return listToMap(ms_focused_ion);
+	}
 	public void MS_FOCUSED_ION(List<Pair<String, String>> value) {
-		ms_focused_ion=value;
+		ms_focused_ion=new ArrayList<Pair<String, String>>(value);
 	}
 	
 	public List<Pair<String, String>> MS_DATA_PROCESSING() {
 		return ms_data_processing;
 	}
 	public void MS_DATA_PROCESSING(List<Pair<String, String>> value) {
-		ms_data_processing=value;
+		ms_data_processing=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public String PK_SPLASH() {
@@ -312,7 +323,7 @@ public class Record {
 		return pk_annotation_header;
 	}
 	public void PK_ANNOTATION_HEADER(List<String> value) {
-		pk_annotation_header=value;
+		pk_annotation_header=new ArrayList<String>(value);
 	}
 
 	// PK_ANNOTATION is a two-dimensional List
@@ -320,13 +331,13 @@ public class Record {
 		return pk_annotation;
 	}
 	public void PK_ANNOTATION_ADD_LINE(List<String> value) {
-		pk_annotation.add(value);
+		pk_annotation.add(new ArrayList<String>(value));
 	}
 
-	public Integer PK_NUM_PEAK() {
+	public int PK_NUM_PEAK() {
 		return pk_num_peak;
 	}
-	public void PK_NUM_PEAK(Integer value) {
+	public void PK_NUM_PEAK(int value) {
 		pk_num_peak	= value;
 	}
 
@@ -335,7 +346,7 @@ public class Record {
 		return pk_peak;
 	}
 	public void PK_PEAK_ADD_LINE(List<Double> value) {
-		pk_peak.add(value);
+		pk_peak.add(new ArrayList<Double>(value));
 	}
 
 	public String toString() {
@@ -462,5 +473,14 @@ public class Record {
 			this.SHORT_NAME	= SHORT_NAME;
 			this.FULL_NAME	= FULL_NAME;
 		}
+	}
+	public static Map<String, String> listToMap(List<Pair<String, String>> list) {
+		Map<String, String> map	= new HashMap<String, String>();
+		
+		for (Pair<String, String> pair : list)
+			map.put(pair.getKey(), pair.getValue());
+		
+		return map;
+		
 	}
 }
