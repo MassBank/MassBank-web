@@ -58,7 +58,7 @@
 	<div class="w3-container">
 		<div class="w3-bar w3-margin-top w3-margin-bottom">
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-red w3-blue" onclick="openSearch(event,'Keyword')">Search by Keyword</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" onclick="openSearch(event,'Peak')">Search by Peak</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" onclick="openSearch(event,'PeakList')">Search by Peak List</button>
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" onclick="openSearch(event,'InChIKey')">Search by InChIKey</button>
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" onclick="openSearch(event,'Splash')">Search by SPLASH</button>
 		</div>
@@ -117,8 +117,42 @@
 			</form>
 		</div>
 			
-		<div id="Peak" class="w3-animate-opacity search_keyword" style="display:none">
-			<h2>Peak</h2>
+		<div id="PeakList" class="w3-animate-opacity search_keyword" style="display:none">
+			<form name="peaklist_query" action="QpeakResult.jsp">
+			<div class="w3-container w3-card-4 w3-padding-small">
+				<h5>Peak List</h5>
+				<div class="w3-cell-row w3-border  w3-padding-small">
+					<div class="w3-cell w3-mobile" style="width:75%">
+						<label><b>Peak Data</b></label>
+						<textarea class="w3-input w3-round w3-border" name="qpeak" cols="40" rows="10"></textarea><br>
+						<input type="button" value="Example1" onClick="insertExample1()">
+						<input type="button" value="Example2" onClick="insertExample2()">					
+					</div>
+					<div class="w3-cell w3-mobile w3-cell-bottom">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
+							style="width:80px;float:right" onclick="append_ms_information(this)">
+<!-- 							<input type="submit" value="Search" onclick="beforeSubmit(); return checkSubmit(0);" class="search"> -->
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="type" value="quick">
+			<input type="hidden" name="searchType" value="peak">
+			<input type="hidden" name="sortKey" value="not">
+			<input type="hidden" name="sortAction" value="1">
+			<input type="hidden" name="pageNo" value="1">
+			<input type="hidden" name="exec" value="">
+			</form>
+<!-- 			<b><span class="fontNote">* <i>m/z</i> and relative intensities(0-999), delimited by a space.</span></b><br> -->
+
+
+<!-- 			<b>Cutoff threshold of relative intensities</b>&nbsp;&nbsp;<input name="CUTOFF" type="text" size="4" value="5"><br> -->
+<!-- 			<b>Number of Results</b> -->
+<!-- 			<select name="num"> -->
+<!-- 				<option value="20" selected>20</option> -->
+<!-- 				<option value="50">50</option> -->
+<!-- 				<option value="100">100</option> -->
+<!-- 				<option value="500">500</option> -->
+<!-- 			</select> -->
 		</div>
 
 		<div id="InChIKey" class="w3-animate-opacity search_keyword" style="display:none">
@@ -211,7 +245,6 @@
 	</div>
   
 	<script>
-	
 	function openSearch(evt, searchName) {
 		var i, x;
 		x = document.getElementsByClassName("search_button");
@@ -259,32 +292,31 @@
 		}
 	}
 	
-	
-	
 	$(document).ready(function() {
-	function updateStorage() {
-		$checkboxes.each(function() {
-			formValues[this.id] = this.checked;
+		function updateStorage() {
+			$checkboxes.each(function() {
+				formValues[this.id] = this.checked;
+			});
+			localStorage.setItem("formValues", JSON.stringify(formValues));
+		}
+		
+		// save all checkboxes in ms_information form, state will persist reload
+		var $checkboxes = $("[name='ms_information'] :checkbox");
+		// get last values from localStorage or load defaults if empty
+		var formValues = JSON.parse(localStorage.getItem('formValues'));
+		// load defaults if empty
+		if (formValues == null) {
+			formValues = {};
+			$('#ESI').trigger('click');
+			$('#ms').trigger('click');
+			updateStorage();
+		};
+		// set checkboxes according to localStorage
+		$.each(formValues, function(key, value) {
+			$("#" + key).prop('checked', value);
 		});
-		localStorage.setItem("formValues", JSON.stringify(formValues));
-	}
-	
-	// save all checkboxes in ms_information form, state will persist reload
-	var $checkboxes = $("[name='ms_information'] :checkbox");
-	// get last values from localStorage or load defaults if empty
-	var formValues = JSON.parse(localStorage.getItem('formValues'));
-	// load defaults if empty
-	if (formValues == null) {
-		formValues = {};
-		$('#ESI').trigger('click');
-		$('#ms').trigger('click');
-	};
-	// set checkboxes according to localStorage
-	$.each(formValues, function(key, value) {
-		$("#" + key).prop('checked', value);
-	});
-	// update checkbox state on each change
-	$checkboxes.on("change", updateStorage);
+		// update checkbox state on each change
+		$checkboxes.on("change", updateStorage);
 	});
 	</script>
 
