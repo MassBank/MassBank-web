@@ -368,8 +368,7 @@
 	<script type="text/javascript" src="script/Common.js"></script>
 	<script type="text/javascript" src="script/Result.js"></script>
 	<script type="text/javascript" src="script/ResultMenu.js"></script>
-	<script type="text/javascript" src="script/jquery-1.8.3.min.js" ></script>
-	<script type="text/javascript" src="script/StructurePreview.js"></script>
+	<script type="text/javascript" src="script/jquery-3.3.1.min.js" ></script>
 	<!-- SpeckTackle dependencies-->
 	<script type="text/javascript" src="script/d3.v3.min.js"></script>
 	<!-- SpeckTackle library-->
@@ -385,8 +384,8 @@
 		<tr>
 			<td><h1><%=hTitle%></h1></td>
 			<td align="right" class="font12px">
-				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>

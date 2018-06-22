@@ -124,8 +124,8 @@
 		out.println( "  <tr>" );
 		out.println( "   <td><h1>Quick Search Results</h1></td>" );
 		out.println( "   <td align=\"right\" class=\"font12px\">" );
-		out.println( "    <img src=\"img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "    <img src=\"img/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + RESULT_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + RESULT_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
@@ -289,8 +289,8 @@
 		<tr>
 			<td><h1>Quick Search Results</h1></td>
 			<td align="right" class="font12px">
-				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="img/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>

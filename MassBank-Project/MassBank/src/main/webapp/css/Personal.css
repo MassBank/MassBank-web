@@ -29,7 +29,7 @@ a { border:0; font-size:11pt; }
 a, a:link, a:visited { color:#297acc; text-decoration: underline;}
 a:hover, a:active{ color:#004d99; text-decoration: underline;}
 .bullet_link { padding:4px 4px 4px 20px; }
-.bullet_link { background: url(../img/bullet_link.gif) no-repeat 2px center; }
-a:hover.bullet_link { background: url(../img/bullet_link.gif) no-repeat 2px center; }
+.bullet_link { background: url(../image/bullet_link.gif) no-repeat 2px center; }
+a:hover.bullet_link { background: url(../image/bullet_link.gif) no-repeat 2px center; }
 
 .version { height:60px; text-align:right; vertical-align:top; color:#666; font-family:Verdana, Arial, Trebuchet MS; font-size:10px; font-style:italic; display:block; margin-right:25px; position:relative;}
