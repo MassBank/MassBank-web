@@ -1,10 +1,21 @@
 package massbank.web.export;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.io.FileUtils;
 import org.openscience.cdk.exception.CDKException;
 
 import massbank.DatabaseManager;
@@ -161,27 +172,39 @@ Num Peaks: 7
 	
 	public static enum ExportFormat {
 		MSP,
-		THERMO;
+		MassBank;
 	}
-	public static String[] recordExport(ExportFormat format, Record... records) throws CDKException{
-		List<String> list	= new ArrayList<String>();
-		
-		for(Record record : records) {
-			switch (format) {
+	public static void recordExport(File file, ExportFormat format, Record... records) throws CDKException{
+		switch (format) {
 			case MSP:{
-				list.addAll(recordToMsp(record));
+				recordsToMsp(file, records);
 				break;
 			}
-			case THERMO: {
-				list.addAll(recordToThermo(record));
+			case MassBank: {
+				recordsToZipFile(file, records);
 				break;
 			}
 			default:
 				throw new IllegalArgumentException("Unknown Export-Format '" + format + "'!");
-			}
+		}
+	}
+	public static void recordsToMsp(File file, Record... records) throws CDKException{
+		// collect data
+		List<String> list	= new ArrayList<String>();
+		for(Record record : records) {
+			list.addAll(recordToMsp(record));
+			list.add("");
 		}
 		
-		return list.toArray(new String[list.size()]);
+		try {
+			FileUtils.writeStringToFile(
+					file, 
+					String.join("\n", list.toArray(new String[list.size()])), 
+					Charset.forName("UTF-8")
+			);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 	public static List<String> recordToMsp(Record record) throws CDKException{
 		List<String> list	= new ArrayList<String>();
@@ -296,24 +319,51 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 			list.add(peak.get(0) + " " + peak.get(2));
 		}
 		
-		list.add("");
-		
 		return list;
 	}
-	public static List<String> recordToThermo(Record record){
-		List<String> list	= new ArrayList<String>();
-		
-		// TODO
-//		return list;
-		throw new IllegalArgumentException("Not supported");
+	
+	public static void recordsToZipFile(File file, Record... records){
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			ZipOutputStream zos = new ZipOutputStream(fos);
+			
+			for(Record record : records) {
+				String fileName	= record.ACCESSION() + ".txt";
+				
+				ZipEntry zipEntry = new ZipEntry(fileName);
+				zos.putNextEntry(zipEntry);
+				zos.write(record.toString().getBytes());
+				zos.closeEntry();
+			}
+			
+			zos.close();
+			fos.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
+	
 	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
-		Record record	= new DatabaseManager("MassBank").getAccessionData("AU100601");
+		DatabaseManager dbMan	= new DatabaseManager("MassBank");
+		Record record	= dbMan.getAccessionData("AU100601");
+		dbMan.closeConnection();
+		//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
 		
 		System.out.println(record.toString());
 		System.out.println();
 		
-		String[] export	= recordExport(ExportFormat.MSP, record);
+		List<String> export	= recordToMsp(record);
 		System.out.println(String.join("\n", export));
+		
+		
+		File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
+		recordExport(file, ExportFormat.MassBank, record);
+		
+		File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
+		recordExport(file2, ExportFormat.MSP, record);
+		
 	}
 }
