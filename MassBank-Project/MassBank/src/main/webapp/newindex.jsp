@@ -34,18 +34,7 @@
 <link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 <link rel="stylesheet" type="text/css" href="css/massbank.css">
 <script src="script/jquery-3.3.1.min.js"></script>
-<script>
-	$(document).ready(function(){
-		$.get("newmenu.html", function(data) {
-			$("#menu").html(data);
-		});
-	});
-	$(document).ready(function(){
-		$.get("newcopyrightline.html", function(data) {
-			$("#copyrightline").html(data);
-		});
-	});
-</script>
+<script src="script/massbank.js"></script>
 </head>
 
 <body class="w3-theme-gradient">

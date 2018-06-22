@@ -33,18 +33,8 @@
 <link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 <link rel="stylesheet" type="text/css" href="css/massbank.css">
 <script src="script/jquery-3.3.1.min.js"></script>
-<script>
-	$(document).ready(function(){
-		$.get("newmenu.html", function(data) {
-			$("#menu").html(data);
-		});
-	});
-	$(document).ready(function(){
-		$.get("newcopyrightline.html", function(data) {
-			$("#copyrightline").html(data);
-		});
-	});
-</script>
+<script src="script/massbank.js"></script>
+
 </head>
 
 <body class="w3-theme-gradient">
@@ -83,7 +73,8 @@
 						<input class="w3-input w3-round w3-border" name="compound" type="text">
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom">
-						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" style="width:80px;float:right">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
+							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
 					</div>
 				</div>
 				
@@ -140,7 +131,8 @@
 						<input class="w3-input w3-round w3-border" name="inchikey" type="text">
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom">
-						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" style="width:80px;float:right">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
+							style="width:80px;float:right" onclick="append_ms_information(this)">
 					</div>
 				</div>
 			</div>
@@ -163,7 +155,8 @@
 						<input class="w3-input w3-round w3-border" name="splash" type="text">
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom">
-						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" style="width:80px;float:right">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
+							style="width:80px;float:right" onclick="append_ms_information(this)">
 					</div>
 				</div>
 			</div>
@@ -202,9 +195,9 @@
 			</div>
 			<div class="w3-border w3-padding-small">
 				<b>MS Type</b><br>
-				<input class="w3-check" type="checkbox" name="ms" value="all" checked>All&nbsp;&nbsp;&nbsp;&nbsp;
+				<input class="w3-check" type="checkbox" name="ms" value="all" onclick="myFunction(this)" checked>All&nbsp;&nbsp;&nbsp;&nbsp;
 				<c:forEach items="${ms_info}" var="item">
-				<input class="w3-check" type="checkbox" name="ms" value="${item}" checked>${item}
+				<input class="w3-check" type="checkbox" name="ms" value="${item}" onclick="myFunction(this)" checked>${item}
 				</c:forEach>
 			</div>
 			<div class="w3-border w3-padding-small">
@@ -233,10 +226,9 @@
 		document.getElementById(searchName).style.display = "block";
 	}
 	
-	// attach values from ms_information form to query form
-	document.forms['keyword_query'].addEventListener("submit", function(e) {
+	function append_ms_information(elmnt) {
 		var elements = document.forms['ms_information'].elements;
-		var keyword_query = document.forms['keyword_query'];
+		var target_form = elmnt.form;
 		for (i=0; i<elements.length; i++){
 			if (elements[i].checked == true) {
 				var hiddenField = document.createElement("input");
@@ -244,12 +236,40 @@
 				hiddenField.setAttribute("name", elements[i].name);
 				hiddenField.setAttribute("value", elements[i].value);
 				// append the newly created control to the form
-				keyword_query.appendChild(hiddenField); 
+				target_form.appendChild(hiddenField); 
 			}
 		}
-		return true;
-	}, false);
+	}
 	
+	function myFunction(elmnt) {
+		var allms = document.getElementsByName("ms");
+		if (elmnt.value == "all") {
+			if (elmnt.checked == true) {
+				for (i=0; i<allms.length; i++){
+					allms[i].checked = true;
+				}
+			} else {
+				for (i=0; i<allms.length; i++){
+					allms[i].checked = false;
+				}
+			}
+				
+			console.log("'all");
+		}
+		
+		var allms = document.getElementsByName("ms");
+		
+		for (i=0; i<allms.length; i++){
+			console.log(allms[i].value);
+		}
+	    //var checkBox = document.getElementById("myCheck");
+	    //var text = document.getElementById("text");
+	   // if (checkBox.checked == true){
+	    //    text.style.display = "block";
+	    //} else {
+	    //   text.style.display = "none";
+	    //}
+	}
 // 	function initSearch() {
 // 		var i, x;
 // 		x = document.getElementsByClassName("search_keyword");
