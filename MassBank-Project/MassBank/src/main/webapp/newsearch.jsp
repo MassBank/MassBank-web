@@ -181,11 +181,11 @@
 					<div class="w3-cell w3-mobile">
 						<div class="w3-cell-row">
 							<div class="w3-cell">
-								<input class="w3-check" type="checkbox" name="inst_grp" value="${list.key}">${list.key}
+								<input class="w3-check" id="${list.key}" type="checkbox" name="inst_grp" value="${list.key}" onclick="masterclick(this)">${list.key}
 							</div>
 							<div class="w3-cell">
 								<c:forEach items="${list.value}" var="instrument_type">
-								<input class="w3-check" type="checkbox" name="inst" value="${instrument_type}">${instrument_type}<br>
+								<input class="w3-check ${list.key}" id="${instrument_type}" type="checkbox" name="inst" value="${instrument_type}" onclick="itemclick(this)">${instrument_type}<br>
 								</c:forEach>
 							</div>
 						</div>
@@ -195,9 +195,9 @@
 			</div>
 			<div class="w3-border w3-padding-small">
 				<b>MS Type</b><br>
-				<input class="w3-check" type="checkbox" name="ms" value="all" onclick="myFunction(this)" checked>All&nbsp;&nbsp;&nbsp;&nbsp;
+				<input class="w3-check" id="ms" type="checkbox" name="ms" value="all" onclick="masterclick(this)">All&nbsp;&nbsp;&nbsp;&nbsp;
 				<c:forEach items="${ms_info}" var="item">
-				<input class="w3-check" type="checkbox" name="ms" value="${item}" onclick="myFunction(this)" checked>${item}
+				<input class="w3-check ms" id="${item}" type="checkbox" name="ms" value="${item}" onclick="itemclick(this)">${item}
 				</c:forEach>
 			</div>
 			<div class="w3-border w3-padding-small">
@@ -211,6 +211,7 @@
 	</div>
   
 	<script>
+	
 	function openSearch(evt, searchName) {
 		var i, x;
 		x = document.getElementsByClassName("search_button");
@@ -227,7 +228,7 @@
 	}
 	
 	function append_ms_information(elmnt) {
-		var elements = document.forms['ms_information'].elements;
+		var elements = document.forms["ms_information"].elements;
 		var target_form = elmnt.form;
 		for (i=0; i<elements.length; i++){
 			if (elements[i].checked == true) {
@@ -241,43 +242,50 @@
 		}
 	}
 	
-	function myFunction(elmnt) {
-		var allms = document.getElementsByName("ms");
-		if (elmnt.value == "all") {
-			if (elmnt.checked == true) {
-				for (i=0; i<allms.length; i++){
-					allms[i].checked = true;
-				}
-			} else {
-				for (i=0; i<allms.length; i++){
-					allms[i].checked = false;
-				}
-			}
-				
-			console.log("'all");
-		}
-		
-		var allms = document.getElementsByName("ms");
-		
-		for (i=0; i<allms.length; i++){
-			console.log(allms[i].value);
-		}
-	    //var checkBox = document.getElementById("myCheck");
-	    //var text = document.getElementById("text");
-	   // if (checkBox.checked == true){
-	    //    text.style.display = "block";
-	    //} else {
-	    //   text.style.display = "none";
-	    //}
+	function masterclick(elmnt) {
+		// copy the state of the master checkbox to all items
+		$("."+elmnt.id).prop("checked", elmnt.checked);
 	}
-// 	function initSearch() {
-// 		var i, x;
-// 		x = document.getElementsByClassName("search_keyword");
-// 		for (i = 0; i < x.length; i++) {
-// 			x[i].style.display = "none";
-// 		}
-// 		document.getElementById(document.querySelector('input[name="search_keyword"]:checked').value).style.display = "block";
-// 	}
+	
+	function itemclick(elmnt) {
+		var id = elmnt.classList[1];
+		// if one item gets unchecked master should be uncheck
+		if (elmnt.checked == false) {
+		 	$("#"+id).prop("checked",false);
+		}
+		else {
+			// if all items are checked master should be checked
+			if ($("."+id).length == $("."+id+":checked").length) $("#"+id).prop("checked",true)
+		}
+	}
+	
+	
+	
+	$(document).ready(function() {
+	function updateStorage() {
+		$checkboxes.each(function() {
+			formValues[this.id] = this.checked;
+		});
+		localStorage.setItem("formValues", JSON.stringify(formValues));
+	}
+	
+	// save all checkboxes in ms_information form, state will persist reload
+	var $checkboxes = $("[name='ms_information'] :checkbox");
+	// get last values from localStorage or load defaults if empty
+	var formValues = JSON.parse(localStorage.getItem('formValues'));
+	// load defaults if empty
+	if (formValues == null) {
+		formValues = {};
+		$('#ESI').trigger('click');
+		$('#ms').trigger('click');
+	};
+	// set checkboxes according to localStorage
+	$.each(formValues, function(key, value) {
+		$("#" + key).prop('checked', value);
+	});
+	// update checkbox state on each change
+	$checkboxes.on("change", updateStorage);
+	});
 	</script>
 
 	<br>

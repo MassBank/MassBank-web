@@ -20,12 +20,13 @@
  * 
  ******************************************************************************/
 $(document).ready(function(){
+	
 	$.get("newmenu.html", function(data) {
 		$("#menu").html(data);
 	});
-});
-$(document).ready(function(){
+
 	$.get("newcopyrightline.html", function(data) {
 		$("#copyrightline").html(data);
 	});
+	
 });
