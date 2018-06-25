@@ -57,13 +57,13 @@
 	
 	<div class="w3-container">
 		<div class="w3-bar w3-margin-top w3-margin-bottom">
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-red w3-blue" onclick="openSearch(event,'Keyword')">Search by Keyword</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" onclick="openSearch(event,'PeakList')">Search by Peak List</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" onclick="openSearch(event,'InChIKey')">Search by InChIKey</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" onclick="openSearch(event,'Splash')">Search by SPLASH</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-red w3-blue" id="KeywordButton" onclick="openSearch('Keyword')">Search by Keyword</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" id="PeakListButton" onclick="openSearch('PeakList')">Search by Peak List</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" id="InChIKeyButton" onclick="openSearch('InChIKey')">Search by InChIKey</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" id="SplashButton" onclick="openSearch('Splash')">Search by SPLASH</button>
 		</div>
 
-		<div id="Keyword" class="w3-animate-opacity search_keyword">
+		<div id="Keyword" class="w3-animate-opacity search_keyword" style="display:none">
 			<form name="keyword_query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
@@ -118,20 +118,39 @@
 		</div>
 			
 		<div id="PeakList" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="peaklist_query" action="QpeakResult.jsp">
+			<form name="peaklist_query" method="post" action="QpeakResult.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Peak List</h5>
-				<div class="w3-cell-row w3-border  w3-padding-small">
-					<div class="w3-cell w3-mobile" style="width:75%">
-						<label><b>Peak Data</b></label>
-						<textarea class="w3-input w3-round w3-border" name="qpeak" cols="40" rows="10"></textarea><br>
-						<input type="button" value="Example1" onClick="insertExample1()">
-						<input type="button" value="Example2" onClick="insertExample2()">					
+				<div class="w3-border w3-padding-small">
+					<div class="w3-cell-row">
+						<div class="w3-cell w3-mobile" style="width:75%">
+							<label><b>Peak Data (<i>m/z</i> and relative intensities(0-999), delimited by a space)</b></label>
+							<textarea class="w3-input w3-round w3-border" id="qpeak" name="qpeak" cols="40" rows="10"></textarea>
+						</div>
+						<div class="w3-cell w3-mobile w3-cell-bottom">
+							<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
+								style="width:80px;float:right" onclick="append_ms_information(this)">
+<!-- 								<input type="submit" value="Search" onclick="beforeSubmit(); return checkSubmit(0);" class="search"> -->
+						</div>
+					</div>
+					<div class="w3-bar" style="padding-top:4px">
+						<input type="button" class="w3-input w3-bar-item w3-round w3-border" value="Example1" onclick="insertExample1()">
+						<input type="button" class="w3-input w3-bar-item w3-round w3-border" value="Example2" onclick="insertExample2()">
+					</div>
+				</div>
+				<div class="w3-cell-row w3-border w3-padding-small">
+					<div class="w3-cell w3-mobile" style="width:40%">
+						<label><b>Cutoff threshold of relative intensities</b></label>
+						<input class="w3-input w3-round w3-border" name="CUTOFF" type="text" value="5">
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom">
-						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
-							style="width:80px;float:right" onclick="append_ms_information(this)">
-<!-- 							<input type="submit" value="Search" onclick="beforeSubmit(); return checkSubmit(0);" class="search"> -->
+						<label><b>Number of Results</b></label>
+						<select class="w3-input w3-round w3-border" name="num" style="width:30%">
+							<option value="20" selected>20</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="500">500</option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -142,17 +161,6 @@
 			<input type="hidden" name="pageNo" value="1">
 			<input type="hidden" name="exec" value="">
 			</form>
-<!-- 			<b><span class="fontNote">* <i>m/z</i> and relative intensities(0-999), delimited by a space.</span></b><br> -->
-
-
-<!-- 			<b>Cutoff threshold of relative intensities</b>&nbsp;&nbsp;<input name="CUTOFF" type="text" size="4" value="5"><br> -->
-<!-- 			<b>Number of Results</b> -->
-<!-- 			<select name="num"> -->
-<!-- 				<option value="20" selected>20</option> -->
-<!-- 				<option value="50">50</option> -->
-<!-- 				<option value="100">100</option> -->
-<!-- 				<option value="500">500</option> -->
-<!-- 			</select> -->
 		</div>
 
 		<div id="InChIKey" class="w3-animate-opacity search_keyword" style="display:none">
@@ -203,6 +211,21 @@
 			</form>
 		</div>
 		
+		<script>
+		// setting the search tab from localStorage here to prevent flickering
+		function openSearch(searchName) {
+			$(".search_button").removeClass("w3-blue");
+			$("#"+searchName+"Button").addClass("w3-blue");
+			$(".search_keyword").hide();
+			$("#"+searchName).show();
+			localStorage.setItem("searchName", searchName);
+		}
+		// get last open search tab from localStorage or load default Keyword if empty
+		var searchTab = localStorage.getItem("searchName") || "Keyword";
+		// show search tab
+		openSearch(searchTab);
+		</script>
+		
 		<br>
 		
 		<div class="w3-container w3-card-4 w3-padding-small">
@@ -245,21 +268,6 @@
 	</div>
   
 	<script>
-	function openSearch(evt, searchName) {
-		var i, x;
-		x = document.getElementsByClassName("search_button");
-		for (i = 0; i < x.length; i++) {
-			x[i].className = x[i].className.replace(" w3-blue", "");
-		}
-		evt.currentTarget.className += " w3-blue";
-				
-		x = document.getElementsByClassName("search_keyword");
-		for (i = 0; i < x.length; i++) {
-			x[i].style.display = "none";
-		}
-		document.getElementById(searchName).style.display = "block";
-	}
-	
 	function append_ms_information(elmnt) {
 		var elements = document.forms["ms_information"].elements;
 		var target_form = elmnt.form;
@@ -292,6 +300,30 @@
 		}
 	}
 	
+	function insertExample1() {
+		$("#qpeak").val("273.096 22\n289.086 107\n290.118 14\n291.096 999\n"
+			  + "292.113 162\n293.054 34\n579.169 37\n580.179 15\n");
+	}
+	
+	function insertExample2() {
+		$("#qpeak").val("70 51; 71 13; 72 49; 73 999; 74 98;"
+		  + "75 158; 76 21; 77 235; 78 21; 79 77;"
+		  + "80 5; 81 3; 82 1; 83 1; 84 8;"
+		  + "85 4; 86 28; 87 12; 88 22; 89 4;"
+		  + "90 2; 91 5; 92 2; 94 14; 95 1;"
+		  + "96 2; 97 1; 98 3; 99 3; 100 67;"
+		  + "101 20; 102 19; 103 44; 104 6; 105 5;"
+		  + "106 1; 107 26; 108 1; 109 1; 110 15;"
+		  + "112 1; 113 2; 114 10; 115 13; 116 845;"
+		  + "117 105; 118 40; 119 5; 126 1; 127 5;"
+		  + "128 15; 129 3; 130 50; 131 23; 132 9;"
+		  + "133 23; 134 58; 135 7; 136 2; 143 2;"
+		  + "144 4; 145 1; 146 5; 147 183; 148 30;"
+		  + "149 15; 150 2; 174 1; 184 12; 185 1;"
+		  + "190 34; 191 8; 192 2; 199 2; 218 10;"
+		  + "219 2; 220 1;");
+	}
+	
 	$(document).ready(function() {
 		function updateStorage() {
 			$checkboxes.each(function() {
@@ -299,7 +331,6 @@
 			});
 			localStorage.setItem("formValues", JSON.stringify(formValues));
 		}
-		
 		// save all checkboxes in ms_information form, state will persist reload
 		var $checkboxes = $("[name='ms_information'] :checkbox");
 		// get last values from localStorage or load defaults if empty
