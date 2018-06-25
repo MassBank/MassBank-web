@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -777,6 +778,13 @@ WHERE T.ION = ? ORDER BY ID
 			queryParam.tolUnit = mapReqParam.get("TOLUNIT").get(0);
 		}
 		if (mapReqParam.containsKey("QPEAK")) {
+			if(mapReqParam.get("QPEAK").get(0).indexOf(";") != -1) {
+				String[] sa	= mapReqParam.get("QPEAK").get(0).split(";");
+				ArrayList<String> list	= new ArrayList<String>();
+				for(String s : sa)	list.add(s);
+				mapReqParam.put("QPEAK", list);
+			}
+			
 			StringBuilder sb = new StringBuilder();
 			for (String s : mapReqParam.get("QPEAK")) {
 				s = s.trim().replaceAll(" ", ",");
