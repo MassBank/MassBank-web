@@ -159,7 +159,7 @@
 	<title>MassBank | Database | Record Index</title>
 	<script type="text/javascript" src="./script/Piwik.js"></script>
 </head>
-<body class="msbkFont">
+<body class="msbkFont" typeof="schema:WebPage">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
 			<td>
@@ -172,6 +172,15 @@
 		</tr>
 	</table>
 	<iframe src="./menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/RecordIndex.jsp" typeof="schema:DataCatalog" >
+		<div style="display:none" property="schema:citation" typeof="schema:ScholarlyArticle">
+			<div property="schema:name">Horai, Arita, Kanaya, Nihei, Ikeda, Suwa, Ojima, Tanaka, Tanaka, Aoshima, Oda, Kakazu, Kusano, Tohge, Matsuda, Sawada, Hirai, Nakanishi, Ikeda, Akimoto, Maoka, Takahashi, Ara, Sakurai, Suzuki, Shibata, Neumann, Iida, Tanaka, Funatsu, Matsuura, Soga, Taguchi, Saito, Nishioka. MassBank: a public repository for sharing mass spectral data for life sciences. Journal of mass spectrometry. 2010 Jul;45(7):703-14. doi: 10.1002/jms.1777.</div>
+			<div property="schema:headline">MassBank: a public repository for sharing mass spectral data for life sciences.</div>
+			<div property="schema:image">https://massbank.eu/MassBank/image/sub_logo.jpg</div>
+		</div>
+		<div style="display:none" property="schema:keywords">
+			<div property="schema:name">APCI,ITFT,QFT,ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative,QIT,ITTOF,EB,mass spectra,MassBank,m/z</div>
+		</div>
 	<hr size="1">
 
 	<%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
@@ -664,6 +673,7 @@
 	out.println( "</table>" );
 %>
 </form>
+</main>
 <hr size="1">
 <iframe src="./copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
 </body>
