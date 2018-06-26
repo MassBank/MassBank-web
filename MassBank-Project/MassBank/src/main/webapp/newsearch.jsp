@@ -235,7 +235,7 @@
 				<b>Instrument Type</b><br>
 				<div class="w3-cell-row">
 					<c:forEach items="${instrument_info}" var="list">
-					<div class="w3-cell w3-mobile">
+					<div class="w3-cell w3-mobile ms_information_column w3-border w3-padding-small">
 						<div class="w3-cell-row">
 							<div class="w3-cell">
 								<input class="w3-check" id="${list.key}" type="checkbox" name="inst_grp" value="${list.key}" onclick="masterclick(this)">${list.key}
@@ -348,6 +348,10 @@
 		});
 		// update checkbox state on each change
 		$checkboxes.on("change", updateStorage);
+		// change color in ms information section slightly
+		var ms_information_column = $(".ms_information_column:odd").addClass("w3-light-grey");
+		console.log(ms_information_column);
+		
 	});
 	</script>
 
