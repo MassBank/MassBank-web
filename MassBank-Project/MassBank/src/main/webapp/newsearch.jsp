@@ -34,6 +34,10 @@
 <link rel="stylesheet" type="text/css" href="css/massbank.css">
 <script src="script/jquery-3.3.1.min.js"></script>
 <script src="script/massbank.js"></script>
+<script src="script/PeakSearch2.js"></script>
+<script src="script/AtomicMass.js"></script>
+
+
 
 </head>
 
@@ -59,6 +63,7 @@
 		<div class="w3-bar w3-margin-top w3-margin-bottom">
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-red w3-blue" id="KeywordButton" onclick="openSearch('Keyword')">Search by Keyword</button>
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" id="PeakListButton" onclick="openSearch('PeakList')">Search by Peak List</button>
+			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-orange" id="PeakButton" onclick="openSearch('Peak')">Search by Peak</button>
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" id="InChIKeyButton" onclick="openSearch('InChIKey')">Search by InChIKey</button>
 			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" id="SplashButton" onclick="openSearch('Splash')">Search by SPLASH</button>
 		</div>
@@ -67,7 +72,7 @@
 			<form name="keyword_query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
-				<div class="w3-cell-row w3-border  w3-padding-small">
+				<div class="w3-cell-row w3-border w3-padding-small">
 					<div class="w3-cell w3-mobile" style="width:75%">
 						<label><b>Compound name</b></label>
 						<input class="w3-input w3-round w3-border" name="compound" type="text">
@@ -130,22 +135,23 @@
 						<div class="w3-cell w3-mobile w3-cell-bottom">
 							<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
 								style="width:80px;float:right" onclick="append_ms_information(this)">
-<!-- 								<input type="submit" value="Search" onclick="beforeSubmit(); return checkSubmit(0);" class="search"> -->
 						</div>
 					</div>
 					<div class="w3-bar" style="padding-top:4px">
-						<input type="button" class="w3-input w3-bar-item w3-round w3-border" value="Example1" onclick="insertExample1()">
-						<input type="button" class="w3-input w3-bar-item w3-round w3-border" value="Example2" onclick="insertExample2()">
+						<input type="button" class="w3-input w3-bar-item w3-round w3-border" 
+							value="Example1" onclick="insertExample1()" style="margin-right:4px">
+						<input type="button" class="w3-input w3-bar-item w3-round w3-border" 
+							value="Example2" onclick="insertExample2()">
 					</div>
 				</div>
-				<div class="w3-cell-row w3-border w3-padding-small">
-					<div class="w3-cell w3-mobile" style="width:40%">
+				<div class="w3-cell-row w3-border w3-padding-small" style="display:flex">
+					<div class="w3-cell w3-mobile" style="padding-right:5px;">
 						<label><b>Cutoff threshold of relative intensities</b></label>
 						<input class="w3-input w3-round w3-border" name="CUTOFF" type="text" value="5">
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom">
 						<label><b>Number of Results</b></label>
-						<select class="w3-input w3-round w3-border" name="num" style="width:30%">
+						<select class="w3-select w3-round w3-border" name="num" style="display:block;">
 							<option value="20" selected>20</option>
 							<option value="50">50</option>
 							<option value="100">100</option>
@@ -160,6 +166,149 @@
 			<input type="hidden" name="sortAction" value="1">
 			<input type="hidden" name="pageNo" value="1">
 			<input type="hidden" name="exec" value="">
+			</form>
+		</div>
+		
+		<div id="Peak" class="w3-animate-opacity search_keyword" style="display:none">
+			<form name="peak_query" method="get" action="Result.jsp">
+				<div class="w3-container w3-card-4 w3-padding-small w3-animate-opacity ">
+					<h5>Search by Peaks</h5>
+					<div class="w3-cell-row w3-border w3-padding-small">
+						<div class="w3-cell w3-mobile" style="width:75%">
+							<div class="w3-cell-row" style="margin-bottom:4px">
+								<div class="w3-cell w3-cell-bottom" style="width:60px;padding-right:5px;">
+									<select name="op0" class="w3-select w3-round w3-border">
+										<option value="and">AND</option>
+										<option value="or">OR</option>
+									</select>
+								</div>
+								<div class="w3-cell">
+									<label><b>m/z</b></label>
+									<input class="w3-input w3-round w3-border Mass" name="mz0" type="text">
+								</div>
+								<div class="w3-cell w3-cell-bottom">
+									<img src="image/arrow_peak.gif" alt="" style="margin-bottom:10px">
+								</div>
+								<div class="w3-cell">
+									<label><b>Formula</b></label>
+									<input class="w3-input w3-round w3-border Formula" name="fom0" type="text">
+								</div>						
+							</div>
+							<div class="w3-cell-row" style="margin-bottom:4px">
+								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
+									<b>AND</b>
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Mass" name="mz1" type="text">
+								</div>
+								<div class="w3-cell">
+									<img src="image/arrow_peak.gif" alt="" >
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Formula" name="fom1" type="text">
+								</div>						
+							</div>
+							<div class="w3-cell-row" style="margin-bottom:4px">
+								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
+									<b>AND</b>
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Mass" name="mz2" type="text">
+								</div>
+								<div class="w3-cell">
+									<img src="image/arrow_peak.gif" alt="">
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Formula" name="fom2" type="text">
+								</div>						
+							</div>
+							<div class="w3-cell-row" style="margin-bottom:4px">
+								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
+									<b>AND</b>
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Mass" name="mz3" type="text">
+								</div>
+								<div class="w3-cell ">
+									<img src="image/arrow_peak.gif" alt="">
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Formula" name="fom3" type="text">
+								</div>						
+							</div>
+							<div class="w3-cell-row" style="margin-bottom:4px">
+								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
+									<b>AND</b>
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Mass" name="mz4" type="text">
+								</div>
+								<div class="w3-cell">
+									<img src="image/arrow_peak.gif" alt="">
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Formula" name="fom4" type="text">
+								</div>						
+							</div>
+							<div class="w3-cell-row">
+								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
+									<b>AND</b>
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Mass" name="mz5" type="text">
+								</div>
+								<div class="w3-cell">
+									<img src="image/arrow_peak.gif" alt="">
+								</div>
+								<div class="w3-cell">
+									<input class="w3-input w3-round w3-border Formula" name="fom5" type="text">
+								</div>						
+							</div>
+						</div>
+						<div class="w3-cell w3-mobile w3-cell-bottom">
+							<div class="w3-cell-row">
+								<div class="w3-cell w3-mobile w3-cell-top">	
+									<input type="button" class="w3-input w3-round w3-border w3-grey w3-btn" value="Test" 
+										style="width:80px;float:right" onclick="Test()">
+								</div>
+							</div>
+							<div class="w3-cell-row">
+								<div class="w3-cell w3-mobile w3-cell-bottom">
+									<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
+										style="width:80px;float:right" onclick="append_ms_information(this)">
+								</div>
+							</div>	
+						</div>
+					</div>
+					<div class="w3-cell-row w3-border w3-padding-small" style="display:flex">
+						<div class="w3-cell w3-mobile" style="padding-right:5px;">
+							<label><b>Rel.Intensity</b></label>
+							<input class="w3-input w3-round w3-border" name="int" type="text" value="100">
+						</div>
+						<div class="w3-cell w3-mobile">
+							<label><b>Tolerance</b></label>
+							<input class="w3-input w3-round w3-border" name="tol" type="text" value="0.3">
+						</div>
+					</div>
+				</div>
+				
+				<input type="hidden" name="type" value="peak">
+				<input type="hidden" name="mode" value="and">
+				<input type="hidden" name="op1" value="and">
+				<input type="hidden" name="op2" value="and">
+				<input type="hidden" name="op3" value="and">
+				<input type="hidden" name="op4" value="and">
+				<input type="hidden" name="op5" value="and">
+				
+				<input type="hidden" name="sortKey" value="name">
+				<input type="hidden" name="sortAction" value="1">
+				<input type="hidden" name="pageNo" value="1">
+				<input type="hidden" name="exec" value="">
+				
+				<input type="hidden" name ="searchby" value="mz">
+				
+				<input type="hidden" name="searchof" value="peak">
+<!-- 				make selectable, other value diff -->
 			</form>
 		</div>
 
@@ -350,8 +499,6 @@
 		$checkboxes.on("change", updateStorage);
 		// change color in ms information section slightly
 		var ms_information_column = $(".ms_information_column:odd").addClass("w3-light-grey");
-		console.log(ms_information_column);
-		
 	});
 	</script>
 
