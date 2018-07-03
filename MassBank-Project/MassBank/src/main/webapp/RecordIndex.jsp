@@ -178,8 +178,29 @@
 			<div property="schema:headline">MassBank: a public repository for sharing mass spectral data for life sciences.</div>
 			<div property="schema:image">https://massbank.eu/MassBank/image/sub_logo.jpg</div>
 		</div>
+		<div style="display:none" property="schema:description">
+			<div property="schema:name">Categorized list of spectra. To list up all spectra in a specific category including contributors, instrument types and ionization modes.</div>
+		</div>
+		<div style="display:none" property="schema:headline">
+			<div property="schema:name">European MassBank (NORMAN MassBank)</div>
+		</div>
 		<div style="display:none" property="schema:keywords">
 			<div property="schema:name">APCI,ITFT,QFT,ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative,QIT,ITTOF,EB,mass spectra,MassBank,m/z</div>
+		</div>
+		<div style="display:none" property="schema:name">
+			<div property="schema:name">European MassBank (NORMAN MassBank)</div>
+		</div>
+		<div style="display:none" property="schema:mainEntity">
+			<div property="schema:name">Record index of the European MassBank (NORMAN MassBank)</div>
+		</div>
+		<div style="display:none" property="schema:offers">
+			<div property="schema:name">Mass spectra of pure chemicals (standards)</div>
+		</div>
+		<div style="display:none" property="schema:producer">
+			<div property="schema:name">MassBank consortium</div>
+		</div>
+		<div style="display:none" property="schema:provider">
+			<div property="schema:name">MassBank consortium</div>
 		</div>
 	<hr size="1">
 
