@@ -34,11 +34,8 @@
 <link rel="stylesheet" type="text/css" href="css/massbank.css">
 <script src="script/jquery-3.3.1.min.js"></script>
 <script src="script/massbank.js"></script>
-<script src="script/PeakSearch2.js"></script>
+<!-- <script src="script/PeakSearch2.js"></script> -->
 <script src="script/AtomicMass.js"></script>
-
-
-
 </head>
 
 <body class="w3-theme-gradient">
@@ -50,66 +47,75 @@
 			</h1>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align">
-			<img src="image/bullet_link.gif">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>
+			<img src="image/bullet_link.gif">&nbsp;<b><a class="text" 
+				href="javascript:openMassCalc();">mass calculator</a></b>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align">
-			<img src="image/bullet_link.gif">&nbsp;<b><a class="text" href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>
+			<img src="image/bullet_link.gif">&nbsp;<b><a class="text" 
+				href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>
 		</div>
 	</header>
 	
 	<div class="w3-border-bottom w3-border-dark-grey w3-padding-16" id="menu"></div>
 	
-	<div class="w3-container">
-		<div class="w3-bar w3-margin-top w3-margin-bottom">
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-red w3-blue" id="KeywordButton" onclick="openSearch('Keyword')">Search by Keyword</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-amber" id="PeakListButton" onclick="openSearch('PeakList')">Search by Peak List</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-orange" id="PeakButton" onclick="openSearch('Peak')">Search by Peak</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-deep-purple" id="InChIKeyButton" onclick="openSearch('InChIKey')">Search by InChIKey</button>
-			<button class="search_button w3-bar-item w3-round w3-bottombar w3-border-cyan" id="SplashButton" onclick="openSearch('Splash')">Search by SPLASH</button>
+	<div>
+		<h3><b>Search for:</b></h3>
+		<div class="w3-bar w3-margin-bottom" style="display:flex;flex-wrap:wrap">
+			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-red w3-white" 
+				id="KeywordButton" onclick="openSearch('Keyword')" style="flex:1 1">Keyword</button>
+			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-amber w3-white"
+				id="PeakListButton" onclick="openSearch('PeakList')" style="flex:1 1">Peak List</button>
+			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-teal w3-white" 
+				id="PeakButton" onclick="openSearch('Peak')" style="flex:1 1">Peaks</button>
+			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-deep-purple w3-white"
+				id="PeakDifferenceButton" onclick="openSearch('PeakDifference')" style="flex:1 1">Peak Differences</button>
+			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-brown w3-white"
+				id="InChIKeyButton" onclick="openSearch('InChIKey')" style="flex:1 1">InChIKey</button>
+			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-cyan w3-white" 	
+				id="SplashButton" onclick="openSearch('Splash')" style="flex:1 1">SPLASH</button>
 		</div>
 
 		<div id="Keyword" class="w3-animate-opacity search_keyword" style="display:none">
 			<form name="keyword_query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
-				<div class="w3-cell-row w3-border w3-padding-small">
-					<div class="w3-cell w3-mobile" style="width:75%">
+				<div class="w3-cell-row w3-border">
+					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>Compound name</b></label>
 						<input class="w3-input w3-round w3-border" name="compound" type="text">
 					</div>
-					<div class="w3-cell w3-mobile w3-cell-bottom">
-						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
-							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
-					</div>
 				</div>
-				
-				<div class="w3-cell-row w3-border w3-padding-small">
-					<div class="w3-cell w3-cell-bottom" style="width:60px;padding-right:5px;">
+				<div class="w3-cell-row w3-border">
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:70px">
 						<select class="w3-select w3-round w3-border" name="op1">
 							<option value="and">AND</option>
 							<option value="or">OR</option>
 						</select>
 					</div>
-					<div class="w3-cell w3-mobile">
+					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>Exact Mass</b></label>
 						<input class="w3-input w3-round w3-border" name="mz" type="text" size="10">
 					</div>
-					<div class="w3-cell w3-mobile" style="width:25%">
+					<div class="w3-cell w3-mobile w3-padding-small" style="width:25%">
 						<label><b>Tolerance</b></label>
 						<input class="w3-input w3-round w3-border" name="tol" type="text" size="6" value="0.3">
 					</div>
 				</div>
 				
-				<div class="w3-cell-row w3-border w3-padding-small">
-					<div class="w3-cell w3-cell-bottom" style="width:60px;padding-right:5px;">
+				<div class="w3-cell-row w3-border">
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:70px">
 						<select class="w3-select w3-round w3-border" name="op2">
 							<option value="and">AND</option>
 							<option value="or">OR</option>
 						</select>
 					</div>
-					<div class="w3-cell">
+					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>Formula ( e.g. C6H7N5, C5H*N5, C5* )</b></label>
-						<input class="w3-input w3-round w3-border" name="formula" type="text" size="14">
+						<input class="w3-input w3-round w3-border" name="formula" type="text" size="10">
+					</div>
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
+							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
 					</div>
 				</div>
 			</div>
@@ -126,30 +132,24 @@
 			<form name="peaklist_query" method="post" action="QpeakResult.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Peak List</h5>
-				<div class="w3-border w3-padding-small">
-					<div class="w3-cell-row">
-						<div class="w3-cell w3-mobile" style="width:75%">
-							<label><b>Peak Data (<i>m/z</i> and relative intensities(0-999), delimited by a space)</b></label>
-							<textarea class="w3-input w3-round w3-border" id="qpeak" name="qpeak" cols="40" rows="10"></textarea>
-						</div>
-						<div class="w3-cell w3-mobile w3-cell-bottom">
-							<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
-								style="width:80px;float:right" onclick="append_ms_information(this)">
-						</div>
+				<div class="w3-cell-row w3-border">
+					<div class="w3-cell w3-mobile w3-padding-small">
+						<label><b>Peak Data (<i>m/z</i> and relative intensities(0-999), delimited by a space)</b></label>
+						<textarea class="w3-input w3-round w3-border" id="qpeak" name="qpeak" cols="40" rows="10"></textarea>
 					</div>
-					<div class="w3-bar" style="padding-top:4px">
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small">
 						<input type="button" class="w3-input w3-bar-item w3-round w3-border" 
-							value="Example1" onclick="insertExample1()" style="margin-right:4px">
+							value="Example1" onclick="insertExample1()"><br>
 						<input type="button" class="w3-input w3-bar-item w3-round w3-border" 
 							value="Example2" onclick="insertExample2()">
 					</div>
 				</div>
-				<div class="w3-cell-row w3-border w3-padding-small" style="display:flex">
-					<div class="w3-cell w3-mobile" style="padding-right:5px;">
+				<div class="w3-cell-row w3-border">
+					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>Cutoff threshold of relative intensities</b></label>
 						<input class="w3-input w3-round w3-border" name="CUTOFF" type="text" value="5">
 					</div>
-					<div class="w3-cell w3-mobile w3-cell-bottom">
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small">
 						<label><b>Number of Results</b></label>
 						<select class="w3-select w3-round w3-border" name="num" style="display:block;">
 							<option value="20" selected>20</option>
@@ -157,6 +157,10 @@
 							<option value="100">100</option>
 							<option value="500">500</option>
 						</select>
+					</div>
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
+							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
 					</div>
 				</div>
 			</div>
@@ -171,123 +175,144 @@
 		
 		<div id="Peak" class="w3-animate-opacity search_keyword" style="display:none">
 			<form name="peak_query" method="get" action="Result.jsp">
-				<div class="w3-container w3-card-4 w3-padding-small w3-animate-opacity ">
-					<h5>Search by Peaks</h5>
-					<div class="w3-cell-row w3-border w3-padding-small">
-						<div class="w3-cell w3-mobile" style="width:75%">
-							<div class="w3-cell-row" style="margin-bottom:4px">
-								<div class="w3-cell w3-cell-bottom" style="width:60px;padding-right:5px;">
-									<select name="op0" class="w3-select w3-round w3-border">
-										<option value="and">AND</option>
-										<option value="or">OR</option>
-									</select>
-								</div>
-								<div class="w3-cell">
-									<label><b>m/z</b></label>
-									<input class="w3-input w3-round w3-border Mass" name="mz0" type="text">
-								</div>
-								<div class="w3-cell w3-cell-bottom">
-									<img src="image/arrow_peak.gif" alt="" style="margin-bottom:10px">
-								</div>
-								<div class="w3-cell">
-									<label><b>Formula</b></label>
-									<input class="w3-input w3-round w3-border Formula" name="fom0" type="text">
-								</div>						
+				<div class="w3-container w3-card-4 w3-padding-small">
+					<h5>Search for Peaks</h5>
+<!-- 					<span> -->
+<!-- 						<input type="button" class="w3-input w3-round w3-border w3-button"  -->
+<!-- 							value="Test"  -->
+<!-- 							onclick="Test()" -->
+<!-- 							style="width:70px" -->
+<!-- 							> -->
+							
+<!-- 					</span> -->
+
+					<div class="w3-border">
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:70px">
+								<select class="w3-select w3-round w3-border" name="op0">
+									<option value="and">AND</option>
+									<option value="or">OR</option>
+								</select>
 							</div>
-							<div class="w3-cell-row" style="margin-bottom:4px">
-								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
-									<b>AND</b>
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Mass" name="mz1" type="text">
-								</div>
-								<div class="w3-cell">
-									<img src="image/arrow_peak.gif" alt="" >
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Formula" name="fom1" type="text">
-								</div>						
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<label><b>m/z</b></label>
+								<input class="w3-input w3-round w3-border Mass" name="mz0" type="text">
 							</div>
-							<div class="w3-cell-row" style="margin-bottom:4px">
-								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
-									<b>AND</b>
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Mass" name="mz2" type="text">
-								</div>
-								<div class="w3-cell">
-									<img src="image/arrow_peak.gif" alt="">
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Formula" name="fom2" type="text">
-								</div>						
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
 							</div>
-							<div class="w3-cell-row" style="margin-bottom:4px">
-								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
-									<b>AND</b>
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Mass" name="mz3" type="text">
-								</div>
-								<div class="w3-cell ">
-									<img src="image/arrow_peak.gif" alt="">
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Formula" name="fom3" type="text">
-								</div>						
-							</div>
-							<div class="w3-cell-row" style="margin-bottom:4px">
-								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
-									<b>AND</b>
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Mass" name="mz4" type="text">
-								</div>
-								<div class="w3-cell">
-									<img src="image/arrow_peak.gif" alt="">
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Formula" name="fom4" type="text">
-								</div>						
-							</div>
-							<div class="w3-cell-row">
-								<div class="w3-cell " style="width:60px;padding-right:5px;text-align:right;">
-									<b>AND</b>
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Mass" name="mz5" type="text">
-								</div>
-								<div class="w3-cell">
-									<img src="image/arrow_peak.gif" alt="">
-								</div>
-								<div class="w3-cell">
-									<input class="w3-input w3-round w3-border Formula" name="fom5" type="text">
-								</div>						
-							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<label><b>Formula</b></label>
+								<input class="w3-input w3-round w3-border Formula" name="fom0" type="text">
+							</div>						
 						</div>
-						<div class="w3-cell w3-mobile w3-cell-bottom">
-							<div class="w3-cell-row">
-								<div class="w3-cell w3-mobile w3-cell-top">	
-									<input type="button" class="w3-input w3-round w3-border w3-grey w3-btn" value="Test" 
-										style="width:80px;float:right" onclick="Test()">
-								</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
 							</div>
-							<div class="w3-cell-row">
-								<div class="w3-cell w3-mobile w3-cell-bottom">
-									<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
-										style="width:80px;float:right" onclick="append_ms_information(this)">
-								</div>
-							</div>	
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz1" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom1" type="text">
+							</div>						
 						</div>
-					</div>
-					<div class="w3-cell-row w3-border w3-padding-small" style="display:flex">
-						<div class="w3-cell w3-mobile" style="padding-right:5px;">
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz2" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom2" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz3" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom3" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz4" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom4" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz5" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom5" type="text">
+							</div>						
+						</div>
+					</div>	
+					
+					<div class="w3-cell-row w3-border">
+						<div class="w3-cell w3-mobile w3-padding-small">
 							<label><b>Rel.Intensity</b></label>
 							<input class="w3-input w3-round w3-border" name="int" type="text" value="100">
 						</div>
-						<div class="w3-cell w3-mobile">
+						<div class="w3-cell w3-mobile w3-padding-small">
 							<label><b>Tolerance</b></label>
 							<input class="w3-input w3-round w3-border" name="tol" type="text" value="0.3">
+						</div>
+						<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
+							<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
+								value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
 						</div>
 					</div>
 				</div>
@@ -308,7 +333,160 @@
 				<input type="hidden" name ="searchby" value="mz">
 				
 				<input type="hidden" name="searchof" value="peak">
-<!-- 				make selectable, other value diff -->
+			</form>
+		</div>
+		
+		<div id="PeakDifference" class="w3-animate-opacity search_keyword" style="display:none">
+			<form name="peak_query" method="get" action="Result.jsp">
+				<div class="w3-container w3-card-4 w3-padding-small">
+					<h5>Search for Peak Differences</h5>
+					<div class="w3-border">
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:70px">
+								<select class="w3-select w3-round w3-border" name="op0">
+									<option value="and">AND</option>
+									<option value="or">OR</option>
+								</select>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<label><b>m/z</b></label>
+								<input class="w3-input w3-round w3-border Mass" name="mz0" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<label><b>Formula</b></label>
+								<input class="w3-input w3-round w3-border Formula" name="fom0" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz1" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom1" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz2" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom2" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz3" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom3" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz4" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom4" type="text">
+							</div>						
+						</div>
+						<div class="w3-cell-row">
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+								style="width:70px;text-align:center">
+								<b>AND</b>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Mass" name="mz5" type="text">
+							</div>
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
+								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
+								<path  fill="currentColor" 
+									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								</svg>
+							</div>
+							<div class="w3-cell w3-mobile w3-padding-small">
+								<input class="w3-input w3-round w3-border Formula" name="fom5" type="text">
+							</div>						
+						</div>
+					</div>	
+					
+					<div class="w3-cell-row w3-border">
+						<div class="w3-cell w3-mobile w3-padding-small">
+							<label><b>Rel.Intensity</b></label>
+							<input class="w3-input w3-round w3-border" name="int" type="text" value="100">
+						</div>
+						<div class="w3-cell w3-mobile w3-padding-small">
+							<label><b>Tolerance</b></label>
+							<input class="w3-input w3-round w3-border" name="tol" type="text" value="0.3">
+						</div>
+						<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
+							<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
+								value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
+						</div>
+					</div>
+				</div>
+				
+				<input type="hidden" name="type" value="peak">
+				<input type="hidden" name="mode" value="and">
+				<input type="hidden" name="op1" value="and">
+				<input type="hidden" name="op2" value="and">
+				<input type="hidden" name="op3" value="and">
+				<input type="hidden" name="op4" value="and">
+				<input type="hidden" name="op5" value="and">
+				
+				<input type="hidden" name="sortKey" value="name">
+				<input type="hidden" name="sortAction" value="1">
+				<input type="hidden" name="pageNo" value="1">
+				<input type="hidden" name="exec" value="">
+				
+				<input type="hidden" name ="searchby" value="mz">
+				
+				<input type="hidden" name="searchof" value="diff">
 			</form>
 		</div>
 
@@ -316,14 +494,14 @@
 			<form name="inchikey_query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>InChIKey</h5>
-				<div class="w3-cell-row w3-border  w3-padding-small">
-					<div class="w3-cell w3-mobile" style="width:75%">
+				<div class="w3-cell-row w3-border">
+					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>InChIKey (complete or parts)</b></label>
 						<input class="w3-input w3-round w3-border" name="inchikey" type="text">
 					</div>
-					<div class="w3-cell w3-mobile w3-cell-bottom">
-						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
-							style="width:80px;float:right" onclick="append_ms_information(this)">
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
+							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
 					</div>
 				</div>
 			</div>
@@ -340,14 +518,14 @@
 			<form name="splash_query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>SPLASH</h5>
-				<div class="w3-cell-row w3-border  w3-padding-small">
-					<div class="w3-cell w3-mobile" style="width:75%">
+				<div class="w3-cell-row w3-border">
+					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>SPLASH</b></label>
 						<input class="w3-input w3-round w3-border" name="splash" type="text">
 					</div>
-					<div class="w3-cell w3-mobile w3-cell-bottom">
-						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" value="Search" 
-							style="width:80px;float:right" onclick="append_ms_information(this)">
+					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
+						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
+							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
 					</div>
 				</div>
 			</div>
@@ -363,8 +541,8 @@
 		<script>
 		// setting the search tab from localStorage here to prevent flickering
 		function openSearch(searchName) {
-			$(".search_button").removeClass("w3-blue");
-			$("#"+searchName+"Button").addClass("w3-blue");
+			$(".search_button").removeClass("w3-light-grey").addClass("w3-bottombar w3-white");
+			$("#"+searchName+"Button").removeClass("w3-bottombar w3-white").addClass("w3-light-grey");
 			$(".search_keyword").hide();
 			$("#"+searchName).show();
 			localStorage.setItem("searchName", searchName);
@@ -499,6 +677,43 @@
 		$checkboxes.on("change", updateStorage);
 		// change color in ms information section slightly
 		var ms_information_column = $(".ms_information_column:odd").addClass("w3-light-grey");
+		// Test
+		
+		function getAtomicArray(formula) {
+			var atomicArray = new Array();
+			var nextChar = "";
+			var subStrIndex = 0;
+			var endChrFlag = 0;
+	
+			// 入力値を適切な場所で区切り原子(原子記号+原子数)を配列に格納する
+			for (i=0; i<formula.length; i++) {
+				
+				if ((i+1) < formula.length) {
+					nextChar = formula.charAt(i+1);
+				} else {
+					endChrFlag = 1;
+				}
+				
+				// 次の文字がない場合または、次の文字が大文字の英字の場合は区切る
+				if (endChrFlag == 1 || nextChar.match(/[A-Z]/)) {
+					atomicArray.push(formula.substring(subStrIndex,i+1));
+					subStrIndex = i+1;
+				}
+			}
+			
+			return atomicArray;
+		}
+		
+		$(".Formula").on("keyup", function(){
+				var inputFormula = $(this).val();
+				inputFormula = inputFormula.trim();
+				inputFormula = getAtomicArray(inputFormula);
+
+				alert('"'+inputFormula+'"');
+				
+	            $(this).css("background-color", "lightgray");
+	        }  
+	    );
 	});
 	</script>
 
