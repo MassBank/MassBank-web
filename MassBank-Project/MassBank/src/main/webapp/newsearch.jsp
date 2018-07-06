@@ -34,8 +34,7 @@
 <link rel="stylesheet" type="text/css" href="css/massbank.css">
 <script src="script/jquery-3.3.1.min.js"></script>
 <script src="script/massbank.js"></script>
-<!-- <script src="script/PeakSearch2.js"></script> -->
-<script src="script/AtomicMass.js"></script>
+<script src="script/newsearch.js"></script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -46,13 +45,19 @@
 				<b>Quick Search</b>
 			</h1>
 		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align">
-			<img src="image/bullet_link.gif">&nbsp;<b><a class="text" 
-				href="javascript:openMassCalc();">mass calculator</a></b>
+		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
+			<svg viewBox="0 0 251 222" xmlns="http://www.w3.org/2000/svg" style="width:15px">
+				<path  fill="currentColor" 
+					d="m0 91v40c0 6.6 5.4 12 12 12h116v67c0 10.7 12.9 16 20.5 8.5l99-99c4.7-4.7 4.7-12.3 0-17l-99-99c-7.6-7.6-20.5-2.2-20.5 8.5v67h-116c-6.6 0-12 5.4-12 12z"/>
+			</svg>
+			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
 		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align">
-			<img src="image/bullet_link.gif">&nbsp;<b><a class="text" 
-				href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>
+		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
+			<svg viewBox="0 0 251 222" xmlns="http://www.w3.org/2000/svg" style="width:15px">
+				<path  fill="currentColor" 
+					d="m0 91v40c0 6.6 5.4 12 12 12h116v67c0 10.7 12.9 16 20.5 8.5l99-99c4.7-4.7 4.7-12.3 0-17l-99-99c-7.6-7.6-20.5-2.2-20.5 8.5v67h-116c-6.6 0-12 5.4-12 12z"/>
+			</svg>
+			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
 		</div>
 	</header>
 	
@@ -76,7 +81,7 @@
 		</div>
 
 		<div id="Keyword" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="keyword_query" action="Result.jsp">
+			<form name="keyword_query" class="query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
 				<div class="w3-cell-row w3-border">
@@ -115,7 +120,7 @@
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
 						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
-							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
+							value="Search" style="width:80px;float:right">
 					</div>
 				</div>
 			</div>
@@ -129,7 +134,7 @@
 		</div>
 			
 		<div id="PeakList" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="peaklist_query" method="post" action="QpeakResult.jsp">
+			<form name="peaklist_query" class="query" method="post" action="QpeakResult.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Peak List</h5>
 				<div class="w3-cell-row w3-border">
@@ -160,7 +165,7 @@
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
 						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
-							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
+							value="Search" style="width:80px;float:right">
 					</div>
 				</div>
 			</div>
@@ -174,18 +179,9 @@
 		</div>
 		
 		<div id="Peak" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="peak_query" method="get" action="Result.jsp">
+			<form name="peak_query" class="query" method="get" action="Result.jsp">
 				<div class="w3-container w3-card-4 w3-padding-small">
 					<h5>Search for Peaks</h5>
-<!-- 					<span> -->
-<!-- 						<input type="button" class="w3-input w3-round w3-border w3-button"  -->
-<!-- 							value="Test"  -->
-<!-- 							onclick="Test()" -->
-<!-- 							style="width:70px" -->
-<!-- 							> -->
-							
-<!-- 					</span> -->
-
 					<div class="w3-border">
 						<div class="w3-cell-row">
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:70px">
@@ -312,7 +308,7 @@
 						</div>
 						<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
 							<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
-								value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
+								value="Search" style="width:80px;float:right">
 						</div>
 					</div>
 				</div>
@@ -337,7 +333,7 @@
 		</div>
 		
 		<div id="PeakDifference" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="peak_query" method="get" action="Result.jsp">
+			<form name="peak_query" class="query" method="get" action="Result.jsp">
 				<div class="w3-container w3-card-4 w3-padding-small">
 					<h5>Search for Peak Differences</h5>
 					<div class="w3-border">
@@ -466,7 +462,7 @@
 						</div>
 						<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
 							<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
-								value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
+								value="Search" style="width:80px;float:right">
 						</div>
 					</div>
 				</div>
@@ -491,7 +487,7 @@
 		</div>
 
 		<div id="InChIKey" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="inchikey_query" action="Result.jsp">
+			<form name="inchikey_query" class="query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>InChIKey</h5>
 				<div class="w3-cell-row w3-border">
@@ -501,7 +497,7 @@
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
 						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
-							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
+							value="Search" style="width:80px;float:right">
 					</div>
 				</div>
 			</div>
@@ -515,7 +511,7 @@
 		</div>
 	
 		<div id="Splash" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="splash_query" action="Result.jsp">
+			<form name="splash_query" class="query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>SPLASH</h5>
 				<div class="w3-cell-row w3-border">
@@ -525,7 +521,7 @@
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:25%">
 						<input type="submit" class="w3-input w3-round w3-border w3-blue w3-btn" 
-							value="Search" style="width:80px;float:right" onclick="append_ms_information(this)">
+							value="Search" style="width:80px;float:right">
 					</div>
 				</div>
 			</div>
@@ -594,129 +590,6 @@
 		</div>
 	</div>
   
-	<script>
-	function append_ms_information(elmnt) {
-		var elements = document.forms["ms_information"].elements;
-		var target_form = elmnt.form;
-		for (i=0; i<elements.length; i++){
-			if (elements[i].checked == true) {
-				var hiddenField = document.createElement("input");
-				hiddenField.setAttribute("type", "hidden"); 
-				hiddenField.setAttribute("name", elements[i].name);
-				hiddenField.setAttribute("value", elements[i].value);
-				// append the newly created control to the form
-				target_form.appendChild(hiddenField); 
-			}
-		}
-	}
-	
-	function masterclick(elmnt) {
-		// copy the state of the master checkbox to all items
-		$("."+elmnt.id).prop("checked", elmnt.checked);
-	}
-	
-	function itemclick(elmnt) {
-		var id = elmnt.classList[1];
-		// if one item gets unchecked master should be uncheck
-		if (elmnt.checked == false) {
-		 	$("#"+id).prop("checked",false);
-		}
-		else {
-			// if all items are checked master should be checked
-			if ($("."+id).length == $("."+id+":checked").length) $("#"+id).prop("checked",true)
-		}
-	}
-	
-	function insertExample1() {
-		$("#qpeak").val("273.096 22\n289.086 107\n290.118 14\n291.096 999\n"
-			  + "292.113 162\n293.054 34\n579.169 37\n580.179 15\n");
-	}
-	
-	function insertExample2() {
-		$("#qpeak").val("70 51; 71 13; 72 49; 73 999; 74 98;"
-		  + "75 158; 76 21; 77 235; 78 21; 79 77;"
-		  + "80 5; 81 3; 82 1; 83 1; 84 8;"
-		  + "85 4; 86 28; 87 12; 88 22; 89 4;"
-		  + "90 2; 91 5; 92 2; 94 14; 95 1;"
-		  + "96 2; 97 1; 98 3; 99 3; 100 67;"
-		  + "101 20; 102 19; 103 44; 104 6; 105 5;"
-		  + "106 1; 107 26; 108 1; 109 1; 110 15;"
-		  + "112 1; 113 2; 114 10; 115 13; 116 845;"
-		  + "117 105; 118 40; 119 5; 126 1; 127 5;"
-		  + "128 15; 129 3; 130 50; 131 23; 132 9;"
-		  + "133 23; 134 58; 135 7; 136 2; 143 2;"
-		  + "144 4; 145 1; 146 5; 147 183; 148 30;"
-		  + "149 15; 150 2; 174 1; 184 12; 185 1;"
-		  + "190 34; 191 8; 192 2; 199 2; 218 10;"
-		  + "219 2; 220 1;");
-	}
-	
-	$(document).ready(function() {
-		function updateStorage() {
-			$checkboxes.each(function() {
-				formValues[this.id] = this.checked;
-			});
-			localStorage.setItem("formValues", JSON.stringify(formValues));
-		}
-		// save all checkboxes in ms_information form, state will persist reload
-		var $checkboxes = $("[name='ms_information'] :checkbox");
-		// get last values from localStorage or load defaults if empty
-		var formValues = JSON.parse(localStorage.getItem('formValues'));
-		// load defaults if empty
-		if (formValues == null) {
-			formValues = {};
-			$('#ESI').trigger('click');
-			$('#ms').trigger('click');
-			updateStorage();
-		};
-		// set checkboxes according to localStorage
-		$.each(formValues, function(key, value) {
-			$("#" + key).prop('checked', value);
-		});
-		// update checkbox state on each change
-		$checkboxes.on("change", updateStorage);
-		// change color in ms information section slightly
-		var ms_information_column = $(".ms_information_column:odd").addClass("w3-light-grey");
-		// Test
-		
-		function getAtomicArray(formula) {
-			var atomicArray = new Array();
-			var nextChar = "";
-			var subStrIndex = 0;
-			var endChrFlag = 0;
-	
-			// 入力値を適切な場所で区切り原子(原子記号+原子数)を配列に格納する
-			for (i=0; i<formula.length; i++) {
-				
-				if ((i+1) < formula.length) {
-					nextChar = formula.charAt(i+1);
-				} else {
-					endChrFlag = 1;
-				}
-				
-				// 次の文字がない場合または、次の文字が大文字の英字の場合は区切る
-				if (endChrFlag == 1 || nextChar.match(/[A-Z]/)) {
-					atomicArray.push(formula.substring(subStrIndex,i+1));
-					subStrIndex = i+1;
-				}
-			}
-			
-			return atomicArray;
-		}
-		
-		$(".Formula").on("keyup", function(){
-				var inputFormula = $(this).val();
-				inputFormula = inputFormula.trim();
-				inputFormula = getAtomicArray(inputFormula);
-
-				alert('"'+inputFormula+'"');
-				
-	            $(this).css("background-color", "lightgray");
-	        }  
-	    );
-	});
-	</script>
-
 	<br>
 	<div id="copyrightline"></div>
 		
