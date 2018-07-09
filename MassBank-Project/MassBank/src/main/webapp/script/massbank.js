@@ -21,7 +21,7 @@
  ******************************************************************************/
 $(document).ready(function(){
 	
-	$.get("newmenu.html", function(data) {
+	$.get("menu.html", function(data) {
 		$("#menu").html(data);
 	});
 

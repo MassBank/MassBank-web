@@ -32,8 +32,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/newsearch")
-public class newsearch extends HttpServlet {
+@WebServlet("/search")
+public class search extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -49,7 +49,7 @@ public class newsearch extends HttpServlet {
 			
 	        request.setAttribute("instrument_info", instrument_info);
 	        request.setAttribute("ms_info", ms_info);
-	        request.getRequestDispatcher("/newsearch.jsp").forward(request, response);
+	        request.getRequestDispatcher("/search.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Cannot obtain Instrument Information from DB", e);
         }

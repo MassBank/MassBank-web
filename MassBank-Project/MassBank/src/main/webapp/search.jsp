@@ -34,7 +34,7 @@
 <link rel="stylesheet" type="text/css" href="css/massbank.css">
 <script src="script/jquery-3.3.1.min.js"></script>
 <script src="script/massbank.js"></script>
-<script src="script/newsearch.js"></script>
+<script src="script/search.js"></script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -87,7 +87,7 @@
 				<div class="w3-cell-row w3-border">
 					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>Compound name</b></label>
-						<input class="w3-input w3-round w3-border" name="compound" type="text">
+						<input class="w3-input w3-round w3-border" name="compound" type="text" required>
 					</div>
 				</div>
 				<div class="w3-cell-row w3-border">
@@ -140,7 +140,7 @@
 				<div class="w3-cell-row w3-border">
 					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>Peak Data (<i>m/z</i> and relative intensities(0-999), delimited by a space)</b></label>
-						<textarea class="w3-input w3-round w3-border" id="qpeak" name="qpeak" cols="40" rows="10"></textarea>
+						<textarea class="w3-input w3-round w3-border" id="qpeak" name="qpeak" cols="40" rows="10" required></textarea>
 					</div>
 					<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small">
 						<input type="button" class="w3-input w3-bar-item w3-round w3-border" 
@@ -185,7 +185,7 @@
 					<div class="w3-border">
 						<div class="w3-cell-row">
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:70px">
-								<select class="w3-select w3-round w3-border" name="op0">
+								<select class="w3-select w3-round w3-border searchop" name="op0">
 									<option value="and">AND</option>
 									<option value="or">OR</option>
 								</select>
@@ -206,7 +206,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -224,7 +224,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -242,7 +242,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -260,7 +260,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -278,7 +278,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -339,7 +339,7 @@
 					<div class="w3-border">
 						<div class="w3-cell-row">
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" style="width:70px">
-								<select class="w3-select w3-round w3-border" name="op0">
+								<select class="w3-select w3-round w3-border searchop" name="op0">
 									<option value="and">AND</option>
 									<option value="or">OR</option>
 								</select>
@@ -360,7 +360,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -378,7 +378,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -396,7 +396,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -414,7 +414,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -432,7 +432,7 @@
 							</div>						
 						</div>
 						<div class="w3-cell-row">
-							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small" 
+							<div class="w3-cell w3-mobile w3-cell-bottom w3-padding-small searchoptext" 
 								style="width:70px;text-align:center">
 								<b>AND</b>
 							</div>
@@ -467,7 +467,7 @@
 					</div>
 				</div>
 				
-				<input type="hidden" name="type" value="peak">
+				<input type="hidden" name="type" value="diff">
 				<input type="hidden" name="mode" value="and">
 				<input type="hidden" name="op1" value="and">
 				<input type="hidden" name="op2" value="and">

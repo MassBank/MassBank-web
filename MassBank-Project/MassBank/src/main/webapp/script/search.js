@@ -296,7 +296,7 @@ $(document).ready(function() {
 		$('#ms').trigger('click');
 		updateStorage();
 	};
-	// set checkboxes according to localStorage
+	// load checkboxes state from localStorage
 	$.each(formValues, function(key, value) {
 		$("#" + key).prop('checked', value);
 	});
@@ -304,7 +304,7 @@ $(document).ready(function() {
 	$checkboxes.on("change", updateStorage);
 	// change color in ms information section slightly
 	var ms_information_column = $(".ms_information_column:odd").addClass("w3-light-grey");
-
+	//update mass according to furmula
 	$(".Formula").on("keyup", function(){
 			var inputFormula = $(this).val();
 			inputFormula = inputFormula.trim();
@@ -314,8 +314,40 @@ $(document).ready(function() {
         }  
     );
 	
-	$('.query').on("submit", function(){
-		append_ms_information(this)
+	$(".searchop").on("change", function(event) {
+		console.log(this.value);
+		if (this.value == 'or') {
+			$(this.form).find( "div.searchoptext" ).html('<b>OR</b>');
+			$(this.form).find( "input[name^='op']" ).val(this.value);
 		}
-	);
+		else {
+			$(this.form).find( "div.searchoptext" ).html('<b>AND</b>');
+			$(this.form).find( "input[name^='op']" ).val(this.value);
+		}
+
+		//console.log($(this.form).find( "div.searchoptext" ).text());
+	});
+	
+	// put form information of the query and ms_information form together and submit as new form
+	$(".query").on("submit", function(event) {
+		event.preventDefault();
+		var form = document.createElement("form");
+		form.setAttribute("method", this.method);
+        form.setAttribute("action", this.action);
+        $([this, document.forms["ms_information"]]).serializeArray().forEach(function(element) {
+          console.log(element["name"]);
+          console.log(element["value"]);
+          var hiddenField = document.createElement("input");
+          hiddenField.setAttribute("type", "hidden");
+          hiddenField.setAttribute("name", element["name"]);
+          hiddenField.setAttribute("value", element["value"]);
+          form.appendChild(hiddenField);
+        });
+        document.body.appendChild(form);
+        form.submit();
+	});
+	// set peak search operation
+	
+	
+	
 });
