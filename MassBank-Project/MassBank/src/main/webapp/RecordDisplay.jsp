@@ -130,9 +130,22 @@
 	// TODO property="schema:publisher"
 	final String delimiter	= ": ";
 	StringBuilder sb	= new StringBuilder();
-	String inchi	= null;
-	String smiles	= null;
-	String recordTitle	= null;
+	String inchi			= null;
+	String smiles			= null;
+	String recordTitle		= null;
+	
+	String msType			= null;
+	String name				= null;
+	String compoundClass	= null;
+	String inchiKey			= null;
+	String splash			= null;
+	String instrumentType	= null;
+	String ionization		= null;
+	String ionMode			= null;
+	String fragmentation	= null;
+	String collisionEnergy	= null;
+	String resolution		= null;
+	
 	// CH, AC, MS, PK
 	boolean ch	= false;
 	boolean ac	= false;
@@ -294,10 +307,12 @@
 			// TODO property="schema:name"
 			// TODO property="schema:alternateName"
 			sb.append(tag + ": " + value + "\n");
+			name	= value;
 			//sb.append(tag + ": <span property=\"schema:alternateName\">" + value + "</span>\n");
 			break;
 		case "CH$COMPOUND_CLASS":
 			sb.append(tag + ": " + value + "\n");
+			compoundClass	= value;
 			break;
 		case "CH$FORMULA":
 			sb.append(tag + ": " + "<a href=\"http://www.chemspider.com/Search.aspx?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n");
@@ -336,6 +351,8 @@
 			String CH$LINK_NAME	= value.substring(0, delimiterIndex2);
 			String CH$LINK_ID	= value.substring(delimiterIndex2 + delimiter2.length());
 			
+			if(CH$LINK_NAME == "INCHIKEY")	inchiKey	= CH$LINK_ID;
+			
 			switch(CH$LINK_NAME){
 				case "CAS":								CH$LINK_ID	= "<a href=\"https://www.google.com/search?q=&quot;" + CH$LINK_ID + "&quot;"									+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
 				case "CAYMAN":                      	CH$LINK_ID	= "<a href=\"https://www.caymanchem.com/app/template/Product.vm/catalog/" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
@@ -368,13 +385,41 @@
 		case "AC$INSTRUMENT_TYPE":
 			// TODO property="schema:measurementTechnique"
 			sb.append(tag + ": <span property=\"schema:measurementTechnique\">" + value + "</span>\n");
+			instrumentType	= value;
 			break;
-		// AC$MASS_SPECTROMETRY
+		case "AC$MASS_SPECTROMETRY":
+			sb.append(tag + ": " + value + "\n");
+			
+			String[] tokens2	= value.split(" ");
+			String subTag	= tokens2[0];
+			switch(subTag){
+				case "MS_TYPE":
+					msType			= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
+					break;
+				case "IONIZATION":
+					ionization		= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
+					break;
+				case "ION_MODE":
+					ionMode			= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
+					break;
+				case "FRAGMENTATION_MODE":
+					fragmentation	= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
+					break;
+				case "COLLISION_ENERGY":
+					collisionEnergy	= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
+					break;
+				case "RESOLUTION":
+					resolution		= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
+					break;
+			}
+			
+			break;
 		// AC$CHROMATOGRAPHY
 		// MS$FOCUSED_ION
 		// MS$DATA_PROCESSING
 		case "PK$SPLASH":
 			sb.append(tag + ": " + "<a href=\"http://mona.fiehnlab.ucdavis.edu/#/spectra/splash/" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
+			splash	= value;
 			break;
 		// PK$NUM_PEAK
 		case "PK$PEAK":{
@@ -409,7 +454,28 @@
 	if(clickablePreviewImageData != null)
 		svgMedium	= clickablePreviewImageData.getMediumClickableImage();
 	
+	// meta data
+	String[] compoundClasses	= compoundClass.split("; ");
+	String compoundClass2	= compoundClasses[0];
+	if(compoundClass2.equals("NA") && compoundClasses.length > 1)	compoundClass2	= compoundClasses[1];
 	
+	String description	= 
+			"This MassBank Record with Accession " + accession + 
+			" contains the " + msType + " mass spectrum" + 
+			" of '" + name + "'" +
+			(inchiKey			!= null		? " with the InChIKey '" + inchiKey + "'"					: "") + 
+			(!compoundClass2.equals("N/A")	? " with the compound class '" + compoundClass2 + "'"	: "") + 
+			"." +
+			" The mass spectrum was acquired on a " + instrumentType + 
+			//" with " + (ionization != null	? ionization											: "") + 
+			" with " + ionMode + " ionisation" +
+			(fragmentation		!= null		? " using " + fragmentation + " fragmentation"			: "") +
+			(collisionEnergy	!= null		? " with the collision energy '" + collisionEnergy + "'": "") + 
+			(collisionEnergy	!= null		? " at a resolution of " + resolution					: "") + 
+			(splash				!= null		? " and has the SPLASH '" + splash + "'"				: "") +
+			".";
+	
+	// record
 	String recordString	= sb.toString();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -421,8 +487,8 @@
 		<meta name="Targeted Geographic Area" content="worldwide" />
 		<meta name="rating" content="general" />
 		<meta name="copyright" content="Copyright (c) 2006 MassBank Project and (c) 2011 NORMAN Association" />
-		<meta name="description" content="MassBank Record of <%=accession%>">
-		<meta name="keywords" content="<%=shortName%>, mass spectrum, MassBank record, mass spectrometry, mass spectral library">
+		<meta name="description" content="<%=description%>">
+		<meta name="keywords" content="<%=accession%>, <%=shortName%>, <%=inchiKey%>, mass spectrum, MassBank record, mass spectrometry, mass spectral library">
 		<meta name="revisit_after" content="30 days">
 		<meta name="hreflang" content="en">
 		<meta name="variableMeasured" content="m/z">
