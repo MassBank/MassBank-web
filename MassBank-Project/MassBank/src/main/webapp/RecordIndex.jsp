@@ -149,7 +149,7 @@
 	<meta name="Targeted Geographic Area" content="worldwide" />
 	<meta name="rating" content="general" />
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<meta name="description" content="Categorized list of spectra. To list up all spectra in a specific category including contributors, instrument types and ionization modes.">
+	<meta name="description" content="Categorized list of spectra in MassBank.eu. Here we list up all spectra in a specific category including contributors, instrument types and ionization modes.">
 	<meta name="keywords" content="APCI,ITFT,QFT,ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative,QIT,ITTOF,EB,mass spectra,MassBank,m/z">
 	<meta name="hreflang" content="en">
 	<meta name="robots" content="index, follow">
