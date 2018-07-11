@@ -24,17 +24,18 @@
 <title>MassBank | Database | Quick Search</title>
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="description" content="Search of spectra by chemical name, peak, InChIKey or SPLASH.">
-<meta name="keywords" content="Search,Compound,ExactMass,Formula,InChIKey,SPLASH">
-<meta name="author" content="MassBank">
-<link rel="stylesheet" type="text/css" href="css/w3.css">
-<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-<link rel="stylesheet" type="text/css" href="css/massbank.css">
-<script src="script/jquery-3.3.1.min.js"></script>
-<script src="script/massbank.js"></script>
-<script src="script/search.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="description" content="Search of spectra by chemical name, peak, InChIKey or SPLASH.">
+	<meta name="keywords" content="Search,Compound,ExactMass,Formula,InChIKey,SPLASH">
+	<meta name="author" content="MassBank">
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
+	<link rel="stylesheet" type="text/css" href="css/w3.css">
+	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<script src="script/jquery-3.3.1.min.js"></script>
+	<script src="script/massbank.js"></script>
+	<script src="script/search.js"></script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -63,7 +64,7 @@
 	
 	<div class="w3-border-bottom w3-border-dark-grey w3-padding-16" id="menu"></div>
 	
-	<div>
+	<div style="max-width:90%;height:auto;margin:auto;">
 		<h3><b>Search for:</b></h3>
 		<div class="w3-bar w3-margin-bottom" style="display:flex;flex-wrap:wrap">
 			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-red w3-white" 

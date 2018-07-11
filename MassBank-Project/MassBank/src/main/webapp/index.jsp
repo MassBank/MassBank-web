@@ -25,16 +25,17 @@
 <title>MassBank | ${sitename} Mass Spectral DataBase</title>
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Mass Spectral DataBase">
-<meta name="keywords" content="Mass,Spectral,Database,MassBank">
-<meta name="author" content="MassBank">
-<link rel="stylesheet" type="text/css" href="css/w3.css">
-<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-<link rel="stylesheet" type="text/css" href="css/massbank.css">
-<script src="script/jquery-3.3.1.min.js"></script>
-<script src="script/massbank.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Mass Spectral DataBase">
+	<meta name="keywords" content="Mass,Spectral,Database,MassBank">
+	<meta name="author" content="MassBank">
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
+	<link rel="stylesheet" type="text/css" href="css/w3.css">
+	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<script src="script/jquery-3.3.1.min.js"></script>
+	<script src="script/massbank.js"></script>
 </head>
 
 <body class="w3-theme-gradient">

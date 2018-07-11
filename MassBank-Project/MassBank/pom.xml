@@ -33,9 +33,9 @@
 		</dependency>
 		<!-- breaks with jfreechart 1.5.0 -->
 		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.19</version>
+    		<groupId>org.jfree</groupId>
+   			 <artifactId>jfreechart</artifactId>
+    		<version>1.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
