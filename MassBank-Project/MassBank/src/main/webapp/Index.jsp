@@ -51,8 +51,8 @@
 		<div class="w3-third w3-panel w3-white">
 			<div class="w3-panel w3-leftbar w3-border-teal w3-light-grey w3-text-blue w3-round">
 				<h5>
-					<a href="search"><b>Search</b></a>
-					<a href="search"><img src="image/quick.gif" style="width:100%;"></a>
+					<a href="Search"><b>Search</b></a>
+					<a href="Search"><img src="image/quick.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
@@ -61,8 +61,8 @@
 			<div
 				class="w3-panel w3-leftbar w3-border-amber w3-light-grey w3-text-blue w3-round">
 				<h5>
-					<a href="export"><b>Export</b></a>
-					<a href="export"><img src="image/peak.gif" style="width:100%;"></a>
+					<a href="Export"><b>Export</b></a>
+					<a href="Export"><img src="image/peak.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
@@ -71,8 +71,8 @@
 			<div
 				class="w3-panel w3-leftbar w3-border-pink w3-light-grey w3-text-blue w3-round">
 				<h5>
-					<a href="RecordIndex.jsp"><b>Record Index</b></a>
-					<a href="RecordIndex.jsp"><img src="image/list.gif" style="width:100%;"></a>
+					<a href="RecordIndex"><b>Record Index</b></a>
+					<a href="RecordIndex"><img src="image/list.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
