@@ -28,8 +28,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/index")
-public class index extends HttpServlet {
+@WebServlet("/Index")
+public class Index extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,7 +39,7 @@ public class index extends HttpServlet {
 		try {
 			String sitename = Config.get().LongName();
 	        request.setAttribute("sitename", sitename);
-	        request.getRequestDispatcher("/index.jsp").forward(request, response);
+	        request.getRequestDispatcher("/Index.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Cannot load sitename", e);
         }
