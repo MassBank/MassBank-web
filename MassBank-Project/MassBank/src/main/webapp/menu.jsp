@@ -55,13 +55,13 @@
 				<tr>
 					<td>
 &nbsp;&nbsp;
-<a href="index.jsp" target="_parent" title="MassBank">Home</a>
+<a href="Index" target="_parent" title="MassBank">Home</a>
 |
-<a href="QuickSearch.jsp" target="_parent" title="Quick Search">Quick Search</a>
+<a href="Search" target="_parent" title="Quick Search">Quick Search</a>
 |
-<a href="PeakSearch.jsp" target="_parent" title="Peak Search">Peak Search</a>
+<a href="Search" target="_parent" title="Peak Search">Peak Search</a>
 |
-<a href="RecordIndex.jsp" target="_parent" title="Record Index">Record Index</a>
+<a href="RecordIndex" target="_parent" title="Record Index">Record Index</a>
 |
 <a href="Statistics.jsp" target="_blank" title="Record and Compounds Statistics">Statistics</a>
 |
