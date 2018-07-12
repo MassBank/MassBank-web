@@ -25,7 +25,7 @@ $(document).ready(function(){
 		$("#menu").html(data);
 	});
 
-	$.get("newcopyrightline.html", function(data) {
+	$.get("copyrightline.html", function(data) {
 		$("#copyrightline").html(data);
 	});
 	

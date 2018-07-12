@@ -5,9 +5,8 @@
 	version="3.1">
 	<display-name>MassBank Web Application</display-name>
 	<welcome-file-list>
-		<welcome-file>index</welcome-file>
+		<welcome-file>Index</welcome-file>
 	</welcome-file-list>
-	<!-- get parameters in the code with getServletContext().getInitParameter("xxx"); -->
 	<servlet>
 		<servlet-name>default</servlet-name>
 		<servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
