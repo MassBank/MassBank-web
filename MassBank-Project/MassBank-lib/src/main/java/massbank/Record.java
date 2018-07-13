@@ -99,6 +99,11 @@ public class Record {
 	public String RECORD_TITLE() {
 		return record_title;
 	}
+	
+	public String RECORD_TITLE_NAME() {
+		return record_title_name;
+	}
+	
 	public void RECORD_TITLE(String value) {
 		this.record_title = value;
 		String[] record_title_tokens	= value.split("; ");

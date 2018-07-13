@@ -50,7 +50,6 @@ public class FileUtil {
 		return file.exists();
 	}
 	public static File getFile(String contributor, String accession) throws ConfigurationException{
-		// http://localhost/MassBank/DB/annotation/MassBank/XXX00001.txt
 		File file	= new File(Config.get().DataRootPath() + contributor + File.separator + accession + ".txt");
 		return file;
 	}

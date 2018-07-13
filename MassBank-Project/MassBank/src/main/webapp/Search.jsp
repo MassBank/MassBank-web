@@ -21,7 +21,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en" style="max-width:900px">
-<title>MassBank | Database | Quick Search</title>
+<title>MassBank | Database | Search</title>
 
 <head>
 	<meta charset="UTF-8">
