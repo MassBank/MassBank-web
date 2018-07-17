@@ -169,18 +169,18 @@ public class RecordIndex extends HttpServlet {
 	    	
     		BufferedOutputStream outStream = null;
     		
-    		String filePath = Config.get().TOMCAT_TEMP_PATH(request.getServletContext()) + "massbank_Contributor_Graph.jpg";
+    		String filePath = request.getServletContext().getRealPath("/temp/massbank_Contributor_Graph.jpg");
     		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
 			ChartUtils.writeChartAsJPEG(outStream, sitechart, 900, 350);
 			
-			filePath = Config.get().TOMCAT_TEMP_PATH(request.getServletContext()) + "massbank_Instrument_Type_Graph.jpg";
+			filePath = request.getServletContext().getRealPath("/temp/massbank_Instrument_Type_Graph.jpg");
     		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
 			ChartUtils.writeChartAsJPEG(outStream, instchart, 900, 350);
 			
-			filePath = Config.get().TOMCAT_TEMP_PATH(request.getServletContext()) + "massbank_MS_Type_Graph.jpg";
+			filePath = request.getServletContext().getRealPath("/temp/massbank_MS_Type_Graph.jpg");
     		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
 			ChartUtils.writeChartAsJPEG(outStream, mschart, 900, 350);
-
+			
 	        request.getRequestDispatcher("/RecordIndex.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Error preparing record index", e);

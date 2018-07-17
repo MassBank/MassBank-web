@@ -50,7 +50,7 @@
 		<script type="text/javascript" src="script/Piwik.js"></script>
 		</head>
 	<body class="msbkFont">
-		<form method="post" action="FwdRecord.jsp" target="_blank" class="formStyle">
+		<form method="get" action="RecordDisplay.jsp" target="_blank" class="formStyle">
 			<table  border="0" cellpadding="0" cellspacing="0" width="980" class="menuFont">
 				<tr>
 					<td>

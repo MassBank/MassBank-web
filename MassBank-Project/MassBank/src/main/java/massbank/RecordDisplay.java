@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
+
+
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 
@@ -39,6 +41,8 @@ import org.apache.logging.log4j.LogManager;
 public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	
+	
 	private static final Logger logger = LogManager.getLogger(Record.class);
 
 	@Override
@@ -103,8 +107,32 @@ public class RecordDisplay extends HttpServlet {
 			}
 
 			// read record file for display
-			String recordAsString	= FileUtils.readFileToString(FileUtil.getFile(databaseName, accession), StandardCharsets.UTF_8);
-			record = Validator.validate(recordAsString, databaseName);
+			DatabaseManager dbMan	= new DatabaseManager("MassBank");
+			record	= dbMan.getAccessionData(accession);
+			dbMan.closeConnection();
+			
+			
+			
+//			DepictionGenerator dg = new DepictionGenerator().withAtomColors();
+//			
+//			dg.withSize(40,40).depict(record.CH_IUPAC1()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+"_small.svg"));
+//			dg.withSize(80,80).depict(record.CH_IUPAC1()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+"_medium.svg"));
+//			dg.withSize(160,160).depict(record.CH_IUPAC1()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+"_big.svg"));
+
+
+			
+//			
+//			ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
+//					accession, record.CH_IUPAC(), record.CH_SMILES(), request.getServletContext().getRealPath("/temp"), "/temp",
+//					80, 200, 436
+//			);
+//			String svgMedium	= null;
+//			if(clickablePreviewImageData != null)
+//				svgMedium	= clickablePreviewImageData.getMediumClickableImage();
+//			
+//			System.out.println(svgMedium);
+			
+//			System.out.println(StructureToSvgStringGenerator2.drawToSvg(record.CH_IUPAC1()));
 			
 //			// paths
 //			String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//Config.get().BASE_URL() + "temp";
@@ -518,14 +546,18 @@ public class RecordDisplay extends HttpServlet {
 				".";
 			
 			
+			
 			String peaks = "41.100,46@55.100,142@56.000,3@59.100,14@60.000,60@72.800,29@74.200,11@76.900,33@91.100,4@92.100,44@109.100,999@";
+			
 			
 	        request.setAttribute("shortName", record.RECORD_TITLE_NAME());
 	        request.setAttribute("description", description);
 	        request.setAttribute("accession", accession);
 	        request.setAttribute("inchiKey", InChIKey);
 	        request.setAttribute("recordTitle", record.RECORD_TITLE());
+	        
 	        request.setAttribute("peaks", peaks);
+	        //request.setAttribute("svgMedium", svgMedium);
 
 	        request.getRequestDispatcher("/RecordDisplay2.jsp").forward(request, response);
 		} catch (Exception e) {

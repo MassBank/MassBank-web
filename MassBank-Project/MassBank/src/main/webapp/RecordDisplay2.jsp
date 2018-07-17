@@ -89,10 +89,13 @@
 			</div>
 			<div class="w3-onethird w3-text-grey w3-small">
 				Chemical Structure
-				${svgMedium}
+				 <a href="temp/${accession}_big.svg">
+				 	<img src="temp/${accession}_medium.svg">
+				 </a> 
 			</div>
 		</div>
 	</div>
+	
 		
 	
 	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/RecordDisplay.jsp?id=KO003710&dsn=Keio_Univ" typeof="schema:Dataset" >
