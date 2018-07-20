@@ -13,7 +13,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.AtomContainer;
@@ -64,6 +67,9 @@ public class DatabaseManager {
 			"SELECT CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME " +
 			"FROM CONTRIBUTOR INNER JOIN RECORD ON RECORD.CONTRIBUTOR=CONTRIBUTOR.ID " +
 			"WHERE RECORD.ACCESSION = ?";
+	private final static String sqlGetAccessions = 
+			"SELECT ACCESSION " + 
+			"FROM RECORD;";
 	
 	private final PreparedStatement statementAC_CHROMATOGRAPHY;
 	private final PreparedStatement statementAC_MASS_SPECTROMETRY;
@@ -85,7 +91,8 @@ public class DatabaseManager {
 	private final PreparedStatement statementSP_SAMPLE;
 	private final PreparedStatement statementANNOTATION_HEADER;
 	private final PreparedStatement statementGetContributorFromAccession;
-
+	private final PreparedStatement statementGetAccessions;
+	
 	private final static String insertCompound = "INSERT INTO COMPOUND VALUES(?,?,?,?,?,?,?,?)";
 	private final static String insertCompound_Class = "INSERT INTO COMPOUND_CLASS VALUES(?,?,?,?)";
 	private final static String insertCompound_Compound_Class = "INSERT INTO COMPOUND_COMPOUND_CLASS VALUES(?,?)";
@@ -240,6 +247,7 @@ public class DatabaseManager {
 		statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
 		statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
 		statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
+		statementGetAccessions = this.con.prepareStatement(sqlGetAccessions);
 		
 		statementInsertCompound = this.con.prepareStatement(insertCompound, Statement.RETURN_GENERATED_KEYS);
 		statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class, Statement.RETURN_GENERATED_KEYS);
@@ -1525,11 +1533,31 @@ public class DatabaseManager {
 		}
 		return contributor;
 	}
+	public String[] getAccessions() {
+		List<String> accessions	= new ArrayList<String>();
+		try {
+			ResultSet tmp = this.statementGetAccessions.executeQuery();
+			while(tmp.next())
+				accessions.add(tmp.getString("ACCESSION"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return accessions.toArray(new String[accessions.size()]);
+	}
 	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
 		
 		DatabaseManager db = new DatabaseManager(Config.get().dbName());
 		DatabaseManager.init_db(Config.get().tmpdbName());
 		System.out.println(db);
+		
+		Set<String> praefixSet	= new HashSet<String>();
+		for(String accession : db.getAccessions())
+			praefixSet.add(accession.substring(0, 2));
+		String[] praefixes	= praefixSet.toArray(new String[praefixSet.size()]);
+		Arrays.sort(praefixes);
+		System.out.println(Arrays.toString(praefixes));
+		
 		db.closeConnection();
 		//move_temp_db_to_main_massbank();
 	}
