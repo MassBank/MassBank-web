@@ -4,13 +4,14 @@ import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -35,7 +36,6 @@ import edu.ucdavis.fiehnlab.spectra.hash.core.types.Ion;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
 import net.sf.jniinchi.INCHI_RET;
-
 
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
@@ -105,24 +105,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("ACCESSION")
 			.seq(ref("tagsep"))
 			.seq(
-				letter().times(2).flatten()
+				letter().times(2)
 				.seq(
-					digit().times(6).flatten()
-				)
-				.map((List<String> value) -> {
-					callback.ACCESSION(value.get(0) + value.get(1));
+					digit().times(6)
+				).flatten()
+				.map((String value) -> {
+					callback.ACCESSION(value);
 					return value;
 				})
 				.or(
-					letter().times(3).flatten()
+					letter().times(3)
 					.seq(
-						digit().times(5).flatten()
+						digit().times(5)
 					)
-					.map((List<String> value) -> {
-						callback.ACCESSION(value.get(0) + value.get(1));
-						return value;
-					})
-				)
+				).flatten()
+				.map((String value) -> {
+					callback.ACCESSION(value);
+					return value;
+				})
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
@@ -163,23 +163,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER)
 			.map((List<?> value) -> {
 				//System.out.println(value);
-				
-				// [RECORD_TITLE, : , 2,6-Cyclolycopene-1,5-diol, [FAB, EBEB], MS2, m/z: 570.44; [M]*+, \n]
-				value	= value.subList(2, value.size()-1);
-				List<String> value2	= new ArrayList<String>();
-				for(Object val : value) {
+				List<?> value2 = value.subList(2, value.size()-1);
+				List<String> value3	= new ArrayList<String>();
+				for(Object val : value2) {
 					if(val == null)	continue;
 					if(val instanceof List) {
-						value2.add(String.join("-", (String[]) ((List) val).toArray(new String[((List) val).size()])));
+						value3.add(String.join("-", (List<String>) val));
 						continue;
 					}
-					value2.add((String) val);
+					value3.add((String) val);
 				}
-				String recordTitle	= String.join("; ", value2.toArray(new String[value2.size()]));
+				String recordTitle	= String.join("; ", value3);
 				callback.RECORD_TITLE(recordTitle);
-				
-//				if (value.get(value.size()-2) == null) callback.RECORD_TITLE(value.subList(2, value.size()-2).toString());
-//				else callback.RECORD_TITLE(value.subList(2, value.size()-1).toString());
 				return value;
 			})
 		);
@@ -191,19 +186,23 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// DATE: 2016.01.15
 		// DATE: 2016.01.19 (Created 2006.12.21, modified 2011.05.06)
 		def("date_value",
-			CharacterParser.digit().times(4).flatten().trim(CharacterParser.of('.')).map((String value) -> Integer.parseInt(value))
-			.seq(
-				CharacterParser.digit().times(2)
-				.flatten().trim(CharacterParser.of('.'))
-				.map((String value) -> Integer.parseInt(value))
-			)
-			.seq(
-				CharacterParser.digit().times(2)
-				.flatten()
-				.map((String value) -> Integer.parseInt(value))
-			)
-			.map((List<Integer> value) -> {
-				return LocalDate.of(value.get(0),value.get(1),value.get(2));		
+			CharacterParser.digit().times(4)
+			.seq(CharacterParser.of('.'))
+			.seq(CharacterParser.digit().times(2))
+			.seq(CharacterParser.of('.'))
+			.seq(CharacterParser.digit().times(2))
+			.flatten()
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				Result r = continuation.apply(context);
+				if (r.isSuccess()) {
+					try {
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+						return r.success(LocalDate.parse(r.get(), formatter));
+					} catch (Exception e) { 
+						return context.failure("Can not parse date:\n" + e.getMessage());		 				
+					}
+				}
+				return r;
 			})
 		);
 		def("date",
@@ -523,15 +522,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
 						try {
-							if (r.get().equals("N/A")) callback.CH_IUPAC(new AtomContainer());
+							if ("N/A".equals(r.get())) callback.CH_IUPAC(new AtomContainer());
 							else {
 								// Get InChIToStructure
 								InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), DefaultChemObjectBuilder.getInstance());
 								INCHI_RET ret = intostruct.getReturnStatus();
 								if (ret == INCHI_RET.WARNING) {
 									// Structure generated, but with warning message
-									System.out.println("InChI warning: " + intostruct.getMessage());
-									System.out.println(callback.ACCESSION());
+									logger.warn("InChI warning: " + intostruct.getMessage());
+									logger.warn(callback.ACCESSION());
 								} 
 								else if (ret != INCHI_RET.OKAY) {
 									// Structure generation failed

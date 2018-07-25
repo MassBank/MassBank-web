@@ -21,30 +21,113 @@
  ******************************************************************************/
 package massbank;
 
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.Logger;
-
-
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.depict.DepictionGenerator;
+import org.openscience.cdk.exception.CDKException;
 
 @WebServlet("/RecordDisplay2")
 public class RecordDisplay extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LogManager.getLogger(RecordDisplay.class);
 
-	
-	
-	private static final Logger logger = LogManager.getLogger(Record.class);
+	private static String createRecordString(Record record) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<hr>");
+		sb.append("ACCESSION: " + record.ACCESSION() + "<br>");
+		sb.append("RECORD_TITLE: " + record.RECORD_TITLE() + "<br>");
+		sb.append("DATE: " + record.DATE1() + "<br>");
+		sb.append("AUTHORS: " + record.AUTHORS() + "<br>");
+		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\">" + record.LICENSE() + "</a><br>");
+		if (record.COPYRIGHT() != null)
+			sb.append("COPYRIGHT: " + record.COPYRIGHT() + "<br>");
+		if (record.PUBLICATION() != null)
+			sb.append("PUBLICATION: " + record.PUBLICATION() + "<br>");
+		for (String comment : record.COMMENT())
+			sb.append("COMMENT: " + comment + "<br>");
+		
 
+		sb.append("<hr>");
+		for (String ch_name : record.CH_NAME())
+			sb.append("CH$NAME: " + ch_name + "<br>");
+		sb.append("CH$COMPOUND_CLASS: " + record.CH_COMPOUND_CLASS().get(0));
+		for (String ch_compound_class : record.CH_COMPOUND_CLASS().subList(1, record.CH_COMPOUND_CLASS().size())) {
+			sb.append("; " + ch_compound_class );
+		}
+		sb.append("<br>");
+		sb.append("CH$FORMULA: " + record.CH_FORMULA2() + "<br>");
+		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>");
+		sb.append("CH$SMILES: " + record.CH_SMILES1() + "<br>");
+		sb.append("CH$IUPAC: " + record.CH_IUPAC1() + "<br>");
+		for (Pair<String,String> link : record.CH_LINK()) {
+			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "<br>");
+		}
+		if (record.SP_SCIENTIFIC_NAME() != null)
+			sb.append("SP$SCIENTIFIC_NAME: " + record.SP_SCIENTIFIC_NAME() + "<br>");
+		if (record.SP_LINEAGE() != null)
+			sb.append("SP$LINEAGE: " + record.SP_LINEAGE() + "<br>");
+		for (Pair<String,String> link : record.SP_LINK())
+			sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "<br>");
+		for (String sample : record.SP_SAMPLE())
+				sb.append("SP$SAMPLE: " + sample + "<br>");
+
+		
+		sb.append("<hr>");
+		sb.append("AC$INSTRUMENT: " + record.AC_INSTRUMENT() + "<br>");
+		sb.append("AC$INSTRUMENT_TYPE: " + record.AC_INSTRUMENT_TYPE() + "<br>");
+		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>");
+		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + record.AC_MASS_SPECTROMETRY_ION_MODE() + "<br>");
+		for (Pair<String,String> ac_mass_spectrometry : record.AC_MASS_SPECTROMETRY())
+			sb.append("AC$MASS_SPECTROMETRY: " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "<br>");
+		for (Pair<String,String> ac_chromatography : record.AC_CHROMATOGRAPHY())
+			sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "<br>");
+		
+		
+		if (!record.MS_FOCUSED_ION().isEmpty() || !record.MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>");
+		for (Pair<String,String> ms_focued_ion : record.MS_FOCUSED_ION())
+			sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "<br>");
+		for (Pair<String,String> ms_data_processing : record.MS_DATA_PROCESSING())
+				sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "<br>");
+		
+		sb.append("<hr>");
+		sb.append("PK$SPLASH: " + record.PK_SPLASH() + "<br>");
+		if (!record.PK_ANNOTATION_HEADER().isEmpty()) {
+			sb.append("PK$ANNOTATION:");
+			for (String annotation_header_item : record.PK_ANNOTATION_HEADER())
+				sb.append(" " + annotation_header_item);
+			sb.append("<br>");
+			for (List<String> annotation_line :  record.PK_ANNOTATION()) {
+				sb.append("&nbsp");
+				for (String annotation_item : annotation_line )
+					sb.append("&nbsp" + annotation_item);
+				sb.append("<br>");
+			}
+		}
+
+		sb.append("PK$NUM_PEAK: " + record.PK_NUM_PEAK() + "<br>");
+		sb.append("PK$PEAK: m/z int. rel.int.<br>");
+		for (List<Double> peak_line :  record.PK_PEAK()) {
+			sb.append("&nbsp");
+			for (Double peak_line_item : peak_line )
+				sb.append("&nbsp" + peak_line_item.toString());
+			sb.append("<br>");
+		}
+		
+		sb.append("//");
+
+		return sb.toString();
+	}
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// preprocess request
@@ -86,53 +169,34 @@ public class RecordDisplay extends HttpServlet {
 				DatabaseManager dbManager = new DatabaseManager(Config.get().dbName());
 				Record.Contributor contributorObj = dbManager.getContributorFromAccession(accession);
 				dbManager.closeConnection();
-				if(contributorObj != null)
-					databaseName	= contributorObj.SHORT_NAME;
-			}
-			if(databaseName == null){
-				String errormsg	= "argument 'dsn' is missing, empty or can not be determined from accession id.";
-				logger.error(errormsg);
-				
-				String redirectUrl	= "/NoRecordPage.jsp" + "?id=" + accession + "&dsn=" + databaseName + "&error=" + errormsg;
-				response.sendRedirect(request.getContextPath()+redirectUrl);
-				return;
-			}
-			if(!FileUtil.existsFile(databaseName, accession)){
-				String errormsg	= "File for accession '" + accession + "'" + 
-						(databaseName != null ? " in database '" + databaseName + "'" : "") +
-						" does not exist.";
-				String redirectUrl	= "/NoRecordPage.jsp" + "?id=" + accession + "&dsn=" + databaseName + "&error=" + errormsg;
-				response.sendRedirect(request.getContextPath()+redirectUrl);
-				return;
+				if(contributorObj == null) {
+					String errormsg	= "argument 'dsn' is missing, empty or can not be determined from accession id.";
+					logger.error(errormsg);
+					String redirectUrl	= "/NoRecordPage.jsp" + "?id=" + accession + "&dsn=" + databaseName + "&error=" + errormsg;
+					response.sendRedirect(request.getContextPath()+redirectUrl);
+					return;
+				}
+				else databaseName = contributorObj.SHORT_NAME;
 			}
 
-			// read record file for display
+			// load record for display
 			DatabaseManager dbMan	= new DatabaseManager("MassBank");
 			record	= dbMan.getAccessionData(accession);
 			dbMan.closeConnection();
+			if(record == null) {
+				String errormsg	= "retrieval of '" + accession + "'from database failed";
+				logger.error(errormsg);
+				String redirectUrl	= "/NoRecordPage.jsp" + "?id=" + accession + "&dsn=" + databaseName + "&error=" + errormsg;
+				response.sendRedirect(request.getContextPath()+redirectUrl);
+				return;
+			}
 			
-			
-			
-//			DepictionGenerator dg = new DepictionGenerator().withAtomColors();
-//			
-//			dg.withSize(40,40).depict(record.CH_IUPAC1()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+"_small.svg"));
-//			dg.withSize(80,80).depict(record.CH_IUPAC1()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+"_medium.svg"));
-//			dg.withSize(160,160).depict(record.CH_IUPAC1()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+"_big.svg"));
+			// create formula images					
+			DepictionGenerator dg = new DepictionGenerator().withAtomColors().withZoom(3);
+			dg.depict(record.CH_IUPAC()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+".svg"));
+			String depiction = dg.depict(record.CH_IUPAC()).toSvgStr();
+			depiction = depiction.substring(depiction.indexOf("<svg"));
 
-
-			
-//			
-//			ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
-//					accession, record.CH_IUPAC(), record.CH_SMILES(), request.getServletContext().getRealPath("/temp"), "/temp",
-//					80, 200, 436
-//			);
-//			String svgMedium	= null;
-//			if(clickablePreviewImageData != null)
-//				svgMedium	= clickablePreviewImageData.getMediumClickableImage();
-//			
-//			System.out.println(svgMedium);
-			
-//			System.out.println(StructureToSvgStringGenerator2.drawToSvg(record.CH_IUPAC1()));
 			
 //			// paths
 //			String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//Config.get().BASE_URL() + "temp";
@@ -548,17 +612,18 @@ public class RecordDisplay extends HttpServlet {
 			
 			
 			String peaks = "41.100,46@55.100,142@56.000,3@59.100,14@60.000,60@72.800,29@74.200,11@76.900,33@91.100,4@92.100,44@109.100,999@";
-			
+			String recordstring = createRecordString(record);
 			
 	        request.setAttribute("shortName", record.RECORD_TITLE_NAME());
 	        request.setAttribute("description", description);
 	        request.setAttribute("accession", accession);
 	        request.setAttribute("inchiKey", InChIKey);
 	        request.setAttribute("recordTitle", record.RECORD_TITLE());
-	        
-	        request.setAttribute("peaks", peaks);
-	        //request.setAttribute("svgMedium", svgMedium);
+	        request.setAttribute("depiction", depiction);
 
+	        request.setAttribute("peaks", peaks);
+	        request.setAttribute("recordstring", recordstring);
+	        
 	        request.getRequestDispatcher("/RecordDisplay2.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Cannot load sitename", e);

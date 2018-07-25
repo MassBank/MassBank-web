@@ -1,6 +1,7 @@
 package massbank;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -18,9 +21,6 @@ import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import net.sf.jniinchi.INCHI_RET;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 public class Record {
 	private static final Logger logger = LogManager.getLogger(Record.class);
@@ -34,31 +34,31 @@ public class Record {
 	private LocalDate date;
 	private String authors;
 	private String license;	
-	private String copyright;
-	private String publication;
-	private List<String> comment;
+	private String copyright; // optional
+	private String publication; // optional
+	private List<String> comment; // optional
 	private List<String> ch_name;
 	private List<String> ch_compound_class;
 	private IMolecularFormula ch_formula;
 	private double ch_exact_mass;
 	private IAtomContainer ch_smiles;
 	private IAtomContainer ch_iupac;
-	private List<Pair<String, String>> ch_link;
-	private String sp_scientific_name;
-	private String sp_lineage;
-	private List<Pair<String, String>> sp_link;
-	private List<String> sp_sample;
+	private List<Pair<String, String>> ch_link; // optional
+	private String sp_scientific_name; // optional
+	private String sp_lineage; // optional
+	private List<Pair<String, String>> sp_link; // optional
+	private List<String> sp_sample; // optional
 	private String ac_instrument;
 	private String ac_instrument_type;
 	private String ac_mass_spectrometry_ms_type;
 	private String ac_mass_spectrometry_ion_mode;
-	private List<Pair<String, String>> ac_mass_spectrometry;
-	private List<Pair<String, String>> ac_chromatography;
-	private List<Pair<String, String>> ms_focused_ion;
-	private List<Pair<String, String>> ms_data_processing;
+	private List<Pair<String, String>> ac_mass_spectrometry; // optional
+	private List<Pair<String, String>> ac_chromatography; // optional
+	private List<Pair<String, String>> ms_focused_ion; // optional
+	private List<Pair<String, String>> ms_data_processing; // optional
 	private String pk_splash;
-	private List<String> pk_annotation_header;
-	private final List<List<String>> pk_annotation;
+	private List<String> pk_annotation_header; // optional
+	private final List<List<String>> pk_annotation; // optional
 	private int pk_num_peak;
 	private final List<List<Double>> pk_peak;
 	
@@ -66,18 +66,15 @@ public class Record {
 		this.contributor	= contributor;
 		
 		// set default values for optional fields
-		copyright				= null;
-		publication				= null;
 		comment					= new ArrayList<String>();
 		ch_link					= new ArrayList<Pair<String, String>>();
-		sp_scientific_name		= null;
-		sp_lineage				= null;
 		sp_link					= new ArrayList<Pair<String, String>>();
 		sp_sample				= new ArrayList<String>();
 		ac_mass_spectrometry	= new ArrayList<Pair<String, String>>();
 		ac_chromatography		= new ArrayList<Pair<String, String>>();
 		ms_focused_ion			= new ArrayList<Pair<String, String>>();
 		ms_data_processing		= new ArrayList<Pair<String, String>>();
+		pk_annotation_header	= new ArrayList<String>();
 		pk_annotation			= new ArrayList<List<String>>();
 		
 		// set default values for mandatory fields
@@ -88,22 +85,25 @@ public class Record {
 	public String CONTRIBUTOR() {
 		return contributor;
 	}
+
 	
 	public String ACCESSION() {
 		return accession;
 	}
 	public void ACCESSION(String value) {
-		accession	= value;
+		accession = value;
 	}
+	
 	
 	public String RECORD_TITLE() {
 		return record_title;
 	}
-	
 	public String RECORD_TITLE_NAME() {
 		return record_title_name;
 	}
-	
+	public String RECORD_TITLE_CONDITION() {
+		return record_title_condition;
+	}
 	public void RECORD_TITLE(String value) {
 		this.record_title = value;
 		String[] record_title_tokens	= value.split("; ");
@@ -111,12 +111,18 @@ public class Record {
 		this.record_title_condition	= String.join("; ", Arrays.copyOfRange(record_title_tokens, 1, record_title_tokens.length));
 	}
 	
+	
 	public LocalDate DATE() {
 		return date;
+	}
+	public String DATE1() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+		return date.format(formatter);
 	}
 	public void DATE(LocalDate value) {
 		date=value;
 	}
+	
 	
 	public String AUTHORS() {
 		return authors;
@@ -125,12 +131,14 @@ public class Record {
 		authors=value;
 	}
 	
+	
 	public String LICENSE() {
 		return license;
 	}
 	public void LICENSE(String value) {
 		license=value;
 	}
+	
 	
 	public String COPYRIGHT() {
 		return copyright;
@@ -139,12 +147,14 @@ public class Record {
 		copyright= value;
 	}
 	
+	
 	public String PUBLICATION() {
 		return publication;
 	}
 	public void PUBLICATION(String value) {
 		publication=value;
 	}
+	
 	
 	public List<String> COMMENT() {
 		return comment;
@@ -153,12 +163,14 @@ public class Record {
 		comment=new ArrayList<String>(value);
 	}
 	
+	
 	public List<String> CH_NAME() {
 		return ch_name;
 	}
 	public void CH_NAME(List<String> value) {
 		ch_name=new ArrayList<String>(value);
 	}
+	
 	
 	public List<String> CH_COMPOUND_CLASS() {
 		return ch_compound_class;
@@ -167,15 +179,20 @@ public class Record {
 		ch_compound_class=new ArrayList<String>(value);
 	}
 	
-	public String CH_FORMULA() {
+	
+	public IMolecularFormula CH_FORMULA() {
+		return ch_formula;
+	}
+	public String CH_FORMULA1() {
 		return MolecularFormulaManipulator.getString(ch_formula);
 	}
-	public IMolecularFormula CH_FORMULA1() {
-		return ch_formula;
+	public String CH_FORMULA2() {
+		return MolecularFormulaManipulator.getHTML(ch_formula);
 	}
 	public void CH_FORMULA(IMolecularFormula value) {
 		ch_formula=value;
 	}
+	
 	
 	public double CH_EXACT_MASS() {
 		return ch_exact_mass;
@@ -184,38 +201,51 @@ public class Record {
 		ch_exact_mass=value;
 	}
 	
-	public String CH_SMILES() throws CDKException {
-		if (ch_smiles.isEmpty()) return "N/A";
-		SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Isomeric);
-		return smigen.create(ch_smiles);
-	}
-	public IAtomContainer CH_SMILES1() {
+	
+	public IAtomContainer CH_SMILES() {
 		return ch_smiles;
+	}
+	public String CH_SMILES1() {
+		if (ch_smiles.isEmpty()) return "N/A";
+		try {
+			SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Isomeric);
+			return smigen.create(ch_smiles);
+		} catch (CDKException e) {
+			logger.error(e.getMessage());
+			return "N/A";
+		}
 	}
 	public void CH_SMILES(IAtomContainer value) {
 		ch_smiles=value;
 	}
 	
-	public String CH_IUPAC() throws CDKException {
-		if (ch_iupac.isEmpty()) return "N/A";
-		InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(ch_iupac);
-		INCHI_RET ret = gen.getReturnStatus();
-		if (ret == INCHI_RET.WARNING) {
-			// Structure generated, but with warning message
-			logger.warn("InChI warning: " + gen.getMessage());
-		} else if (ret != INCHI_RET.OKAY) {
-			// Structure generation failed
-			throw new IllegalStateException(
-					"Structure generation failed: " + ret.toString() + " [" + gen.getMessage() + "]");
-		}
-		return gen.getInchi();
-	}
-	public IAtomContainer CH_IUPAC1() {
+	
+	public IAtomContainer CH_IUPAC() {
 		return ch_smiles;
+	}
+	public String CH_IUPAC1() {
+		if (ch_iupac.isEmpty()) return "N/A";
+		try {
+			InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(ch_iupac);
+			INCHI_RET ret = gen.getReturnStatus();
+			if (ret == INCHI_RET.WARNING) {
+				// Structure generated, but with warning message
+				logger.warn("InChI warning: " + gen.getMessage());
+			} else if (ret != INCHI_RET.OKAY) {
+				// Structure generation failed
+				logger.error("Structure generation failed: " + ret.toString() + " [" + gen.getMessage() + "]");
+				return "N/A";
+			}
+			return gen.getInchi();
+		} catch (CDKException e) {
+			logger.error(e.getMessage());
+			return "N/A";
+		}
 	}
 	public void CH_IUPAC(IAtomContainer value) {
 		ch_iupac=value;
 	}
+
 	
 	public List<Pair<String, String>> CH_LINK() {
 		return ch_link;
@@ -359,7 +389,7 @@ public class Record {
 
 		sb.append("ACCESSION: " + ACCESSION() + "\n");
 		sb.append("RECORD_TITLE: " + RECORD_TITLE() + "\n");
-		sb.append("DATE: " + DATE() + "\n");
+		sb.append("DATE: " + DATE1() + "\n");
 		sb.append("AUTHORS: " + AUTHORS() + "\n");
 		sb.append("LICENSE: " + LICENSE() + "\n");
 		if (COPYRIGHT() != null)
@@ -381,20 +411,11 @@ public class Record {
 		}
 		sb.append("\n");
 				
-		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
+		sb.append("CH$FORMULA: " + CH_FORMULA1() + "\n");
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
-		try {
-			sb.append("CH$SMILES: " + CH_SMILES() + "\n");
-		} catch (CDKException e) {
-			logger.error(e.getMessage());
-			sb.append("CH$SMILES: N/A\n");
-		}
-		try {
-			sb.append("CH$IUPAC: " + CH_IUPAC() + "\n");
-		} catch (CDKException e) {
-			logger.error(e.getMessage());
-			sb.append("CH$IUPAC: N/A\n");
-		}
+		sb.append("CH$SMILES: " + CH_SMILES1() + "\n");
+		sb.append("CH$IUPAC: " + CH_IUPAC1() + "\n");
+		
 		if (CH_LINK() != null) {
 			for (Pair<String,String> link : CH_LINK())
 				sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");

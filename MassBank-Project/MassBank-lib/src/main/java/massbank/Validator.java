@@ -2,15 +2,18 @@ package massbank;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
+
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
+
 	
 	public static String recordstringExample = 
 			"ACCESSION: BSU00002\n" +

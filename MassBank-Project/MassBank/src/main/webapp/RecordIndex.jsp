@@ -38,6 +38,8 @@
 	<script src="script/jquery-3.3.1.min.js"></script>
 	<script src="script/massbank.js"></script>
 	<script src="script/search.js"></script>
+	<script src="script/svg4everybody-2.1.9.min.js"></script>
+	<script> svg4everybody();</script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -80,16 +82,15 @@
 			</h1>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 251 222" xmlns="http://www.w3.org/2000/svg" style="width:15px">
-				<path  fill="currentColor" 
-					d="m0 91v40c0 6.6 5.4 12 12 12h116v67c0 10.7 12.9 16 20.5 8.5l99-99c4.7-4.7 4.7-12.3 0-17l-99-99c-7.6-7.6-20.5-2.2-20.5 8.5v67h-116c-6.6 0-12 5.4-12 12z"/>
+			<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
+			<svg viewBox="0 0 32 28" style="width:16px">
+				<use xlink:href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 251 222" xmlns="http://www.w3.org/2000/svg" style="width:15px">
-				<path  fill="currentColor" 
-					d="m0 91v40c0 6.6 5.4 12 12 12h116v67c0 10.7 12.9 16 20.5 8.5l99-99c4.7-4.7 4.7-12.3 0-17l-99-99c-7.6-7.6-20.5-2.2-20.5 8.5v67h-116c-6.6 0-12 5.4-12 12z"/>
+			<svg viewBox="0 0 32 28" style="width:16px">
+				<use xlink:href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
 		</div>

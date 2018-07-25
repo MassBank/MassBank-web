@@ -36,6 +36,8 @@
 	<script src="script/jquery-3.3.1.min.js"></script>
 	<script src="script/massbank.js"></script>
 	<script src="script/search.js"></script>
+	<script src="script/svg4everybody-2.1.9.min.js"></script>
+	<script> svg4everybody();</script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -47,16 +49,14 @@
 			</h1>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 251 222" xmlns="http://www.w3.org/2000/svg" style="width:15px">
-				<path  fill="currentColor" 
-					d="m0 91v40c0 6.6 5.4 12 12 12h116v67c0 10.7 12.9 16 20.5 8.5l99-99c4.7-4.7 4.7-12.3 0-17l-99-99c-7.6-7.6-20.5-2.2-20.5 8.5v67h-116c-6.6 0-12 5.4-12 12z"/>
+			<svg viewBox="0 0 32 28" style="width:16px">
+				<use xlink:href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 251 222" xmlns="http://www.w3.org/2000/svg" style="width:15px">
-				<path  fill="currentColor" 
-					d="m0 91v40c0 6.6 5.4 12 12 12h116v67c0 10.7 12.9 16 20.5 8.5l99-99c4.7-4.7 4.7-12.3 0-17l-99-99c-7.6-7.6-20.5-2.2-20.5 8.5v67h-116c-6.6 0-12 5.4-12 12z"/>
+			<svg viewBox="0 0 32 28" style="width:16px">
+				<use xlink:href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
 		</div>
@@ -196,9 +196,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz0" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -215,9 +214,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz1" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -233,9 +231,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz2" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -251,9 +248,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz3" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -269,9 +265,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz4" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -287,9 +282,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz5" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -350,9 +344,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz0" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -369,9 +362,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz1" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -387,9 +379,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz2" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -405,9 +396,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz3" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -423,9 +413,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz4" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -441,9 +430,8 @@
 								<input class="w3-input w3-round w3-border Mass" name="mz5" type="text">
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
-								<svg viewBox="0 0 251 272" xmlns="http://www.w3.org/2000/svg" style="width:25px">
-								<path  fill="currentColor" 
-									d="m251 91v40c0 6.6-5.4 12-12 12h-116v67c0 10.7-12.9 16-20.5 8.5l-99-99c-4.7-4.7-4.7-12.3 0-17l99-99c7.6-7.6 20.5-2.2 20.5 8.5v67h116c6.6 0 12 5.4 12 12z"/>
+								<svg viewBox="0 4 32 36" style="width:25px">
+									<use xlink:href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
