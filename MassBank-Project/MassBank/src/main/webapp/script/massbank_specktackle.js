@@ -50,77 +50,6 @@ function loadSpectrum(spectrum) {
     MSData.add(spectrum);
 }
 
-// load data from molfile and display the structure
-function loadMolFile() {
-	var urlVars = getUrlVars();
-    // array for mol2svg XHR promises
-    var deferreds = [];
-    // hide the sub-div until all promises are fulfilled
-    d3.selectAll('.molecule§viewer').style('display', 'none');
-    // resolve all file URLs one by one 
-    d3.selectAll('.molecule§viewer').each(function () {
-    	var molDivId = "#" + d3.select(this).attr('id');
-    	d3.selectAll(molDivId)
-            .append('div')
-            .attr('id', 'tooltips-mol-'+molDivId+'.mol')
-            .style('float', 'left')
-            .style('height', '100%')
-            .style('width', '50%');
-            var idSplit = d3.select(this).attr('id').split("§");
-            // the id of the mol div takes the form molecule§viewer[§id][§site|dsn]
-            // example id with site molecule§viewer§XX000001§0
-            // example id with dsn molecule§viewer§XX000001§MassBank
-            // check if the id contains an id and site or dsn
-            if (idSplit[2] !== undefined && idSplit[3] !== undefined) {
-            	var molId = idSplit[2];
-            	var dsn = idSplit[3];
-            	// check if the id is a site, i.e. a number
-            	if (!isNaN(dsn)) {
-            		var jqxhrList = $.get('../massbank.conf').done(function (data){
-			            var list = data.evaluate('//DB',data,null,XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
-			            dsn = list.snapshotItem(dsn).textContent;
-			            jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn,"text").done(function (data) {
-				            var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
-				            deferreds.push(jqxhr);    
-				        });
-			    	});
-            	} 
-            	// if it is not a number take the value as the string for the dsn parameter
-            	else {
-	            	var jqxhrMolFile = $.get('../cgi-bin/GetMolfileById.cgi?id='+ molId +'&dsn=' + dsn).done(function (data) {
-	                	var jqxhr = st.util.mol2svg(100,100).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
-	                	deferreds.push(jqxhr);    
-	            	});		
-            	}
-            } 
-            // if the id does not contain an id and site or dsn try to retrieve both parameters from the page's URL
-            else {
-            	var molId = id;
-            	var molIdURL = urlVars["id"];
-            	var dsnURL = urlVars["dsn"];
-    			if (molIdURL !== undefined) {
-					molId = molIdURL;
-				}
-				if (dsnURL !== undefined) {
-					dsn = dsnURL;
-				}
-            	if (molId !== "" && dsn !== "") {
-            		var jqxhr = $.get("../cgi-bin/GetMolfileById.cgi?dsn="+dsn+"&id="+molId,"text");
-				    jqxhr.done(function (data) {
-				        var jqxhr = st.util.mol2svg(200,200).draw('../DB/molfile/'+dsn+'/'+data+'.mol', molDivId);
-				        deferreds.push(jqxhr);
-				    });
-            	}
-            }
-        // wait until all XHR promises are finished
-        $.when.apply($, deferreds).done(function () {
-        // make the tooltip-mol sub-div visible
-        d3.selectAll(molDivId)
-            .style('display', 'inline');
-        });
-    });
-}
-
 // construct the spectrum data structure
 function loadData() {
 	// array for mol2svg XHR promises
@@ -170,5 +99,4 @@ function loadData() {
 
 $(document).ready(function () {
 	loadData();
-	loadMolFile();
 });
