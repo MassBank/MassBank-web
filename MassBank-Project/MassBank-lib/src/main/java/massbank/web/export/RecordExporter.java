@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -171,16 +172,21 @@ Num Peaks: 7
 	
 	
 	public static enum ExportFormat {
-		MSP,
-		MassBank;
+		NIST_MSP,
+		RIKEN_MSP,
+		MASSBANK_RECORDS;
 	}
 	public static void recordExport(File file, ExportFormat format, Record... records) throws CDKException{
 		switch (format) {
-			case MSP:{
-				recordsToMsp(file, records);
+			case NIST_MSP:{
+				recordsToNIST_MSP(file, records);
 				break;
 			}
-			case MassBank: {
+			case RIKEN_MSP:{
+				recordsToRIKEN_MSP(file, records);
+				break;
+			}
+			case MASSBANK_RECORDS: {
 				recordsToZipFile(file, records);
 				break;
 			}
@@ -188,11 +194,18 @@ Num Peaks: 7
 				throw new IllegalArgumentException("Unknown Export-Format '" + format + "'!");
 		}
 	}
-	public static void recordsToMsp(File file, Record... records) throws CDKException{
+	
+	/**
+	 * wrapper for individual record export function and write
+	 * @param file
+	 * @param records
+	 * @throws CDKException
+	 */
+	public static void recordsToNIST_MSP(File file, Record... records) throws CDKException{
 		// collect data
 		List<String> list	= new ArrayList<String>();
 		for(Record record : records) {
-			list.addAll(recordToMsp(record));
+			list.addAll(recordToNIST_MSP(record));
 			list.add("");
 		}
 		
@@ -206,12 +219,16 @@ Num Peaks: 7
 			e1.printStackTrace();
 		}
 	}
-	public static List<String> recordToMsp(Record record) throws CDKException{
+	/**
+	 * NIST format, also used by MONA
+	 * @param record
+	 * @return
+	 * @throws CDKException
+	 */
+	public static List<String> recordToNIST_MSP(Record record) throws CDKException{
 		List<String> list	= new ArrayList<String>();
 		
-		List<String> tmpList	= null;
-		
-		tmpList	= record.CH_NAME();
+		List<String> tmpList	= record.CH_NAME();
 		list.add("Name" + ": " + tmpList.get(0));
 		for(int i = 1; i < tmpList.size(); i++)
 			list.add("Synon" + ": " + tmpList.get(i));
@@ -322,6 +339,87 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		return list;
 	}
 	
+	/**
+	 * wrapper for individual record export function and write
+	 * @param file
+	 * @param records
+	 * @throws CDKException
+	 */
+	public static void recordsToRIKEN_MSP(File file, Record... records) throws CDKException{
+		// collect data
+		List<String> list	= new ArrayList<String>();
+		for(Record record : records) {
+			list.addAll(recordToRIKEN_MSP(record));
+			list.add("");
+		}
+		
+		try {
+			FileUtils.writeStringToFile(
+					file, 
+					String.join("\n", list.toArray(new String[list.size()])), 
+					Charset.forName("UTF-8")
+			);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+	public static List<String> recordToRIKEN_MSP(Record record) throws CDKException{
+		
+		/*
++	NAME: Apigenin M-H
++	PRECURSORMZ: 269.0455469
++	PRECURSORTYPE: [M-H]-
++	INSTRUMENTTYPE: DI-ESI-qTof
++	INSTRUMENT: DI-ESI-qTof
++	SMILES: OC1=CC=C(C=C1)C1=CC(=O)C2=C(O)C=C(O)C=C2O1
++	INCHIKEY: KZNIFHPLKGYRTM-UHFFFAOYSA-N
++	FORMULA: C15H10O5
++	RETENTIONTIME: -1
++	IONMODE: Negative
++	LINKS: CCMSLIB00000077172
++	Comment: 
++	Num Peaks: 50
++	117.0362	19794
+	118.0391	990
+	275.031	271
+	766.5048	422
+		 */
+		
+		List<String> list_links	= new ArrayList<String>();
+		for(Entry<String, String> entry : record.CH_LINK_asMap().entrySet())
+			list_links.add(entry.getValue() + ":" + entry.getKey());
+		String links	= String.join("; ", list_links);
+		
+		String comment	= null;
+		for(String comment2 : record.COMMENT())
+			if(comment2.startsWith("CONFIDENCE"))
+				comment	= comment2.substring("CONFIDENCE".length() + 1);
+		if(comment == null)
+			comment	= String.join("; ", record.COMMENT());
+		if(comment.equals(""))
+			comment	= "NA";
+		
+		List<String> list	= new ArrayList<String>();
+		
+		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
+		list.add("PRECURSORMZ"		+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : ""));
+		list.add("PRECURSORTYPE"	+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE") : "NA"));
+		list.add("INSTRUMENTTYPE"	+ ": " + record.AC_INSTRUMENT_TYPE());
+		list.add("INSTRUMENT"		+ ": " + record.AC_INSTRUMENT());
+		list.add("SMILES"			+ ": " + record.CH_SMILES());
+		list.add("INCHIKEY"			+ ": " + (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "NA"));
+		list.add("FORMULA"			+ ": " + record.CH_FORMULA());
+		list.add("RETENTIONTIME"	+ ": " + (record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "NA"));
+		list.add("IONMODE"			+ ": " + record.AC_MASS_SPECTROMETRY_ION_MODE());
+		list.add("LINKS"			+ ": " + links);
+		list.add("Comment"			+ ": " + comment);
+		list.add("Num Peaks"		+ ": " + record.PK_NUM_PEAK());
+		for(List<Double> peak : record.PK_PEAK())
+			list.add(peak.get(0) + "\t" + peak.get(2));
+		
+		return list;
+	}
+	
 	public static void recordsToZipFile(File file, Record... records){
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
@@ -355,15 +453,15 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		System.out.println(record.toString());
 		System.out.println();
 		
-		List<String> export	= recordToMsp(record);
+		List<String> export	= recordToNIST_MSP(record);
 		System.out.println(String.join("\n", export));
 		
 		
 		File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
-		recordExport(file, ExportFormat.MassBank, record);
+		recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
 		
 		File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
-		recordExport(file2, ExportFormat.MSP, record);
+		recordExport(file2, ExportFormat.NIST_MSP, record);
 		
 	}
 }

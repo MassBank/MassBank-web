@@ -326,6 +326,9 @@ public class Record {
 	public List<Pair<String, String>> AC_CHROMATOGRAPHY() {
 		return ac_chromatography;
 	}
+	public Map<String, String> AC_CHROMATOGRAPHY_asMap() {
+		return listToMap(ac_chromatography);
+	}
 	public void AC_CHROMATOGRAPHY(List<Pair<String, String>> value) {
 		ac_chromatography=new ArrayList<Pair<String, String>>(value);
 	}
