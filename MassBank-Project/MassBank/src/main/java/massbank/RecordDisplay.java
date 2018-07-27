@@ -43,37 +43,40 @@ public class RecordDisplay extends HttpServlet {
 
 	private static String createRecordString(Record record) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<hr>");
-		sb.append("ACCESSION: " + record.ACCESSION() + "<br>");
-		sb.append("RECORD_TITLE: " + record.RECORD_TITLE() + "<br>");
-		sb.append("DATE: " + record.DATE1() + "<br>");
-		sb.append("AUTHORS: " + record.AUTHORS() + "<br>");
-		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\">" + record.LICENSE() + "</a><br>");
+		sb.append("<hr>\n");
+		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
+		sb.append("RECORD_TITLE: <span property=\"schema:headline\">" + record.RECORD_TITLE() + "</span><br>\n");
+		sb.append("DATE: <span property=\"schema:datePublished\">" + record.DATE1() + "</span><br>\n");
+		sb.append("AUTHORS: " + record.AUTHORS() + "<br>\n");
+		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + record.LICENSE() + "</a><br>\n");
+		
+		
 		if (record.COPYRIGHT() != null)
-			sb.append("COPYRIGHT: " + record.COPYRIGHT() + "<br>");
+			sb.append("COPYRIGHT: " + record.COPYRIGHT() + "<br>\n");
 		if (record.PUBLICATION() != null)
-			sb.append("PUBLICATION: " + record.PUBLICATION() + "<br>");
+			sb.append("PUBLICATION: " + record.PUBLICATION() + "<br>\n");
 		for (String comment : record.COMMENT())
-			sb.append("COMMENT: " + comment + "<br>");
+			sb.append("COMMENT: <span property=\"schema:comment\">" + comment + "</span><br>\n");
 		
 
-		sb.append("<hr>");
+		sb.append("<hr>\n");
 		for (String ch_name : record.CH_NAME())
-			sb.append("CH$NAME: " + ch_name + "<br>");
+			sb.append("CH$NAME: " + ch_name + "<br>\n");
 		sb.append("CH$COMPOUND_CLASS: " + record.CH_COMPOUND_CLASS().get(0));
 		for (String ch_compound_class : record.CH_COMPOUND_CLASS().subList(1, record.CH_COMPOUND_CLASS().size())) {
 			sb.append("; " + ch_compound_class );
 		}
-		sb.append("<br>");
-		sb.append("CH$FORMULA: " + record.CH_FORMULA2() + "<br>");
-		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>");
-		sb.append("CH$SMILES: " + record.CH_SMILES1() + "<br>");
-		sb.append("CH$IUPAC: " + record.CH_IUPAC1() + "<br>");
+		sb.append("<br>\n");
+		sb.append("CH$FORMULA: <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA1() + "\" target=\"_blank\">" + record.CH_FORMULA2() + "</a><br>\n");
+		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>\n");
+		sb.append("CH$SMILES: " + record.CH_SMILES1() + "<br>\n");
+		sb.append("CH$IUPAC: " + record.CH_IUPAC1() + "<br>\n");
+		
 		for (Pair<String,String> link : record.CH_LINK()) {
-			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "<br>");
+			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "<br>\n");
 		}
 		if (record.SP_SCIENTIFIC_NAME() != null)
-			sb.append("SP$SCIENTIFIC_NAME: " + record.SP_SCIENTIFIC_NAME() + "<br>");
+			sb.append("SP$SCIENTIFIC_NAME: " + record.SP_SCIENTIFIC_NAME() + "<br>\n");
 		if (record.SP_LINEAGE() != null)
 			sb.append("SP$LINEAGE: " + record.SP_LINEAGE() + "<br>");
 		for (Pair<String,String> link : record.SP_LINK())
@@ -198,112 +201,18 @@ public class RecordDisplay extends HttpServlet {
 			depiction = depiction.substring(depiction.indexOf("<svg"));
 
 			
-//			// paths
-//			String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//Config.get().BASE_URL() + "temp";
-//			//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";// ${ctx}
-//			String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
-//			
-//			// ##################################################################################################
-//			// get accession data
-//			
-//			// read file
-//			File file	= FileUtil.getFile(databaseName, accession);//new File(Config.get().DataRootPath() + databaseName + File.separator + accession + ".txt");
-//			List<String> list	= FileUtil.readFromFile(file);
-//			
+
 //			// process record
 //			// TODO property="schema:fileFormat"
 //			// TODO property="schema:isAccessibleForFree"
 //			// TODO property="schema:keywords"
 //			// TODO property="schema:publisher"
-//			final String delimiter	= ": ";
-//			StringBuilder sb	= new StringBuilder();
-//			String inchi			= null;
-//			String smiles			= null;
-//			String recordTitle		= null;
 //			
-//			String msType			= null;
-//			String name				= null;
-//			String compoundClass	= null;
-//			String inchiKey			= null;
-//			String splash			= null;
-//			String instrumentType	= null;
-//			String ionization		= null;
-//			String ionMode			= null;
-//			String fragmentation	= null;
-//			String collisionEnergy	= null;
-//			String resolution		= null;
-//			
-//			// CH, AC, MS, PK
-//			boolean ch	= false;
-//			boolean ac	= false;
-//			boolean ms	= false;
-//			boolean pk	= false;
-//			int PK_PEAK_idx	= -1;
-//			
-//			for(int lineIdx = 0; lineIdx < list.size(); lineIdx++){
-//				String line	= list.get(lineIdx);
-//				int delimiterIndex	= line.indexOf(delimiter);
-//				if(delimiterIndex == -1){
-//					sb.append(line + "\n");
-//					continue;
-//				}
-//				
-//				String tag		= line.substring(0, delimiterIndex);
-//				String value	= line.substring(delimiterIndex + delimiter.length());
-//				
-//				// horizontal ruler
-//				if(tag.startsWith("CH$") && (!ch))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	ch	= true;	}
-//				if(tag.startsWith("AC$") && (!ac))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	ac	= true;	}
-//				if(tag.startsWith("MS$") && (!ms))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	ms	= true;	}
-//				if(tag.startsWith("PK$") && (!pk))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	pk	= true;	}
-//				
-//				switch(tag){
+
 //				case "ACCESSION":
 //					// TODO schema:identifier
 //					sb.append(tag + ": " + value + "\n");
-//					
-//					break;
-//				case "RECORD_TITLE":
-//					// sb.append(tag + ": " + value + "\n");
-//					sb.append(tag + ": <span property=\"schema:headline\">" + value + "</span>\n");
-//					break;
-//				case "DATE":
-//					//sb.append(tag + ": " + value + "\n");
-//					
-//					// property="schema:dateCreated"
-//					// property="schema:dateModified"
-//					// property="schema:datePublished"
-//					
-//					// DATE: 2016.01.19 (Created 2010.10.06, modified 2011.05.11)
-//					String datePublished	= null;
-//					String dateCreated		= null;
-//					String dateModified		= null;
-//					
-//					String[] tokens	= value.split(" ");
-//					datePublished	= tokens[0];
-//					if(tokens.length > 1){
-//						tokens	= value.substring(datePublished.length()).replaceAll("\\(", "").replaceAll("\\)", "").trim().split(", ");
-//						for(int i = 0; i < tokens.length; i++){
-//							if(tokens[i].startsWith("Created"))		dateCreated		= tokens[i].split(" ")[1];
-//							if(tokens[i].startsWith("modified"))	dateModified	= tokens[i].split(" ")[1];
-//						}
-//					}
-//					
-//					sb.append(tag + ": <span property=\"schema:datePublished\">" + datePublished + "</span>");
-//					if(dateCreated != null || dateModified != null)
-//						sb.append(" (");
-//					if(dateCreated != null)
-//						sb.append("<span property=\"schema:dateCreated\">" + dateCreated + "</span>");
-//					if(dateModified != null){
-//						if(dateCreated != null)
-//							sb.append(", ");
-//						sb.append("<span property=\"schema:dateModified\">" + dateModified + "</span>");
-//					}
-//					if(dateCreated != null || dateModified != null)
-//						sb.append(")");
-//					
-//					sb.append("\n");
-//					break;
+
 //				case "AUTHORS":
 //					//sb.append(tag + ": " + value + "\n");
 //					String[] authorTokens	= value.split(", ");
@@ -348,12 +257,8 @@ public class RecordDisplay extends HttpServlet {
 //						sb.append(", " + affiliation);
 //					sb.append("\n");
 //					break;
-//				case "LICENSE":
-//					sb.append(tag + ": " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + value + "</a>" + "\n");
-//					break;
-//				case "COPYRIGHT":
-//					sb.append(tag + ": " + value + "\n");
-//					break;
+
+
 //				case "PUBLICATION":
 //					String regex_pmid	= "PMID:[ ]?\\d{8,8}";
 //					String regex_doi	= "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
@@ -385,10 +290,8 @@ public class RecordDisplay extends HttpServlet {
 //				    //sb.append(tag + ": " + value + "\n");
 //					sb.append(tag + ": <span property=\"schema:citation\" typeof=\"schema:ScholarlyArticle\">" + "<span property=\"schema:name\">" + value + "</span>" + "</span>\n");
 //					break;
-//				case "COMMENT":
-//					// property="schema:text" / property="schema:comment"
-//					sb.append(tag + ": <span property=\"schema:comment\">" + value + "</span>\n");
-//					break;
+
+
 //				case "CH$NAME":
 //					// TODO property="schema:name"
 //					// TODO property="schema:alternateName"
@@ -396,10 +299,8 @@ public class RecordDisplay extends HttpServlet {
 //					name	= value;
 //					//sb.append(tag + ": <span property=\"schema:alternateName\">" + value + "</span>\n");
 //					break;
-//				case "CH$COMPOUND_CLASS":
-//					sb.append(tag + ": " + value + "\n");
-//					compoundClass	= value;
-//					break;
+			
+
 //				case "CH$FORMULA":
 //					sb.append(tag + ": " + "<a href=\"http://www.chemspider.com/Search.aspx?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n");
 //					break;
@@ -623,6 +524,7 @@ public class RecordDisplay extends HttpServlet {
 
 	        request.setAttribute("peaks", peaks);
 	        request.setAttribute("recordstring", recordstring);
+	        
 	        
 	        request.getRequestDispatcher("/RecordDisplay2.jsp").forward(request, response);
 		} catch (Exception e) {

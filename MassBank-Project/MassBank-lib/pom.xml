@@ -104,18 +104,19 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>2.2.5</version>
+			<version>${jdbc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.petitparser.java-petitparser</groupId>
 			<artifactId>petitparser-core</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.jni-inchi</groupId>
-			<artifactId>jni-inchi</artifactId>
-			<version>0.8</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>net.sf.jni-inchi</groupId> -->
+<!-- 			<artifactId>jni-inchi</artifactId> -->
+<!-- 			<version>0.8</version> -->
+<!-- 			<scope>provided</scope> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>edu.ucdavis.fiehnlab.splash</groupId>
 			<artifactId>core</artifactId>
