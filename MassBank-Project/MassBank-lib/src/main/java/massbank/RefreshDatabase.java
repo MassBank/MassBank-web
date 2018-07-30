@@ -13,13 +13,16 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.depict.DepictionGenerator;
 
 /**
  * @author rmeier
- * @version 0.1, 18-04-2018
+ * @version 0.2, 30-07-2018
  * This class is called from command line to create a new temporary
  * database <i>tmpdbName</i>, fill it with all records found in <i>DataRootPath</i>
- * and move the new database to <i>dbName</i>.
+ * and move the new database to <i>dbName</i>. For each Record a svg showing the
+ * molecular formula is created in <i>DataRootPath</i>/figure.
+ * 
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
@@ -37,7 +40,8 @@ public class RefreshDatabase {
 			for (Path contributorPath : path) {
 				if (!Files.isDirectory(contributorPath)) continue;
 				if (contributorPath.endsWith(".git")) continue;
-				if (contributorPath.endsWith(".scripts")) continue;
+				if (contributorPath.endsWith("scripts")) continue;
+				if (contributorPath.endsWith("figure")) continue;
 				
 				String contributor = contributorPath.getFileName().toString();
 				logger.trace("Opening contributor path \"" + contributor + "\" and iterate over content.");
@@ -52,6 +56,10 @@ public class RefreshDatabase {
 					}
 					logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
 					db.persistAccessionFile(record);
+					logger.trace("Creating svg figure for record\"" + record.ACCESSION() + "\".");
+					// create formula images					
+					DepictionGenerator dg = new DepictionGenerator().withAtomColors().withZoom(3);
+					dg.depict(record.CH_IUPAC()).writeTo(Config.get().DataRootPath()+"/figure/"+record.ACCESSION()+".svg");
 				}
 				path2.close();
 			}

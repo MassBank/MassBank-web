@@ -541,7 +541,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 	
 								String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
 								logger.trace("Formula from InChI " + formula_inchi + ".");
-								if (!formula_inchi.equals(callback.CH_FORMULA())) {
+								if (!formula_inchi.equals(callback.CH_FORMULA1())) {
 									logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
 									
 									// just log an error for now

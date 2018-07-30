@@ -50,13 +50,13 @@
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<svg viewBox="0 0 32 28" style="width:16px">
-				<use xlink:href="image/arrow.svg#arrow_right"/>
+				<use href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<svg viewBox="0 0 32 28" style="width:16px">
-				<use xlink:href="image/arrow.svg#arrow_right"/>
+				<use href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
 		</div>
@@ -197,7 +197,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -215,7 +215,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -232,7 +232,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -249,7 +249,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -266,7 +266,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -283,7 +283,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -345,7 +345,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -363,7 +363,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -380,7 +380,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -397,7 +397,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -414,7 +414,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -431,7 +431,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use xlink:href="image/arrow.svg#arrow_left"/>
+									<use href="image/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">

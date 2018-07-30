@@ -66,13 +66,13 @@
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<svg viewBox="0 0 32 28" style="width:16px">
-				<use xlink:href="image/arrow.svg#arrow_right"/>
+				<use href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<svg viewBox="0 0 32 28" style="width:16px">
-				<use xlink:href="image/arrow.svg#arrow_right"/>
+				<use href="image/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
 		</div>
@@ -89,19 +89,10 @@
 			</div>
 			<div class="w3-third w3-text-grey w3-small">
 				Chemical Structure<br>
-				 <a href="temp/${accession}.svg">
-				 	${depiction}
-				 </a> 
+				<a href="figure/${accession}.svg">
+					<img src="figure/${accession}.svg" style="width:100%">
+				</a>
 			</div>
-			<script>
-			var svgs = document.getElementsByTagName("svg");
-			var i;
-			for(i = 0; i < svgs.length; i++)
-			{
-				svgs[i].removeAttribute("width");
-				svgs[i].removeAttribute("height");
-			}
-			</script>
 		</div>
 	</div>
 	

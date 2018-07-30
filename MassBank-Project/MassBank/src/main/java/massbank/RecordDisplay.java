@@ -35,13 +35,102 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.depict.DepictionGenerator;
-import org.openscience.cdk.exception.CDKException;
 
 @WebServlet("/RecordDisplay2")
 public class RecordDisplay extends HttpServlet {
 	private static final Logger logger = LogManager.getLogger(RecordDisplay.class);
 
 	private static String createRecordString(Record record) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<hr>\n");
+		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
+		sb.append("RECORD_TITLE: <span property=\"schema:headline\">" + record.RECORD_TITLE() + "</span><br>\n");
+		sb.append("DATE: <span property=\"schema:datePublished\">" + record.DATE1() + "</span><br>\n");
+		sb.append("AUTHORS: " + record.AUTHORS() + "<br>\n");
+		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + record.LICENSE() + "</a><br>\n");
+		
+		
+		if (record.COPYRIGHT() != null)
+			sb.append("COPYRIGHT: " + record.COPYRIGHT() + "<br>\n");
+		if (record.PUBLICATION() != null)
+			sb.append("PUBLICATION: " + record.PUBLICATION() + "<br>\n");
+		for (String comment : record.COMMENT())
+			sb.append("COMMENT: <span property=\"schema:comment\">" + comment + "</span><br>\n");
+		
+
+		sb.append("<hr>\n");
+		for (String ch_name : record.CH_NAME())
+			sb.append("CH$NAME: " + ch_name + "<br>\n");
+		sb.append("CH$COMPOUND_CLASS: " + record.CH_COMPOUND_CLASS().get(0));
+		for (String ch_compound_class : record.CH_COMPOUND_CLASS().subList(1, record.CH_COMPOUND_CLASS().size())) {
+			sb.append("; " + ch_compound_class );
+		}
+		sb.append("<br>\n");
+		sb.append("CH$FORMULA: <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA1() + "\" target=\"_blank\">" + record.CH_FORMULA2() + "</a><br>\n");
+		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>\n");
+		sb.append("CH$SMILES: " + record.CH_SMILES1() + "<br>\n");
+		sb.append("CH$IUPAC: " + record.CH_IUPAC1() + "<br>\n");
+		
+		for (Pair<String,String> link : record.CH_LINK()) {
+			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "<br>\n");
+		}
+		if (record.SP_SCIENTIFIC_NAME() != null)
+			sb.append("SP$SCIENTIFIC_NAME: " + record.SP_SCIENTIFIC_NAME() + "<br>\n");
+		if (record.SP_LINEAGE() != null)
+			sb.append("SP$LINEAGE: " + record.SP_LINEAGE() + "<br>");
+		for (Pair<String,String> link : record.SP_LINK())
+			sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "<br>");
+		for (String sample : record.SP_SAMPLE())
+				sb.append("SP$SAMPLE: " + sample + "<br>");
+
+		
+		sb.append("<hr>");
+		sb.append("AC$INSTRUMENT: " + record.AC_INSTRUMENT() + "<br>");
+		sb.append("AC$INSTRUMENT_TYPE: " + record.AC_INSTRUMENT_TYPE() + "<br>");
+		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>");
+		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + record.AC_MASS_SPECTROMETRY_ION_MODE() + "<br>");
+		for (Pair<String,String> ac_mass_spectrometry : record.AC_MASS_SPECTROMETRY())
+			sb.append("AC$MASS_SPECTROMETRY: " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "<br>");
+		for (Pair<String,String> ac_chromatography : record.AC_CHROMATOGRAPHY())
+			sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "<br>");
+		
+		
+		if (!record.MS_FOCUSED_ION().isEmpty() || !record.MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>");
+		for (Pair<String,String> ms_focued_ion : record.MS_FOCUSED_ION())
+			sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "<br>");
+		for (Pair<String,String> ms_data_processing : record.MS_DATA_PROCESSING())
+				sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "<br>");
+		
+		sb.append("<hr>");
+		sb.append("PK$SPLASH: " + record.PK_SPLASH() + "<br>");
+		if (!record.PK_ANNOTATION_HEADER().isEmpty()) {
+			sb.append("PK$ANNOTATION:");
+			for (String annotation_header_item : record.PK_ANNOTATION_HEADER())
+				sb.append(" " + annotation_header_item);
+			sb.append("<br>");
+			for (List<String> annotation_line :  record.PK_ANNOTATION()) {
+				sb.append("&nbsp");
+				for (String annotation_item : annotation_line )
+					sb.append("&nbsp" + annotation_item);
+				sb.append("<br>");
+			}
+		}
+
+		sb.append("PK$NUM_PEAK: " + record.PK_NUM_PEAK() + "<br>");
+		sb.append("PK$PEAK: m/z int. rel.int.<br>");
+		for (List<Double> peak_line :  record.PK_PEAK()) {
+			sb.append("&nbsp");
+			for (Double peak_line_item : peak_line )
+				sb.append("&nbsp" + peak_line_item.toString());
+			sb.append("<br>");
+		}
+		
+		sb.append("//");
+
+		return sb.toString();
+	}
+	
+	private static String createStructuredData(Record record) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<hr>\n");
 		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
@@ -194,13 +283,7 @@ public class RecordDisplay extends HttpServlet {
 				return;
 			}
 			
-			// create formula images					
-			DepictionGenerator dg = new DepictionGenerator().withAtomColors().withZoom(3);
-			dg.depict(record.CH_IUPAC()).writeTo(request.getServletContext().getRealPath("/temp/"+accession+".svg"));
-			String depiction = dg.depict(record.CH_IUPAC()).toSvgStr();
-			depiction = depiction.substring(depiction.indexOf("<svg"));
 
-			
 
 //			// process record
 //			// TODO property="schema:fileFormat"
@@ -520,7 +603,6 @@ public class RecordDisplay extends HttpServlet {
 	        request.setAttribute("accession", accession);
 	        request.setAttribute("inchiKey", InChIKey);
 	        request.setAttribute("recordTitle", record.RECORD_TITLE());
-	        request.setAttribute("depiction", depiction);
 
 	        request.setAttribute("peaks", peaks);
 	        request.setAttribute("recordstring", recordstring);

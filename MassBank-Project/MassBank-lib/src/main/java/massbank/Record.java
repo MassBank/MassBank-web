@@ -179,13 +179,21 @@ public class Record {
 		ch_compound_class=new ArrayList<String>(value);
 	}
 	
-	
+	/**
+	* Returns the molecular formula as an org.openscience.cdk.interfaces.IMolecularFormula.
+	*/
 	public IMolecularFormula CH_FORMULA() {
 		return ch_formula;
 	}
+	/**
+	* Returns the molecular formula as an String.
+	*/
 	public String CH_FORMULA1() {
 		return MolecularFormulaManipulator.getString(ch_formula);
 	}
+	/**
+	* Returns the molecular formula as an String with HTML sup tags.
+	*/
 	public String CH_FORMULA2() {
 		return MolecularFormulaManipulator.getHTML(ch_formula);
 	}
