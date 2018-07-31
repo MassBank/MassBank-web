@@ -222,13 +222,13 @@
 	<div style="max-width:90%;height:auto;margin:auto;flush:left">
 		<div class=" w3-padding-small">
 			<div class="w3-padding-small">
-				<img src="temp/massbank_Contributor_Graph.jpg" alt="" border="0">
+				<img src="figure/massbank_Contributor_Graph.svg" alt="" border="0">
 			</div>
 			<div class="w3-padding-small">
-				<img src="temp/massbank_Instrument_Type_Graph.jpg" alt="" border="0">
+				<img src="figure/massbank_Instrument_Type_Graph.svg" alt="" border="0">
 			</div>
 			<div class="w3-padding-small">
-				<img src="temp/massbank_MS_Type_Graph.jpg" alt="" border="0">
+				<img src="figure/massbank_MS_Type_Graph.svg" alt="" border="0">
 			</div>
 		</div> 
 	</div>

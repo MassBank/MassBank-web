@@ -153,33 +153,33 @@ public class RecordIndex extends HttpServlet {
 	        request.setAttribute("ionmodes", ionmodes);
 	        request.setAttribute("symbols", symbols);
 
-	    	// construct and show pie charts
-	        int MAX_DISP_DATA=10;
-	    	PieDataset siteGraphData = createDataset(sites, MAX_DISP_DATA);
-	    	PieDataset instGraphData = createDataset(instruments, MAX_DISP_DATA);
-	    	PieDataset msGraphData = createDataset(mstypes, MAX_DISP_DATA);
-	    	
-	    	int siteTopNum = (siteGraphData.getItemCount() < MAX_DISP_DATA) ? siteGraphData.getItemCount() : MAX_DISP_DATA;
-    		int instTopNum = (instGraphData.getItemCount() < MAX_DISP_DATA) ? instGraphData.getItemCount() : MAX_DISP_DATA;
-    		int msTopNum = (msGraphData.getItemCount() < MAX_DISP_DATA) ? msGraphData.getItemCount() : MAX_DISP_DATA;
-    		
-    		JFreeChart sitechart = drawDataset(siteGraphData, "Contributor  top " + siteTopNum);
-    		JFreeChart instchart = drawDataset(instGraphData, "Instrument Type  top " + instTopNum);
-    		JFreeChart mschart = drawDataset(msGraphData, "MS Type  top " + msTopNum);
-	    	
-    		BufferedOutputStream outStream = null;
-    		
-    		String filePath = request.getServletContext().getRealPath("/temp/massbank_Contributor_Graph.jpg");
-    		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
-			ChartUtils.writeChartAsJPEG(outStream, sitechart, 900, 350);
-			
-			filePath = request.getServletContext().getRealPath("/temp/massbank_Instrument_Type_Graph.jpg");
-    		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
-			ChartUtils.writeChartAsJPEG(outStream, instchart, 900, 350);
-			
-			filePath = request.getServletContext().getRealPath("/temp/massbank_MS_Type_Graph.jpg");
-    		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
-			ChartUtils.writeChartAsJPEG(outStream, mschart, 900, 350);
+//	    	// construct and show pie charts
+//	        int MAX_DISP_DATA=10;
+//	    	PieDataset siteGraphData = createDataset(sites, MAX_DISP_DATA);
+//	    	PieDataset instGraphData = createDataset(instruments, MAX_DISP_DATA);
+//	    	PieDataset msGraphData = createDataset(mstypes, MAX_DISP_DATA);
+//	    	
+//	    	int siteTopNum = (siteGraphData.getItemCount() < MAX_DISP_DATA) ? siteGraphData.getItemCount() : MAX_DISP_DATA;
+//    		int instTopNum = (instGraphData.getItemCount() < MAX_DISP_DATA) ? instGraphData.getItemCount() : MAX_DISP_DATA;
+//    		int msTopNum = (msGraphData.getItemCount() < MAX_DISP_DATA) ? msGraphData.getItemCount() : MAX_DISP_DATA;
+//    		
+//    		JFreeChart sitechart = drawDataset(siteGraphData, "Contributor  top " + siteTopNum);
+//    		JFreeChart instchart = drawDataset(instGraphData, "Instrument Type  top " + instTopNum);
+//    		JFreeChart mschart = drawDataset(msGraphData, "MS Type  top " + msTopNum);
+//	    	
+//    		BufferedOutputStream outStream = null;
+//    		
+//    		String filePath = request.getServletContext().getRealPath("/temp/massbank_Contributor_Graph.jpg");
+//    		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
+//			ChartUtils.writeChartAsJPEG(outStream, sitechart, 900, 350);
+//			
+//			filePath = request.getServletContext().getRealPath("/temp/massbank_Instrument_Type_Graph.jpg");
+//    		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
+//			ChartUtils.writeChartAsJPEG(outStream, instchart, 900, 350);
+//			
+//			filePath = request.getServletContext().getRealPath("/temp/massbank_MS_Type_Graph.jpg");
+//    		outStream = new BufferedOutputStream(new FileOutputStream(filePath));
+//			ChartUtils.writeChartAsJPEG(outStream, mschart, 900, 350);
 			
 	        request.getRequestDispatcher("/RecordIndex.jsp").forward(request, response);
 		} catch (Exception e) {
