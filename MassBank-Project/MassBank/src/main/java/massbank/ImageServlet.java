@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The Image servlet for serving from absolute path.
@@ -20,10 +22,9 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
  */
 @WebServlet("/figure/*")
 public class ImageServlet extends HttpServlet {
-
-    // Properties ---------------------------------------------------------------------------------
-
-    private String imagePath;
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LogManager.getLogger(ImageServlet.class);
+	private String imagePath;
 
     // Init ---------------------------------------------------------------------------------------
 
