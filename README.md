@@ -50,6 +50,11 @@ $ source ~/.zshrc
 ```
 The vagrant version from the repository (Version 1.7.2) does NOT support Virtualbox Version 5
 
+### Windows 10 64 bit Professional
+
+With regards to [this](https://stackoverflow.com/questions/37955942/vagrant-up-vboxmanage-exe-error-vt-x-is-not-available-verr-vmx-no-vmx-code] stackoverflow post, Virtual Box has troubles with enabled Microsoft Hyper-V environment. Thus disable the Hyper-V accordingly.
+
+Then follow the instructions for Windows 7 64 bit below and consider also the general instructions above.
 
 ### Windows 7 64 bit (!Not tested for other Windows versions!)
 Install Virtualbox for Windows
@@ -78,11 +83,8 @@ Source: https://github.com/MassBank/MassBank-web
 Start a commandline window and change to the folder with the repo:
 ```
 cd your_favorite_folder\MassBank-web
-run Setup_MassBank.bat
+vagrant up
 ```
-You will be asked for an username and the password to access the mbadmin environment
-Now the the virtual machine should be available in the Oracle VM VirtualBox manager
-
 Type to connect to the VM
 ```
 vagrant ssh
