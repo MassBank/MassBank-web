@@ -969,7 +969,7 @@ Peaks are arranged in the ascending order of m/z.
 
 ### 2.7 Supplementary Definitions
 #### 2.7.1 Description of Isotope-Labeled Compounds
-*This section will be updated in near future as molfiles are deprecated"
+*This section will be updated in near future as molfiles are deprecated*
 
 This section defines the chemical information of isotope-labeled chemical compounds.
 CH$NAME is Chemical Name followed by ”–[(Labeled Positions-)Isotopic Atom Name with the Number of Isotopic Atoms]”.
@@ -990,12 +990,12 @@ CH$IUPAC, which is InChI code, should define the isotope name and the labeled po
 MS$FOCUSED_ION: PRECURSOR_M/Z should be the value that was actually used in the mass spectrometry. 
 MS$FOCUSED_ION: PRECURSOR_TYPE should be the same to that of non-labeled chemical compound.
 
-`Example: MS$FOCUSED_ION: PRECURSOR_TYPE [M+H]+`
+Example: `MS$FOCUSED_ION: PRECURSOR_TYPE [M+H]+`
 
 Record Editor correctly generates CH$FORMULA, CH$EXACT_MASS, CH$SMILES, and CH$IUPAC from the molfile of the isotope-labeled chemical compound.
 
-#### 2.7.2 PK$ANNOTATION of Natural Abundant Isotopic or In Source Fragment Peaks
-This section describes the annotation of natural abundant isotopic or in-source fragment peaks. Optional and Multiple Line Information
+#### 2.7.2 PK$ANNOTATION of Natural Abundant Isotopic or In-Source Adduct Fragments
+This section describes the annotation of natural abundant isotopic or in-source adduct fragments. Optional and Multiple Line Information
 
 Example 1:
 ```
@@ -1004,7 +1004,11 @@ PK$ANNOTATION: m/z formula annotation exact_mass error(ppm)
  168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
 ```
 
+Line 1 defines the record format of Line 2 or later lines. 
+The first line of each annotation block should be indented by space space.
+
 Example 2:
+RMassBank provides the option for automated tentative annotation of the fragment peaks including in-source adduct fragments (N2/O)
 ```
 PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
  94.0656 C6H8N+ 1 94.0651 4.89
@@ -1014,6 +1018,4 @@ PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
  122.0968 C8H12N+ 1 122.0964 3
  133.0766 C8H9N2+ 1 133.076 4.34
 ```
-
-Line 1 defines the record format of Line 2 or later lines. 
-The first line of each annotation block should be indented by space space.
+The automated annotation by RMassBank is currently tentative.
