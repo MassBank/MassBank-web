@@ -44,8 +44,8 @@ public class RecordDisplay extends HttpServlet {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<hr>\n");
 		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
-		sb.append("RECORD_TITLE: <span property=\"schema:headline\">" + record.RECORD_TITLE() + "</span><br>\n");
-		sb.append("DATE: <span property=\"schema:datePublished\">" + record.DATE1() + "</span><br>\n");
+		sb.append("RECORD_TITLE: " + record.RECORD_TITLE() + "<br>\n");
+		sb.append("DATE: " + record.DATE1() + "<br>\n");
 		sb.append("AUTHORS: " + record.AUTHORS() + "<br>\n");
 		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + record.LICENSE() + "</a><br>\n");
 		
@@ -135,9 +135,9 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("<script type=\"application/ld+json\">\n");
 		sb.append("{\n");
 		sb.append("\"@context\": \"http://schema.org\",\n");
-		sb.append("\"@type\": \"Organization\",\n");
-		sb.append("\n");
-		sb.append("\n");
+		sb.append("\"@type\": \"Dataset\",\n");
+		sb.append("\"headline\": \""+ record.RECORD_TITLE() + "\",\n");
+		sb.append("\"datePublished\": \"" + record.DATE1() + "\",\n");
 		sb.append("\n");
 		sb.append("\n");
 		sb.append("}\n");
