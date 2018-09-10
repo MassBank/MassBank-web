@@ -97,13 +97,21 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>Bibliographic information of reference</td>
     <td><a href="#2.1.7">2.1.7</a></td>
   </tr>
+    <tr>
+    <td>PROJECT</td>
+    <td>O</td>
+    <td>I</td>
+    <td>S</td>
+    <td>Information on related project(s)</td>
+    <td><a href="#2.1.8">2.1.8</a></td>
+  </tr>
   <tr>
     <td>COMMENT</td>
     <td>O</td>
     <td>I</td>
     <td>S</td>
     <td>Comments</td>
-    <td><a href="#2.1.8">2.1.8</a></td>
+    <td><a href="#2.1.9">2.1.9</a></td>
   </tr>
   <tr>
     <td colspan="6"><b>Information of Chemical Compound Analyzed</b></td>
@@ -381,8 +389,8 @@ A project tag of a project related to the datasets. Project tags currently used 
 
 Example:
 ```
-PROJECT NATOXAQ - Natural Toxins and Drinking Water Quality - From Source to Tap (https://natoxaq.ku.dk).
-PROJECT SOLUTIONS - SOLUTIONS for present and future emerging pollutants in land and water resources management (https://www.solutions-project.eu).
+PROJECT: NATOXAQ - Natural Toxins and Drinking Water Quality - From Source to Tap (https://natoxaq.ku.dk).
+PROJECT: SOLUTIONS - SOLUTIONS for present and future emerging pollutants in land and water resources management (https://www.solutions-project.eu).
 ```
 
 #### <a name="2.1.8"></a>2.1.9 COMMENT
