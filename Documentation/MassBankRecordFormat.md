@@ -1,7 +1,7 @@
 # MassBank Record Format 2.2
 MassBank Consortium (September 10, 2018)
 #### Updated
-- **September 2018**: Add some undocumented tags used in RMassBank and cross references to HUBO-PSI
+- **September 2018**: Add some undocumented tags used in RMassBank (AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUBO-PSI
 - **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
 - **June 2017**: CH$LINK: COMPTOX added to link the CompTox Chemistry Dashboard
 - **March 2016**: The default Creative Commons license of MassBank record is defined as CC BY. Two new tags are added, CH$LINK: INCHIKEY and PK$SPLASH. InChI key in CH$LINK: INCHIKEY is a hashed version of InChI code and used as an optional, common link based on chemical structures.  SPLASH in PK$SPLASH (Section 2.6.1) is a mandatory, hashed identifier of mass spectra.
@@ -338,7 +338,7 @@ Identifier of the MassBank Record. Mandatory
 
 Example: `ACCESSION: ZMS00006`
 
-8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank  “Statistics” table (http://www.massbank.jp/en/statistics.html). Rest of the field are decimal letters which are the identifier of the record at each site.
+8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md). Rest of the field are decimal letters which are the identifier of the record at each site.
 
 #### <a name="2.1.2"></a>2.1.2 RECORD\_TITLE
 Brief Description of MassBank Record. Mandatory
@@ -407,6 +407,34 @@ Example 5:
 ```
 COMMENT: Profile spectrum of this record is given as a JPEG file.
 COMMENT: [Profile] CA000185.jpg
+```
+
+#### <a name="2.1.9"></a>2.1.9 COMMENT: subtag Description
+Comment subtags. Optional and Iterative
+
+##### 2.1.9 Subtag: CONFIDENCE
+Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to Schymanski et al. (DOI:10.1021/es5002105)
+
+Example:
+```
+COMMENT: CONFIDENCE Reference Standard (Level 1)
+```
+
+##### 2.1.9 Subtag: INTERNAL_ID
+Internal ID tag of the laboratory (e.g. compound number).
+
+Example:
+```
+COMMENT: INTERNAL_ID 21
+```
+
+##### 2.1.9 Subtag: PROJECT
+A project tag of a project related to the datasets. Project tags currently used are listed in the “Project Tag” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
+
+Example:
+```
+COMMENT: PROJECT NATOXAQ - Natural Toxins and Drinking Water Quality - From Source to Tap (https://natoxaq.ku.dk).
+COMMENT: PROJECT SOLUTIONS - SOLUTIONS for present and future emerging pollutants in land and water resources management (https://www.solutions-project.eu).
 ```
 
 ### 2.2 Information of Chemical Compound Analyzed
@@ -610,7 +638,7 @@ Example: `AC$MASS_SPECTROMETRY: DESOLVATION_TEMPERATURE 400 C`
 ##### 2.4.5 Subtag: FRAGMENTATION\_MODE`
 Fragmentation method used for dissociation or fragmentation.
 
-Example: `AC$MASS_SPECTROMETRY: FRAGMENTATION\_MODE CID`
+Example: `AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE CID`
 
 Fragmentation modes are for example `BIRD`, `CID`, `ECD`, `EDD`, `ETD`, `HCD`, `IRMPD`, `MPD`, `NETD`, `SID`.
 
