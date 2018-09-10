@@ -376,7 +376,16 @@ Example: `PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). 
 
 Citation with PubMed ID is recommended.
 
-#### <a name="2.1.8"></a>2.1.8 COMMENT
+#### <a name="2.1.8"></a>2.1.8 PROJECT
+A project tag of a project related to the datasets. Project tags currently used are listed in the “Project Tag” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
+
+Example:
+```
+PROJECT NATOXAQ - Natural Toxins and Drinking Water Quality - From Source to Tap (https://natoxaq.ku.dk).
+PROJECT SOLUTIONS - SOLUTIONS for present and future emerging pollutants in land and water resources management (https://www.solutions-project.eu).
+```
+
+#### <a name="2.1.8"></a>2.1.9 COMMENT
 Comments. Optional and Iterative
  
 In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments specific to the following five examples.
@@ -409,10 +418,10 @@ COMMENT: Profile spectrum of this record is given as a JPEG file.
 COMMENT: [Profile] CA000185.jpg
 ```
 
-#### <a name="2.1.9"></a>2.1.9 COMMENT: subtag Description
+#### <a name="2.1.10"></a>2.1.10 COMMENT: subtag Description
 Comment subtags. Optional and Iterative
 
-##### 2.1.9 Subtag: CONFIDENCE
+##### 2.1.10 Subtag: CONFIDENCE
 Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to Schymanski et al. (DOI:10.1021/es5002105)
 
 Example:
@@ -420,21 +429,12 @@ Example:
 COMMENT: CONFIDENCE Reference Standard (Level 1)
 ```
 
-##### 2.1.9 Subtag: INTERNAL_ID
+##### 2.1.10 Subtag: INTERNAL_ID
 Internal ID tag of the laboratory (e.g. compound number).
 
 Example:
 ```
 COMMENT: INTERNAL_ID 21
-```
-
-##### 2.1.9 Subtag: PROJECT
-A project tag of a project related to the datasets. Project tags currently used are listed in the “Project Tag” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
-
-Example:
-```
-COMMENT: PROJECT NATOXAQ - Natural Toxins and Drinking Water Quality - From Source to Tap (https://natoxaq.ku.dk).
-COMMENT: PROJECT SOLUTIONS - SOLUTIONS for present and future emerging pollutants in land and water resources management (https://www.solutions-project.eu).
 ```
 
 ### 2.2 Information of Chemical Compound Analyzed
