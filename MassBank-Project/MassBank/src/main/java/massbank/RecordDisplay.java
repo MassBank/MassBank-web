@@ -47,7 +47,7 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("RECORD_TITLE: " + record.RECORD_TITLE() + "<br>\n");
 		sb.append("DATE: " + record.DATE1() + "<br>\n");
 		sb.append("AUTHORS: " + record.AUTHORS() + "<br>\n");
-		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + record.LICENSE() + "</a><br>\n");
+		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + record.LICENSE() + "</a><br>\n");
 		
 		
 		if (record.COPYRIGHT() != null)
@@ -138,10 +138,14 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("\"@type\": \"Dataset\",\n");
 		sb.append("\"headline\": \""+ record.RECORD_TITLE() + "\",\n");
 		sb.append("\"datePublished\": \"" + record.DATE1() + "\",\n");
-		sb.append("\n");
+		sb.append("\"license\":  \"https://creativecommons.org/licenses/\"\n");
+		sb.append("},\n");
 		sb.append("\n");
 		sb.append("}\n");
 		sb.append("</script>");
+		
+		
+
 //			// TODO property="schema:fileFormat"
 //			// TODO property="schema:isAccessibleForFree"
 //			// TODO property="schema:keywords"

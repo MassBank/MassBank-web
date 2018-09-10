@@ -54,7 +54,7 @@ echo "**copy apache files****************************************************"
 
 echo "**fetch data repo******************************************************"
 (cd /home/vagrant; \
-git clone https://github.com/MassBank/MassBank-data.git; \
+git clone https://github.com/tsufz/MassBank-data.git; \
 chown -R vagrant:vagrant MassBank-data) #; \
 #ln -s $PWD/MassBank-data /var/www/html/MassBank/DB )
 

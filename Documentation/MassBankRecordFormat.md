@@ -1,6 +1,7 @@
-# MassBank Record Format 2.13 (draft)
-MassBank Consortium (July 19, 2017)
+# MassBank Record Format 2.2
+MassBank Consortium (September 10, 2018)
 #### Updated
+- **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUBO-PSI
 - **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
 - **June 2017**: CH$LINK: COMPTOX added to link the CompTox Chemistry Dashboard
 - **March 2016**: The default Creative Commons license of MassBank record is defined as CC BY. Two new tags are added, CH$LINK: INCHIKEY and PK$SPLASH. InChI key in CH$LINK: INCHIKEY is a hashed version of InChI code and used as an optional, common link based on chemical structures.  SPLASH in PK$SPLASH (Section 2.6.1) is a mandatory, hashed identifier of mass spectra.
@@ -24,7 +25,7 @@ Last line of a MassBank Record is `//`.
 MassBank Record Information in a MassBank Record is arranged in a fixed order (see Section 2).
 
 ### 1.3 Others
-`[MS : space value ]` is the mzOntology ID in [OLS](http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MS).
+`[MS : space value ]` is the HUBO-PSI ID in [OLS](https://www.ebi.ac.uk/ols/index).
 
 
 ## Table 1.  MassBank Record Format (Summary)
@@ -96,13 +97,21 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>Bibliographic information of reference</td>
     <td><a href="#2.1.7">2.1.7</a></td>
   </tr>
+    <tr>
+    <td>PROJECT</td>
+    <td>O</td>
+    <td>I</td>
+    <td>S</td>
+    <td>Information on a related project)</td>
+    <td><a href="#2.1.8">2.1.8</a></td>
+  </tr>
   <tr>
     <td>COMMENT</td>
     <td>O</td>
     <td>I</td>
     <td>S</td>
     <td>Comments</td>
-    <td><a href="#2.1.8">2.1.8</a></td>
+    <td><a href="#2.1.9">2.1.9</a></td>
   </tr>
   <tr>
     <td colspan="6"><b>Information of Chemical Compound Analyzed</b></td>
@@ -246,7 +255,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>O</td>
     <td>U/I</td>
     <td>S</td>
-    <td>Analytical conditions of chromatographic seperation</td>
+    <td>Analytical conditions of chromatographic separation</td>
     <td><a href="#2.4.6">2.4.6</a></td>
   </tr>
   <tr>
@@ -337,7 +346,7 @@ Identifier of the MassBank Record. Mandatory
 
 Example: `ACCESSION: ZMS00006`
 
-8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank  “Statistics” table (http://www.massbank.jp/en/statistics.html). Rest of the field are decimal letters which are the identifier of the record at each site.
+8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md). Rest of the field are decimal letters which are the identifier of the record at each site.
 
 #### <a name="2.1.2"></a>2.1.2 RECORD\_TITLE
 Brief Description of MassBank Record. Mandatory
@@ -371,11 +380,24 @@ Example: `COPYRIGHT: Keio University`
 #### <a name="2.1.7"></a>2.1.7 PUBLICATION
 Reference of the Mass Spectral Data. Optional
 
-Example: `PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]`
+Example: 
+```
+PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]
+PUBLICATION: Schymanski EL, Jeon J, et al., Environ. Sci. Technol. 48, 2097-2098 (2014). [DOI: 10.1021/es5002105]
+```
 
-Citation with PubMed ID is recommended.
+Citation with PubMed ID or DOI is recommended.
 
-#### <a name="2.1.8"></a>2.1.8 COMMENT
+#### <a name="2.1.8"></a>2.1.8 PROJECT
+A project tag of a project related to the datasets. Project tags currently used are listed in the “Project Tag” column of the MassBank [List of contributors, prefixes and projects](https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
+
+Example:
+```
+PROJECT: NATOXAQ Natural Toxins and Drinking Water Quality - From Source to Tap
+PROJECT: SOLUTIONS for present and future emerging pollutants in land and water resources management
+```
+
+#### <a name="2.1.8"></a>2.1.9 COMMENT
 Comments. Optional and Iterative
  
 In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments specific to the following five examples.
@@ -406,6 +428,25 @@ Example 5:
 ```
 COMMENT: Profile spectrum of this record is given as a JPEG file.
 COMMENT: [Profile] CA000185.jpg
+```
+
+#### <a name="2.1.10"></a>2.1.10 COMMENT: subtag Description
+Comment subtags. Optional and Iterative
+
+##### 2.1.10 Subtag: CONFIDENCE
+Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to Schymanski et al. [DOI: 10.1021/es5002105}
+
+Example:
+```
+COMMENT: CONFIDENCE Reference Standard (Level 1)
+```
+
+##### 2.1.10 Subtag: INTERNAL_ID
+Internal ID tag of the laboratory (e.g. compound number).
+
+Example:
+```
+COMMENT: INTERNAL_ID 21
 ```
 
 ### 2.2 Information of Chemical Compound Analyzed
@@ -525,7 +566,7 @@ Commercial Name and Model of Chromatographic Separation Instrument, if any were 
 
 Example: `AC$INSTRUMENT: LC-10ADVPmicro HPLC, Shimadzu; LTQ Orbitrap, Thermo Electron.`
 
-Cross-reference to mzOntology: Instrument model [MS:1000031]
+Cross-reference to HUBO-PSI: Instrument model [MS:1000031]
 All the instruments are given together in a single line. This record is not iterative.
 
 #### <a name="2.4.2"></a>2.4.2 AC$INSTRUMENT\_TYPE
@@ -549,11 +590,11 @@ ESI-QTOF
 GC-EI-EB
 LC-ESI-ITFT
 ```
-Cross-reference to mzOntology: 
+Cross-reference to HUBO-PSI: 
 
 Ionization methods [MS:1000008]: APCI [MS:1000070], APPI [MS:1000382], EI [MS:1000389], ESI [MS:1000073], FAB[MS:1000074], MALDI[MS:1000075], FD[MS:1000257], CI[MS:1000071], FI[MS:1000258]
 
-Ion analyzer types [MS:1000443]: B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
+Ion analyzer types [MS:1000443]: B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084]
 
 #### <a name="2.4.3"></a>2.4.3 AC$MASS\_SPECTROMETRY: MS\_TYPE
 Data Type. Mandatory
@@ -572,7 +613,7 @@ Polarity of Ion Detection. Mandatory
 
 Example: `AC$MASS_SPECTROMETRY: ION_MODE POSITIVE`
 
-Either of POSITIVE or NEGATIVE is allowed. Cross-reference to mzOntology: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+Either of POSITIVE or NEGATIVE is allowed. Cross-reference to HUBO-PSI: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
 
 #### <a name="2.4.5"></a>2.4.5 AC$MASS\_SPECTROMETRY: subtag Description
 Other Optional Experimental Methods and Conditions of Mass Spectrometry.
@@ -591,7 +632,7 @@ Name of Collision Gas.
 
 Example: `AC$MASS_SPECTROMETRY: COLLISION_GAS N2`
 
-Cross-reference to mzOntology: Collision gas [MS:1000419]
+Cross-reference to HUBO-PSI: Collision gas [MS:1000419]
 
 ##### 2.4.5 Subtag: DATE
 Date of Analysis.
@@ -606,11 +647,23 @@ Temperature of Desolvation Gas.
 
 Example: `AC$MASS_SPECTROMETRY: DESOLVATION_TEMPERATURE 400 C`
 
+##### 2.4.5 Subtag: FRAGMENTATION\_MODE`
+Fragmentation method used for dissociation or fragmentation.
+
+Example: `AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE CID`
+
+Fragmentation modes are for example `BIRD`, `CID`, `ECD`, `EDD`, `ETD`, `HCD`, `IRMPD`, `MPD`, `NETD`, `SID`.
+
+Cross-reference to HUBO-PSI: dissociation method [MS:1000044]
+
 ##### 2.4.5 Subtag: IONIZATION
-Ionization type.
+The method by which gas phase ions are generated from the sample.
 
 Example: `AC$MASS_SPECTROMETRY: IONIZATION ESI`
 
+Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`, `FD`, `CI`, `FI`.
+
+Cross-reference to HUBO-PSI: ionization type [MS:1000008]
 
 ##### 2.4.5 Subtag: IONIZATION\_ENERGY
 Energy of Ionization.
@@ -637,6 +690,13 @@ Name of Reagent Gas.
 
 Example: `AC$MASS_SPECTROMETRY: REAGENT_GAS ammonia`
 
+##### 2.4.5 Subtag: RESOLUTION
+Resolution (aka mass resolution or resolving power) is the smallest mass difference between two equal magnitude peaks so that the valley between them is a specified fraction of the peak height.
+
+Example: `AC$MASS_SPECTROMETRY: RESOLUTION 15000`
+
+ Cross-reference to HUBO-PSI: mass resolution [MS:1000011]
+
 ##### 2.4.5 Subtag: SCANNING
 Scan Cycle and Range.
 
@@ -656,7 +716,6 @@ Example: `AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)`
 `DRY_GAS_FLOW`
 `DRY_GAS_TEMP`
 `FRAGMENTATION_METHOD`
-`FRAGMENTATION_MODE`
 `FRAGMENT_VOLTAGE`
 `GAS_PRESSURE`
 `HELIUM_FLOW`
@@ -677,7 +736,6 @@ Example: `AC$MASS_SPECTROMETRY: SCANNING 0.2 sec/scan (m/z 50-500)`
 `ORIFICE_TEMPERATURE`
 `ORIFICE_VOLTAGE`
 `PROBE_TIP`
-`RESOLUTION`
 `RESOLUTION_SETTING`
 `RING_VOLTAGE`
 `SAMPLE_DRIPPING`
@@ -732,7 +790,7 @@ Retention Time on Chromatography.
 
 Example: `AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min`
 
-Cross-reference to mzOntology: Retention time [MS:1000016]
+Cross-reference to HUBO-PSI: Retention time [MS:1000016]
 
 ##### 2.4.6 Subtag: SOLVENT
 Chemical Composition of Buffer Solution.  Iterative
@@ -807,14 +865,14 @@ m/z of Precursor Ion in MSn spectrum.
 
 Example: `MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123`
 
-Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to mzOntology: precursor m/z [MS:1000504]
+Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to HUBO-PSI: precursor m/z [MS:1000504]
 
 ##### 2.5.1 Subtag: PRECURSOR\_TYPE
 Type of Precursor Ion in MSn.
 
 Example: `MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-`
 
-Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`. Cross-reference to mzOntology: Precursor type [MS: 1000792]
+Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`. Cross-reference to HUBO-PSI: Precursor type [MS: 1000792]
 
 ##### undocumented Subtags
 `FULL_SCAN_FRAGMENT_ION_PEAK`
@@ -823,12 +881,22 @@ Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+N
 #### <a name="2.5.2"></a>2.5.2 MS$DATA\_PROCESSING: subtag
 Data Processing Method of Peak Detection. Optional
 
-`MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to mzOntology: Data processing [MS:1000543]
+`MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to HUBO-PSI: Data processing [MS:1000543]
 
 ##### 2.5.2 Subtag: FIND\_PEAK
 Peak Detection.
 
 Example: `MS$DATA_PROCESSING: FIND_PEAK convexity search; threshold = 9.1`
+
+##### 2.5.2 Subtag: REANALYZE
+Data processing to include reanalyzed peaks (e.g. in RMassBank).
+
+Example: `MS$DATA_PROCESSING: REANALYZE Peaks with additional N2/O included`
+
+##### 2.5.2 Subtag: RECALIBRATE
+Data processing to recalibrate mass accuracy (e.g. in RMassBank). 
+
+Example: `MS$DATA_PROCESSING: RECALIBRATE loess on assigned fragments and MS1`
 
 ##### 2.5.2 Subtag: WHOLE
 Whole Process in Single Method / Software.
@@ -838,8 +906,6 @@ Example: `MS$DATA_PROCESSING: WHOLE Analyst 1.4.2`
 ##### undocumented Subtags
 `DEPROFILE`
 `IGNORE`
-`REANALYZE`
-`RECALIBRATE`
 `RELATIVE_M/Z`
 
 
@@ -874,7 +940,7 @@ PK$ANNOTATION: m/z formula annotation exact_mass error(ppm)
 ```
 Line 1 defines the record format of the annotation blocks. Contributors freely define the record format by using appropriate terms.
 Line 2 or later：sequence of multiple line annotation blocks.
-The first line of each annotation block should be indented by `space space`.  The second or later line in each annotation block should be indented by `space space space space`.
+The first line of each annotation block should be indented by `space space`. The second or later line in each annotation block should be indented by `space space space space`.
 See Section 2.7.2 about more details of Example 3. 
 
 #### <a name="2.6.3"></a>2.6.3 PK$NUM\_PEAK
@@ -910,9 +976,9 @@ CH$NAME: L-Aspartic acid-[2-15N][3,3-d2]
 CH$NAME: Benzene-[d6]
 MOLFILE depends on whether the labeled position is specified. If the labeled position is specified, molfile defines the isotopic atom name and the labeled position. Otherwise molfile should be the same to that of the non-labeled chemical compound.
 CH$FORMULA should be the same to that of the non-labeled chemical compound.
-CH$EXACT_MASS is the monoisotopic mass, but not the sum of the mass of the isotopes.  Thus CH$EXACT_MASS should be equal to that of the non-labeled chemical compound.
+CH$EXACT_MASS is the monoisotopic mass, but not the sum of the mass of the isotopes. Thus CH$EXACT_MASS should be equal to that of the non-labeled chemical compound.
 CH$SMILES is the same to that of the non-labeled chemical compound.
-CH$IUPAC, which is InChI code, should define the isotope name and the labeled positions if these two are specified.  If not, InChI code is the same to that of the non-labeled chemical compound.
+CH$IUPAC, which is InChI code, should define the isotope name and the labeled positions if these two are specified. If not, InChI code is the same to that of the non-labeled chemical compound.
 MS$FOCUSED_ION: PRECURSOR_M/Z should be the value that was actually used in the mass spectrometry. 
 MS$FOCUSED_ION: PRECURSOR_TYPE should be the same to that of non-labeled chemical compound.
 Example
