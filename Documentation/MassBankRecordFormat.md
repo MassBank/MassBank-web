@@ -1,5 +1,5 @@
-# MassBank Record Format 2.13 (draft)
-MassBank Consortium (July 19, 2017)
+# MassBank Record Format 2.2
+MassBank Consortium (September 10, 2018)
 #### Updated
 - **September 2018**: Add some undocumented tags used in RMassBank and cross references to HUBO-PSI
 - **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
@@ -554,7 +554,7 @@ Cross-reference to HUBO-PSI:
 
 Ionization methods [MS:1000008]: APCI [MS:1000070], APPI [MS:1000382], EI [MS:1000389], ESI [MS:1000073], FAB[MS:1000074], MALDI[MS:1000075], FD[MS:1000257], CI[MS:1000071], FI[MS:1000258]
 
-Ion analyzer types [MS:1000443]: B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
+Ion analyzer types [MS:1000443]: B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084]
 
 #### <a name="2.4.3"></a>2.4.3 AC$MASS\_SPECTROMETRY: MS\_TYPE
 Data Type. Mandatory
@@ -614,7 +614,7 @@ Example: `AC$MASS_SPECTROMETRY: FRAGMENTATION\_MODE CID`
 
 Fragmentation modes are for example `BIRD`, `CID`, `ECD`, `EDD`, `ETD`, `HCD`, `IRMPD`, `MPD`, `NETD`, `SID`.
 
-Cross-reference to HUBO-PSI: dissociation method [MS:1000044]).
+Cross-reference to HUBO-PSI: dissociation method [MS:1000044]
 
 ##### 2.4.5 Subtag: IONIZATION
 The method by which gas phase ions are generated from the sample.
@@ -623,7 +623,7 @@ Example: `AC$MASS_SPECTROMETRY: IONIZATION ESI`
 
 Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`, `FD`, `CI`, `FI`.
 
-Cross-reference to HUBO-PSI: ionization type [MS:1000008].
+Cross-reference to HUBO-PSI: ionization type [MS:1000008]
 
 ##### 2.4.5 Subtag: IONIZATION\_ENERGY
 Energy of Ionization.
@@ -655,7 +655,7 @@ Resolution (aka mass resolution or resolving power) is the smallest mass differe
 
 Example: `AC$MASS_SPECTROMETRY: RESOLUTION 15000`
 
- Cross-reference to HUBO-PSI: mass resolution [MS:1000011].
+ Cross-reference to HUBO-PSI: mass resolution [MS:1000011]
 
 ##### 2.4.5 Subtag: SCANNING
 Scan Cycle and Range.
