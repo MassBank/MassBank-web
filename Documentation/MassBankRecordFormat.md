@@ -1,7 +1,7 @@
 # MassBank Record Format 2.2
 MassBank Consortium (September 10, 2018)
 #### Updated
-- **September 2018**: Add some undocumented tags used in RMassBank (AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUBO-PSI
+- **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUBO-PSI
 - **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
 - **June 2017**: CH$LINK: COMPTOX added to link the CompTox Chemistry Dashboard
 - **March 2016**: The default Creative Commons license of MassBank record is defined as CC BY. Two new tags are added, CH$LINK: INCHIKEY and PK$SPLASH. InChI key in CH$LINK: INCHIKEY is a hashed version of InChI code and used as an optional, common link based on chemical structures.  SPLASH in PK$SPLASH (Section 2.6.1) is a mandatory, hashed identifier of mass spectra.
@@ -102,7 +102,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>O</td>
     <td>I</td>
     <td>S</td>
-    <td>Information on related project(s)</td>
+    <td>Information on a related project)</td>
     <td><a href="#2.1.8">2.1.8</a></td>
   </tr>
   <tr>
@@ -380,17 +380,21 @@ Example: `COPYRIGHT: Keio University`
 #### <a name="2.1.7"></a>2.1.7 PUBLICATION
 Reference of the Mass Spectral Data. Optional
 
-Example: `PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]`
+Example: 
+```
+PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]
+PUBLICATION: Schymanski EL, Jeon J, et al., Environ. Sci. Technol. 48, 2097-2098 (2014). [DOI: 10.1021/es5002105]
+```
 
-Citation with PubMed ID is recommended.
+Citation with PubMed ID or DOI is recommended.
 
 #### <a name="2.1.8"></a>2.1.8 PROJECT
-A project tag of a project related to the datasets. Project tags currently used are listed in the “Project Tag” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
+A project tag of a project related to the datasets. Project tags currently used are listed in the “Project Tag” column of the MassBank [List of contributors, prefixes and projects](https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
 
 Example:
 ```
-PROJECT: NATOXAQ - Natural Toxins and Drinking Water Quality - From Source to Tap (https://natoxaq.ku.dk).
-PROJECT: SOLUTIONS - SOLUTIONS for present and future emerging pollutants in land and water resources management (https://www.solutions-project.eu).
+PROJECT: NATOXAQ Natural Toxins and Drinking Water Quality - From Source to Tap
+PROJECT: SOLUTIONS for present and future emerging pollutants in land and water resources management
 ```
 
 #### <a name="2.1.8"></a>2.1.9 COMMENT
@@ -430,7 +434,7 @@ COMMENT: [Profile] CA000185.jpg
 Comment subtags. Optional and Iterative
 
 ##### 2.1.10 Subtag: CONFIDENCE
-Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to Schymanski et al. (DOI:10.1021/es5002105)
+Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to Schymanski et al. [DOI: 10.1021/es5002105}
 
 Example:
 ```
