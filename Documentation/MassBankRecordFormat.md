@@ -100,7 +100,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <tr>
     <td>PROJECT</td>
     <td>O</td>
-    <td>I</td>
+    <td>U</td>
     <td>S</td>
     <td>Information on a related project)</td>
     <td><a href="#2.1.8">2.1.8</a></td>
@@ -389,7 +389,8 @@ PUBLICATION: Schymanski EL, Jeon J, et al., Environ. Sci. Technol. 48, 2097-2098
 Citation with PubMed ID or DOI is recommended.
 
 #### <a name="2.1.8"></a>2.1.8 PROJECT
-A project tag of a project related to the datasets. Project tags currently used are listed in the “Project Tag” column of the MassBank [List of contributors, prefixes and projects](https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
+A project tag of a project related to the record. Optional
+Project tags currently used are listed in the “Project Tag” column of the MassBank [List of contributors, prefixes and projects](https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md).
 
 Example:
 ```
@@ -966,14 +967,21 @@ Line 2 or later: `space` `space` `MZ` `space` `INT` `space` `REL`
 
 Peaks are arranged in the ascending order of m/z.
 
-2.7 Supplementary Definitions
-2.7.1 Description of Isotope-Labeled Compounds
+### 2.7 Supplementary Definitions
+#### 2.7.1 Description of Isotope-Labeled Compounds
+*This section will be updated in near future as molfiles are deprecated"
+
 This section defines the chemical information of isotope-labeled chemical compounds.
 CH$NAME is Chemical Name followed by ”–[(Labeled Positions-)Isotopic Atom Name with the Number of Isotopic Atoms]”.
-Example
+
+
+Examples:
+```
 CH$NAME: Glycine-[2-13C, 15N]
 CH$NAME: L-Aspartic acid-[2-15N][3,3-d2]
 CH$NAME: Benzene-[d6]
+````
+
 MOLFILE depends on whether the labeled position is specified. If the labeled position is specified, molfile defines the isotopic atom name and the labeled position. Otherwise molfile should be the same to that of the non-labeled chemical compound.
 CH$FORMULA should be the same to that of the non-labeled chemical compound.
 CH$EXACT_MASS is the monoisotopic mass, but not the sum of the mass of the isotopes. Thus CH$EXACT_MASS should be equal to that of the non-labeled chemical compound.
@@ -981,15 +989,31 @@ CH$SMILES is the same to that of the non-labeled chemical compound.
 CH$IUPAC, which is InChI code, should define the isotope name and the labeled positions if these two are specified. If not, InChI code is the same to that of the non-labeled chemical compound.
 MS$FOCUSED_ION: PRECURSOR_M/Z should be the value that was actually used in the mass spectrometry. 
 MS$FOCUSED_ION: PRECURSOR_TYPE should be the same to that of non-labeled chemical compound.
-Example
-MS$FOCUSED_ION: PRECURSOR_TYPE [M+H]+
+
+`Example: MS$FOCUSED_ION: PRECURSOR_TYPE [M+H]+`
+
 Record Editor correctly generates CH$FORMULA, CH$EXACT_MASS, CH$SMILES, and CH$IUPAC from the molfile of the isotope-labeled chemical compound.
 
-2.7.2 PK$ANNOTATION of Natural Abundant Isotopic Peaks
-This section describes the annotation of natural abundant isotopic peaks.  Optional and Multiple Line Information
-Example
+#### 2.7.2 PK$ANNOTATION of Natural Abundant Isotopic or In Source Fragment Peaks
+This section describes the annotation of natural abundant isotopic or in-source fragment peaks. Optional and Multiple Line Information
+
+Example 1:
+```
 PK$ANNOTATION: m/z formula annotation exact_mass error(ppm) 
-167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
-168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
+ 167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
+ 168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
+```
+
+Example 2:
+```
+PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
+ 94.0656 C6H8N+ 1 94.0651 4.89
+ 105.0702 C8H9+ 1 105.0699 3.36
+ 106.0652 C7H8N+ 1 106.0651 0.52
+ 107.0733 C7H9N+ 1 107.073 2.92
+ 122.0968 C8H12N+ 1 122.0964 3
+ 133.0766 C8H9N2+ 1 133.076 4.34
+```
+
 Line 1 defines the record format of Line 2 or later lines. 
-・	The first line of each annotation block should be indented by space space.
+The first line of each annotation block should be indented by space space.
