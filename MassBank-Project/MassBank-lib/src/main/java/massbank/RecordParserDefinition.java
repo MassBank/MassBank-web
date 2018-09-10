@@ -542,11 +542,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 								String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
 								logger.trace("Formula from InChI " + formula_inchi + ".");
 								if (!formula_inchi.equals(callback.CH_FORMULA1())) {
-									logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
+									logger.trace("Formula from record file " + callback.CH_FORMULA1() + ".");
 									
-									// just log an error for now
+									// just log an error until all records are fixed
 									logger.error("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-											+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"\n" 
+											+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA1() + "\"\n" 
 											+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
 											
 									// Formula error in record file

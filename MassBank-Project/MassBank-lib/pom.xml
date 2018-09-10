@@ -12,7 +12,7 @@
 	<artifactId>MassBank-lib</artifactId>
 	<name>MassBank lib</name>
 	<url>http://maven.apache.org</url>
-	<packaging>jar</packaging>
+<!-- 	<packaging>jar</packaging> -->
 
 	<dependencies>
 		<dependency>
@@ -24,12 +24,12 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.11.0</version>
+			<version>2.11.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.11.0</version>
+			<version>2.11.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -54,12 +54,12 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.7</version>
+			<version>3.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-configuration2</artifactId>
-			<version>2.2</version>
+			<version>2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -111,12 +111,6 @@
 			<artifactId>petitparser-core</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>net.sf.jni-inchi</groupId> -->
-<!-- 			<artifactId>jni-inchi</artifactId> -->
-<!-- 			<version>0.8</version> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>edu.ucdavis.fiehnlab.splash</groupId>
 			<artifactId>core</artifactId>

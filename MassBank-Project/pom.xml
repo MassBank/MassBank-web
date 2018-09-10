@@ -19,8 +19,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axis2.version>1.7.8</axis2.version>
+		<!--CDK version >2.1.1 is needed to fix a deuterium problem-->
 		<cdk.version>2.1.1</cdk.version>
-		<jdbc.version>2.2.6</jdbc.version>
+		<jdbc.version>2.3.0</jdbc.version>
 	</properties>
 
 	<build>
