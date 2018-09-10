@@ -246,7 +246,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>O</td>
     <td>U/I</td>
     <td>S</td>
-    <td>Analytical conditions of chromatographic seperation</td>
+    <td>Analytical conditions of chromatographic separation</td>
     <td><a href="#2.4.6">2.4.6</a></td>
   </tr>
   <tr>
@@ -874,7 +874,7 @@ PK$ANNOTATION: m/z formula annotation exact_mass error(ppm)
 ```
 Line 1 defines the record format of the annotation blocks. Contributors freely define the record format by using appropriate terms.
 Line 2 or later：sequence of multiple line annotation blocks.
-The first line of each annotation block should be indented by `space space`.  The second or later line in each annotation block should be indented by `space space space space`.
+The first line of each annotation block should be indented by `space space`. The second or later line in each annotation block should be indented by `space space space space`.
 See Section 2.7.2 about more details of Example 3. 
 
 #### <a name="2.6.3"></a>2.6.3 PK$NUM\_PEAK
@@ -910,9 +910,9 @@ CH$NAME: L-Aspartic acid-[2-15N][3,3-d2]
 CH$NAME: Benzene-[d6]
 MOLFILE depends on whether the labeled position is specified. If the labeled position is specified, molfile defines the isotopic atom name and the labeled position. Otherwise molfile should be the same to that of the non-labeled chemical compound.
 CH$FORMULA should be the same to that of the non-labeled chemical compound.
-CH$EXACT_MASS is the monoisotopic mass, but not the sum of the mass of the isotopes.  Thus CH$EXACT_MASS should be equal to that of the non-labeled chemical compound.
+CH$EXACT_MASS is the monoisotopic mass, but not the sum of the mass of the isotopes. Thus CH$EXACT_MASS should be equal to that of the non-labeled chemical compound.
 CH$SMILES is the same to that of the non-labeled chemical compound.
-CH$IUPAC, which is InChI code, should define the isotope name and the labeled positions if these two are specified.  If not, InChI code is the same to that of the non-labeled chemical compound.
+CH$IUPAC, which is InChI code, should define the isotope name and the labeled positions if these two are specified. If not, InChI code is the same to that of the non-labeled chemical compound.
 MS$FOCUSED_ION: PRECURSOR_M/Z should be the value that was actually used in the mass spectrometry. 
 MS$FOCUSED_ION: PRECURSOR_TYPE should be the same to that of non-labeled chemical compound.
 Example
