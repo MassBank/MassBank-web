@@ -3,10 +3,8 @@ package massbank;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,15 +24,8 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openscience.cdk.depict.DepictionGenerator;
-
-import massbank.web.SearchExecution;
-import massbank.web.recordindex.RecordIndexCount;
-import massbank.web.recordindex.RecordIndexCount.RecordIndexCountResult;
-
 import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.title.LegendTitle;
@@ -45,6 +36,11 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
+import org.openscience.cdk.depict.DepictionGenerator;
+
+import massbank.web.SearchExecution;
+import massbank.web.recordindex.RecordIndexCount;
+import massbank.web.recordindex.RecordIndexCount.RecordIndexCountResult;
 
 /**
  * @author rmeier
