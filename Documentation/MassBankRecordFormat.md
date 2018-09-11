@@ -919,6 +919,10 @@ Example: `PK$SPLASH: splash10-z200000000-87bb3c76b8e5f33dd07f`
 #### <a name="2.6.2"></a>2.6.2 PK$ANNOTATION
 Chemical Annotation of Peaks with Molecular Formula. Optional and Multiple Line Information
 
+Line 1 defines the record format of the annotation blocks. Contributors freely define the record format by using appropriate terms.
+Line 2 or later：sequence of multiple line annotation blocks.
+The first line of each annotation block should be indented by `space space`. The second or later line in each annotation block should be indented by `space space space space`.
+
 Example 1: 
 
 ```
@@ -933,15 +937,24 @@ PK$ANNOTATION: m/z {annotation formula exact_mass error(ppm)}
   494.34 [lyso PC(alkyl-18:0,-)]- C25H53NO6P 494.36105 -42
 ```
 Example 3:
-
 ```
 PK$ANNOTATION: m/z formula annotation exact_mass error(ppm) 
   167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
-    168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
+  168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
 ```
-Line 1 defines the record format of the annotation blocks. Contributors freely define the record format by using appropriate terms.
-Line 2 or later：sequence of multiple line annotation blocks.
-The first line of each annotation block should be indented by `space space`. The second or later line in each annotation block should be indented by `space space space space`.
+Example 4:
+RMassBank provides the option for automated tentative annotation of the fragment peaks including in-source adduct fragments (N2/O)
+```
+PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
+  94.0656 C6H8N+ 1 94.0651 4.89
+  105.0702 C8H9+ 1 105.0699 3.36
+  106.0652 C7H8N+ 1 106.0651 0.52
+  107.0733 C7H9N+ 1 107.073 2.92
+  122.0968 C8H12N+ 1 122.0964 3
+  133.0766 C8H9N2+ 1 133.076 4.34
+```
+The automated annotation by RMassBank is currently tentative.
+
 See Section 2.7.2 about more details of Example 3. 
 
 #### <a name="2.6.3"></a>2.6.3 PK$NUM\_PEAK
@@ -980,7 +993,7 @@ Examples:
 CH$NAME: Glycine-[2-13C, 15N]
 CH$NAME: L-Aspartic acid-[2-15N][3,3-d2]
 CH$NAME: Benzene-[d6]
-````
+```
 
 MOLFILE depends on whether the labeled position is specified. If the labeled position is specified, molfile defines the isotopic atom name and the labeled position. Otherwise molfile should be the same to that of the non-labeled chemical compound.
 CH$FORMULA should be the same to that of the non-labeled chemical compound.
@@ -994,28 +1007,16 @@ Example: `MS$FOCUSED_ION: PRECURSOR_TYPE [M+H]+`
 
 Record Editor correctly generates CH$FORMULA, CH$EXACT_MASS, CH$SMILES, and CH$IUPAC from the molfile of the isotope-labeled chemical compound.
 
-#### 2.7.2 PK$ANNOTATION of Natural Abundant Isotopic or In-Source Adduct Fragments
-This section describes the annotation of natural abundant isotopic or in-source adduct fragments. Optional and Multiple Line Information
+#### 2.7.2 PK$ANNOTATION of Natural Abundant Isotopic Peaks
 
-Example 1:
+This section describes the annotation of natural abundant isotopic peaks. Optional and Multiple Line Information
 ```
 PK$ANNOTATION: m/z formula annotation exact_mass error(ppm) 
- 167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
- 168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
+  167.08947 C9H12O2N [M+1]+(13C) 167.08961 0.81
+  168.08681 C9H12O2N [M+1]+(13C, 15N) 168.08664 1.04
 ```
 
 Line 1 defines the record format of Line 2 or later lines. 
 The first line of each annotation block should be indented by space space.
 
-Example 2:
-RMassBank provides the option for automated tentative annotation of the fragment peaks including in-source adduct fragments (N2/O)
-```
-PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)
- 94.0656 C6H8N+ 1 94.0651 4.89
- 105.0702 C8H9+ 1 105.0699 3.36
- 106.0652 C7H8N+ 1 106.0651 0.52
- 107.0733 C7H9N+ 1 107.073 2.92
- 122.0968 C8H12N+ 1 122.0964 3
- 133.0766 C8H9N2+ 1 133.076 4.34
-```
-The automated annotation by RMassBank is currently tentative.
+
