@@ -1,31 +1,27 @@
 package massbank.web;
 
-import java.sql.Connection;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.GetConfig;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
+import massbank.DatabaseManager;
+
 
 public class SearchExecution {
-	private Database database = null;
-	
-//	private Connection connection = null;
-	
+	private DatabaseManager database = null;
 	private HttpServletRequest request = null;
 	
-	private GetConfig conf = null;
 	
-	public SearchExecution(HttpServletRequest request, GetConfig conf) {
-		this.database = new Database(); 
-//		this.connection = this.database.getConnection();
+	public SearchExecution(HttpServletRequest request) throws SQLException, ConfigurationException {
+		this.database = new DatabaseManager("MassBank"); 
 		this.request = request;
-		this.conf = conf;
 	}
 	
-	public ArrayList<String> exec(SearchFunction function) {
+	public <E> E exec(SearchFunction<E> function) {
 		function.getParameters(this.request);
-		ArrayList<String> result = function.search(this.database.getConnection());
+		E result = function.search(this.database);
 		this.database.closeConnection();
 		return result;
 	}

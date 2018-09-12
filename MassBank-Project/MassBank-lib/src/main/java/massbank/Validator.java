@@ -2,15 +2,18 @@ package massbank;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
+
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
+
 	
 	public static String recordstringExample = 
 			"ACCESSION: BSU00002\n" +
@@ -171,17 +174,16 @@ public class Validator {
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
 				String[] tokens = recordstring.split("\\r?\\n");
-				System.out.println(
-						"Warning: non standard ASCII charactet found. This might be an error. Please check carefully.");
+				logger.warn("non standard ASCII charactet found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
 				for (String token : tokens) {
 					offset = offset + token.length() + 1;
 					if (i < offset) {
 						col = i - (offset - (token.length() + 1));
-						System.out.println(tokens[line]);
+						logger.warn(tokens[line]);
 						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
 						error_at.setCharAt(col, '^');
-						System.out.println(error_at);
+						logger.warn(error_at);
 						break;
 					}
 					line++;
@@ -193,8 +195,7 @@ public class Validator {
 		Parser recordparser = new RecordParser(record);
 		Result res = recordparser.parse(recordstring);
 		if (res.isFailure()) {
-			System.err.println();
-			System.err.println(res.getMessage());
+			logger.error(res.getMessage());
 			int position = res.getPosition();
 			String[] tokens = recordstring.split("\\n");
 
@@ -203,10 +204,10 @@ public class Validator {
 				offset = offset + token.length() + 1;
 				if (position < offset) {
 					col = position - (offset - (token.length() + 1));
-					System.err.println(tokens[line]);
+					logger.error(tokens[line]);
 					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 					error_at.append('^');
-					System.err.println(error_at);
+					logger.error(error_at);
 					break;
 				}
 				line++;
@@ -220,21 +221,19 @@ public class Validator {
 		boolean haserror = false;
 		if (arguments.length==0) {
 			Record record = validate(recordstringExample, "");
-			if (record == null) System.err.println("Error.");
+			if (record == null) logger.fatal("Error.");
 			else logger.trace(record.toString());
-			//System.out.println(record.toString());
 		}
 		else {
 			for (String filename : arguments) {
-				recordstringExample = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
-				Record record = validate(recordstringExample, "");
+				String recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
+				Record record = validate(recordstring, "");
 				if (record == null) {
-					System.err.println("Error in " + filename);
+					logger.error("error in " + filename);
 					haserror = true;
 				}
 				else {
-					//System.out.println("ok");
-					//System.out.println(record.toString());
+					logger.trace("validation passed for " + filename);
 				}
 			}
 		}

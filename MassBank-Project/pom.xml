@@ -18,8 +18,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<axis2.version>1.7.7</axis2.version>
+		<axis2.version>1.7.8</axis2.version>
+		<!--CDK version >2.1.1 is needed to fix a deuterium problem-->
 		<cdk.version>2.1.1</cdk.version>
+		<jdbc.version>2.3.0</jdbc.version>
 	</properties>
 
 	<build>
@@ -37,7 +39,11 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>z</id>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>releases</id>
 			<name>Fiehnlab Public Maven Repository</name>
 			<url>http://gose.fiehnlab.ucdavis.edu:55000/content/groups/public</url>
 		</repository>

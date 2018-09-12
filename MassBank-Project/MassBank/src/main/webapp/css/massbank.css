@@ -1,51 +1,50 @@
-.gradient {
-	box-shadow: 0px 0px 10px 10px #888
+html {
+	min-height: 100%;
+	height:auto;
+	margin:auto;
+	background:#ececec;
 }
 
-#copyright p {
-	padding: 0 0 30px;
-	padding-left: 8px;
+.w3-padding-small{padding:4px 4px!important}
+
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -webkit-linear-gradient(#ececec , #ffffff 75%)
 }
 
-#copyrightline span {
-	color: #666;
-	font-family: Verdana, Arial, Trebuchet MS;
-	font-size: 10px;
-	font-style: italic;
-	text-decoration: none;
-	font-weight: normal;
-	clear: both;
-	display: block;
-	margin: 0;
-	position: relative;
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -moz-linear-gradient(#ececec , #ffffff 75%)
 }
 
-.msbkFont {
-	font-family: Arial, 'MS UI Gothic', sans-serif, monospace;
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -o-linear-gradient(#ececec , #ffffff 75%)
 }
 
-.pageShadow {
-	background-image: url(../image/index_bg_002.gif);
-	background-repeat: repeat-x;
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -ms-linear-gradient(#ececec , #ffffff 75%)
 }
 
-caption {
-    display: block;
-    font-size: 1.5em;
-    margin-top: 0.83em;
-    margin-bottom: 0.83em;
-    margin-left: 0;
-    margin-right: 0;
-    font-weight: bold;
+.w3-theme-gradient {
+	color: #000 !important;
+	background: linear-gradient(#ececec 25%, #ffffff 75%)
 }
 
-.version {
-	height: 60px;
-	color: #666;
-	font-family: Verdana, Arial, Trebuchet MS;
-	font-size: 10px;
-	font-style: italic;
-	display: block;
-	margin-right: 25px;
-	position: relative;
+svg {
+	fill: currentColor;
+}
+
+hr {
+	border: 0;
+	width: 100%;
+	height: 1px;
+	background-color: #616161
+}
+
+.monospace {
+	font-family: "Lucida Console", Monaco, monospace
+}
+
 }

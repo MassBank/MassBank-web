@@ -1,2 +1,6 @@
 .vagrant
-/*.log
+**/*.log
+**/.project
+**/.settings
+**/.classpath
+**/target

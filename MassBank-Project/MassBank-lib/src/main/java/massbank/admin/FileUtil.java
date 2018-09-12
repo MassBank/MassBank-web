@@ -25,13 +25,20 @@
  ******************************************************************************/
 package massbank.admin;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
-import java.util.logging.*;
-import massbank.admin.CmdExecute;
-import massbank.admin.CmdResult;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import massbank.CmdExecute;
+import massbank.CmdResult;
+import massbank.RecordParserDefinition;
 
 public class FileUtil {
+	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
 	
 	/** OS名 */
 	//private static String OS_NAME = System.getProperty("os.name");
@@ -160,7 +167,7 @@ public class FileUtil {
 			inpstrm.close();
 		}
 		catch ( Exception ex ) {
-			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe( ex.toString() );
+			logger.debug( ex.toString() );
 			return false;
 		}
 		return true;
@@ -231,7 +238,7 @@ public class FileUtil {
 			}
 			String crlf = System.getProperty("line.separator");
 			String errMsg = crlf + "[Command] " + cmdline + crlf + "[Error Discription]" + crlf + err;
-			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning( errMsg );
+			logger.warn( errMsg );
 		}
 			// 終了コード取得
 		if ( res.getStatus() != 0 ) {

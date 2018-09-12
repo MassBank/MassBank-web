@@ -1,1 +1,0 @@
-USE `SAMPLE_DB`;

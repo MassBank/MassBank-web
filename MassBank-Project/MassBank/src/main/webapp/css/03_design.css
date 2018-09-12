@@ -1,0 +1,274 @@
+@charset "UTF-8";
+/*******************************************************************************
+ *
+ * Copyright (C) 2009 JST-BIRD MassBank
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *******************************************************************************
+ *
+ * ページごとのデザインに関わるCSS
+ *
+ * ver 1.0.34 2012.12.06
+ *
+ ******************************************************************************/
+
+/*HOME（トップページ）============================================== */
+/*見出し関連*/
+#home h2 { padding:0; }
+#h_news, #h_event { width:695px; height:50px; background:url(image/h.gif) no-repeat; margin:0; }
+#h_news_en, #h_event_en { width:695px; height:50px; background:url(image/h_en.gif) no-repeat; margin:0; }
+#h_database { background-position: 0 -100px; }
+#h_event { background-position: 0 -50px; }
+#h_event_en { background-position: 0 -50px; }
+
+#home li { background:none; padding:0; }
+
+#headline { width:695px; padding-bottom:0; }
+#headline .anniversary { color: #f60; font-weight: bold; }
+#headline .note { color: #DC143C; }
+#headline .s_item { padding-left:20px; }
+#home_news { width:695px; padding:0 0 10px; }
+#home_event { width:695px; padding:0 0 10px; }
+
+#h_home_massdb
+{ width:695px; height:52px; background:url(image/parts_top_db_01.gif) no-repeat; margin:20px 0 0; }
+#h_home_massdb_en
+{ width:695px; height:52px; background:url(image/parts_top_db_01_en.gif) no-repeat; margin:20px 0 0; }
+.massdb_bg
+{ width:695px; background:url(image/parts_top_db_02.gif) no-repeat bottom center; position:relative; padding:15px 0; margin:0 0 10px;}
+
+#line1 { width:675px; display:block; padding:0 0 15px; margin:0 auto; }
+#line2 { width:675px; display:block; padding:0 0; margin:0 auto; }
+.massdb_bg li { float:left; }
+
+/*ショートカットボタン設定*/
+#home_btn1 a, #home_btn2 a, #home_btn3 a, #home_btn4 a, #home_btn5 a
+{ display:block; width:127px; height:62px; background:url(image/btn_db_1.gif) no-repeat; margin:0 0 0 10px; }
+#home_btn6 a, #home_btn7 a, #home_btn8 a, #home_btn9 a
+{ display:block; width:162px; height:47px; background:url(image/btn_db_2.gif) no-repeat; margin:0 0 0 10px; }
+#home_btn9 a
+{ width:159px; }
+
+/*通常状態*/
+#home_btn1 a { background-position: 0 0; margin:0; }
+#home_btn2 a { background-position: -127px 0; }
+#home_btn3 a { background-position: -254px 0; }
+#home_btn4 a { background-position: -381px 0; }
+#home_btn5 a { background-position: -508px 0; }
+#home_btn6 a { background-position: 0 0; margin:0; }
+#home_btn7 a { background-position: -162px 0; }
+#home_btn8 a { background-position: -324px 0; }
+#home_btn9 a { background-position: -486px 0; }
+/*ロールオーバー状態*/
+#home_btn1 a:hover { background-position: 0 -62px; }
+#home_btn2 a:hover { background-position: -127px -62px; }
+#home_btn3 a:hover { background-position: -254px -62px; }
+#home_btn4 a:hover { background-position: -381px -62px; }
+#home_btn5 a:hover { background-position: -508px -62px; }
+#home_btn6 a:hover { background-position: 0 -47px; }
+#home_btn7 a:hover { background-position: -162px -47px; }
+#home_btn8 a:hover { background-position: -324px -47px; }
+#home_btn9 a:hover { background-position: -486px -47px; }
+
+/*データベースサービスサマリー設定*/
+#home .p_dbsammary { padding-bottom:30px; }
+
+/*お知らせ設定*/
+#home_notice { background:#ffe5e5; border:1px #f66 solid; line-height:22px; color:#f44; padding:0px 10px 10px 10px; !important; margin:10px 0 20px; }
+#home_notice .title { padding-top:10px; font-weight:bold; color:#f44; line-height:28px; }
+#home_notice .contents { padding-left:10px; color:#f44; }
+
+#home_notice2 { background:#ffefe0; border:1px #ff6633 solid; line-height:22px; color:#ff3300; padding:0px 10px 10px 10px; !important; margin:5px 0 20px; }
+#home_notice2 .title { padding-top:10px; font-weight:bold; color:#ff3300; line-height:28px; }
+#home_notice2 .contents { padding-left:10px; color:#ff3300; }
+
+/*点線*/
+#home .separate { border-bottom: 1px #ccc solid; }
+
+/*Mass++動画リンク*/
+#home_masspp { margin-top:50px; padding-top:10px; line-height:20px; border-top: 1px #ccc solid; }
+#home_masspp .title { margin-bottom:3px; }
+#home_masspp .img_line { border:solid 1px #4d4d4d; }
+
+/*ニュース============================================== */
+#news p
+{ line-height: 2em; padding-left:30px; }
+
+#news .anniversary { color: #f60; font-weight: bold; }
+#news .note { color: #DC143C; }
+
+#news .h_over { background-color:#e5edff; cursor:pointer; }
+#news .d_exp1 { background:url(image/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+#news .d_exp2 { background:url(image/exp2_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+
+#news .show { display:; }
+#news .hid { display:none; }
+
+/*イベント============================================== */
+#event .p_event { line-height: 2em; padding:10px 0px 10px 30px; }
+#event .s_item { padding-left:20px; width:400px; }
+#event .p_photo { padding:0 0 0 50px; margin:0px; display:inline-block; }
+#event .i_photo { margin-right:10px; width:90px; }
+
+#event .anniversary { color: #f60; font-weight: bold; }
+#event .note { color: #DC143C; }
+
+#event .h_over { background-color:#e5edff; cursor:pointer; }
+#event .d_exp1 { background:url(image/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+#event .d_exp2 { background:url(image/exp2_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+
+#event .show { display:; }
+#event .hid { display:none; }
+
+/*データベースサービス============================================== */
+#database p, #spectrum p, #quick p, #peak p, #substructure p, #record p, #spectral p, #batch p, #browse p, #manual p
+{ padding: 0 0 30px; }
+
+#database .capture { float:left; margin:5px 10px 0; border:1px solid; border-color:#666; width:230px; height:135px; }
+#database .cb { clear:both; }
+#database .p_text { padding: 0;  }
+#database .p_link { padding: 5px 0 5px;  line-height: 34px; }
+
+#database .bi { font-weight:bold; font-style:italic; }
+
+/*公開データ============================================== */
+#published p
+{ padding: 0 0 30px; padding-left:8px; }
+
+#published table{ width:100%; line-height: 20px; margin-bottom:5px; }
+#published tr { background:#e5f1f4; }
+#published th { padding:0.3em 0.6em; border:2px solid #fff; vertical-align:middle; text-align:center;  background:#328aa4; color:#fff; font-weight:bold; }
+#published td { padding:0.3em 0.6em; border:2px solid #fff; vertical-align:middle; text-align:left; }
+
+#published .text_right { text-align:right; }
+#published .p_num { padding-bottom:10px; }
+#published .p_link { padding: 5px 0 30px; padding-left:8px; line-height: 34px; }
+#published .new { background:#fff5ee; }
+#published th.prefix_ja { width:44px; }
+#published th.instms_ja { width:185px; }
+#published th.spectra_ja { width:80px; }
+#published th.compound_ja { width:80px; }
+#published th.prefix_en { width:44px; }
+#published th.instms_en { width:185px; }
+#published th.spectra_en { width:80px; }
+#published th.compound_en { width:80px; }
+
+/*パブリケーション============================================== */
+#publication p
+{ padding: 0 0 30px; }
+
+#publication .ul_list { padding-left:20px; padding-bottom:5px; line-height: 20px; position:relative; margin-right:7px; z-index:0; }
+#publication .ul_list li { background:url(); padding:4px 4px 4px 0px; }
+#publication .ul_list li a { font-weight: bold; }
+#publication .p_text { padding-bottom:35px; padding-left:58px; }
+#publication .p_ref { padding: 0 0 30px; padding-left:20px; }
+/*#publication .doc { position: absolute; left: 0; width: 100%; text-align: right; z-index:999; }*/
+#publication .spr, .spr:link, .spr:visited, spr:hover, spr:active { color:inherit; }
+
+/*ダウンロード============================================== */
+#download p
+{ padding: 0 0 30px; padding-left:8px; }
+
+#download .p_exp { padding-bottom:5px; padding-left:10px; }
+#download .p_text { padding-bottom:5px; padding-left:30px; }
+#download .p_link { padding: 0px 0 10px; padding-left:60px; line-height:34px; position:relative; margin-right:7px; z-index:0; }
+
+#download .ver { font-weight:bold; font-style:italic; }
+#download .memo_latest { padding-left:20px; color:#f60; font-size:11px; text-indent:10px; line-height:24px; }
+#download .memo_old { padding-left:20px; color:#999; font-size:11px; text-indent:10px; line-height:24px; }
+#download .note { color: #DC143C; }
+
+#download .latest { color: #f60; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
+#download .old { color: #999; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
+
+#download .h_over { background-color:#e5edff; cursor:pointer; }
+#download .d_exp1 { background:url(image/exp1_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+#download .d_exp2 { background:url(image/exp2_gray.gif) no-repeat 97% center; width:100%; -moz-user-select:none; -khtml-user-select:none; user-select:none; }
+
+#download .show { display:; }
+#download .hid { display:none; }
+
+/*マニュアル============================================== */
+#manual p
+{ padding: 0 0 30px; padding-left:8px; }
+
+#manual table{ width:100%; line-height: 20px; margin-bottom:5px; }
+#manual tr { background:#FEECE1; }
+#manual th { padding:0.9em 0em; text-align:center; border:2px solid #fff; vertical-align:middle; background:#DF7163; color:#fff; font-weight:bold; width:33%; }
+#manual td { padding:0.9em 0em; text-align:center; border:2px solid #fff; vertical-align:middle; }
+
+#manual .p_exp { padding-bottom:5px; padding-left:10px; }
+#manual .p_text { padding-bottom:20px; padding-left:35px; }
+#manual .p_link { padding: 5px 0 0px; padding-left:15px; line-height: 34px; position:relative; margin-right:7px; z-index:0; }
+
+#manual .memo_latest { padding-left:20px; color:#f60; font-size:11px; text-indent:10px; line-height:24px; }
+#manual .memo_old { padding-left:20px; color:#999; font-size:11px; text-indent:10px; line-height:24px; }
+
+#manual .latest { color: #f60; position: absolute; left: 0; width: 100%; text-align: right; z-index:-1; }
+#manual .latest_table { color:#f60; }
+#manual .old { color: #999; position:absolute; left:0; width:100%; text-align:right; z-index:-1; }
+#manual .old_table { color:#999; }
+
+#manual .bullet_pdf_table { background:#FEECE1 url(image/bullet_pdf.gif) no-repeat 2px center; padding:4px 4px 4px 20px; }
+#manual a:hover.bullet_pdf_table { background:#E5EDFF url(image/bullet_pdf.gif) no-repeat 2px center; }
+
+/*MassBankについて============================================== */
+#about p
+{ padding: 0 0 30px; padding-left:8px; }
+
+#about .p_text { padding-bottom:5px; }
+#about .p_details { padding: 0 0 30px; padding-left:42px; font-size:12px; }
+#about .ul_list { padding-left:28px; padding-bottom:0px; line-height: 24px; }
+#about .li_list { padding-bottom:15px; }
+
+/*お問い合わせ============================================== */
+#contact p
+{ padding: 0 0 30px; padding-left:8px; }
+
+#contact .p_text { padding-bottom:15px; }
+#contact .p_contact { padding: 0 0 30px; padding-left:34px; }
+#contact .p_mailinglist { padding: 0 0 15px; padding-left:34px; }
+
+/*研究協力グループ============================================== */
+#group p
+{ padding: 0 0 30px; padding-left:8px; }
+
+#group .p_text { padding-bottom:5px; padding-left:10px; }
+#group .p_link { padding: 0 0 30px; padding-left: 26px; line-height: 24px; }
+
+/*利用規定============================================== */
+#regulation p
+{ padding: 0 0 30px; padding-left:8px; }
+
+#regulation .p_text { padding-bottom:5px; }
+#regulation .ul_list { padding-left:28px; padding-bottom:30px; line-height: 24px; }
+
+/*著作権============================================== */
+#copyright p
+{ padding: 0 0 30px; padding-left:8px; }
+
+/*サイトマップ============================================== */
+#sitemap_link { padding-left:8px; line-height: 30px; }
+#sitemap_link .ul_list { padding-left:20px; padding-bottom:0px; line-height: 20px; }
+#sitemap_link .split { width:320px; }
+
+/*フッター============================================== */
+#footer iframe { border-style:none; margin:0px; overflow:hidden; width:300px; height:60px; float:left; padding: 20px 0 0; }
+#footer .above { padding: 14px 0 0; }
+
+/*フッター著作権============================================== */
+#copyrightline span
+{ color:#666; font-family:Verdana, Arial, Trebuchet MS; font-size:10px; font-style:italic; text-decoration:none; font-weight:normal; clear:both; display:block; margin:0;  position:relative; }

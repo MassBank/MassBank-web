@@ -83,6 +83,14 @@ public class Config {
 		return config.getString("BASE_URL")+ "temp/";
 	}
 	
+	public boolean Cookie() {
+		return config.getBoolean("Cookie");
+	}
+	
+	public int PollingInterval() {
+		return config.getInt("PollingInterval");
+	}
+	
 	public static void main(String[] args) throws Exception {
 		System.out.println(Config.get().dbName());
 		System.out.println(Config.get().tmpdbName());

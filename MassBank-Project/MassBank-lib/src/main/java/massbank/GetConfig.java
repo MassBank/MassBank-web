@@ -25,10 +25,6 @@
  ******************************************************************************/
 package massbank;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-
 import javax.xml.parsers.*;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -48,13 +44,13 @@ public class GetConfig {
 			DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
 
 			// ドキュメントビルダーを生成
-			DocumentBuilder builder = dbfactory.newDocumentBuilder();
+			//DocumentBuilder builder = dbfactory.newDocumentBuilder();
 
 			// パースを実行してDocumentオブジェクトを取得
-			Document doc = builder.parse( url );
+			//Document doc = builder.parse( url );
 
 			// ルート要素を取得
-			m_root = doc.getDocumentElement();
+			//m_root = doc.getDocumentElement();
 		}
 		catch ( Exception e ) {
 			e.printStackTrace();
@@ -62,24 +58,14 @@ public class GetConfig {
 	}
 
 	/**
-	 * サイトのフル名称を取得する
-	 */ 
-	public String[] getSiteLongName() {
-		return  getSetting("LongName");
-	}
-
-	/**
-	 * Browseアプレットの動作モードを取得する
-	 */ 
-	public String[] getBrowseMode() {
-		return getSetting("BrowseMode");
-	}
-
-	/**
 	 * DB名を取得する
+	 * @throws ConfigurationException 
 	 */ 
-	public String[] getDbName() {
-		return getSetting("DB");
+	public String[] getDbName() throws ConfigurationException {
+		String[] infoList = null;
+		infoList = new String[1];
+		infoList[0] = Config.get().dbName();
+		return infoList;
 	}
 
 	/**
@@ -99,18 +85,14 @@ public class GetConfig {
 
 	/**
 	 * サイトURLを取得する
+	 * @throws ConfigurationException 
 	 */ 
-	public String[] getSiteUrl() {
-		return getSetting("URL");
+	public String[] getSiteUrl() throws ConfigurationException {
+		String[] infoList = null;
+		infoList = new String[1];
+		infoList[0] = Config.get().BASE_URL();
+		return infoList;
 	}
-	
-	/**
-	 * サイト名称を取得する
-	 */ 
-	public String[] getSiteName() {
-		return getSetting("Name");
-	}
-
 	
 	/**
 	 * Get the DocumentRoot folder of Apache HTTPD.
@@ -145,46 +127,6 @@ public class GetConfig {
 		return val;
 	}
 
-	/**
-	 * ページリンク表示数取得
-	 */ 
-	public String getDispLinkNum() {
-		return getValByTagName( "LinkNum" );
-	}
-	
-	/**
-	 * 親ノード表示数取得する
-	 */ 
-	public String getDispNodeNum() {
-		return getValByTagName( "NodeNum" );
-	}
-	
-	/**
-	 * Cookie有効フラグ
-	 */ 
-	public boolean isCookie() {
-		// デフォルト
-		boolean val = false;
-		String ret = getValByTagName( "Cookie" );
-		if ( ret.equals("true") ) {
-			val = true;
-		}
-		return val;
-	}
-	
-	/**
-	 * サーバ監視のポーリング周期を取得する
-	 */
-	public int getPollInterval() {
-		// デフォルト30分
-		int val = 30;
-		String ret = getValByTagName( "PollingInterval" );
-		if ( !ret.equals("") ) {
-			val = Integer.parseInt(ret);
-		}
-		return val;
-	}
-	
 	/**
 	 * 
 	 */
@@ -297,13 +239,4 @@ public class GetConfig {
 		}
 		return val;
 	}
-	
-	/*public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
-		GetConfig conf=new GetConfig("/var/www/html/MassBank/");
-		String[] dbNameList = conf.getDbName();
-		for ( int i = 0; i < dbNameList.length; i++ ) {
-			System.out.println(dbNameList[i]);
-		}
-		
-	}*/
 }

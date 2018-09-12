@@ -23,21 +23,26 @@
  */
 package massbank;
 
-
-import java.io.*;
-import java.sql.*;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.Reader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * Tool to run database scripts
  */
 public class ScriptRunner {
-	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
+	private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
 
     private static final String DEFAULT_DELIMITER = ";";
     /**
