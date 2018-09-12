@@ -139,7 +139,7 @@ public class RefreshDatabase {
 			for (Path contributorPath : path) {
 				if (!Files.isDirectory(contributorPath)) continue;
 				if (contributorPath.endsWith(".git")) continue;
-				if (contributorPath.endsWith("scripts")) continue;
+				if (contributorPath.endsWith(".scripts")) continue;
 				if (contributorPath.endsWith("figure")) continue;
 				
 				String contributor = contributorPath.getFileName().toString();
