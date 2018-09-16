@@ -271,7 +271,7 @@
 		case "PUBLICATION":
 			String regex_pmid	= "PMID:[ ]?\\d{8,8}";
 			String regex_doi	= "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
-			String regex_doiUrl	= "http\\:\\/\\/doi\\.org\\/" + regex_doi;
+			String regex_doiUrl	= "https?\\:\\/\\/(dx\\.)?doi\\.org\\/" + regex_doi;
 			Pattern pattern_pmid	= Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
 		    Matcher matcher_pmid	= pattern_pmid.matcher(value);
 		    Pattern pattern_doi		= Pattern.compile(".*" + "(" + regex_doi	+ ")" + ".*");
