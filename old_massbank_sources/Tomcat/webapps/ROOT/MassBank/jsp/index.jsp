@@ -248,7 +248,7 @@ MassBank.jp と同様に NORMAN MassBank からでも常に最新データにア
 <p class="p_dbsammary separate">
 MassBank は、<a href="http://biosciencedbc.jp/" target="_blank">NBDC-JST</a> によるライフサイエンスデータベース統合化推進プログラムの支援を受けています（2011－2013）。<br />
 MassBank は、<a href="http://www.mssj.jp/index-jp.html" target="_blank">日本質量分析学会</a> の公式データベースです。<br />
-MassBank をご利用された方は論文 (<a href="http://dx.doi.org/10.1002/jms.1777" target="_blank">DOI</a>) を引用してください。
+MassBank をご利用された方は論文 (<a href="https://doi.org/10.1002/jms.1777" target="_blank">DOI</a>) を引用してください。
 </p>
 <p />
 <!--ここまで▲データベースサービス　ショートカットボタン一覧-->
@@ -419,7 +419,7 @@ From NORMAN MassBank as well as MassBank.jp, users are accessible to all the lat
 <p class="p_dbsammary separate">
 MassBank is financially suported from <a href="http://biosciencedbc.jp/?lng=en" target="_blank">National Bioscience Database Center, Japan Science and Technology Agency</a> (2011-2013).<br />
 <a href="http://www.mssj.jp/index.html" target="_blank">The Mass Spectorometry Society of Japan</a> officially supports MassBank.<br />
-Please cite the article (<a href="http://dx.doi.org/10.1002/jms.1777" target="_blank">DOI</a>) when using MassBank.
+Please cite the article (<a href="https://doi.org/10.1002/jms.1777" target="_blank">DOI</a>) when using MassBank.
 </p>
 <p />
 <!--ed▲mass spectrum database shortcut button list-->

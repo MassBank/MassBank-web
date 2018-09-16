@@ -259,14 +259,14 @@ public class RecordDisplay extends HttpServlet {
 //				    	value			= value.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
 //				    }
 //				    if(matcher_doiUrl.matches()){
-//				    	// link http://dx.doi.org/<doi> url
+//				    	// link https://doi.org/<doi> url
 //				    	String doiUrl	= value.substring(matcher_doiUrl.start(1), matcher_doiUrl.end(1));
 //				    	value			= value.replaceAll(doiUrl, "<a href=\"" + doiUrl + "\" target=\"_blank\">" + doiUrl + "</a>");
 //				    } else 
 //				    if(matcher_doi.matches()){
 //				    	// link doi
 //				    	String doi	= value.substring(matcher_doi.start(1), matcher_doi.end(1));
-//				    	value			= value.replaceAll(doi, "<a href=\"http:\\/\\/dx.doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
+//				    	value			= value.replaceAll(doi, "<a href=\"https:\\/\\/doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
 //				    }
 //					
 //				    //sb.append(tag + ": " + value + "\n");
