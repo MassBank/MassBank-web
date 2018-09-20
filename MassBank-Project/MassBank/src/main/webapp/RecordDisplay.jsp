@@ -271,7 +271,7 @@
 		case "PUBLICATION":
 			String regex_pmid	= "PMID:[ ]?\\d{8,8}";
 			String regex_doi	= "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
-			String regex_doiUrl	= "http\\:\\/\\/doi\\.org\\/" + regex_doi;
+			String regex_doiUrl	= "https?\\:\\/\\/(dx\\.)?doi\\.org\\/" + regex_doi;
 			Pattern pattern_pmid	= Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
 		    Matcher matcher_pmid	= pattern_pmid.matcher(value);
 		    Pattern pattern_doi		= Pattern.compile(".*" + "(" + regex_doi	+ ")" + ".*");
@@ -286,14 +286,14 @@
 		    	value			= value.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
 		    }
 		    if(matcher_doiUrl.matches()){
-		    	// link http://dx.doi.org/<doi> url
+		    	// link https://doi.org/<doi> url
 		    	String doiUrl	= value.substring(matcher_doiUrl.start(1), matcher_doiUrl.end(1));
 		    	value			= value.replaceAll(doiUrl, "<a href=\"" + doiUrl + "\" target=\"_blank\">" + doiUrl + "</a>");
 		    } else 
 		    if(matcher_doi.matches()){
 		    	// link doi
 		    	String doi	= value.substring(matcher_doi.start(1), matcher_doi.end(1));
-		    	value			= value.replaceAll(doi, "<a href=\"http:\\/\\/dx.doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
+		    	value			= value.replaceAll(doi, "<a href=\"https:\\/\\/doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
 		    }
 			
 		    //sb.append(tag + ": " + value + "\n");
