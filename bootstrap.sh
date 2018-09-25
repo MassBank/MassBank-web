@@ -44,24 +44,11 @@ mkdir /mariadb
 cd /vagrant 
 docker-compose up -d
 
-echo "**copy apache files****************************************************"
-#rm -r /var/www/*
-#cp -r  modules/apache/html /var/www/html
-#cp -r  modules/apache/error /var/www/error
-#chown -R www-data:www-data /var/www/*
-#install -m 644 -o root -g root modules/apache/conf/010-a2site-massbank.conf /etc/apache2/sites-available
-#a2ensite 010-a2site-massbank
-
 echo "**fetch data repo******************************************************"
 (cd /home/vagrant; \
 git clone https://github.com/MassBank/MassBank-data.git; \
 chown -R vagrant:vagrant MassBank-data) #; \
 #ln -s $PWD/MassBank-data /var/www/html/MassBank/DB )
-
-echo "**enable required apache modules***************************************"
-#a2enmod rewrite
-#a2enmod cgid
-#a2enmod jk
 
 echo "**compile MassBank webapp**********************************************"
 (cd MassBank-Project; mvn install)
@@ -71,11 +58,6 @@ cp massbank.conf /etc
 
 echo "**update database******************************************************"
 MassBank-Project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
-
-#echo "**configure Tomcat if not already done*********************************"
-#if ! grep '^<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />$' /var/lib/tomcat8/conf/server.xml ; then
-#sed -i -e 's#<!-- Define an AJP 1.3 Connector on port 8009 -->#<!-- Define an AJP 1.3 Connector on port 8009 -->\n<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />#' /var/lib/tomcat8/conf/server.xml
-#fi
 
 echo "**RESTARTING ALL SERVER************************************************"
 
