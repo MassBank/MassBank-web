@@ -67,37 +67,37 @@
 			<version>1.9.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openscience.cdk</groupId>
+			<groupId>${cdk.groupId}</groupId>
 			<artifactId>cdk-core</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openscience.cdk</groupId>
+			<groupId>${cdk.groupId}</groupId>
 			<artifactId>cdk-data</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openscience.cdk</groupId>
+			<groupId>${cdk.groupId}</groupId>
 			<artifactId>cdk-inchi</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openscience.cdk</groupId>
+			<groupId>${cdk.groupId}</groupId>
 			<artifactId>cdk-smiles</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openscience.cdk</groupId>
+			<groupId>${cdk.groupId}</groupId>
 			<artifactId>cdk-interfaces</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openscience.cdk</groupId>
+			<groupId>${cdk.groupId}</groupId>
 			<artifactId>cdk-depict</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openscience.cdk</groupId>
+			<groupId>${cdk.groupId}</groupId>
 			<artifactId>cdk-formula</artifactId>
 			<version>${cdk.version}</version>
 		</dependency>
