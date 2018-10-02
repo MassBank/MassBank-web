@@ -220,11 +220,13 @@ public class Validator {
 	public static void main(String[] arguments) throws Exception {
 		boolean haserror = false;
 		if (arguments.length==0) {
+			System.out.println("Nothing to validate");
 			Record record = validate(recordstringExample, "");
 			if (record == null) logger.fatal("Error.");
 			else logger.trace(record.toString());
 		}
 		else {
+			System.out.println("Validating " + arguments.length + " files");
 			for (String filename : arguments) {
 				String recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
 				Record record = validate(recordstring, "");
