@@ -1136,7 +1136,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[M-H+OH]-"))
 			.or(StringParser.of("[M-CH3]-"))
 			.or(StringParser.of("[2M-H]-"))
-			.or(StringParser.of("[M+HCOO-]-"))
+			.or(StringParser.of("[M+HCOO]-"))
 			.or(StringParser.of("[M-C2H3O]-"))
 			.or(StringParser.of("[M-C3H7O2]-"))
 			.or(StringParser.of("[M-H-C6H10O5]-"))
