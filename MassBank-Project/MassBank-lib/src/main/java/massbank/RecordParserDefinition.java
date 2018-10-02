@@ -967,7 +967,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ac_mass_spectrometry",
 			StringParser.of("AC$MASS_SPECTROMETRY")
 			.seq(ref("tagsep"))
-			.seq(ref("ac_mass_spectrometry_subtag"))
+			.seq(
+				ref("ac_mass_spectrometry_subtag")
+				.or(
+					CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_'))
+					.plus().flatten()
+					.map((String value) -> {
+						logger.warn("Usage of free subtag \""+value+"\" in AC$MASS_SPECTROMETRY is not recomended.");
+						return value;
+					})
+					.seq(CharacterParser.whitespace()).flatten()
+				)
+			)
 			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.map((List<String> value) -> {
@@ -1043,7 +1054,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ac_chromatography",
 			StringParser.of("AC$CHROMATOGRAPHY")
 			.seq(ref("tagsep"))
-			.seq(ref("ac_chromatography_subtag"))
+			.seq(ref("ac_chromatography_subtag")
+				.or(
+					CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_'))
+					.plus().flatten()
+					.map((String value) -> {
+						logger.warn("Usage of free subtag \""+value+"\" in AC$CHROMATOGRAPHY is not recomended.");
+						return value;
+					})
+					.seq(CharacterParser.whitespace()).flatten()
+				)
+			)
 			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.map((List<String> value) -> {
