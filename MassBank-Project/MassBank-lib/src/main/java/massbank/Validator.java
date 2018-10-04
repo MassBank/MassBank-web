@@ -174,7 +174,7 @@ public class Validator {
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F) {
 				String[] tokens = recordstring.split("\\r?\\n");
-				logger.warn("non standard ASCII charactet found. This might be an error. Please check carefully.");
+				logger.warn("non standard ASCII character found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
 				for (String token : tokens) {
 					offset = offset + token.length() + 1;
