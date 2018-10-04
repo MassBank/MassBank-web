@@ -1176,7 +1176,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("DERIVATIVE_TYPE "))
 			.or(StringParser.of("FULL_SCAN_FRAGMENT_ION_PEAK "))
 			.or(StringParser.of("PRECURSOR_M/Z "))
-			.or(StringParser.of("PRECURSOR_INTENITY "))
+			.or(StringParser.of("PRECURSOR_INTENSITY "))
 		);
 		
 		def("ms_focused_ion",
