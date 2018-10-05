@@ -975,7 +975,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				ref("ac_mass_spectrometry_subtag")
 				.or(
-					CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_'))
+					CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_')).or(CharacterParser.of('/'))
 					.plus().flatten()
 					.map((String value) -> {
 						logger.warn("Usage of free subtag \""+value+"\" in AC$MASS_SPECTROMETRY is not recomended.");
