@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.Element;
 import org.openscience.cdk.config.Elements;
@@ -98,6 +99,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("valuesep", StringParser.of("; "));
 		def("endtag", StringParser.of("//").trim());
 		def("multiline_start", StringParser.of("  "));
+		
+		def("uint_primitive", digit().plus().flatten());
 
 		// 2.1 Record Specific Information
 		// 2.1.1 ACCESSION
@@ -113,17 +116,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 				letter().times(2)
 				.seq(
 					digit().times(6)
-				).flatten()
-				.map((String value) -> {
-					callback.ACCESSION(value);
-					return value;
-				})
+				)
 				.or(
 					letter().times(3)
 					.seq(
 						digit().times(5)
 					)
-				).flatten()
+				)
+				.flatten()
 				.map((String value) -> {
 					callback.ACCESSION(value);
 					return value;
@@ -422,14 +422,161 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// It follows the Hill's System.
 		// No prosthetic molecule is included (see 2.2.1 CH$NAME).
 		// Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in the MS$FOCUSED_ION: DERIVATIVE_FORM (2.5.1) field.
+		def("element", StringParser.of("Zr")
+			.or(StringParser.of("Zn"))
+			.or(StringParser.of("Yb"))
+			.or(StringParser.of("Y"))
+			.or(StringParser.of("Xe"))
+			.or(StringParser.of("W"))
+			.or(StringParser.of("V"))
+			.or(StringParser.of("U"))
+			.or(StringParser.of("Ts"))
+			.or(StringParser.of("Tm"))
+			.or(StringParser.of("Tl"))
+			.or(StringParser.of("Ti"))
+			.or(StringParser.of("Th"))
+			.or(StringParser.of("Te"))
+			.or(StringParser.of("Tc"))
+			.or(StringParser.of("Tb"))
+			.or(StringParser.of("Ta"))
+			.or(StringParser.of("Sr"))
+			.or(StringParser.of("Sn"))
+			.or(StringParser.of("Sm"))
+			.or(StringParser.of("Si"))
+			.or(StringParser.of("Sg"))
+			.or(StringParser.of("Se"))
+			.or(StringParser.of("Sc"))
+			.or(StringParser.of("Sb"))
+			.or(StringParser.of("S"))
+			.or(StringParser.of("Ru"))
+			.or(StringParser.of("Rn"))
+			.or(StringParser.of("Rh"))
+			.or(StringParser.of("Rg"))
+			.or(StringParser.of("Rf"))
+			.or(StringParser.of("Re"))
+			.or(StringParser.of("Rb"))
+			.or(StringParser.of("Ra"))
+			.or(StringParser.of("Pu"))
+			.or(StringParser.of("Pt"))
+			.or(StringParser.of("Pr"))
+			.or(StringParser.of("Po"))
+			.or(StringParser.of("Pm"))
+			.or(StringParser.of("Pd"))
+			.or(StringParser.of("Pb"))
+			.or(StringParser.of("Pa"))
+			.or(StringParser.of("P"))
+			.or(StringParser.of("Os"))
+			.or(StringParser.of("Og"))
+			.or(StringParser.of("O"))
+			.or(StringParser.of("Np"))
+			.or(StringParser.of("No"))
+			.or(StringParser.of("Ni"))
+			.or(StringParser.of("Nh"))
+			.or(StringParser.of("Ne"))
+			.or(StringParser.of("Nd"))
+			.or(StringParser.of("Nb"))
+			.or(StringParser.of("Na"))
+			.or(StringParser.of("N"))
+			.or(StringParser.of("Mt"))
+			.or(StringParser.of("Mo"))
+			.or(StringParser.of("Mn"))
+			.or(StringParser.of("Mg"))
+			.or(StringParser.of("Md"))
+			.or(StringParser.of("Mc"))
+			.or(StringParser.of("Lv"))
+			.or(StringParser.of("Lu"))
+			.or(StringParser.of("Lr"))
+			.or(StringParser.of("Li"))
+			.or(StringParser.of("La"))
+			.or(StringParser.of("Kr"))
+			.or(StringParser.of("K"))
+			.or(StringParser.of("Ir"))
+			.or(StringParser.of("In"))
+			.or(StringParser.of("I"))
+			.or(StringParser.of("Hs"))
+			.or(StringParser.of("Ho"))
+			.or(StringParser.of("Hg"))
+			.or(StringParser.of("Hf"))
+			.or(StringParser.of("He"))
+			.or(StringParser.of("H"))
+			.or(StringParser.of("Ge"))
+			.or(StringParser.of("Gd"))
+			.or(StringParser.of("Ga"))
+			.or(StringParser.of("Fr"))
+			.or(StringParser.of("Fm"))
+			.or(StringParser.of("Fl"))
+			.or(StringParser.of("Fe"))
+			.or(StringParser.of("F"))
+			.or(StringParser.of("Eu"))
+			.or(StringParser.of("Es"))
+			.or(StringParser.of("Er"))
+			.or(StringParser.of("Dy"))
+			.or(StringParser.of("Ds"))
+			.or(StringParser.of("Db"))
+			.or(StringParser.of("Cu"))
+			.or(StringParser.of("Cs"))
+			.or(StringParser.of("Cr"))
+			.or(StringParser.of("Co"))
+			.or(StringParser.of("Cn"))
+			.or(StringParser.of("Cm"))
+			.or(StringParser.of("Cl"))
+			.or(StringParser.of("Cf"))
+			.or(StringParser.of("Ce"))
+			.or(StringParser.of("Cd"))
+			.or(StringParser.of("Ca"))
+			.or(StringParser.of("C"))
+			.or(StringParser.of("Br"))
+			.or(StringParser.of("Bk"))
+			.or(StringParser.of("Bi"))
+			.or(StringParser.of("Bh"))
+			.or(StringParser.of("Be"))
+			.or(StringParser.of("Ba"))
+			.or(StringParser.of("B"))
+			.or(StringParser.of("Au"))
+			.or(StringParser.of("At"))
+			.or(StringParser.of("As"))
+			.or(StringParser.of("Ar"))
+			.or(StringParser.of("Am"))
+			.or(StringParser.of("Al"))
+			.or(StringParser.of("Ag"))
+			.or(StringParser.of("Ac"))
+//			.map((List<?> value) -> {
+//				System.out.println(value.toString());
+//				return value;						
+//			})
+		);
+		
+		def("element_count", 
+			ref("element")
+			.seq(ref("uint_primitive").optional())
+		);
+		def("molecular_formula", 
+				ref("element_count").plus().flatten()
+		);
+		
 		def("ch_formula",
 			StringParser.of("CH$FORMULA")
 			.seq(ref("tagsep"))
-			.seq(Token.NEWLINE_PARSER.not())
 			.seq(
-				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
-				.flatten()
+				ref("molecular_formula")
+				// test Hill System String and issue warning
 				.map((String value) -> {
+					IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula((String) value, DefaultChemObjectBuilder.getInstance());
+					String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
+					if (!(value.equals(ch_formula_from_cdk))) { 
+						logger.info("Found " + value + " in CH$FORMULA in " + callback.ACCESSION() + ". This is interpreted as Hill formula "+ ch_formula_from_cdk +". Please fix.");		 				
+					}
+					return value;
+				})
+				.seq(
+					CharacterParser.anyOf("+-").plus()
+					.or(
+						ref("uint_primitive")
+						.seq(CharacterParser.anyOf("+-"))
+					).optional()
+				).flatten()
+				.map((String value) -> {
+					//System.out.println(value.toString());
 					IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula((String) value, DefaultChemObjectBuilder.getInstance());
 					callback.CH_FORMULA(m);
 					return value;
@@ -1118,84 +1265,110 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-,
 		// [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-. Cross-reference to mzOntology: Precursor type [MS: 1000792]
 		
-		def("Element_token", 
-				StringParser.of("Os").or(StringParser.of("Xe")).or(StringParser.of("Pa")).or(StringParser.of("Pb")).or(StringParser.of("Pd")).or(StringParser.of("He")).or(StringParser.of("Pm")).or(StringParser.of("Hf")).or(StringParser.of("Hg")).or(StringParser.of("Po")).or(StringParser.of("Pr")).or(StringParser.of("Pt")).or(StringParser.of("Pu")).or(StringParser.of("Ho")).or(StringParser.of("Yb")).or(StringParser.of("Hs")).or(StringParser.of("Ac")).or(StringParser.of("In")).or(StringParser.of("Ag")).or(StringParser.of("Ir")).or(StringParser.of("Al")).or(StringParser.of("Am")).or(StringParser.of("Ra")).or(StringParser.of("Rb")).or(StringParser.of("Ar")).or(StringParser.of("As")).or(StringParser.of("Re")).or(StringParser.of("At")).or(StringParser.of("Zn")).or(StringParser.of("Au")).or(StringParser.of("Rf")).or(StringParser.of("Rg")).or(StringParser.of("Rh")).or(StringParser.of("Zr")).or(StringParser.of("Rn")).or(StringParser.of("Ba")).or(StringParser.of("Be")).or(StringParser.of("Ru")).or(StringParser.of("Bh")).or(StringParser.of("Bi")).or(StringParser.of("Bk")).or(StringParser.of("Sb")).or(StringParser.of("Sc")).or(StringParser.of("Br")).or(StringParser.of("Se")).or(StringParser.of("Sg")).or(StringParser.of("Si")).or(StringParser.of("Sm")).or(StringParser.of("Sn")).or(StringParser.of("Ca")).or(StringParser.of("Sr")).or(StringParser.of("Cd")).or(StringParser.of("Ce")).or(StringParser.of("Cf")).or(StringParser.of("Kr")).or(StringParser.of("Cl")).or(StringParser.of("Cm")).or(StringParser.of("Cn")).or(StringParser.of("Co")).or(StringParser.of("Ta")).or(StringParser.of("Tb")).or(StringParser.of("Cr")).or(StringParser.of("Tc")).or(StringParser.of("Cs")).or(StringParser.of("Te")).or(StringParser.of("Cu")).or(StringParser.of("Th")).or(StringParser.of("Ti")).or(StringParser.of("La")).or(StringParser.of("Tl")).or(StringParser.of("Tm")).or(StringParser.of("Li")).or(StringParser.of("Db")).or(StringParser.of("Ts")).or(StringParser.of("Lr")).or(StringParser.of("Lu")).or(StringParser.of("Lv")).or(StringParser.of("Uuo")).or(StringParser.of("Ds")).or(StringParser.of("Uup")).or(StringParser.of("Uus")).or(StringParser.of("Dy")).or(StringParser.of("Uut")).or(StringParser.of("Mc")).or(StringParser.of("Md")).or(StringParser.of("Mg")).or(StringParser.of("Mn")).or(StringParser.of("Mo")).or(StringParser.of("Mt")).or(StringParser.of("Er")).or(StringParser.of("Es")).or(StringParser.of("Eu")).or(StringParser.of("Na")).or(StringParser.of("Nb")).or(StringParser.of("Nd")).or(StringParser.of("Ne")).or(StringParser.of("Nh")).or(StringParser.of("Ni")).or(StringParser.of("Fe")).or(StringParser.of("No")).or(StringParser.of("Np")).or(StringParser.of("Fl")).or(StringParser.of("Fm")).or(StringParser.of("Fr")).or(StringParser.of("Og")).or(StringParser.of("Ga")).or(StringParser.of("Gd")).or(StringParser.of("Ge")).or(StringParser.of("B")).or(StringParser.of("C")).or(StringParser.of("F")).or(StringParser.of("H")).or(StringParser.of("I")).or(StringParser.of("K")).or(StringParser.of("N")).or(StringParser.of("O")).or(StringParser.of("P")).or(StringParser.of("S")).or(StringParser.of("U")).or(StringParser.of("V")).or(StringParser.of("W")).or(StringParser.of("Y"))
-		);
-		def("ElementCount_token", 
-				ref("Element_token").seq(digit().star())
-		);
-		def("MolecularFormula_token", 
-				ref("ElementCount_token").plus()
-		);
+//		def("Element_token", 
+//				StringParser.of("Os").or(StringParser.of("Xe")).or(StringParser.of("Pa")).or(StringParser.of("Pb")).or(StringParser.of("Pd")).or(StringParser.of("He")).or(StringParser.of("Pm")).or(StringParser.of("Hf")).or(StringParser.of("Hg")).or(StringParser.of("Po")).or(StringParser.of("Pr")).or(StringParser.of("Pt")).or(StringParser.of("Pu")).or(StringParser.of("Ho")).or(StringParser.of("Yb")).or(StringParser.of("Hs")).or(StringParser.of("Ac")).or(StringParser.of("In")).or(StringParser.of("Ag")).or(StringParser.of("Ir")).or(StringParser.of("Al")).or(StringParser.of("Am")).or(StringParser.of("Ra")).or(StringParser.of("Rb")).or(StringParser.of("Ar")).or(StringParser.of("As")).or(StringParser.of("Re")).or(StringParser.of("At")).or(StringParser.of("Zn")).or(StringParser.of("Au")).or(StringParser.of("Rf")).or(StringParser.of("Rg")).or(StringParser.of("Rh")).or(StringParser.of("Zr")).or(StringParser.of("Rn")).or(StringParser.of("Ba")).or(StringParser.of("Be")).or(StringParser.of("Ru")).or(StringParser.of("Bh")).or(StringParser.of("Bi")).or(StringParser.of("Bk")).or(StringParser.of("Sb")).or(StringParser.of("Sc")).or(StringParser.of("Br")).or(StringParser.of("Se")).or(StringParser.of("Sg")).or(StringParser.of("Si")).or(StringParser.of("Sm")).or(StringParser.of("Sn")).or(StringParser.of("Ca")).or(StringParser.of("Sr")).or(StringParser.of("Cd")).or(StringParser.of("Ce")).or(StringParser.of("Cf")).or(StringParser.of("Kr")).or(StringParser.of("Cl")).or(StringParser.of("Cm")).or(StringParser.of("Cn")).or(StringParser.of("Co")).or(StringParser.of("Ta")).or(StringParser.of("Tb")).or(StringParser.of("Cr")).or(StringParser.of("Tc")).or(StringParser.of("Cs")).or(StringParser.of("Te")).or(StringParser.of("Cu")).or(StringParser.of("Th")).or(StringParser.of("Ti")).or(StringParser.of("La")).or(StringParser.of("Tl")).or(StringParser.of("Tm")).or(StringParser.of("Li")).or(StringParser.of("Db")).or(StringParser.of("Ts")).or(StringParser.of("Lr")).or(StringParser.of("Lu")).or(StringParser.of("Lv")).or(StringParser.of("Uuo")).or(StringParser.of("Ds")).or(StringParser.of("Uup")).or(StringParser.of("Uus")).or(StringParser.of("Dy")).or(StringParser.of("Uut")).or(StringParser.of("Mc")).or(StringParser.of("Md")).or(StringParser.of("Mg")).or(StringParser.of("Mn")).or(StringParser.of("Mo")).or(StringParser.of("Mt")).or(StringParser.of("Er")).or(StringParser.of("Es")).or(StringParser.of("Eu")).or(StringParser.of("Na")).or(StringParser.of("Nb")).or(StringParser.of("Nd")).or(StringParser.of("Ne")).or(StringParser.of("Nh")).or(StringParser.of("Ni")).or(StringParser.of("Fe")).or(StringParser.of("No")).or(StringParser.of("Np")).or(StringParser.of("Fl")).or(StringParser.of("Fm")).or(StringParser.of("Fr")).or(StringParser.of("Og")).or(StringParser.of("Ga")).or(StringParser.of("Gd")).or(StringParser.of("Ge")).or(StringParser.of("B")).or(StringParser.of("C")).or(StringParser.of("F")).or(StringParser.of("H")).or(StringParser.of("I")).or(StringParser.of("K")).or(StringParser.of("N")).or(StringParser.of("O")).or(StringParser.of("P")).or(StringParser.of("S")).or(StringParser.of("U")).or(StringParser.of("V")).or(StringParser.of("W")).or(StringParser.of("Y"))
+//		);
+//		def("ElementCount_token", 
+//				ref("Element_token").seq(digit().star())
+//		);
+//		def("MolecularFormula_token", 
+//				ref("ElementCount_token").plus()
+//		);
+//		def("adduct_token", 
+//				CharacterParser.anyOf("+-").seq(digit().star().seq(ref("MolecularFormula_token").plus()))
+//		);
 		def("adduct_token", 
-				CharacterParser.anyOf("+-").seq(digit().star().seq(ref("MolecularFormula_token").plus()))
+				CharacterParser.anyOf("+-")
+				.seq(ref("uint_primitive").optional())
+				.seq(ref("molecular_formula"))
+//				.map((List<?> value) -> {
+//					System.out.println(value);
+//					return value;						
+//				})
 		);
 		def("adduct", 
 				CharacterParser.of('[')
-				.seq(CharacterParser.digit().star()
-				.seq(CharacterParser.of('M')))
+				.seq(ref("uint_primitive").optional())
+				.seq(CharacterParser.of('M'))
 				.seq(ref("adduct_token").star())
 				.seq(CharacterParser.of(']'))
-				.seq(CharacterParser.anyOf("+-").plus()).or(digit().star().seq(CharacterParser.anyOf("+-")))
+				.seq(CharacterParser.anyOf("+-").plus()).or(ref("uint_primitive").seq(CharacterParser.anyOf("+-")))
 				.seq(CharacterParser.of('*').optional())
+//				.map((List<?> value) -> {
+//					System.out.println(value);
+//					return value;						
+//				})
 		);
 		
 		def("precursor_type",
-			ref("adduct").flatten()
-//			StringParser.of("[M]+*")
-//			.or(StringParser.of("[M]++"))
-//			.or(StringParser.of("[M]+"))
-//			.or(StringParser.of("[M+H]+,[M-H2O+H]+"))
-//			.or(StringParser.of("[M+H]+"))
-//			.or(StringParser.of("[M+2H]++"))
-//			.or(StringParser.of("[2M+H]+"))
-//			.or(StringParser.of("[M+Li]+*"))
-//			.or(StringParser.of("[M-H+Li]+*"))
-//			.or(StringParser.of("[M+Na]+*"))
-//			.or(StringParser.of("[M-H+Na]+*"))
-//			.or(StringParser.of("[M+Na]+"))
-//			.or(StringParser.of("[M+K]+"))
-//			.or(StringParser.of("[M+K]+"))
-//			.or(StringParser.of("[M-H2O+H]+,[M-2H2O+H]+"))
-//			.or(StringParser.of("[M-H2O+H]+"))
-//			.or(StringParser.of("[M+15]+"))
-//			.or(StringParser.of("[M-H+Na]+"))
-//			.or(StringParser.of("[2M+Na]+"))
-//			.or(StringParser.of("[M+2Na-H]+"))
-//			.or(StringParser.of("[(M+NH3)+H]+"))
-//			.or(StringParser.of("[M+NH4]+"))
-//			.or(StringParser.of("[M+H-H2O]+"))
-//			.or(StringParser.of("[M-2H2O+H]+,[M-H2O+H]+"))
-//			.or(StringParser.of("[M-2H2O+H]+"))
-//			.or(StringParser.of("[M+H-C6H10O4]+"))
-//			.or(StringParser.of("[M+H-C6H10O5]+"))
-//			.or(StringParser.of("[M+H-C12H20O9]+"))
-//			.or(StringParser.of("[M-H]+"))
-//			.or(StringParser.of("[M-OH]+"))
-//			
-//			.or(StringParser.of("[M-3]+,[M-H2O+H]+"))
-//			
-//			.or(StringParser.of("[M]-"))
-//			.or(StringParser.of("[M-H]-/[M-Ser]-"))
-//			.or(StringParser.of("[M-H]-"))
-//			.or(StringParser.of("[M-2H]--"))
-//			.or(StringParser.of("[M-2H]-"))
-//			.or(StringParser.of("[M+K-2H]-"))
-//			.or(StringParser.of("[M-2H+H2O]-"))
-//			.or(StringParser.of("[M-H+OH]-"))
-//			.or(StringParser.of("[M-CH3]-"))
-//			.or(StringParser.of("[2M-H]-"))
-//			.or(StringParser.of("[M+HCOO]-"))
-//			.or(StringParser.of("[M-C2H3O]-"))
-//			.or(StringParser.of("[M-C3H7O2]-"))
-//			.or(StringParser.of("[M-H-C6H10O5]-"))
-//			.or(StringParser.of("[M-H-CO2]-"))
-//			.or(StringParser.of("[(M+CH3COOH)-H]-"))
-//			.or(StringParser.of("[M+CH3COO]-/[M-CH3]-"))
-//			.or(StringParser.of("[M+CH3COO]-"))
-//			.or(StringParser.of("[2M-H-CO2]-"))
-//			.or(StringParser.of("[2M-H-C6H10O5]-"))
-//			.or(StringParser.of("[M-H-CO2-2HF]-"))
+				ref("adduct")
+				.seq(
+					CharacterParser.of('/')
+					.seq(ref("adduct")).star()
+				)						
+				.flatten()
+//				.map((String value) -> {
+//					System.out.println(value);
+//					return value;						
+//				})
+		);
+		
+		def("ion_type",
+			StringParser.of("[M]+*")
+			.or(StringParser.of("[M]++"))
+			.or(StringParser.of("[M]+"))
+			.or(StringParser.of("[M+H]+,[M-H2O+H]+"))
+			.or(StringParser.of("[M+H]+"))
+			.or(StringParser.of("[M+2H]++"))
+			.or(StringParser.of("[2M+H]+"))
+			.or(StringParser.of("[M+Li]+*"))
+			.or(StringParser.of("[M-H+Li]+*"))
+			.or(StringParser.of("[M+Na]+*"))
+			.or(StringParser.of("[M-H+Na]+*"))
+			.or(StringParser.of("[M+Na]+"))
+			.or(StringParser.of("[M+K]+"))
+			.or(StringParser.of("[M+K]+"))
+			.or(StringParser.of("[M-H2O+H]+,[M-2H2O+H]+"))
+			.or(StringParser.of("[M-H2O+H]+"))
+			.or(StringParser.of("[M+15]+"))
+			.or(StringParser.of("[M-H+Na]+"))
+			.or(StringParser.of("[2M+Na]+"))
+			.or(StringParser.of("[M+2Na-H]+"))
+			.or(StringParser.of("[M+NH3+H]+"))
+			.or(StringParser.of("[M+NH4]+"))
+			.or(StringParser.of("[M+H-H2O]+"))
+			.or(StringParser.of("[M-2H2O+H]+,[M-H2O+H]+"))
+			.or(StringParser.of("[M-2H2O+H]+"))
+			.or(StringParser.of("[M+H-C6H10O4]+"))
+			.or(StringParser.of("[M+H-C6H10O5]+"))
+			.or(StringParser.of("[M+H-C12H20O9]+"))
+			.or(StringParser.of("[M-H]+"))
+			.or(StringParser.of("[M+CH3]+"))
+			.or(StringParser.of("[M-OH]+"))
+			
+			.or(StringParser.of("[M-3]+,[M-H2O+H]+"))
+			
+			.or(StringParser.of("[M]-"))
+			.or(StringParser.of("[M-H]-/[M-Ser]-"))
+			.or(StringParser.of("[M-H]-"))
+			.or(StringParser.of("[M-2H]--"))
+			.or(StringParser.of("[M-2H]-"))
+			.or(StringParser.of("[M+K-2H]-"))
+			.or(StringParser.of("[M-2H+H2O]-"))
+			.or(StringParser.of("[M-H+OH]-"))
+			.or(StringParser.of("[M-CH3]-"))
+			.or(StringParser.of("[2M-H]-"))
+			.or(StringParser.of("[M+HCOO]-"))
+			.or(StringParser.of("[M-C2H3O]-"))
+			.or(StringParser.of("[M-C3H7O2]-"))
+			.or(StringParser.of("[M-H-C6H10O5]-"))
+			.or(StringParser.of("[M-H-CO2]-"))
+			.or(StringParser.of("[M+CH3COOH-H]-"))
+			.or(StringParser.of("[M+CH3COO]-/[M-CH3]-"))
+			.or(StringParser.of("[M+CH3COO]-"))
+			.or(StringParser.of("[2M-H-CO2]-"))
+			.or(StringParser.of("[2M-H-C6H10O5]-"))
+			.or(StringParser.of("[M-H-CO2-2HF]-"))
 		);
 		def ("ms_focused_ion_subtag",
 			StringParser.of("BASE_PEAK ")
@@ -1211,7 +1384,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("MS$FOCUSED_ION")
 			.seq(ref("tagsep"))
 			.seq(StringParser.of("ION_TYPE ")).pick(2)
-			.seq(ref("precursor_type"))
+			.seq(ref("ion_type"))
 			.map((List<String> value) -> {
 				return Pair.of(value.get(0).trim(), value.get(1));
 			})
