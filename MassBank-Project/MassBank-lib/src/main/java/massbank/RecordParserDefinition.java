@@ -6,25 +6,19 @@ import static org.petitparser.parser.primitive.CharacterParser.letter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.Element;
-import org.openscience.cdk.config.Elements;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IElement;
 import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
@@ -147,7 +141,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				ref("ch_name_value")
 				.seq(ref("valuesep"))
 				.pick(0)
-			)
+			).pick(2)
 			.seq(
 				ref("ac_instrument_type_value")
 				.seq(ref("valuesep"))
@@ -159,36 +153,27 @@ public class RecordParserDefinition extends GrammarDefinition {
 			// TODO curation required because ionisation energy is not in format doc
 			.seq(
 				ref("valuesep")
-				.seq(
-					CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()
-					)
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				.pick(1)
 				.optional()
 			)
-			.seq(Token.NEWLINE_PARSER)
-			.map((List<?> value) -> {
-				//System.out.println(value);
-				List<?> value2 = value.subList(2, value.size()-1);
-				List<String> value3	= new ArrayList<String>();
-				for(Object val : value2) {
-					if(val == null)	continue;
-					if(val instanceof List) {
-						value3.add(String.join("-", (List<String>) val));
-						continue;
-					}
-					value3.add((String) val);
-				}
-				String recordTitle	= String.join("; ", value3);
-				callback.RECORD_TITLE(recordTitle);
+			.map((List<String> value) -> {
+				if (value.get(value.size()-1) == null) value.remove(value.size()-1);
+				callback.RECORD_TITLE(value);
 				return value;
 			})
+			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;
+//			})
 		);
 		
 		// 2.1.3 DATE
 		// Date of the Creation or the Last Modification of MassBank Record. Mandatory
 		// Example
-		// DATE: 2011.02.21 (Created 2007.07.07)
 		// DATE: 2016.01.15
+		// DATE: 2011.02.21 (Created 2007.07.07)
 		// DATE: 2016.01.19 (Created 2006.12.21, modified 2011.05.06)
 		def("date_value",
 			CharacterParser.digit().times(4)
@@ -202,7 +187,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				if (r.isSuccess()) {
 					try {
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-						return r.success(LocalDate.parse(r.get(), formatter));
+						LocalDate.parse(r.get(), formatter);
 					} catch (Exception e) { 
 						return context.failure("Can not parse date:\n" + e.getMessage());		 				
 					}
@@ -213,20 +198,30 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("date",
 			StringParser.of("DATE")
    			.seq(ref("tagsep"))
-   			.seq(ref("date_value"))
-    		.seq(
-    			ref("date_value")
-    			.trim(StringParser.of(" (Created "),StringParser.of(", modified "))
-    			.seq(ref("date_value").trim(CharacterParser.none(), CharacterParser.of(')')))
-    			.or(ref("date_value").trim(StringParser.of(" (Created "),CharacterParser.of(')')))
-    			.optional()
-    		)
+   			.seq(
+   				ref("date_value")
+   				.seq(
+   					StringParser.of(" (Created ")
+   					.seq(ref("date_value"))
+   					.seq(StringParser.of(", modified "))
+   					.seq(ref("date_value"))
+   					.seq(CharacterParser.of(')'))
+   					.or(
+   						StringParser.of(" (Created ")
+   						.seq(ref("date_value"))
+   						.seq(CharacterParser.of(')'))
+   					).optional()
+   				).flatten()
+   				.map((String value) -> {
+   					callback.DATE(value);
+   					return value;						
+   				})
+  			)
     		.seq(Token.NEWLINE_PARSER)
-			.map((List<?> value) -> {
-				//System.out.println(value);
-				callback.DATE((LocalDate) value.get(2));
-				return value;						
-			})
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
 		);
 		
 		// 2.1.4 AUTHORS
@@ -540,12 +535,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("Al"))
 			.or(StringParser.of("Ag"))
 			.or(StringParser.of("Ac"))
-//			.map((List<?> value) -> {
-//				System.out.println(value.toString());
-//				return value;						
-//			})
 		);
-		
 		def("element_count", 
 			ref("element")
 			.seq(ref("uint_primitive").optional())
@@ -559,27 +549,32 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("tagsep"))
 			.seq(
 				ref("molecular_formula")
-				// test Hill System String and issue warning
-				.map((String value) -> {
-					IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula((String) value, DefaultChemObjectBuilder.getInstance());
-					String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
-					if (!(value.equals(ch_formula_from_cdk))) { 
-						logger.info("Found " + value + " in CH$FORMULA in " + callback.ACCESSION() + ". This is interpreted as Hill formula "+ ch_formula_from_cdk +". Please fix.");		 				
-					}
-					return value;
-				})
-				.seq(
-					CharacterParser.anyOf("+-").plus()
-					.or(
-						ref("uint_primitive")
-						.seq(CharacterParser.anyOf("+-"))
-					).optional()
+				.or(
+					CharacterParser.of('[')
+					.seq(ref("molecular_formula"))
+					.seq(CharacterParser.of(']'))
+					.seq(
+						CharacterParser.anyOf("+-").plus()
+						.or(
+							ref("uint_primitive")
+							.seq(CharacterParser.anyOf("+-"))
+						)
+					)
 				).flatten()
+				.callCC((Function<Context, Result> continuation, Context context) -> {
+					Result r = continuation.apply(context);
+					if (r.isSuccess()) {
+						IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(r.get(), DefaultChemObjectBuilder.getInstance());
+						String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
+						if (!(r.get().equals(ch_formula_from_cdk))) {
+							return context.failure("CH$FORMULA is interpreted as \""+ ch_formula_from_cdk +"\".");
+						}
+					}
+					return r;
+				})
 				.map((String value) -> {
-					//System.out.println(value.toString());
-					IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula((String) value, DefaultChemObjectBuilder.getInstance());
-					callback.CH_FORMULA(m);
-					return value;
+					callback.CH_FORMULA(value);
+					return value;						
 				})
 			)
 			.seq(Token.NEWLINE_PARSER)
@@ -693,12 +688,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 	
 								String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
 								logger.trace("Formula from InChI " + formula_inchi + ".");
-								if (!formula_inchi.equals(callback.CH_FORMULA1())) {
-									logger.trace("Formula from record file " + callback.CH_FORMULA1() + ".");
+								if (!formula_inchi.equals(callback.CH_FORMULA())) {
+									logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
 									
 									// just log an error until all records are fixed
 									logger.error("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-											+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA1() + "\"\n" 
+											+ formula_inchi + "!= \"" + callback.CH_FORMULA() + "\"\n" 
 											+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
 											
 									// Formula error in record file
@@ -924,16 +919,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("FT"))
 			.or(StringParser.of("IT"))
 			.or(StringParser.of("Q"))
-			.or(StringParser.of("TOF"))
+			.or(StringParser.of("TOF")).plus().flatten()
 		);
 		def("ac_instrument_type_value", 
 			ref("ac_instrument_type_sep")
 			.optional()
 			.seq(ref("ac_instrument_type_ionisation"))
-			.seq(ref("ac_instrument_type_analyzer").plus().flatten())
-			.map((List<?> value) -> {
+			.seq(ref("ac_instrument_type_analyzer"))
+			.map((List<String> value) -> {
 				if (value.get(0)==null) value.remove(0);
-				return value;
+				return String.join("-", value);
 			})
 		);
 		def("ac_instrument_type", 
@@ -941,8 +936,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(ref("tagsep"))
 			.seq(
 				ref("ac_instrument_type_value")
-				.map((List<String> value) -> {
-					callback.AC_INSTRUMENT_TYPE(String.join("-", value));
+				.map((String value) -> {
+					callback.AC_INSTRUMENT_TYPE(value);
 					return value;						
 				})
 			)
@@ -1292,7 +1287,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(CharacterParser.of('M'))
 				.seq(ref("adduct_token").star())
 				.seq(CharacterParser.of(']'))
-				.seq(CharacterParser.anyOf("+-").plus()).or(ref("uint_primitive").seq(CharacterParser.anyOf("+-")))
+				.seq(
+					CharacterParser.anyOf("+-").plus()
+					.or(
+						ref("uint_primitive")
+						.seq(CharacterParser.anyOf("+-"))
+					)
+				)
 				.seq(CharacterParser.of('*').optional())
 //				.map((List<?> value) -> {
 //					System.out.println(value);

@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -28,10 +29,10 @@ public class Record {
 	private final String contributor;
 	
 	private String accession;
-	private String record_title;
-	private String record_title_name;
-	private String record_title_condition;
-	private LocalDate date;
+	private List<String> record_title;
+//	private String record_title_name;
+//	private String record_title_condition;
+	private String date;
 	private String authors;
 	private String license;	
 	private String copyright; // optional
@@ -39,7 +40,7 @@ public class Record {
 	private List<String> comment; // optional
 	private List<String> ch_name;
 	private List<String> ch_compound_class;
-	private IMolecularFormula ch_formula;
+	private String ch_formula;
 	private double ch_exact_mass;
 	private IAtomContainer ch_smiles;
 	private IAtomContainer ch_iupac;
@@ -95,31 +96,24 @@ public class Record {
 	}
 	
 	
-	public String RECORD_TITLE() {
+	public List<String> RECORD_TITLE() {
 		return record_title;
 	}
-	public String RECORD_TITLE_NAME() {
-		return record_title_name;
+	public String RECORD_TITLE1() {
+		return String.join("; ", record_title);
 	}
-	public String RECORD_TITLE_CONDITION() {
-		return record_title_condition;
+	public void RECORD_TITLE(List<String> value) {
+		record_title = value;
 	}
-	public void RECORD_TITLE(String value) {
-		this.record_title = value;
-		String[] record_title_tokens	= value.split("; ");
-		this.record_title_name		= record_title_tokens[0];
-		this.record_title_condition	= String.join("; ", Arrays.copyOfRange(record_title_tokens, 1, record_title_tokens.length));
+	public void RECORD_TITLE1(String value) {
+		record_title = new ArrayList<String>(Arrays.asList(value.split("; ")));
 	}
 	
 	
-	public LocalDate DATE() {
+	public String DATE() {
 		return date;
 	}
-	public String DATE1() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-		return date.format(formatter);
-	}
-	public void DATE(LocalDate value) {
+	public void DATE(String value) {
 		date=value;
 	}
 	
@@ -182,22 +176,17 @@ public class Record {
 	/**
 	* Returns the molecular formula as an org.openscience.cdk.interfaces.IMolecularFormula.
 	*/
-	public IMolecularFormula CH_FORMULA() {
+	public String CH_FORMULA() {
 		return ch_formula;
-	}
-	/**
-	* Returns the molecular formula as an String.
-	*/
-	public String CH_FORMULA1() {
-		return MolecularFormulaManipulator.getString(ch_formula);
 	}
 	/**
 	* Returns the molecular formula as an String with HTML sup tags.
 	*/
-	public String CH_FORMULA2() {
-		return MolecularFormulaManipulator.getHTML(ch_formula);
+	public String CH_FORMULA1() {
+		IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, DefaultChemObjectBuilder.getInstance());
+		return MolecularFormulaManipulator.getHTML(m);
 	}
-	public void CH_FORMULA(IMolecularFormula value) {
+	public void CH_FORMULA(String value) {
 		ch_formula=value;
 	}
 	
@@ -399,8 +388,8 @@ public class Record {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("ACCESSION: " + ACCESSION() + "\n");
-		sb.append("RECORD_TITLE: " + RECORD_TITLE() + "\n");
-		sb.append("DATE: " + DATE1() + "\n");
+		sb.append("RECORD_TITLE: " + RECORD_TITLE1() + "\n");
+		sb.append("DATE: " + DATE() + "\n");
 		sb.append("AUTHORS: " + AUTHORS() + "\n");
 		sb.append("LICENSE: " + LICENSE() + "\n");
 		if (COPYRIGHT() != null)
@@ -422,7 +411,7 @@ public class Record {
 		}
 		sb.append("\n");
 				
-		sb.append("CH$FORMULA: " + CH_FORMULA1() + "\n");
+		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
 		sb.append("CH$SMILES: " + CH_SMILES1() + "\n");
 		sb.append("CH$IUPAC: " + CH_IUPAC1() + "\n");

@@ -7,6 +7,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
@@ -59,7 +62,7 @@ public class Validator {
 			"AC$CHROMATOGRAPHY: SOLVENT A 90:10 water:methanol with 0.01% formic acid and 5mM ammonium formate\n" + 
 			"AC$CHROMATOGRAPHY: SOLVENT B methanol with 0.01% formic acid and 5mM ammonium formate\n" +
 			"MS$FOCUSED_ION: PRECURSOR_M/Z 410.3\n" +
-			"MS$FOCUSED_ION: PRECURSOR_TYPE [M+H]+\n" +
+			"MS$FOCUSED_ION: PRECURSOR_TYPE [M+2H]2+\n" +
 			"PK$SPLASH: splash10-0002-0960000000-77302b0326a418630a84\n" +
 			"PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)\n" +
 			"  134.0594 C8H8NO+ 2 134.0600 -4.77\n" +
@@ -220,7 +223,6 @@ public class Validator {
 	public static void main(String[] arguments) throws Exception {
 		boolean haserror = false;
 		if (arguments.length==0) {
-			System.out.println("Nothing to validate");
 			Record record = validate(recordstringExample, "");
 			if (record == null) logger.fatal("Error.");
 			else logger.trace(record.toString());

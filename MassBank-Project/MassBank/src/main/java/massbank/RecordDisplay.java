@@ -45,7 +45,7 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("<hr>\n");
 		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
 		sb.append("RECORD_TITLE: " + record.RECORD_TITLE() + "<br>\n");
-		sb.append("DATE: " + record.DATE1() + "<br>\n");
+		sb.append("DATE: " + record.DATE() + "<br>\n");
 		sb.append("AUTHORS: " + record.AUTHORS() + "<br>\n");
 		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + record.LICENSE() + "</a><br>\n");
 		
@@ -66,7 +66,7 @@ public class RecordDisplay extends HttpServlet {
 			sb.append("; " + ch_compound_class );
 		}
 		sb.append("<br>\n");
-		sb.append("CH$FORMULA: <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA1() + "\" target=\"_blank\">" + record.CH_FORMULA2() + "</a><br>\n");
+		sb.append("CH$FORMULA: <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA() + "\" target=\"_blank\">" + record.CH_FORMULA1() + "</a><br>\n");
 		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>\n");
 		sb.append("CH$SMILES: " + record.CH_SMILES1() + "<br>\n");
 		sb.append("CH$IUPAC: " + record.CH_IUPAC1() + "<br>\n");
@@ -137,7 +137,7 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("\"@context\": \"http://schema.org\",\n");
 		sb.append("\"@type\": \"Dataset\",\n");
 		sb.append("\"headline\": \""+ record.RECORD_TITLE() + "\",\n");
-		sb.append("\"datePublished\": \"" + record.DATE1() + "\",\n");
+		sb.append("\"datePublished\": \"" + record.DATE() + "\",\n");
 		sb.append("\"license\":  \"https://creativecommons.org/licenses/\"\n");
 		sb.append("},\n");
 		sb.append("\n");
@@ -617,7 +617,7 @@ public class RecordDisplay extends HttpServlet {
 			String description	= 
 				"This MassBank Record with Accession " + accession + 
 				" contains the " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum" + 
-				" of '" + record.RECORD_TITLE_NAME() + "'" +
+				" of '" + record.RECORD_TITLE().get(0) + "'" +
 				(InChIKey != null ? " with the InChIKey '" + InChIKey + "'" : "") + 
 				//(!compoundClass2.equals("N/A")	? " with the compound class '" + compoundClass2 + "'"	: "") + 
 				//"." +
@@ -635,7 +635,7 @@ public class RecordDisplay extends HttpServlet {
 			String peaks = "41.100,46@55.100,142@56.000,3@59.100,14@60.000,60@72.800,29@74.200,11@76.900,33@91.100,4@92.100,44@109.100,999@";
 			String recordstring = createRecordString(record);
 			String structureddata = createStructuredData(record);
-	        request.setAttribute("shortName", record.RECORD_TITLE_NAME());
+	        request.setAttribute("shortName", record.RECORD_TITLE1());
 	        request.setAttribute("description", description);
 	        request.setAttribute("accession", accession);
 	        request.setAttribute("inchiKey", InChIKey);

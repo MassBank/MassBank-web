@@ -24,10 +24,7 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.smiles.SmilesParser;
-import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
-
 import net.sf.jniinchi.INCHI_RET;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -318,8 +315,8 @@ public class DatabaseManager {
 			int instrumentID = -1;
 			if (set.next()) {
 				acc.ACCESSION(set.getString("ACCESSION"));
-				acc.RECORD_TITLE(set.getString("RECORD_TITLE"));
-				acc.DATE(set.getDate("DATE").toLocalDate());
+				acc.RECORD_TITLE1(set.getString("RECORD_TITLE"));
+				acc.DATE(set.getString("DATE"));
 				acc.AUTHORS(set.getString("AUTHORS"));
 				acc.LICENSE(set.getString("LICENSE"));
 				acc.COPYRIGHT(set.getString("COPYRIGHT"));
@@ -396,9 +393,7 @@ public class DatabaseManager {
 			this.statementCOMPOUND.setInt(1, compoundID);
 			set = this.statementCOMPOUND.executeQuery();
 			while (set.next()) {
-				String formulaString	= set.getString("CH_FORMULA");
-				IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(formulaString, DefaultChemObjectBuilder.getInstance());
-				acc.CH_FORMULA(m);
+				acc.CH_FORMULA(set.getString("CH_FORMULA"));
 				acc.CH_EXACT_MASS(set.getDouble("CH_EXACT_MASS"));
 				
 				String smilesString	= set.getString("CH_SMILES");
@@ -778,7 +773,7 @@ public class DatabaseManager {
 		try {
 		//System.out.println(System.nanoTime());
 		statementInsertCompound.setNull(1, java.sql.Types.INTEGER);
-		statementInsertCompound.setString(2, acc.CH_FORMULA1());
+		statementInsertCompound.setString(2, acc.CH_FORMULA());
 		statementInsertCompound.setDouble(3, acc.CH_EXACT_MASS());
 		statementInsertCompound.setString(4, acc.CH_SMILES1());
 		statementInsertCompound.setString(5, acc.CH_IUPAC1());
@@ -910,7 +905,7 @@ public class DatabaseManager {
 		
 		//System.out.println(System.nanoTime());
 		statementInsertRECORD.setString(1, acc.ACCESSION());
-		statementInsertRECORD.setString(2, acc.RECORD_TITLE());
+		statementInsertRECORD.setString(2, acc.RECORD_TITLE1());
 		statementInsertRECORD.setDate(3, Date.valueOf(acc.DATE()));
 		statementInsertRECORD.setString(4, acc.AUTHORS());
 //		if (acc.get("LICENSE").size() != 0) {
