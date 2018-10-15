@@ -548,7 +548,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("CH$FORMULA")
 			.seq(ref("tagsep"))
 			.seq(
-				ref("molecular_formula")
+				StringParser.of("N/A")
+				.or(ref("molecular_formula"))
 				.or(
 					CharacterParser.of('[')
 					.seq(ref("molecular_formula"))
@@ -564,6 +565,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.callCC((Function<Context, Result> continuation, Context context) -> {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
+						if (r.get().equals("N/A")) return r;
 						IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(r.get(), DefaultChemObjectBuilder.getInstance());
 						String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
 						if (!(r.get().equals(ch_formula_from_cdk))) {
