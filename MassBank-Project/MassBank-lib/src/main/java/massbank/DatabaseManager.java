@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -906,7 +905,7 @@ public class DatabaseManager {
 		//System.out.println(System.nanoTime());
 		statementInsertRECORD.setString(1, acc.ACCESSION());
 		statementInsertRECORD.setString(2, acc.RECORD_TITLE1());
-		statementInsertRECORD.setDate(3, Date.valueOf(acc.DATE()));
+		statementInsertRECORD.setString(3, acc.DATE());
 		statementInsertRECORD.setString(4, acc.AUTHORS());
 //		if (acc.get("LICENSE").size() != 0) {
 			statementInsertRECORD.setString(5, acc.LICENSE());			
