@@ -134,6 +134,10 @@ public class RefreshDatabase {
 			logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
 			DatabaseManager db  = new DatabaseManager(Config.get().tmpdbName());
 			
+			logger.trace("Creating a temporary directory.");
+			Path tmp = Files.createTempDirectory(null);
+			tmp.toFile().deleteOnExit();
+			
 			logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
 			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.get().DataRootPath()));
 			for (Path contributorPath : path) {
