@@ -1,7 +1,5 @@
 package massbank;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,8 +28,6 @@ public class Record {
 	
 	private String accession;
 	private List<String> record_title;
-//	private String record_title_name;
-//	private String record_title_condition;
 	private String date;
 	private String authors;
 	private String license;	

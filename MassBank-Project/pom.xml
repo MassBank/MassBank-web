@@ -22,7 +22,7 @@
 		<!--change back to org.openscience.cdk if cdk 2.2 is released-->
 		<cdk.groupId>com.github.cdk.cdk</cdk.groupId>
 		<!--CDK version >2.1.1 is needed to fix a deuterium problem-->
-		<cdk.version>4004eb64fd</cdk.version>
+		<cdk.version>1834befd1b</cdk.version>
 		<jdbc.version>2.3.0</jdbc.version>
 	</properties>
 
