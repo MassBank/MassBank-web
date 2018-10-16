@@ -3,9 +3,37 @@ Status](https://travis-ci.org/MassBank/MassBank-web.svg?branch=master)](https://
 
 # Installation
 
-There are two possibilities: Install MassBank in a virtual machine
-without major impact on the host computer or install it as "Dynamic Web Module"
-in eclipse for development(requires installation of local Apache httpd).
+MassBank needs a few dependencies to run. This needs to be provided by the server system. It needs a MariaDB database running somewhere, a tomcat server for the webapp and the maven build system for installation. This can be provided directly by the hosting system or in docker containers. Although in principle it might be possible to run this webapp directly on a windows server, we havent tested it and it will not run out of the box. With the help of docker it can easily be run on Window.
+
+Besides running MassBank on a server system it is also possible to run it in the integrated tomcat server within eclipse for easy development and debuging. Our development platform is Ubuntu 16.04/18.04.
+
+## Install in eclipse for development
+
+Needed for a working development environment:
+1. MySQL database - we use a MariaDB docker container
+2. Eclipse Java EE IDE for Web Developers.
+3. Local Apache tomcat for eclipse
+
+### Install MariaDB
+Install and configure [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your system-user is in the group 'docker'. Create a mariadb data directory `sudo mkdir /mariadb` amd adjust your root password for the database in `mariadb-docker-compose.yml`.
+
+Start the database with `docker-compose -f mariadb-docker-compose.yml up -d` and check with `docker ps` for **massbank_mariadb**. Check database connectivity with `mysql -u root -h 127.0.0.1 -p`.
+
+### Install massbank.conf
+Adjust settings in massbank.conf and copy it to /etc. 
+
+### Import project into Eclipse
+Download and install the [Eclipse IDE for Java EE Developers](https://www.eclipse.org/downloads). Start eclipse and import the folder 'MassBank-Project' from this repo: File -> Import -> Existing Maven Project -> Select this repo for import. 
+Download [Apache Tomcat](http://tomcat.apache.org/) and extract it to your preferred folder.
+Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). 
+
+### Populate database
+Clone the data from [MassBank-data](https://github.com/MassBank/MassBank-data) to a local directory and make sure the 'DataRootPath' in 'massbank.conf' is correctly set to your data repo. Run '/MassBank-lib/src/main/java/massbank/RefreshDatabase.java' to populate your database.
+
+### Run MassBank webapp
+
+Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost:8080/MassBank/](http://localhost:8080/MassBank/).
+
 
 ## Virtual Machine Installation
 The requirement is the "vagrant" system and Virtualbox. I used the latest vagrant (1.9.5) with Virtualbox 5.1 on 
@@ -99,56 +127,7 @@ If the tickbox is checked, the integrity of the appliance will be checked during
 
 Import the ova file to your VMWare environment and change the settings if necessary using the console
 
-# Install in eclipse for development
 
-There are three parts needed to have a working development environment:
-1. MySQL database - we use a MariaDB docker container
-2. Apache httpd
-3. Local Apache tomcat in eclipse
-
-## Install MariaDB
-Install and configure [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your system-user is in the group 'docker'. Adjust your root password for the database. Create a mariadb data directory `sudo mkdir /mariadb` and issue `docker-compose up -d` in the root directory of this repo. Check with `docker ps` for **massbank_mariadb**. Check database with `mysql -u root -h 127.0.0.1 -p`.
-
-## Install Apache httpd content
-Install dependencies: apache2 libcgi-pm-perl libapache2-mod-jk mariadb-client git.
-Install apache httpd and make sure you have no old projects installed.
-
-```
-# copy Massbank-web content into folder '/var/www/'
-sudo cp -rp modules/apache/error /var/www/
-sudo cp -rp modules/apache/html /var/www/
-
-# clone MassBank-data to local disk
-git clone https://github.com/MassBank/MassBank-data.git
-
-# configure file system rights and link in data repo
-sudo chown -R www-data:www-data /var/www/*
-sudo ln -s $PWD/MassBank-data /var/www/html/MassBank/DB
-```
-## Configure apache httpd
-```
-# write server-name to apache2.conf
-sudo bash -c 'cat >> /etc/apache2/apache2.conf << EOF
-ServerName localhost
-EOF'
-
-# enable apache sites and modules
-sudo bash -c 'install -m 644 -o root -g root modules/apache/conf/010-a2site-massbank.conf /etc/apache2/sites-available
-a2ensite 010-a2site-massbank
-a2enmod rewrite
-a2enmod authz_groupfile
-a2enmod cgid
-a2enmod jk'
-```
-Restart server: `sudo systemctl restart apache2`.
-
-## install massbank.conf
-Adjust settings in massbank.conf and copy it to /etc.
-
-## Import project into Eclipse
-Download and install the [Eclipse IDE for Java EE Developers](https://www.eclipse.org/downloads) with "Maven Integration for Eclipse" and "Maven Integration for WTP" and extract it to your preferred folder. Start eclipse and import the clones github-project 'Massbank-web': File -> Import -> Existing Maven Project -> Select this repo for import. 
-Download [Apache Tomcat](http://tomcat.apache.org/) and extract it to your preferred folder.
-Then create a Tomcat server in eclipse. Please follow the instructions [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftomcat.html) and [here](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jst.server.ui.doc.user%2Ftopics%2Ftwtomprf.html). Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost/MassBank/](http://localhost/MassBank/).
 
 ## PIWIK log analyser (https://piwik.org/)
 The default MassBank server installation includes the PIWIK log analyser. Consider that user tracking has privacy issues.
