@@ -15,9 +15,9 @@ Needed for a working development environment:
 3. Local Apache tomcat for eclipse
 
 ### Install MariaDB
-Install and configure [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your system-user is in the group 'docker'. Create a mariadb data directory `sudo mkdir /mariadb` amd adjust your root password for the database in `mariadb-docker-compose.yml`.
+Install and configure [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your user is in the group 'docker'. Create a mariadb data directory `sudo mkdir /mariadb` amd adjust your root password for the database in `mariadb-docker-compose.yml`.
 
-Start the database with `docker-compose -f mariadb-docker-compose.yml up -d` and check with `docker ps` for **massbank_mariadb**. Check database connectivity with `mysql -u root -h 127.0.0.1 -p`.
+Start the database with `docker-compose -f compose/mariadb-docker-compose.yml up -d` and check with `docker ps` for **massbank_mariadb**. Check database connectivity with `mysql -u root -h 127.0.0.1 -p`.
 
 ### Install massbank.conf
 Adjust settings in massbank.conf and copy it to /etc. 
@@ -35,7 +35,34 @@ Clone the data from [MassBank-data](https://github.com/MassBank/MassBank-data) t
 Run the MassBank-project on the Tomcat server and access MassBank at [http://localhost:8080/MassBank/](http://localhost:8080/MassBank/).
 
 
-## Virtual Machine Installation
+## Install as server system
+A docker compose file named 'full-service.yaml' is provided to install all required container to run MassBank as a server system. The only requirement are the  [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your user is in the group 'docker' and create a mariadb data directory `sudo mkdir /mariadb`.
+
+### Prepare database and tomcat server
+To set up the MassBank webapp the source of the webapp and the data repository are needed. Get them with:
+```
+git clone git@github.com:MassBank/MassBank-web.git
+git clone git@github.com:MassBank/MassBank-data.git
+```
+Change to the MassBank-web folder and compile the source with `docker-compose -f compose/full-service.yml run maven mvn clean package -f /project`. Please note: Due to the way docker works the compiled files within `MassBank-Project` folder are owned by `root`. They can be removed with `docker-compose -f compose/full-service.yml run maven mvn clean -f /project`. Other option for compilation would be to install Maven and a JDK and run `mvn package`inside the `MassBank-Project` folder.
+
+With the compiled war-files the service container can be pulled up. 
+Run: 
+```
+docker-compose -f compose/full-service.yml up -d mariadb
+docker-compose -f compose/full-service.yml up -d tomcat
+```
+Now the webapp should be visible at `http://hostname/MassBank`
+
+### Update database content
+After creation of the database server the content is missing. The database can only be accessed from a host within the service network inside docker. The `RefreshDatabase` application needs to run from a docker container.
+```
+docker-compose -f compose/full-service.yml run maven /project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
+```
+
+
+## Install as server system within vagrant
+We provide a vagrant setup to automate the installation of a complete virtual server. 
 The requirement is the "vagrant" system and Virtualbox. I used the latest vagrant (1.9.5) with Virtualbox 5.1 on 
 Ubuntu 16.04. Please follow the instructions on [https://www.vagrantup.com/docs/installation/](https://www.vagrantup.com/docs/installation/) and [https://www.virtualbox.org/wiki/Linux_Downloads](https://www.virtualbox.org/wiki/Linux_Downloads).
 Note: 16.04 default vagrant(1.8.1) refuses to work correctly with 16.04 client boxes.
