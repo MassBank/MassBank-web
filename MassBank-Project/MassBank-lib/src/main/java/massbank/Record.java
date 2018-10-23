@@ -9,10 +9,11 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
+import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.smiles.SmiFlavor;
@@ -39,7 +40,7 @@ public class Record {
 	private String ch_formula;
 	private double ch_exact_mass;
 	private IAtomContainer ch_smiles;
-	private IAtomContainer ch_iupac;
+	private String ch_iupac;
 	private List<Pair<String, String>> ch_link; // optional
 	private String sp_scientific_name; // optional
 	private String sp_lineage; // optional
@@ -213,29 +214,30 @@ public class Record {
 	}
 	
 	
-	public IAtomContainer CH_IUPAC() {
-		return ch_smiles;
+	public String CH_IUPAC() {
+		return ch_iupac;
 	}
-	public String CH_IUPAC1() {
-		if (ch_iupac.isEmpty()) return "N/A";
+	public IAtomContainer CH_IUPAC1() {
+		if ("N/A".equals(ch_iupac)) return new AtomContainer();
 		try {
-			InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(ch_iupac);
-			INCHI_RET ret = gen.getReturnStatus();
+			// Get InChIToStructure
+			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, DefaultChemObjectBuilder.getInstance());
+			INCHI_RET ret = intostruct.getReturnStatus();
 			if (ret == INCHI_RET.WARNING) {
 				// Structure generated, but with warning message
-				logger.warn("InChI warning: " + gen.getMessage());
-			} else if (ret != INCHI_RET.OKAY) {
+				logger.warn("InChI warning: \"" + intostruct.getMessage() + "\" converting \"" + ch_iupac + "\".");
+			} 
+			else if (ret != INCHI_RET.OKAY) {
 				// Structure generation failed
-				logger.error("Structure generation failed: " + ret.toString() + " [" + gen.getMessage() + "]");
-				return "N/A";
+				logger.error("Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for \"" + ch_iupac + "\".");
 			}
-			return gen.getInchi();
+			return intostruct.getAtomContainer();
 		} catch (CDKException e) {
-			logger.error(e.getMessage());
-			return "N/A";
-		}
+			logger.error("Structure generation failed for \"" + ch_iupac + "\". Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
+			return new AtomContainer();
+		}		 			
 	}
-	public void CH_IUPAC(IAtomContainer value) {
+	public void CH_IUPAC(String value) {
 		ch_iupac=value;
 	}
 

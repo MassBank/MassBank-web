@@ -564,11 +564,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.callCC((Function<Context, Result> continuation, Context context) -> {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
-						if (r.get().equals("N/A")) return r;
+						if ("N/A".equals(r.get())) return r;
 						IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(r.get(), DefaultChemObjectBuilder.getInstance());
 						String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
 						if (!(r.get().equals(ch_formula_from_cdk))) {
-							return context.failure("CH$FORMULA is interpreted as \""+ ch_formula_from_cdk +"\".");
+							logger.warn("CH$FORMULA is read as \"" + r.get() + "\"");
+							logger.warn("but after parsing it is interpreted as \"" + ch_formula_from_cdk + "\". Please check!");
+							logger.warn(callback.ACCESSION());
 						}
 					}
 					return r;
@@ -669,44 +671,42 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.callCC((Function<Context, Result> continuation, Context context) -> {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
+						if ("N/A".equals(r.get())) return r;
 						try {
-							if ("N/A".equals(r.get())) callback.CH_IUPAC(new AtomContainer());
-							else {
-								// Get InChIToStructure
-								InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), DefaultChemObjectBuilder.getInstance());
-								INCHI_RET ret = intostruct.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
-									// Structure generated, but with warning message
-									logger.warn("InChI warning: " + intostruct.getMessage());
-									logger.warn(callback.ACCESSION());
-								} 
-								else if (ret != INCHI_RET.OKAY) {
-									// Structure generation failed
-									return context.failure("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + r.get());
-								}
-								IAtomContainer m = intostruct.getAtomContainer();
-								callback.CH_IUPAC(m);
-	
-								String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
-								logger.trace("Formula from InChI " + formula_inchi + ".");
-								if (!formula_inchi.equals(callback.CH_FORMULA())) {
-									logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
-									
-									// just log an error until all records are fixed
-									logger.error("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-											+ formula_inchi + "!= \"" + callback.CH_FORMULA() + "\"\n" 
-											+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
-											
-									// Formula error in record file
-									//return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-									//		+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
-								}
+							// Get InChIToStructure
+							InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), DefaultChemObjectBuilder.getInstance());
+							INCHI_RET ret = intostruct.getReturnStatus();
+							if (ret == INCHI_RET.WARNING) {
+								// Structure generated, but with warning message
+								logger.warn("InChI warning: " + intostruct.getMessage());
+								logger.warn(callback.ACCESSION());
+							} 
+							else if (ret != INCHI_RET.OKAY) {
+								// Structure generation failed
+								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + r.get() + ".");
 							}
-						} catch (CDKException e) { 
-							return context.failure("\"Can not parse INCHI string in \"CH$IUPAC\" field.");		 				
+							IAtomContainer m = intostruct.getAtomContainer();
+							String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
+							logger.trace("Formula from InChI: \"" + formula_inchi + "\".");
+							if (!formula_inchi.equals(callback.CH_FORMULA())) {
+								logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
+								// just log an error until all records are fixed
+								logger.error("Formula generated from InChI string \"" + r.get() + "\" in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". \""
+										+ formula_inchi + "\" != \"" + callback.CH_FORMULA() + "\"\n" 
+										+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
+								// TODO mark as parsing error after all records in MassBank-data are fixed
+								//return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
+								//		+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
+							}
+						} catch (CDKException e) {
+							return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + r.get() + "\".");		 				
 						}		 			
 					}
 					return r; 
+				})
+				.map((String value) -> {
+					callback.CH_IUPAC(value);
+					return value;						
 				})
 			)
 			.seq(Token.NEWLINE_PARSER)
@@ -1276,7 +1276,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("adduct_token", 
 				CharacterParser.anyOf("+-")
 				.seq(ref("uint_primitive").optional())
-				.seq(ref("molecular_formula"))
+				.seq(
+					ref("molecular_formula")
+					.or(StringParser.of("ACN"))
+					.or(StringParser.of("FA"))
+				)
 //				.map((List<?> value) -> {
 //					System.out.println(value);
 //					return value;						
