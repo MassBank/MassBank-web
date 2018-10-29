@@ -737,7 +737,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("CHEMSPIDER "))
 			.or(StringParser.of("COMPTOX "))
 			.or(StringParser.of("HMDB "))
-			.or(StringParser.of("INCHIKEY "))
+			.or(
+				StringParser.of("INCHIKEY ")
+				// validate INCHIKEY against InChI
+				.callCC((Function<Context, Result> continuation, Context context) -> {
+					Result r = continuation.apply(context);
+					if (r.isSuccess()) {
+						// get InCHI
+						String InChI = callback.CH_IUPAC();
+						if ("N/A".equals(InChI)) {
+							logger.error("Found INCHIKEY while \"CH$IUPAC: N/A\" is set.");
+							return context.failure("Found INCHIKEY while CH$IUPAC is missing.");
+						}
+					}
+					return r; 
+				})
+			)
 			.or(StringParser.of("KAPPAVIEW "))
 			.or(StringParser.of("KEGG "))
 			.or(StringParser.of("KNAPSACK "))
