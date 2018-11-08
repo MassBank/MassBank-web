@@ -237,7 +237,7 @@ Num Peaks: 7
 		if(record.CH_LINK_asMap().containsKey("INCHIKEY"))
 			list.add("InChIKey" + ": " + record.CH_LINK_asMap().get("INCHIKEY"));
 		list.add("InChI" + ": " + record.CH_IUPAC());
-		list.add("SMILES" + ": " + record.CH_SMILES());
+		list.add("SMILES" + ": " + record.CH_SMILES1());
 		
 		if(record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE"))
 			list.add("Precursor_type" + ": " + record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE"));
@@ -406,7 +406,7 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		list.add("PRECURSORTYPE"	+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE") : "NA"));
 		list.add("INSTRUMENTTYPE"	+ ": " + record.AC_INSTRUMENT_TYPE());
 		list.add("INSTRUMENT"		+ ": " + record.AC_INSTRUMENT());
-		list.add("SMILES"			+ ": " + record.CH_SMILES());
+		list.add("SMILES"			+ ": " + record.CH_SMILES1());
 		list.add("INCHIKEY"			+ ": " + (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "NA"));
 		list.add("FORMULA"			+ ": " + record.CH_FORMULA());
 		list.add("RETENTIONTIME"	+ ": " + (record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "NA"));
@@ -444,24 +444,48 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		}
 	}
 	
-	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
+	public static void exportWholeMassBank(ExportFormat exportFormat, File file) throws SQLException, ConfigurationException, CDKException {
+		// #################################################################
+		// get data
+		System.out.println("Creating DB connection");
 		DatabaseManager dbMan	= new DatabaseManager("MassBank");
-		Record record	= dbMan.getAccessionData("AU100601");
+		System.out.println("Fetching accession codes");
+		String[] accessions	= dbMan.getAccessions();
+		System.out.println("Fetching " + accessions.length + " records");
+		Record[] records	= new Record[accessions.length];
+		for(int i = 0; i < accessions.length; i++)
+			records[i]	= dbMan.getAccessionData(accessions[i]);
+		System.out.println("Closing DB connection");
 		dbMan.closeConnection();
-		//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
 		
-		System.out.println(record.toString());
-		System.out.println();
+		// #################################################################
+		// export data
+		System.out.println("Exporting records to file " + file.getAbsolutePath());
+		recordExport(file, exportFormat, records);
+		System.out.println("Finished");
+	}
+	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
+		if(false) {
+			DatabaseManager dbMan	= new DatabaseManager("MassBank");
+			Record record	= dbMan.getAccessionData("AU100601");
+			dbMan.closeConnection();
+			//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
+			
+			System.out.println(record.toString());
+			System.out.println();
+			
+			List<String> export	= recordToNIST_MSP(record);
+			System.out.println(String.join("\n", export));
+			
+			
+			File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
+			recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
+			
+			File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
+			recordExport(file2, ExportFormat.NIST_MSP, record);
+		}
 		
-		List<String> export	= recordToNIST_MSP(record);
-		System.out.println(String.join("\n", export));
-		
-		
-		File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
-		recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
-		
-		File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
-		recordExport(file2, ExportFormat.NIST_MSP, record);
-		
+		File file	= new File("/home/htreutle/Downloads/tmp/181108_MassBank.msp");
+		exportWholeMassBank(ExportFormat.RIKEN_MSP, file);
 	}
 }

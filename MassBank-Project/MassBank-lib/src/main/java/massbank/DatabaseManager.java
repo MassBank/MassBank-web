@@ -290,11 +290,17 @@ public class DatabaseManager {
 		return this.con;
 	}
 	
+	/**
+	 * Returns the complete record
+	 * @param accessionId
+	 * @return
+	 */
 	public Record getAccessionData(String accessionId) {
 		return getAccessionData(accessionId, getContributorFromAccession(accessionId).SHORT_NAME);
 	}
 	
 	/**
+	 * Returns the complete record
 	 * TODO solve 1:1 relations by a single sql statement with joins
 	 * (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff, SP_SCIENTIFIC_NAME, SP_LINEAGE, AC_INSTRUMENT, AC_INSTRUMENT_TYPE)
 	 * @param accessionId
@@ -1508,6 +1514,10 @@ public class DatabaseManager {
 		}
 		return contributor;
 	}
+	/**
+	 * Get all Accessions stored in MassBank
+	 * @return
+	 */
 	public String[] getAccessions() {
 		List<String> accessions	= new ArrayList<String>();
 		try {
