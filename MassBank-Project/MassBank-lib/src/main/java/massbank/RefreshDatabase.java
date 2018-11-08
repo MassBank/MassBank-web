@@ -162,7 +162,7 @@ public class RefreshDatabase {
 					logger.trace("Creating svg figure for record\"" + record.ACCESSION() + "\".");
 					// create formula images					
 					DepictionGenerator dg = new DepictionGenerator().withAtomColors().withZoom(3);
-					dg.depict(record.CH_IUPAC1()).writeTo(Config.get().DataRootPath()+"/figure/"+record.ACCESSION()+".svg");
+					dg.depict(record.CH_IUPAC_obj()).writeTo(Config.get().DataRootPath()+"/figure/"+record.ACCESSION()+".svg");
 				}
 				path2.close();
 			}

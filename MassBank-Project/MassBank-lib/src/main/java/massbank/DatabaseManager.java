@@ -761,7 +761,7 @@ public class DatabaseManager {
 		statementInsertCompound.setNull(1, java.sql.Types.INTEGER);
 		statementInsertCompound.setString(2, acc.CH_FORMULA());
 		statementInsertCompound.setDouble(3, acc.CH_EXACT_MASS());
-		statementInsertCompound.setString(4, acc.CH_SMILES1());
+		statementInsertCompound.setString(4, acc.CH_SMILES());
 		statementInsertCompound.setString(5, acc.CH_IUPAC());
 		
 		// TODO support CH$CDK_DEPICT_SMILES

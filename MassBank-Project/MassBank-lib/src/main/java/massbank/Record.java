@@ -196,10 +196,10 @@ public class Record {
 	}
 	
 	
-	public IAtomContainer CH_SMILES() {
+	public IAtomContainer CH_SMILES_obj() {
 		return ch_smiles;
 	}
-	public String CH_SMILES1() {
+	public String CH_SMILES() {
 		if (ch_smiles.isEmpty()) return "N/A";
 		try {
 			SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Isomeric);
@@ -217,7 +217,7 @@ public class Record {
 	public String CH_IUPAC() {
 		return ch_iupac;
 	}
-	public IAtomContainer CH_IUPAC1() {
+	public IAtomContainer CH_IUPAC_obj() {
 		if ("N/A".equals(ch_iupac)) return new AtomContainer();
 		try {
 			// Get InChIToStructure
@@ -411,8 +411,8 @@ public class Record {
 				
 		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
-		sb.append("CH$SMILES: " + CH_SMILES1() + "\n");
-		sb.append("CH$IUPAC: " + CH_IUPAC1() + "\n");
+		sb.append("CH$SMILES: " + CH_SMILES() + "\n");
+		sb.append("CH$IUPAC: " + CH_IUPAC_obj() + "\n");
 		
 		if (CH_LINK() != null) {
 			for (Pair<String,String> link : CH_LINK())

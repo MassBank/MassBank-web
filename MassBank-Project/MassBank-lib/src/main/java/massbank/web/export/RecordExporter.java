@@ -18,6 +18,8 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.inchi.InChIGeneratorFactory;
+import org.openscience.cdk.smiles.SmilesGenerator;
 
 import massbank.DatabaseManager;
 import massbank.Record;
@@ -237,7 +239,7 @@ Num Peaks: 7
 		if(record.CH_LINK_asMap().containsKey("INCHIKEY"))
 			list.add("InChIKey" + ": " + record.CH_LINK_asMap().get("INCHIKEY"));
 		list.add("InChI" + ": " + record.CH_IUPAC());
-		list.add("SMILES" + ": " + record.CH_SMILES1());
+		list.add("SMILES" + ": " + record.CH_SMILES());
 		
 		if(record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE"))
 			list.add("Precursor_type" + ": " + record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE"));
@@ -401,13 +403,34 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		
 		List<String> list	= new ArrayList<String>();
 		
+		String smiles	= record.CH_SMILES();
+		String inchi	= record.CH_IUPAC();
+		String inchiKey	= (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "NA");
+		
+		if(
+				(smiles == null || smiles == "NA" || smiles == "N/A" || smiles == "") &&
+				(inchi  != null && inchi  != "NA" && inchi  != "N/A" && inchi  != "")
+		)
+			smiles	= SmilesGenerator.isomeric().create(record.CH_IUPAC_obj());
+		if(
+				(inchi  == null || inchi  == "NA" || inchi  == "N/A" || inchi  == "") &&
+				(smiles != null && smiles != "NA" && smiles != "N/A" && smiles != "")
+		)
+			inchi	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchi();
+		
+		if(inchiKey == "NA" && record.CH_IUPAC_obj() != null)
+			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_IUPAC_obj()).getInchiKey();
+		if(inchiKey == "NA" && record.CH_SMILES_obj() != null)
+			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchiKey();
+		
 		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
 		list.add("PRECURSORMZ"		+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : ""));
 		list.add("PRECURSORTYPE"	+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE") : "NA"));
 		list.add("INSTRUMENTTYPE"	+ ": " + record.AC_INSTRUMENT_TYPE());
 		list.add("INSTRUMENT"		+ ": " + record.AC_INSTRUMENT());
-		list.add("SMILES"			+ ": " + record.CH_SMILES1());
-		list.add("INCHIKEY"			+ ": " + (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "NA"));
+		list.add("SMILES"			+ ": " + smiles);
+		list.add("INCHIKEY"			+ ": " + inchiKey);
+		list.add("INCHI"			+ ": " + inchi);
 		list.add("FORMULA"			+ ": " + record.CH_FORMULA());
 		list.add("RETENTIONTIME"	+ ": " + (record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "NA"));
 		list.add("IONMODE"			+ ": " + record.AC_MASS_SPECTROMETRY_ION_MODE());
