@@ -399,13 +399,13 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		if(comment == null)
 			comment	= String.join("; ", record.COMMENT());
 		if(comment.equals(""))
-			comment	= "NA";
+			comment	= "N/A";
 		
 		List<String> list	= new ArrayList<String>();
 		
 		String smiles	= record.CH_SMILES();
 		String inchi	= record.CH_IUPAC();
-		String inchiKey	= (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "NA");
+		String inchiKey	= (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "N/A");
 		
 		if(
 				(smiles == null || smiles == "NA" || smiles == "N/A" || smiles == "") &&
@@ -418,10 +418,16 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		)
 			inchi	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchi();
 		
-		if(inchiKey == "NA" && record.CH_IUPAC_obj() != null)
+		if(inchiKey == "N/A" && record.CH_IUPAC_obj()  != null && !record.CH_IUPAC_obj().isEmpty())
 			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_IUPAC_obj()).getInchiKey();
-		if(inchiKey == "NA" && record.CH_SMILES_obj() != null)
+		if(inchiKey == "N/A" && record.CH_SMILES_obj() != null && !record.CH_SMILES_obj().isEmpty())
 			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchiKey();
+		
+		if(smiles	== "") smiles	= "N/A";
+		if(inchi	== "") inchi	= "N/A";
+		if(inchiKey	== "") inchiKey	= "N/A";
+		
+//		if(smiles	== "N/A" || inchi	== "N/A" || inchiKey	== "N/A")	return list;
 		
 		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
 		list.add("PRECURSORMZ"		+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : ""));
