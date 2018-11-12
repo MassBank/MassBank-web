@@ -401,33 +401,41 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		if(comment.equals(""))
 			comment	= "N/A";
 		
-		List<String> list	= new ArrayList<String>();
-		
 		String smiles	= record.CH_SMILES();
 		String inchi	= record.CH_IUPAC();
 		String inchiKey	= (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "N/A");
+		if(inchiKey.equals("NA"))	inchiKey	= "N/A";
 		
 		if(
-				(smiles == null || smiles == "NA" || smiles == "N/A" || smiles == "") &&
-				(inchi  != null && inchi  != "NA" && inchi  != "N/A" && inchi  != "")
+				(smiles == null || smiles.equals("NA") || smiles.equals("N/A") || smiles.equals("")) &&
+				( inchi != null && !inchi.equals("NA") && !inchi.equals("N/A") && !inchi.equals(""))
 		)
 			smiles	= SmilesGenerator.isomeric().create(record.CH_IUPAC_obj());
 		if(
-				(inchi  == null || inchi  == "NA" || inchi  == "N/A" || inchi  == "") &&
-				(smiles != null && smiles != "NA" && smiles != "N/A" && smiles != "")
+				( inchi == null ||   inchi.equals("NA") ||   inchi.equals("N/A") ||   inchi.equals("")) &&
+				(smiles != null && !smiles.equals("NA") && !smiles.equals("N/A") && !smiles.equals(""))
 		)
 			inchi	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchi();
 		
-		if(inchiKey == "N/A" && record.CH_IUPAC_obj()  != null && !record.CH_IUPAC_obj().isEmpty())
+		if(inchiKey.equals("N/A") && record.CH_IUPAC_obj()  != null && !record.CH_IUPAC_obj().isEmpty())
 			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_IUPAC_obj()).getInchiKey();
-		if(inchiKey == "N/A" && record.CH_SMILES_obj() != null && !record.CH_SMILES_obj().isEmpty())
+		if(inchiKey.equals("N/A") && record.CH_SMILES_obj() != null && !record.CH_SMILES_obj().isEmpty())
 			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchiKey();
 		
-		if(smiles	== "") smiles	= "N/A";
-		if(inchi	== "") inchi	= "N/A";
-		if(inchiKey	== "") inchiKey	= "N/A";
+		if(  smiles.equals("")) smiles		= "N/A";
+		if(   inchi.equals("")) inchi		= "N/A";
+		if(inchiKey.equals("")) inchiKey	= "N/A";
 		
-//		if(smiles	== "N/A" || inchi	== "N/A" || inchiKey	== "N/A")	return list;
+		List<String> list	= new ArrayList<String>();
+		
+//		if(  smiles.equals("N/A") && (! inchi.equals("N/A") || !inchiKey.equals("N/A")))	System.out.println("SMILES missing: " + smiles + " vs " + inchi + " + " + inchiKey);
+//		if(   inchi.equals("N/A") && (!smiles.equals("N/A") || !inchiKey.equals("N/A")))	System.out.println("InChI missing: " + inchi + " vs " + smiles + " + " + inchiKey);
+//		if(inchiKey.equals("N/A") && (! inchi.equals("N/A") || !  smiles.equals("N/A")))	System.out.println("InChIKey missing: " + inchiKey + " vs " + inchi + " + " + smiles);
+//		
+//		if(smiles.equals("N/A") || inchi.equals("N/A") || inchiKey.equals("N/A"))	return list;
+//		if(!record.AC_MASS_SPECTROMETRY_MS_TYPE().equals("MS2"))	return list;
+////		if(!record.AC_MASS_SPECTROMETRY_ION_MODE().equals("POSITIVE"))	return list;
+//		if(!record.AC_MASS_SPECTROMETRY_ION_MODE().equals("NEGATIVE"))	return list;
 		
 		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
 		list.add("PRECURSORMZ"		+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : ""));
