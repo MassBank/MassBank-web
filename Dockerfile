@@ -13,6 +13,7 @@ RUN git clone --depth 1 https://github.com/MassBank/MassBank-web.git ; \
 
 CMD [ "sh", "-c", "cp -avx /usr/local/tomcat/webapps/* /app ; tail -f /dev/null"]
 
+
 # This was the manual invocation:
 # docker run --rm -v $HOME/.m2:/root/.m2 -v $PWD/MassBank-Project:/project -v $PWD/conf/full-service.conf:/etc/massbank.conf -v $PWD/../MassBank-data:/MassBank-data maven:latest mvn clean package -f /project^C
 
