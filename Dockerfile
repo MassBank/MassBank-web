@@ -11,7 +11,8 @@ RUN git clone --depth 1 https://github.com/MassBank/MassBank-web.git ; \
     cp /project/api/target/api.war /usr/local/tomcat/webapps/ ; \ 
     rm -rf /MassBank-web .m2 
 
-CMD [ "tail", "-f" ]
+CMD [ "tail", "-f", "/dev/null"]
+
 # This was the manual invocation:
 # docker run --rm -v $HOME/.m2:/root/.m2 -v $PWD/MassBank-Project:/project -v $PWD/conf/full-service.conf:/etc/massbank.conf -v $PWD/../MassBank-data:/MassBank-data maven:latest mvn clean package -f /project^C
 
