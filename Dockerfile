@@ -4,8 +4,9 @@ FROM maven:latest
 RUN git clone --depth 1 https://github.com/MassBank/MassBank-web.git ; \
     ln -s /MassBank-web/MassBank-Project /project ; \
     mvn clean package -f /project ; \
-    cp /project/MassBank/target/MassBank.war / ; \
-    cp /project/api/target/api.war / ; \ 
+    mkdir -p /usr/local/tomcat/webapps ; \
+    cp /project/MassBank/target/MassBank.war /usr/local/tomcat/webapps/ ; \
+    cp /project/api/target/api.war /usr/local/tomcat/webapps/ ; \ 
     rm -rf /MassBank-web .m2 
 
 # This was the manual invocation:
