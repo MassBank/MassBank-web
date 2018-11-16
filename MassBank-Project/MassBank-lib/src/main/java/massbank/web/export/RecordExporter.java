@@ -18,6 +18,8 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.inchi.InChIGeneratorFactory;
+import org.openscience.cdk.smiles.SmilesGenerator;
 
 import massbank.DatabaseManager;
 import massbank.Record;
@@ -397,17 +399,52 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		if(comment == null)
 			comment	= String.join("; ", record.COMMENT());
 		if(comment.equals(""))
-			comment	= "NA";
+			comment	= "N/A";
+		
+		String smiles	= record.CH_SMILES();
+		String inchi	= record.CH_IUPAC();
+		String inchiKey	= (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "N/A");
+		if(inchiKey.equals("NA"))	inchiKey	= "N/A";
+		
+		if(
+				(smiles == null || smiles.equals("NA") || smiles.equals("N/A") || smiles.equals("")) &&
+				( inchi != null && !inchi.equals("NA") && !inchi.equals("N/A") && !inchi.equals(""))
+		)
+			smiles	= SmilesGenerator.isomeric().create(record.CH_IUPAC_obj());
+		if(
+				( inchi == null ||   inchi.equals("NA") ||   inchi.equals("N/A") ||   inchi.equals("")) &&
+				(smiles != null && !smiles.equals("NA") && !smiles.equals("N/A") && !smiles.equals(""))
+		)
+			inchi	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchi();
+		
+		if(inchiKey.equals("N/A") && record.CH_IUPAC_obj()  != null && !record.CH_IUPAC_obj().isEmpty())
+			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_IUPAC_obj()).getInchiKey();
+		if(inchiKey.equals("N/A") && record.CH_SMILES_obj() != null && !record.CH_SMILES_obj().isEmpty())
+			inchiKey	= InChIGeneratorFactory.getInstance().getInChIGenerator(record.CH_SMILES_obj()).getInchiKey();
+		
+		if(  smiles.equals("")) smiles		= "N/A";
+		if(   inchi.equals("")) inchi		= "N/A";
+		if(inchiKey.equals("")) inchiKey	= "N/A";
 		
 		List<String> list	= new ArrayList<String>();
+		
+//		if(  smiles.equals("N/A") && (! inchi.equals("N/A") || !inchiKey.equals("N/A")))	System.out.println("SMILES missing: " + smiles + " vs " + inchi + " + " + inchiKey);
+//		if(   inchi.equals("N/A") && (!smiles.equals("N/A") || !inchiKey.equals("N/A")))	System.out.println("InChI missing: " + inchi + " vs " + smiles + " + " + inchiKey);
+//		if(inchiKey.equals("N/A") && (! inchi.equals("N/A") || !  smiles.equals("N/A")))	System.out.println("InChIKey missing: " + inchiKey + " vs " + inchi + " + " + smiles);
+//		
+//		if(smiles.equals("N/A") || inchi.equals("N/A") || inchiKey.equals("N/A"))	return list;
+//		if(!record.AC_MASS_SPECTROMETRY_MS_TYPE().equals("MS2"))	return list;
+////		if(!record.AC_MASS_SPECTROMETRY_ION_MODE().equals("POSITIVE"))	return list;
+//		if(!record.AC_MASS_SPECTROMETRY_ION_MODE().equals("NEGATIVE"))	return list;
 		
 		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
 		list.add("PRECURSORMZ"		+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : ""));
 		list.add("PRECURSORTYPE"	+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE") : "NA"));
 		list.add("INSTRUMENTTYPE"	+ ": " + record.AC_INSTRUMENT_TYPE());
 		list.add("INSTRUMENT"		+ ": " + record.AC_INSTRUMENT());
-		list.add("SMILES"			+ ": " + record.CH_SMILES());
-		list.add("INCHIKEY"			+ ": " + (record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "NA"));
+		list.add("SMILES"			+ ": " + smiles);
+		list.add("INCHIKEY"			+ ": " + inchiKey);
+		list.add("INCHI"			+ ": " + inchi);
 		list.add("FORMULA"			+ ": " + record.CH_FORMULA());
 		list.add("RETENTIONTIME"	+ ": " + (record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "NA"));
 		list.add("IONMODE"			+ ": " + record.AC_MASS_SPECTROMETRY_ION_MODE());
@@ -444,24 +481,48 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		}
 	}
 	
-	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
+	public static void exportWholeMassBank(ExportFormat exportFormat, File file) throws SQLException, ConfigurationException, CDKException {
+		// #################################################################
+		// get data
+		System.out.println("Creating DB connection");
 		DatabaseManager dbMan	= new DatabaseManager("MassBank");
-		Record record	= dbMan.getAccessionData("AU100601");
+		System.out.println("Fetching accession codes");
+		String[] accessions	= dbMan.getAccessions();
+		System.out.println("Fetching " + accessions.length + " records");
+		Record[] records	= new Record[accessions.length];
+		for(int i = 0; i < accessions.length; i++)
+			records[i]	= dbMan.getAccessionData(accessions[i]);
+		System.out.println("Closing DB connection");
 		dbMan.closeConnection();
-		//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
 		
-		System.out.println(record.toString());
-		System.out.println();
+		// #################################################################
+		// export data
+		System.out.println("Exporting records to file " + file.getAbsolutePath());
+		recordExport(file, exportFormat, records);
+		System.out.println("Finished");
+	}
+	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
+		if(false) {
+			DatabaseManager dbMan	= new DatabaseManager("MassBank");
+			Record record	= dbMan.getAccessionData("AU100601");
+			dbMan.closeConnection();
+			//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
+			
+			System.out.println(record.toString());
+			System.out.println();
+			
+			List<String> export	= recordToNIST_MSP(record);
+			System.out.println(String.join("\n", export));
+			
+			
+			File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
+			recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
+			
+			File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
+			recordExport(file2, ExportFormat.NIST_MSP, record);
+		}
 		
-		List<String> export	= recordToNIST_MSP(record);
-		System.out.println(String.join("\n", export));
-		
-		
-		File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
-		recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
-		
-		File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
-		recordExport(file2, ExportFormat.NIST_MSP, record);
-		
+		File file	= new File("/home/htreutle/Downloads/tmp/181108_MassBank.msp");
+		exportWholeMassBank(ExportFormat.RIKEN_MSP, file);
 	}
 }

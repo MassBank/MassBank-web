@@ -20,11 +20,8 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.inchi.InChIGeneratorFactory;
-import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
-import net.sf.jniinchi.INCHI_RET;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -293,11 +290,17 @@ public class DatabaseManager {
 		return this.con;
 	}
 	
+	/**
+	 * Returns the complete record
+	 * @param accessionId
+	 * @return
+	 */
 	public Record getAccessionData(String accessionId) {
 		return getAccessionData(accessionId, getContributorFromAccession(accessionId).SHORT_NAME);
 	}
 	
 	/**
+	 * Returns the complete record
 	 * TODO solve 1:1 relations by a single sql statement with joins
 	 * (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff, SP_SCIENTIFIC_NAME, SP_LINEAGE, AC_INSTRUMENT, AC_INSTRUMENT_TYPE)
 	 * @param accessionId
@@ -402,24 +405,8 @@ public class DatabaseManager {
 					acc.CH_SMILES(c);
 				}
 				
-				String iupacString	= set.getString("CH_IUPAC");
-				if (iupacString.equals("N/A")) acc.CH_IUPAC(new AtomContainer());
-				else {
-					// Get InChIToStructure
-					InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(iupacString, DefaultChemObjectBuilder.getInstance());
-					INCHI_RET ret = intostruct.getReturnStatus();
-					if (ret == INCHI_RET.WARNING) {
-						// Structure generated, but with warning message
-						System.out.println(acc.ACCESSION() + ": InChI warning: " + intostruct.getMessage());
-					} 
-					else if (ret != INCHI_RET.OKAY) {
-						// Structure generation failed
-						throw new IllegalArgumentException("Can not parse INCHI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + iupacString);
-					}
-					IAtomContainer iupac = intostruct.getAtomContainer();
-					acc.CH_IUPAC(iupac);
-				}
-				
+				acc.CH_IUPAC(set.getString("CH_IUPAC"));
+								
 				// TODO CH$CDK_DEPICT_SMILES
 				// TODO CH$CDK_DEPICT_GENERIC_SMILES
 				// TODO CH$CDK_DEPICT_STRUCTURE_SMILES
@@ -774,8 +761,8 @@ public class DatabaseManager {
 		statementInsertCompound.setNull(1, java.sql.Types.INTEGER);
 		statementInsertCompound.setString(2, acc.CH_FORMULA());
 		statementInsertCompound.setDouble(3, acc.CH_EXACT_MASS());
-		statementInsertCompound.setString(4, acc.CH_SMILES1());
-		statementInsertCompound.setString(5, acc.CH_IUPAC1());
+		statementInsertCompound.setString(4, acc.CH_SMILES());
+		statementInsertCompound.setString(5, acc.CH_IUPAC());
 		
 		// TODO support CH$CDK_DEPICT_SMILES
 		// TODO support CH$CDK_DEPICT_GENERIC_SMILES
@@ -1527,6 +1514,10 @@ public class DatabaseManager {
 		}
 		return contributor;
 	}
+	/**
+	 * Get all Accessions stored in MassBank
+	 * @return
+	 */
 	public String[] getAccessions() {
 		List<String> accessions	= new ArrayList<String>();
 		try {

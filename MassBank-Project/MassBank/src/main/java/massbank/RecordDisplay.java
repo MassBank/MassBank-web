@@ -68,8 +68,8 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("<br>\n");
 		sb.append("CH$FORMULA: <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA() + "\" target=\"_blank\">" + record.CH_FORMULA1() + "</a><br>\n");
 		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>\n");
-		sb.append("CH$SMILES: " + record.CH_SMILES1() + "<br>\n");
-		sb.append("CH$IUPAC: " + record.CH_IUPAC1() + "<br>\n");
+		sb.append("CH$SMILES: " + record.CH_SMILES() + "<br>\n");
+		sb.append("CH$IUPAC: " + record.CH_IUPAC_obj() + "<br>\n");
 		
 		for (Pair<String,String> link : record.CH_LINK()) {
 			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "<br>\n");
