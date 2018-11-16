@@ -62,13 +62,11 @@ docker-compose -f compose/full-service.yml run maven /project/MassBank-lib/targe
 
 
 ## Install as server system within vagrant
-We provide a vagrant setup to automate the installation of a complete virtual server. 
-The requirement is the "vagrant" system and Virtualbox. I used the latest vagrant (1.9.5) with Virtualbox 5.1 on 
-Ubuntu 16.04. Please follow the instructions on [https://www.vagrantup.com/docs/installation/](https://www.vagrantup.com/docs/installation/) and [https://www.virtualbox.org/wiki/Linux_Downloads](https://www.virtualbox.org/wiki/Linux_Downloads).
-Note: 16.04 default vagrant(1.8.1) refuses to work correctly with 16.04 client boxes.
+We provide a vagrant setup to automate the installation of a complete virtual server. Required are Vagrant and Virtualbox. Please follow the instructions on [https://www.vagrantup.com/docs/installation/](https://www.vagrantup.com/docs/installation/) and [https://www.virtualbox.org/wiki/Linux_Downloads](https://www.virtualbox.org/wiki/Linux_Downloads).
 
-Install [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) on your system if not present. Check out the MassBank-web project(or fork on github first and clone from your own repository), 
-which contains 1) The virtual machine initialization files 
+Check out the MassBank-web project and the MassBank-data project(or fork on github first and clone from your own repository).
+
+
 `Vagrantfile` and `bootstrap.sh` and 2) the MassBank software 
 to be installed inside the virtual machine. 
 
