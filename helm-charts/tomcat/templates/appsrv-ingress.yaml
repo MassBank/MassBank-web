@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: massbank-traefik
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+  - host: {{ .Values.service.externalHost }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ template "tomcat.fullname" . }}
+          servicePort: {{ .Values.service.externalPort }}
+        path: /

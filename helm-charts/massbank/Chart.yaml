@@ -1,0 +1,10 @@
+apiVersion: v1
+name: massbank
+description: Deploy MassBank using mariaDB and Tomcat sub-charts 
+icon: https://avatars1.githubusercontent.com/u/8543997?s=200&v=4
+version: 0.1.0
+appVersion: 7.0
+home: https://massbank.eu
+maintainers:
+  - name: Steffen Neumann
+    email: sneumann@ipb-halle.de

@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{.Release.Name}}"
+  #name: massbank-data-import
+  labels:
+    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+    app.kubernetes.io/instance: {{.Release.Name | quote }}
+    helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{.Release.Name}}"
+      labels:
+        app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+        app.kubernetes.io/instance: {{.Release.Name | quote }}
+        helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    spec:
+      volumes:
+      - name: data-volume
+        emptyDir: {}
+      containers:
+      - name: massbank-data-post-install-import
+        image: sneumann/massbank-web-war:latest
+        command: ["bash", "-c", "git clone --depth 1 https://github.com/MassBank/MassBank-data.git && rm -rf /MassBank-data/[^I]* && /MassBank-lib-0.0.1/bin/RefreshDatabase"]
+        volumeMounts:
+          - name: data-volume
+            mountPath: /MassBank-data
+          - name: massbank-conf
+            mountPath: "/etc/"
+            readOnly: false
+      restartPolicy: Never
+  backoffLimit: 4
+
+
