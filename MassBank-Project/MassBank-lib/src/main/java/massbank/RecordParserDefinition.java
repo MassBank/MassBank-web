@@ -690,13 +690,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 							logger.trace("Formula from InChI: \"" + formula_inchi + "\".");
 							if (!formula_inchi.equals(callback.CH_FORMULA())) {
 								logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
-								// just log an error until all records are fixed
-								logger.error("Formula generated from InChI string \"" + r.get() + "\" in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". \""
-										+ formula_inchi + "\" != \"" + callback.CH_FORMULA() + "\"\n" 
-										+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
-								// TODO mark as parsing error after all records in MassBank-data are fixed
-								//return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-								//		+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
+								return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
+										+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
 							}
 						} catch (CDKException e) {
 							return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + r.get() + "\".");		 				
