@@ -19,10 +19,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axis2.version>1.7.8</axis2.version>
-		<!--change back to org.openscience.cdk if cdk 2.2 is released-->
-		<cdk.groupId>com.github.cdk.cdk</cdk.groupId>
-		<!--CDK version >2.1.1 is needed to fix a deuterium problem-->
-		<cdk.version>1834befd1b</cdk.version>
+		<cdk.groupId>org.openscience.cdk</cdk.groupId>
+		<cdk.version>2.2</cdk.version>
 		<jdbc.version>2.3.0</jdbc.version>
 	</properties>
 
