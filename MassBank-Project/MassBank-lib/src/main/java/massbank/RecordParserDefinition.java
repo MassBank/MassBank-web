@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
@@ -638,14 +637,29 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.callCC((Function<Context, Result> continuation, Context context) -> {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
+						if ("N/A".equals(r.get())) return r;
 						try {
-							if (r.get().equals("N/A")) callback.CH_SMILES(new AtomContainer());
-							else callback.CH_SMILES(new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(r.get()));
+							IAtomContainer m = new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(r.get());
+							// get the molecular formula from the SMILES and compare it with CH$FORMULA
+							String formula_smiles = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
+							logger.trace("Formula from SMILES: \"" + formula_smiles + "\".");
+							if (!formula_smiles.equals(callback.CH_FORMULA())) {
+								logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
+								// just log an error until all records are fixed
+								logger.error("Formula generated from SMILES string \"" + r.get() + "\" in \"CH$SMILES\" field does not match formula in \"CH$FORMULA\". \""
+										+ formula_smiles + "\" != \"" + callback.CH_FORMULA() + "\"\n" 
+										+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
+							}
+							
 						} catch (InvalidSmilesException e) { 
 							return r=context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage() + " for " + r.get());		 				
 						}		 			
 					}
 					return r; 
+				})
+				.map((String value) -> {
+					callback.CH_SMILES(value);
+					return value;						
 				})
 			)
 			.seq(Token.NEWLINE_PARSER)
@@ -685,7 +699,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 								// Structure generation failed
 								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + r.get() + ".");
 							}
+							// Structure generation succeeded
 							IAtomContainer m = intostruct.getAtomContainer();
+							// get the molecular formula from the InChI and compare it with CH$FORMULA
 							String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
 							logger.trace("Formula from InChI: \"" + formula_inchi + "\".");
 							if (!formula_inchi.equals(callback.CH_FORMULA())) {

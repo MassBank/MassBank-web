@@ -12,12 +12,12 @@ import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecularFormula;
-import org.openscience.cdk.smiles.SmiFlavor;
-import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import net.sf.jniinchi.INCHI_RET;
@@ -39,7 +39,7 @@ public class Record {
 	private List<String> ch_compound_class;
 	private String ch_formula;
 	private double ch_exact_mass;
-	private IAtomContainer ch_smiles;
+	private String ch_smiles;
 	private String ch_iupac;
 	private List<Pair<String, String>> ch_link; // optional
 	private String sp_scientific_name; // optional
@@ -196,20 +196,19 @@ public class Record {
 	}
 	
 	
-	public IAtomContainer CH_SMILES_obj() {
+	public String CH_SMILES() {
 		return ch_smiles;
 	}
-	public String CH_SMILES() {
-		if (ch_smiles.isEmpty()) return "N/A";
+	public IAtomContainer CH_SMILES_obj() {
+		if ("N/A".equals(ch_smiles)) return new AtomContainer();
 		try {
-			SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Isomeric);
-			return smigen.create(ch_smiles);
-		} catch (CDKException e) {
-			logger.error(e.getMessage());
-			return "N/A";
+			return new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
+		} catch (InvalidSmilesException e) {
+			logger.error("Structure generation from SMILES failed. Error: \""+ e.getMessage() + "\" for \"" + ch_smiles + "\".");
+			return new AtomContainer();
 		}
 	}
-	public void CH_SMILES(IAtomContainer value) {
+	public void CH_SMILES(String value) {
 		ch_smiles=value;
 	}
 	
@@ -233,7 +232,7 @@ public class Record {
 			}
 			return intostruct.getAtomContainer();
 		} catch (CDKException e) {
-			logger.error("Structure generation failed for \"" + ch_iupac + "\". Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
+			logger.error("Structure generation from InChI failed. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
 			return new AtomContainer();
 		}		 			
 	}

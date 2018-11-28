@@ -18,10 +18,6 @@ import java.util.Set;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.smiles.SmilesParser;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -397,14 +393,7 @@ public class DatabaseManager {
 			while (set.next()) {
 				acc.CH_FORMULA(set.getString("CH_FORMULA"));
 				acc.CH_EXACT_MASS(set.getDouble("CH_EXACT_MASS"));
-				
-				String smilesString	= set.getString("CH_SMILES");
-				if (smilesString.equals("N/A")) acc.CH_SMILES(new AtomContainer());
-				else {
-					IAtomContainer c	= new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(smilesString);
-					acc.CH_SMILES(c);
-				}
-				
+				acc.CH_SMILES(set.getString("CH_SMILES"));
 				acc.CH_IUPAC(set.getString("CH_IUPAC"));
 								
 				// TODO CH$CDK_DEPICT_SMILES
