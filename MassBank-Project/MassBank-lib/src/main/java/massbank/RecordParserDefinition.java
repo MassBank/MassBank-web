@@ -645,10 +645,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 							logger.trace("Formula from SMILES: \"" + formula_smiles + "\".");
 							if (!formula_smiles.equals(callback.CH_FORMULA())) {
 								logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
-								// just log an error until all records are fixed
-								logger.error("Formula generated from SMILES string \"" + r.get() + "\" in \"CH$SMILES\" field does not match formula in \"CH$FORMULA\". \""
-										+ formula_smiles + "\" != \"" + callback.CH_FORMULA() + "\"\n" 
-										+ callback.CONTRIBUTOR() + "/" + callback.ACCESSION()+".txt");
+								return context.failure("Formula generated from SMILES string in \"CH$SMILES\" field does not match formula in \"CH$FORMULA\". "
+										+ formula_smiles + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
 							}
 							
 						} catch (InvalidSmilesException e) { 
