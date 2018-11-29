@@ -58,27 +58,3 @@ ingress.enabled=true,ingress.hosts[0]="massbank.134.176.27.229.nip.io",ingress.a
   massbank-helm-repo/tomcat
 ```
 
-
-#------------------------------------------------------------------------
-
-
-
-## Use helm to initialise database and web server 
-
-#helm install --name my-mariadb --set root.password=secretpassword,user.database=app_database stable/mariadb
-
-# A mariaDB with init scripts by Rene:
-helm install --name massbank-mariadb --set slave.replicas=0 mariadb-5.2.3.tgz
-
-## Tomcat splits tomcat docker and WAR docker:
-
-## https://github.com/helm/charts/tree/master/stable/tomcat
-## More details: https://github.com/kubernetes/examples/tree/master/staging/javaweb-tomcat-sidecar
-
-# helm install --name my-tomcat --set image.webarchive.repository=sneumann/massbank-web-war,image.webarchive.tag=latest,image.pullPolicy=Always stable/tomcat
-helm install --name massbank-tomcat --set image.webarchive.repository=sneumann/massbank-web-war,image.webarchive.tag=latest,image.tomcat.tag=8-jre8 tomcat-0.1.0.tgz
-
-
-
-## Run MassBank-data import job:
-kubectl create -f massbank-data.yaml
