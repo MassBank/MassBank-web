@@ -411,7 +411,7 @@ public class Record {
 		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
 		sb.append("CH$SMILES: " + CH_SMILES() + "\n");
-		sb.append("CH$IUPAC: " + CH_IUPAC_obj() + "\n");
+		sb.append("CH$IUPAC: " + CH_IUPAC() + "\n");
 		
 		if (CH_LINK() != null) {
 			for (Pair<String,String> link : CH_LINK())
