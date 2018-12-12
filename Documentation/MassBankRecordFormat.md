@@ -161,7 +161,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>M</td>
     <td>U</td>
     <td>S</td>
-    <td>InChi code</td>
+    <td>InChI code</td>
     <td><a href="#2.2.6">2.2.6</a></td>
   </tr>
   <tr>
