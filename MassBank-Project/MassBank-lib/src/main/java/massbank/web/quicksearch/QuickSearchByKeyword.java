@@ -9,6 +9,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import massbank.DatabaseManager;
 import massbank.ResultRecord;
 import massbank.web.SearchFunction;
@@ -38,6 +40,12 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 	}
 
 	public ResultRecord[] search(DatabaseManager databaseManager) {
+		// check input
+		// return empty Result array if no ms is selected
+		if (ms == null) return ArrayUtils.toArray();
+		// return empty Result array if no inst is selected
+		if (inst == null) return ArrayUtils.toArray();
+	
 		// ###########################################################################################
 		// fetch matching records
 		// SELECT * FROM NAME WHERE UPPER(NAME.CH_NAME) like UPPER("%BENzENE%") ORDER BY LENGTH(NAME.CH_NAME);
