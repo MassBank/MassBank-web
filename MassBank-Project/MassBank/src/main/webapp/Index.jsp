@@ -36,6 +36,11 @@
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<script src="script/jquery-3.3.1.min.js"></script>
 	<script src="script/massbank.js"></script>
+	<noscript>
+		<div class="w3-panel w3-yellow">
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
 </head>
 
 <body class="w3-theme-gradient">

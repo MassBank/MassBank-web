@@ -38,6 +38,11 @@
 	<script src="script/search.js"></script>
 	<script src="script/svg4everybody-2.1.9.min.js"></script>
 	<script> svg4everybody();</script>
+	<noscript>
+		<div class="w3-panel w3-yellow">
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
 </head>
 
 <body class="w3-theme-gradient">
