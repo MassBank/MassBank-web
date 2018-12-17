@@ -45,7 +45,7 @@
 	<header class="w3-cell-row w3-text-grey">
 		<div class="w3-container w3-cell w3-mobile" style="width:60%">
 			<h1>
-				<b>Quick Search</b>
+				<b>Search</b>
 			</h1>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
