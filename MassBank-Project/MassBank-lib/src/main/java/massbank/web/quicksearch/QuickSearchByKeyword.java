@@ -64,7 +64,8 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 		if (mz.compareTo("") != 0 && tol.compareTo("") != 0)
 			sb.append(op1 + " (? <= CH_EXACT_MASS AND CH_EXACT_MASS <= ?) ");
 		if (formula.compareTo("") != 0)
-			sb.append(op2 + " CH_FORMULA = ? ");
+			sb.append(op2 + " CH_FORMULA LIKE ? ");
+			//sb.append(op2 + " CH_FORMULA = ? ");
 		sb.append(") AND (");
 		for (int i = 0; i < inst.length; i++) {
 			sb.append("INSTRUMENT.AC_INSTRUMENT_TYPE = ?");
@@ -104,7 +105,7 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 				idx++;
 			}
 			if (formula.compareTo("") != 0) {
-				stmnt.setString(idx, formula);
+				stmnt.setString(idx, formula.replace('*','%'));
 				idx++;
 			}
 			for (int i = 0; i < inst.length; i++) {
