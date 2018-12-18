@@ -93,7 +93,7 @@
 				<div class="w3-cell-row w3-border">
 					<div class="w3-cell w3-mobile w3-padding-small">
 						<label><b>Compound name</b></label>
-						<input class="w3-input w3-round w3-border" name="compound" type="text" required>
+						<input class="w3-input w3-round w3-border" name="compound" type="text">
 					</div>
 				</div>
 				<div class="w3-cell-row w3-border">
