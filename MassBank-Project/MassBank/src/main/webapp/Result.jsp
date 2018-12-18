@@ -668,7 +668,8 @@
 		}
 		
 		out.println( "  <td align=\"right\">" );
-		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Edit / Resubmit Query</a>" );
+		out.println( "   <button onclick=\"window.history.back()\">Back to Record Index</button>" );
+		//out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Edit / Resubmit Query</a>" );
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( "</table>" );
