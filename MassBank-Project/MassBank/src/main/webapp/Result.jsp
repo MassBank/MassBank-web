@@ -629,7 +629,8 @@
 		out.println( "  <td width=\"132\">&nbsp;&nbsp;&nbsp;Ion Mode:</td>" );
 		out.println( "  <td><b>" + ionMode + "</b></td>" );
 		out.println( "  <td align=\"right\">" );
-		out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Edit / Resubmit Query</a>" );
+		out.println( "   <button onclick=\"window.history.back()\">Edit / Resubmit Query</button>" );
+		//out.println( "   <a href=\"\" class=\"pageLink\" onClick=\"return parameterResetting('" + type + "')\">Edit / Resubmit Query</a>" );
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( "</table>" );
