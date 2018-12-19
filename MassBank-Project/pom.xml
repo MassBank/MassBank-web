@@ -18,7 +18,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<axis2.version>1.7.8</axis2.version>
+		<axis2.version>1.7.9</axis2.version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.2</cdk.version>
 		<jdbc.version>2.3.0</jdbc.version>
