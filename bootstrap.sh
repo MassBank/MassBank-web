@@ -2,28 +2,22 @@
 echo "**PREPARE BASE SYSTEM**************************************************"
 export DEBIAN_FRONTEND=noninteractive
 
-echo "**set up docker repo***************************************************"
-#curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-#add-apt-repository \
-#   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-#   $(lsb_release -cs) \
-#   stable"
-
 echo "**set timezone*********************************************************"
 ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 dpkg-reconfigure tzdata
 
 echo "**freshen package index************************************************"
 apt-get update
+apt-get upgrade -y
 
 echo "**install software*****************************************************"
 # just a little hack for multiline command with comments
 CMD=(
 apt-get install -y --no-install-recommends
-#docker-ce # docker environment
 docker.io
-tomcat8 # tomcat8
-maven # maven
+default-jdk
+tomcat8
+maven
 git
 )
 
