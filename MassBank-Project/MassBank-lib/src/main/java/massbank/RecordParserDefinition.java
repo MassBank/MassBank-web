@@ -683,7 +683,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.callCC((Function<Context, Result> continuation, Context context) -> {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
-						if ("N/A".equals(r.get())) return r;
+						if ("N/A".equals(r.get())) {
+							// find all records with SMILES and no InChI and report them
+							if (!("N/A".equals(callback.CH_SMILES()))) {
+								return context.failure("\"CH$IUPAC\" field is set to \"N/A\" but \"CH$SMILES\" is set to \"" + callback.CH_SMILES() + "\".");
+							}
+							return r;
+						}
 						try {
 							// Get InChIToStructure
 							InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), DefaultChemObjectBuilder.getInstance());
