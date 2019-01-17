@@ -36,12 +36,17 @@
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
 	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.6.3-web/css/all.min.css">
-	<link> 
 	<script src="js/jquery-3.3.1.min.js"></script>
-	<script src="js/massbank_static.js"></script>
+	<script src="js/w3.js"></script> 
 	<script src="js/MassCalc.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
-	<script> svg4everybody();</script>
+	<script>
+	svg4everybody();
+	$(function(){
+		$("#masscalc").load("masscalc.html"); 
+	});
+	
+	</script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -80,30 +85,35 @@
 	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
 		<div class="w3-bar">
 			<div class="w3-left">
-   				<h1>
+				<h1>
 					<b>Record Index</b>
 				</h1>
-   			</div>
-   			<div style="position:absolute;transform:translateY(-50%);bottom:0;right:0">
-   				<div class="w3-container">
-   					<div class="w3-text-blue">
-						<svg viewBox="0 0 32 28" style="width:16px">
-							<use href="img/arrow.svg#arrow_right"/>
+			</div>
+			<div
+				style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
 						</svg>
-						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
+						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf"
+							target="_blank"><b>user manual</b></a>
 					</div>
 				</div>
 				<div class="w3-container">
-   					<div class="w3-text-blue">
-						<svg viewBox="0 0 32 28" style="width:16px">
-							<use href="img/arrow.svg#arrow_right"/>
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
 						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass
+								calculator</b></a>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="MassCalc" class="w3-light-blue" style="position:absolute;transform:translateY(100%);bottom:0;right:0;display:none;">
+<!-- 	MassCalc code begin -->
+		<div id="MassCalc" class="w3-light-blue"
+			style="position: absolute; transform: translateY(100%); bottom: 0; right: 0; display: none;">
 			<div class="w3-bar">
 				<div id="closeMassCalc" class="w3-right w3-button w3-red">
 					<span class="fas fa-times"></span>
@@ -118,77 +128,77 @@
 							<th><i>m/z</i></th>
 						</tr>
 						<tr>
-							<td>
-								<input name="fom0" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
-							</td>
+							<td><input class="fFormula" type="text" maxlength="20"
+								size="14"></td>
 							<td>
 								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="img/arrow.svg#arrow_right"/>
-									</svg>
-								</div>					
+									<svg viewBox="0 5 32 22" style="width: 16px">
+								<use href="img/arrow.svg#arrow_right" />
+							</svg>
+								</div>
 							</td>
-							<td>
-								<input name="mz0" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							<td><input
+								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+								type="text" size="7" readonly></td>
 							</td>
 						</tr>
 						<tr>
-							<td>
-								<input name="fom1" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
-							</td>
+							<td><input class="fFormula" type="text" maxlength="20"
+								size="14"></td>
 							<td>
 								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="img/arrow.svg#arrow_right"/>
-									</svg>
-								</div>					
+									<svg viewBox="0 5 32 22" style="width: 16px">
+								<use href="img/arrow.svg#arrow_right" />
+							</svg>
+								</div>
 							</td>
-							<td>
-								<input name="mz1" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							<td><input
+								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+								type="text" size="7" readonly></td>
 							</td>
 						</tr>
 						<tr>
-							<td>
-								<input name="fom2" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
-							</td>
+							<td><input class="fFormula" type="text" maxlength="20"
+								size="14"></td>
 							<td>
 								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="img/arrow.svg#arrow_right"/>
-									</svg>
-								</div>					
+									<svg viewBox="0 5 32 22" style="width: 16px">
+								<use href="img/arrow.svg#arrow_right" />
+							</svg>
+								</div>
 							</td>
-							<td>
-								<input name="mz2" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							<td><input
+								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+								type="text" size="7" readonly></td>
 							</td>
 						</tr>
 						<tr>
-							<td>
-								<input name="fom3" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
-							</td>
+							<td><input class="fFormula" type="text" maxlength="20"
+								size="14"></td>
 							<td>
 								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="img/arrow.svg#arrow_right"/>
-									</svg>
-								</div>					
+									<svg viewBox="0 5 32 22" style="width: 16px">
+								<use href="img/arrow.svg#arrow_right" />
+							</svg>
+								</div>
 							</td>
-							<td>
-								<input name="mz3" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							<td><input
+								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+								type="text" size="7" readonly></td>
 							</td>
 						</tr>
 						<tr>
-							<td colspan="3" align="right">
-								<input type="button" name="clear" value="Clear" onClick="resetForm()" style="width:70px;">
-							</td>
+							<td colspan="3" align="right"><input type="button"
+								name="clear" value="Clear" onClick="resetMassCalc()"></td>
 						</tr>
 					</table>
 				</div>
 			</form>
 		</div>
+<!-- 	MassCalc code end -->
 	</header>
-	
-	<div id="menu" class="w3-border-bottom w3-border-dark-grey" style="padding-top:74px"></div>
+
+	<div w3-include-html="menu.html" style="padding-top:74px"></div>
 	
 	<div class="w3-row w3-padding">
 		<div class="w3-col" style="width:120px">
@@ -313,7 +323,10 @@
 	</div> 
 
 	<br>
-	<div id="copyrightline"></div>
+	<div w3-include-html="copyrightline.html"></div>
 		
 </body>
+ <script>
+w3.includeHTML();
+</script> 
 </html>

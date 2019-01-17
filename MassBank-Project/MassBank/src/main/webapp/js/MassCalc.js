@@ -30,17 +30,21 @@ function openMassCalc() {
 function closeMassCalc() {
 	$("#MassCalc").fadeOut();
 }
+function resetMassCalc() {
+	$(".fMass").val("");
+	$(".fFormula").val("");
+	$(".fFormula:eq(0)").focus();
+}
 
 $(document).ready(function() {
+	console.log("MassCalc")
 	$('#openMassCalc').click(function(){ openMassCalc(); return false; });
 	$('#closeMassCalc').click(function(){ closeMassCalc(); return false; });
 	//update mass according to formula
 	$(".fFormula").on("keyup", function(){
 			var inputFormula = $(this).val();
-			console.log(inputFormula);
 			inputFormula = inputFormula.trim();
 			inputFormula = getAtomicArray(inputFormula);
-			console.log(inputFormula);
 			mass = massCalc(inputFormula);
 			$(".fMass:eq("+$(".fFormula").index(this)+")").val(mass);
         }  
@@ -248,3 +252,4 @@ function massCalc(atomicArray) {
 	}
 	return mass;
 }
+
