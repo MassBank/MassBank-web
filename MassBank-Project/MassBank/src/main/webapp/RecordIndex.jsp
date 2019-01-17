@@ -20,10 +20,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
-<html lang="en" style="max-width:90%">
-<!-- <html lang="en"> -->
+<html lang="en">
 <title>MassBank | Database | Record Index</title>
-
 
 <head>
 	<meta charset="UTF-8">
@@ -31,14 +29,18 @@
 	<meta name="description" content="Categorized list of spectra in MassBank.eu. Here we list up all spectra in a specific category including contributors, instrument types and ionization modes.">
 	<meta name="keywords" content="APCI,ITFT,QFT,ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative,QIT,ITTOF,EB,mass spectra,MassBank,m/z">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<link rel="stylesheet" type="text/css" href="css/w3.css">
-	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<script src="script/jquery-3.3.1.min.js"></script>
-	<script src="script/massbank.js"></script>
-	<script src="script/search.js"></script>
-	<script src="script/svg4everybody-2.1.9.min.js"></script>
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" >
+	<link href="favicon.ico" rel="icon" type="image/x-icon">
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
+	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
+	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.6.3-web/css/all.min.css">
+	<link> 
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/massbank_static.js"></script>
+	<script src="js/MassCalc.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script> svg4everybody();</script>
 </head>
 
@@ -75,163 +77,240 @@
 		</div>
 	</main>
 
-	<header class="w3-cell-row w3-text-grey">
-		<div class="w3-container w3-cell w3-mobile" style="width:60%">
-			<h1>
-				<b>Record Index</b>
-			</h1>
+	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
+		<div class="w3-bar">
+			<div class="w3-left">
+   				<h1>
+					<b>Record Index</b>
+				</h1>
+   			</div>
+   			<div style="position:absolute;transform:translateY(-50%);bottom:0;right:0">
+   				<div class="w3-container">
+   					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width:16px">
+							<use href="image/arrow.svg#arrow_right"/>
+						</svg>
+						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
+					</div>
+				</div>
+				<div class="w3-container">
+   					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width:16px">
+							<use href="image/arrow.svg#arrow_right"/>
+						</svg>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="image/arrow.svg#arrow_right"/>
-			</svg>
-			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
-		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="image/arrow.svg#arrow_right"/>
-			</svg>
-			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
+		<div id="MassCalc" class="w3-light-blue" style="position:absolute;transform:translateY(100%);bottom:0;right:0;display:none;">
+			<div class="w3-bar">
+				<div id="closeMassCalc" class="w3-right w3-button w3-red">
+					<span class="fas fa-times"></span>
+				</div>
+			</div>
+			<form>
+				<div id="fCalc">
+					<table>
+						<tr>
+							<th>Formula</th>
+							<th></th>
+							<th><i>m/z</i></th>
+						</tr>
+						<tr>
+							<td>
+								<input name="fom0" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
+							</td>
+							<td>
+								<div class="w3-text-indigo">
+									<svg viewBox="0 5 32 22" style="width:16px">
+										<use href="image/arrow.svg#arrow_right"/>
+									</svg>
+								</div>					
+							</td>
+							<td>
+								<input name="mz0" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input name="fom1" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
+							</td>
+							<td>
+								<div class="w3-text-indigo">
+									<svg viewBox="0 5 32 22" style="width:16px">
+										<use href="image/arrow.svg#arrow_right"/>
+									</svg>
+								</div>					
+							</td>
+							<td>
+								<input name="mz1" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input name="fom2" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
+							</td>
+							<td>
+								<div class="w3-text-indigo">
+									<svg viewBox="0 5 32 22" style="width:16px">
+										<use href="image/arrow.svg#arrow_right"/>
+									</svg>
+								</div>					
+							</td>
+							<td>
+								<input name="mz2" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input name="fom3" type="text" value="" maxlength="20" style="width:170px; ime-mode:disabled;" class="fFormula">
+							</td>
+							<td>
+								<div class="w3-text-indigo">
+									<svg viewBox="0 5 32 22" style="width:16px">
+										<use href="image/arrow.svg#arrow_right"/>
+									</svg>
+								</div>					
+							</td>
+							<td>
+								<input name="mz3" type="text" size="15" value="" readonly style="width:100px; text-align:right; background-color:#eeeeee;border:solid 1px #999;" class="fMass"></td>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3" align="right">
+								<input type="button" name="clear" value="Clear" onClick="resetForm()" style="width:70px;">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</form>
 		</div>
 	</header>
 	
-	<div class="w3-border-bottom w3-border-dark-grey w3-padding-16" id="menu"></div>
+	<div id="menu" class="w3-border-bottom w3-border-dark-grey" style="padding-top:74px"></div>
 	
-	<div style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-row w3-padding-small">
-			<div class="w3-col" style="width:100px">
-				<b>Contributor</b>
-			</div>
-			<div class="w3-col" style="width:10px">
-				<b>:</b>
-			</div>
-			<div class="w3-rest">
-				<ul style="-webkit-columns:270px 5;-moz-columns:270px 5;columns:270px 5;margin:0px;list-style:none;">
-					<c:forEach items="${sites}" var="site">
-						<li>
-							<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=site&srchkey=${site.key}&sortKey=name&sortAction=1&pageNo=1&exec="
-							title="${site.key}" target="_self">${site.key}</a> (${site.value})
-						</li>
-					</c:forEach>
-				</ul>
-  			</div>
-		</div> 
-	</div>
-	<div style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-row w3-padding-small">
-			<div class="w3-col" style="width:100px">
-				<b>Instrument Type</b>
-			</div>
-			<div class="w3-col" style="width:10px">
-				<b>:</b>
-			</div>
-			<div class="w3-rest">
-				<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
-					<c:forEach items="${instruments}" var="instrument">
-						<li>
-							<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=inst&srchkey=${instrument.key}&sortKey=name&sortAction=1&pageNo=1&exec="
-							title="${instrument.key}" target="_self">${instrument.key}</a> (${instrument.value})
-						</li>
-					</c:forEach>
-				</ul>
-  			</div>
-		</div> 
-	</div>
-	<div style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-row w3-padding-small">
-			<div class="w3-col" style="width:100px">
-				<b>MS Type</b>
-			</div>
-			<div class="w3-col" style="width:10px">
-				<b>:</b>
-			</div>
-			<div class="w3-rest">
-				<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
-					<c:forEach items="${mstypes}" var="mstype">
-						<li>
-							<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=ms&srchkey=${mstype.key}&sortKey=name&sortAction=1&pageNo=1&exec="
-							title="${mstype.key}" target="_self">${mstype.key}</a> (${mstype.value})
-						</li>
-					</c:forEach>
-				</ul>
-  			</div>
-		</div> 
-	</div>
-	<div style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-row w3-padding-small">
-			<div class="w3-col" style="width:100px">
-				<b>Merged Type</b>
-			</div>
-			<div class="w3-col" style="width:10px">
-				<b>:</b>
-			</div>
-			<div class="w3-rest">
-				<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
-					<c:forEach items="${mergedtypes}" var="mergedtype">
-						<li>
-							<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=merged&srchkey=${mergedtype.key}&sortKey=name&sortAction=1&pageNo=1&exec="
-							title="${mergedtype.key}" target="_self">${mergedtype.key}</a> (${mergedtype.value})
-						</li>
-					</c:forEach>
-				</ul>
-  			</div>
-		</div> 
-	</div>
-	<div style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-row w3-padding-small">
-			<div class="w3-col" style="width:100px">
-				<b>Ion Mode</b>
-			</div>
-			<div class="w3-col" style="width:10px">
-				<b>:</b>
-			</div>
-			<div class="w3-rest">
-				<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
-					<c:forEach items="${ionmodes}" var="ionmode">
-						<li>
-							<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=ion&srchkey=${ionmode.key}&sortKey=name&sortAction=1&pageNo=1&exec="
-							title="${ionmode.key}" target="_self">${ionmode.key}</a> (${ionmode.value})
-						</li>
-					</c:forEach>
-				</ul>
-  			</div>
-		</div> 
-	</div>
-	<div style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-row w3-padding-small">
-			<div class="w3-col" style="width:100px">
-				<b>Compound Name</b>
-			</div>
-			<div class="w3-col" style="width:10px">
-				<b>:</b>
-			</div>
-			<div class="w3-rest">
-				<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
-					<c:forEach items="${symbols}" var="symbol">
-						<li>
-							<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=cmpd&srchkey=${symbol.key}&sortKey=name&sortAction=1&pageNo=1&exec="
-							title="${symbol.key}" target="_self">${symbol.key}</a> (${symbol.value})
-						</li>
-					</c:forEach>
-				</ul>
-  			</div>
-		</div> 
-	</div>
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Contributor</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:280px 5;-moz-columns:280px 5;columns:280px 5;margin:0px;list-style:none;">
+				<c:forEach items="${sites}" var="site">
+					<li>
+						<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=site&srchkey=${site.key}&sortKey=name&sortAction=1&pageNo=1&exec="
+						title="${site.key}" target="_self">${site.key}</a> (${site.value})
+					</li>
+				</c:forEach>
+			</ul>
+		</div>
+	</div> 
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Instrument Type</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:160px 5;-moz-columns:160px 5;columns:160px 5;margin:0px;list-style:none;">
+				<c:forEach items="${instruments}" var="instrument">
+					<li>
+						<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=inst&srchkey=${instrument.key}&sortKey=name&sortAction=1&pageNo=1&exec="
+						title="${instrument.key}" target="_self">${instrument.key}</a> (${instrument.value})
+					</li>
+				</c:forEach>
+			</ul>
+		</div>
+	</div> 
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>MS Type</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
+				<c:forEach items="${mstypes}" var="mstype">
+					<li>
+						<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=ms&srchkey=${mstype.key}&sortKey=name&sortAction=1&pageNo=1&exec="
+						title="${mstype.key}" target="_self">${mstype.key}</a> (${mstype.value})
+					</li>
+				</c:forEach>
+			</ul>
+		</div>
+	</div> 
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Merged Type</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
+				<c:forEach items="${mergedtypes}" var="mergedtype">
+					<li>
+						<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=merged&srchkey=${mergedtype.key}&sortKey=name&sortAction=1&pageNo=1&exec="
+						title="${mergedtype.key}" target="_self">${mergedtype.key}</a> (${mergedtype.value})
+					</li>
+				</c:forEach>
+			</ul>
+		</div>
+	</div> 
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Ion Mode</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
+				<c:forEach items="${ionmodes}" var="ionmode">
+					<li>
+						<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=ion&srchkey=${ionmode.key}&sortKey=name&sortAction=1&pageNo=1&exec="
+						title="${ionmode.key}" target="_self">${ionmode.key}</a> (${ionmode.value})
+					</li>
+				</c:forEach>
+			</ul>
+ 		</div>
+	</div> 
+
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Compound Name</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+				<c:forEach items="${symbols}" var="symbol">
+					<li>
+						<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=cmpd&srchkey=${symbol.key}&sortKey=name&sortAction=1&pageNo=1&exec="
+						title="${symbol.key}" target="_self">${symbol.key}</a> (${symbol.value})
+					</li>
+				</c:forEach>
+			</ul>
+		</div>
+	</div> 
 	
-	<div style="max-width:90%;height:auto;margin:auto;flush:left">
-		<div class=" w3-padding-small">
-			<div class="w3-padding-small">
-				<img src="figure/massbank_Contributor_Graph.svg" alt="" border="0">
-			</div>
-			<div class="w3-padding-small">
-				<img src="figure/massbank_Instrument_Type_Graph.svg" alt="" border="0">
-			</div>
-			<div class="w3-padding-small">
-				<img src="figure/massbank_MS_Type_Graph.svg" alt="" border="0">
-			</div>
-		</div> 
-	</div>
+	<div class="w3-padding">
+		<div class="w3-padding-small">
+			<img src="figure/massbank_Contributor_Graph.svg" alt="" border="0">
+		</div>
+		<div class="w3-padding-small">
+			<img src="figure/massbank_Instrument_Type_Graph.svg" alt="" border="0">
+		</div>
+		<div class="w3-padding-small">
+			<img src="figure/massbank_MS_Type_Graph.svg" alt="" border="0">
+		</div>
+	</div> 
 
 	<br>
 	<div id="copyrightline"></div>
