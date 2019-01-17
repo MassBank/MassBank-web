@@ -49,7 +49,7 @@
 		<div style="display:none" property="schema:citation" typeof="schema:ScholarlyArticle">
 			<div property="schema:name">Horai, Arita, Kanaya, Nihei, Ikeda, Suwa, Ojima, Tanaka, Tanaka, Aoshima, Oda, Kakazu, Kusano, Tohge, Matsuda, Sawada, Hirai, Nakanishi, Ikeda, Akimoto, Maoka, Takahashi, Ara, Sakurai, Suzuki, Shibata, Neumann, Iida, Tanaka, Funatsu, Matsuura, Soga, Taguchi, Saito, Nishioka. MassBank: a public repository for sharing mass spectral data for life sciences. Journal of mass spectrometry. 2010 Jul;45(7):703-14. doi: 10.1002/jms.1777.</div>
 			<div property="schema:headline">MassBank: a public repository for sharing mass spectral data for life sciences.</div>
-			<div property="schema:image">https://massbank.eu/MassBank/image/sub_logo.jpg</div>
+			<div property="schema:image">https://massbank.eu/MassBank/img/sub_logo.jpg</div>
 		</div>
 		<div style="display:none" property="schema:description">
 			<div property="schema:name">Categorized list of spectra in MassBank.eu. Here we list up all spectra in a specific category including contributors, instrument types and ionization modes.</div>
@@ -88,7 +88,7 @@
    				<div class="w3-container">
    					<div class="w3-text-blue">
 						<svg viewBox="0 0 32 28" style="width:16px">
-							<use href="image/arrow.svg#arrow_right"/>
+							<use href="img/arrow.svg#arrow_right"/>
 						</svg>
 						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
 					</div>
@@ -96,7 +96,7 @@
 				<div class="w3-container">
    					<div class="w3-text-blue">
 						<svg viewBox="0 0 32 28" style="width:16px">
-							<use href="image/arrow.svg#arrow_right"/>
+							<use href="img/arrow.svg#arrow_right"/>
 						</svg>
 						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
 					</div>
@@ -124,7 +124,7 @@
 							<td>
 								<div class="w3-text-indigo">
 									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="image/arrow.svg#arrow_right"/>
+										<use href="img/arrow.svg#arrow_right"/>
 									</svg>
 								</div>					
 							</td>
@@ -139,7 +139,7 @@
 							<td>
 								<div class="w3-text-indigo">
 									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="image/arrow.svg#arrow_right"/>
+										<use href="img/arrow.svg#arrow_right"/>
 									</svg>
 								</div>					
 							</td>
@@ -154,7 +154,7 @@
 							<td>
 								<div class="w3-text-indigo">
 									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="image/arrow.svg#arrow_right"/>
+										<use href="img/arrow.svg#arrow_right"/>
 									</svg>
 								</div>					
 							</td>
@@ -169,7 +169,7 @@
 							<td>
 								<div class="w3-text-indigo">
 									<svg viewBox="0 5 32 22" style="width:16px">
-										<use href="image/arrow.svg#arrow_right"/>
+										<use href="img/arrow.svg#arrow_right"/>
 									</svg>
 								</div>					
 							</td>
