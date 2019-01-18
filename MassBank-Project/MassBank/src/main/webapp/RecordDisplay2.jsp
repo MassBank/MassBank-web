@@ -30,9 +30,9 @@
 	<meta name="keywords" content="${accession}, ${shortName}, ${inchiKey}, mass spectrum, MassBank record, mass spectrometry, mass spectral library">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<link rel="stylesheet" type="text/css" href="css/w3.css">
-	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
+	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
 	<script src="script/jquery-3.3.1.min.js"></script>
 	<script src="script/massbank.js"></script>
 	<script src="script/search.js"></script>	<script src="script/svg4everybody-2.1.9.min.js"></script>
