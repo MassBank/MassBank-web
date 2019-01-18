@@ -43,6 +43,12 @@
 </head>
 
 <body class="w3-theme-gradient">
+	<noscript>
+		<div class="w3-panel w3-yellow">
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
+  	
 	<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/RecordIndex" typeof="schema:DataCatalog" >
 		<div style="display:none" property="schema:citation" typeof="schema:ScholarlyArticle">
 			<div property="schema:name">Horai, Arita, Kanaya, Nihei, Ikeda, Suwa, Ojima, Tanaka, Tanaka, Aoshima, Oda, Kakazu, Kusano, Tohge, Matsuda, Sawada, Hirai, Nakanishi, Ikeda, Akimoto, Maoka, Takahashi, Ara, Sakurai, Suzuki, Shibata, Neumann, Iida, Tanaka, Funatsu, Matsuura, Soga, Taguchi, Saito, Nishioka. MassBank: a public repository for sharing mass spectral data for life sciences. Journal of mass spectrometry. 2010 Jul;45(7):703-14. doi: 10.1002/jms.1777.</div>

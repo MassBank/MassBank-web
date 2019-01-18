@@ -179,6 +179,9 @@ function getAtomicArray(formula) {
 	return atomicArray;
 }
 
+/**
+ * MassCalc（Formula to m/z）
+ */
 function massCalc(atomicArray) {
 	var mass = "";
 	var massArray = new Array();

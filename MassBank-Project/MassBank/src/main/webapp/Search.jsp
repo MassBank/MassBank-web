@@ -20,7 +20,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
-<html lang="en" style="max-width:900px">
+<html lang="en">
 <title>MassBank | Database | Search</title>
 
 <head>
@@ -30,45 +30,60 @@
 	<meta name="keywords" content="Search,Compound,ExactMass,Formula,InChIKey,SPLASH">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<link rel="stylesheet" type="text/css" href="css/w3.css">
-	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<script src="script/jquery-3.3.1.min.js"></script>
-	<script src="script/massbank.js"></script>
+	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
+	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
+	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.6.3-web/css/all.min.css">
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/MassCalc.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
+	<script>svg4everybody();</script>
 	<script src="script/search.js"></script>
-	<script src="script/svg4everybody-2.1.9.min.js"></script>
-	<script> svg4everybody();</script>
+</head>
+
+<body class="w3-theme-gradient">
 	<noscript>
 		<div class="w3-panel w3-yellow">
   			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
   		</div>
   	</noscript>
-</head>
-
-<body class="w3-theme-gradient">
 	
-	<header class="w3-cell-row w3-text-grey">
-		<div class="w3-container w3-cell w3-mobile" style="width:60%">
-			<h1>
-				<b>Search</b>
-			</h1>
+	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
+		<div class="w3-bar">
+			<div class="w3-left">
+				<h1>
+					<b>Search</b>
+				</h1>
+			</div>
+			<div
+				style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf"
+							target="_blank"><b>user manual</b></a>
+					</div>
+				</div>
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass
+								calculator</b></a>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="image/arrow.svg#arrow_right"/>
-			</svg>
-			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
-		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="image/arrow.svg#arrow_right"/>
-			</svg>
-			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
-		</div>
+		<jsp:include page="masscalc.html"/>
 	</header>
-	
-	<div class="w3-border-bottom w3-border-dark-grey w3-padding-16" id="menu"></div>
-	
+
+	<div style="padding-top:74px">
+		<jsp:include page="menu.html"/>
+	</div>
+
 	<div style="max-width:90%;height:auto;margin:auto;">
 		<h3><b>Search for:</b></h3>
 		<div class="w3-bar w3-margin-bottom" style="display:flex;flex-wrap:wrap">
@@ -202,7 +217,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -220,7 +235,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -237,7 +252,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -254,7 +269,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -271,7 +286,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -288,7 +303,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-teal" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -350,7 +365,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -368,7 +383,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -385,7 +400,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -402,7 +417,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -419,7 +434,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -436,7 +451,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-cell-bottom w3-text-deep-purple" style="width:25px">
 								<svg viewBox="0 4 32 36" style="width:25px">
-									<use href="image/arrow.svg#arrow_left"/>
+									<use href="img/arrow.svg#arrow_left"/>
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
@@ -583,9 +598,9 @@
 			</form>
 		</div>
 	</div>
-  
+
 	<br>
-	<div id="copyrightline"></div>
-		
+	<jsp:include page="copyrightline.html"/>
+
 </body>
 </html>

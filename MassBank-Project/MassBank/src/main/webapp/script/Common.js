@@ -392,35 +392,3 @@ function expandMolView(url) {
 	win.blur();	// chrome対応
 	win.focus();
 }
-
-
-/**
- * MassCalculator表示
- */
-function openMassCalc() {
-	var url = location.href;
-	if ( url.indexOf("/index") != -1 ) {
-		url = url.substring(0, url.indexOf("/index") + 1);
-	}
-	else if ( url.indexOf("/ja") != -1 ) {
-		url = url.substring(0, url.indexOf("/ja") + 1);
-	}
-	else if ( url.indexOf("/en") != -1 ) {
-		url = url.substring(0, url.indexOf("/en") + 1);
-	}
-	else {
-		url = url.substring(0, url.indexOf("/jsp") + 1);
-	}
-	url += "MassCalc.jsp";
-	if ( ie ) {
-		leftX = window.screenLeft + document.body.clientWidth - 350;
-		topY =  window.screenTop + 20;
-	}
-	else {
-		leftX = window.screenX + document.body.clientWidth - 350;
-		topY =  window.screenTop + 20;
-	}
-	win = window.open(url, "MassCalc",
-		'width=380,height=380,menubar=no,toolbar=no,scrollbars=no,status=no,left=' + leftX + ',top=' + topY + ',screenX=' + leftX + ',screenY=' + topY);
-	win.focus();
-}
