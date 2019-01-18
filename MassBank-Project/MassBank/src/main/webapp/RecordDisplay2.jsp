@@ -33,9 +33,10 @@
 	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
-	<script src="script/jquery-3.3.1.min.js"></script>
+	<script src="js/jquery-3.3.1.min.js"></script>
 	<script src="script/massbank.js"></script>
-	<script src="script/search.js"></script>	<script src="script/svg4everybody-2.1.9.min.js"></script>
+	<script src="script/search.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script> svg4everybody();</script>
 
 	<!-- 	hier anpassen -->
@@ -66,13 +67,13 @@
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="image/arrow.svg#arrow_right"/>
+				<use href="img/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
 		</div>
 		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
 			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="image/arrow.svg#arrow_right"/>
+				<use href="img/arrow.svg#arrow_right"/>
 			</svg>
 			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
 		</div>
