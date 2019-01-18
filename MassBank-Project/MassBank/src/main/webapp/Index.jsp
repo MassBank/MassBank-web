@@ -56,7 +56,7 @@
 			<div class="w3-panel w3-leftbar w3-border-teal w3-light-grey w3-text-blue w3-round">
 				<h5>
 					<a href="Search"><b>Search</b></a>
-					<a href="Search"><img src="img/quick.gif" style="width:100%;"></a>
+					<a href="Search"><img src="img/search.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
@@ -66,7 +66,7 @@
 				class="w3-panel w3-leftbar w3-border-amber w3-light-grey w3-text-blue w3-round">
 				<h5>
 					<a href="Export"><b>Export</b></a>
-					<a href="Export"><img src="img/peak.gif" style="width:100%;"></a>
+					<a href="Export"><img src="img/export.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
@@ -76,7 +76,7 @@
 				class="w3-panel w3-leftbar w3-border-pink w3-light-grey w3-text-blue w3-round">
 				<h5>
 					<a href="RecordIndex"><b>Record Index</b></a>
-					<a href="RecordIndex"><img src="img/list.gif" style="width:100%;"></a>
+					<a href="RecordIndex"><img src="img/recordindex.gif" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
