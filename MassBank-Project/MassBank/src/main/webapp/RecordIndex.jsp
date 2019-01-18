@@ -37,16 +37,9 @@
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
 	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.6.3-web/css/all.min.css">
 	<script src="js/jquery-3.3.1.min.js"></script>
-	<script src="js/w3.js"></script> 
 	<script src="js/MassCalc.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
-	<script>
-	svg4everybody();
-	$(function(){
-		$("#masscalc").load("masscalc.html"); 
-	});
-	
-	</script>
+	<script>svg4everybody();</script>
 </head>
 
 <body class="w3-theme-gradient">
@@ -111,94 +104,12 @@
 				</div>
 			</div>
 		</div>
-<!-- 	MassCalc code begin -->
-		<div id="MassCalc" class="w3-light-blue"
-			style="position: absolute; transform: translateY(100%); bottom: 0; right: 0; display: none;">
-			<div class="w3-bar">
-				<div id="closeMassCalc" class="w3-right w3-button w3-red">
-					<span class="fas fa-times"></span>
-				</div>
-			</div>
-			<form>
-				<div id="fCalc">
-					<table>
-						<tr>
-							<th>Formula</th>
-							<th></th>
-							<th><i>m/z</i></th>
-						</tr>
-						<tr>
-							<td><input class="fFormula" type="text" maxlength="20"
-								size="14"></td>
-							<td>
-								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width: 16px">
-								<use href="img/arrow.svg#arrow_right" />
-							</svg>
-								</div>
-							</td>
-							<td><input
-								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
-								type="text" size="7" readonly></td>
-							</td>
-						</tr>
-						<tr>
-							<td><input class="fFormula" type="text" maxlength="20"
-								size="14"></td>
-							<td>
-								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width: 16px">
-								<use href="img/arrow.svg#arrow_right" />
-							</svg>
-								</div>
-							</td>
-							<td><input
-								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
-								type="text" size="7" readonly></td>
-							</td>
-						</tr>
-						<tr>
-							<td><input class="fFormula" type="text" maxlength="20"
-								size="14"></td>
-							<td>
-								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width: 16px">
-								<use href="img/arrow.svg#arrow_right" />
-							</svg>
-								</div>
-							</td>
-							<td><input
-								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
-								type="text" size="7" readonly></td>
-							</td>
-						</tr>
-						<tr>
-							<td><input class="fFormula" type="text" maxlength="20"
-								size="14"></td>
-							<td>
-								<div class="w3-text-indigo">
-									<svg viewBox="0 5 32 22" style="width: 16px">
-								<use href="img/arrow.svg#arrow_right" />
-							</svg>
-								</div>
-							</td>
-							<td><input
-								class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
-								type="text" size="7" readonly></td>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="3" align="right"><input type="button"
-								name="clear" value="Clear" onClick="resetMassCalc()"></td>
-						</tr>
-					</table>
-				</div>
-			</form>
-		</div>
-<!-- 	MassCalc code end -->
+		<jsp:include page="masscalc.html"/>
 	</header>
-
-	<div w3-include-html="menu.html" style="padding-top:74px"></div>
+	
+	<div style="padding-top:74px">
+		<jsp:include page="menu.html"/>
+	</div>
 	
 	<div class="w3-row w3-padding">
 		<div class="w3-col" style="width:120px">
@@ -323,10 +234,7 @@
 	</div> 
 
 	<br>
-	<div w3-include-html="copyrightline.html"></div>
-		
+	<jsp:include page="copyrightline.html"/>
+
 </body>
- <script>
-w3.includeHTML();
-</script> 
 </html>

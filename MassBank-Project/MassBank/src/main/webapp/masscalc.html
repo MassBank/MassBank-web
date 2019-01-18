@@ -1,0 +1,83 @@
+<div id="MassCalc" class="w3-light-blue"
+	style="position: absolute; transform: translateY(100%); bottom: 0; right: 0; display: none;">
+	<div class="w3-bar">
+		<div id="closeMassCalc" class="w3-right w3-button w3-red">
+			<span class="fas fa-times"></span>
+		</div>
+	</div>
+	<form>
+		<div id="fCalc">
+			<table>
+				<tr>
+					<th>Formula</th>
+					<th></th>
+					<th><i>m/z</i></th>
+				</tr>
+				<tr>
+					<td><input class="fFormula" type="text" maxlength="20"
+						size="14"></td>
+					<td>
+						<div class="w3-text-indigo">
+							<svg viewBox="0 5 32 22" style="width: 16px">
+						<use href="img/arrow.svg#arrow_right" />
+					</svg>
+						</div>
+					</td>
+					<td><input
+						class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+						type="text" size="10" readonly></td>
+					</td>
+				</tr>
+				<tr>
+					<td><input class="fFormula" type="text" maxlength="20"
+						size="14"></td>
+					<td>
+						<div class="w3-text-indigo">
+							<svg viewBox="0 5 32 22" style="width: 16px">
+						<use href="img/arrow.svg#arrow_right" />
+					</svg>
+						</div>
+					</td>
+					<td><input
+						class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+						type="text" size="10" readonly></td>
+					</td>
+				</tr>
+				<tr>
+					<td><input class="fFormula" type="text" maxlength="20"
+						size="14"></td>
+					<td>
+						<div class="w3-text-indigo">
+							<svg viewBox="0 5 32 22" style="width: 16px">
+						<use href="img/arrow.svg#arrow_right" />
+					</svg>
+						</div>
+					</td>
+					<td><input
+						class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+						type="text" size="10" readonly></td>
+					</td>
+				</tr>
+				<tr>
+					<td><input class="fFormula" type="text" maxlength="20"
+						size="14"></td>
+					<td>
+						<div class="w3-text-indigo">
+							<svg viewBox="0 5 32 22" style="width: 16px">
+						<use href="img/arrow.svg#arrow_right" />
+					</svg>
+						</div>
+					</td>
+					<td><input
+						class="fMass w3-light-grey w3-border w3-border-grey w3-right-align"
+						type="text" size="10" readonly></td>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3" align="right"><input type="button"
+						name="clear" value="Clear" onClick="resetMassCalc()"></td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
