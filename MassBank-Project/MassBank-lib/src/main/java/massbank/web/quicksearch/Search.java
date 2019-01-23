@@ -68,15 +68,15 @@ public class Search {
 
 	public void execute() {
 		
-//		System.out.println();
+		System.out.println();
 //		System.out.println("PARAM_WEIGHT_LINEAR: " + PARAM_WEIGHT_LINEAR);
 //		System.out.println("PARAM_WEIGHT_SQUARE: " + PARAM_WEIGHT_SQUARE);
 //		System.out.println("PARAM_NORM_LOG: " + PARAM_NORM_LOG);
 //		System.out.println("PARAM_NORM_SQRT: " + PARAM_NORM_SQRT);
 //		System.out.println("isQuick: " + isQuick);
-//		System.out.println("isInteg: " + isInteg);
+////		System.out.println("isInteg: " + isInteg);
 //		System.out.println("isAPI: " + isAPI);
-//		
+		
 //		System.out.println();
 //		System.out.println("getReqParam");
 		getReqParam();		// fill HashMap<String, ArrayList<String>> mapReqParam (in case of POST method)
@@ -99,8 +99,8 @@ public class Search {
 		searchPeak();		// get hits from DB filling HashMap<String, ArrayList<SearchHitPeak>> mapHitPeak and HashMap<String, Integer> mapMzCnt
 //		System.out.println("mapHitPeak: " + mapHitPeak.size());
 //		System.out.println(mapHitPeak);
-////		for(Entry<String, ArrayList<SearchHitPeak>> entry : mapHitPeak.entrySet())
-////			System.out.println(entry.getKey() + "\t" + entry.getValue());
+//		for(Entry<String, ArrayList<SearchHitPeak>> entry : mapHitPeak.entrySet())
+//			System.out.println(entry.getKey() + "\t" + entry.getValue());
 //		System.out.println("mapMzCnt: " + mapMzCnt.size());
 //		System.out.println(mapMzCnt);
 //		System.out.println();
@@ -198,6 +198,8 @@ public class Search {
 	}
 
 	private void setScore() {
+		if (!queryParam.colType.equals("COSINE")) throw new IllegalArgumentException("Unknown score function");
+		
 		String sql;
 		PreparedStatement stmnt;
 		ArrayList<SearchHitPeak> vecHitPeak = new ArrayList<SearchHitPeak>();
@@ -250,17 +252,18 @@ public class Search {
 					String strRelInt = resMySql.getString(2);
 					double fMz = Double.parseDouble(strMz);
 					double fVal = Double.parseDouble(strRelInt);
-
-					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
-						fVal *= fMz / 10;
-					} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
-						fVal *= fMz * fMz / 100;
-					}
-					if (queryParam.norm == PARAM_NORM_LOG) {
-						fVal = Math.log(fVal);
-					} else if (queryParam.norm == PARAM_NORM_SQRT) {
-						fVal = Math.sqrt(fVal);
-					}
+					fVal = normalizePeakIntensity(fMz, fVal);
+					
+//					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
+//						fVal *= fMz / 10;
+//					} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
+//						fVal *= fMz * fMz / 100;
+//					}
+//					if (queryParam.norm == PARAM_NORM_LOG) {
+//						fVal = Math.log(fVal);
+//					} else if (queryParam.norm == PARAM_NORM_SQRT) {
+//						fVal = Math.sqrt(fVal);
+//					}
 
 					String key;
 					key = strId + " " + strMz;
@@ -281,21 +284,47 @@ public class Search {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			
+			
+//			double fLen2 = 0;
+//			for (int i = 0; i < vecHitPeak.size(); i++) {
+//				fLen2 += vecHitPeak.get(i).hitVal * vecHitPeak.get(i).hitVal;
+//			}
+//			System.out.println((fLen > fLen2) + "\t" + fLen + "\t> " + fLen2);
+			
 
 			double dblScore = 0;
-			if (queryParam.colType.equals("COSINE")) {
-				double fCos = 0;
-				for (int i = 0; i < vecHitPeak.size(); i++) {
-					SearchHitPeak pHitPeak = vecHitPeak.get(i);
-					fCos += (double) (pHitPeak.qVal * pHitPeak.hitVal);
-				}
-				if (m_fLen * fLen == 0) {
-					dblScore = 0;
-				} else {
-					dblScore = fCos / Math.sqrt(m_fLen * fLen);
-				}
+			double fCos = 0;
+			for (int i = 0; i < vecHitPeak.size(); i++) {
+				SearchHitPeak pHitPeak = vecHitPeak.get(i);
+				fCos += (double) (pHitPeak.qVal * pHitPeak.hitVal);
+			}
+			if (m_fLen * fLen == 0) {
+				dblScore = 0;
+			} else {
+				dblScore = fCos / Math.sqrt(m_fLen * fLen);
 			}
 			if (dblScore >= 0.9999) {
+//				System.out.println();
+//				System.out.println();
+//				System.out.println(dblScore);
+//				System.out.println();
+//				System.out.println();
+//				for (int i = 0; i < queryMz.size(); i++) {
+//					System.out.println(queryMz.get(i) + "\t" + queryVal.get(i));
+//				}
+//				System.out.println(m_fLen);
+//				System.out.println();
+//				System.out.println(iCnt);
+//				System.out.println(fLen);
+//				System.out.println(fCos);
+//				System.out.println();
+//				for (int i = 0; i < vecHitPeak.size(); i++) {
+//					SearchHitPeak pHitPeak = vecHitPeak.get(i);
+//					System.out.println(pHitPeak.qVal + "\t" + pHitPeak.hitVal + "\t" + pHitPeak.qMz + "\t" + pHitPeak.hitMz);
+//				}
+//				System.out.println();
+				
 				dblScore = 0.999999999999;
 			} else if (dblScore < 0) {
 				dblScore = 0;
@@ -663,7 +692,7 @@ WHERE T.ION = ? ORDER BY ID
 					if (value == null) {
 						mapMzCnt.put(key, 1);
 					} else {
-						mapMzCnt.put(key, value++);
+						mapMzCnt.put(key, value + 1);
 					}
 				}
 				resMySql.close();
@@ -688,25 +717,7 @@ WHERE T.ION = ? ORDER BY ID
 			String sMz = vecPeak.get(0);
 			double fMz = Double.parseDouble(vecPeak.get(0));
 			double fVal = Double.parseDouble(vecPeak.get(1));
-
-			if (fVal < 1) {
-				fVal = 1;
-			} else if (fVal > 999) {
-				fVal = 999;
-			}
-			if (fVal < queryParam.cutoff) {
-				continue;
-			}
-			if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
-				fVal *= fMz / 10;
-			} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
-				fVal *= fMz * fMz / 100;
-			}
-			if (queryParam.norm == PARAM_NORM_LOG) {
-				fVal = Math.log(fVal);
-			} else if (queryParam.norm == PARAM_NORM_SQRT) {
-				fVal = Math.sqrt(fVal);
-			}
+			fVal	= normalizePeakIntensity(fMz, fVal);
 
 			if (fVal > 0) {
 				queryMz.add(sMz);
@@ -719,6 +730,27 @@ WHERE T.ION = ? ORDER BY ID
 		if (m_iCnt - 1 < queryParam.threshold) {
 			queryParam.threshold = m_iCnt - 1;
 		}
+	}
+	public double normalizePeakIntensity(double fMz, double fVal) {
+		if (fVal < 1) {
+			fVal = 1;
+		} else if (fVal > 999) {
+			fVal = 999;
+		}
+		if (fVal < queryParam.cutoff) {
+			return 0;
+		}
+		if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
+			fVal *= fMz / 10;
+		} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
+			fVal *= fMz * fMz / 100;
+		}
+		if (queryParam.norm == PARAM_NORM_LOG) {
+			fVal = Math.log(fVal);
+		} else if (queryParam.norm == PARAM_NORM_SQRT) {
+			fVal = Math.sqrt(fVal);
+		}
+		return fVal;
 	}
 
 	public void setQueryParam() {
