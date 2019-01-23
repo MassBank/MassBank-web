@@ -292,7 +292,9 @@ public class DatabaseManager {
 	 * @return
 	 */
 	public Record getAccessionData(String accessionId) {
-		return getAccessionData(accessionId, getContributorFromAccession(accessionId).SHORT_NAME);
+		Record.Contributor Contributor=getContributorFromAccession(accessionId);
+		if(Contributor == null) { return null; }
+		return getAccessionData(accessionId, Contributor.SHORT_NAME);
 	}
 	
 	/**
