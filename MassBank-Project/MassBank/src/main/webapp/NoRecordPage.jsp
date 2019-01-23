@@ -1,75 +1,100 @@
-<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
-<%
-/*******************************************************************************
- *
- * Copyright (C) 2010 JST-BIRD MassBank
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- *******************************************************************************
- *
- ******************************************************************************/
-%>
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
+<!-- Copyright (C) 2010 JST-BIRD MassBank -->
+<!-- Copyright (C) 2017 MassBank consortium -->
 
-<%@ page import="java.util.Enumeration" %>
-<%
-	// ##################################################################################################
-	// get parameters
-	// http://localhost/MassBank/jsp/NoRecordPage.jsp?id=XXX00000&dsn=MassBank&error=Some error
-	//String accession	= "XXX00000";
-	//String database	= "MassBank";
-	//String error		= "Some error";
-	String accession		= null;
-	String databaseName		= null;
-	String error			= null;
-	
-	Enumeration<String> names = request.getParameterNames();
-	while ( names.hasMoreElements() ) {
-		String key = (String) names.nextElement();
-		String val = (String) request.getParameter( key );
-		
-		switch(key){
-			case "id":		accession		= val; break;
-			case "dsn":		databaseName	= val; break;
-			case "error":	error			= val; break;
-			default: System.out.println("Warning: Unused argument " + key + "=" + val);
-		}
-	}
-	%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- This file is part of MassBank. -->
+
+<!-- MassBank is free software; you can redistribute it and/or -->
+<!-- modify it under the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation; either version 2 -->
+<!-- of the License, or (at your option) any later version. -->
+
+<!-- This program is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with this program; if not, write to the Free Software -->
+<!-- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta name="author" content="MassBank" />
-		<meta name="coverage" content="worldwide" />
-		<meta name="Targeted Geographic Area" content="worldwide" />
-		<meta name="rating" content="general" />
-		<meta name="copyright" content="Copyright (c) 2006 MassBank Project and (c) 2011 NORMAN Association" />
-		<meta name="description" content="MassBank Record of <%=accession%>">
-		<meta name="keywords" content="No MassBank record">
-		<meta name="revisit_after" content="30 days">
-		<meta name="hreflang" content="en">
-		<meta name="variableMeasured" content="m/z">
-		<meta http-equiv="Content-Style-Type" content="text/css">
-		<link rel="stylesheet" type="text/css" href="css/Common.css">
-		<title>No Mass Spectrum</title>
-	</head>
-	<body style="font-family:Times;">
-		No MassBank record exists for accession <%=accession%> from contributor <%=databaseName%>:<br>
-		<b><%=error%></b></b>
-		<hr size=1>
-		<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<title>No Mass Spectrum</title>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="description" content="MassBank Record of ${accession}">
+	<meta name="keywords" content="No MassBank record">
+	<meta name="author" content="MassBank">
+	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
+	<link href="favicon.ico" rel="icon" type="image/x-icon">
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
+	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
+	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.6.3-web/css/all.min.css">
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/MassCalc.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
+	<script>svg4everybody();</script>
+</head>
+
+<body class="w3-theme-gradient">
+	<noscript>
+		<div class="w3-panel w3-yellow">
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
+  	
+  	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
+		<div class="w3-bar">
+			<div class="w3-left">
+				<h1>
+					<b>No Mass Spectrum</b>
+				</h1>
+			</div>
+			<div
+				style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf"
+							target="_blank"><b>user manual</b></a>
+					</div>
+				</div>
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<jsp:include page="masscalc.html"/>
+	</header>
+	
+	<div style="padding-top:74px">
+		<jsp:include page="menu.html"/>
+	</div>
+  	
+  	<div class="w3-padding">
+  	<c:if test="${not empty accession}">
+		No MassBank record exists for accession ${accession}.<br>
+	</c:if>
+	<c:if test="${not empty error}">
+		<b>Error message: ${error}</b>
+	</c:if>	
+	</div>	
+	
+	<br>
+	<jsp:include page="copyrightline.html"/>
+	
 	</body>
 </html>

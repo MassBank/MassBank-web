@@ -30,6 +30,8 @@
 	<meta name="keywords" content="Search,Compound,ExactMass,Formula,InChIKey,SPLASH">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
+	<link href="favicon.ico" rel="icon" type="image/x-icon">
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
@@ -71,8 +73,7 @@
 						<svg viewBox="0 0 32 28" style="width: 16px">
 							<use href="img/arrow.svg#arrow_right" />
 						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass
-								calculator</b></a>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
 					</div>
 				</div>
 			</div>

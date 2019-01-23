@@ -44,11 +44,9 @@
 <%
 	// ##################################################################################################
 	// get parameters
-	// http://localhost/MassBank/jsp/RecordDisplay.jsp?id=XXX00001&dsn=MassBank
+	// http://localhost/MassBank/jsp/RecordDisplay.jsp?id=XXX00001
 	//String accession	= "XXX00001";
-	//String database	= "MassBank";
 	String accession		= null;
-	String databaseName		= null;
 	
 	Enumeration<String> names = request.getParameterNames();
 	while ( names.hasMoreElements() ) {
@@ -59,7 +57,6 @@
 		
 		switch(key){
 			case "id":	accession		= val; break;
-			case "dsn":	databaseName	= val; break;
 			default: System.out.println("Warning: Unused argument " + key + "=" + val);
 		}
 	}
@@ -68,34 +65,29 @@
 	// error handling
 	if(accession != null && accession.equals(""))
 		accession		= null;
-	if(databaseName != null && databaseName.equals(""))
-		databaseName	= null;
 	
 	if(accession == null){
 		String error	= "Error: Missing argument 'id'";
 		System.out.println(error);
 		String baseUrl	= Config.get().BASE_URL();
 		String urlStub	= baseUrl + "NoRecordPage.jsp";
-		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
+		String redirectUrl	= urlStub + "?id=" + accession + "&error=" + error;
 		
 		response.sendRedirect(redirectUrl);
 		return;
 	}
+	
+	String databaseName = null;
+	DatabaseManager dbManager	= new DatabaseManager(Config.get().dbName());
+	Record.Contributor contributorObj	= dbManager.getContributorFromAccession(accession);
+	dbManager.closeConnection();
+	if(contributorObj != null) databaseName	= contributorObj.SHORT_NAME;
+	
 	if(databaseName == null){
-		DatabaseManager dbManager	= new DatabaseManager(Config.get().dbName());
-		Record.Contributor contributorObj	= dbManager.getContributorFromAccession(accession);
-		dbManager.closeConnection();
-		if(contributorObj != null)
-			databaseName	= contributorObj.SHORT_NAME;
-	}
-	if(databaseName == null){
-		String error	= "Error: Argument 'dsn' is missing or empty";
+		String error	= "Error: Can not find contributor";
 		System.out.println(error);
-		String baseUrl	= Config.get().BASE_URL();
-		String urlStub	= baseUrl + "NoRecordPage.jsp";
-		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
-		
-		response.sendRedirect(redirectUrl);
+		String redirectUrl	= "/NoRecordPage" + "?id=" + accession + "&error=" + error;
+		response.sendRedirect(request.getContextPath()+redirectUrl);
 		return;
 	}
 	if(!FileUtil.existsFile(databaseName, accession)){
@@ -103,11 +95,8 @@
 							(databaseName != null ? " in database '" + databaseName + "'" : "") + 
 							" does not exist.";
 		System.out.println(error);
-		String baseUrl	= Config.get().BASE_URL();
-		String urlStub	= baseUrl + "NoRecordPage.jsp";
-		String redirectUrl	= urlStub + "?id=" + accession + "&dsn=" + databaseName + "&error=" + error;
-		
-		response.sendRedirect(redirectUrl);
+		String redirectUrl	= "/NoRecordPage" + "?id=" + databaseName + "&error=" + error;
+		response.sendRedirect(request.getContextPath()+redirectUrl);
 		return;
 	}
 	

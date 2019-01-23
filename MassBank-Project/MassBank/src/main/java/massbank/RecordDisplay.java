@@ -44,7 +44,7 @@ public class RecordDisplay extends HttpServlet {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<hr>\n");
 		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
-		sb.append("RECORD_TITLE: " + record.RECORD_TITLE() + "<br>\n");
+		sb.append("RECORD_TITLE: " + record.RECORD_TITLE1() + "<br>\n");
 		sb.append("DATE: " + record.DATE() + "<br>\n");
 		sb.append("AUTHORS: " + record.AUTHORS() + "<br>\n");
 		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + record.LICENSE() + "</a><br>\n");
@@ -69,7 +69,7 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("CH$FORMULA: <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA() + "\" target=\"_blank\">" + record.CH_FORMULA1() + "</a><br>\n");
 		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>\n");
 		sb.append("CH$SMILES: " + record.CH_SMILES() + "<br>\n");
-		sb.append("CH$IUPAC: " + record.CH_IUPAC_obj() + "<br>\n");
+		sb.append("CH$IUPAC: " + record.CH_IUPAC() + "<br>\n");
 		
 		for (Pair<String,String> link : record.CH_LINK()) {
 			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "<br>\n");
@@ -532,49 +532,28 @@ public class RecordDisplay extends HttpServlet {
 		Record record = null;
 		try {
 			// get parameters
-			// http://localhost/MassBank/jsp/RecordDisplay.jsp?id=XXX00001&dsn=MassBank
-			//String accession = "XXX00001";
-			//String database = "MassBank";
+			// http://localhost/MassBank/jsp/RecordDisplay.jsp?id=XXX00001
+			// String accession = "XXX00001";
 			String accession = null;
-			String databaseName = null;
 			
 			Enumeration<String> names = request.getParameterNames();
-			while ( names.hasMoreElements() ) {
+			while (names.hasMoreElements()) {
 				String key = (String) names.nextElement();
 				String val = (String) request.getParameter( key );
-
 				switch(key){
 					case "id": accession = val; break;
-					case "dsn":	databaseName = val; break;
 					default: logger.warn("unused argument " + key + "=" + val);
 				}
 			}
 			
 			// error handling
 			if("".equals(accession)) accession = null;
-			if("".equals(databaseName)) databaseName = null;
-			
 			if(accession == null){
 				String errormsg ="missing argument 'id'.";
 				logger.error(errormsg);
-				
-				String redirectUrl	= "/NoRecordPage.jsp" + "?id=" + accession + "&dsn=" + databaseName + "&error=" + errormsg;
+				String redirectUrl	= "/NoRecordPage" + "?error=" + errormsg;
 				response.sendRedirect(request.getContextPath()+redirectUrl);
 				return;
-			}
-			
-			if(databaseName == null){
-				DatabaseManager dbManager = new DatabaseManager(Config.get().dbName());
-				Record.Contributor contributorObj = dbManager.getContributorFromAccession(accession);
-				dbManager.closeConnection();
-				if(contributorObj == null) {
-					String errormsg	= "argument 'dsn' is missing, empty or can not be determined from accession id.";
-					logger.error(errormsg);
-					String redirectUrl	= "/NoRecordPage.jsp" + "?id=" + accession + "&dsn=" + databaseName + "&error=" + errormsg;
-					response.sendRedirect(request.getContextPath()+redirectUrl);
-					return;
-				}
-				else databaseName = contributorObj.SHORT_NAME;
 			}
 
 			// load record for display
@@ -582,9 +561,9 @@ public class RecordDisplay extends HttpServlet {
 			record	= dbMan.getAccessionData(accession);
 			dbMan.closeConnection();
 			if(record == null) {
-				String errormsg	= "retrieval of '" + accession + "'from database failed";
+				String errormsg	= "retrieval of '" + accession + "' from database failed";
 				logger.error(errormsg);
-				String redirectUrl	= "/NoRecordPage.jsp" + "?id=" + accession + "&dsn=" + databaseName + "&error=" + errormsg;
+				String redirectUrl	= "/NoRecordPage" + "?id=" + accession + "&error=" + errormsg;
 				response.sendRedirect(request.getContextPath()+redirectUrl);
 				return;
 			}
@@ -635,11 +614,16 @@ public class RecordDisplay extends HttpServlet {
 			String peaks = "41.100,46@55.100,142@56.000,3@59.100,14@60.000,60@72.800,29@74.200,11@76.900,33@91.100,4@92.100,44@109.100,999@";
 			String recordstring = createRecordString(record);
 			String structureddata = createStructuredData(record);
+			
+			request.setAttribute("accession", accession);
+			
+			
+			
 	        request.setAttribute("shortName", record.RECORD_TITLE1());
 	        request.setAttribute("description", description);
-	        request.setAttribute("accession", accession);
+	        
 	        request.setAttribute("inchiKey", InChIKey);
-	        request.setAttribute("recordTitle", record.RECORD_TITLE());
+	        request.setAttribute("recordTitle", record.RECORD_TITLE1());
 
 	        request.setAttribute("peaks", peaks);
 	        request.setAttribute("recordstring", recordstring);

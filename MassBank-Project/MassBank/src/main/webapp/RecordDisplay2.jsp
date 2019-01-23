@@ -20,7 +20,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
-<html lang="en" style="max-width:90%"">
+<html lang="en">
 <title>${shortName} Mass Spectrum</title>
 
 <head>
@@ -30,14 +30,17 @@
 	<meta name="keywords" content="${accession}, ${shortName}, ${inchiKey}, mass spectrum, MassBank record, mass spectrometry, mass spectral library">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
+	<link href="favicon.ico" rel="icon" type="image/x-icon">
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
+	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.6.3-web/css/all.min.css">
 	<script src="js/jquery-3.3.1.min.js"></script>
-	<script src="script/massbank.js"></script>
-	<script src="script/search.js"></script>
+	<script src="js/MassCalc.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
-	<script> svg4everybody();</script>
+	<script>svg4everybody();</script>
+	
 
 	<!-- 	hier anpassen -->
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -56,32 +59,49 @@
 	<script type="text/javascript" src="script/massbank_specktackle.js"></script>
 </head>
 
-<body class="w3-theme-gradient" typeof="schema:WebPage">	
-
-	<header class="w3-cell-row w3-text-grey">
-		<div class="w3-container w3-cell w3-mobile" style="width:60%">
-			<h1>
-				<b>MassBank Record: ${accession}</b>
-			</h1>
+<body class="w3-theme-gradient">
+	<noscript>
+		<div class="w3-panel w3-yellow">
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
+  	
+  	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
+		<div class="w3-bar">
+			<div class="w3-left">
+				<h1>
+					<b>MassBank Record: ${accession}</b>
+				</h1>
+			</div>
+			<div
+				style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf"
+							target="_blank"><b>user manual</b></a>
+					</div>
+				</div>
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="img/arrow.svg#arrow_right"/>
-			</svg>
-			<a class="text w3-text-grey"  href="javascript:openMassCalc();"><b>mass calculator</b></a>
-		</div>
-		<div class="w3-container w3-cell w3-mobile w3-cell-middle w3-right-align w3-text-blue">
-			<svg viewBox="0 0 32 28" style="width:16px">
-				<use href="img/arrow.svg#arrow_right"/>
-			</svg>
-			<a class="text w3-text-grey" href="manuals/UserManual_en.pdf" target="_blank"><b>user manual</b></a>
-		</div>
+		<jsp:include page="masscalc.html"/>
 	</header>
 	
-	<div class="w3-border-bottom w3-border-dark-grey w3-padding-16" id="menu"></div>
+	<div style="padding-top:74px">
+		<jsp:include page="menu.html"/>
+	</div>
 	
-	<div style="max-width:90%;height:auto;margin:auto;">
+	<div class="w3-padding">
 		<h3><b>${recordTitle}</b></h3>
 		<div class="w3-row w3-padding-small">
 			<div class="w3-twothird w3-text-grey w3-small">
@@ -102,7 +122,8 @@
 	</div>
 	
 	<br>
-	<div id="copyrightline"></div>
-	</body>
+	<jsp:include page="copyrightline.html"/>
+	
+</body>
 ${structureddata}
 </html>

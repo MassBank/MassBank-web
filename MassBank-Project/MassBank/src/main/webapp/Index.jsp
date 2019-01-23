@@ -19,7 +19,6 @@
 <!-- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. -->
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-
 <!DOCTYPE html>
 <html lang="en" style="max-width:900px">
 <title>MassBank | ${sitename} Mass Spectral DataBase</title>
@@ -31,6 +30,8 @@
 	<meta name="keywords" content="Mass,Spectral,Database,MassBank">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
+	<link href="favicon.ico" rel="icon" type="image/x-icon">
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">

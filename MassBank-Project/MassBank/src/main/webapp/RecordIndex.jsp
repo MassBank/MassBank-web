@@ -104,8 +104,7 @@
 						<svg viewBox="0 0 32 28" style="width: 16px">
 							<use href="img/arrow.svg#arrow_right" />
 						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass
-								calculator</b></a>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
 					</div>
 				</div>
 			</div>
