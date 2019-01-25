@@ -22,6 +22,7 @@
 package massbank;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -39,8 +40,18 @@ import org.apache.logging.log4j.Logger;
 public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(RecordDisplay.class);
-
-	private static String createRecordString(Record record) {
+	
+	private static String CreatePeakListForSpectrumViewer(Record record) {
+        // convert a list of lists [[mz, int, rel.int], [...], ...]
+        // to String "mz,rel.int@mz,rel.int@..."
+		List<String> peaks = new ArrayList<>();
+		for (List<Double> peak : record.PK_PEAK()) {
+			peaks.add(peak.get(0)+","+peak.get(2));
+		}
+		return String.join("@", peaks);
+	}
+	
+	private static String CreateRecordString(Record record) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<hr>\n");
 		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
@@ -130,7 +141,7 @@ public class RecordDisplay extends HttpServlet {
 		return sb.toString();
 	}
 	
-	private static String createStructuredData(Record record) {
+	private static String CreateStructuredData(Record record) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script type=\"application/ld+json\">\n");
 		sb.append("{\n");
@@ -568,36 +579,24 @@ public class RecordDisplay extends HttpServlet {
 				return;
 			}
 			
-
-
-
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+			String shortname = record.RECORD_TITLE().get(0);
 			// find InChIKey in CH_LINK
-			String InChIKey = null;
-			
-			
+			String inchikey = null;
+			for (Pair<String,String> link : record.CH_LINK()) {
+				if ("INCHIKEY".equals(link.getKey())) {
+					inchikey=link.getValue();
+				}
+			}
+			String keywords =
+				accession + ", " 
+				+ shortname +", "
+				+ (inchikey != null ? inchikey + ", " : "")
+			    + "mass spectrum, MassBank record, mass spectrometry, mass spectral library";
 			String description	= 
 				"This MassBank Record with Accession " + accession + 
 				" contains the " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum" + 
 				" of '" + record.RECORD_TITLE().get(0) + "'" +
-				(InChIKey != null ? " with the InChIKey '" + InChIKey + "'" : "") + 
+				(inchikey != null ? " with the InChIKey '" + inchikey + "'" : "") + 
 				//(!compoundClass2.equals("N/A")	? " with the compound class '" + compoundClass2 + "'"	: "") + 
 				//"." +
 				//" The mass spectrum was acquired on a " + instrumentType + 
@@ -608,31 +607,20 @@ public class RecordDisplay extends HttpServlet {
 				//(collisionEnergy	!= null		? " at a resolution of " + resolution					: "") + 
 				//(splash				!= null		? " and has the SPLASH '" + splash + "'"				: "") +
 				".";
-			
-			
-			
-			String peaks = "41.100,46@55.100,142@56.000,3@59.100,14@60.000,60@72.800,29@74.200,11@76.900,33@91.100,4@92.100,44@109.100,999@";
-			String recordstring = createRecordString(record);
-			String structureddata = createStructuredData(record);
+			String recordstring = CreateRecordString(record);
+			String structureddata = CreateStructuredData(record);
 			
 			request.setAttribute("accession", accession);
-			
-			
-			
-	        request.setAttribute("shortName", record.RECORD_TITLE1());
-	        request.setAttribute("description", description);
-	        
-	        request.setAttribute("inchiKey", InChIKey);
-	        request.setAttribute("recordTitle", record.RECORD_TITLE1());
-
-	        request.setAttribute("peaks", peaks);
-	        request.setAttribute("recordstring", recordstring);
+			request.setAttribute("short_name", shortname);
+	        request.setAttribute("keywords", keywords);
+	        request.setAttribute("record_title", record.RECORD_TITLE1());	        		
+	        request.setAttribute("peaks", CreatePeakListForSpectrumViewer(record));
+			request.setAttribute("description", description);
+			request.setAttribute("recordstring", recordstring);
 	        request.setAttribute("structureddata", structureddata);
-	        
-	        
 	        request.getRequestDispatcher("/RecordDisplay2.jsp").forward(request, response);
 		} catch (Exception e) {
-			throw new ServletException("Cannot load sitename", e);
+			throw new ServletException("Cannot load record", e);
         }
      }
 

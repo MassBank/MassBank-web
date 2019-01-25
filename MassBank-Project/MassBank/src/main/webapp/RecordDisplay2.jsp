@@ -21,13 +21,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en">
-<title>${shortName} Mass Spectrum</title>
+<title>${short_name} Mass Spectrum</title>
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta name="description" content="${description}">
-	<meta name="keywords" content="${accession}, ${shortName}, ${inchiKey}, mass spectrum, MassBank record, mass spectrometry, mass spectral library">
+	<meta name="keywords" content="${keywords}">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
 	<link href="favicon.ico" rel="icon" type="image/x-icon">
@@ -102,7 +102,7 @@
 	</div>
 	
 	<div class="w3-padding">
-		<h3><b>${recordTitle}</b></h3>
+		<h3><b>${record_title}</b></h3>
 		<div class="w3-row w3-padding-small">
 			<div class="w3-twothird w3-text-grey w3-small">
 				Mass Spectrum
@@ -117,7 +117,7 @@
 		</div>
 	</div>
 	
-	<div class="monospace w3-small" style="max-width:90%;height:auto;margin:auto;overflow-x:scroll;white-space:nowrap">
+	<div class="monospace w3-padding w3-small" style="height:auto;margin:auto;overflow-x:scroll;white-space:nowrap">
 		${recordstring}
 	</div>
 	
