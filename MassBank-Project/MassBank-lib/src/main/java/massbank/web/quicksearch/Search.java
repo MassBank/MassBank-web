@@ -252,7 +252,7 @@ public class Search {
 					String strRelInt = resMySql.getString(2);
 					double fMz = Double.parseDouble(strMz);
 					double fVal = Double.parseDouble(strRelInt);
-					fVal = normalizePeakIntensity(fMz, fVal);
+					fVal = normalizePeakIntensity(fMz, fVal, false);
 					
 //					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
 //						fVal *= fMz / 10;
@@ -717,7 +717,7 @@ WHERE T.ION = ? ORDER BY ID
 			String sMz = vecPeak.get(0);
 			double fMz = Double.parseDouble(vecPeak.get(0));
 			double fVal = Double.parseDouble(vecPeak.get(1));
-			fVal	= normalizePeakIntensity(fMz, fVal);
+			fVal	= normalizePeakIntensity(fMz, fVal, true);
 
 			if (fVal > 0) {
 				queryMz.add(sMz);
@@ -731,13 +731,13 @@ WHERE T.ION = ? ORDER BY ID
 			queryParam.threshold = m_iCnt - 1;
 		}
 	}
-	public double normalizePeakIntensity(double fMz, double fVal) {
+	public double normalizePeakIntensity(double fMz, double fVal, boolean filterByIntensityCutoff) {
 		if (fVal < 1) {
 			fVal = 1;
 		} else if (fVal > 999) {
 			fVal = 999;
 		}
-		if (fVal < queryParam.cutoff) {
+		if (filterByIntensityCutoff && fVal < queryParam.cutoff) {
 			return 0;
 		}
 		if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
