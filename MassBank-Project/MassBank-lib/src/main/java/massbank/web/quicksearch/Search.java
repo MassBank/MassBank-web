@@ -68,7 +68,7 @@ public class Search {
 
 	public void execute() {
 		
-		System.out.println();
+//		System.out.println();
 //		System.out.println("PARAM_WEIGHT_LINEAR: " + PARAM_WEIGHT_LINEAR);
 //		System.out.println("PARAM_WEIGHT_SQUARE: " + PARAM_WEIGHT_SQUARE);
 //		System.out.println("PARAM_NORM_LOG: " + PARAM_NORM_LOG);
@@ -165,10 +165,6 @@ public class Search {
 //					} else {
 						strId = resScore.id;
 //					}
-					
-//					System.out.println(resScore.id + ": " + strName);
-					
-					// TODO
 					
 //					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
 //					sb.append(strId + "\t" + strName + "\t" + resScore.hitNumber + "\t" + resScore.hitScore + "\t" + strIon);
@@ -285,14 +281,6 @@ public class Search {
 				e.printStackTrace();
 			}
 			
-			
-//			double fLen2 = 0;
-//			for (int i = 0; i < vecHitPeak.size(); i++) {
-//				fLen2 += vecHitPeak.get(i).hitVal * vecHitPeak.get(i).hitVal;
-//			}
-//			System.out.println((fLen > fLen2) + "\t" + fLen + "\t> " + fLen2);
-			
-
 			double dblScore = 0;
 			double fCos = 0;
 			for (int i = 0; i < vecHitPeak.size(); i++) {
@@ -305,26 +293,6 @@ public class Search {
 				dblScore = fCos / Math.sqrt(m_fLen * fLen);
 			}
 			if (dblScore >= 0.9999) {
-//				System.out.println();
-//				System.out.println();
-//				System.out.println(dblScore);
-//				System.out.println();
-//				System.out.println();
-//				for (int i = 0; i < queryMz.size(); i++) {
-//					System.out.println(queryMz.get(i) + "\t" + queryVal.get(i));
-//				}
-//				System.out.println(m_fLen);
-//				System.out.println();
-//				System.out.println(iCnt);
-//				System.out.println(fLen);
-//				System.out.println(fCos);
-//				System.out.println();
-//				for (int i = 0; i < vecHitPeak.size(); i++) {
-//					SearchHitPeak pHitPeak = vecHitPeak.get(i);
-//					System.out.println(pHitPeak.qVal + "\t" + pHitPeak.hitVal + "\t" + pHitPeak.qMz + "\t" + pHitPeak.hitMz);
-//				}
-//				System.out.println();
-				
 				dblScore = 0.999999999999;
 			} else if (dblScore < 0) {
 				dblScore = 0;
@@ -369,8 +337,7 @@ public class Search {
 		String sqlw2 = "";
 		ArrayList<String> sqlw2Params = new ArrayList<String>();
 		boolean isMsType = false;
-		if (!(queryParam.mstype == null) && !(queryParam.mstype.isEmpty()) && queryParam.mstype.indexOf("ALL") == -1
-				&& queryParam.mstype.indexOf("all") == -1) {
+		if (!(queryParam.mstype == null) && !(queryParam.mstype.isEmpty()) && queryParam.mstype.toUpperCase().indexOf("ALL") == -1) {
 			// MS_TYPE
 			sql = "SHOW COLUMNS FROM RECORD LIKE 'AC_MASS_SPECTROMETRY_MS_TYPE'";
 			try {
@@ -381,11 +348,15 @@ public class Search {
 					String ms = queryParam.mstype;
 					int idx;
 					sqlw2 = " AND T.MS_TYPE IN(";
-					while ((idx = ms.indexOf(",")) != -1) {
-						sqlw2Params.add(ms.substring(0, idx - 1));
-						ms = ms.substring(idx + 1);
+					for(String ms_token : ms.split(",")) {
+						sqlw2Params.add(ms_token);
 						sqlw2 += "?,";
 					}
+//					while ((idx = ms.indexOf(",")) != -1) {
+//						sqlw2Params.add(ms.substring(0, idx - 1));
+//						ms = ms.substring(idx + 1);
+//						sqlw2 += "?,";
+//					}
 					sqlw2 = sqlw2.substring(0, sqlw2.length() - 1) + ")";
 				}
 			} catch (SQLException e) {
@@ -393,16 +364,15 @@ public class Search {
 				return false;
 			}
 		}
-
+		
 		// ####################################################################################
 		// get accessions with right instrument type, MS type, precursor m/z
 		boolean isFilter = false;
 		ArrayList<String> vecTargetId = new ArrayList<String>();
 		if (
-				queryParam.instType != null || 
-				!queryParam.instType.isEmpty() || 
-				queryParam.instType.indexOf("ALL") != -1 || 
-				queryParam.instType.indexOf("all") != -1
+				queryParam.instType == null || 
+				queryParam.instType.isEmpty() || 
+				queryParam.instType.toUpperCase().indexOf("ALL") != -1
 		) {
 			if (!queryParam.ion.equals("0")) {
 				sql = "SELECT T.ID "
@@ -416,6 +386,7 @@ public class Search {
 					sql += sqlw2;
 				}
 				sql += " ORDER BY ID";
+				
 				try {
 					/*
 SELECT T.ID 
@@ -494,6 +465,7 @@ WHERE T.ION = ? ORDER BY ID
 					stmnt.setString(paramIdx, s);
 					paramIdx++;
 				}
+				
 				resMySql = stmnt.executeQuery();
 				boolean isEmpty = true;
 				// ------------------------------------------------------------
@@ -513,9 +485,12 @@ WHERE T.ION = ? ORDER BY ID
 				e.printStackTrace();
 				return false;
 			}
-
+			
 			sql = "SELECT T.ID "
-					+ "FROM (SELECT * FROM (SELECT AC_INSTRUMENT AS AC_INSTRUMENT, ACCESSION AS ID, AC_MASS_SPECTROMETRY_MS_TYPE AS MS_TYPE, RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD) AS R, (SELECT RECORD, VALUE FROM MS_FOCUSED_ION WHERE SUBTAG = 'PRECURSOR_M/Z') AS S WHERE R.ID= S.RECORD) AS T "
+					+ "FROM (SELECT * FROM "
+					+ "(SELECT AC_INSTRUMENT AS AC_INSTRUMENT, ACCESSION AS ID, AC_MASS_SPECTROMETRY_MS_TYPE AS MS_TYPE, RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD) AS R"
+					+ (isPre ? ", (SELECT RECORD, VALUE FROM MS_FOCUSED_ION WHERE SUBTAG = 'PRECURSOR_M/Z') AS S WHERE R.ID= S.RECORD" : "")
+					+ ") AS T "
 					+ "WHERE";
 			if (queryParam.ion.equals("0")) {
 				sql += " AC_INSTRUMENT IN (";
@@ -542,7 +517,7 @@ WHERE T.ION = ? ORDER BY ID
 			}
 
 			sql += " ORDER BY ID";
-
+			
 			try {
 				stmnt = con.prepareStatement(sql);
 				int paramIdx = 1;
@@ -591,7 +566,6 @@ WHERE T.ION = ? ORDER BY ID
 				}
 
 				resMySql = stmnt.executeQuery();
-				boolean isEmpty = true;
 				isFilter = true;
 				// ------------------------------------------------------------
 				// (3)
@@ -600,7 +574,7 @@ WHERE T.ION = ? ORDER BY ID
 					vecTargetId.add(resMySql.getString(1));
 				}
 				resMySql.close();
-				if (isEmpty) {
+				if (vecTargetId.isEmpty()) {
 					return false;
 				}
 			} catch (SQLException e) {
@@ -712,7 +686,8 @@ WHERE T.ION = ? ORDER BY ID
 		for (int i = 0; i < vecVal.size(); i++) {
 			ArrayList<String> vecPeak = new ArrayList<String>();
 			for (String s : vecVal.get(i).split(",")) {
-				vecPeak.add(s);
+				if(s.trim().length() > 0)
+					vecPeak.add(s.trim());
 			}
 			String sMz = vecPeak.get(0);
 			double fMz = Double.parseDouble(vecPeak.get(0));
