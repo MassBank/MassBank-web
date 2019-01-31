@@ -77,7 +77,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 //				System.out.println(value);
 //				return value;						
 //			})
-			// check symantic here
+			// check semantic here
 			.callCC((Function<Context, Result> continuation, Context context) -> {
 				Result r = continuation.apply(context);
 				if (r.isSuccess()) {
@@ -155,7 +155,42 @@ public class RecordParserDefinition extends GrammarDefinition {
 							return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");		 				
 						}		 			
 					}
-
+					
+					// validate the number of peaks in the peaklist
+					Integer num_peak= callback.PK_NUM_PEAK();
+					List<List<Double>> pk_peak = callback.PK_PEAK();
+					if (pk_peak.size() != num_peak) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("Incorrect number of peaks in peaklist. ");
+						sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
+						return context.failure(sb.toString());
+					}
+					
+					// validate the SPLASH
+					List<Ion> ions = new ArrayList<Ion>();
+					for (List<Double> peak_line :  pk_peak) {
+						ions.add(new Ion(peak_line.get(0), peak_line.get(1)));
+					}
+					Splash splashFactory = SplashFactory.create();
+					Spectrum spectrum = new SpectrumImpl(ions, SpectraType.MS);
+					String splash_from_peaks = splashFactory.splashIt(spectrum);
+					String splash_from_record = callback.PK_SPLASH();
+					if (!splash_from_peaks.equals(splash_from_record)) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("SPLASH from record file does not match SPLASH calculated from peaklist. ");
+						sb.append(splash_from_record + " defined in record file, but " + splash_from_peaks + " calculated from peaks.\n");
+						return context.failure(sb.toString());
+					}
+					
+					// check peak sorting
+					for (int i=0; i<pk_peak.size()-1; i++) {
+						if ((pk_peak.get(i).get(0).compareTo(pk_peak.get(i+1).get(0)))>0) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("The peaks in the peak list are not sorted.\n");
+							sb.append("Error in line " + pk_peak.get(i).toString() + ".\n");
+							return context.failure(sb.toString());
+						};
+					}
 				}
 				return r;
 			})
@@ -678,7 +713,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				ref("number")
 				.map((String value) -> {
-	        		Double d = Double.parseDouble(value);
+	        		double d = Double.parseDouble(value);
 	        		callback.CH_EXACT_MASS(d);
 	        		return value;
 	        	})
@@ -1675,36 +1710,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 				})
 				.seq(Token.NEWLINE_PARSER).plus()
 			)
-			// call a Continuation Parser to validate the number of peaks in the peaklist
-			.callCC((Function<Context, Result> continuation, Context context) -> {
-				Result r = continuation.apply(context);
-				if (r.isSuccess()) {
-					Integer num_peak= callback.PK_NUM_PEAK();
-					List<List<Double>> pk_peak = callback.PK_PEAK();
-					if (pk_peak.size() != num_peak) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("Incorrect number of peaks in peaklist. ");
-						sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
-						return context.failure(sb.toString());
-					}
-					
-					List<Ion> ions = new ArrayList<Ion>();
-					for (List<Double> peak_line :  pk_peak) {
-						ions.add(new Ion(peak_line.get(0), peak_line.get(1)));
-					}
-					Splash splashFactory = SplashFactory.create();
-					Spectrum spectrum = new SpectrumImpl(ions, SpectraType.MS);
-					String splash_from_peaks = splashFactory.splashIt(spectrum);
-					String splash_from_record = callback.PK_SPLASH();
-					if (!splash_from_peaks.equals(splash_from_record)) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("SPLASH from record file does not match SPLASH calculated from peaklist. ");
-						sb.append(splash_from_record + " defined in record file, but " + splash_from_peaks + " calculated from peaks.\n");
-						return context.failure(sb.toString());
-					}
-				}
-				return r; 
-			})
 //			.map((List<?> value) -> {
 //				System.out.println(value);
 //				return value;						
