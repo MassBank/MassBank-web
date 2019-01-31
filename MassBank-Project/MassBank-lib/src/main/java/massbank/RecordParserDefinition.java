@@ -184,7 +184,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					
 					// check peak sorting
 					for (int i=0; i<pk_peak.size()-1; i++) {
-						if ((pk_peak.get(i).get(0).compareTo(pk_peak.get(i+1).get(0)))>0) {
+						if ((pk_peak.get(i).get(0).compareTo(pk_peak.get(i+1).get(0)))>=0) {
 							StringBuilder sb = new StringBuilder();
 							sb.append("The peaks in the peak list are not sorted.\n");
 							sb.append("Error in line " + pk_peak.get(i).toString() + ".\n");
