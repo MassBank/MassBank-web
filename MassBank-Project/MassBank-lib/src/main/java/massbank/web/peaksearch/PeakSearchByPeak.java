@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringJoiner;
@@ -28,7 +29,7 @@ public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {
 
 	private String[] mz;
 
-	private String[] fom;
+//	private String[] fom;
 
 	private String tol;
 
@@ -37,6 +38,12 @@ public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {
 	private String mode;
 
 	public void getParameters(HttpServletRequest request) {
+//		Object[] oa	= request.getParameterMap().keySet().toArray();
+//		Arrays.sort(oa);
+//		System.out.println(Arrays.toString(oa));
+//		for(Object o : oa)
+//			System.out.println(o + "\t" + Arrays.toString(request.getParameterMap().get(o)));
+		
 		this.inst	= request.getParameterValues("inst");
 		this.ms		= request.getParameterValues("ms");
 		this.ion	= request.getParameter("ion");
@@ -47,11 +54,11 @@ public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {
 		
 		this.op		= new String[this.num];
 		this.mz		= new String[this.num];
-		this.fom	= new String[this.num];
+//		this.fom	= new String[this.num];
 		for (int i = 0; i < this.num; i++) {
 			this.op[i]	= request.getParameter("op" + i);
 			this.mz[i]	= request.getParameter("mz" + i).trim();
-			this.fom[i]	= request.getParameter("fom" + i).trim();
+//			this.fom[i]	= request.getParameter("fom" + i).trim();
 		}
 		this.tol	= request.getParameter("tol").trim();
 		this.intens	= request.getParameter("int").trim();
