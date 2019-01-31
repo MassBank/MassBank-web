@@ -310,87 +310,95 @@ public class ResultList {
 			int ret = 0;
 			
 			// ソート処理
-			if (sortKey == SORT_KEY_NAME) {				// Nameソート
-				if (!e1.getSortName().equals(e2.getSortName())) {
-					switch (sortAction) {
-						case SORT_ACTION_ASC:
+			switch (sortKey) {
+				case SORT_KEY_NAME: {				// Nameソート
+					if (!e1.getSortName().equals(e2.getSortName())) {
+						switch (sortAction) {
+							case SORT_ACTION_ASC:
+								ret = (e1.getSortName()).compareTo(e2.getSortName());
+								break;
+							case SORT_ACTION_DESC:
+								ret = (e2.getSortName()).compareTo(e1.getSortName());
+								break;
+						}
+					}
+					else {
+						switch (sortAction) {
+							case SORT_ACTION_ASC:
+								ret = (e1.getSortAddition()).compareTo(e2.getSortAddition());
+								break;
+							case SORT_ACTION_DESC:
+								ret = (e2.getSortAddition()).compareTo(e1.getSortAddition());
+								break;
+						}
+					}
+					break;
+				}
+				case SORT_KEY_FORMULA: {		// Formulaソート
+					if (!e1.getSortFormula().equals(e2.getSortFormula())) {
+						switch (sortAction) {
+							case SORT_ACTION_ASC:
+								ret = (e1.getSortFormula()).compareTo(e2.getSortFormula());
+								break;
+							case SORT_ACTION_DESC:
+								ret = (e2.getSortFormula()).compareTo(e1.getSortFormula());
+								break;
+						}
+					}
+					else {
+						if (!e1.getSortName().equals(e2.getSortName())) {
 							ret = (e1.getSortName()).compareTo(e2.getSortName());
-							break;
-						case SORT_ACTION_DESC:
-							ret = (e2.getSortName()).compareTo(e1.getSortName());
-							break;
-					}
-				}
-				else {
-					switch (sortAction) {
-						case SORT_ACTION_ASC:
+						}
+						else {
 							ret = (e1.getSortAddition()).compareTo(e2.getSortAddition());
-							break;
-						case SORT_ACTION_DESC:
-							ret = (e2.getSortAddition()).compareTo(e1.getSortAddition());
-							break;
+						}
 					}
+					break;
 				}
-			}
-			else if (sortKey == SORT_KEY_FORMULA) {		// Formulaソート
-				if (!e1.getSortFormula().equals(e2.getSortFormula())) {
-					switch (sortAction) {
-						case SORT_ACTION_ASC:
-							ret = (e1.getSortFormula()).compareTo(e2.getSortFormula());
-							break;
-						case SORT_ACTION_DESC:
-							ret = (e2.getSortFormula()).compareTo(e1.getSortFormula());
-							break;
+				case SORT_KEY_EMASS: {		// ExactMassソート
+					if (e1.getSortEmass() != e2.getSortEmass()) {
+						switch (sortAction) {
+							case SORT_ACTION_ASC:
+								ret = (Float.valueOf(e1.getSortEmass())).compareTo(Float.valueOf(e2.getSortEmass()));
+								break;
+							case SORT_ACTION_DESC:
+								ret = (Float.valueOf(e2.getSortEmass())).compareTo(Float.valueOf(e1.getSortEmass()));
+								break;
+						}
 					}
+					else {
+						if (!e1.getSortName().equals(e2.getSortName())) {
+							ret = (e1.getSortName()).compareTo(e2.getSortName());
+						}
+						else {
+							ret = (e1.getSortAddition()).compareTo(e2.getSortAddition());
+						}
+					}
+					break;
 				}
-				else {
+				case SORT_KEY_ID: {			// IDソート
 					if (!e1.getSortName().equals(e2.getSortName())) {
 						ret = (e1.getSortName()).compareTo(e2.getSortName());
 					}
 					else {
-						ret = (e1.getSortAddition()).compareTo(e2.getSortAddition());
+						switch (sortAction) {
+							case SORT_ACTION_ASC:
+								ret = e1.getId().compareTo(e2.getId());
+								break;
+							case SORT_ACTION_DESC:
+								ret = e2.getId().compareTo(e1.getId());
+								break;
+						}
 					}
+					break;
 				}
+				case SORT_NOT: {
+					// not compared
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("Unknown sort key: " + sortKey);
 			}
-			else if (sortKey == SORT_KEY_EMASS) {		// ExactMassソート
-				if (e1.getSortEmass() != e2.getSortEmass()) {
-					switch (sortAction) {
-						case SORT_ACTION_ASC:
-							ret = (Float.valueOf(e1.getSortEmass())).compareTo(Float.valueOf(e2.getSortEmass()));
-							break;
-						case SORT_ACTION_DESC:
-							ret = (Float.valueOf(e2.getSortEmass())).compareTo(Float.valueOf(e1.getSortEmass()));
-							break;
-					}
-				}
-				else {
-					if (!e1.getSortName().equals(e2.getSortName())) {
-						ret = (e1.getSortName()).compareTo(e2.getSortName());
-					}
-					else {
-						ret = (e1.getSortAddition()).compareTo(e2.getSortAddition());
-					}
-				}
-			}
-			else if (sortKey == SORT_KEY_ID) {			// IDソート
-				if (!e1.getSortName().equals(e2.getSortName())) {
-					ret = (e1.getSortName()).compareTo(e2.getSortName());
-				}
-				else {
-					switch (sortAction) {
-						case SORT_ACTION_ASC:
-							ret = e1.getId().compareTo(e2.getId());
-							break;
-						case SORT_ACTION_DESC:
-							ret = e2.getId().compareTo(e1.getId());
-							break;
-					}
-				}
-			}
-			else if (sortKey == SORT_NOT) {
-				// not compared
-			}
-			
 			return ret;
 		}
 	}

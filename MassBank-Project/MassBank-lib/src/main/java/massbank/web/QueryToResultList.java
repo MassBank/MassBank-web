@@ -110,7 +110,6 @@ public class QueryToResultList {
 		
 		// Record sort (レコードソート)
 		list.sortList(sortKey, sortAction);
-		
 		return list;
 	}
 }
