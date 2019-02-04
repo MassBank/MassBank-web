@@ -53,6 +53,7 @@ MassBank-Project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0
 
 echo "**RESTARTING ALL SERVER************************************************"
 
+sed 's|^JAVA_OPTS="-Djava.awt.headless=true.*|JAVA_OPTS="-Djava.awt.headless=true -Xmx4096m -Xms4096m -XX:+UseConcMarkSweepGC"|g' -i /etc/default/tomcat8
 systemctl restart tomcat8
 
 
