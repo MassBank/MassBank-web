@@ -218,6 +218,8 @@ public class Validator {
 	}
 
 	public static void main(String[] arguments) throws Exception {
+//		arguments	= new String[] {"/tmp/JP011676.txt"};
+		
 		boolean haserror = false;
 		if (arguments.length==0) {
 			Record record = validate(recordstringExample, "");

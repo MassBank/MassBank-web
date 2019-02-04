@@ -170,6 +170,8 @@
 			</ul>
 		</div>
 	</div> 
+	<!-- 
+	Merged spectra are missing at the moment. Hence, we exclude this chunk.
 	<div class="w3-row w3-padding">
 		<div class="w3-col" style="width:120px">
 			<b>Merged Type</b>
@@ -188,6 +190,7 @@
 			</ul>
 		</div>
 	</div> 
+	 -->
 	<div class="w3-row w3-padding">
 		<div class="w3-col" style="width:120px">
 			<b>Ion Mode</b>
