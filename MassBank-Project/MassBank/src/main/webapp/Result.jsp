@@ -793,7 +793,7 @@
 			isMulti = false;
 			searchParam = searchParam.replaceAll( "srchkey", "site" );
 		}
-		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_RCDIDX];
+		typeName = MassBankCommon.TYPE_TBL[MassBankCommon.CGI_TBL_TYPE_RCDIDX];
 	}
 	else {
 		try { siteNo = Integer.parseInt(String.valueOf(reqParams.get( "site" ))); } catch (NumberFormatException nfe) {}
@@ -802,19 +802,19 @@
 		}
 		// ◇ PeakSearchの場合
 		if ( refPeak ) {
-			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_PEAK];
+			typeName = MassBankCommon.TYPE_TBL[MassBankCommon.CGI_TBL_TYPE_PEAK];
 		}
 		// ◇ PeakDifferenceSearchの場合
 		else if ( refPeakDiff ) {
-			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_PDIFF];
+			typeName = MassBankCommon.TYPE_TBL[MassBankCommon.CGI_TBL_TYPE_PDIFF];
 		}
 		// ◇ QuickSearchの場合
 		else if ( refQuick ) {
-			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_QUICK];
+			typeName = MassBankCommon.TYPE_TBL[MassBankCommon.CGI_TBL_TYPE_QUICK];
 		}
 		// ◇ Substructure Searchの場合
 		else if ( refStruct ) {
-			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_STRUCT];
+			typeName = MassBankCommon.TYPE_TBL[MassBankCommon.CGI_TBL_TYPE_STRUCT];
 		}
 		else if ( refInchi ) {
 			typeName = "inchikey";
@@ -845,12 +845,13 @@
 		records = new SearchExecution(request).exec(new QuickSearchBySplash());
 	}
 	else {
-		if ( isMulti ) {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null);
-		}
-		else {
-			list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo));
-		}
+		throw new IllegalArgumentException(typeName);
+		// if ( isMulti ) {
+		// 	list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, true, null);
+		// }
+		// else {
+		// 	list = mbcommon.execDispatcherResult( serverUrl, typeName, searchParam, false, String.valueOf(siteNo));
+		// }
 	}
 	
 	if (records != null) 
@@ -1120,20 +1121,31 @@
 				String url = "";
 				// ◇ PeakSearch／PeakDifferenceSearchの場合
 				String contributor	= dbManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
-				if ( refPeak || refPeakDiff ) {
-					if ( refPeak ) {
-						typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
-					}
-					else {
-						typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISPDIFF];
-					}
-					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor + recordParam;
+				
+				// if ( refPeak || refPeakDiff ) {
+				// 		if ( refPeak ) {
+				// 			typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
+				// 		}
+				// 		else {
+				//	 		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISPDIFF];
+				// 		}
+				// 		url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor + recordParam;
+				// }
+				// // ◇ QuickSearch／RecordIndex/Substructure Searchの場合
+				// else if( refQuick || refRecIndex || refStruct || refInchi || refSplash) {
+				// 		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
+				//	 	//url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
+				// 	url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor;
+				// }
+				if ( refPeak ) {
+					url = "RecordDisplay.jsp" + "?id=" + rec.getId() + "&dsn=" + contributor + recordParam;
 				}
-				// ◇ QuickSearch／RecordIndex/Substructure Searchの場合
-				else if( refQuick || refRecIndex || refStruct || refInchi || refSplash) {
-					typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
-					//url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&site=" + rec.getContributor() + "&dsn=" + conf.getDbName()[Integer.parseInt(rec.getContributor())];
-					url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor;
+				if ( refPeakDiff ) {
+					typeName = MassBankCommon.TYPE_TBL[MassBankCommon.CGI_TBL_TYPE_DISP];
+					url = "RecordDisplay.jsp" + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor + recordParam;
+				}
+				if( refQuick || refRecIndex || refStruct || refInchi || refSplash) {
+					url = "RecordDisplay.jsp" + "?id=" + rec.getId() + "&dsn=" + contributor;
 				}
 				
 				//------------------------------------

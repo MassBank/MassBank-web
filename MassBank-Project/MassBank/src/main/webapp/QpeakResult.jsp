@@ -357,8 +357,8 @@
 		//-------------------------------------
 		// 検索実行・結果取得
 		//-------------------------------------
-		String typeName = "";
-		typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_SEARCH];
+		// String typeName = "";
+		// typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_SEARCH];
 		String param = "quick=true&CEILING=1000&WEIGHT=SQUARE&NORM=SQRT&START=1&TOLUNIT=unit"
 				 + "&CORTYPE=COSINE&FLOOR=0&NUMTHRESHOLD=3&CORTHRESHOLD=0.8&TOLERANCE=0.3"
 				 + "&CUTOFF=" + pCutoff + "&NUM=0&VAL=" + paramPeak.toString();
@@ -443,9 +443,12 @@
 				
 				// レコードページへのリンクURLをセット
 				String contributor	= dbManager.getContributorFromAccession(id).SHORT_NAME;
-				typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
-				String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
-								 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
+				// typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
+				// String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
+				// 				 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
+				String linkUrl = "RecordDisplay.jsp" + "?id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
+				
+				
 				String valstr = name.replace("\"", "&quot;") + "\t" + id + "\t" + formula + "\t0\t" + site;
 				
 				String rowId = String.valueOf(i);

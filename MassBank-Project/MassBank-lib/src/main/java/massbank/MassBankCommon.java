@@ -34,14 +34,15 @@ import java.net.URLConnection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class MassBankCommon {
-	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
-	public static final String MULTI_DISPATCHER_NAME = "MultiDispatcher";
+//	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
+//	public static final String MULTI_DISPATCHER_NAME = "MultiDispatcher";
 
 	// <Number of search conditions> (＜検索条件数＞)
 	public static final int PEAK_SEARCH_PARAM_NUM     = 6;
@@ -78,9 +79,9 @@ public class MassBankCommon {
 	public static final String REQ_TYPE_GETCINFO  = "gcinfo";
 	public static final String REQ_TYPE_GETFORMULA = "gform";
 	
-	// <CGI table index> (＜CGIテーブルインデックス＞)
-	public static final int CGI_TBL_NUM_TYPE = 0;		// CGI type specification (CGI種別指定)
-	public static final int CGI_TBL_NUM_FILE = 1;		// CGI file specification (CGIファイル指定)
+//	// <CGI table index> (＜CGIテーブルインデックス＞)
+//	public static final int CGI_TBL_NUM_TYPE = 0;		// CGI type specification (CGI種別指定)
+//	public static final int CGI_TBL_NUM_FILE = 1;		// CGI file specification (CGIファイル指定)
 
 	// <CGI table number> (＜CGIテーブル番号＞)
 	public static final int CGI_TBL_TYPE_PEAK     = 0;
@@ -114,223 +115,238 @@ public class MassBankCommon {
 	public static final int CGI_TBL_TYPE_GETCINFO  = 28;
 	public static final int CGI_TBL_TYPE_GETFORMULA = 29;
 	
-
-	// <<CGI table> (＜CGIテーブル＞)
-	public static final String[][] CGI_TBL = {
-		{ REQ_TYPE_PEAK,     REQ_TYPE_PEAKDIFF,  REQ_TYPE_DISP,     REQ_TYPE_GDATA,
-		  REQ_TYPE_GDATA2,   REQ_TYPE_SEARCH,    REQ_TYPE_GNAME,    REQ_TYPE_GPEAK,
-		  REQ_TYPE_QSTAR,    REQ_TYPE_GSON,      REQ_TYPE_DISPDIFF, REQ_TYPE_QUICK,
-		  REQ_TYPE_PEAK2,    REQ_TYPE_PEAKDIFF2, REQ_TYPE_RECORD,   REQ_TYPE_IDXCNT,
-		  REQ_TYPE_RCDIDX,   REQ_TYPE_INST,
-		  REQ_TYPE_MOL,      REQ_TYPE_GSDATA,    REQ_TYPE_GDATA3,
-		  REQ_TYPE_GETLIST,  REQ_TYPE_STRUCT,    REQ_TYPE_PEAKADV,  REQ_TYPE_GETRECORD,
-		  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT, REQ_TYPE_ADVSEARCH, REQ_TYPE_GETCINFO,
-		  REQ_TYPE_GETFORMULA
-		} ,
-		{ "PeakSearch2.cgi",   "PeakSearch2.cgi",     "Disp.cgi",         "GetData.cgi",
-		  "GetData2.cgi",      "Search.cgi",          "GetName.cgi",      "GetPeakById.cgi",
-		  "QstarTable.cgi",    "GetSon.cgi",          "Disp.cgi",         "QuickSearch.cgi",
-		  "PeakSearch2.cgi",   "PeakSearch2.cgi",     "ExistRecord.cgi",  "IndexCount.cgi",
-		  "RecordIndex.cgi",   "GetInstInfo.cgi",
-		  "MolfileAPI.cgi",    "GetSpectrumData.cgi", "GetData3.cgi",
-		  "GetRecordList.cgi", "StructureSearch.cgi", "PeakSearchAdv.cgi", "GetRecordInfo.cgi",
-		  "GetMolfile.cgi",    "GetStructure.cgi",    "AdvancedSearch.cgi", "GetCompoudInfo.cgi",
-		  "GetFormula.cgi"
-		}
+//	public static final Map<Integer, String> mapTypeIdxToTypeName	= new HashMap<Integer, String>();
+//	static {
+//		mapTypeIdxToTypeName.put(, );
+//	}
+	public static final String[] TYPE_TBL = {
+	  REQ_TYPE_PEAK,     REQ_TYPE_PEAKDIFF,  REQ_TYPE_DISP,     REQ_TYPE_GDATA,
+	  REQ_TYPE_GDATA2,   REQ_TYPE_SEARCH,    REQ_TYPE_GNAME,    REQ_TYPE_GPEAK,
+	  REQ_TYPE_QSTAR,    REQ_TYPE_GSON,      REQ_TYPE_DISPDIFF, REQ_TYPE_QUICK,
+	  REQ_TYPE_PEAK2,    REQ_TYPE_PEAKDIFF2, REQ_TYPE_RECORD,   REQ_TYPE_IDXCNT,
+	  REQ_TYPE_RCDIDX,   REQ_TYPE_INST,
+	  REQ_TYPE_MOL,      REQ_TYPE_GSDATA,    REQ_TYPE_GDATA3,
+	  REQ_TYPE_GETLIST,  REQ_TYPE_STRUCT,    REQ_TYPE_PEAKADV,  REQ_TYPE_GETRECORD,
+	  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT, REQ_TYPE_ADVSEARCH, REQ_TYPE_GETCINFO,
+	  REQ_TYPE_GETFORMULA
 	};
-	
-	/**
-	 * Run servlet MultiDispatcher or Dispatcher.jsp (サーブレットMultiDispatcher または、Dispatcher.jspを実行する)
-	 * @param serverUrl		Server URL (サーバーURL)
-	 * @param type			Request type (リクエスト種別)
-	 * @param param			URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
-	 * @param isMulti		Multi Flag (マルチフラグ)
-	 * @param siteNo			Site No. (サイトNo.)
-	 * @return 
-	 */
-	public ArrayList<String> execDispatcher(
-			String serverUrl,
-			String type,
-			String param,
-			boolean isMulti,
-			String siteNo ) {
-		
-		String reqUrl = "";
-		int site = 0;
-		if ( isMulti ) {
-			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
-		}
-		else {
-			reqUrl = serverUrl + DISPATCHER_NAME;
-			site = Integer.parseInt(siteNo);
-		}
-		
-		// URL parameter generation (URLパラメータ生成)
-		String reqParam = "type=" + type;
-		if ( !param.equals("") ) {
-			reqParam += "&" + param;
-		}
-		ArrayList<String> result = new ArrayList<String>();
-		try {
-			URL url = new URL( reqUrl );
-			URLConnection con = url.openConnection();
-			if ( !reqParam.equals("") ) {
-				con.setDoOutput(true);
-				PrintStream psm = new PrintStream( con.getOutputStream() );
-				psm.print( reqParam );
-			}
-			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
-			boolean isStartSpace = true;
-			String line = "";
-			while ( ( line = in.readLine() ) != null ) {
-				// To skip leading spaces (先頭スペースを読み飛ばすため)
-				if ( isStartSpace ) {
-					if ( line.equals("") ) {
-						continue;
-					}
-					else {
-						isStartSpace = false;
-					}
-				}
-				if ( !line.equals("") ) {
-					if ( isMulti ) {
-						result.add(line);
-					}
-					else {
-						result.add(line + "\t" + Integer.toString(site) );
-					}
-				}
-			}
-			in.close();
-		}
-		catch ( Exception ex ) {
-			ex.printStackTrace();
-		}
-		return result;
-	 }
-	
 
-	/**
-	 * Execute Servlet MultiDispatcher or Dispatcher.jsp (for displaying search results page) (サーブレットMultiDispatcher または、Dispatcher.jspを実行する（検索結果ページ表示用）)
-	 * @param serverUrl		Server URL (サーバーURL)
-	 * @param type			Request type (リクエスト種別)
-	 * @param reqParam		URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
-	 * @param isMulti		Multi Flag (マルチフラグ)
-	 * @param siteNo		Site No. (サイトNo.)
-	 * @param conf			Configuration file information object (設定ファイル情報オブジェクト)
-	 * @return Record information list (レコード情報リスト)
-	 * @throws ConfigurationException 
-	 */
-	public ResultList execDispatcherResult(
-			String serverUrl,
-			String type,
-			String reqParam,
-			boolean isMulti,
-			String siteNo
-			) throws ConfigurationException {
-		
-		String reqUrl = "";
-		int site = 0;
-		if ( isMulti ) {
-			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
-		}
-		else {
-			reqUrl = serverUrl + DISPATCHER_NAME;
-			site = Integer.parseInt(siteNo);
-		}
-		
-		// Results obtained (結果取得)
-		ArrayList<String> allLine = new ArrayList<String>();
-		try {
-			URL url = new URL( reqUrl );
-			URLConnection con = url.openConnection();
-			if ( !reqParam.equals("") ) {
-				con.setDoOutput(true);
-				PrintStream psm = new PrintStream( con.getOutputStream() );
-				psm.print( reqParam );
-			}
-
-			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
-			boolean isStartSpace = true;
-			String line = "";
-			while ( ( line = in.readLine() ) != null ) {
-				// To skip leading spaces (先頭スペースを読み飛ばすため)
-				if ( isStartSpace ) {
-					if ( line.equals("") ) {
-						continue;
-					}
-					else {
-						isStartSpace = false;
-					}
-				}
-				
-				if ( !line.equals("") ) {
-					if ( isMulti ) {
-						allLine.add(line);
-					}
-					else {
-						allLine.add(line + "\t" + Integer.toString(site) );
-					}
-				}
-			}
-			in.close();
-		}
-		catch ( Exception ex ) {
-			ex.printStackTrace();
-		}
-		
-		// Result information record generation (結果情報レコード生成)
-		ResultList list = new ResultList();
-		ResultRecord record;
-		int nodeGroup = -1;
-		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();
-		String[] fields;
-		for (int i=0; i<allLine.size(); i++) {
-			fields = allLine.get(i).split("\t");
-			record = new ResultRecord();
-			record.setInfo(fields[0]);
-			record.setId(fields[1]);
-			record.setIon(fields[2]);
-			record.setFormula(fields[3]);
-			record.setEmass(fields[4]);
-			record.setContributor(fields[fields.length-1]);
-			// Node group setting (ノードグループ設定)
-			if (!nodeCount.containsKey(record.getName())) {
-				nodeGroup++;
-				nodeCount.put(record.getName(), nodeGroup);
-				record.setNodeGroup(nodeGroup);
-			}
-			else {
-				record.setNodeGroup(nodeCount.get(record.getName()));
-			}
-			list.addRecord(record);
-		}
-		
-		// Get sort key (ソートキー取得)
-		String sortKey = ResultList.SORT_KEY_NAME;
-		if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_FORMULA) != -1) {
-			sortKey = ResultList.SORT_KEY_FORMULA;
-		}
-		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_EMASS) != -1) {
-			sortKey = ResultList.SORT_KEY_EMASS;
-		}
-		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_ID) != -1) {
-			sortKey = ResultList.SORT_KEY_ID;
-		}
-		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_NOT) != -1) {
-			sortKey = ResultList.SORT_NOT;
-		}
-		
-		// Acquire sort action (ソートアクション取得)
-		int sortAction = ResultList.SORT_ACTION_ASC;
-		if (reqParam.indexOf("sortAction=" + ResultList.SORT_ACTION_DESC) != -1) {
-			sortAction = ResultList.SORT_ACTION_DESC;
-		}
-		
-		// Record sort (レコードソート)
-		list.sortList(sortKey, sortAction);
-		
-		
-		return list;
-	 }
+//	// <<CGI table> (＜CGIテーブル＞)
+//	public static final String[][] CGI_TBL = {
+//		{ REQ_TYPE_PEAK,     REQ_TYPE_PEAKDIFF,  REQ_TYPE_DISP,     REQ_TYPE_GDATA,
+//		  REQ_TYPE_GDATA2,   REQ_TYPE_SEARCH,    REQ_TYPE_GNAME,    REQ_TYPE_GPEAK,
+//		  REQ_TYPE_QSTAR,    REQ_TYPE_GSON,      REQ_TYPE_DISPDIFF, REQ_TYPE_QUICK,
+//		  REQ_TYPE_PEAK2,    REQ_TYPE_PEAKDIFF2, REQ_TYPE_RECORD,   REQ_TYPE_IDXCNT,
+//		  REQ_TYPE_RCDIDX,   REQ_TYPE_INST,
+//		  REQ_TYPE_MOL,      REQ_TYPE_GSDATA,    REQ_TYPE_GDATA3,
+//		  REQ_TYPE_GETLIST,  REQ_TYPE_STRUCT,    REQ_TYPE_PEAKADV,  REQ_TYPE_GETRECORD,
+//		  REQ_TYPE_GETMOL,   REQ_TYPE_GETSTRUCT, REQ_TYPE_ADVSEARCH, REQ_TYPE_GETCINFO,
+//		  REQ_TYPE_GETFORMULA
+//		} ,
+//		{ "PeakSearch2.cgi",   "PeakSearch2.cgi",     "Disp.cgi",         "GetData.cgi",
+//		  "GetData2.cgi",      "Search.cgi",          "GetName.cgi",      "GetPeakById.cgi",
+//		  "QstarTable.cgi",    "GetSon.cgi",          "Disp.cgi",         "QuickSearch.cgi",
+//		  "PeakSearch2.cgi",   "PeakSearch2.cgi",     "ExistRecord.cgi",  "IndexCount.cgi",
+//		  "RecordIndex.cgi",   "GetInstInfo.cgi",
+//		  "MolfileAPI.cgi",    "GetSpectrumData.cgi", "GetData3.cgi",
+//		  "GetRecordList.cgi", "StructureSearch.cgi", "PeakSearchAdv.cgi", "GetRecordInfo.cgi",
+//		  "GetMolfile.cgi",    "GetStructure.cgi",    "AdvancedSearch.cgi", "GetCompoudInfo.cgi",
+//		  "GetFormula.cgi"
+//		}
+//	};
+//	
+//	/**
+//	 * Run servlet MultiDispatcher or Dispatcher.jsp (サーブレットMultiDispatcher または、Dispatcher.jspを実行する)
+//	 * @param serverUrl		Server URL (サーバーURL)
+//	 * @param type			Request type (リクエスト種別)
+//	 * @param param			URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
+//	 * @param isMulti		Multi Flag (マルチフラグ)
+//	 * @param siteNo			Site No. (サイトNo.)
+//	 * @return 
+//	 */
+//	public ArrayList<String> execDispatcher(
+//			String serverUrl,
+//			String type,
+//			String param,
+//			boolean isMulti,
+//			String siteNo ) {
+//		
+//		String reqUrl = "";
+//		int site = 0;
+//		if ( isMulti ) {
+//			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
+//		}
+//		else {
+//			reqUrl = serverUrl + DISPATCHER_NAME;
+//			site = Integer.parseInt(siteNo);
+//		}
+//		
+//		// URL parameter generation (URLパラメータ生成)
+//		String reqParam = "type=" + type;
+//		if ( !param.equals("") ) {
+//			reqParam += "&" + param;
+//		}
+//		ArrayList<String> result = new ArrayList<String>();
+//		try {
+//			URL url = new URL( reqUrl );
+//			URLConnection con = url.openConnection();
+//			if ( !reqParam.equals("") ) {
+//				con.setDoOutput(true);
+//				PrintStream psm = new PrintStream( con.getOutputStream() );
+//				psm.print( reqParam );
+//			}
+//			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
+//			boolean isStartSpace = true;
+//			String line = "";
+//			while ( ( line = in.readLine() ) != null ) {
+//				// To skip leading spaces (先頭スペースを読み飛ばすため)
+//				if ( isStartSpace ) {
+//					if ( line.equals("") ) {
+//						continue;
+//					}
+//					else {
+//						isStartSpace = false;
+//					}
+//				}
+//				if ( !line.equals("") ) {
+//					if ( isMulti ) {
+//						result.add(line);
+//					}
+//					else {
+//						result.add(line + "\t" + Integer.toString(site) );
+//					}
+//				}
+//			}
+//			in.close();
+//		}
+//		catch ( Exception ex ) {
+//			ex.printStackTrace();
+//		}
+//		return result;
+//	 }
+//	
+//
+//	/**
+//	 * Execute Servlet MultiDispatcher or Dispatcher.jsp (for displaying search results page) (サーブレットMultiDispatcher または、Dispatcher.jspを実行する（検索結果ページ表示用）)
+//	 * @param serverUrl		Server URL (サーバーURL)
+//	 * @param type			Request type (リクエスト種別)
+//	 * @param reqParam		URL parameter (not including request type) (URLパラメータ（リクエスト種別を含まない）)
+//	 * @param isMulti		Multi Flag (マルチフラグ)
+//	 * @param siteNo		Site No. (サイトNo.)
+//	 * @param conf			Configuration file information object (設定ファイル情報オブジェクト)
+//	 * @return Record information list (レコード情報リスト)
+//	 * @throws ConfigurationException 
+//	 */
+//	public ResultList execDispatcherResult(
+//			String serverUrl,
+//			String type,
+//			String reqParam,
+//			boolean isMulti,
+//			String siteNo
+//			) throws ConfigurationException {
+//		
+//		String reqUrl = "";
+//		int site = 0;
+//		if ( isMulti ) {
+//			reqUrl = serverUrl + MULTI_DISPATCHER_NAME;
+//		}
+//		else {
+//			reqUrl = serverUrl + DISPATCHER_NAME;
+//			site = Integer.parseInt(siteNo);
+//		}
+//		
+//		// Results obtained (結果取得)
+//		ArrayList<String> allLine = new ArrayList<String>();
+//		try {
+//			URL url = new URL( reqUrl );
+//			URLConnection con = url.openConnection();
+//			if ( !reqParam.equals("") ) {
+//				con.setDoOutput(true);
+//				PrintStream psm = new PrintStream( con.getOutputStream() );
+//				psm.print( reqParam );
+//			}
+//
+//			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()) );
+//			boolean isStartSpace = true;
+//			String line = "";
+//			while ( ( line = in.readLine() ) != null ) {
+//				// To skip leading spaces (先頭スペースを読み飛ばすため)
+//				if ( isStartSpace ) {
+//					if ( line.equals("") ) {
+//						continue;
+//					}
+//					else {
+//						isStartSpace = false;
+//					}
+//				}
+//				
+//				if ( !line.equals("") ) {
+//					if ( isMulti ) {
+//						allLine.add(line);
+//					}
+//					else {
+//						allLine.add(line + "\t" + Integer.toString(site) );
+//					}
+//				}
+//			}
+//			in.close();
+//		}
+//		catch ( Exception ex ) {
+//			ex.printStackTrace();
+//		}
+//		
+//		// Result information record generation (結果情報レコード生成)
+//		ResultList list = new ResultList();
+//		ResultRecord record;
+//		int nodeGroup = -1;
+//		HashMap<String, Integer> nodeCount = new HashMap<String, Integer>();
+//		String[] fields;
+//		for (int i=0; i<allLine.size(); i++) {
+//			fields = allLine.get(i).split("\t");
+//			record = new ResultRecord();
+//			record.setInfo(fields[0]);
+//			record.setId(fields[1]);
+//			record.setIon(fields[2]);
+//			record.setFormula(fields[3]);
+//			record.setEmass(fields[4]);
+//			record.setContributor(fields[fields.length-1]);
+//			// Node group setting (ノードグループ設定)
+//			if (!nodeCount.containsKey(record.getName())) {
+//				nodeGroup++;
+//				nodeCount.put(record.getName(), nodeGroup);
+//				record.setNodeGroup(nodeGroup);
+//			}
+//			else {
+//				record.setNodeGroup(nodeCount.get(record.getName()));
+//			}
+//			list.addRecord(record);
+//		}
+//		
+//		// Get sort key (ソートキー取得)
+//		String sortKey = ResultList.SORT_KEY_NAME;
+//		if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_FORMULA) != -1) {
+//			sortKey = ResultList.SORT_KEY_FORMULA;
+//		}
+//		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_EMASS) != -1) {
+//			sortKey = ResultList.SORT_KEY_EMASS;
+//		}
+//		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_KEY_ID) != -1) {
+//			sortKey = ResultList.SORT_KEY_ID;
+//		}
+//		else if (reqParam.indexOf("sortKey=" + ResultList.SORT_NOT) != -1) {
+//			sortKey = ResultList.SORT_NOT;
+//		}
+//		
+//		// Acquire sort action (ソートアクション取得)
+//		int sortAction = ResultList.SORT_ACTION_ASC;
+//		if (reqParam.indexOf("sortAction=" + ResultList.SORT_ACTION_DESC) != -1) {
+//			sortAction = ResultList.SORT_ACTION_DESC;
+//		}
+//		
+//		// Record sort (レコードソート)
+//		list.sortList(sortKey, sortAction);
+//		
+//		
+//		return list;
+//	 }
 }
