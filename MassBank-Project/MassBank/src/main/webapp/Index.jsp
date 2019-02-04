@@ -21,9 +21,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en" style="max-width:900px">
-<title>MassBank | ${sitename} Mass Spectral DataBase</title>
 
 <head>
+	<title>MassBank | ${sitename} Mass Spectral DataBase</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Mass Spectral DataBase">

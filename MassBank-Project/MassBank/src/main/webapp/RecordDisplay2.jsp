@@ -21,9 +21,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en">
-<title>${short_name} Mass Spectrum</title>
 
 <head>
+	<title>${short_name} Mass Spectrum</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta name="description" content="${description}">
@@ -57,6 +57,7 @@
 	<link rel="stylesheet" href="css/st.css" type="text/css" />
 	<!-- SpeckTackle MassBank loading script-->
 	<script type="text/javascript" src="script/massbank_specktackle.js"></script>
+${structureddata}
 </head>
 
 <body class="w3-theme-gradient">
@@ -125,5 +126,4 @@
 	<jsp:include page="copyrightline.html"/>
 	
 </body>
-${structureddata}
 </html>
