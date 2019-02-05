@@ -171,7 +171,7 @@ public class Record {
 	}
 	
 	/**
-	* Returns the molecular formula as an org.openscience.cdk.interfaces.IMolecularFormula.
+	* Returns the molecular formula as an String.
 	*/
 	public String CH_FORMULA() {
 		return ch_formula;

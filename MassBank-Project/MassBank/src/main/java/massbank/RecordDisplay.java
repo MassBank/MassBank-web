@@ -41,7 +41,7 @@ public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(RecordDisplay.class);
 	
-	private static String CreatePeakListForSpectrumViewer(Record record) {
+	private static String createPeakListForSpectrumViewer(Record record) {
         // convert a list of lists [[mz, int, rel.int], [...], ...]
         // to String "mz,rel.int@mz,rel.int@..."
 		List<String> peaks = new ArrayList<>();
@@ -51,7 +51,7 @@ public class RecordDisplay extends HttpServlet {
 		return String.join("@", peaks);
 	}
 	
-	private static String CreateRecordString(Record record) {
+	private static String createRecordString(Record record) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<hr>\n");
 		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
@@ -141,20 +141,48 @@ public class RecordDisplay extends HttpServlet {
 		return sb.toString();
 	}
 	
-	private static String CreateStructuredData(Record record) {
+	private static String createStructuredData(Record record) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script type=\"application/ld+json\">\n");
 		sb.append("{\n");
+		sb.append("\"name\": \""+record.RECORD_TITLE().get(0)+"\",\n");
+		sb.append("\"identifier\": \""+record.ACCESSION()+"\",\n");
+		sb.append("\"molecularFormula\": \""+record.CH_FORMULA()+"\",\n");
+		sb.append("\"monoisotopicMolecularWeight\": \""+record.CH_EXACT_MASS()+"\",\n");
+		sb.append("\"inChI\": \""+record.CH_IUPAC()+"\",\n");
+		sb.append("\"smiles\": \""+record.CH_SMILES()+"\",\n");
+		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+record.ACCESSION()+"\",\n");
 		sb.append("\"@context\": \"http://schema.org\",\n");
-		sb.append("\"@type\": \"Dataset\",\n");
-		sb.append("\"headline\": \""+ record.RECORD_TITLE() + "\",\n");
-		sb.append("\"datePublished\": \"" + record.DATE() + "\",\n");
-		sb.append("\"license\":  \"https://creativecommons.org/licenses/\"\n");
-		sb.append("},\n");
-		sb.append("\n");
+		sb.append("\"@type\": \"MolecularEntity\"\n");
 		sb.append("}\n");
 		sb.append("</script>");
 		
+		
+//			"alternateName": [
+//				"Allolithocholic Acid Methyl ester"
+//			],
+//			"biologicalRole": [
+//				{
+//					"@type": "DefinedTerm",
+//					"@id": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C66892",
+//					"inDefinedTermSet":
+//						{
+//							"@type":"DefinedTermSet",
+//							"@id":"http://data.bioontology.org/ontologies/NCIT/submissions/69/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb",
+//							"name": "National Cancer Institute Thesaurus"
+//						},
+//					"termCode": "C66892",
+//					"name": "natural product",
+//					"url": "http://bioportal.bioontology.org/ontologies/NCIT?p=classes&conceptid=http%3A%2F%2Fncicb.nci.nih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C66892"
+//				}
+//		  ]
+//		}
+		
+		
+		
+		
+		
+
 		
 
 //			// TODO property="schema:fileFormat"
@@ -607,14 +635,14 @@ public class RecordDisplay extends HttpServlet {
 				//(collisionEnergy	!= null		? " at a resolution of " + resolution					: "") + 
 				//(splash				!= null		? " and has the SPLASH '" + splash + "'"				: "") +
 				".";
-			String recordstring = CreateRecordString(record);
-			String structureddata = CreateStructuredData(record);
+			String recordstring = createRecordString(record);
+			String structureddata = createStructuredData(record);
 			
 			request.setAttribute("accession", accession);
 			request.setAttribute("short_name", shortname);
 	        request.setAttribute("keywords", keywords);
 	        request.setAttribute("record_title", record.RECORD_TITLE1());	        		
-	        request.setAttribute("peaks", CreatePeakListForSpectrumViewer(record));
+	        request.setAttribute("peaks", createPeakListForSpectrumViewer(record));
 			request.setAttribute("description", description);
 			request.setAttribute("recordstring", recordstring);
 	        request.setAttribute("structureddata", structureddata);
