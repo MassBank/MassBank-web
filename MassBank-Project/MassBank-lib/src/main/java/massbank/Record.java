@@ -74,6 +74,8 @@ public class Record {
 		ms_data_processing		= new ArrayList<Pair<String, String>>();
 		pk_annotation_header	= new ArrayList<String>();
 		pk_annotation			= new ArrayList<List<String>>();
+		copyright				= null;
+		publication				= null;
 		
 		// set default values for mandatory fields
 		pk_num_peak				= -1;
@@ -109,6 +111,12 @@ public class Record {
 	
 	public String DATE() {
 		return date;
+	}
+	public String[] DATE1() {
+		// DATE: 2016.01.15
+		// DATE: 2011.02.21 (Created 2007.07.07)
+		// DATE: 2016.01.19 (Created 2006.12.21, modified 2011.05.06)
+		return date.replace("(Created ", "").replace(", modified", "").replace(")", "").split(" ");
 	}
 	public void DATE(String value) {
 		date=value;
