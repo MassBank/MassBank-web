@@ -166,12 +166,8 @@ public class RecordDisplay extends HttpServlet {
 
 		String[] tokens	= record.DATE1();
 		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
-		if(tokens.length >= 2) {
-			sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n");
-		}
-		if(tokens.length == 3) {
-			sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n");
-		}
+		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
+		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
 		sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
 		
 		sb.append("\"@context\": \"http://schema.org\",\n");
@@ -185,14 +181,8 @@ public class RecordDisplay extends HttpServlet {
 		
 		
 
-//		sb.append("\"datePublished\": \"" + record.DATE() + "\",\n");
-		
 //		@id  https://massbank.eu/MassBank/RecordDisplay.jsp?id=WA001202&dsn=Waters
-//		datePublished 2016.01.19
-//		dateCreated 2007.08.01
-//		dateModified 2011.09.27
 //		measurementTechnique LC-ESI-Q
-	
 		
 //			"alternateName": [
 //				"Allolithocholic Acid Methyl ester"
