@@ -3,6 +3,9 @@ package massbank;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -71,8 +74,25 @@ public class AddMetaData {
 	public static String doPub(Record record, String recordstring) {
 		String publication = record.PUBLICATION();
 		if (publication == null) return recordstring;
-		
-		
+
+		String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
+
+		Pattern pattern_doi = Pattern.compile(".*" + "(" + regex_doi + ")" + ".*");
+		Matcher matcher_doi = pattern_doi.matcher(publication);
+
+		String doi;
+		if (matcher_doi.matches()) {
+			doi = publication.substring(matcher_doi.start(1), matcher_doi.end(1));
+			System.out.println(doi);
+		}
+		// look up https://www.doi.org/ and https://crosscite.org/
+		// curl -LH "Accept: text/x-bibliography; style=ieee-with-url" https://doi.org/<doi>
+		// eg.
+		// curl -LH "Accept: text/x-bibliography; style=ieee-with-url" https://doi.org/10.1038/sdata.2014.29
+		// curl -LH "Accept: text/x-bibliography; style=american-chemical-society"  https://data.datacite.org/10.1038/sdata.2014.29
+		// gives:
+		// [1]S. Beisken, M. Earll, C. Baxter, D. Portwood, Z. Ament, A. Kende, C. Hodgman, G. Seymour, R. Smith, P. Fraser, M. Seymour, R. M. Salek, and C. Steinbeck, “Metabolic differences in ripening of Solanum lycopersicum ‘Ailsa Craig’ and three monogenic mutants,” Scientific Data, vol. 1, p. 140029, Sep. 2014 [Online]. Available: http://dx.doi.org/10.1038/sdata.2014.29
+
 		return recordstring;
 	}
 
@@ -133,7 +153,7 @@ public class AddMetaData {
 		String recordstring2 = recordstring;
 		if (doPub) recordstring2=doPub(record, recordstring2);
 		
-		System.out.println(recordstring2);
+		//System.out.println(recordstring2);
 		
 		
 		
