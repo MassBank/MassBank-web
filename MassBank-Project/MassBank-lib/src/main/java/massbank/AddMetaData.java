@@ -1,8 +1,14 @@
 package massbank;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,25 +80,48 @@ public class AddMetaData {
 	public static String doPub(Record record, String recordstring) {
 		String publication = record.PUBLICATION();
 		if (publication == null) return recordstring;
-
+		
 		String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
-
 		Pattern pattern_doi = Pattern.compile(".*" + "(" + regex_doi + ")" + ".*");
 		Matcher matcher_doi = pattern_doi.matcher(publication);
 
-		String doi;
+		String doi=null;
 		if (matcher_doi.matches()) {
 			doi = publication.substring(matcher_doi.start(1), matcher_doi.end(1));
-			System.out.println(doi);
 		}
+		if (doi == null) return recordstring;
+		
 		// look up https://www.doi.org/ and https://crosscite.org/
 		// curl -LH "Accept: text/x-bibliography; style=ieee-with-url" https://doi.org/<doi>
-		// eg.
 		// curl -LH "Accept: text/x-bibliography; style=ieee-with-url" https://doi.org/10.1038/sdata.2014.29
 		// curl -LH "Accept: text/x-bibliography; style=american-chemical-society"  https://data.datacite.org/10.1038/sdata.2014.29
-		// gives:
-		// [1]S. Beisken, M. Earll, C. Baxter, D. Portwood, Z. Ament, A. Kende, C. Hodgman, G. Seymour, R. Smith, P. Fraser, M. Seymour, R. M. Salek, and C. Steinbeck, “Metabolic differences in ripening of Solanum lycopersicum ‘Ailsa Craig’ and three monogenic mutants,” Scientific Data, vol. 1, p. 140029, Sep. 2014 [Online]. Available: http://dx.doi.org/10.1038/sdata.2014.29
-
+		String formated_citation=null;
+		try {
+			//URL obj = new URL("https://data.datacite.org/"+doi);
+			URL obj = new URL("https://www.doi.org/"+doi);
+			URLConnection conn = obj.openConnection();
+			//conn.setRequestProperty("Accept", "text/x-bibliography; style=american-chemical-society");
+			conn.setRequestProperty("Accept", "text/x-bibliography; style=apa");
+			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			formated_citation = in.readLine();
+			in.close();
+			// check for doi in new citation string
+			String fetched_doi=null;
+			matcher_doi = pattern_doi.matcher(formated_citation);
+			if (matcher_doi.matches()) {
+				fetched_doi= formated_citation.substring(matcher_doi.start(1), matcher_doi.end(1));
+			}
+			if (!doi.equals(fetched_doi)) {
+				System.err.println("doi mismatch in fetched formated citation:");
+				System.err.println("Original: "+publication);
+				System.err.println("Fetched: "+formated_citation);
+			} else {
+				recordstring=recordstring.replace(publication, formated_citation);
+			}
+		} catch (Exception exp) {
+			System.err.println( "Fetching formated citation failed. Reason: " + exp.getMessage() );
+			exp.printStackTrace();
+		}
 		return recordstring;
 	}
 
@@ -153,7 +182,16 @@ public class AddMetaData {
 		String recordstring2 = recordstring;
 		if (doPub) recordstring2=doPub(record, recordstring2);
 		
-		//System.out.println(recordstring2);
+		if (!recordstring.equals(recordstring2)) {
+			try {
+				FileUtils.write(new File(filename), recordstring2, StandardCharsets.UTF_8);
+			}
+			catch(IOException exp) {
+				System.err.println( "Reading file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
+				System.exit(1);
+			}
+		}
+
 		
 		
 		
