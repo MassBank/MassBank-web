@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,7 +52,8 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 		// fetch matching records
 		// SELECT * FROM NAME WHERE UPPER(NAME.CH_NAME) like UPPER("%BENzENE%") ORDER BY LENGTH(NAME.CH_NAME);
 		String sql = 
-				"SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS, CH_NAME " +
+				//"SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_MS_TYPE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, INSTRUMENT.AC_INSTRUMENT_TYPE, CH_FORMULA, CH_EXACT_MASS, CH_NAME " +
+				"SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS " +
 				"FROM RECORD,INSTRUMENT,COMPOUND,COMPOUND_NAME,NAME " +
 				"WHERE " +
 					"COMPOUND.ID = COMPOUND_NAME.COMPOUND AND " +
@@ -88,6 +91,7 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 		
 		// ###########################################################################################
 		// execute and fetch results
+		Set<String> names	= new HashSet<String>();
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
 			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
@@ -130,7 +134,10 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 				record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
 				record.setFormula(	res.getString("CH_FORMULA"));
 				record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
-				resList.add(record);
+				if(!names.contains(record.getId())) {
+					resList.add(record);
+					names.add(record.getId());
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
