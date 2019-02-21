@@ -7,8 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,8 +21,19 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jbibtex.BibTeXDatabase;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
+
+import de.undercouch.citeproc.BibliographyFileReader;
+import de.undercouch.citeproc.CSL;
+import de.undercouch.citeproc.ItemDataProvider;
+import de.undercouch.citeproc.bibtex.BibTeXConverter;
+import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.csl.CSLItemDataBuilder;
+import de.undercouch.citeproc.csl.CSLType;
+import de.undercouch.citeproc.output.Bibliography;
 
 
 public class AddMetaData {
@@ -97,14 +107,70 @@ public class AddMetaData {
 		// curl -LH "Accept: text/x-bibliography; style=american-chemical-society"  https://data.datacite.org/10.1038/sdata.2014.29
 		String formated_citation=null;
 		try {
-			//URL obj = new URL("https://data.datacite.org/"+doi);
 			URL obj = new URL("https://www.doi.org/"+doi);
 			URLConnection conn = obj.openConnection();
-			//conn.setRequestProperty("Accept", "text/x-bibliography; style=american-chemical-society");
-			conn.setRequestProperty("Accept", "text/x-bibliography; style=apa");
-			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			formated_citation = in.readLine();
-			in.close();
+			conn.setRequestProperty("Accept", "application/x-bibtex");
+			
+			
+//			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//			String line;
+//			StringBuilder sb=new StringBuilder();
+//			while ((line = in.readLine()) != null) 
+//				sb.append(line);
+//			in.close();
+//			String bibtex = sb.toString();
+//			
+//			System.out.println(bibtex);
+			
+			BibTeXDatabase db = new BibTeXConverter().loadDatabase(conn.getInputStream());
+			BibTeXItemDataProvider provider = new BibTeXItemDataProvider();
+			provider.addDatabase(db);		
+			CSL citeproc = new CSL(provider, "MassBank");
+			citeproc.setOutputFormat("text");
+			
+			provider.registerCitationItems(citeproc);
+			
+			Bibliography bib=citeproc.makeBibliography();
+			String out=bib.makeString();
+			System.out.println(out);
+			
+			
+			
+//			conn.setRequestProperty("Accept", "application/x-bibtex");
+//			BibliographyFileReader reader = new BibliographyFileReader();
+//			ItemDataProvider prov = reader.readBibliographyFile(conn.getInputStream(), BibliographyFileReader.FileFormat.BIBTEX);
+//			String id = prov.getIds()[0];
+//			System.out.println(id);
+//			CSLItemData item = prov.retrieveItem(id);
+//			String bibl = CSL.makeAdhocBibliography("MassBank", "text", item).makeString();
+			
+//			CSL citeproc = new CSL(prov,"MassBank");
+//			citeproc.setOutputFormat("text");
+//			citeproc.registerCitationItems("[Huntscha_2014]");
+//			Bibliography bib = citeproc.makeBibliography();
+
+			
+//			System.out.println("hallo1");
+//			System.out.println(bibl);
+//			System.out.println("hallo2");
+//			formated_citation=bibl;
+			
+			//System.out.println(citeproc.makeCitation(prov.getIds()[0]));
+			//citeproc.ma
+			//BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			//CSLItemData item = prov.retrieveItem(prov.getIds()[0]);
+			//		CSLItemData.fromJson(new JsonParser(new JsonLexer(in)).parseObject());
+			//in.close();
+				     
+			//String bibl = CSL.makeAdhocBibliography("MassBank", "text", item).makeString();
+			//System.out.println(bibl);
+			
+//			formated_citation = json_string.toString();
+//			
+//			System.out.println(json.toString());
+			//formated_citation=bibl;
+			
+			formated_citation="hallo";
 			// check for doi in new citation string
 			String fetched_doi=null;
 			matcher_doi = pattern_doi.matcher(formated_citation);

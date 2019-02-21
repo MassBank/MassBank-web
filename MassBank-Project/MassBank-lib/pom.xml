@@ -12,7 +12,7 @@
 	<artifactId>MassBank-lib</artifactId>
 	<name>MassBank lib</name>
 	<url>http://maven.apache.org</url>
-<!-- 	<packaging>jar</packaging> -->
+	<!-- <packaging>jar</packaging> -->
 
 	<dependencies>
 		<dependency>
@@ -131,6 +131,11 @@
 			<artifactId>jfreesvg</artifactId>
 			<version>3.3</version>
 		</dependency>
+		<dependency>
+			<groupId>de.undercouch</groupId>
+			<artifactId>citeproc-java</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -154,4 +159,15 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<id>oss-snapshots-repo</id>
+			<name>Sonatype OSS Maven Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>
