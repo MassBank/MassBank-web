@@ -97,6 +97,7 @@ public class QueryToResultList {
 //				sortKey = ResultList.SORT_KEY_ID;
 //			}
 			sortKey = request.getParameter("sortKey");
+			if(sortKey.equals(ResultList.SORT_NOT)) sortKey	= ResultList.SORT_KEY_NAME;
 		}
 
 		// Acquire sort action (ソートアクション取得)
