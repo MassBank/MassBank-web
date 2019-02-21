@@ -37,7 +37,6 @@ function resetMassCalc() {
 }
 
 $(document).ready(function() {
-	console.log("MassCalc")
 	$('#openMassCalc').click(function(){ openMassCalc(); return false; });
 	$('#closeMassCalc').click(function(){ closeMassCalc(); return false; });
 	//update mass according to formula
