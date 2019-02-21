@@ -189,7 +189,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 							sb.append("The peaks in the peak list are not sorted.\n");
 							sb.append("Error in line " + pk_peak.get(i).toString() + ".\n");
 							return context.failure(sb.toString());
-						};
+						}
+					}
+					
+					// max 600 characters are supported in database for PUBLICATION
+					if (callback.PUBLICATION()!=null) {
+						if (callback.PUBLICATION().length()>600) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("PUBLICATION length exeeds database limit of 600 characters.\n");
+							return context.failure(sb.toString());
+						}
 					}
 				}
 				return r;
