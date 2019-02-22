@@ -1,5 +1,13 @@
+<!-- 
+This csl is a modified version of the ACS style.
+ -the citation number was removed
+ -the trailing dot was removed
+ -page style minimal
+ -doi without "https://doi.org/" but "DOI:"
+-->
+
 <?xml version="1.0" encoding="utf-8"?>
-<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="sort-only" page-range-format="expanded" default-locale="en-US">
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="sort-only" page-range-format="minimal" default-locale="en-US">
   <info>
     <title>American Chemical Society</title>
     <title-short>ACS</title-short>
@@ -136,8 +144,7 @@
     </layout>
   </citation>
   <bibliography second-field-align="flush" entry-spacing="0" et-al-min="11" et-al-use-first="10">
-    <layout suffix=".">
-      <--text variable="citation-number" prefix="(" suffix=") "/-->
+    <layout>
       <text macro="author" suffix=" "/>
       <choose>
         <if type="article-journal review" match="any">
@@ -263,7 +270,7 @@
           </group>
         </else>
       </choose>
-      <text variable="DOI" prefix=". https://doi.org/"/>
+      <text variable="DOI" prefix=". DOI:"/>
     </layout>
   </bibliography>
 </style>

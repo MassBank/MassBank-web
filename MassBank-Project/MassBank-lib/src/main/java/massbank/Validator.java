@@ -172,7 +172,7 @@ public class Validator {
 	public static Record validate(String recordstring, String contributor) {
 		// test non standard ASCII chars and print warnings
 		for (int i = 0; i < recordstring.length(); i++) {
-			if (recordstring.charAt(i) > 0x7F) {
+			if (recordstring.charAt(i) > 0x7F && !(recordstring.charAt(i)=='–')) {
 				String[] tokens = recordstring.split("\\r?\\n");
 				logger.warn("non standard ASCII character found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
