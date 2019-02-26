@@ -130,25 +130,32 @@ $(document).ready(function() {
 		//console.log($(this.form).find( "div.searchoptext" ).text());
 	});
 	
-	// put form information of the query and ms_information form together and submit as new form
+	// put form information of the query and ms_information form together and submit
 	$(".query").on("submit", function(event) {
 		event.preventDefault();
+		// check if there are options selected
+		if ($("input[name='inst']:checked").length == 0 || $("input[name='ms']:checked").length == 0) {
+			$.alert({
+				theme : 'supervan',
+				title : 'Error',
+				content : 'Please select at least one Instrument Type and MS Type!',
+			});
+			return;
+		}
 		var form = document.createElement("form");
-		form.setAttribute("method", this.method);
-        form.setAttribute("action", this.action);
-        $([this, document.forms["ms_information"]]).serializeArray().forEach(function(element) {
-          console.log(element["name"]);
-          console.log(element["value"]);
-          var hiddenField = document.createElement("input");
-          hiddenField.setAttribute("type", "hidden");
-          hiddenField.setAttribute("name", element["name"]);
-          hiddenField.setAttribute("value", element["value"]);
-          form.appendChild(hiddenField);
-        });
-        document.body.appendChild(form);
-        form.submit();
+		form.setAttribute("method",this.method);
+		form.setAttribute("action",this.action);
+		$([this,document.forms["ms_information"] ]).serializeArray().forEach(function(element) {
+			//console.log("name:",element["name"]," value:",element["value"]);
+			var hiddenField = document.createElement("input");
+			hiddenField.setAttribute("type","hidden");
+			hiddenField.setAttribute("name",element["name"]);
+			hiddenField.setAttribute("value",element["value"]);
+			form.appendChild(hiddenField);
+		});
+		document.body.appendChild(form);
+		form.submit();
 	});
-	// set peak search operation
 	
 	
 	
