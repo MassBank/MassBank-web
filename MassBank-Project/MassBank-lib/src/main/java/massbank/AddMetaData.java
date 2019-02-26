@@ -109,6 +109,8 @@ public class AddMetaData {
 			citeproc.setOutputFormat("text");
 			citeproc.registerCitationItems(p.getIds());
 			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
+			// call twice because of bug https://github.com/michel-kraemer/citeproc-java/issues/53
+			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
 			
 			String fetched_doi=null;
 			matcher_doi = pattern_doi.matcher(formated_citation);
