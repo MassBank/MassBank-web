@@ -529,7 +529,6 @@ public class RecordDisplay extends HttpServlet {
 //			<link rel="stylesheet" type="text/css" href="css/Common.css">
 //			<script type="text/javascript" src="script/Common.js"></script>
 //			<!-- SpeckTackle dependencies-->
-//			<script type="text/javascript" src="script/jquery-1.8.3.min.js" ></script>
 //			<script type="text/javascript" src="script/d3.v3.min.js"></script>
 //			<!-- SpeckTackle library-->
 //			<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>

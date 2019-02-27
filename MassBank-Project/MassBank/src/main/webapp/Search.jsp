@@ -32,7 +32,6 @@
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
 	<link href="favicon.ico" rel="icon" type="image/x-icon">
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="css.new/jquery-confirm.min.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
     <link rel="stylesheet" type="text/css" href="css.new/jquery-confirm.min.css">

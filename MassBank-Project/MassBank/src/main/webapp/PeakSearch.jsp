@@ -185,7 +185,8 @@
 	<link rel="stylesheet" type="text/css" href="css/Common.css">
 	<link rel="stylesheet" type="text/css" href="css/FormulaSuggest.css" />
 	<script type="text/javascript" src="script/Common.js"></script>
-	<script type="text/javascript" src="script/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<!-- 	<script type="text/javascript" src="script/jquery.js"></script> -->
 	<script type="text/javascript" src="script/AtomicMass.js"></script>
 	<script type="text/javascript" src="script/PeakSearch.js"></script>
 	<title>MassBank | Database | Peak Search</title>
