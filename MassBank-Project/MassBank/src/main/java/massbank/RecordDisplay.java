@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -55,31 +57,46 @@ public class RecordDisplay extends HttpServlet {
 	private static String createRecordString(Record record) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<hr>\n");
-		sb.append("ACCESSION: " + record.ACCESSION() + "<br>\n");
-		sb.append("RECORD_TITLE: " + record.RECORD_TITLE1() + "<br>\n");
-		sb.append("DATE: " + record.DATE() + "<br>\n");
-		sb.append("AUTHORS: " + record.AUTHORS() + "<br>\n");
-		sb.append("LICENSE: <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + record.LICENSE() + "</a><br>\n");
+		sb.append("<b>ACCESSION:</b> " + record.ACCESSION() + "<br>\n");
+		sb.append("<b>RECORD_TITLE:</b> " + record.RECORD_TITLE1() + "<br>\n");
+		sb.append("<b>DATE:</b> " + record.DATE() + "<br>\n");
+		sb.append("<b>AUTHORS:</b> " + record.AUTHORS() + "<br>\n");
+		sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + record.LICENSE() + "</a><br>\n");
 		if (record.COPYRIGHT() != null)
-			sb.append("COPYRIGHT: " + record.COPYRIGHT() + "<br>\n");
-		if (record.PUBLICATION() != null)
-			sb.append("PUBLICATION: " + record.PUBLICATION() + "<br>\n");
-		
-		
+			sb.append("<b>COPYRIGHT:</b> " + record.COPYRIGHT() + "<br>\n");
+		if (record.PUBLICATION() != null) {
+			String pub=record.PUBLICATION();
+			String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
+			String regex_pmid = "PMID:[ ]?\\d{8,8}";
+			Pattern pattern_doi = Pattern.compile(".*" + "(" + regex_doi+ ")" + ".*");
+			Pattern pattern_pmid = Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
+			Matcher matcher_doi = pattern_doi.matcher(pub);
+		    Matcher matcher_pmid = pattern_pmid.matcher(pub);
+		    if(matcher_doi.matches()){
+				//link doi
+				String doi=pub.substring(matcher_doi.start(1), matcher_doi.end(1));
+				pub.replaceAll(doi, "<a href=\"https:\\/\\/doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
+			} else if (matcher_pmid.matches()) {
+				String PMID = pub.substring(matcher_pmid.start(1), matcher_pmid.end(1));
+		    	String id = PMID.substring("PMID:".length()).trim();
+		    	pub = pub.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
+			}
+			sb.append("<b>PUBLICATION:</b> " + pub + "<br>\n");
+		}
 		for (String comment : record.COMMENT())
-			sb.append("COMMENT: <span property=\"schema:comment\">" + comment + "</span><br>\n");
-		
-
+			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
 		sb.append("<hr>\n");
 		for (String ch_name : record.CH_NAME())
-			sb.append("CH$NAME: " + ch_name + "<br>\n");
-		sb.append("CH$COMPOUND_CLASS: " + record.CH_COMPOUND_CLASS().get(0));
-		for (String ch_compound_class : record.CH_COMPOUND_CLASS().subList(1, record.CH_COMPOUND_CLASS().size())) {
-			sb.append("; " + ch_compound_class );
-		}
-		sb.append("<br>\n");
-		sb.append("CH$FORMULA: <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA() + "\" target=\"_blank\">" + record.CH_FORMULA1() + "</a><br>\n");
-		sb.append("CH$EXACT_MASS: " + record.CH_EXACT_MASS() + "<br>\n");
+			sb.append("<b>CH$NAME:</b> " + ch_name + "<br>\n");
+		sb.append("<b>CH$COMPOUND_CLASS:</b> " + String.join("; ", record.CH_COMPOUND_CLASS()) + "<br>\n");
+		sb.append("<b>CH$FORMULA:</b> <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA() + "\" target=\"_blank\">" + record.CH_FORMULA1() + "</a><br>\n");
+		sb.append("<b>CH$EXACT_MASS:</b> " + record.CH_EXACT_MASS() + "<br>\n");
+		
+		
+		
+		
+				
+		
 		sb.append("CH$SMILES: " + record.CH_SMILES() + "<br>\n");
 		sb.append("CH$IUPAC: " + record.CH_IUPAC() + "<br>\n");
 		
@@ -150,7 +167,11 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("\"identifier\": \""+record.ACCESSION()+"\",\n");
 		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+record.ACCESSION()+"\",\n");
 		sb.append("\"name\": \""+record.RECORD_TITLE().get(0)+"\",\n");
+		if (record.CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ record.CH_NAME().get(0) +"\",\n");
+		else if (record.CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", record.CH_NAME()) +"\"],\n");
 
+		
+		
 		sb.append("\"molecularFormula\": \""+record.CH_FORMULA()+"\",\n");
 		sb.append("\"monoisotopicMolecularWeight\": \""+record.CH_EXACT_MASS()+"\",\n");
 		sb.append("\"inChI\": \""+record.CH_IUPAC()+"\",\n");
@@ -160,15 +181,25 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("},\n");
 		sb.append("{\n");
 		
+		
+		
+		
 		sb.append("\"identifier\": \""+record.ACCESSION()+"\",\n");
 		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+record.ACCESSION()+"\",\n");
-		sb.append("\"headline\": \""+record.RECORD_TITLE().get(0)+"\",\n");
-
+		sb.append("\"headline\": \""+record.RECORD_TITLE1()+"\",\n");
+		sb.append("\"name\": \""+record.RECORD_TITLE().get(0)+"\",\n");
 		String[] tokens	= record.DATE1();
 		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
 		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
 		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
 		sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
+		sb.append("\"citation\": \""+record.PUBLICATION()+"\",\n");
+		if (record.COMMENT().size() == 1)  sb.append("\"comment\": \""+ record.COMMENT().get(0) +"\",\n");
+		else if (record.COMMENT().size() >= 1) sb.append("\"comment\": [\""+ String.join("\", \"", record.COMMENT()) +"\"],\n");
+		if (record.CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ record.CH_NAME().get(0) +"\",\n");
+		else if (record.CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", record.CH_NAME()) +"\"],\n");
+		
+
 		
 		sb.append("\"@context\": \"http://schema.org\",\n");
 		sb.append("\"@type\": \"Dataset\"\n");
@@ -176,17 +207,16 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("]\n");
 		sb.append("</script>");
 		return sb.toString();
-	}		
-
-		
-		
+	}	
+	
+//	case "CH$COMPOUND_CLASS":
+//	sb.append(tag + ": " + value + "\n");
+//	compoundClass	= value;
+//	break;
 
 //		@id  https://massbank.eu/MassBank/RecordDisplay.jsp?id=WA001202&dsn=Waters
 //		measurementTechnique LC-ESI-Q
-		
-//			"alternateName": [
-//				"Allolithocholic Acid Methyl ester"
-//			],
+
 //			"biologicalRole": [
 //				{
 //					"@type": "DefinedTerm",
@@ -300,56 +330,8 @@ public class RecordDisplay extends HttpServlet {
 //					sb.append(", " + affiliation);
 //				sb.append("\n");
 //				break;
-//			case "PUBLICATION":
-//				String regex_pmid	= "PMID:[ ]?\\d{8,8}";
-//				String regex_doi	= "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
-//				String regex_doiUrl	= "https?\\:\\/\\/(dx\\.)?doi\\.org\\/" + regex_doi;
-//				Pattern pattern_pmid	= Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
-//			    Matcher matcher_pmid	= pattern_pmid.matcher(value);
-//			    Pattern pattern_doi		= Pattern.compile(".*" + "(" + regex_doi	+ ")" + ".*");
-//			    Matcher matcher_doi		= pattern_doi.matcher(value);
-//			    Pattern pattern_doiUrl	= Pattern.compile(".*" + "(" + regex_doiUrl	+ ")" + ".*");
-//			    Matcher matcher_doiUrl	= pattern_doiUrl.matcher(value);
-//			    
-//			    if(matcher_pmid.matches()){
-//			    	// link pubmed id
-//			    	String PMID		= value.substring(matcher_pmid.start(1), matcher_pmid.end(1));
-//			    	String id		= PMID.substring("PMID:".length()).trim();
-//			    	value			= value.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
-//			    }
-//			    if(matcher_doiUrl.matches()){
-//			    	// link https://doi.org/<doi> url
-//			    	String doiUrl	= value.substring(matcher_doiUrl.start(1), matcher_doiUrl.end(1));
-//			    	value			= value.replaceAll(doiUrl, "<a href=\"" + doiUrl + "\" target=\"_blank\">" + doiUrl + "</a>");
-//			    } else 
-//			    if(matcher_doi.matches()){
-//			    	// link doi
-//			    	String doi	= value.substring(matcher_doi.start(1), matcher_doi.end(1));
-//			    	value			= value.replaceAll(doi, "<a href=\"https:\\/\\/doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
-//			    }
-//				
-//			    //sb.append(tag + ": " + value + "\n");
-//				sb.append(tag + ": <span property=\"schema:citation\" typeof=\"schema:ScholarlyArticle\">" + "<span property=\"schema:name\">" + value + "</span>" + "</span>\n");
-//				break;
-//			case "COMMENT":
-//				// property="schema:text" / property="schema:comment"
-//				sb.append(tag + ": <span property=\"schema:comment\">" + value + "</span>\n");
-//				break;
-//			case "CH$NAME":
-//				// TODO property="schema:name"
-//				// TODO property="schema:alternateName"
-//				sb.append(tag + ": " + value + "\n");
-//				name	= value;
-//				//sb.append(tag + ": <span property=\"schema:alternateName\">" + value + "</span>\n");
-//				break;
-//			case "CH$COMPOUND_CLASS":
-//				sb.append(tag + ": " + value + "\n");
-//				compoundClass	= value;
-//				break;
-//			case "CH$FORMULA":
-//				sb.append(tag + ": " + "<a href=\"http://www.chemspider.com/Search.aspx?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n");
-//				break;
-//			// CH$EXACT_MASS
+
+
 //			case "CH$SMILES":
 //				sb.append(tag + ": " + value + "\n");
 //				smiles	= value;
