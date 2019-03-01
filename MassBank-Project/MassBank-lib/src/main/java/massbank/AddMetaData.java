@@ -111,7 +111,9 @@ public class AddMetaData {
 			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
 			// call twice because of bug https://github.com/michel-kraemer/citeproc-java/issues/53
 			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
-			
+			formated_citation=formated_citation.replaceAll("\\$\\\\less\\$I\\$\\\\greater\\$", "");
+			formated_citation=formated_citation.replaceAll("\\$\\\\less\\$/I\\$\\\\greater\\$", "");
+
 			String fetched_doi=null;
 			matcher_doi = pattern_doi.matcher(formated_citation);
 			
