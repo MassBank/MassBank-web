@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,73 +19,26 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.petitparser.context.Result;
-import org.petitparser.parser.Parser;
-
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 
-
-
-
+/**
+ * This class adds meta information automatically where feasible. Supported functions are:<p>
+ * {@link doPub}<p>
+ * {@link doName}<p>
+ * 
+ * @author rmeier
+ * @version 01-03-2019
+ */
 public class AddMetaData {
 	private static final Logger logger = LogManager.getLogger(AddMetaData.class);
-
 	
-	
-	
-	public static Record validate(String recordstring) {
-		// test non standard ASCII chars and print warnings
-		for (int i = 0; i < recordstring.length(); i++) {
-			if (recordstring.charAt(i) > 0x7F && !(recordstring.charAt(i)=='–')) {
-				String[] tokens = recordstring.split("\\r?\\n");
-				logger.warn("non standard ASCII character found. This might be an error. Please check carefully.");
-				int line = 0, col = 0, offset = 0;
-				for (String token : tokens) {
-					offset = offset + token.length() + 1;
-					if (i < offset) {
-						col = i - (offset - (token.length() + 1));
-						logger.warn(tokens[line]);
-						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
-						error_at.setCharAt(col, '^');
-						logger.warn(error_at);
-						break;
-					}
-					line++;
-				}
-			}
-		}
-		
-		Record record = new Record("");
-		Parser recordparser = new RecordParser(record);
-		Result res = recordparser.parse(recordstring);
-		if (res.isFailure()) {
-			logger.error(res.getMessage());
-			int position = res.getPosition();
-			String[] tokens = recordstring.split("\\n");
-
-			int line = 0, col = 0, offset = 0;
-			for (String token : tokens) {
-				offset = offset + token.length() + 1;
-				if (position < offset) {
-					col = position - (offset - (token.length() + 1));
-					logger.error(tokens[line]);
-					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
-					error_at.append('^');
-					logger.error(error_at);
-					break;
-				}
-				line++;
-			}
-			return null;
-		} 
-		return record;
-	}
-	
+	/**
+	 * Automatically format a PUBLICATION tag according to ACS rules if a DOI could be identified.
+	 */
 	public static String doPub(Record record, String recordstring) {
 		String publication = record.PUBLICATION();
 		if (publication == null) return recordstring;
@@ -133,12 +90,39 @@ public class AddMetaData {
 		}
 		return recordstring;
 	}
+	
+	/**
+	 * Automatically remove duplicate names.
+	 */
+	public static String doName(Record record, String recordstring) {
+		List<String> ch_name = record.CH_NAME();
+		Set<String> duplicates = new LinkedHashSet<String>();
+		Set<String> uniques = new HashSet<String>();
+		for(String c : ch_name) {
+			if(!uniques.add(c)) {
+				duplicates.add(c);
+			}
+		}
+		if (duplicates.size()>0) {
+			for (String d : duplicates) {
+				// find first occurrence 
+				String fullDup = "CH$NAME: " + d + "\n";
+				int index = recordstring.indexOf(fullDup)+fullDup.length();
+				String begining = recordstring.substring(0, index);
+				String end = recordstring.substring(index, recordstring.length()).replace(fullDup, "");
+				recordstring = begining + end;
+			}
+		}
+		return recordstring;
+	}
 
 	public static void main(String[] arguments) throws Exception {
 		boolean doPub = false;
+		boolean doName = false;
 		Options options = new Options();
 		options.addOption("a", "all", false, "execute all operations");
 		options.addOption("p", "publication", false, "format PUBLICATION tag from given DOI to follow the guidelines of ACS");
+		options.addOption("n", "name", false, "fix common problems in CH$NAME tag");
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
 		try {
@@ -153,13 +137,18 @@ public class AddMetaData {
 		if (cmd.hasOption("a")) {
 			// set all to true
 			doPub = true;
+			doName = true;
 		}
 		
 		if (cmd.hasOption("p")) {
 			doPub = true;
 		}
+		
+		if (cmd.hasOption("n")) {
+			doName = true;
+		}
 
-		if (!doPub) {
+		if (!(doPub || doName) ) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
 			System.exit(1);
@@ -183,7 +172,8 @@ public class AddMetaData {
 			System.exit(1);
 		}
 		
-		Record record = validate(recordstring);
+		// read record in less strict mode
+		Record record = Validator.validate(recordstring, "", false);
 		if (record == null) {
 			System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
 			System.exit(1);
@@ -191,13 +181,19 @@ public class AddMetaData {
 		
 		String recordstring2 = recordstring;
 		if (doPub) recordstring2=doPub(record, recordstring2);
+		if (doName) recordstring2=doName(record, recordstring2);
 		
 		if (!recordstring.equals(recordstring2)) {
+			Record record2 = Validator.validate(recordstring2, "");
+			if (record2 == null) {
+				System.err.println( "Validation of new created record file failed. Exiting.");
+				System.exit(1);
+			}
 			try {
 				FileUtils.write(new File(filename), recordstring2, StandardCharsets.UTF_8);
 			}
 			catch(IOException exp) {
-				System.err.println( "Reading file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
+				System.err.println( "Writing file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
 				System.exit(1);
 			}
 		}

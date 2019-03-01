@@ -6,7 +6,10 @@ import static org.petitparser.parser.primitive.CharacterParser.letter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,7 +42,7 @@ import net.sf.jniinchi.INCHI_RET;
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
 
-	public RecordParserDefinition(Record callback) {
+	public RecordParserDefinition(Record callback, boolean strict) {
 		def("start",
 			ref("accession")
 			.seq(ref("record_title"))
@@ -200,6 +203,28 @@ public class RecordParserDefinition extends GrammarDefinition {
 							return context.failure(sb.toString());
 						}
 					}
+					
+					// check for duplicate entries in CH$NAME
+					List<String> ch_name = callback.CH_NAME();
+					Set<String> duplicates = new LinkedHashSet<String>();
+					Set<String> uniques = new HashSet<String>();
+					for(String c : ch_name) {
+						if(!uniques.add(c)) {
+							duplicates.add(c);
+						}
+					}
+					if (duplicates.size()>0) {
+						if (strict ) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("There are duplicate entries in \"CH$NAME\" field.");
+							return context.failure(sb.toString());
+						} else {
+							logger.warn("There are duplicate entries in \"CH$NAME\" field.");
+						}
+					}
+
+					    
+					
 				}
 				return r;
 			})
