@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -130,6 +131,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 					}
 					
 					// check the formula of the molecule in CH$IUPAC against CH$FORMULA
+					// and keep an InChIGenerator for later
+					InChIGenerator inchiGen = null;
 					if (!"N/A".equals(ch_iupac)) {
 						try {
 							// Get InChIToStructure
@@ -146,6 +149,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 							}
 							// Structure generation succeeded
 							IAtomContainer m = intostruct.getAtomContainer();
+							// prepare an InChIGenerator
+							inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
+							
 							// get the molecular formula from the InChI and compare it with CH$FORMULA
 							String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
 							logger.trace("Formula from InChI: \"" + formula_inchi + "\".");
@@ -155,8 +161,40 @@ public class RecordParserDefinition extends GrammarDefinition {
 										+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
 							}
 						} catch (CDKException e) {
-							return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");		 				
+							return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
 						}		 			
+					}
+					
+					// check the InChiKey against the InChi
+					if (inchiGen!= null) {
+						String InChiKey = callback.CH_LINK_asMap().get("INCHIKEY");
+						if (InChiKey!=null) {
+							try {
+								// we have an InChiKey in CH$LINK and an inchiGen initialized 
+								// with the structure retrieved from the InChi
+								INCHI_RET ret = inchiGen.getReturnStatus();
+								if (ret == INCHI_RET.WARNING) {
+									// InChI generated, but with warning message
+									//logger.warn("InChI warning: " + inchiGen.getMessage());
+									//logger.warn(callback.ACCESSION());
+								} else if (ret != INCHI_RET.OKAY) {
+									// InChI generation failed
+									return context.failure("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+								}
+								
+								if (!ch_iupac.equals(inchiGen.getInchi())) {
+									return context.failure("Missmatch in InChi during validation of InChiKey. "
+											+ inchiGen.getInchi() + " != \"CH$IUPAC: " + ch_iupac + "\"");
+								}
+								if (!InChiKey.equals(inchiGen.getInchiKey())) {
+									return context.failure("InChiKey generated from InChI string in \"CH$IUPAC\" field does not match InChiKey in \"CH$LINK\". "
+											+ inchiGen.getInchiKey() + " != \"CH$LINK: INCHIKEY " + InChiKey + "\"");
+								}
+							} catch (CDKException e) {
+								return context.failure("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + e.getMessage() + "\" for \"" + ch_iupac + "\".");
+							}
+						}
+						
 					}
 					
 					// validate the number of peaks in the peaklist
@@ -892,6 +930,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("LIPIDMAPS "))
 			.or(StringParser.of("NIKKAJI "))
 			.or(StringParser.of("PUBCHEM "))
+			.or(StringParser.of("ZINC "))
 		);
 		def("ch_link",
 			StringParser.of("CH$LINK")

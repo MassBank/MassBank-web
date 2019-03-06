@@ -37,6 +37,7 @@ public class Validator {
 			"CH$EXACT_MASS: 409.29807\n" +
 			"CH$SMILES: CC1CC2C(C(C3(O2)CCC4C5CC=C6CC(CCC6(C5CC4=C3C)C)O)C)NC1\n" + 
 			"CH$IUPAC: InChI=1S/C27H41NO2/c1-15-11-24-25(28-14-15)17(3)27(30-24)10-8-20-21-6-5-18-12-19(29)7-9-26(18,4)23(21)13-22(20)16(27)2/h5,15,17,19-21,23-25,28-29H,6-14H2,1-4H3/t15-,17+,19-,20-,21-,23-,24+,25-,26-,27-/m0/s1\n" +
+			"CH$LINK: INCHIKEY 60-70-8\n" +
 			"CH$LINK: CAS 60-70-8\n" + 
 			"CH$LINK: CHEBI 9951\n" + 
 			"CH$LINK: CHEMSPIDER 5845\n" +
@@ -179,7 +180,7 @@ public class Validator {
 	 */
 	public static boolean hasNonStandardChars(String recordstring) {
 		// the following are allowed
-		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó'};
+		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó', 'é'};
 		Arrays.sort(myCharSet);
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F &&  (Arrays.binarySearch(myCharSet, recordstring.charAt(i))<0)) {
