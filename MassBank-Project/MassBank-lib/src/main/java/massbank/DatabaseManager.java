@@ -137,7 +137,7 @@ public class DatabaseManager {
 		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
 		Statement stmt = connection.createStatement();
 		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
-		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
+		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'utf8';");
 		stmt.executeUpdate("USE " + dbName + ";");
 		
 		
