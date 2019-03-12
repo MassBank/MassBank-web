@@ -931,6 +931,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("NIKKAJI "))
 			.or(StringParser.of("PUBCHEM "))
 			.or(StringParser.of("ZINC "))
+			.or(StringParser.of("CHEMBL "))
 		);
 		def("ch_link",
 			StringParser.of("CH$LINK")
