@@ -7,4 +7,4 @@ LIB_DIR="$DIST_DIR/lib"
 CONF_DIR="$DIST_DIR/conf"
 
 $JAVA_EXECUTABLE -cp "$CONF_DIR:$LIB_DIR/*" \
-massbank.Validator $@
+massbank.Validator "$@"
