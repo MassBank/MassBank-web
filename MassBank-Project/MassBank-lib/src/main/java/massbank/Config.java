@@ -58,37 +58,12 @@ public class Config {
 		return config.getString("DataRootPath");
 	}
 	
-	
-	public String LinkNum() {
-		return config.getString("LinkNum");
-	}
-	
-	public String NodeNum() {
-		return config.getString("NodeNum");
-	}
-	
-	public String TOMCAT_APPPSERV_PATH() {
-		return config.getString("TOMCAT_APPPSERV_PATH");
-	}
-	
-	public String BASE_URL() {
-		return config.getString("BASE_URL");
-	}
-	
 	public String TOMCAT_TEMP_PATH(ServletContext context) {
 		return context.getRealPath("/") + "temp/";
 	}
 	
 	public String TOMCAT_TEMP_URL() {
-		return config.getString("BASE_URL")+ "temp/";
-	}
-	
-	public boolean Cookie() {
-		return config.getBoolean("Cookie");
-	}
-	
-	public int PollingInterval() {
-		return config.getInt("PollingInterval");
+		return "/MassBank/temp/";
 	}
 	
 	public static void main(String[] args) throws Exception {

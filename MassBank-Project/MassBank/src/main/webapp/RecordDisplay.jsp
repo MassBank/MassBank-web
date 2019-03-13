@@ -69,7 +69,7 @@
 	if(accession == null){
 		String error	= "Error: Missing argument 'id'";
 		System.out.println(error);
-		String baseUrl	= Config.get().BASE_URL();
+		String baseUrl	= "";//Config.get().BASE_URL();
 		String urlStub	= baseUrl + "NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&error=" + error;
 		
@@ -101,8 +101,7 @@
 	}
 	
 	// paths
-	String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//Config.get().BASE_URL() + "temp";
-	//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";// ${ctx}
+	String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 	String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 	
 	// ##################################################################################################

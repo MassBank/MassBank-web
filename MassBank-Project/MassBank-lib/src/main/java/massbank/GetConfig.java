@@ -25,10 +25,10 @@
  ******************************************************************************/
 package massbank;
 
-import javax.xml.parsers.*;
-
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.w3c.dom.*;
+import massbank.Config;
+
 
 public class GetConfig {
 	public static final int MYSVR_INFO_NUM = 0;
@@ -37,24 +37,7 @@ public class GetConfig {
 	/**
 	 * コンストラクタ
 	 */ 
-	public GetConfig( String baseUrl ) {
-		String url =  baseUrl + "massbank.conf";
-		try {
-			// ドキュメントビルダーファクトリを生成
-			DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
-
-			// ドキュメントビルダーを生成
-			//DocumentBuilder builder = dbfactory.newDocumentBuilder();
-
-			// パースを実行してDocumentオブジェクトを取得
-			//Document doc = builder.parse( url );
-
-			// ルート要素を取得
-			//m_root = doc.getDocumentElement();
-		}
-		catch ( Exception e ) {
-			e.printStackTrace();
-		}
+	public GetConfig() {
 	}
 
 	/**
@@ -87,12 +70,12 @@ public class GetConfig {
 	 * サイトURLを取得する
 	 * @throws ConfigurationException 
 	 */ 
-	public String[] getSiteUrl() throws ConfigurationException {
-		String[] infoList = null;
-		infoList = new String[1];
-		infoList[0] = Config.get().BASE_URL();
-		return infoList;
-	}
+//	public String[] getSiteUrl() throws ConfigurationException {
+//		String[] infoList = null;
+//		infoList = new String[1];
+//		infoList[0] = Config.get().BASE_URL();
+//		return infoList;
+//	}
 	
 	/**
 	 * Get the DocumentRoot folder of Apache HTTPD.

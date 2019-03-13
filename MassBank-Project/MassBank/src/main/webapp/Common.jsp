@@ -32,8 +32,8 @@
 	//-------------------------------------
 	// 各URL設定
 	//-------------------------------------
-	String commonRefBaseUrl = Config.get().BASE_URL();
-	String MANUAL_URL = commonRefBaseUrl + "manuals/UserManual_en.pdf";
+// 	String commonRefBaseUrl = Config.get().BASE_URL();
+//	String MANUAL_URL = commonRefBaseUrl + "manuals/UserManual_en.pdf";
 	String SPECTRUM_PAGE = "";
 	String QUICK_PAGE = "";
 	String PEAK_PAGE = "";
@@ -47,8 +47,8 @@
 	String MULTI_PAGE = "";
 	String RESULT_PAGE = "";
 	String RESULT_PEAK_PAGE = "";
-	String SAMPLE_URL = commonRefBaseUrl + "sample/sample.txt";
-	String SAMPLE_ZIP_URL = commonRefBaseUrl + "sample/sample.zip";
-	String RECDATA_ZIP_URL = commonRefBaseUrl + "sample/recdata.zip";
-	String MOLDATA_ZIP_URL = commonRefBaseUrl + "sample/moldata.zip";
+// 	String SAMPLE_URL = commonRefBaseUrl + "sample/sample.txt";
+// 	String SAMPLE_ZIP_URL = commonRefBaseUrl + "sample/sample.zip";
+// 	String RECDATA_ZIP_URL = commonRefBaseUrl + "sample/recdata.zip";
+// 	String MOLDATA_ZIP_URL = commonRefBaseUrl + "sample/moldata.zip";
 %>

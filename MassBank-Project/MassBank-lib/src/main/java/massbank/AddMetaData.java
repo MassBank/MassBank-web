@@ -5,15 +5,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,8 +28,6 @@ import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
-
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
@@ -137,6 +130,7 @@ public class AddMetaData {
 	/**
 	 * Automatically process CH$LINK section.
 	 */
+	// https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/AADVZSXPNRLYLVadasd/JSON
 	public static String doLink(Record record, String recordstring) {
 		Pattern pattern = Pattern.compile("CH\\$IUPAC: .*\n");
 		Matcher matcher = pattern.matcher(recordstring);

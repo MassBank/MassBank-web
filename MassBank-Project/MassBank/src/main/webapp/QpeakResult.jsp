@@ -125,7 +125,7 @@
 		out.println( "   <td><h1>Quick Search Results</h1></td>" );
 		out.println( "   <td align=\"right\" class=\"font12px\">" );
 		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + RESULT_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"manuals/UserManual_en.pdf\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
@@ -291,7 +291,7 @@
 			<td><h1>Quick Search Results</h1></td>
 			<td align="right" class="font12px">
 				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
@@ -330,10 +330,10 @@
 		//-------------------------------------------
 		// 設定ファイル内容を取得
 		//-------------------------------------------
-		GetConfig conf = new GetConfig(Config.get().BASE_URL());
-		String serverUrl = Config.get().BASE_URL();
+		GetConfig conf = new GetConfig();
+		//String serverUrl = Config.get().BASE_URL();
 		String[] dbNameList = conf.getDbName();
-		String[] urlList = conf.getSiteUrl();
+		//String[] urlList = conf.getSiteUrl();
 		
 		
 		//-------------------------------------
@@ -483,8 +483,7 @@
 				String databaseName		= conf.getDbName()[Integer.parseInt(site)];
 				String accession		= id;
 				
-				String tmpUrlFolder		= Config.get().BASE_URL() + "temp";
-				//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
+				String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 				String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 				
 				Record.Structure structure	= dbManager.getStructureOfAccession(accession);
