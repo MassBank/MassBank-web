@@ -528,12 +528,15 @@ CHEMSPIDER
 COMPTOX
 HMDB
 INCHIKEY
+KAPPAVIEW
 KEGG
 KNAPSACK
 LIPIDBANK
 LIPIDMAPS
 NIKKAJI
 PUBCHEM
+ZINC
+CHEMBL
 ```
 
 CH$LINK fields should be arranged by the alphabetical order of database names.
