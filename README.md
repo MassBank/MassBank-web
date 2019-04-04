@@ -54,11 +54,12 @@ Usage: install.sh <operation> <instance>
 - start a MassBank service (incl. the required database)
 - stop and remove a MassBank service
 - refresh the content of the MassBank
+- instance is used to seperate the networks of different MassBank servers and determines the port of the service, 0 serves at 80, 1 serves at 81 ...
 
-Several networks with independent instances of MassBank are possible with this deployment method. To deploy to standard port 80 use `./install.sh start 0`. After 30 min you can find a MassBank instance at http://<your-ip>/MassBank. To upload new content update the data repo (needs to be in `../MassBank-data`) and issue `./install.sh refresh 0`. To remove this MassBank use `./install.sh stop 0`.
+Several networks with independent instances of MassBank are possible with this deployment method. To deploy to standard port 80 use `./install.sh start 0`. After 30 min you can find a MassBank instance at http://\<your-ip\>/MassBank. To upload new content update the data repo (needs to be in `../MassBank-data`) and issue `./install.sh refresh 0`. To remove this MassBank use `./install.sh stop 0`.
 
 ### Install multiple instance with `docker-compose`
-The deployment uses the codebase in MassBank-web and the data in MassBank-data in the same directory for one deployment. Because the data in `MassBank-data` is not only used for deployment, but also for serving it is recomended to have a separate data repo for each instance of MassBank, e.g.:
+The deployment uses the codebase in MassBank-web and the data in MassBank-data in the same parent directory for one deployment. Because the data in `MassBank-data` is not only used for deployment, but also for serving it is recomended to have a separate data repo for each instance of MassBank, e.g.:
 ```
 |
 |-MassBank1
@@ -71,7 +72,7 @@ The deployment uses the codebase in MassBank-web and the data in MassBank-data i
    |-MassBank-web 
    |-MassBank-data
 ```
-With this layout its easy to have several instances with differnet codebase/data on the same server. To start MassBank1 go to MassBank1/MassBank-web and use `./install.sh start 1`. Your server will be at http://<your-ip>:81/MassBank. To start MassBank2 go to MassBank2/MassBank-web and use `./install.sh start 2`. Your server will be at http://<your-ip>:82/MassBank. The second parameter of the install script is used to seperate the different instances by using different subnets and ports on the local machine. 
+With this layout its easy to have several instances with differnet codebase / data on the same server. To start MassBank1 go to MassBank1/MassBank-web and use `./install.sh start 1`. Your server will be at http://\<your-ip\>:81/MassBank. To start MassBank2 go to MassBank2/MassBank-web and use `./install.sh start 2`. Your server will be at http://\<your-ip\>:82/MassBank. The second parameter of the install script is used to seperate the different instances by using different subnets and ports on the local machine. 
  
 
 ## Install as server system within vagrant
