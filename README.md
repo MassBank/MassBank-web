@@ -3,9 +3,9 @@ Status](https://travis-ci.org/MassBank/MassBank-web.svg?branch=master)](https://
 
 # Installation
 
-MassBank needs a MariaDB database running somewhere, a tomcat server for the webapp and the maven build system for installation. This can be provided directly by the hosting system or in docker containers. Although in principle it might be possible to run this webapp on a windows server, we havent tested it and it will not run out of the box.
+MassBank needs a MariaDB database running somewhere, a tomcat server for the webapp and the maven build system for installation. This can be provided directly by the hosting system or in docker containers. Although in principle it might be possible to run this webapp on a windows server, we haven't tested it and it will not run out of the box.
 
-Besides running MassBank on a server system it is also possible to run it in the integrated tomcat server within eclipse for easy development and debuging. Our development platform is Ubuntu 16.04/18.04.
+Besides running MassBank on a server system it is also possible to run it in the integrated tomcat server within eclipse for easy development and debugging. Our development platform is Ubuntu 16.04/18.04.
 
 ## Install in eclipse for development
 
@@ -15,7 +15,7 @@ Needed for a working development environment:
 3. Local Apache tomcat for eclipse
 
 ### Install MariaDB docker
-Install and configure [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your user is in the group 'docker'. Create a mariadb data directory `sudo mkdir /mariadb` amd adjust your root password for the database in `compose/mariadb-docker-compose.yml`.
+Install and configure [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your user is in the group 'docker'. Create a mariadb data directory `sudo mkdir /mariadb` and adjust your root password for the database in `compose/mariadb-docker-compose.yml`.
 
 Start the database with `docker-compose -f compose/mariadb-docker-compose.yml up -d` and check with `docker ps` for **massbank_mariadb**. Check database connectivity with `mysql -u root -h 127.0.0.1 -p`.
 
@@ -54,12 +54,12 @@ Usage: install.sh <operation> <instance>
 - start a MassBank service (incl. the required database)
 - stop and remove a MassBank service
 - refresh the content of the MassBank
-- instance is used to seperate the networks of different MassBank servers and determines the port of the service, 0 serves at 8080, 1 serves at 8081 ...
+- instance is used to separate the networks of different MassBank servers and determines the port of the service, 0 serves at 8080, 1 serves at 8081 ...
 
 Several networks with independent instances of MassBank are possible with this deployment method. To deploy to standard port 80 use `./install.sh start 0`. After 30 min you can find a MassBank instance at http://\<your-ip\>:8080/MassBank. To upload new content update the data repo (needs to be in `../MassBank-data`) and issue `./install.sh refresh 0`. To remove this MassBank use `./install.sh stop 0`.
 
 ### Install multiple instance with `docker-compose`
-The deployment uses the codebase in MassBank-web and the data in MassBank-data in the same parent directory for one deployment. Because the data in `MassBank-data` is not only used for deployment, but also for serving it is recomended to have a separate data repo for each instance of MassBank, e.g.:
+The deployment uses the codebase in MassBank-web and the data in MassBank-data in the same parent directory for one deployment. Because the data in `MassBank-data` is not only used for deployment, but also for serving it is recommended to have a separate data repo for each instance of MassBank, e.g.:
 ```
 |
 |-MassBank1
@@ -72,7 +72,7 @@ The deployment uses the codebase in MassBank-web and the data in MassBank-data i
    |-MassBank-web 
    |-MassBank-data
 ```
-With this layout its easy to have several instances with differnet codebase / data on the same server. To start MassBank1 go to MassBank1/MassBank-web and use `./install.sh start 1`. Your server will be at http://\<your-ip\>:8081/MassBank. To start MassBank2 go to MassBank2/MassBank-web and use `./install.sh start 2`. Your server will be at http://\<your-ip\>:8082/MassBank. The second parameter of the install script is used to seperate the different instances by using different subnets and ports on the local machine. 
+With this layout its easy to have several instances with different codebase / data on the same server. To start MassBank1 go to MassBank1/MassBank-web and use `./install.sh start 1`. Your server will be at http://\<your-ip\>:8081/MassBank. To start MassBank2 go to MassBank2/MassBank-web and use `./install.sh start 2`. Your server will be at http://\<your-ip\>:8082/MassBank. The second parameter of the install script is used to separate the different instances by using different subnets and ports on the local machine. 
  
 
 ## Install as server system within vagrant
