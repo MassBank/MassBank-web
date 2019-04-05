@@ -16,7 +16,7 @@ services:
       - $PWD/conf/full-service.conf:/etc/massbank.conf
       - $PWD/../MassBank-data:/MassBank-data  
     ports:
-      - "8${TAG}:8080"
+      - "808${TAG}:8080"
     restart: always
     depends_on:
       - mariadb
