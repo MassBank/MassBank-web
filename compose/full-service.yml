@@ -20,6 +20,8 @@ services:
     restart: always
     depends_on:
       - mariadb
+    environment:
+      JAVA_OPTS: -Xmx4g -Xms4g
     links:
       - "mariadb:massbank_mariadb"
 
