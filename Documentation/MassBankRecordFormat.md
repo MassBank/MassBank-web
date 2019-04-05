@@ -962,7 +962,7 @@ See Section 2.7.2 about more details of Example 3.
 
 #### <a name="2.6.3"></a>2.6.3 PK$NUM\_PEAK
 Total Number of Peaks in PK$PEAK (2.6.4). Mandatory
-Example `PK$NUM_PEAK 86`
+Example `PK$NUM_PEAK: 86`
 
 #### <a name="2.6.4"></a>2.6.4 PK$PEAK
 Peak Data.  Mandatory and Multiple line Information
