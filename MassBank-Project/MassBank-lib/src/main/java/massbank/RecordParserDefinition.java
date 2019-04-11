@@ -533,7 +533,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("COMMENT")
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(CharacterParser.any().repeatLazy(Token.NEWLINE_PARSER, 1, 600).flatten())
 			.seq(Token.NEWLINE_PARSER).pick(3)
 			.plus()
 			.map((List<String> value) -> {
