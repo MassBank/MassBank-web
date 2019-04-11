@@ -21,7 +21,7 @@
 		<axis2.version>1.7.9</axis2.version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.2</cdk.version>
-		<jdbc.version>2.4.0</jdbc.version>
+		<jdbc.version>2.4.1</jdbc.version>
 	</properties>
 
 	<build>
