@@ -58,6 +58,11 @@ public class Config {
 		return config.getString("DataRootPath");
 	}
 	
+	// the final URL for sitemap.xml
+	public String SitemapBaseURL() {
+		return config.getString("SitemapBaseURL");
+	}
+	
 	public String TOMCAT_TEMP_PATH(ServletContext context) {
 		return context.getRealPath("/") + "temp/";
 	}
