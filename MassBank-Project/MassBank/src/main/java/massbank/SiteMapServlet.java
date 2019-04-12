@@ -24,6 +24,9 @@ package massbank;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -44,6 +47,7 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
  * @author rmeier 
  * This servlet generates dynamic sitemap.xml files. It serves a index
  * at /sitemap_index.xml and the actual sitemaps at /sitemap/sitemap*.xml
+ * TODO make this servlet somehow aware of recent changes in the database
  *
  */
 @WebServlet({"/sitemap_index.xml","/sitemap/*"})
@@ -63,20 +67,39 @@ public class SiteMapServlet extends HttpServlet {
 			
 			// add URL here
 			WebSitemapGenerator wsg = new WebSitemapGenerator(Config.get().SitemapBaseURL(), tmpdir);
-			for (int i = 0; i < 60000; i++) wsg.addUrl(Config.get().SitemapBaseURL()+ "/doc"+i+".html");
+			// static content
+			wsg.addUrl(Config.get().SitemapBaseURL());
+			wsg.addUrl(Config.get().SitemapBaseURL() + "Index");
+			wsg.addUrl(Config.get().SitemapBaseURL() + "Search");
+			wsg.addUrl(Config.get().SitemapBaseURL() + "RecordIndex");
+
+			// dynamic content of records
+			PreparedStatement stmnt;
+			ResultSet res;
+			ArrayList<String> accessions = new ArrayList<String>();
+			DatabaseManager databaseManager= new DatabaseManager("MassBank");
+			String sql = "SELECT ACCESSION FROM RECORD";
 			
-			
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			res = stmnt.executeQuery();
+			while (res.next()) {
+				accessions.add(res.getString(1));
+			}
+
+			for (String accession : accessions ) {
+				wsg.addUrl(Config.get().SitemapBaseURL() + "RecordDisplay.jsp?id=" + accession);
+			}
+
 			// write new sitemaps
 			List<File> sitemaps=wsg.write();
 			// write sitemap index
 			SitemapIndexGenerator sig = new SitemapIndexGenerator(Config.get().SitemapBaseURL(), new File(tmpdir,"sitemap_index.xml"));
 			for (File sitemap: sitemaps) {
-				sig.addUrl(Config.get().SitemapBaseURL()+"/sitemap/"+sitemap.getName());
+				sig.addUrl(Config.get().SitemapBaseURL()+"sitemap/"+sitemap.getName());
 			}
 			sig.write();
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
