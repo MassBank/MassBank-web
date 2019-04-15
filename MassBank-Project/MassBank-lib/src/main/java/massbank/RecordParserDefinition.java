@@ -808,7 +808,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("CH$SMILES")
 			.seq(ref("tagsep"))
 			.seq(
-				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+				CharacterParser.any().repeatLazy(Token.NEWLINE_PARSER, 1, 1200)
 				.flatten()
 				// call a Continuation Parser to validate content of SMILES string
 				.callCC((Function<Context, Result> continuation, Context context) -> {
