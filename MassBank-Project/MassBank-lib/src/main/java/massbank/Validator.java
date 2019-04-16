@@ -180,7 +180,7 @@ public class Validator {
 	 */
 	public static boolean hasNonStandardChars(String recordstring) {
 		// the following are allowed
-		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó', 'é'};
+		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó', 'é', 'µ'};
 		Arrays.sort(myCharSet);
 		for (int i = 0; i < recordstring.length(); i++) {
 			if (recordstring.charAt(i) > 0x7F &&  (Arrays.binarySearch(myCharSet, recordstring.charAt(i))<0)) {
