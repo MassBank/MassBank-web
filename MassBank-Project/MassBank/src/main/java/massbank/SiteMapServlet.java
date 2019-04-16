@@ -23,10 +23,11 @@ package massbank;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,53 +56,57 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
 public class SiteMapServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(SiteMapServlet.class);
+	private DatabaseTimestamp timestamp;
+	public static final String sitemap_index = "sitemap_index.xml";
+	public static final String sitemap_dir = "sitemap";
 	
 	public void init() throws ServletException {
+		logger.trace(getServletContext().getAttribute(ServletContext.TEMPDIR));
+		File tmpdir = (File)getServletContext().getAttribute(ServletContext.TEMPDIR);
+		// remove old index
+		File f_sitemap_index = new File(tmpdir, sitemap_index);
+		if (f_sitemap_index.exists()) f_sitemap_index.delete();
+		// remove old sitemaps
+		File f_sitemap_dir = new File(tmpdir, sitemap_dir);
+		if (f_sitemap_dir.exists()) {
+			for (File file : (new File(tmpdir, sitemap_dir)).listFiles()) {
+				file.delete();
+			}
+		}
+		
 		try {
-			logger.trace(getServletContext().getAttribute(ServletContext.TEMPDIR));
-			File tmpdir = (File)getServletContext().getAttribute(ServletContext.TEMPDIR);
-			for (File file : tmpdir.listFiles()) {
-				if (file.getName().matches("sitemap.*\\.xml$")) {
-					file.delete();
-				}
-			}
-			
-			// add URL here
-			WebSitemapGenerator wsg = new WebSitemapGenerator(Config.get().SitemapBaseURL(), tmpdir);
-			// static content
-			wsg.addUrl(Config.get().SitemapBaseURL());
-			wsg.addUrl(Config.get().SitemapBaseURL() + "Index");
-			wsg.addUrl(Config.get().SitemapBaseURL() + "Search");
-			wsg.addUrl(Config.get().SitemapBaseURL() + "RecordIndex");
+			// create sitemap generator
+			String sitemapbaseurl = Config.get().SitemapBaseURL();
+			WebSitemapGenerator wsg = new WebSitemapGenerator(sitemapbaseurl, f_sitemap_dir);
 
-			// dynamic content of records
-			PreparedStatement stmnt;
-			ResultSet res;
-			ArrayList<String> accessions = new ArrayList<String>();
+			// add static content
+			wsg.addUrl(sitemapbaseurl);
+			wsg.addUrl(sitemapbaseurl + "Index");
+			wsg.addUrl(sitemapbaseurl + "Search");
+			wsg.addUrl(sitemapbaseurl + "RecordIndex");
+
+			// add dynamic content
 			DatabaseManager databaseManager= new DatabaseManager("MassBank");
-			String sql = "SELECT ACCESSION FROM RECORD";
-			
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
-			res = stmnt.executeQuery();
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT ACCESSION FROM RECORD");
+			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
-				accessions.add(res.getString(1));
-			}
-
-			for (String accession : accessions ) {
-				wsg.addUrl(Config.get().SitemapBaseURL() + "RecordDisplay.jsp?id=" + accession);
+				wsg.addUrl(sitemapbaseurl + "RecordDisplay.jsp?id=" + res.getString(1));
 			}
 
 			// write new sitemaps
 			List<File> sitemaps=wsg.write();
+			
 			// write sitemap index
-			SitemapIndexGenerator sig = new SitemapIndexGenerator(Config.get().SitemapBaseURL(), new File(tmpdir,"sitemap_index.xml"));
-			for (File sitemap: sitemaps) {
-				sig.addUrl(Config.get().SitemapBaseURL()+"sitemap/"+sitemap.getName());
+			SitemapIndexGenerator sig = new SitemapIndexGenerator(sitemapbaseurl, f_sitemap_index);
+			for (File sitemap : sitemaps) {
+				sig.addUrl(sitemapbaseurl+"sitemap/"+sitemap.getName());
 			}
 			sig.write();
 			
-		} catch (Exception e) {
-			e.printStackTrace();
+			// get the current database timestamp			
+			timestamp=DatabaseTimestamp.getTimestamp();		
+		} catch (ConfigurationException | MalformedURLException | SQLException e) {
+			logger.error(e.getMessage());
 		}
 	}
 	
@@ -109,8 +115,10 @@ public class SiteMapServlet extends HttpServlet {
 		logger.trace("getServletPath: " + request.getServletPath());
 		logger.trace("getRequestURI: " + request.getRequestURI() );
 		
-		File sitemap; 
 		
+		if (timestamp.isOutdated()) init();
+		
+		File sitemap; 
 		if ((request.getPathInfo() == null) && "/sitemap_index.xml".equals(request.getServletPath())) {
 			sitemap=new File((File)getServletContext().getAttribute(ServletContext.TEMPDIR), "sitemap_index.xml");
 			if (!sitemap.exists()) {
