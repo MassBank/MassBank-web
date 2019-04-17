@@ -13,6 +13,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -168,6 +169,10 @@ public class RefreshDatabase {
 			}
 			path.close();
 			
+			logger.trace("Setting Timestamp in database");
+			PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME) VALUES (CURRENT_TIMESTAMP)");
+			stmnt.executeQuery();
+						
 			logger.trace("Moving new database to MassBank database.");
 			DatabaseManager.move_temp_db_to_main_massbank();
 			

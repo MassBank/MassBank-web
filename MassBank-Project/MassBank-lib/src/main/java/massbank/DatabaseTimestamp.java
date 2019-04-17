@@ -18,30 +18,40 @@ public class DatabaseTimestamp {
 	
 	public static DatabaseTimestamp getTimestamp() {
 		// get timestamp of last db change from database
-		DatabaseManager databaseManager;
-//		try {
-//			databaseManager = new DatabaseManager("MassBank");
-//			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT ACCESSION FROM RECORD");			
-//			ResultSet res = stmnt.executeQuery();
-//		} catch (SQLException | ConfigurationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-		
-		
 		DatabaseTimestamp ts = new DatabaseTimestamp(); 
-		ts.timestamp = new Date();
+		DatabaseManager databaseManager;
+		try {
+			databaseManager = new DatabaseManager("MassBank");
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
+			ResultSet res = stmnt.executeQuery();
+			res.next();
+			ts.timestamp = res.getTimestamp(1);
+			logger.trace("Create DatabaseTimestamp with: " + ts.timestamp.toString());
+		} catch (SQLException | ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return ts;
 	}
 	
 	public boolean isOutdated() {
 		// check if this.timestamp is older than timestamp from database
-		Date now = new Date(); // database timestamp is required here
-		logger.trace("Timestamp date is: " + timestamp.toString());
-		logger.trace("Database timestamp is: " + now.toString());
-		logger.trace("isOutdated(): " + timestamp.before(now));
-		return timestamp.before(now);
+		DatabaseManager databaseManager;
+		Date database_timestamp = null;
+		try {
+			databaseManager = new DatabaseManager("MassBank");
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
+			ResultSet res = stmnt.executeQuery();
+			res.next();
+			database_timestamp = res.getTimestamp(1);
+		} catch (SQLException | ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		logger.trace("Found DatabaseTimestamp: " + database_timestamp.toString());
+		logger.trace("Own Timestamp: " + timestamp.toString());
+		logger.trace("isOutdated(): " + timestamp.before(database_timestamp));
+		return timestamp.before(database_timestamp);
 	}
 	
 }
