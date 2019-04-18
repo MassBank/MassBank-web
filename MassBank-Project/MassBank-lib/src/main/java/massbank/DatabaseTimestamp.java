@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (C) 2017 MassBank consortium
+ * 
+ * This file is part of MassBank.
+ * 
+ * MassBank is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * package massbank;
+ * 
+ ******************************************************************************/
 package massbank;
 
 import java.sql.PreparedStatement;
@@ -9,49 +30,52 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * 
+ * DatabaseTimestamp checks COLUMN 'TIME' in TABLE 'LAST_UPDATE' in database 
+ * 'MassBank' for the latest update time. DatabaseTimestamp is constructed with the
+ * current timestamp in the database and can be used to label external resources
+ * with a timestamp. {@code isOutdated()} is used to compare this timestamp to the 
+ * current on in the database.
+ * 
+ * @author rmeier 
+ *
+ */
 public class DatabaseTimestamp {
 	private static final Logger logger = LogManager.getLogger(DatabaseTimestamp.class);
 	private Date timestamp;
 	
-	private DatabaseTimestamp() {
-	}
-	
-	public static DatabaseTimestamp getTimestamp() {
+	public DatabaseTimestamp() throws SQLException, ConfigurationException {
 		// get timestamp of last db change from database
-		DatabaseTimestamp ts = new DatabaseTimestamp(); 
 		DatabaseManager databaseManager;
-		try {
-			databaseManager = new DatabaseManager("MassBank");
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
-			ResultSet res = stmnt.executeQuery();
-			res.next();
-			ts.timestamp = res.getTimestamp(1);
-			logger.trace("Create DatabaseTimestamp with: " + ts.timestamp.toString());
-		} catch (SQLException | ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return ts;
+		databaseManager = new DatabaseManager("MassBank");
+		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
+		ResultSet res = stmnt.executeQuery();
+		res.next();
+		timestamp = res.getTimestamp(1);
+		databaseManager.closeConnection();
+		logger.trace("Create DatabaseTimestamp with: " + timestamp);
 	}
 	
-	public boolean isOutdated() {
+	/**
+	 * Check if this timestamp is outdated.
+	 * 
+	 * @return Return true if the current database timestamp is more recent than this one.
+	 *
+	 */
+	public boolean isOutdated() throws SQLException, ConfigurationException {
 		// check if this.timestamp is older than timestamp from database
 		DatabaseManager databaseManager;
-		Date database_timestamp = null;
-		try {
-			databaseManager = new DatabaseManager("MassBank");
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
-			ResultSet res = stmnt.executeQuery();
-			res.next();
-			database_timestamp = res.getTimestamp(1);
-		} catch (SQLException | ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		logger.trace("Found DatabaseTimestamp: " + database_timestamp.toString());
-		logger.trace("Own Timestamp: " + timestamp.toString());
-		logger.trace("isOutdated(): " + timestamp.before(database_timestamp));
+		databaseManager = new DatabaseManager("MassBank");
+		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
+		ResultSet res = stmnt.executeQuery();
+		res.next();
+		Date database_timestamp = res.getTimestamp(1);
+		databaseManager.closeConnection();
+		logger.trace("Found DatabaseTimestamp: " + database_timestamp);
+		logger.trace("Own Timestamp: " + timestamp);
+		if (timestamp != null && database_timestamp != null) logger.trace("isOutdated(): " + timestamp.before(database_timestamp));
+		else logger.trace("isOutdated(): one timestamp is null");
 		return timestamp.before(database_timestamp);
 	}
-	
 }

@@ -46,10 +46,10 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
 
 /**
  * 
- * @author rmeier 
  * This servlet generates dynamic sitemap.xml files. It serves a index
  * at /sitemap_index.xml and the actual sitemaps at /sitemap/sitemap*.xml
- * TODO make this servlet somehow aware of recent changes in the database
+ * 
+ * @author rmeier 
  *
  */
 @WebServlet({"/sitemap_index.xml","/sitemap/*"})
@@ -58,18 +58,14 @@ public class SiteMapServlet extends HttpServlet {
 	private static final Logger logger = LogManager.getLogger(SiteMapServlet.class);
 	private DatabaseTimestamp timestamp;
 	public static final String sitemap_index = "sitemap_index.xml";
-	public static final String sitemap_dir = "sitemap";
 	
 	public void init() throws ServletException {
-		logger.trace(getServletContext().getAttribute(ServletContext.TEMPDIR));
+		logger.trace("ServletContext.TEMPDIR: " + getServletContext().getAttribute(ServletContext.TEMPDIR));
 		File tmpdir = (File)getServletContext().getAttribute(ServletContext.TEMPDIR);
 		// remove old index
-		File f_sitemap_index = new File(tmpdir, sitemap_index);
-		if (f_sitemap_index.exists()) f_sitemap_index.delete();
-		// remove old sitemaps
-		File f_sitemap_dir = new File(tmpdir, sitemap_dir);
-		if (f_sitemap_dir.exists()) {
-			for (File file : (new File(tmpdir, sitemap_dir)).listFiles()) {
+		for (File file : tmpdir.listFiles()) {
+			if (file.getName().matches("sitemap.*\\.xml$")) {
+				logger.trace("Remove old sitemap: " + file.toString());
 				file.delete();
 			}
 		}
@@ -77,7 +73,7 @@ public class SiteMapServlet extends HttpServlet {
 		try {
 			// create sitemap generator
 			String sitemapbaseurl = Config.get().SitemapBaseURL();
-			WebSitemapGenerator wsg = new WebSitemapGenerator(sitemapbaseurl, f_sitemap_dir);
+			WebSitemapGenerator wsg = new WebSitemapGenerator(sitemapbaseurl, tmpdir);
 
 			// add static content
 			wsg.addUrl(sitemapbaseurl);
@@ -92,19 +88,20 @@ public class SiteMapServlet extends HttpServlet {
 			while (res.next()) {
 				wsg.addUrl(sitemapbaseurl + "RecordDisplay.jsp?id=" + res.getString(1));
 			}
-
+			databaseManager.closeConnection();
+			
 			// write new sitemaps
 			List<File> sitemaps=wsg.write();
 			
 			// write sitemap index
-			SitemapIndexGenerator sig = new SitemapIndexGenerator(sitemapbaseurl, f_sitemap_index);
+			SitemapIndexGenerator sig = new SitemapIndexGenerator(sitemapbaseurl, new File(tmpdir, sitemap_index));
 			for (File sitemap : sitemaps) {
 				sig.addUrl(sitemapbaseurl+"sitemap/"+sitemap.getName());
 			}
 			sig.write();
 			
 			// get the current database timestamp			
-			timestamp=DatabaseTimestamp.getTimestamp();		
+			timestamp=new DatabaseTimestamp();		
 		} catch (ConfigurationException | MalformedURLException | SQLException e) {
 			logger.error(e.getMessage());
 		}
@@ -115,8 +112,11 @@ public class SiteMapServlet extends HttpServlet {
 		logger.trace("getServletPath: " + request.getServletPath());
 		logger.trace("getRequestURI: " + request.getRequestURI() );
 		
-		
-		if (timestamp.isOutdated()) init();
+		try {
+			if (timestamp.isOutdated()) init();
+		} catch (SQLException | ConfigurationException e) {
+			logger.error(e.getMessage());
+		}
 		
 		File sitemap; 
 		if ((request.getPathInfo() == null) && "/sitemap_index.xml".equals(request.getServletPath())) {
