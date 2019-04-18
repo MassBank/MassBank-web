@@ -43,7 +43,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class DatabaseTimestamp {
 	private static final Logger logger = LogManager.getLogger(DatabaseTimestamp.class);
-	private Date timestamp;
+	private Date timestamp = new Date();
 	
 	public DatabaseTimestamp() throws SQLException, ConfigurationException {
 		// get timestamp of last db change from database
@@ -52,7 +52,13 @@ public class DatabaseTimestamp {
 		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
 		ResultSet res = stmnt.executeQuery();
 		res.next();
-		timestamp = res.getTimestamp(1);
+		Date db_timestamp = res.getTimestamp(1);
+		if ( db_timestamp == null) {
+			logger.error("Timestamp from database is 'null'; using defaults.");
+		}
+		else {
+			timestamp = db_timestamp;
+		}
 		databaseManager.closeConnection();
 		logger.trace("Create DatabaseTimestamp with: " + timestamp);
 	}
@@ -70,12 +76,15 @@ public class DatabaseTimestamp {
 		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
 		ResultSet res = stmnt.executeQuery();
 		res.next();
-		Date database_timestamp = res.getTimestamp(1);
+		Date db_timestamp = res.getTimestamp(1);
+		if ( db_timestamp== null) {
+			db_timestamp = new Date();
+			logger.error("Timestamp from database is 'null'; using defaults.");
+		}
 		databaseManager.closeConnection();
-		logger.trace("Found DatabaseTimestamp: " + database_timestamp);
+		logger.trace("Found DatabaseTimestamp: " + db_timestamp);
 		logger.trace("Own Timestamp: " + timestamp);
-		if (timestamp != null && database_timestamp != null) logger.trace("isOutdated(): " + timestamp.before(database_timestamp));
-		else logger.trace("isOutdated(): one timestamp is null");
-		return timestamp.before(database_timestamp);
+		logger.trace("isOutdated(): " + timestamp.before(db_timestamp));
+		return timestamp.before(db_timestamp);
 	}
 }
