@@ -14,6 +14,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -133,11 +134,7 @@ public class RefreshDatabase {
 			DatabaseManager.init_db(Config.get().tmpdbName());
 			
 			logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
-			DatabaseManager db  = new DatabaseManager(Config.get().tmpdbName());
-			
-			logger.trace("Creating a temporary directory.");
-			Path tmp = Files.createTempDirectory(null);
-			tmp.toFile().deleteOnExit();
+			DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
 			
 			logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
 			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.get().DataRootPath()));
@@ -160,6 +157,7 @@ public class RefreshDatabase {
 					}
 					logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
 					db.persistAccessionFile(record);
+					// TODO use database timestamp for lazy generation
 					logger.trace("Creating svg figure for record\"" + record.ACCESSION() + "\".");
 					// create formula images					
 					DepictionGenerator dg = new DepictionGenerator().withAtomColors().withZoom(3);
@@ -170,8 +168,10 @@ public class RefreshDatabase {
 			path.close();
 			
 			logger.trace("Setting Timestamp in database");
-			PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME) VALUES (CURRENT_TIMESTAMP)");
-			stmnt.executeQuery();
+			PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME) VALUES (CURRENT_TIMESTAMP);");
+			stmnt.executeUpdate();
+			db.getConnection().commit();
+			db.closeConnection();
 						
 			logger.trace("Moving new database to MassBank database.");
 			DatabaseManager.move_temp_db_to_main_massbank();

@@ -49,7 +49,7 @@ public class DatabaseTimestamp {
 		// get timestamp of last db change from database
 		DatabaseManager databaseManager;
 		databaseManager = new DatabaseManager("MassBank");
-		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
+		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE;");			
 		ResultSet res = stmnt.executeQuery();
 		res.next();
 		Date db_timestamp = res.getTimestamp(1);
