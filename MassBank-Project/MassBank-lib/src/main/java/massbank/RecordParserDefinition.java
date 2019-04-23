@@ -1767,17 +1767,19 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				StringParser.of("  ")
 				.seq(
-					ref("number").trim()
+					ref("number")
+					.seq(CharacterParser.of(' ')).pick(0)
 				)
 				.pick(1)
 				.seq(
-					ref("number").trim()
+					ref("number")
+					.seq(CharacterParser.of(' ')).pick(0)
 				)
 				.seq(
 					ref("number")
 				)
 				.map((List<String> value) -> {
-//					System.out.println(value);
+					//System.out.println(value);
 					List<Double> list	= new ArrayList<Double>();
 					for(String val : value)
 						list.add(Double.parseDouble(val));
