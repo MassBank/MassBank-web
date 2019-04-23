@@ -56,8 +56,8 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
 public class SiteMapServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(SiteMapServlet.class);
+	// generated sitemaps represent state of the database at 'timestamp'
 	private DatabaseTimestamp timestamp;
-	public static final String sitemap_index = "sitemap_index.xml";
 	
 	public void init() throws ServletException {
 		logger.trace("ServletContext.TEMPDIR: " + getServletContext().getAttribute(ServletContext.TEMPDIR));
@@ -94,7 +94,7 @@ public class SiteMapServlet extends HttpServlet {
 			List<File> sitemaps=wsg.write();
 			
 			// write sitemap index
-			SitemapIndexGenerator sig = new SitemapIndexGenerator(sitemapbaseurl, new File(tmpdir, sitemap_index));
+			SitemapIndexGenerator sig = new SitemapIndexGenerator(sitemapbaseurl, new File(tmpdir, "sitemap_index.xml"));
 			for (File sitemap : sitemaps) {
 				sig.addUrl(sitemapbaseurl+"sitemap/"+sitemap.getName());
 			}
