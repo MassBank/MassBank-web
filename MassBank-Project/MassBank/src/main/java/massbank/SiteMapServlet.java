@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- * package massbank;
  * 
  ******************************************************************************/
 package massbank;
@@ -49,7 +48,8 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
  * This servlet generates dynamic sitemap.xml files. It serves a index
  * at /sitemap_index.xml and the actual sitemaps at /sitemap/sitemap*.xml
  * 
- * @author rmeier 
+ * @author rmeier
+ * @version 23-04-2019
  *
  */
 @WebServlet({"/sitemap_index.xml","/sitemap/*"})

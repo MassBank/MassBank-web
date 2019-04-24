@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- * package massbank;
  * 
  ******************************************************************************/
 package massbank;
@@ -44,7 +43,7 @@ import org.apache.logging.log4j.LogManager;
  * This class provides the code for storage and retrieval of records in SQL databases. 
  * 
  * @author rmeier
- * @version 0.2, 23-04-2019
+ * @version 23-04-2019
  *
  */
 public class DatabaseManager {

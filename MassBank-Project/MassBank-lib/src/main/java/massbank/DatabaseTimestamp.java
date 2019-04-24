@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- * package massbank;
  * 
  ******************************************************************************/
 package massbank;
@@ -38,7 +37,8 @@ import org.apache.logging.log4j.Logger;
  * with a timestamp. {@code isOutdated()} is used to compare this timestamp to the 
  * current on in the database.
  * 
- * @author rmeier 
+ * @author rmeier
+ * @version 23-04-2019
  *
  */
 public class DatabaseTimestamp {
