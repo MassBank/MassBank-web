@@ -431,7 +431,7 @@ public class RecordDisplay extends HttpServlet {
 //			// MS$FOCUSED_ION
 //			// MS$DATA_PROCESSING
 //			case "PK$SPLASH":
-//				sb.append(tag + ": " + "<a href=\"http://mona.fiehnlab.ucdavis.edu/#/spectra/splash/" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
+//				sb.append(tag + ": " + "<a href=\"http://www.google.com/search?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
 //				splash	= value;
 //				break;
 //			// PK$NUM_PEAK
