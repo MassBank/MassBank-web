@@ -35,7 +35,7 @@ refresh)
                 run --rm dbupdate \
                 /project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
 	;;
-redeploy)
+deploy)
 	docker-compose -f compose/full-service.yml -p $TAG pull
 	docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project package
 	docker-compose -f compose/full-service.yml -p $TAG rm -s tomcat
