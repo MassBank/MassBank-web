@@ -10,7 +10,7 @@ case $2 in
         ;;
 *)
         echo "Usage: install.sh <operation> <instance>"
-        echo "         <operation> ... start, stop, redeploy or refresh"
+        echo "         <operation> ... start, stop, deploy or refresh"
         echo "         <instance>  ... 0 to 9"
         exit 1
         ;;
@@ -44,7 +44,7 @@ redeploy)
 
 *)
 	echo "Usage: install.sh <operation> <instance>"
-	echo "         <operation> ... start, stop, redeploy or refresh"
+	echo "         <operation> ... start, stop, deploy or refresh"
 	echo "         <instance>  ... 0 to 9"
 	exit 1
 	;;
