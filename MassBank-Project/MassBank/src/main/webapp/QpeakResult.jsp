@@ -162,6 +162,7 @@
 	//-------------------------------------------
 	// Peak Dataを改行,セミコロン区切りで取り出す
 	//-------------------------------------------
+	pPeak = pPeak.replaceAll("\\h{1,}", " ").trim();
 	String inpLines[] = pPeak.split("\n");
 	ArrayList<String> peakList = new ArrayList<String>();
 	String line = "";
