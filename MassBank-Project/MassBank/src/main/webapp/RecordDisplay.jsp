@@ -69,7 +69,7 @@
 	if(accession == null){
 		String error	= "Error: Missing argument 'id'";
 		System.out.println(error);
-		String baseUrl	= Config.get().BASE_URL();
+		String baseUrl	= "";//Config.get().BASE_URL();
 		String urlStub	= baseUrl + "NoRecordPage.jsp";
 		String redirectUrl	= urlStub + "?id=" + accession + "&error=" + error;
 		
@@ -101,8 +101,7 @@
 	}
 	
 	// paths
-	String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();//Config.get().BASE_URL() + "temp";
-	//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";// ${ctx}
+	String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 	String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 	
 	// ##################################################################################################
@@ -407,7 +406,7 @@
 		// MS$FOCUSED_ION
 		// MS$DATA_PROCESSING
 		case "PK$SPLASH":
-			sb.append(tag + ": " + "<a href=\"http://mona.fiehnlab.ucdavis.edu/#/spectra/splash/" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
+			sb.append(tag + ": " + "<a href=\"http://www.google.com/search?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
 			splash	= value;
 			break;
 		// PK$NUM_PEAK
@@ -486,7 +485,7 @@
 		<link rel="stylesheet" type="text/css" href="css/Common.css">
 		<script type="text/javascript" src="script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
-		<script type="text/javascript" src="script/jquery-1.8.3.min.js" ></script>
+		<script type="text/javascript" src="js/jquery-3.3.1.min.js" ></script>
 		<script type="text/javascript" src="script/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>

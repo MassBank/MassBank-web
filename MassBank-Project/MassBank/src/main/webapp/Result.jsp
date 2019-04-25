@@ -337,11 +337,11 @@
 	//-------------------------------------------
 	String path = request.getRequestURL().toString();
 	String baseUrl = path.substring( 0, (path.indexOf("/jsp")+1) );
-	GetConfig conf = new GetConfig(baseUrl);
-	String serverUrl = Config.get().BASE_URL();
+	GetConfig conf = new GetConfig();
+	//String serverUrl = Config.get().BASE_URL();
 	//String [] siteLongName = conf.getSiteLongName();	// サイト名取得
 	String[] dbNameList = conf.getDbName();
-	String[] urlList = conf.getSiteUrl();
+	//String[] urlList = conf.getSiteUrl();
 
 %>
 
@@ -385,7 +385,7 @@
 			<td><h1><%=hTitle%></h1></td>
 			<td align="right" class="font12px">
 				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>

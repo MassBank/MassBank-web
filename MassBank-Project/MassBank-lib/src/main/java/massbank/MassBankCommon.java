@@ -25,21 +25,6 @@
  ******************************************************************************/
 package massbank;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.configuration2.ex.ConfigurationException;
-
 public class MassBankCommon {
 //	public static final String DISPATCHER_NAME = "Dispatcher.jsp";
 //	public static final String MULTI_DISPATCHER_NAME = "MultiDispatcher";

@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright (C) 2017 MassBank consortium
+ * 
+ * This file is part of MassBank.
+ * 
+ * MassBank is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * 
+ ******************************************************************************/
 package massbank;
 
 import java.awt.Color;
@@ -13,6 +33,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -43,13 +65,13 @@ import massbank.web.recordindex.RecordIndexCount;
 import massbank.web.recordindex.RecordIndexCount.RecordIndexCountResult;
 
 /**
- * @author rmeier
- * @version 0.2, 30-07-2018
  * This class is called from command line to create a new temporary
  * database <i>tmpdbName</i>, fill it with all records found in <i>DataRootPath</i>
  * and move the new database to <i>dbName</i>. For each Record a svg showing the
  * molecular formula is created in <i>DataRootPath</i>/figure.
- * 
+ *
+ * @author rmeier
+ * @version 23-04-2019
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
@@ -132,11 +154,7 @@ public class RefreshDatabase {
 			DatabaseManager.init_db(Config.get().tmpdbName());
 			
 			logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
-			DatabaseManager db  = new DatabaseManager(Config.get().tmpdbName());
-			
-			logger.trace("Creating a temporary directory.");
-			Path tmp = Files.createTempDirectory(null);
-			tmp.toFile().deleteOnExit();
+			DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
 			
 			logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
 			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.get().DataRootPath()));
@@ -159,6 +177,7 @@ public class RefreshDatabase {
 					}
 					logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
 					db.persistAccessionFile(record);
+					// TODO use database timestamp for lazy generation
 					logger.trace("Creating svg figure for record\"" + record.ACCESSION() + "\".");
 					// create formula images					
 					DepictionGenerator dg = new DepictionGenerator().withAtomColors().withZoom(3);
@@ -168,6 +187,12 @@ public class RefreshDatabase {
 			}
 			path.close();
 			
+			logger.trace("Setting Timestamp in database");
+			PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME) VALUES (CURRENT_TIMESTAMP);");
+			stmnt.executeUpdate();
+			db.getConnection().commit();
+			db.closeConnection();
+						
 			logger.trace("Moving new database to MassBank database.");
 			DatabaseManager.move_temp_db_to_main_massbank();
 			

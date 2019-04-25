@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright (C) 2017 MassBank consortium
+ * 
+ * This file is part of MassBank.
+ * 
+ * MassBank is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * 
+ ******************************************************************************/
 package massbank;
 
 import java.io.InputStreamReader;
@@ -12,20 +32,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
-* @author rmeier
-* @version 0.1, 18-04-2018
-* This class is used to manipulate SQL databases.
-*/
+ * 
+ * This class provides the code for storage and retrieval of records in SQL databases. 
+ * 
+ * @author rmeier
+ * @version 23-04-2019
+ *
+ */
 public class DatabaseManager {
 	private static final Logger logger = LogManager.getLogger(DatabaseManager.class);
 	
@@ -121,7 +141,8 @@ public class DatabaseManager {
 	private final PreparedStatement statementInsertPEAK;
 	private final PreparedStatement statementUpdatePEAKs;
 	private final PreparedStatement statementInsertANNOTATION_HEADER;
-		
+	
+	
 	/**
 	 * Create a database with the MassBank database scheme.
 	 * @param dbName the name of the new database
@@ -137,7 +158,7 @@ public class DatabaseManager {
 		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
 		Statement stmt = connection.createStatement();
 		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
-		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'latin1' COLLATE = 'latin1_general_cs';");
+		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'utf8';");
 		stmt.executeUpdate("USE " + dbName + ";");
 		
 		
@@ -147,6 +168,7 @@ public class DatabaseManager {
 		
 		stmt.close();
 		logger.trace("Closing connection with url\"" + link + "\".");
+		connection.commit();
 		connection.close();
 	}
 	
@@ -205,6 +227,7 @@ public class DatabaseManager {
 		logger.trace("Running sql commands:\n" + sb.toString());
 		ScriptRunner runner = new ScriptRunner(connection, false, false);
 		runner.runScript(new StringReader(sb.toString()));
+		connection.commit();
 		connection.close();
 	}
 	
@@ -267,7 +290,7 @@ public class DatabaseManager {
 			Class.forName("org.mariadb.jdbc.Driver");
 			con = DriverManager.getConnection(connectUrl);
 			con.setAutoCommit(false);
-			con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
+			//con.setTransactionIsolation(java.sql.Connection.TRANSACTION_READ_COMMITTED);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1520,21 +1543,5 @@ public class DatabaseManager {
 			return null;
 		}
 		return accessions.toArray(new String[accessions.size()]);
-	}
-	public static void main (String[] args) throws SQLException, FileNotFoundException, ConfigurationException, IOException {
-		
-		DatabaseManager db = new DatabaseManager(Config.get().dbName());
-		DatabaseManager.init_db(Config.get().tmpdbName());
-		System.out.println(db);
-		
-		Set<String> praefixSet	= new HashSet<String>();
-		for(String accession : db.getAccessions())
-			praefixSet.add(accession.substring(0, 2));
-		String[] praefixes	= praefixSet.toArray(new String[praefixSet.size()]);
-		Arrays.sort(praefixes);
-		System.out.println(Arrays.toString(praefixes));
-		
-		db.closeConnection();
-		//move_temp_db_to_main_massbank();
 	}
 }

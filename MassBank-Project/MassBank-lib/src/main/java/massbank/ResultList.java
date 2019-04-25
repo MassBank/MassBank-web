@@ -74,23 +74,23 @@ public class ResultList {
 	public ResultList() throws ConfigurationException {
 		// ページリンク表示数
 		int linkNum = 10;									// デフォルト
-		try {
-			if ( Integer.parseInt(Config.get().LinkNum()) > 0 ) {
-				linkNum =  Integer.parseInt(Config.get().LinkNum());
-			}
-		}
-		catch (NumberFormatException e) {
-		}
-		
+//		try {
+//			if ( Integer.parseInt(Config.get().LinkNum()) > 0 ) {
+//				linkNum =  Integer.parseInt(Config.get().LinkNum());
+//			}
+//		}
+//		catch (NumberFormatException e) {
+//		}
+//		
 		// 親ノード表示数
 		int nodeNum = 25;									// デフォルト
-		try {
-			if ( Integer.parseInt(Config.get().NodeNum()) > 0 ) {
-				nodeNum =  Integer.parseInt(Config.get().NodeNum());
-			}
-		}
-		catch (NumberFormatException e) {
-		}
+//		try {
+//			if ( Integer.parseInt(Config.get().NodeNum()) > 0 ) {
+//				nodeNum =  Integer.parseInt(Config.get().NodeNum());
+//			}
+//		}
+//		catch (NumberFormatException e) {
+//		}
 		
 		this.DISP_LINK_NUM = linkNum;
 		this.DISP_NODE_NUM = nodeNum;

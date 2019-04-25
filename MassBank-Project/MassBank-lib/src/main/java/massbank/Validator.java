@@ -2,6 +2,7 @@ package massbank;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -10,11 +11,15 @@ import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
-
+/**
+ * This class validates a record file or String by using the syntax of {@link RecordParserDefinition}.
+ * @author rmeier
+ * @version 01-03-2019
+ */
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
-
 	
+	// just a test String
 	public static String recordstringExample = 
 			"ACCESSION: BSU00002\n" +
 			"RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n" +
@@ -32,6 +37,7 @@ public class Validator {
 			"CH$EXACT_MASS: 409.29807\n" +
 			"CH$SMILES: CC1CC2C(C(C3(O2)CCC4C5CC=C6CC(CCC6(C5CC4=C3C)C)O)C)NC1\n" + 
 			"CH$IUPAC: InChI=1S/C27H41NO2/c1-15-11-24-25(28-14-15)17(3)27(30-24)10-8-20-21-6-5-18-12-19(29)7-9-26(18,4)23(21)13-22(20)16(27)2/h5,15,17,19-21,23-25,28-29H,6-14H2,1-4H3/t15-,17+,19-,20-,21-,23-,24+,25-,26-,27-/m0/s1\n" +
+			"CH$LINK: INCHIKEY 60-70-8\n" +
 			"CH$LINK: CAS 60-70-8\n" + 
 			"CH$LINK: CHEBI 9951\n" + 
 			"CH$LINK: CHEMSPIDER 5845\n" +
@@ -169,12 +175,17 @@ public class Validator {
 			"  414.3 9233 24\n" +
 			"//";	
 	
-	public static Record validate(String recordstring, String contributor) {
-		// test non standard ASCII chars and print warnings
+	/**
+	 * Returns <code>true</code> if there is any suspicious character in <code>recordstring</code>.
+	 */
+	public static boolean hasNonStandardChars(String recordstring) {
+		// the following are allowed
+		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó', 'é', 'µ'};
+		Arrays.sort(myCharSet);
 		for (int i = 0; i < recordstring.length(); i++) {
-			if (recordstring.charAt(i) > 0x7F && !(recordstring.charAt(i)=='–')) {
+			if (recordstring.charAt(i) > 0x7F &&  (Arrays.binarySearch(myCharSet, recordstring.charAt(i))<0)) {
 				String[] tokens = recordstring.split("\\r?\\n");
-				logger.warn("non standard ASCII character found. This might be an error. Please check carefully.");
+				logger.warn("Non standard ASCII character found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
 				for (String token : tokens) {
 					offset = offset + token.length() + 1;
@@ -184,15 +195,31 @@ public class Validator {
 						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
 						error_at.setCharAt(col, '^');
 						logger.warn(error_at);
-						break;
+						return true;
 					}
-					line++;
+				line++;
 				}
 			}
 		}
-		
+		return false;
+	}
+	
+	/**
+	 * Validate a <code>recordstring</code> and return the parsed information in a {@link Record} 
+	 * or <code>null</code> if the validation was not successful. Be strict in validation.
+	 */
+	public static Record validate(String recordstring, String contributor) {
+		return validate(recordstring, contributor, true);
+	}
+	
+	/**
+	 * Validate a <code>recordstring</code> and return the parsed information in a {@link Record} 
+	 * or <code>null</code> if the validation was not successful. Be less strict if 
+	 * <code>strict</code> is <code>false</code>. This is useful in automatic repair routines.
+	 */
+	public static Record validate(String recordstring, String contributor, boolean strict) {
 		Record record = new Record(contributor);
-		Parser recordparser = new RecordParser(record);
+		Parser recordparser = new RecordParser(record, strict);
 		Result res = recordparser.parse(recordstring);
 		if (res.isFailure()) {
 			logger.error(res.getMessage());
@@ -213,8 +240,8 @@ public class Validator {
 				line++;
 			}
 			return null;
-		} else
-			return record;
+		} 
+		return record;
 	}
 
 	public static void main(String[] arguments) throws Exception {
@@ -230,6 +257,7 @@ public class Validator {
 			System.out.println("Validating " + arguments.length + " files");
 			for (String filename : arguments) {
 				String recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
+				hasNonStandardChars(recordstring);
 				Record record = validate(recordstring, "");
 				if (record == null) {
 					logger.error("error in " + filename);

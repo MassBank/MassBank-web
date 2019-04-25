@@ -20,19 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  ******************************************************************************/
-function append_ms_information(elmnt) {
-	var elements = document.forms["ms_information"].elements;
-	for (i=0; i<elements.length; i++){
-		if (elements[i].checked == true) {
-			var hiddenField = document.createElement("input");
-			hiddenField.setAttribute("type", "hidden"); 
-			hiddenField.setAttribute("name", elements[i].name);
-			hiddenField.setAttribute("value", elements[i].value);
-			// append the newly created control to the form
-			elmnt.appendChild(hiddenField); 
-		}
-	}
-}
+
 
 function masterclick(elmnt) {
 	// copy the state of the master checkbox to all items
@@ -106,16 +94,8 @@ $(document).ready(function() {
 	$checkboxes.on("change", updateStorage);
 	// change color in ms information section slightly
 	var ms_information_column = $(".ms_information_column:odd").addClass("w3-light-grey");
-	//update mass according to furmula
-	$(".Formula").on("keyup", function(){
-			var inputFormula = $(this).val();
-			inputFormula = inputFormula.trim();
-			inputFormula = getAtomicArray(inputFormula);
-			mass = massCalc(inputFormula);
-			$(".Mass:eq("+$(".Formula").index(this)+")").val(mass);
-        }  
-    );
 	
+	// change text on dropdowns in keyword search
 	$(".searchop").on("change", function(event) {
 		console.log(this.value);
 		if (this.value == 'or') {

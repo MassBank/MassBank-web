@@ -125,7 +125,7 @@
 		out.println( "   <td><h1>Quick Search Results</h1></td>" );
 		out.println( "   <td align=\"right\" class=\"font12px\">" );
 		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"" + MANUAL_URL + RESULT_PAGE + "\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
+		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"manuals/UserManual_en.pdf\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
@@ -162,6 +162,7 @@
 	//-------------------------------------------
 	// Peak Dataを改行,セミコロン区切りで取り出す
 	//-------------------------------------------
+	pPeak = pPeak.replaceAll("\\h{1,}", " ").trim();
 	String inpLines[] = pPeak.split("\n");
 	ArrayList<String> peakList = new ArrayList<String>();
 	String line = "";
@@ -272,7 +273,9 @@
 <script type="text/javascript" src="script/Common.js"></script>
 <script type="text/javascript" src="script/QpeakResult.js"></script>
 <script type="text/javascript" src="script/QpeakResultMenu.js"></script>
-<script type="text/javascript" src="script/jquery-1.8.3.min.js" ></script>
+<!-- <script type="text/javascript" src="script/jquery-1.8.3.min.js" ></script> -->
+<script type="text/javascript" src="js/jquery-3.3.1.min.js" ></script>
+
 <!-- SpeckTackle dependencies-->
 <script type="text/javascript" src="script/d3.v3.min.js"></script>
 <!-- SpeckTackle library-->
@@ -289,7 +292,7 @@
 			<td><h1>Quick Search Results</h1></td>
 			<td align="right" class="font12px">
 				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="<%=MANUAL_URL%><%=RESULT_PAGE%>" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
@@ -328,10 +331,10 @@
 		//-------------------------------------------
 		// 設定ファイル内容を取得
 		//-------------------------------------------
-		GetConfig conf = new GetConfig(Config.get().BASE_URL());
-		String serverUrl = Config.get().BASE_URL();
+		GetConfig conf = new GetConfig();
+		//String serverUrl = Config.get().BASE_URL();
 		String[] dbNameList = conf.getDbName();
-		String[] urlList = conf.getSiteUrl();
+		//String[] urlList = conf.getSiteUrl();
 		
 		
 		//-------------------------------------
@@ -481,8 +484,7 @@
 				String databaseName		= conf.getDbName()[Integer.parseInt(site)];
 				String accession		= id;
 				
-				String tmpUrlFolder		= Config.get().BASE_URL() + "temp";
-				//String tmpUrlFolder		= request.getServletContext().getAttribute("ctx").toString() + "/temp";
+				String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 				String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 				
 				Record.Structure structure	= dbManager.getStructureOfAccession(accession);
