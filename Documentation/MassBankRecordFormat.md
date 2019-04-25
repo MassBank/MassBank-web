@@ -460,7 +460,7 @@ Example:
 CH$NAME: D-Tartaric acid
 CH$NAME: (2S,3S)-Tartaric acid
 ```
-No prosthetic molecule of adducts (HCl, H2SO3, H2O, etc), conjugate ions (Chloride, etc) , and protecting groups (TMS, etc.) is included. Chemical names which are listed in the compound list are recommended.  Synonyms could be added. If chemical compound is a stereoisomer, stereochemistry should be indicated.
+No prosthetic molecule of adducts (HCl, H2SO3, H2O, etc), conjugate ions (Chloride, etc) , and protecting groups (TMS, etc.) is included. Synonyms could be added. If chemical compound is a stereoisomer, stereochemistry should be indicated.
 
 #### <a name="2.2.2"></a>2.2.2 CH$COMPOUND\_CLASS
 Category of Chemical Compound. Mandatory
@@ -472,9 +472,14 @@ Either Natural Product or Non-Natural Product should be precedes the other class
 #### <a name="2.2.3"></a>2.2.3 CH$FORMULA
 Molecular Formula of Chemical Compound. Mandatory
 
-Example: `CH$FORMULA: C9H10ClNO3`
-
-It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> `CH$NAME`). Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
+Example: 
+```
+CH$FORMULA: C9H10ClNO3
+```
+```
+CH$FORMULA: [C5H14NO]+
+```
+It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> `CH$NAME`). If possible the neutral forn should be given. Charged molecules are given in square brackets with charge behind. Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
 
 #### <a name="2.2.4"></a>2.2.4 CH$EXACT\_MASS
 Monoisotopic Mass of Chemical Compound. Mandatory
@@ -830,17 +835,20 @@ AC$CHROMATOGRAPHY: SOLVENT B 2-propanol with 0.1% acetic acid and 0.1% ammonium 
 #### <a name="2.5.1"></a>2.5.1 MS$FOCUSED\_ION: subtag Description
 Information of Precursor or Molecular Ion. Optional
 
-`MS$FOCUSED_ION` fields should be arranged by the alphabetical order of subtag names.
-
 ##### 2.5.1 Subtag: BASE\_PEAK
 m/z of Base Peak.
 
-Example: `MS$FOCUSED_ION: BASE_PEAK 73`
+Example:
+ 
+```
+MS$FOCUSED_ION: BASE_PEAK 73
+```
+Cross-reference to HUBO-PSI: precursor m/z [MS:1000504]
 
 ##### 2.5.1 Subtag: DERIVATIVE\_FORM
 Molecular Formula of Derivative for GC-MS.
 
-Example
+Example:
 
 ```
 MS$FOCUSED_ION: DERIVATIVE_FORM C19H42O5Si4
@@ -850,17 +858,29 @@ MS$FOCUSED_ION: DERIVATIVE_FORM C{9+3*n}H{16+8*n}NO5Si{n}
 ##### 2.5.1 Subtag: DERIVATIVE\_MASS
 Exact Mass of Derivative for GC-MS.
 
-Example: `MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093`
+Example: 
+
+```
+MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093
+```
 
 ##### 2.5.1 Subtag: DERIVATIVE\_TYPE
 Type of Derivative for GC-MS.
 
-Example: `MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS`
+Example: 
+
+```
+MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS
+```
 
 ##### 2.5.1 Subtag: ION\_TYPE
 Type of Focused Ion.
 
-Example: `MS$FOCUSED_ION: ION_TYPE [M+H]+`
+Example: 
+
+```
+MS$FOCUSED_ION: ION_TYPE [M+H]+
+```
 
 Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`.
 
@@ -869,14 +889,22 @@ m/z of Precursor Ion in MSn spectrum.
 
 Example: `MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123`
 
-Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to HUBO-PSI: precursor m/z [MS:1000504]
+Calculated exact mass is preferred to the measured accurate mass of the precursor ion.
 
 ##### 2.5.1 Subtag: PRECURSOR\_TYPE
-Type of Precursor Ion in MSn.
+Type of Precursor Ion in MSn spectrum.
 
-Example: `MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-`
+Example for MS2:
+```
+MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-
+```
+Example for MS3:
+```
+MS$FOCUSED_ION: PRECURSOR_TYPE [M+CH3COO]-/[M-CH3]-
+```
+The syntax is '[<n>M<+-><molecular formula>]<charge>'
 
-Types currently used in MassBank are `[M]+`, `[M]+*`, `[M+H]+`, `[2M+H]+`, `[M+Na]+`, `[M-H+Na]+`, `[2M+Na]+`, `[M+2Na-H]+`, `[(M+NH3)+H]+`, `[M+H-H2O]+`, `[M+H-C6H10O4]+`, `[M+H-C6H10O5]+`, `[M]-`, `[M-H]-`, `[M-2H]-`, `[M-2H+H2O]-`, `[M-H+OH]-`, `[2M-H]-`, `[M+HCOO-]-`, `[(M+CH3COOH)-H]-`, `[2M-H-CO2]-` and `[2M-H-C6H10O5]-`. Cross-reference to HUBO-PSI: Precursor type [MS: 1000792]
+Examples: `[M]+`, `[M+Na]+`, `[2M-H]-`, `[2M-H-CO2]-`. Cross-reference to HUBO-PSI: isolation window attribute [MS: 1000792]
 
 ##### undocumented Subtags
 `FULL_SCAN_FRAGMENT_ION_PEAK`
