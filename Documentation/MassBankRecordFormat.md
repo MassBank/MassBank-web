@@ -902,7 +902,7 @@ Example for MS3:
 ```
 MS$FOCUSED_ION: PRECURSOR_TYPE [M+CH3COO]-/[M-CH3]-
 ```
-The syntax is '[<n>M<+-><molecular formula>]<charge>'
+The syntax is `[<n>M<+-><molecular formula>]<charge>`
 
 Examples: `[M]+`, `[M+Na]+`, `[2M-H]-`, `[2M-H-CO2]-`. Cross-reference to HUBO-PSI: isolation window attribute [MS: 1000792]
 
