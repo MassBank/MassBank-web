@@ -600,12 +600,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 		
 		
 		// 2.2.3 CH$FORMULA
-		// Molecular Formula of Chemical Compound. Mandatory
-		// Example
-		// CH$FORMULA: C9H10ClNO3
-		// It follows the Hill's System.
-		// No prosthetic molecule is included (see 2.2.1 CH$NAME).
-		// Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in the MS$FOCUSED_ION: DERIVATIVE_FORM (2.5.1) field.
 		def("element", StringParser.of("Zr")
 			.or(StringParser.of("Zn"))
 			.or(StringParser.of("Yb"))
@@ -1418,50 +1412,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 
 
 		// 2.5.1 MS$FOCUSED_ION: subtag Description
-		// Information of Precursor or Molecular Ion. Optional
-		// MS$FOCUSED_ION fields should be arranged by the alphabetical order of subtag names.
 		// 2.5.1 Subtag: BASE_PEAK
-		// m/z of Base Peak.
-		// Example: MS$FOCUSED_ION: BASE_PEAK 73
 		// 2.5.1 Subtag: DERIVATIVE_FORM
-		// Molecular Formula of Derivative for GC-MS.
-		// Example
-		// MS$FOCUSED_ION: DERIVATIVE_FORM C19H42O5Si4
-		// MS$FOCUSED_ION: DERIVATIVE_FORM C{9+3*n}H{16+8*n}NO5Si{n}
 		// 2.5.1 Subtag: DERIVATIVE_MASS
-		// Exact Mass of Derivative for GC-MS.
-		// Example: MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093
 		// 2.5.1 Subtag: DERIVATIVE_TYPE
-		// Type of Derivative for GC-MS.
-		// Example: MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS
 		// 2.5.1 Subtag: ION_TYPE
-		// Type of Focused Ion.
-		// Example: MS$FOCUSED_ION: ION_TYPE [M+H]+
-		// Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+, [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+, [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-, [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-.
 		// 2.5.1 Subtag: PRECURSOR_M/Z
-		// m/z of Precursor Ion in MSn spectrum.
-		// Example: MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123
-		// Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to mzOntology: precursor m/z [MS:1000504]
-		// 2.5.1 Subtag: PRECURSOR_TYPE
-		// Type of Precursor Ion in MSn.
-		// Example: MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-
-		// Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+,
-		// [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+,
-		// [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-,
-		// [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-. Cross-reference to mzOntology: Precursor type [MS: 1000792]
 		
-//		def("Element_token", 
-//				StringParser.of("Os").or(StringParser.of("Xe")).or(StringParser.of("Pa")).or(StringParser.of("Pb")).or(StringParser.of("Pd")).or(StringParser.of("He")).or(StringParser.of("Pm")).or(StringParser.of("Hf")).or(StringParser.of("Hg")).or(StringParser.of("Po")).or(StringParser.of("Pr")).or(StringParser.of("Pt")).or(StringParser.of("Pu")).or(StringParser.of("Ho")).or(StringParser.of("Yb")).or(StringParser.of("Hs")).or(StringParser.of("Ac")).or(StringParser.of("In")).or(StringParser.of("Ag")).or(StringParser.of("Ir")).or(StringParser.of("Al")).or(StringParser.of("Am")).or(StringParser.of("Ra")).or(StringParser.of("Rb")).or(StringParser.of("Ar")).or(StringParser.of("As")).or(StringParser.of("Re")).or(StringParser.of("At")).or(StringParser.of("Zn")).or(StringParser.of("Au")).or(StringParser.of("Rf")).or(StringParser.of("Rg")).or(StringParser.of("Rh")).or(StringParser.of("Zr")).or(StringParser.of("Rn")).or(StringParser.of("Ba")).or(StringParser.of("Be")).or(StringParser.of("Ru")).or(StringParser.of("Bh")).or(StringParser.of("Bi")).or(StringParser.of("Bk")).or(StringParser.of("Sb")).or(StringParser.of("Sc")).or(StringParser.of("Br")).or(StringParser.of("Se")).or(StringParser.of("Sg")).or(StringParser.of("Si")).or(StringParser.of("Sm")).or(StringParser.of("Sn")).or(StringParser.of("Ca")).or(StringParser.of("Sr")).or(StringParser.of("Cd")).or(StringParser.of("Ce")).or(StringParser.of("Cf")).or(StringParser.of("Kr")).or(StringParser.of("Cl")).or(StringParser.of("Cm")).or(StringParser.of("Cn")).or(StringParser.of("Co")).or(StringParser.of("Ta")).or(StringParser.of("Tb")).or(StringParser.of("Cr")).or(StringParser.of("Tc")).or(StringParser.of("Cs")).or(StringParser.of("Te")).or(StringParser.of("Cu")).or(StringParser.of("Th")).or(StringParser.of("Ti")).or(StringParser.of("La")).or(StringParser.of("Tl")).or(StringParser.of("Tm")).or(StringParser.of("Li")).or(StringParser.of("Db")).or(StringParser.of("Ts")).or(StringParser.of("Lr")).or(StringParser.of("Lu")).or(StringParser.of("Lv")).or(StringParser.of("Uuo")).or(StringParser.of("Ds")).or(StringParser.of("Uup")).or(StringParser.of("Uus")).or(StringParser.of("Dy")).or(StringParser.of("Uut")).or(StringParser.of("Mc")).or(StringParser.of("Md")).or(StringParser.of("Mg")).or(StringParser.of("Mn")).or(StringParser.of("Mo")).or(StringParser.of("Mt")).or(StringParser.of("Er")).or(StringParser.of("Es")).or(StringParser.of("Eu")).or(StringParser.of("Na")).or(StringParser.of("Nb")).or(StringParser.of("Nd")).or(StringParser.of("Ne")).or(StringParser.of("Nh")).or(StringParser.of("Ni")).or(StringParser.of("Fe")).or(StringParser.of("No")).or(StringParser.of("Np")).or(StringParser.of("Fl")).or(StringParser.of("Fm")).or(StringParser.of("Fr")).or(StringParser.of("Og")).or(StringParser.of("Ga")).or(StringParser.of("Gd")).or(StringParser.of("Ge")).or(StringParser.of("B")).or(StringParser.of("C")).or(StringParser.of("F")).or(StringParser.of("H")).or(StringParser.of("I")).or(StringParser.of("K")).or(StringParser.of("N")).or(StringParser.of("O")).or(StringParser.of("P")).or(StringParser.of("S")).or(StringParser.of("U")).or(StringParser.of("V")).or(StringParser.of("W")).or(StringParser.of("Y"))
-//		);
-//		def("ElementCount_token", 
-//				ref("Element_token").seq(digit().star())
-//		);
-//		def("MolecularFormula_token", 
-//				ref("ElementCount_token").plus()
-//		);
-//		def("adduct_token", 
-//				CharacterParser.anyOf("+-").seq(digit().star().seq(ref("MolecularFormula_token").plus()))
-//		);
+		// 2.5.1 Subtag: PRECURSOR_TYPE
 		def("adduct_token", 
 				CharacterParser.anyOf("+-")
 				.seq(ref("uint_primitive").optional())
