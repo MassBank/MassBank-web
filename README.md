@@ -35,7 +35,7 @@ Run the MassBank-project on the Tomcat server and access MassBank at [http://loc
 
 
 ## Install as server system with docker/multiple instances on one server possible
-A docker compose file named 'compose/full-service.yaml' is provided to install all required container to run MassBank as a server system. The only requirement are the  [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your user is in the group 'docker'. A setup script called `install.sh` is provided to make deployment easy.
+A docker compose file named `compose/full-service.yaml` is provided to install all required container to run MassBank as a server system. The only requirement is the  [docker environment](https://docs.docker.com/install/linux/docker-ce/ubuntu/) including [docker-compose](https://docs.docker.com/compose/install/). Make sure that your user is in the group 'docker'. A setup script called `install.sh` is provided to make deployment easy.
 
 ### Install one instance with `docker-compose`
 To set up the MassBank webapp the source of the webapp and the data repository are needed. Get them with:
