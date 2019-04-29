@@ -587,7 +587,7 @@ Format is `(Separation tool type-)Ionization method-Ion analyzer type(Ion analyz
 
 Separation tool types are `CE`, `GC`, `LC`.
 
-Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`, `FD`, `CI`, `FI`.
+Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`, `FD`, `CI`, `FI`, `SI`.
 
 Ion analyzer types are `B`, `E`, `FT`, `IT`, `Q`, `TOF`. In tandem mass analyzers, no `-` is inserted between ion analyzers.
 `FT` includes `FTICR` and other type analyzers using `FT`, such as Orbitrap(R). `IT` comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap. 
@@ -601,9 +601,9 @@ LC-ESI-ITFT
 ```
 Cross-reference to HUBO-PSI: 
 
-Ionization methods [MS:1000008]: APCI [MS:1000070], APPI [MS:1000382], EI [MS:1000389], ESI [MS:1000073], FAB[MS:1000074], MALDI[MS:1000075], FD[MS:1000257], CI[MS:1000071], FI[MS:1000258]
+Ionization methods [MS:1000008]: APCI[MS:1000070], APPI[MS:1000382], EI[MS:1000389], ESI[MS:1000073], FAB[MS:1000074], MALDI[MS:1000075], FD[MS:1000257], CI[MS:1000071], FI[MS:1000258], SI[MS:1000402].
 
-Ion analyzer types [MS:1000443]: B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084]
+Ion analyzer types [MS:1000443]: B[MS:1000080], E[MS:1000254], IT[MS:1000264], Q[MS:1000081], TOF[MS:1000084]
 
 #### <a name="2.4.3"></a>2.4.3 AC$MASS\_SPECTROMETRY: MS\_TYPE
 Data Type. Mandatory
