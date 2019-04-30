@@ -24,7 +24,6 @@ package massbank;
 import javax.servlet.http.HttpServlet;
 
 import java.io.IOException;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -37,31 +36,34 @@ import massbank.web.SearchExecution;
 import massbank.web.recordindex.RecordIndexCount;
 import massbank.web.recordindex.RecordIndexCount.RecordIndexCountResult;
 
+/**
+ * 
+ * This servlet generates dynamic content for the RecordIndex.
+ * 
+ * @author rmeier
+ * @version 30-04-2019
+ *
+ */
 @WebServlet("/RecordIndex")
 public class RecordIndex extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(RecordIndex.class);
-	
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Preprocess request: load list of mass spectrometry information in JSP.
 		try {
 			RecordIndexCountResult result = new SearchExecution(request).exec(new RecordIndexCount());
-			Map<String, Integer> sites = result.mapSiteToRecordCount;
-			Map<String, Integer> instruments = result.mapInstrumentToRecordCount;
-			Map<String, Integer> mstypes = result.mapMsTypeToRecordCount;
-			Map<String, Integer> mergedtypes = result.mapMergedToCount;
-			Map<String, Integer> ionmodes = result.mapIonModeToRecordCount;
-			Map<String, Integer> symbols = result.mapSymbolToCount;
-			
-	        request.setAttribute("sites", sites);
-	        request.setAttribute("instruments", instruments);
-	        request.setAttribute("mstypes", mstypes);
-	        request.setAttribute("mergedtypes", mergedtypes);
-	        request.setAttribute("ionmodes", ionmodes);
-	        request.setAttribute("symbols", symbols);
-		
-	        request.getRequestDispatcher("/RecordIndex.jsp").forward(request, response);
+
+			request.setAttribute("sites", result.mapSiteToRecordCount);
+			request.setAttribute("instruments", result.mapInstrumentToRecordCount);
+			request.setAttribute("mstypes", result.mapMsTypeToRecordCount);
+			request.setAttribute("ionmodes", result.mapIonModeToRecordCount);
+			request.setAttribute("symbols", result.mapSymbolToCount);
+			request.setAttribute("spectra", result.spectraCount);
+			request.setAttribute("compounds", result.compoundCount);
+
+			request.getRequestDispatcher("/RecordIndex.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Error preparing record index", e);
 		}
