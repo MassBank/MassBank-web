@@ -42,6 +42,7 @@
 	<script>svg4everybody();</script>
 </head>
 
+
 <body class="w3-theme-gradient">
 	<noscript>
 		<div class="w3-panel w3-yellow">
@@ -209,6 +210,7 @@
 			</ul>
  		</div>
 	</div> 
+	
 
 	<div class="w3-row w3-padding">
 		<div class="w3-col" style="width:120px">
@@ -227,7 +229,36 @@
 				</c:forEach>
 			</ul>
 		</div>
-	</div> 
+	</div>
+	
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Unique Spectra</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+				<li>${spectra}</li>
+			</ul>
+		</div>
+	</div>
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Unique Compounds</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+				<li>${compounds}</li>
+			</ul>
+		</div>
+	</div>
+	
+	
 	
 	<div class="w3-padding">
 		<div class="w3-padding-small">
