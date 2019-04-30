@@ -26,6 +26,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		Map<String, Integer> mapIonModeToRecordCount	= new TreeMap<String, Integer>();
 		int spectraCount = 0;
 		int compoundCount = 0;
+		int isomerCount = 0;
 		
 		char[] compoundA_Z_symbols		= new char[] {
 				'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
@@ -129,6 +130,18 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			e.printStackTrace();
 		}
 		
+		sql = "SELECT COUNT(DISTINCT SUBSTRING(DATABASE_ID,1,14)) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
+		try {
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			res = stmnt.executeQuery();
+			while (res.next()) {
+				isomerCount = res.getInt(1);
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		
 		ArrayList<String> symbolList	= new ArrayList<String>();
 		TreeMap<String, Integer> mapSymbolToCount	= new TreeMap<String, Integer>();
@@ -149,7 +162,8 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 				mapIonModeToRecordCount,
 				mapSymbolToCount,
 				spectraCount,
-				compoundCount
+				compoundCount,
+				isomerCount
 		);
 	}
 	public static class RecordIndexCountResult {
@@ -160,6 +174,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		public final Map<String, Integer> mapSymbolToCount;
 		public final int spectraCount;
 		public final int compoundCount;
+		public final int isomerCount;
 		public RecordIndexCountResult(
 				Map<String, Integer> mapSiteToRecordCount,
 				Map<String, Integer> mapInstrumentToRecordCount,
@@ -167,7 +182,8 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 				Map<String, Integer> mapIonModeToRecordCount,
 				Map<String, Integer> mapSymbolToCount,
 				int spectraCount,
-				int compoundCount
+				int compoundCount,
+				int isomerCount
 		) {
 			this.mapSiteToRecordCount		= mapSiteToRecordCount;
 			this.mapInstrumentToRecordCount	= mapInstrumentToRecordCount;
@@ -176,6 +192,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			this.mapSymbolToCount           = mapSymbolToCount;
 			this.spectraCount			    = spectraCount;
 			this.compoundCount			    = compoundCount;
+			this.isomerCount			    = isomerCount;
 		}
 	}
 }

@@ -62,6 +62,7 @@ public class RecordIndex extends HttpServlet {
 			request.setAttribute("symbols", result.mapSymbolToCount);
 			request.setAttribute("spectra", result.spectraCount);
 			request.setAttribute("compounds", result.compoundCount);
+			request.setAttribute("isomers", result.isomerCount);
 
 			request.getRequestDispatcher("/RecordIndex.jsp").forward(request, response);
 		} catch (Exception e) {
