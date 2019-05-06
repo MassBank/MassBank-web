@@ -344,9 +344,21 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
 #### <a name="2.1.1"></a>2.1.1 ACCESSION
 Identifier of the MassBank Record. Mandatory
 
-Example: `ACCESSION: ZMS00006`
+Example:
+```
+ACCESSION: ZMS00006
+```
 
-8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, i.e. database, where the record is submitted and stored. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md). Rest of the field are decimal letters which are the identifier of the record at each site.
+8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, database or contributor, where the record was submitted or who has contributed. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md). Rest of the field are decimal letters which are the identifier of the record at each site.
+
+A deprecated record is marked with the tag `DEPRECATED: ` followed by date and reason on the second line. The content of a deprecated record may not be valid.
+
+Example:
+```
+ACCESSION: XY000010
+DEPRECATED: 2019-05-03 considered noisy
+```
+
 
 #### <a name="2.1.2"></a>2.1.2 RECORD\_TITLE
 Brief Description of MassBank Record. Mandatory
