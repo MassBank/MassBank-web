@@ -251,17 +251,15 @@
 		</div>
 	</div>
 	
-	
-	
 	<div class="w3-padding">
 		<div class="w3-padding-small">
-			<img src="figure/massbank_Contributor_Graph.svg" alt="" border="0">
+			${sitechartSVG}
 		</div>
 		<div class="w3-padding-small">
-			<img src="figure/massbank_Instrument_Type_Graph.svg" alt="" border="0">
+			${instchartSVG}
 		</div>
 		<div class="w3-padding-small">
-			<img src="figure/massbank_MS_Type_Graph.svg" alt="" border="0">
+			${mschartSVG}
 		</div>
 	</div> 
 
