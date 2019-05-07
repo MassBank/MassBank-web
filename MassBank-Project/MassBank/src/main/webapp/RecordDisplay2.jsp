@@ -23,7 +23,7 @@
 <html lang="en">
 
 <head>
-	<title>${short_name} Mass Spectrum</title>
+	<title>${short_name}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta name="description" content="${description}">
@@ -102,18 +102,20 @@ ${structureddata}
 	
 	<div class="w3-padding">
 		<h3><b>${record_title}</b></h3>
-		<div class="w3-row w3-padding-small">
-			<div class="w3-twothird w3-text-grey w3-small">
-				Mass Spectrum
-				<div id="spectrum_canvas" peaks="${peaks}" style="height:200px; width:600px; background-color:white"></div>
+		<c:if test="${not isDeprecated}">
+			<div class="w3-row w3-padding-small">
+				<div class="w3-twothird w3-text-grey w3-small">
+					Mass Spectrum
+					<div id="spectrum_canvas" peaks="${peaks}" style="height:200px; width:600px; background-color:white"></div>
+				</div>
+				<div class="w3-third w3-text-grey w3-small">
+					Chemical Structure<br>
+					<a href="figure/${accession}.svg">
+						<img src="figure/${accession}.svg" style="width:100%">
+					</a>
+				</div>
 			</div>
-			<div class="w3-third w3-text-grey w3-small">
-				Chemical Structure<br>
-				<a href="figure/${accession}.svg">
-					<img src="figure/${accession}.svg" style="width:100%">
-				</a>
-			</div>
-		</div>
+		</c:if>
 	</div>
 	
 	<div class="monospace w3-padding w3-small" style="height:auto;margin:auto">

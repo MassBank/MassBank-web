@@ -69,14 +69,22 @@ public class DatabaseManager {
 	private final static String sqlPEAK = "SELECT * FROM PEAK WHERE RECORD = ?";
 	private final static String sqlPK_NUM_PEAK = "SELECT * FROM PK_NUM_PEAK WHERE RECORD = ?";
 	private final static String sqlRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
+	private final static String sqlDEPRECATED_RECORD = "SELECT * FROM DEPRECATED_RECORD WHERE ACCESSION = ?";
 	private final static String sqlSAMPLE = "SELECT * FROM SAMPLE WHERE ID = ?";
 	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE RECORD = ?";
 	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE RECORD = ?";
 	private final static String sqlANNOTATION_HEADER = "SELECT * FROM ANNOTATION_HEADER WHERE RECORD = ?";
 	private final static String sqlGetContributorFromAccession = 
-			"SELECT CONTRIBUTOR.ACRONYM, CONTRIBUTOR.SHORT_NAME, CONTRIBUTOR.FULL_NAME " +
-			"FROM CONTRIBUTOR INNER JOIN RECORD ON RECORD.CONTRIBUTOR=CONTRIBUTOR.ID " +
-			"WHERE RECORD.ACCESSION = ?";
+			"SELECT ACRONYM, SHORT_NAME, FULL_NAME FROM CONTRIBUTOR WHERE ID =" +
+			"(" +
+			"	SELECT CONTRIBUTOR" + 
+			"	FROM" +
+			"	(" +
+			"		(SELECT ACCESSION, CONTRIBUTOR FROM RECORD) UNION" + 
+			"		(SELECT ACCESSION, CONTRIBUTOR FROM DEPRECATED_RECORD)" +
+			"	) MERGED_CONTRIBUTOR" +
+			"	WHERE ACCESSION = ?" +
+			");";
 	private final static String sqlGetAccessions = 
 			"SELECT ACCESSION " + 
 			"FROM RECORD;";
@@ -96,6 +104,7 @@ public class DatabaseManager {
 	private final PreparedStatement statementPEAK;
 	private final PreparedStatement statementPK_NUM_PEAK;
 	private final PreparedStatement statementRECORD;
+	private final PreparedStatement statementDEPRECATED_RECORD;
 	private final PreparedStatement statementSAMPLE;
 	private final PreparedStatement statementSP_LINK;
 	private final PreparedStatement statementSP_SAMPLE;
@@ -255,6 +264,7 @@ public class DatabaseManager {
 		statementPEAK = this.con.prepareStatement(sqlPEAK);
 		statementPK_NUM_PEAK = this.con.prepareStatement(sqlPK_NUM_PEAK);
 		statementRECORD = this.con.prepareStatement(sqlRECORD);
+		statementDEPRECATED_RECORD = this.con.prepareStatement(sqlDEPRECATED_RECORD);
 		statementSAMPLE = this.con.prepareStatement(sqlSAMPLE);
 		statementSP_LINK = this.con.prepareStatement(sqlSP_LINK);
 		statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
@@ -308,27 +318,18 @@ public class DatabaseManager {
 	public Connection getConnection() {
 		return this.con;
 	}
-	
+
 	/**
-	 * Returns the complete record
+	 * Returns the complete record TODO solve 1:1 relations by a single sql
+	 * statement with joins (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff,
+	 * SP_SCIENTIFIC_NAME, SP_LINEAGE, AC_INSTRUMENT, AC_INSTRUMENT_TYPE)
+	 * 
 	 * @param accessionId
-	 * @return
+	 * @return Record
 	 */
 	public Record getAccessionData(String accessionId) {
 		Record.Contributor Contributor=getContributorFromAccession(accessionId);
-		if(Contributor == null) { return null; }
-		return getAccessionData(accessionId, Contributor.SHORT_NAME);
-	}
-	
-	/**
-	 * Returns the complete record
-	 * TODO solve 1:1 relations by a single sql statement with joins
-	 * (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff, SP_SCIENTIFIC_NAME, SP_LINEAGE, AC_INSTRUMENT, AC_INSTRUMENT_TYPE)
-	 * @param accessionId
-	 * @param contributor
-	 * @return
-	 */
-	public Record getAccessionData(String accessionId, String contributor) {
+		String contributor=Contributor.SHORT_NAME;
 		Record acc = new Record(contributor);
 		try {
 			this.statementRECORD.setString(1, accessionId);
@@ -410,7 +411,20 @@ public class DatabaseManager {
 				while (tmp.next()) {
 					acc.PK_NUM_PEAK(Integer.valueOf(tmp.getInt("PK_NUM_PEAK")));
 				}
-			} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+			} else {
+				// try to find the ACCESSION in DEPRECATED_RECORD
+				this.statementDEPRECATED_RECORD.setString(1, accessionId);
+				set = this.statementDEPRECATED_RECORD.executeQuery();
+				if (set.next()) {
+					acc.ACCESSION(set.getString("ACCESSION"));
+					acc.DEPRECATED(true);
+					acc.DEPRECATED_CONTENT(set.getString("CONTENT"));
+					return acc;
+				} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+			}
+			
+			
+			
 			if (compoundID == -1)
 				throw new IllegalStateException("compoundID is not set");
 			this.statementCOMPOUND.setInt(1, compoundID);
@@ -536,32 +550,8 @@ public class DatabaseManager {
 	}
 	
 
-	
-//	public void batchPersist(ArrayList<Record> accs) {
-//		for (Record acc : accs) {
-//			if (acc != null) {
-////				if (acc.isValid()) {							
-//					try {
-//						persistAccessionFile(acc, true);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-////				} else {
-////				}
-//			}
-//		}
-////		this.closeConnection();
-//	}
-	
 	public void persistAccessionFile(Record acc) {
-		persistAccessionFile(acc, false);
-	}
-	
-	// TODO remove contributor sql statements from within the function
-	public void persistAccessionFile(Record acc, boolean bulk) {
-//		this.openConnection();
-//		String insertCompound = "INSERT INTO COMPOUND VALUES(?,?,?,?,?,?,?,?)";
-//		PreparedStatement stmnt = con.prepareStatement(insertCompound);
+		boolean bulk=false;
 		
 		Integer conId = -1;
 		try {
@@ -602,10 +592,11 @@ public class DatabaseManager {
 		try {
 			if (acc.DEPRECATED()) {
 				// deprecated records go into table DEPRECATED_RECORD
-				String sql = "INSERT INTO DEPRECATED_RECORD (ACCESSION, CONTENT) VALUES (?,?)";
+				String sql = "INSERT INTO DEPRECATED_RECORD (ACCESSION, CONTRIBUTOR, CONTENT) VALUES (?,?,?)";
 				PreparedStatement stmnt = con.prepareStatement(sql);
 				stmnt.setString(1, acc.ACCESSION());
-				stmnt.setBlob(2, new ByteArrayInputStream(acc.DEPRECATED_CONTENT().getBytes()));
+				stmnt.setInt(2, conId);
+				stmnt.setBlob(3, new ByteArrayInputStream(acc.DEPRECATED_CONTENT().getBytes()));
 				stmnt.executeUpdate();
 			}
 			else {		
@@ -965,386 +956,8 @@ public class DatabaseManager {
 		}
 //		this.closeConnection();
 	}
-//	public void persistAccessionFile(Record acc, boolean bulk) {
-////		this.openConnection();
-////		String insertCompound = "INSERT INTO COMPOUND VALUES(?,?,?,?,?,?,?,?)";
-////		PreparedStatement stmnt = con.prepareStatement(insertCompound);
-//		
-//		try {
-//			String sql = "INSERT INTO CONTRIBUTOR (ACRONYM, SHORT_NAME, FULL_NAME) VALUES (NULL,?,NULL)";
-//			PreparedStatement stmnt = con.prepareStatement(sql);
-//			stmnt.setString(1, acc.CONTRIBUTOR());
-//			stmnt.executeUpdate();
-//		} catch (SQLException e1) {
-////			 e1.printStackTrace();
-//		}
-//		
-//		Integer conId = -1;
-//		try {
-//			String sql = "SELECT ID FROM CONTRIBUTOR WHERE SHORT_NAME = ?";
-//			PreparedStatement stmnt = con.prepareStatement(sql);
-//			stmnt.setString(1, acc.CONTRIBUTOR());
-//			ResultSet res = stmnt.executeQuery();
-//			if (res.next()) {
-//				conId = res.getInt(1);
-//			}
-//		} catch (SQLException e1) {
-//			e1.printStackTrace();
-//		}
-//		
-//		try {
-//		//System.out.println(System.nanoTime());
-//		statementInsertCompound.setNull(1, java.sql.Types.INTEGER);
-//		statementInsertCompound.setString(2, acc.get("CH$FORMULA").get(0)[2]);
-//		statementInsertCompound.setString(3, acc.get("CH$EXACT_MASS").get(0)[2]);
-//		statementInsertCompound.setString(4, acc.get("CH$SMILES").get(0)[2]);
-//		statementInsertCompound.setString(5, acc.get("CH$IUPAC").get(0)[2]);
-//		if (acc.get("CH$CDK_DEPICT_SMILES").size() != 0) {
-//			statementInsertCompound.setString(6, acc.get("CH$CDK_DEPICT_SMILES").get(0)[2]);
-//		} else {
-//			statementInsertCompound.setNull(6, java.sql.Types.VARCHAR);
-//		}
-//		if (acc.get("CH$CDK_DEPICT_GENERIC_SMILES").size() != 0) {
-//			statementInsertCompound.setString(7, acc.get("CH$CDK_DEPICT_GENERIC_SMILES").get(0)[2]);
-//		} else {
-//			statementInsertCompound.setNull(7, java.sql.Types.VARCHAR);
-//		}
-//		if (acc.get("CH$CDK_DEPICT_STRUCTURE_SMILES").size() != 0) {
-//			statementInsertCompound.setString(8, acc.get("CH$CDK_DEPICT_STRUCTURE_SMILES").get(0)[2]);
-//		} else {
-//			statementInsertCompound.setNull(8, java.sql.Types.VARCHAR);
-//		}
-//		statementInsertCompound.executeUpdate();
-//		ResultSet set = statementInsertCompound.getGeneratedKeys();
-//		set.next();
-//		int compoundId = set.getInt("ID");
-//		
-//		
-//		//System.out.println(System.nanoTime());
-//		int compoundClassId;
-////		String insertCompoundClass = "INSERT INTO COMPOUND_CLASS VALUES(?,?,?,?)";
-////		stmnt = con.prepareStatement(insertCompoundClass);
-//		for (String[] el : acc.get("CH$COMPOUND_CLASS")) {
-//			statementInsertCompound_Class.setNull(1, java.sql.Types.INTEGER);		
-//			statementInsertCompound_Class.setString(2, null);
-//			statementInsertCompound_Class.setString(3, null);
-//			statementInsertCompound_Class.setString(4, el[2]);
-//			statementInsertCompound_Class.executeUpdate();
-//			set = statementInsertCompound_Class.getGeneratedKeys();
-//			set.next();
-//			compoundClassId = set.getInt("ID");
-//			
-////			String insertCompoundCompoundClass = "INSERT INTO COMPOUND_COMPOUND_CLASS VALUES(?,?)";
-////			stmnt = con.prepareStatement(insertCompoundCompoundClass);
-//			statementInsertCompound_Compound_Class.setInt(1, compoundId);
-//			statementInsertCompound_Compound_Class.setInt(2, compoundClassId);
-//			statementInsertCompound_Compound_Class.executeUpdate();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		int nameId;
-////		String insertName = "INSERT INTO NAME VALUES(?,?)";
-////		stmnt = con.prepareStatement(insertName);
-//		for (String[] el : acc.get("CH$NAME")) {
-//			statementInsertName.setNull(1, java.sql.Types.INTEGER);
-//			statementInsertName.setString(2, el[2]);
-//			try {
-//				statementInsertName.executeUpdate();
-//				set = statementInsertName.getGeneratedKeys();
-//				set.next();
-//				nameId = set.getInt("ID");
-//
-////				String insertCompoundName = "INSERT INTO COMPOUND_NAME VALUES(?,?)";
-////				stmnt = con.prepareStatement(insertCompoundName);
-//				statementInsertCompound_Name.setInt(1, compoundId);
-//				statementInsertCompound_Name.setInt(2, nameId);
-//				statementInsertCompound_Name.executeUpdate();
-//			} catch (SQLException e) {
-//				if (e.getErrorCode() == 1062) {
-//					PreparedStatement retrieveIdForName = con.prepareStatement("SELECT ID FROM NAME WHERE CH_NAME = ?");
-//					retrieveIdForName.setString(1, el[2]);
-//					set = retrieveIdForName.executeQuery();
-//					set.next();
-//					nameId = set.getInt("ID");
-//					statementInsertCompound_Name.setInt(1, compoundId);
-//					statementInsertCompound_Name.setInt(2, nameId);
-//					statementInsertCompound_Name.executeUpdate();
-//				} else {
-//					this.closeConnection();
-//					throw e;
-////					e.printStackTrace();
-////					nameId = -1;
-//				}
-//			}
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-////		String insertChLink = "INSERT INTO CH_LINK VALUES(?,?,?)";
-////		stmnt = con.prepareStatement(insertChLink);
-//		for (String[] el : acc.get("CH$LINK")) {
-//			statementInsertCH_LINK.setInt(1,compoundId);
-//			statementInsertCH_LINK.setString(2, el[1]);
-//			statementInsertCH_LINK.setString(3, el[2]);
-////			statementInsertCH_LINK.executeUpdate();
-//			statementInsertCH_LINK.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertCH_LINK.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		int sampleId = -1;
-//		statementInsertSAMPLE.setNull(1, java.sql.Types.INTEGER);
-//		if (acc.get("SP$SCIENTIFIC_NAME").size() != 0) {
-//			statementInsertSAMPLE.setString(2, acc.get("SP$SCIENTIFIC_NAME").get(0)[2]);
-//		} else {
-//			statementInsertSAMPLE.setNull(2, java.sql.Types.VARCHAR);
-//		}
-//		if (acc.get("SP$LINEAGE").size() != 0) {
-//			statementInsertSAMPLE.setString(3, acc.get("SP$LINEAGE").get(0)[2]);
-//		} else {
-//			statementInsertSAMPLE.setNull(3, java.sql.Types.VARCHAR);
-//		}
-//		if (acc.get("SP$SCIENTIFIC_NAME").size() != 0 && acc.get("SP$LINEAGE").size() != 0) {
-//			statementInsertSAMPLE.executeUpdate();
-//			set = statementInsertSAMPLE.getGeneratedKeys();
-//			set.next();
-//			sampleId = set.getInt("ID");
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		for (String[] el : acc.get("SP$LINK")) {
-//			statementInsertSP_LINK.setInt(1, sampleId);
-//			statementInsertSP_LINK.setString(2, el[2]);
-////			statementInsertSP_LINK.executeUpdate();
-//			statementInsertSP_LINK.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertSP_LINK.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		for (String[] el : acc.get("SP$SAMPLE")) {
-//			statementInsertSP_SAMPLE.setInt(1, sampleId);
-//			statementInsertSP_SAMPLE.setString(2, el[2]);
-////			statementInsertSP_SAMPLE.executeUpdate();
-//			statementInsertSP_SAMPLE.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertSP_SAMPLE.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		statementInsertINSTRUMENT.setNull(1, java.sql.Types.INTEGER);
-//		statementInsertINSTRUMENT.setString(2, acc.get("AC$INSTRUMENT").get(0)[2]);
-//		statementInsertINSTRUMENT.setString(3, acc.get("AC$INSTRUMENT_TYPE").get(0)[2]);
-//		statementInsertINSTRUMENT.executeUpdate();
-//		set = statementInsertINSTRUMENT.getGeneratedKeys();
-//		set.next();
-//		int instrumentId = set.getInt("ID");
-//		
-//		//System.out.println(System.nanoTime());
-//		statementInsertRECORD.setString(1, acc.get("ACCESSION").get(0)[2]);
-//		statementInsertRECORD.setString(2, acc.get("RECORD_TITLE").get(0)[2]);
-//		statementInsertRECORD.setString(3, acc.get("DATE").get(0)[2]);
-//		statementInsertRECORD.setString(4, acc.get("AUTHORS").get(0)[2]);
-//		if (acc.get("LICENSE").size() != 0) {
-//			statementInsertRECORD.setString(5, acc.get("LICENSE").get(0)[2]);			
-//		} else {
-//			statementInsertRECORD.setNull(5, java.sql.Types.VARCHAR);
-//		}
-//		if (acc.get("COPYRIGHT").size() != 0) {
-//			statementInsertRECORD.setString(6, acc.get("COPYRIGHT").get(0)[2]);			
-//		} else {
-//			statementInsertRECORD.setNull(6, java.sql.Types.VARCHAR);
-//		}
-//		if (acc.get("PUBLICATION").size() != 0) {
-//			statementInsertRECORD.setString(7, acc.get("PUBLICATION").get(0)[2]);			
-//		} else {
-//			statementInsertRECORD.setNull(7, java.sql.Types.VARCHAR);
-//		}
-//		statementInsertRECORD.setInt(8, compoundId);
-//		if (sampleId > 0) {
-//			statementInsertRECORD.setInt(9, sampleId);
-//		} else {
-//			statementInsertRECORD.setNull(9, java.sql.Types.INTEGER);
-//		}
-//		statementInsertRECORD.setInt(10, instrumentId);
-//		statementInsertRECORD.setString(11, acc.get("AC$MASS_SPECTROMETRY", "MS_TYPE").get(0)[2]);
-//		statementInsertRECORD.setString(12, acc.get("AC$MASS_SPECTROMETRY", "ION_MODE").get(0)[2]);
-//		statementInsertRECORD.setString(13, acc.get("PK$SPLASH").get(0)[2]);
-//		statementInsertRECORD.setInt(14, conId);
-//		statementInsertRECORD.executeUpdate();
-////		set = statementInsertRECORD.getGeneratedKeys();
-////		set.next();
-//		String accession = acc.get("ACCESSION").get(0)[2];
-//		
-//		//System.out.println(System.nanoTime());
-//		for (String[] el : acc.get("COMMENT")) {
-//			statementInsertCOMMENT.setString(1, accession);
-//			statementInsertCOMMENT.setString(2, el[2]);
-////			statementInsertCOMMENT.executeUpdate();
-//			statementInsertCOMMENT.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertCOMMENT.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		for (String[] el : acc.get("AC$MASS_SPECTROMETRY")) {
-//			statementInsertAC_MASS_SPECTROMETRY.setString(1, accession);
-//			statementInsertAC_MASS_SPECTROMETRY.setString(2, el[1]);
-//			statementInsertAC_MASS_SPECTROMETRY.setString(3, el[2]);
-////			statementInsertAC_MASS_SPECTROMETRY.executeUpdate();
-//			statementInsertAC_MASS_SPECTROMETRY.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertAC_MASS_SPECTROMETRY.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		for (String[] el : acc.get("AC$CHROMATOGRAPHY")) {
-//			statementInsertAC_CHROMATOGRAPHY.setString(1, accession);
-//			statementInsertAC_CHROMATOGRAPHY.setString(2, el[1]);
-//			statementInsertAC_CHROMATOGRAPHY.setString(3, el[2]);
-////			statementInsertAC_CHROMATOGRAPHY.executeUpdate();
-//			statementInsertAC_CHROMATOGRAPHY.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertAC_CHROMATOGRAPHY.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		for (String[] el : acc.get("MS$FOCUSED_ION")) {
-//			statementInsertMS_FOCUSED_ION.setString(1, accession);
-//			statementInsertMS_FOCUSED_ION.setString(2, el[1]);
-//			statementInsertMS_FOCUSED_ION.setString(3, el[2]);
-////			statementInsertMS_FOCUSED_ION.executeUpdate();
-//			statementInsertMS_FOCUSED_ION.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertMS_FOCUSED_ION.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		for (String[] el : acc.get("MS$DATA_PROCESSING")) {
-//			statementInsertMS_DATA_PROCESSING.setString(1, accession);
-//			statementInsertMS_DATA_PROCESSING.setString(2, el[1]);
-//			statementInsertMS_DATA_PROCESSING.setString(3, el[2]);
-////			statementInsertMS_DATA_PROCESSING.executeUpdate();
-//			statementInsertMS_DATA_PROCESSING.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertMS_DATA_PROCESSING.executeBatch();
-//		}
-//
-//		//System.out.println(System.nanoTime());
-//		ArrayList<String[]> peak = acc.get("PK$PEAK");
-//		for (int i = 1; i < peak.size(); i++) {
-//			statementInsertPEAK.setString(1, accession);
-//			String values = peak.get(i)[2];
-//			statementInsertPEAK.setDouble(2, Double.parseDouble(values.substring(0, values.indexOf(" "))));
-//			values = values.substring(values.indexOf(" ")+1, values.length());
-//			statementInsertPEAK.setFloat(3, Float.parseFloat(values.substring(0, values.indexOf(" "))));
-//			values = values.substring(values.indexOf(" ")+1, values.length());
-//			statementInsertPEAK.setShort(4, Short.parseShort(values.substring(0, values.length())));
-//			statementInsertPEAK.setNull(5, java.sql.Types.VARCHAR);
-////			statementInsertPEAK.setNull(5, java.sql.Types.VARCHAR);
-////			statementInsertPEAK.setNull(6, java.sql.Types.SMALLINT);
-////			statementInsertPEAK.setNull(7, java.sql.Types.FLOAT);
-////			statementInsertPEAK.setNull(8, java.sql.Types.FLOAT);
-////			statementInsertPEAK.executeUpdate();
-//			statementInsertPEAK.addBatch();
-//		}
-//		if (!bulk) {
-//			statementInsertPEAK.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		ArrayList<String[]> annotation = acc.get("PK$ANNOTATION");
-//		if (annotation.size() != 0) {
-//			statementInsertANNOTATION_HEADER.setString(1, accession);
-//			statementInsertANNOTATION_HEADER.setString(2, annotation.get(0)[2]);
-//			statementInsertANNOTATION_HEADER.executeUpdate();
-//		}
-//		for (int i = 1; i < annotation.size(); i++) {
-//			String values = annotation.get(i)[2];
-//			Float mz = Float.parseFloat(values.substring(0, values.indexOf(" ")));
-////			values = values.substring(values.indexOf(" ")+1, values.length());
-//			statementUpdatePEAKs.setString(1, values);
-//			statementUpdatePEAKs.setString(2, accession);
-//			statementUpdatePEAKs.setFloat(3, mz);
-////			statementUpdatePEAK.setString(1, values.substring(0, values.indexOf(" ")));
-////			values = values.substring(values.indexOf(" ")+1, values.length());
-////			statementUpdatePEAK.setShort(2, Short.parseShort(values.substring(0, values.indexOf(" "))));
-////			values = values.substring(values.indexOf(" ")+1, values.length());
-////			statementUpdatePEAK.setFloat(3, Float.parseFloat(values.substring(0, values.indexOf(" "))));
-////			values = values.substring(values.indexOf(" ")+1, values.length());
-////			statementUpdatePEAK.setFloat(4, Float.parseFloat(values.substring(0, values.length())));
-////			statementUpdatePEAK.setString(5, accession);
-////			statementUpdatePEAK.setFloat(6, mz);
-////			statementUpdatePEAK.executeUpdate();
-//			statementUpdatePEAKs.addBatch();
-//		}
-//		if (!bulk) {
-//			statementUpdatePEAKs.executeBatch();
-//		}
-//		
-//		//System.out.println(System.nanoTime());
-//		con.commit();
-//		//System.out.println(System.nanoTime());
-//		
-//		} catch (SQLException e) {
-//			StringBuilder tmp = new StringBuilder();
-//			tmp.append(e.getMessage());
-//			tmp.append("\n");
-//			for (StackTraceElement el : e.getStackTrace()) {
-//				tmp.append(el.toString());
-//				tmp.append("\n");
-//			}
-//			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.get("ACCESSION").get(0)[2]);
-////			try {
-////				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.get("ACCESSION").get(0)[2] + ".txt")));
-////			} catch (FileNotFoundException e1) {
-////				//e1.printStackTrace();
-////			}
-//			this.closeConnection();
-//		} catch (IndexOutOfBoundsException e) {
-//			StringBuilder tmp = new StringBuilder();
-//			tmp.append(e.getMessage());
-//			tmp.append("\n");
-//			for (StackTraceElement el : e.getStackTrace()) {
-//				tmp.append(el.toString());
-//				tmp.append("\n");
-//			}
-//			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.get("ACCESSION").get(0)[2]);
-////			System.out.println(acc.get("ACCESSION").get(0)[2]);
-////			System.out.println(acc.get("PK$PEAK").size());
-////			System.out.println(acc.get("PK$ANNOTATION").size());
-////			try {
-////				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.get("ACCESSION").get(0)[2] + ".txt")));
-////			} catch (FileNotFoundException e1) {
-////				//e1.printStackTrace();
-////			}
-//		} catch (Exception e) {
-//			StringBuilder tmp = new StringBuilder();
-//			tmp.append(e.getMessage());
-//			tmp.append("\n");
-//			for (StackTraceElement el : e.getStackTrace()) {
-//				tmp.append(el.toString());
-//				tmp.append("\n");
-//			}
-//			DevLogger.printToDBLog("DB ERROR " + tmp + " for accession: " + acc.get("ACCESSION").get(0)[2]);
-////			try {
-////				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.get("ACCESSION").get(0)[2] + ".txt")));
-////			} catch (FileNotFoundException e1) {
-////				//e1.printStackTrace();
-////			}
-//			this.closeConnection();
-//		}
-//		this.closeConnection();
-//	}
 
+	
 	public Record.Contributor getContributorFromAccession(String accessionId) {
 //		String accessionId	= "OUF01001";
 		Record.Contributor contributor	= null;
