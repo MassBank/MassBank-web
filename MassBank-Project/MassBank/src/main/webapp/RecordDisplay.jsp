@@ -219,48 +219,49 @@
 				sb.append("\n");
 				break;
 			case "AUTHORS":
-				//sb.append(tag + ": " + value + "\n");
-				String[] authorTokens	= value.split(", ");
+// 				//sb.append(tag + ": " + value + "\n");
+// 				String[] authorTokens	= value.split(", ");
 				
-				// check which tokens are authors
-				int lastAuthorIdx	= -1;
-				for(int i = 0; i < authorTokens.length; i++){
-					// check if string is author like 'Akimoto AV'
-					boolean isAuthor	= authorTokens[i].matches("\\w+ \\w+");
-					if(isAuthor){
-						// 2nd word is initials?
-						String[] initials	= authorTokens[i].split(" ")[1].split("");
-						for(int j = 0; j < initials.length; j++)
-							if(!Character.isUpperCase(initials[j].toCharArray()[0])){
-								isAuthor	= false;
-								break;
-							}
-					}
-					if(isAuthor){
-						lastAuthorIdx	= i;
-					}
-				}
+// 				// check which tokens are authors
+// 				int lastAuthorIdx	= -1;
+// 				for(int i = 0; i < authorTokens.length; i++){
+// 					// check if string is author like 'Akimoto AV'
+// 					boolean isAuthor	= authorTokens[i].matches("\\w+ \\w+");
+// 					if(isAuthor){
+// 						// 2nd word is initials?
+// 						String[] initials	= authorTokens[i].split(" ")[1].split("");
+// 						for(int j = 0; j < initials.length; j++)
+// 							if(!Character.isUpperCase(initials[j].toCharArray()[0])){
+// 								isAuthor	= false;
+// 								break;
+// 							}
+// 					}
+// 					if(isAuthor){
+// 						lastAuthorIdx	= i;
+// 					}
+// 				}
 				
-				// create affiliation
-				int numberOfAuthors	= lastAuthorIdx + 1;
-				String affiliation	= String.join(", ", Arrays.copyOfRange(authorTokens, numberOfAuthors, authorTokens.length));
+// 				// create affiliation
+// 				int numberOfAuthors	= lastAuthorIdx + 1;
+// 				String affiliation	= String.join(", ", Arrays.copyOfRange(authorTokens, numberOfAuthors, authorTokens.length));
 				
-				// create authors
-				String[] authors	= new String[numberOfAuthors];
-				for(int i = 0; i < numberOfAuthors; i++)
-					authors[i]	= 
-							"<span property=\"schema:author\" typeof=\"schema:Person\">" +
-								"<span property=\"schema:name\">" + authorTokens[i] + "</span>" +
-								//((affiliation.length() > 0) ?"<span property=\"schema:affiliation\" style=\"visibility:hidden\">" + affiliation + "</span>" : "") +
-								((affiliation.length() > 0) ?"<span property=\"schema:affiliation\" style=\"display:none\">" + affiliation + "</span>" : "") +
-							"</span>";
+// 				// create authors
+// 				String[] authors	= new String[numberOfAuthors];
+// 				for(int i = 0; i < numberOfAuthors; i++)
+// 					authors[i]	= 
+// 							"<span property=\"schema:author\" typeof=\"schema:Person\">" +
+// 								"<span property=\"schema:name\">" + authorTokens[i] + "</span>" +
+// 								//((affiliation.length() > 0) ?"<span property=\"schema:affiliation\" style=\"visibility:hidden\">" + affiliation + "</span>" : "") +
+// 								((affiliation.length() > 0) ?"<span property=\"schema:affiliation\" style=\"display:none\">" + affiliation + "</span>" : "") +
+// 							"</span>";
 				
-				// paste
-				sb.append(tag + ": ");
-				sb.append(String.join(", ", authors));
-				if(affiliation.length() > 0)
-					sb.append(", " + affiliation);
-				sb.append("\n");
+// 				// paste
+// 				sb.append(tag + ": ");
+// 				sb.append(String.join(", ", authors));
+// 				if(affiliation.length() > 0)
+// 					sb.append(", " + affiliation);
+// 				sb.append("\n");
+				sb.append(tag + ": " + value + "\n");
 				break;
 			case "LICENSE":
 				sb.append(tag + ": " + "<a href=\"https://creativecommons.org/licenses/\" target=\"_blank\" property=\"schema:license\">" + value + "</a>" + "\n");
