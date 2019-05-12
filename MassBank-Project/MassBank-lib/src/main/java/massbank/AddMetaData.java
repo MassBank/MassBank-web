@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -21,9 +23,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -45,6 +50,12 @@ import net.sf.jniinchi.INCHI_RET;
  */
 public class AddMetaData {
 	private static final Logger logger = LogManager.getLogger(AddMetaData.class);
+	
+	public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+		JSONObject json = new JSONObject(IOUtils.toString(new URL(url),
+								Charset.forName("UTF-8")));
+		return json;
+	  }
 	
 	/**
 	 * Automatically format a PUBLICATION tag according to ACS rules if a DOI could be identified.
@@ -145,15 +156,17 @@ public class AddMetaData {
 		}
 		recordstring=recordstring.replaceAll("CH\\$LINK: .*\n", "");
 		
-		StringBuilder sb=new StringBuilder();
-		boolean hasInchi=false;
+		
+		// add InChI-Key if missing
+		boolean hasInchiKey=false;
+		String INCHIKEY = null;
 		for (Pair<String, String> link : record.CH_LINK()) {
 			if ("INCHIKEY".equals(link.getKey())) {
-				hasInchi=true;
+				hasInchiKey=true;
+				INCHIKEY=link.getValue();
 			}
-			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		}
-		if (!hasInchi) {
+		if (!hasInchiKey) {
 			String ch_iupac = record.CH_IUPAC();
 			if (!"N/A".equals(ch_iupac)) {
 				try {
@@ -182,14 +195,61 @@ public class AddMetaData {
 						// InChI generation failed
 						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
 					}
-					sb.append("CH$LINK: INCHIKEY " + inchiGen.getInchiKey() + "\n");
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("INCHIKEY",inchiGen.getInchiKey()));
-					record.CH_LINK(ch_link);
+					else {
+						List<Pair<String, String>>ch_link = record.CH_LINK();
+						ch_link.add(Pair.of("INCHIKEY",inchiGen.getInchiKey()));
+						record.CH_LINK(ch_link);
+						INCHIKEY=inchiGen.getInchiKey();
+						hasInchiKey=true;
+					}					
 				} catch (CDKException e) {
 					logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
 				}		 			
 			}
+		}
+		
+		// add database identifier
+		if (hasInchiKey) {
+			// add COMPTOX if missing
+			boolean hasCOMPTOX=false;
+			String COMPTOX=null;
+			for (Pair<String, String> link : record.CH_LINK()) {
+				if ("COMPTOX".equals(link.getKey())) {
+					hasCOMPTOX=true;
+					COMPTOX=link.getValue();
+				}
+			}
+			if (!hasCOMPTOX) {
+				JSONObject comptox=null;
+				try {
+					comptox = readJsonFromUrl("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY);
+					String DTXSID = comptox.getJSONObject("DataRow").getString("dtxsid");
+					List<Pair<String, String>>ch_link = record.CH_LINK();
+					ch_link.add(Pair.of("COMPTOX", DTXSID));
+					record.CH_LINK(ch_link);
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch DTXSID.");
+					logger.trace(e.getMessage());
+				}
+			}
+			else {
+				JSONObject comptox=null;
+				try {
+					comptox = readJsonFromUrl("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY);
+					String DTXSID = comptox.getJSONObject("DataRow").getString("dtxsid");
+					if (!DTXSID.equals(COMPTOX)) {
+						logger.error("Wrong COPTOX database identifier in record file.");
+					}
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch DTXSID.");
+					logger.trace(e.getMessage());
+				}
+			}
+		}
+		
+		StringBuilder sb=new StringBuilder();
+		for (Pair<String, String> link : record.CH_LINK()) {
+			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		}
 		recordstring=recordstring.substring(0, ch_linkPos) + sb.toString() + recordstring.substring(ch_linkPos, recordstring.length());
 
