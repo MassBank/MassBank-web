@@ -1713,8 +1713,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 				
 			}
-			
-			
+
 			
 			// validate the number of peaks in the peaklist
 			Integer num_peak= callback.PK_NUM_PEAK();
@@ -1725,6 +1724,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
 				return context.failure(sb.toString());
 			}
+			
 			
 			// validate the SPLASH
 			List<Ion> ions = new ArrayList<Ion>();
@@ -1742,6 +1742,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				return context.failure(sb.toString());
 			}
 			
+			
 			// check peak sorting
 			for (int i=0; i<pk_peak.size()-1; i++) {
 				if ((pk_peak.get(i).get(0).compareTo(pk_peak.get(i+1).get(0)))>=0) {
@@ -1752,6 +1753,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 			}
 			
+			
 			// max 600 characters are supported in database for PUBLICATION
 			if (callback.PUBLICATION()!=null) {
 				if (callback.PUBLICATION().length()>600) {
@@ -1760,6 +1762,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					return context.failure(sb.toString());
 				}
 			}
+			
 			
 			// check for duplicate entries in CH$NAME
 			List<String> ch_name = callback.CH_NAME();
@@ -1779,6 +1782,23 @@ public class RecordParserDefinition extends GrammarDefinition {
 					logger.warn("There are duplicate entries in \"CH$NAME\" field.");
 				}
 			}
+			
+			
+			// check for duplicate entries in CH$LINK
+			List<Pair<String, String>> ch_link = callback.CH_LINK();
+			duplicates = new LinkedHashSet<String>();
+			uniques = new HashSet<String>();
+			for(Pair<String, String> c : ch_link) {
+				if(!uniques.add(c.getKey())) {
+					duplicates.add(c.getKey());
+				}
+			}
+			if (duplicates.size()>0) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("There are duplicate entries in \"CH$LINK\" field.");
+				return context.failure(sb.toString());
+			}
+			
 		}
 		return r;
 	}
