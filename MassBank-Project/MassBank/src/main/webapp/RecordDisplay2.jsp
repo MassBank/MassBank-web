@@ -58,6 +58,24 @@
 ${structureddata}
 </head>
 
+<script>
+// $(document).ready(function() {
+// 	$('#chemicalStructure').click(function() {
+// 		var myWindow = window.open("", "Chemical Structure", "width=200,height=100");
+// 		myWindow.document.write('<div id=\"container\"></div>');
+// 		container = myWindow.document.getElementById("container");
+// 		
+		
+		
+// 		//var svg = myWindow.document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		
+// 		//myWindow.document.body.appendChild(svg);
+		
+// 		return false; 
+// 	});
+// });
+</script>
+
 <body class="w3-theme-gradient">
 	<noscript>
 		<div class="w3-panel w3-yellow">
@@ -106,13 +124,11 @@ ${structureddata}
 			<div class="w3-row w3-padding-small">
 				<div class="w3-twothird w3-text-grey w3-small">
 					Mass Spectrum
-					<div id="spectrum_canvas" peaks="${peaks}" style="height:200px; width:600px; background-color:white"></div>
+					<div id="spectrum_canvas" peaks="${peaks}" style="height:200px; width:600px; max-width:100%; background-color:white"></div>
 				</div>
 				<div class="w3-third w3-text-grey w3-small">
 					Chemical Structure<br>
-					<a href="figure/${accession}.svg">
-						<img src="figure/${accession}.svg" style="width:100%">
-					</a>
+					<a id="chemicalStructure" class="w3-text-dark-grey" href="">${svg}</a>
 				</div>
 			</div>
 		</c:if>

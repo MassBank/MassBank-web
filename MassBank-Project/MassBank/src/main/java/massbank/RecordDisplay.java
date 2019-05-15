@@ -37,6 +37,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.depict.Depiction;
+import org.openscience.cdk.depict.DepictionGenerator;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 @WebServlet("/RecordDisplay2")
 public class RecordDisplay extends HttpServlet {
@@ -645,6 +648,8 @@ public class RecordDisplay extends HttpServlet {
 					".";
 				String recordstring = createRecordString(record);
 				String structureddata = createStructuredData(record);
+				IAtomContainer mol = record.CH_IUPAC_obj(); 
+				String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);
 				
 				request.setAttribute("accession", accession);
 				request.setAttribute("short_name", shortname);
@@ -654,6 +659,7 @@ public class RecordDisplay extends HttpServlet {
 				request.setAttribute("description", description);
 				request.setAttribute("recordstring", recordstring);
 		        request.setAttribute("structureddata", structureddata);
+		        request.setAttribute("svg", svg);
 			}
 	        request.getRequestDispatcher("/RecordDisplay2.jsp").forward(request, response);
 		} catch (Exception e) {
