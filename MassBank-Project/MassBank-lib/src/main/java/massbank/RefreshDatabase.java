@@ -73,11 +73,6 @@ public class RefreshDatabase {
 					}
 					logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
 					db.persistAccessionFile(record);
-					// TODO use database timestamp for lazy generation
-					//logger.trace("Creating svg figure for record\"" + record.ACCESSION() + "\".");
-					// create formula images					
-					//DepictionGenerator dg = new DepictionGenerator().withAtomColors().withZoom(3);
-					//dg.depict(record.CH_IUPAC_obj()).writeTo(Config.get().DataRootPath()+"/figure/"+record.ACCESSION()+".svg");
 				}
 				path2.close();
 			}
