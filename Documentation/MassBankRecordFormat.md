@@ -278,7 +278,7 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td><a href="#2.5.2">2.5.2</a></td>
   </tr>
   <tr>
-    <td colspan="6">Peak Information</td>
+    <td colspan="6"><b>Peak Information</b></td>
   </tr>
   <tr>
     <td>PK$SPLASH</td>
