@@ -59,8 +59,10 @@ public class AddMetaData {
 	// https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/AADVZSXPNRLYLVadasd/JSON
 
 	public static String getPubchemCID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
-		return Integer.toString(new JSONObject(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/" + INCHIKEY + "/JSON"),
-				Charset.forName("UTF-8"))).getJSONArray("PC_Compounds").getJSONObject(0).getJSONObject("id").getJSONObject("id").getInt("cid"));
+		JSONObject jo = new JSONObject(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/" + INCHIKEY + "/JSON"), Charset.forName("UTF-8")));
+		logger.trace(jo.toString());
+		int lastCompoundId = jo.getJSONArray("PC_Compounds").length()-1;
+		return Integer.toString(jo.getJSONArray("PC_Compounds").getJSONObject(lastCompoundId).getJSONObject("id").getJSONObject("id").getInt("cid"));
 	}
 	
 	/**
