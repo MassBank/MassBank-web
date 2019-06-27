@@ -42,6 +42,7 @@
 	<script>svg4everybody();</script>
 </head>
 
+
 <body class="w3-theme-gradient">
 	<noscript>
 		<div class="w3-panel w3-yellow">
@@ -170,27 +171,7 @@
 			</ul>
 		</div>
 	</div> 
-	<!-- 
-	Merged spectra are missing at the moment. Hence, we exclude this chunk.
-	<div class="w3-row w3-padding">
-		<div class="w3-col" style="width:120px">
-			<b>Merged Type</b>
-		</div>
-		<div class="w3-col" style="width:10px">
-			<b>:</b>
-		</div>
-		<div class="w3-rest">
-			<ul style="-webkit-columns:150px 5;-moz-columns:150px 5;columns:150px 5;margin:0px;list-style:none;">
-				<c:forEach items="${mergedtypes}" var="mergedtype">
-					<li>
-						<a class="w3-text-blue" href="Result.jsp?type=rcdidx&idxtype=merged&srchkey=${mergedtype.key}&sortKey=name&sortAction=1&pageNo=1&exec="
-						title="${mergedtype.key}" target="_self">${mergedtype.key}</a> (${mergedtype.value})
-					</li>
-				</c:forEach>
-			</ul>
-		</div>
-	</div> 
-	 -->
+
 	<div class="w3-row w3-padding">
 		<div class="w3-col" style="width:120px">
 			<b>Ion Mode</b>
@@ -209,6 +190,7 @@
 			</ul>
  		</div>
 	</div> 
+	
 
 	<div class="w3-row w3-padding">
 		<div class="w3-col" style="width:120px">
@@ -227,17 +209,57 @@
 				</c:forEach>
 			</ul>
 		</div>
-	</div> 
+	</div>
+	
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Unique Spectra</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+				<li>${spectra}</li>
+			</ul>
+		</div>
+	</div>
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Unique Compounds</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+				<li>${compounds}</li>
+			</ul>
+		</div>
+	</div>
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Unique Isomers</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+				<li>${isomers}</li>
+			</ul>
+		</div>
+	</div>
 	
 	<div class="w3-padding">
 		<div class="w3-padding-small">
-			<img src="figure/massbank_Contributor_Graph.svg" alt="" border="0">
+			${sitechartSVG}
 		</div>
 		<div class="w3-padding-small">
-			<img src="figure/massbank_Instrument_Type_Graph.svg" alt="" border="0">
+			${instchartSVG}
 		</div>
 		<div class="w3-padding-small">
-			<img src="figure/massbank_MS_Type_Graph.svg" alt="" border="0">
+			${mschartSVG}
 		</div>
 	</div> 
 

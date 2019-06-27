@@ -46,226 +46,49 @@ public class RecordParserDefinition extends GrammarDefinition {
 	public RecordParserDefinition(Record callback, boolean strict) {
 		def("start",
 			ref("accession")
-			.seq(ref("record_title"))
-			.seq(ref("date"))
-			.seq(ref("authors"))
-			.seq(ref("license"))
-			.seq(ref("copyright").optional())
-			.seq(ref("publication").optional())
-			.seq(ref("comment").optional())
-			.seq(ref("ch_name"))
-			.seq(ref("ch_compound_class"))
-			.seq(ref("ch_formula"))
-			.seq(ref("ch_exact_mass"))
-			.seq(ref("ch_smiles"))
-			.seq(ref("ch_iupac"))
-			.seq(ref("ch_link").optional())
-			.seq(ref("sp_scientific_name").optional())
-			.seq(ref("sp_lineage").optional())
-			.seq(ref("sp_link").optional())
-			.seq(ref("sp_sample").optional())
-			.seq(ref("ac_instrument"))
-			.seq(ref("ac_instrument_type"))
-			.seq(ref("ac_mass_spectrometry_ms_type"))
-			.seq(ref("ac_mass_spectrometry_ion_mode"))
-			.seq(ref("ac_mass_spectrometry").optional())
-			.seq(ref("ac_chromatography").optional())
-			.seq(ref("ms_focused_ion").optional())
-			.seq(ref("ms_data_processing").optional())
-			.seq(ref("pk_splash"))
-			.seq(ref("pk_annotation").optional())
-			.seq(ref("pk_num_peak"))
-			.seq(ref("pk_peak"))
-			.seq(ref("endtag"))
-//			.map((List<?> value) -> {
-//				System.out.println(value);
-//				return value;						
-//			})
-			// check semantic here
-			.callCC((Function<Context, Result> continuation, Context context) -> {
-				Result r = continuation.apply(context);
-				if (r.isSuccess()) {
-					String ch_formula=callback.CH_FORMULA();
-					String ch_smiles=callback.CH_SMILES();
-					String ch_iupac=callback.CH_IUPAC();
-					
-					// if any information is in smiles or InChI CH$FORMULA must be defined
-					if ("N/A".equals(ch_formula)) {
-						if ((!"N/A".equals(ch_smiles)) || (!"N/A".equals(ch_iupac))) {
-							return context.failure("\"CH$FORMULA: N/A\" requires \"CH$SMILES: N/A\" and \"CH$IUPAC: N/A\".");
-						}
-					}
-					else {
-						IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, DefaultChemObjectBuilder.getInstance());
-						String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
-						if (!(ch_formula.equals(ch_formula_from_cdk))) {
-							logger.warn("CH$FORMULA is \"" + ch_formula + "\"");
-							logger.warn("but after parsing it is interpreted as \"" + ch_formula_from_cdk + "\". Please check!");
-							logger.warn(callback.ACCESSION());
-						}
-					}
-					
-					// if InChI is available SMILES is also possible and the other way around
-					if ((!"N/A".equals(ch_smiles)) && ("N/A".equals(ch_iupac))) {
-						return context.failure("CH$SMILES is available but CH$IUPAC is empty.");
-					}
-					if (("N/A".equals(ch_smiles)) && (!"N/A".equals(ch_iupac))) {
-						return context.failure("CH$IUPAC is available but CH$SMILES is empty.");
-					}
-					
-					// check the formula of the molecule in smiles against CH$FORMULA
-					if (!"N/A".equals(ch_smiles)) {
-						try {
-							IAtomContainer m = new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
-							// get the molecular formula from the SMILES and compare it with CH$FORMULA
-							String formula_smiles = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
-							logger.trace("Formula from SMILES: \"" + formula_smiles + "\".");
-							if (!formula_smiles.equals(ch_formula)) {
-								logger.trace("Formula from record file " + ch_formula + ".");
-								return context.failure("Formula generated from SMILES string in \"CH$SMILES\" field does not match formula in \"CH$FORMULA\". "
-										+ formula_smiles + "!= \"CH$FORMULA: " + ch_formula + "\"");
-							}							
-						} catch (InvalidSmilesException e) { 
-							return context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage() + " for " + ch_smiles);		 				
-						}
-					}
-					
-					// check the formula of the molecule in CH$IUPAC against CH$FORMULA
-					// and keep an InChIGenerator for later
-					InChIGenerator inchiGen = null;
-					if (!"N/A".equals(ch_iupac)) {
-						try {
-							// Get InChIToStructure
-							InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, DefaultChemObjectBuilder.getInstance());
-							INCHI_RET ret = intostruct.getReturnStatus();
-							if (ret == INCHI_RET.WARNING) {
-								// Structure generated, but with warning message
-								logger.warn("InChI warning: " + intostruct.getMessage());
-								logger.warn(callback.ACCESSION());
-							} 
-							else if (ret != INCHI_RET.OKAY) {
-								// Structure generation failed
-								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + ch_iupac + ".");
-							}
-							// Structure generation succeeded
-							IAtomContainer m = intostruct.getAtomContainer();
-							// prepare an InChIGenerator
-							inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
-							
-							// get the molecular formula from the InChI and compare it with CH$FORMULA
-							String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
-							logger.trace("Formula from InChI: \"" + formula_inchi + "\".");
-							if (!formula_inchi.equals(callback.CH_FORMULA())) {
-								logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
-								return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-										+ formula_inchi + "!= \"CH$FORMULA: " + callback.CH_FORMULA() + "\"");
-							}
-						} catch (CDKException e) {
-							return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
-						}		 			
-					}
-					
-					// check the InChiKey against the InChi
-					if (inchiGen!= null) {
-						String InChiKey = callback.CH_LINK_asMap().get("INCHIKEY");
-						if (InChiKey!=null) {
-							try {
-								// we have an InChiKey in CH$LINK and an inchiGen initialized 
-								// with the structure retrieved from the InChi
-								INCHI_RET ret = inchiGen.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
-									// InChI generated, but with warning message
-									//logger.warn("InChI warning: " + inchiGen.getMessage());
-									//logger.warn(callback.ACCESSION());
-								} else if (ret != INCHI_RET.OKAY) {
-									// InChI generation failed
-									return context.failure("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
-								}
-								
-								if (!ch_iupac.equals(inchiGen.getInchi())) {
-									return context.failure("Missmatch in InChi during validation of InChiKey. "
-											+ inchiGen.getInchi() + " != \"CH$IUPAC: " + ch_iupac + "\"");
-								}
-								if (!InChiKey.equals(inchiGen.getInchiKey())) {
-									return context.failure("InChiKey generated from InChI string in \"CH$IUPAC\" field does not match InChiKey in \"CH$LINK\". "
-											+ inchiGen.getInchiKey() + " != \"CH$LINK: INCHIKEY " + InChiKey + "\"");
-								}
-							} catch (CDKException e) {
-								return context.failure("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + e.getMessage() + "\" for \"" + ch_iupac + "\".");
-							}
-						}
-						
-					}
-					
-					// validate the number of peaks in the peaklist
-					Integer num_peak= callback.PK_NUM_PEAK();
-					List<List<Double>> pk_peak = callback.PK_PEAK();
-					if (pk_peak.size() != num_peak) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("Incorrect number of peaks in peaklist. ");
-						sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
-						return context.failure(sb.toString());
-					}
-					
-					// validate the SPLASH
-					List<Ion> ions = new ArrayList<Ion>();
-					for (List<Double> peak_line :  pk_peak) {
-						ions.add(new Ion(peak_line.get(0), peak_line.get(1)));
-					}
-					Splash splashFactory = SplashFactory.create();
-					Spectrum spectrum = new SpectrumImpl(ions, SpectraType.MS);
-					String splash_from_peaks = splashFactory.splashIt(spectrum);
-					String splash_from_record = callback.PK_SPLASH();
-					if (!splash_from_peaks.equals(splash_from_record)) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("SPLASH from record file does not match SPLASH calculated from peaklist. ");
-						sb.append(splash_from_record + " defined in record file, but " + splash_from_peaks + " calculated from peaks.\n");
-						return context.failure(sb.toString());
-					}
-					
-					// check peak sorting
-					for (int i=0; i<pk_peak.size()-1; i++) {
-						if ((pk_peak.get(i).get(0).compareTo(pk_peak.get(i+1).get(0)))>=0) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("The peaks in the peak list are not sorted.\n");
-							sb.append("Error in line " + pk_peak.get(i).toString() + ".\n");
-							return context.failure(sb.toString());
-						}
-					}
-					
-					// max 600 characters are supported in database for PUBLICATION
-					if (callback.PUBLICATION()!=null) {
-						if (callback.PUBLICATION().length()>600) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("PUBLICATION length exeeds database limit of 600 characters.\n");
-							return context.failure(sb.toString());
-						}
-					}
-					
-					// check for duplicate entries in CH$NAME
-					List<String> ch_name = callback.CH_NAME();
-					Set<String> duplicates = new LinkedHashSet<String>();
-					Set<String> uniques = new HashSet<String>();
-					for(String c : ch_name) {
-						if(!uniques.add(c)) {
-							duplicates.add(c);
-						}
-					}
-					if (duplicates.size()>0) {
-						if (strict ) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("There are duplicate entries in \"CH$NAME\" field.");
-							return context.failure(sb.toString());
-						} else {
-							logger.warn("There are duplicate entries in \"CH$NAME\" field.");
-						}
-					}
-
-					    
-					
-				}
-				return r;
-			})
+			.seq(ref("deprecated_record")
+				.or(
+					ref("record_title")
+					.seq(ref("date"))
+					.seq(ref("authors"))
+					.seq(ref("license"))
+					.seq(ref("copyright").optional())
+					.seq(ref("publication").optional())
+					.seq(ref("comment").optional())
+					.seq(ref("ch_name"))
+					.seq(ref("ch_compound_class"))
+					.seq(ref("ch_formula"))
+					.seq(ref("ch_exact_mass"))
+					.seq(ref("ch_smiles"))
+					.seq(ref("ch_iupac"))
+					.seq(ref("ch_link").optional())
+					.seq(ref("sp_scientific_name").optional())
+					.seq(ref("sp_lineage").optional())
+					.seq(ref("sp_link").optional())
+					.seq(ref("sp_sample").optional())
+					.seq(ref("ac_instrument"))
+					.seq(ref("ac_instrument_type"))
+					.seq(ref("ac_mass_spectrometry_ms_type"))
+					.seq(ref("ac_mass_spectrometry_ion_mode"))
+					.seq(ref("ac_mass_spectrometry").optional())
+					.seq(ref("ac_chromatography").optional())
+					.seq(ref("ms_focused_ion").optional())
+					.seq(ref("ms_data_processing").optional())
+					.seq(ref("pk_splash"))
+					.seq(ref("pk_annotation").optional())
+					.seq(ref("pk_num_peak"))
+					.seq(ref("pk_peak"))
+					.seq(ref("endtag"))
+//					.map((List<?> value) -> {
+//						System.out.println(value);
+//						return value;						
+//					})
+					// check semantic here
+					.callCC((Function<Context, Result> continuation, Context context) -> {
+						return checkSemantic(continuation, context, callback, strict);
+					})
+				)
+			)
 			.end()
 		);
 		
@@ -312,6 +135,26 @@ public class RecordParserDefinition extends GrammarDefinition {
 				})
 			)
 			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
+		
+		def("deprecated_record",
+			StringParser.of("DEPRECATED")
+			.seq(ref("tagsep"))
+			.map((List<?> value) -> {
+				callback.DEPRECATED(true);
+				return value;						
+			})
+			.seq(CharacterParser.any().star()
+				.flatten()
+				.map((String value) -> {
+					callback.DEPRECATED_CONTENT(value);
+					return value;
+				})
+			)
 //			.map((List<?> value) -> {
 //				System.out.println(value);
 //				return value;						
@@ -600,12 +443,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 		
 		
 		// 2.2.3 CH$FORMULA
-		// Molecular Formula of Chemical Compound. Mandatory
-		// Example
-		// CH$FORMULA: C9H10ClNO3
-		// It follows the Hill's System.
-		// No prosthetic molecule is included (see 2.2.1 CH$NAME).
-		// Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in the MS$FOCUSED_ION: DERIVATIVE_FORM (2.5.1) field.
 		def("element", StringParser.of("Zr")
 			.or(StringParser.of("Zn"))
 			.or(StringParser.of("Yb"))
@@ -1066,23 +903,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		);
 		
 		// 2.4.2 AC$INSTRUMENT_TYPE
-		// General Type of Instrument. Mandatory
-		// Example
-		// AC$INSTRUMENT_TYPE: LC-ESI-QTOF
-		// Format is:
-		// (Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type).
-		// Separation tool types are CE, GC, LC.
-		// Ionization methods are APCI, APPI, EI, ESI, FAB, MALDI.
-		// Ion analyzer types are B, E, FT, IT, Q, TOF.
-		// In tandem mass analyzers, no “–“ is inserted between ion analyzers.
-		// FT includes FTICR and other type analyzers using FT, such as Orbitrap(R).
-		// IT comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap.
-		// Other examples of AC$INSTRUMENT_TYPE data are as follows.
-		// ESI-QQ
-		// ESI-QTOF
-		// GC-EI-EB
-		// LC-ESI-ITFT
-		// Cross-reference to mzOntology: Ionization methods [MS:1000008]; APCI [MS:1000070]; APPI [MS:1000382]; EI [MS:1000389]; ESI [MS:1000073]; B [MS:1000080]; IT [MS:1000264], Q [MS:1000081], TOF [MS:1000084].
+		// Mandatory
 		def("ac_instrument_type_sep",
 			StringParser.of("CE")
 			.or(StringParser.of("GC"))
@@ -1100,6 +921,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("FD"))
 			.or(StringParser.of("CI"))
 			.or(StringParser.of("FI"))
+			.or(StringParser.of("SI"))
 			.seq(CharacterParser.of('-'))
 			.pick(0)
 		);
@@ -1418,50 +1240,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 
 
 		// 2.5.1 MS$FOCUSED_ION: subtag Description
-		// Information of Precursor or Molecular Ion. Optional
-		// MS$FOCUSED_ION fields should be arranged by the alphabetical order of subtag names.
 		// 2.5.1 Subtag: BASE_PEAK
-		// m/z of Base Peak.
-		// Example: MS$FOCUSED_ION: BASE_PEAK 73
 		// 2.5.1 Subtag: DERIVATIVE_FORM
-		// Molecular Formula of Derivative for GC-MS.
-		// Example
-		// MS$FOCUSED_ION: DERIVATIVE_FORM C19H42O5Si4
-		// MS$FOCUSED_ION: DERIVATIVE_FORM C{9+3*n}H{16+8*n}NO5Si{n}
 		// 2.5.1 Subtag: DERIVATIVE_MASS
-		// Exact Mass of Derivative for GC-MS.
-		// Example: MS$FOCUSED_ION: DERIVATIVE_MASS 462.21093
 		// 2.5.1 Subtag: DERIVATIVE_TYPE
-		// Type of Derivative for GC-MS.
-		// Example: MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS
 		// 2.5.1 Subtag: ION_TYPE
-		// Type of Focused Ion.
-		// Example: MS$FOCUSED_ION: ION_TYPE [M+H]+
-		// Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+, [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+, [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-, [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-.
 		// 2.5.1 Subtag: PRECURSOR_M/Z
-		// m/z of Precursor Ion in MSn spectrum.
-		// Example: MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123
-		// Calculated exact mass is preferred to the measured accurate mass of the precursor ion. Cross-reference to mzOntology: precursor m/z [MS:1000504]
-		// 2.5.1 Subtag: PRECURSOR_TYPE
-		// Type of Precursor Ion in MSn.
-		// Example: MS$FOCUSED_ION: PRECURSOR_TYPE [M-H]-
-		// Types currently used in MassBank are [M]+, [M]+*, [M+H]+, [2M+H]+, [M+Na]+,
-		// [M-H+Na]+, [2M+Na]+, [M+2Na-H]+, [(M+NH3)+H]+, [M+H-H2O]+, [M+H-C6H10O4]+,
-		// [M+H-C6H10O5]+, [M]-, [M-H]-, [M-2H]-, [M-2H+H2O]-, [M-H+OH]-, [2M-H]-, [M+HCOO-]-,
-		// [(M+CH3COOH)-H]-, [2M-H-CO2]- and [2M-H-C6H10O5]-. Cross-reference to mzOntology: Precursor type [MS: 1000792]
 		
-//		def("Element_token", 
-//				StringParser.of("Os").or(StringParser.of("Xe")).or(StringParser.of("Pa")).or(StringParser.of("Pb")).or(StringParser.of("Pd")).or(StringParser.of("He")).or(StringParser.of("Pm")).or(StringParser.of("Hf")).or(StringParser.of("Hg")).or(StringParser.of("Po")).or(StringParser.of("Pr")).or(StringParser.of("Pt")).or(StringParser.of("Pu")).or(StringParser.of("Ho")).or(StringParser.of("Yb")).or(StringParser.of("Hs")).or(StringParser.of("Ac")).or(StringParser.of("In")).or(StringParser.of("Ag")).or(StringParser.of("Ir")).or(StringParser.of("Al")).or(StringParser.of("Am")).or(StringParser.of("Ra")).or(StringParser.of("Rb")).or(StringParser.of("Ar")).or(StringParser.of("As")).or(StringParser.of("Re")).or(StringParser.of("At")).or(StringParser.of("Zn")).or(StringParser.of("Au")).or(StringParser.of("Rf")).or(StringParser.of("Rg")).or(StringParser.of("Rh")).or(StringParser.of("Zr")).or(StringParser.of("Rn")).or(StringParser.of("Ba")).or(StringParser.of("Be")).or(StringParser.of("Ru")).or(StringParser.of("Bh")).or(StringParser.of("Bi")).or(StringParser.of("Bk")).or(StringParser.of("Sb")).or(StringParser.of("Sc")).or(StringParser.of("Br")).or(StringParser.of("Se")).or(StringParser.of("Sg")).or(StringParser.of("Si")).or(StringParser.of("Sm")).or(StringParser.of("Sn")).or(StringParser.of("Ca")).or(StringParser.of("Sr")).or(StringParser.of("Cd")).or(StringParser.of("Ce")).or(StringParser.of("Cf")).or(StringParser.of("Kr")).or(StringParser.of("Cl")).or(StringParser.of("Cm")).or(StringParser.of("Cn")).or(StringParser.of("Co")).or(StringParser.of("Ta")).or(StringParser.of("Tb")).or(StringParser.of("Cr")).or(StringParser.of("Tc")).or(StringParser.of("Cs")).or(StringParser.of("Te")).or(StringParser.of("Cu")).or(StringParser.of("Th")).or(StringParser.of("Ti")).or(StringParser.of("La")).or(StringParser.of("Tl")).or(StringParser.of("Tm")).or(StringParser.of("Li")).or(StringParser.of("Db")).or(StringParser.of("Ts")).or(StringParser.of("Lr")).or(StringParser.of("Lu")).or(StringParser.of("Lv")).or(StringParser.of("Uuo")).or(StringParser.of("Ds")).or(StringParser.of("Uup")).or(StringParser.of("Uus")).or(StringParser.of("Dy")).or(StringParser.of("Uut")).or(StringParser.of("Mc")).or(StringParser.of("Md")).or(StringParser.of("Mg")).or(StringParser.of("Mn")).or(StringParser.of("Mo")).or(StringParser.of("Mt")).or(StringParser.of("Er")).or(StringParser.of("Es")).or(StringParser.of("Eu")).or(StringParser.of("Na")).or(StringParser.of("Nb")).or(StringParser.of("Nd")).or(StringParser.of("Ne")).or(StringParser.of("Nh")).or(StringParser.of("Ni")).or(StringParser.of("Fe")).or(StringParser.of("No")).or(StringParser.of("Np")).or(StringParser.of("Fl")).or(StringParser.of("Fm")).or(StringParser.of("Fr")).or(StringParser.of("Og")).or(StringParser.of("Ga")).or(StringParser.of("Gd")).or(StringParser.of("Ge")).or(StringParser.of("B")).or(StringParser.of("C")).or(StringParser.of("F")).or(StringParser.of("H")).or(StringParser.of("I")).or(StringParser.of("K")).or(StringParser.of("N")).or(StringParser.of("O")).or(StringParser.of("P")).or(StringParser.of("S")).or(StringParser.of("U")).or(StringParser.of("V")).or(StringParser.of("W")).or(StringParser.of("Y"))
-//		);
-//		def("ElementCount_token", 
-//				ref("Element_token").seq(digit().star())
-//		);
-//		def("MolecularFormula_token", 
-//				ref("ElementCount_token").plus()
-//		);
-//		def("adduct_token", 
-//				CharacterParser.anyOf("+-").seq(digit().star().seq(ref("MolecularFormula_token").plus()))
-//		);
+		// 2.5.1 Subtag: PRECURSOR_TYPE
 		def("adduct_token", 
 				CharacterParser.anyOf("+-")
 				.seq(ref("uint_primitive").optional())
@@ -1794,5 +1580,235 @@ public class RecordParserDefinition extends GrammarDefinition {
 //			})
 		);
 	}
+	
+	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback, boolean strict) {
+		Result r = continuation.apply(context);
+		if (r.isSuccess()) {
+			String ch_formula=callback.CH_FORMULA();
+			String ch_smiles=callback.CH_SMILES();
+			String ch_iupac=callback.CH_IUPAC();
+			String InChiKey_from_CH_IUPAC = null;
+			
+			// validate the three sources of formulas against each other
+			
+			// if any structural information is in smiles or InChI then CH$FORMULA must be defined
+			if ("N/A".equals(ch_formula)) {
+				if (!("N/A".equals(ch_smiles)) && ("N/A".equals(ch_iupac))) {
+					return context.failure("\"CH$FORMULA: N/A\" requires \"CH$SMILES: N/A\" and \"CH$IUPAC: N/A\".");
+				}
+			}
+			else {
+				IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, DefaultChemObjectBuilder.getInstance());
+				String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
+				if (!(ch_formula.equals(ch_formula_from_cdk))) {
+					logger.warn("CH$FORMULA is \"" + ch_formula + "\"");
+					logger.warn("but after parsing it is interpreted as \"" + ch_formula_from_cdk + "\". Please check!");
+					logger.warn(callback.ACCESSION());
+				}
+			}
+			
+			// if InChI is available SMILES is also possible and the other way around
+			if (!("N/A".equals(ch_smiles)) && "N/A".equals(ch_iupac)) {
+				return context.failure("CH$SMILES is available but CH$IUPAC is empty.");
+			}
+			if ("N/A".equals(ch_smiles) && !("N/A".equals(ch_iupac))) {
+				return context.failure("CH$IUPAC is available but CH$SMILES is empty.");
+			}
+			
+			// check CH$IUPAC
+			if (!"N/A".equals(ch_iupac)) {
+				try {
+					// Get InChIToStructure
+					InChIToStructure intoStruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, DefaultChemObjectBuilder.getInstance());
+					INCHI_RET ret = intoStruct.getReturnStatus();
+					if (ret == INCHI_RET.WARNING) {
+						// Structure generated, but with warning message
+						logger.warn("InChI warning: " + intoStruct.getMessage());
+					} 
+					else 
+					if (ret != INCHI_RET.OKAY) {
+						// Structure generation failed
+						return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intoStruct.getMessage() + "] for " + ch_iupac + ".");
+					}
+					// Structure generation succeeded
+					IAtomContainer m = intoStruct.getAtomContainer();
+					// get the molecular formula from the InChI and compare it with CH$FORMULA
+					String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
+					logger.trace("Formula from InChI: \"" + formula_inchi + "\".");
+					if (!formula_inchi.equals(callback.CH_FORMULA())) {
+						logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
+						return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
+								+ formula_inchi + "!= \"CH$FORMULA: " + ch_formula + "\"");
+					}
+					
+					// create an InChiKey for comparison with SMILES
+					InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
+					ret = inchiGen.getReturnStatus();
+					if (ret == INCHI_RET.WARNING) {
+						// Structure generated, but with warning message
+						logger.warn("InChI warning: " + inchiGen.getMessage());
+					} 
+					else if (ret != INCHI_RET.OKAY) {
+						// Structure generation failed
+						return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+					}
+					// compare the temporary InChI for InChIKey generation with the original InChI
+					String tmpInChI=inchiGen.getInchi();
+					logger.trace("Temporary InChI: \"" + tmpInChI + "\".");
+					if (!tmpInChI.equals(ch_iupac)) {
+						logger.trace("InChI from \"CH$IUPAC\" field: \"" + ch_iupac + "\".");
+						return context.failure("Temporary InChI for InChIKey generation differs from \"CH$IUPAC\". " + tmpInChI + "!= \"CH$IUPAC: " + ch_iupac + "\"");
+					}
+					InChiKey_from_CH_IUPAC = inchiGen.getInchiKey();
+				} catch (CDKException e) {
+					return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
+				}		 			
+			}
+		
+			// check CH$SMILES
+			if (!"N/A".equals(ch_smiles)) {
+				try {
+					// get the IAtomContainer formula from the SMILES
+					IAtomContainer m = new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
+					// compare it with CH$FORMULA
+					String formula_smiles = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
+					logger.trace("Formula from SMILES: \"" + formula_smiles + "\".");
+					if (!formula_smiles.equals(ch_formula)) {
+						logger.trace("Formula from record file " + ch_formula + ".");
+						return context.failure("Formula generated from SMILES string in \"CH$SMILES\" field does not match formula in \"CH$FORMULA\". "
+								+ formula_smiles + "!= \"CH$FORMULA: " + ch_formula + "\"");
+					}
+					
+					// this code compares the structure in the SMILES with the structure in the InChI
+					// it is done by converting the SMILES structure to an InChIKey and compare that
+					// with the InChIKey from the InChI itself.
+					// compare it with CH$IUPAC
+					InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
+					INCHI_RET ret = inchiGen.getReturnStatus();
+					
+					if (ret == INCHI_RET.WARNING) {
+						// Structure generated, but with warning message
+						logger.warn("InChI warning: " + inchiGen.getMessage());
+					} 
+					else if (ret != INCHI_RET.OKAY) {
+						// InChI generation failed
+						return context.failure("Can not create InChiKey from SMILES string in \"CH$SMILES\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_smiles + ".");
+					}
+					String InChiKey_from_SMILES = inchiGen.getInchiKey();
+					logger.trace("InChIKey from InChI " + InChiKey_from_CH_IUPAC + ".");
+					logger.trace("InChIKey from SMILES " + InChiKey_from_SMILES + ".");
+					// only field1 of InChIKey atm
+					if (!InChiKey_from_SMILES.substring(0,14).equals(InChiKey_from_CH_IUPAC.substring(0,14))) {
+						return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\". "
+								+ InChiKey_from_SMILES + "!= " + InChiKey_from_CH_IUPAC + ".");
+					}
+				} catch (CDKException e) { 
+					return context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage() + " for " + ch_smiles);		 				
+				}
+			}
+	
+			// check the InChIKey against the InChi
+			if (InChiKey_from_CH_IUPAC!= null) {
+				String InChiKey = callback.CH_LINK_asMap().get("INCHIKEY");
+				if (InChiKey!=null) {
+					// we have an InChIKey in CH$LINK and an InChIKey from CH$IUPAC 
+					if (!InChiKey.equals(InChiKey_from_CH_IUPAC)) {
+						return context.failure("InChIKey generated from InChI string in \"CH$IUPAC\" field does not match InChIKey in \"CH$LINK\". "
+							+ InChiKey_from_CH_IUPAC + " != \"CH$LINK: INCHIKEY " + InChiKey + "\"");
+					}
+				}
+			}
+
+			
+			// validate the number of peaks in the peaklist
+			Integer num_peak= callback.PK_NUM_PEAK();
+			List<List<Double>> pk_peak = callback.PK_PEAK();
+			if (pk_peak.size() != num_peak) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Incorrect number of peaks in peaklist. ");
+				sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
+				return context.failure(sb.toString());
+			}
+			
+			
+			// validate the SPLASH
+			List<Ion> ions = new ArrayList<Ion>();
+			for (List<Double> peak_line :  pk_peak) {
+				ions.add(new Ion(peak_line.get(0), peak_line.get(1)));
+			}
+			Splash splashFactory = SplashFactory.create();
+			Spectrum spectrum = new SpectrumImpl(ions, SpectraType.MS);
+			String splash_from_peaks = splashFactory.splashIt(spectrum);
+			String splash_from_record = callback.PK_SPLASH();
+			if (!splash_from_peaks.equals(splash_from_record)) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("SPLASH from record file does not match SPLASH calculated from peaklist. ");
+				sb.append(splash_from_record + " defined in record file, but " + splash_from_peaks + " calculated from peaks.\n");
+				return context.failure(sb.toString());
+			}
+			
+			
+			// check peak sorting
+			for (int i=0; i<pk_peak.size()-1; i++) {
+				if ((pk_peak.get(i).get(0).compareTo(pk_peak.get(i+1).get(0)))>=0) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("The peaks in the peak list are not sorted.\n");
+					sb.append("Error in line " + pk_peak.get(i).toString() + ".\n");
+					return context.failure(sb.toString());
+				}
+			}
+			
+			
+			// max 600 characters are supported in database for PUBLICATION
+			if (callback.PUBLICATION()!=null) {
+				if (callback.PUBLICATION().length()>600) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("PUBLICATION length exeeds database limit of 600 characters.\n");
+					return context.failure(sb.toString());
+				}
+			}
+			
+			
+			// check for duplicate entries in CH$NAME
+			List<String> ch_name = callback.CH_NAME();
+			Set<String> duplicates = new LinkedHashSet<String>();
+			Set<String> uniques = new HashSet<String>();
+			for(String c : ch_name) {
+				if(!uniques.add(c)) {
+					duplicates.add(c);
+				}
+			}
+			if (duplicates.size()>0) {
+				if (strict ) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("There are duplicate entries in \"CH$NAME\" field.");
+					return context.failure(sb.toString());
+				} else {
+					logger.warn("There are duplicate entries in \"CH$NAME\" field.");
+				}
+			}
+			
+			
+			// check for duplicate entries in CH$LINK
+			List<Pair<String, String>> ch_link = callback.CH_LINK();
+			duplicates = new LinkedHashSet<String>();
+			uniques = new HashSet<String>();
+			for(Pair<String, String> c : ch_link) {
+				if(!uniques.add(c.getKey())) {
+					duplicates.add(c.getKey());
+				}
+			}
+			if (duplicates.size()>0) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("There are duplicate entries in \"CH$LINK\" field.");
+				return context.failure(sb.toString());
+			}
+			
+		}
+		return r;
+	}
+
+
+
 
 }

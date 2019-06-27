@@ -28,6 +28,8 @@ public class Record {
 	private final String contributor;
 	
 	private String accession;
+	private boolean deprecated = false;
+	private String deprecated_content = null;
 	private List<String> record_title;
 	private String date;
 	private String authors;
@@ -94,6 +96,22 @@ public class Record {
 		accession = value;
 	}
 	
+	
+	public boolean DEPRECATED() {
+		return deprecated;
+	}
+	
+	public void DEPRECATED(boolean value) {
+		deprecated = value;
+	}
+	
+	public String DEPRECATED_CONTENT() {
+		return deprecated_content;
+	}
+	
+	public void DEPRECATED_CONTENT(String value) {
+		deprecated_content = value;
+	}
 	
 	public List<String> RECORD_TITLE() {
 		return record_title;
@@ -393,6 +411,11 @@ public class Record {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("ACCESSION: " + ACCESSION() + "\n");
+		if (DEPRECATED()) {
+			sb.append("DEPRECATED: ");
+			sb.append(DEPRECATED_CONTENT());
+			return sb.toString();
+		}
 		sb.append("RECORD_TITLE: " + RECORD_TITLE1() + "\n");
 		sb.append("DATE: " + DATE() + "\n");
 		sb.append("AUTHORS: " + AUTHORS() + "\n");

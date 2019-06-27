@@ -17,15 +17,16 @@ import massbank.web.recordindex.RecordIndexCount.RecordIndexCountResult;
 public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> {
 
 	public void getParameters(HttpServletRequest request) {
-
 	}
 
 	public RecordIndexCountResult search(DatabaseManager databaseManager) {
-//		List<String> resList	= new ArrayList<String>();
 		Map<String, Integer> mapSiteToRecordCount		= new TreeMap<String, Integer>();
 		Map<String, Integer> mapInstrumentToRecordCount	= new TreeMap<String, Integer>();
 		Map<String, Integer> mapMsTypeToRecordCount		= new TreeMap<String, Integer>();
 		Map<String, Integer> mapIonModeToRecordCount	= new TreeMap<String, Integer>();
+		int spectraCount = 0;
+		int compoundCount = 0;
+		int isomerCount = 0;
 		
 		char[] compoundA_Z_symbols		= new char[] {
 				'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
@@ -33,31 +34,28 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		int[] compoundA_ZToRecordCount	= new int[26];
 		int compound0_9RecordCount		= 0;
 		int compoundOtherRecordCount	= 0;
-		int normalRecordCount			= 0;
-		int mergedRecordCount			= 0;
 		
 		PreparedStatement stmnt;
 		ResultSet res;
 		
 		String sql = "SELECT SHORT_NAME AS CONTRIBUTOR, COUNT FROM (SELECT CONTRIBUTOR, COUNT(*) AS COUNT "
-				+ "FROM RECORD GROUP BY CONTRIBUTOR) AS C, CONTRIBUTOR " + "WHERE CONTRIBUTOR = ID";
+				+ "FROM RECORD GROUP BY CONTRIBUTOR) AS C, CONTRIBUTOR WHERE CONTRIBUTOR = ID";
 		try {
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
-//				resList.add("SITE:" + res.getString(1) + "\t" + res.getString("COUNT"));
 				mapSiteToRecordCount.put(res.getString("CONTRIBUTOR"), res.getInt("COUNT"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		sql = "SELECT AC_INSTRUMENT_TYPE as INSTRUMENT, COUNT(*) as COUNT FROM INSTRUMENT GROUP BY AC_INSTRUMENT_TYPE";
+		
+		sql = "SELECT AC_INSTRUMENT_TYPE AS INSTRUMENT, COUNT(*) AS COUNT FROM INSTRUMENT GROUP BY AC_INSTRUMENT_TYPE";
 		try {
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
-//				resList.add("INSTRUMENT:" + res.getString("INSTRUMENT") + "\t" + res.getString("COUNT"));
 				mapInstrumentToRecordCount.put(res.getString("INSTRUMENT"), res.getInt("COUNT"));
 			}
 		} catch (SQLException e) {
@@ -69,7 +67,6 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
-//				resList.add("MS:" + res.getString("TYPE") + "\t" + res.getString("COUNT"));
 				mapMsTypeToRecordCount.put(res.getString("TYPE"), res.getInt("COUNT"));
 			}
 		} catch (SQLException e) {
@@ -81,7 +78,6 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
-//				resList.add("ION:" + res.getString("MODE") + "\t" + res.getString("COUNT"));
 				mapIonModeToRecordCount.put(res.getString("MODE"), res.getInt("COUNT"));
 			}
 		} catch (SQLException e) {
@@ -97,7 +93,6 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			while (res.next()) {
 				String compound = res.getString("COMPOUND");
 				if (compound.matches("[a-zA-Z]")) {
-//					resList.add("COMPOUND:" + compound + "\t" + res.getString("COUNT"));
 					compoundA_ZToRecordCount[((int) compound.charAt(0)) - ((int) 'A')]	= res.getInt("COUNT");
 				} else if (compound.matches("[0-9]")) {
 					numCnt = numCnt + res.getInt("COUNT");
@@ -105,49 +100,70 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 					othCnt = othCnt + res.getInt("COUNT");
 				}
 			}
-//			resList.add("COMPOUND:1-9\t" + numCnt);
-//			resList.add("COMPOUND:Others\t" + othCnt);
 			compound0_9RecordCount		= numCnt;
 			compoundOtherRecordCount	= othCnt;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		sql = "SELECT COUNT(*) AS COUNT FROM RECORD WHERE INSTR(RECORD_TITLE,'MERGED') = 0";
+		
+		sql = "SELECT COUNT(ACCESSION) AS SPECTRA FROM RECORD";
 		try {
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
-//				resList.add("MERGED:Normal\t" + res.getString("COUNT"));
-				normalRecordCount	= res.getInt("COUNT");
+				spectraCount = res.getInt(1);
+				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		sql = "SELECT COUNT(*) AS COUNT FROM RECORD WHERE INSTR(RECORD_TITLE,'MERGED') > 0";
+		
+		sql = "SELECT COUNT(DISTINCT DATABASE_ID) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
 		try {
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
-//				resList.add("MERGED:Merged\t" + res.getString("COUNT"));
-				mergedRecordCount	= res.getInt("COUNT");
+				compoundCount = res.getInt(1);
+				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		sql = "SELECT COUNT(DISTINCT SUBSTRING(DATABASE_ID,1,14)) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
+		try {
+			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			res = stmnt.executeQuery();
+			while (res.next()) {
+				isomerCount = res.getInt(1);
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		ArrayList<String> symbolList	= new ArrayList<String>();
+		TreeMap<String, Integer> mapSymbolToCount	= new TreeMap<String, Integer>();
+		for(int i = 0; i < compoundA_Z_symbols.length; i++) {
+			symbolList.add(compoundA_Z_symbols[i] + "");
+			mapSymbolToCount.put(compoundA_Z_symbols[i] + "", compoundA_ZToRecordCount[i]);
+		}
+		symbolList.add("0-9");
+		mapSymbolToCount.put("0-9", compound0_9RecordCount);
+		symbolList.add("Others");
+		mapSymbolToCount.put("Others", compoundOtherRecordCount);
+		
 
 		return new RecordIndexCountResult(
-				mapSiteToRecordCount, 
-				mapInstrumentToRecordCount, 
-				mapMsTypeToRecordCount, 
-				mapIonModeToRecordCount, 
-				compoundA_Z_symbols, 
-				compoundA_ZToRecordCount, 
-				compound0_9RecordCount, 
-				compoundOtherRecordCount, 
-				normalRecordCount, 
-				mergedRecordCount
+				mapSiteToRecordCount,
+				mapInstrumentToRecordCount,
+				mapMsTypeToRecordCount,
+				mapIonModeToRecordCount,
+				mapSymbolToCount,
+				spectraCount,
+				compoundCount,
+				isomerCount
 		);
 	}
 	public static class RecordIndexCountResult {
@@ -155,52 +171,28 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		public final Map<String, Integer> mapInstrumentToRecordCount;
 		public final Map<String, Integer> mapMsTypeToRecordCount;
 		public final Map<String, Integer> mapIonModeToRecordCount;
-		public final char[] compoundA_Z_symbols;
-		public final int[] compoundA_ZToRecordCount;
-		public final int compound0_9RecordCount;
-		public final int compoundOtherRecordCount;
-		public final int normalRecordCount;
-		public final int mergedRecordCount;
-		public final List<String> symbolList;
 		public final Map<String, Integer> mapSymbolToCount;
-		public final Map<String, Integer> mapMergedToCount;
+		public final int spectraCount;
+		public final int compoundCount;
+		public final int isomerCount;
 		public RecordIndexCountResult(
 				Map<String, Integer> mapSiteToRecordCount,
 				Map<String, Integer> mapInstrumentToRecordCount,
 				Map<String, Integer> mapMsTypeToRecordCount,
 				Map<String, Integer> mapIonModeToRecordCount,
-				char[] compoundA_Z_symbols,
-				int[] compoundA_ZToRecordCount,
-				int compound0_9RecordCount,
-				int compoundOtherRecordCount,
-				int normalRecordCount,
-				int mergedRecordCount
+				Map<String, Integer> mapSymbolToCount,
+				int spectraCount,
+				int compoundCount,
+				int isomerCount
 		) {
 			this.mapSiteToRecordCount		= mapSiteToRecordCount;
 			this.mapInstrumentToRecordCount	= mapInstrumentToRecordCount;
 			this.mapMsTypeToRecordCount		= mapMsTypeToRecordCount;
 			this.mapIonModeToRecordCount	= mapIonModeToRecordCount;
-			this.compoundA_Z_symbols		= compoundA_Z_symbols;
-			this.compoundA_ZToRecordCount	= compoundA_ZToRecordCount;
-			this.compound0_9RecordCount		= compound0_9RecordCount;
-			this.compoundOtherRecordCount	= compoundOtherRecordCount;
-			this.normalRecordCount			= normalRecordCount;
-			this.mergedRecordCount			= mergedRecordCount;
-			
-			this.symbolList	= new ArrayList<String>();
-			this.mapSymbolToCount	= new TreeMap<String, Integer>();
-			for(int i = 0; i < compoundA_Z_symbols.length; i++) {
-				this.symbolList.add(compoundA_Z_symbols[i] + "");
-				this.mapSymbolToCount.put(compoundA_Z_symbols[i] + "", compoundA_ZToRecordCount[i]);
-			}
-			this.symbolList.add("0-9");
-			this.mapSymbolToCount.put("0-9", compound0_9RecordCount);
-			this.symbolList.add("Others");
-			this.mapSymbolToCount.put("Others", compoundOtherRecordCount);
-			
-			this.mapMergedToCount	= new TreeMap<String, Integer>();
-			this.mapMergedToCount.put("Normal", normalRecordCount);
-			this.mapMergedToCount.put("Merged", mergedRecordCount);
+			this.mapSymbolToCount           = mapSymbolToCount;
+			this.spectraCount			    = spectraCount;
+			this.compoundCount			    = compoundCount;
+			this.isomerCount			    = isomerCount;
 		}
 	}
 }

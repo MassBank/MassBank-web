@@ -93,7 +93,7 @@ public class AccessionList implements SearchFunction<Record[]> {
 		// fetch these records
 		List<Record> resList_record		= new ArrayList<Record>();
 		for(int recordIdx = 0; recordIdx < resList_accession.size(); recordIdx++) {
-			resList_record.add(databaseManager.getAccessionData(resList_accession.get(recordIdx), resList_contribut.get(recordIdx)));
+			resList_record.add(databaseManager.getAccessionData(resList_accession.get(recordIdx)));
 		}
 		return resList_record.toArray(new Record[resList_record.size()]);
 	}

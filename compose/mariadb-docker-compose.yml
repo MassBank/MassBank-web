@@ -5,7 +5,6 @@ services:
     image: mariadb:latest
     container_name: massbank_mariadb
     volumes:
-      - /mariadb:/var/lib/mysql
       - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - '127.0.0.1:3306:3306'

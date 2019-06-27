@@ -315,20 +315,20 @@ public class ResultList {
 					if (!e1.getSortName().equals(e2.getSortName())) {
 						switch (sortAction) {
 							case SORT_ACTION_ASC:
-								ret = (e1.getSortName()).compareTo(e2.getSortName());
+								ret = (e1.getSortName()).compareToIgnoreCase(e2.getSortName());
 								break;
 							case SORT_ACTION_DESC:
-								ret = (e2.getSortName()).compareTo(e1.getSortName());
+								ret = (e2.getSortName()).compareToIgnoreCase(e1.getSortName());
 								break;
 						}
 					}
 					else {
 						switch (sortAction) {
 							case SORT_ACTION_ASC:
-								ret = (e1.getSortAddition()).compareTo(e2.getSortAddition());
+								ret = (e1.getSortAddition()).compareToIgnoreCase(e2.getSortAddition());
 								break;
 							case SORT_ACTION_DESC:
-								ret = (e2.getSortAddition()).compareTo(e1.getSortAddition());
+								ret = (e2.getSortAddition()).compareToIgnoreCase(e1.getSortAddition());
 								break;
 						}
 					}
