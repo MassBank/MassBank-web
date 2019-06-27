@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -49,20 +50,28 @@ import net.sf.jniinchi.INCHI_RET;
  * {@link doLink}
  * 
  * @author rmeier
- * @version 14-05-2019
+ * @version 27-06-2019
  */
 public class AddMetaData {
 	private static final Logger logger = LogManager.getLogger(AddMetaData.class);
 	private static final String CHEMSPIDER_API_KEY = "";
 	
 	
-	// https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/AADVZSXPNRLYLVadasd/JSON
-
+	/**
+	 * Try to fetch the PubChem CID for a given InChI-key using PUG REST. This function gets the first CID which has some SID associated.
+	 * CIDs without SIDs are marked as "Non-Live".
+	 */
 	public static String getPubchemCID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
-		JSONObject jo = new JSONObject(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/" + INCHIKEY + "/JSON"), Charset.forName("UTF-8")));
+		JSONObject jo = new JSONObject(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/" + INCHIKEY + "/sids/JSON"), Charset.forName("UTF-8")));
 		logger.trace(jo.toString());
-		int lastCompoundId = jo.getJSONArray("PC_Compounds").length()-1;
-		return Integer.toString(jo.getJSONArray("PC_Compounds").getJSONObject(lastCompoundId).getJSONObject("id").getJSONObject("id").getInt("cid"));
+		JSONArray Information = jo.getJSONObject("InformationList").getJSONArray("Information");
+		int len = Information.length();
+		for (int i=0;i<len;i++) {
+			if (Information.getJSONObject(i).has("SID")) {
+				return Integer.toString(Information.getJSONObject(i).getInt("CID"));
+			}
+		}
+		throw new JSONException("No CID found wich has some SIDs associated.");
 	}
 	
 	/**
