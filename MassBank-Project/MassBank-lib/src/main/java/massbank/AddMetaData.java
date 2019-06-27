@@ -2,26 +2,36 @@ package massbank;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -34,15 +44,64 @@ import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import net.sf.jniinchi.INCHI_RET;
 
 /**
- * This class adds meta information automatically where feasible. Supported functions are:<p>
+ * This class adds meta information automatically where feasible and makes some automatic fixes. Supported functions are:<p>
  * {@link doPub}<p>
  * {@link doName}<p>
+ * {@link doLink}
  * 
  * @author rmeier
- * @version 01-03-2019
+ * @version 27-06-2019
  */
 public class AddMetaData {
 	private static final Logger logger = LogManager.getLogger(AddMetaData.class);
+	private static final String CHEMSPIDER_API_KEY = "";
+	
+	
+	/**
+	 * Try to fetch the PubChem CID for a given InChI-key using PUG REST. This function gets the first CID which has some SID associated.
+	 * CIDs without SIDs are marked as "Non-Live".
+	 */
+	public static String getPubchemCID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
+		JSONObject jo = new JSONObject(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/" + INCHIKEY + "/sids/JSON"), Charset.forName("UTF-8")));
+		logger.trace(jo.toString());
+		JSONArray Information = jo.getJSONObject("InformationList").getJSONArray("Information");
+		int len = Information.length();
+		for (int i=0;i<len;i++) {
+			if (Information.getJSONObject(i).has("SID")) {
+				return Integer.toString(Information.getJSONObject(i).getInt("CID"));
+			}
+		}
+		throw new JSONException("No CID found wich has some SIDs associated.");
+	}
+	
+	/**
+	 * Try to fetch the COMPTOX id for a given InChI-key.
+	 */
+	public static String getComptoxID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
+		return new JSONObject(IOUtils.toString(new URL("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY),
+				Charset.forName("UTF-8"))).getJSONObject("DataRow").getString("dtxsid");
+	}
+	
+	/**
+	 * Try to fetch the CHEMSPIDER id for a given InChI-key.
+	 */
+	public static String getChemspiderID(String INCHIKEY) throws MalformedURLException, IOException, JSONException {
+		HttpURLConnection connection = (HttpURLConnection) new URL("https://api.rsc.org/compounds/v1/filter/inchikey").openConnection();
+		connection.setDoInput(true);
+		connection.setDoOutput(true);
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Content-Type", "");
+		connection.setRequestProperty("apikey", CHEMSPIDER_API_KEY);
+		OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
+		writer.write("{\"inchikey\": \"" + INCHIKEY + "\" }");
+		writer.close();
+		String queryID = new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getString("queryId");
+		connection = (HttpURLConnection) new URL("https://api.rsc.org/compounds/v1/filter/" + queryID + "/results").openConnection();
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Content-Type", "");
+		connection.setRequestProperty("apikey", CHEMSPIDER_API_KEY);
+		return Integer.toString(new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getJSONArray("results").getInt(0));
+	}
 	
 	/**
 	 * Automatically format a PUBLICATION tag according to ACS rules if a DOI could be identified.
@@ -65,8 +124,7 @@ public class AddMetaData {
 		// curl -LH "Accept: application/x-bibtex" https://doi.org/<doi>
 		String formated_citation=null;
 		try {
-			URL obj = new URL("https://www.doi.org/"+doi);
-			URLConnection conn = obj.openConnection();
+			URLConnection conn = new URL("https://www.doi.org/"+doi).openConnection();
 			conn.setRequestProperty("Accept", "application/x-bibtex");
 			BibTeXItemDataProvider p = new BibTeXItemDataProvider();
 			p.addDatabase(new BibTeXConverter().loadDatabase(conn.getInputStream()));
@@ -130,7 +188,6 @@ public class AddMetaData {
 	/**
 	 * Automatically process CH$LINK section.
 	 */
-	// https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/AADVZSXPNRLYLVadasd/JSON
 	public static String doLink(Record record, String recordstring) {
 		Pattern pattern = Pattern.compile("CH\\$IUPAC: .*\n");
 		Matcher matcher = pattern.matcher(recordstring);
@@ -143,15 +200,17 @@ public class AddMetaData {
 		}
 		recordstring=recordstring.replaceAll("CH\\$LINK: .*\n", "");
 		
-		StringBuilder sb=new StringBuilder();
-		boolean hasInchi=false;
+		
+		// add InChI-Key if missing
+		boolean hasInchiKey=false;
+		String INCHIKEY = null;
 		for (Pair<String, String> link : record.CH_LINK()) {
 			if ("INCHIKEY".equals(link.getKey())) {
-				hasInchi=true;
+				hasInchiKey=true;
+				INCHIKEY=link.getValue();
 			}
-			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		}
-		if (!hasInchi) {
+		if (!hasInchiKey) {
 			String ch_iupac = record.CH_IUPAC();
 			if (!"N/A".equals(ch_iupac)) {
 				try {
@@ -180,65 +239,164 @@ public class AddMetaData {
 						// InChI generation failed
 						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
 					}
-					sb.append("CH$LINK: INCHIKEY " + inchiGen.getInchiKey() + "\n");
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("INCHIKEY",inchiGen.getInchiKey()));
-					record.CH_LINK(ch_link);
+					else {
+						List<Pair<String, String>>ch_link = record.CH_LINK();
+						ch_link.add(Pair.of("INCHIKEY",inchiGen.getInchiKey()));
+						record.CH_LINK(ch_link);
+						INCHIKEY=inchiGen.getInchiKey();
+						hasInchiKey=true;
+					}					
 				} catch (CDKException e) {
 					logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
 				}		 			
 			}
+		}
+		
+		// add database identifier
+		if (hasInchiKey) {
+			
+			// add PUBCHEM cid if missing
+			List<String> PUBCHEM = new ArrayList<String>();
+			for (Pair<String, String> link : record.CH_LINK()) {
+				if ("PUBCHEM".equals(link.getKey())) {
+					PUBCHEM.add(link.getValue());
+					break;
+				}
+			}
+			if (PUBCHEM.isEmpty()) {
+				try {
+					String PUBCHEMCID=getPubchemCID(INCHIKEY);
+					List<Pair<String, String>>ch_link = record.CH_LINK();
+					ch_link.add(Pair.of("PUBCHEM", "CID:"+PUBCHEMCID));
+					record.CH_LINK(ch_link);
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch PUBCHEM cid.");
+					logger.trace(e.getMessage());
+				}
+			}
+			else {
+				try {
+					String PUBCHEMCID=getPubchemCID(INCHIKEY);;
+					if (!("CID:"+PUBCHEMCID).equals(PUBCHEM.get(0))) {
+						logger.error("Wrong PUBCHEM database identifier in record file.");
+					}
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch PUBCHEM id for comparision.");
+					logger.trace(e.getMessage());
+				}
+			}
+			
+			// add COMPTOX if missing
+			List<String> COMPTOX = new ArrayList<String>();
+			for (Pair<String, String> link : record.CH_LINK()) {
+				if ("COMPTOX".equals(link.getKey())) {
+					COMPTOX.add(link.getValue());
+					break;
+				}
+			}
+			if (COMPTOX.isEmpty()) {
+				try {
+					String COMPTOXID=getComptoxID(INCHIKEY);
+					List<Pair<String, String>>ch_link = record.CH_LINK();
+					ch_link.add(Pair.of("COMPTOX", COMPTOXID));
+					record.CH_LINK(ch_link);
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch COMPTOX id.");
+					logger.trace(e.getMessage());
+				}
+			}
+			else {
+				try {
+					String COMPTOXID=getComptoxID(INCHIKEY);
+					if (!COMPTOXID.equals(COMPTOX.get(0))) {
+						logger.error("Wrong COMPTOX database identifier in record file.");
+					}
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch COMPTOX id for comparision.");
+					logger.trace(e.getMessage());
+				}
+			}
+			
+			// add Chemspider
+			List<String> CHEMSPIDER = new ArrayList<String>();
+			for (Pair<String, String> link : record.CH_LINK()) {
+				if ("CHEMSPIDER".equals(link.getKey())) {
+					CHEMSPIDER.add(link.getValue());
+					break;
+				}
+			}
+			if (CHEMSPIDER.isEmpty()) {
+				try {
+					String CHEMSPIDERID=getChemspiderID(INCHIKEY);
+					List<Pair<String, String>>ch_link = record.CH_LINK();
+					ch_link.add(Pair.of("CHEMSPIDER", CHEMSPIDERID));
+					record.CH_LINK(ch_link);
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch CHEMSPIDER id.");
+					logger.trace(e.getMessage());
+				}
+			}
+			else {
+				try {
+					String CHEMSPIDERID=getChemspiderID(INCHIKEY);
+					if (!CHEMSPIDERID.equals(CHEMSPIDER.get(0))) {
+						logger.error("Wrong CHEMSPIDER database identifier in record file.");
+					}
+				} catch (JSONException | IOException e) {
+					logger.warn("Could not fetch CHEMSPIDER id for comparision.");
+					logger.trace(e.getMessage());
+				}
+			}
+		}
+		
+		StringBuilder sb=new StringBuilder();
+		for (Pair<String, String> link : record.CH_LINK()) {
+			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		}
 		recordstring=recordstring.substring(0, ch_linkPos) + sb.toString() + recordstring.substring(ch_linkPos, recordstring.length());
 
 		return recordstring;
 	}
 	
+	/**
+	 * Automatically adjust MS$FOCUSED_ION: ION_TYPE and MS$FOCUSED_ION: PRECURSOR_TYPE
+	 */
+	public static String doFocusedIon(Record record, String recordstring) {
+		// if record is MS2 and MS$FOCUSED_ION: ION_TYPE == MS$FOCUSED_ION: PRECURSOR_TYPE
+		// remove MS$FOCUSED_ION: ION_TYPE
+		if (!record.AC_MASS_SPECTROMETRY_MS_TYPE().equals("MS2")) return recordstring;
+		
+		Map<String, String> ms_focused_ion = new HashMap<String, String>();
+		for (Pair<String, String> pair : record.MS_FOCUSED_ION()) {
+			ms_focused_ion.put(pair.getKey(), pair.getValue());			
+		}
+		if (ms_focused_ion.get("ION_TYPE") == null) return recordstring;
+		
+		if (ms_focused_ion.get("ION_TYPE").equals(ms_focused_ion.get("PRECURSOR_TYPE"))) {
+			recordstring=recordstring.replaceAll("MS\\$FOCUSED_ION: ION_TYPE .*\n", "");
+		}
+		
+		return recordstring;
+	}
 
 	public static void main(String[] arguments) throws Exception {
-		boolean doPub = false;
-		boolean doName = false;
-		boolean doLink = false;
 		Options options = new Options();
 		options.addOption("a", "all", false, "execute all operations");
 		options.addOption("p", "publication", false, "format PUBLICATION tag from given DOI to follow the guidelines of ACS");
 		options.addOption("n", "name", false, "fix common problems in CH$NAME tag");
 		options.addOption("l", "link", false, "add links to CH$LINK tag");
-		CommandLineParser parser = new DefaultParser();
+		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
 		CommandLine cmd = null;
 		try {
-			cmd = parser.parse( options, arguments);
+			cmd = new DefaultParser().parse( options, arguments);
 		}
 		catch(ParseException exp) {
 	        // oops, something went wrong
 	        System.err.println( "Parsing command line failed. Reason: " + exp.getMessage() );
+	        HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
 	        System.exit(1);
 	    }
-		
-		if (cmd.hasOption("a")) {
-			// set all to true
-			doPub = true;
-			doName = true;
-			doLink = true;
-		}
-		
-		if (cmd.hasOption("p")) {
-			doPub = true;
-		}
-		
-		if (cmd.hasOption("n")) {
-			doName = true;
-		}
-
-		if (cmd.hasOption("l")) {
-			doLink = true;
-		}
-		
-		if (!(doPub || doName || doLink) ) {
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
-			System.exit(1);
-		}
 		
 		String filename = null;
 		if (cmd.getArgList().size() == 1) filename=cmd.getArgList().get(0);
@@ -247,6 +405,13 @@ public class AddMetaData {
 			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
 			System.exit(1);
 		}
+		
+		if (cmd.getOptions().length == 0) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
+			System.exit(1);
+		}
+		
 		
 		System.out.println("Formatting: \""+filename+"\"");
 		String recordstring = null;
@@ -264,11 +429,15 @@ public class AddMetaData {
 			System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
 			System.exit(1);
 		}
+		else if (record.DEPRECATED()) {
+			System.exit(0);
+		}
 		
 		String recordstring2 = recordstring;
-		if (doPub) recordstring2=doPub(record, recordstring2);
-		if (doName) recordstring2=doName(record, recordstring2);
-		if (doLink) recordstring2=doLink(record, recordstring2);
+		if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
+		if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
+		if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record, recordstring2);
+		if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
 		
 		if (!recordstring.equals(recordstring2)) {
 			Record record2 = Validator.validate(recordstring2, "");
@@ -284,9 +453,6 @@ public class AddMetaData {
 				System.exit(1);
 			}
 		}
-
-		
-		
 		
 		System.exit(0);
 	}

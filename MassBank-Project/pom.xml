@@ -21,7 +21,7 @@
 		<axis2.version>1.7.9</axis2.version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.2</cdk.version>
-		<jdbc.version>2.4.1</jdbc.version>
+		<jdbc.version>2.4.2</jdbc.version>
 	</properties>
 
 	<build>
@@ -29,7 +29,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.8.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -38,23 +38,23 @@
 		</plugins>
 	</build>
 	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>jitpack.io</id> -->
+<!-- 			<url>https://jitpack.io</url> -->
+<!-- 		</repository> -->
 		<repository>
 			<id>releases</id>
 			<name>Fiehnlab Public Maven Repository</name>
 			<url>http://gose.fiehnlab.ucdavis.edu:55000/content/groups/public</url>
 		</repository>
-		<repository>
-			<id>oss-snapshots-repo</id>
-			<name>Sonatype OSS Maven Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>oss-snapshots-repo</id> -->
+<!-- 			<name>Sonatype OSS Maven Repository</name> -->
+<!-- 			<url>https://oss.sonatype.org/content/groups/public</url> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>true</enabled> -->
+<!-- 				<updatePolicy>always</updatePolicy> -->
+<!-- 			</snapshots> -->
+<!-- 		</repository> -->
 	</repositories>
 </project>

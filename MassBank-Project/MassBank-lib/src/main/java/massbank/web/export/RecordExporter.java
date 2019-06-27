@@ -204,8 +204,13 @@ Num Peaks: 7
 		// collect data
 		List<String> list	= new ArrayList<String>();
 		for(Record record : records) {
-			list.addAll(recordToNIST_MSP(record));
-			list.add("");
+			try {
+				list.addAll(recordToNIST_MSP(record));
+				list.add("");
+			} catch (Exception e) {
+				System.out.println("Error in file " + record.CONTRIBUTOR() + "/" + record.ACCESSION());
+				e.printStackTrace();
+			}
 		}
 		
 		try {
@@ -348,8 +353,13 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		// collect data
 		List<String> list	= new ArrayList<String>();
 		for(Record record : records) {
-			list.addAll(recordToRIKEN_MSP(record));
-			list.add("");
+			try {
+				list.addAll(recordToRIKEN_MSP(record));
+				list.add("");
+			} catch (Exception e) {
+				System.out.println("Error in file " + record.CONTRIBUTOR() + "/" + record.ACCESSION());
+				e.printStackTrace();
+			}
 		}
 		
 		try {
@@ -460,12 +470,17 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 			ZipOutputStream zos = new ZipOutputStream(fos);
 			
 			for(Record record : records) {
-				String fileName	= record.ACCESSION() + ".txt";
-				
-				ZipEntry zipEntry = new ZipEntry(fileName);
-				zos.putNextEntry(zipEntry);
-				zos.write(record.toString().getBytes());
-				zos.closeEntry();
+				try {
+					String fileName	= record.ACCESSION() + ".txt";
+					
+					ZipEntry zipEntry = new ZipEntry(fileName);
+					zos.putNextEntry(zipEntry);
+					zos.write(record.toString().getBytes());
+					zos.closeEntry();
+				} catch (Exception e) {
+					System.out.println("Error in file " + record.CONTRIBUTOR() + "/" + record.ACCESSION());
+					e.printStackTrace();
+				}
 			}
 			
 			zos.close();
@@ -519,7 +534,7 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 			recordExport(file2, ExportFormat.NIST_MSP, record);
 		}
 		
-		File file	= new File("/home/htreutle/Downloads/tmp/181108_MassBank.msp");
+		File file	= new File("/home/htreutle/Downloads/tmp/190516_MassBank.msp");
 		exportWholeMassBank(ExportFormat.RIKEN_MSP, file);
 	}
 }

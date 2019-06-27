@@ -33,7 +33,7 @@ public class QuickSearchByInChIKey implements SearchFunction<ResultRecord[]> {
 		// ###########################################################################################
 		// fetch matching records
 		String sql = 
-				"SELECT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS " +
+				"SELECT DISTINCT RECORD.ACCESSION, RECORD.RECORD_TITLE, RECORD.AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS " +
 				"FROM RECORD,INSTRUMENT,COMPOUND,CH_LINK " +
 				"WHERE COMPOUND.ID = CH_LINK.COMPOUND AND RECORD.CH = COMPOUND.ID AND RECORD.AC_INSTRUMENT = INSTRUMENT.ID";
 		StringBuilder sb = new StringBuilder();
