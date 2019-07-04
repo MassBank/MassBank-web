@@ -21,7 +21,12 @@
  ******************************************************************************/
 package massbank;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -33,13 +38,31 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLFilterImpl;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 @WebServlet("/RecordDisplay2")
 public class RecordDisplay extends HttpServlet {
@@ -648,8 +671,54 @@ public class RecordDisplay extends HttpServlet {
 					".";
 				String recordstring = createRecordString(record);
 				String structureddata = createStructuredData(record);
-				IAtomContainer mol = record.CH_IUPAC_obj(); 
+				IAtomContainer mol = record.CH_SMILES_obj();
+				
+				
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				factory.setNamespaceAware(false);
+				factory.setValidating(false);
+				factory.setFeature("http://xml.org/sax/features/namespaces", false);
+				factory.setFeature("http://xml.org/sax/features/validation", false);
+				factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+				factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+				DocumentBuilder builder = factory.newDocumentBuilder();
+				
+				
+				long a, b, c, d, e, f, g, h, i, j;
+				a = System.currentTimeMillis();
 				String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);
+				b = System.currentTimeMillis();
+				Document svgDoc = builder.parse(new InputSource(new StringReader(svg)));
+				c = System.currentTimeMillis();
+				
+				Element svgNode = (Element) svgDoc.getElementsByTagName("svg").item(0);
+				NamedNodeMap attr = svgNode.getAttributes();
+				d = System.currentTimeMillis();
+				attr.getNamedItem("width").setTextContent("100%");
+				e = System.currentTimeMillis();
+				attr.getNamedItem("height").setTextContent("200px");
+				f = System.currentTimeMillis();
+				svgNode.setAttribute("preserveAspectRatio", "xMinYMin meet");
+				//attr.getNamedItem("preserveAspectRatio").setTextContent("xMinYMin meet");
+				g = System.currentTimeMillis();
+				StringWriter writer = new StringWriter();
+				h = System.currentTimeMillis();
+				TransformerFactory.newInstance().newTransformer().transform(new DOMSource(svgDoc), new StreamResult(writer));
+				i = System.currentTimeMillis();
+				svg = writer.getBuffer().toString();   
+				j = System.currentTimeMillis();
+				
+				System.out.println("1 took "+(b-a)+"mil to execute. ("+((b-a)/1000)+" seconds)");
+				System.out.println("2 took "+(c-b)+"mil to execute. ("+((c-b)/1000)+" seconds)");
+				System.out.println("3 took "+(d-c)+"mil to execute. ("+((d-c)/1000)+" seconds)");
+				
+				System.out.println("4 took "+(e-d)+"mil to execute. ("+((e-d)/1000)+" seconds)");
+				System.out.println("5 took "+(f-e)+"mil to execute. ("+((f-e)/1000)+" seconds)");
+				System.out.println("6 took "+(g-f)+"mil to execute. ("+((g-f)/1000)+" seconds)");
+				                                                            
+				System.out.println("7 took "+(h-g)+"mil to execute. ("+((h-g)/1000)+" seconds)");
+				System.out.println("8 took "+(i-h)+"mil to execute. ("+((i-h)/1000)+" seconds)");
+				System.out.println("9 took "+(j-i)+"mil to execute. ("+((j-i)/1000)+" seconds)");
 				
 				request.setAttribute("accession", accession);
 				request.setAttribute("short_name", shortname);
