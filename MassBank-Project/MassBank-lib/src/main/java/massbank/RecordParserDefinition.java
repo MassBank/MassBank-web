@@ -742,6 +742,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("CAS ")
 			.or(StringParser.of("CAYMAN "))
 			.or(StringParser.of("CHEBI "))
+			.or(StringParser.of("CHEMBL "))
 			.or(StringParser.of("CHEMPDB "))
 			.or(StringParser.of("CHEMSPIDER "))
 			.or(StringParser.of("COMPTOX "))
@@ -770,7 +771,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("NIKKAJI "))
 			.or(StringParser.of("PUBCHEM "))
 			.or(StringParser.of("ZINC "))
-			.or(StringParser.of("CHEMBL "))
 		);
 		def("ch_link",
 			StringParser.of("CH$LINK")
@@ -1696,8 +1696,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 					}
 					String InChiKey_from_SMILES = inchiGen.getInchiKey();
 					logger.trace("InChIKey from InChI " + InChiKey_from_CH_IUPAC + ".");
+					logger.trace("InChI from SMILES " + inchiGen.getInchi() + ".");
 					logger.trace("InChIKey from SMILES " + InChiKey_from_SMILES + ".");
 					// only field1 of InChIKey atm
+					//if (!InChiKey_from_SMILES.equals(InChiKey_from_CH_IUPAC)) {
 					if (!InChiKey_from_SMILES.substring(0,14).equals(InChiKey_from_CH_IUPAC.substring(0,14))) {
 						return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\". "
 								+ InChiKey_from_SMILES + "!= " + InChiKey_from_CH_IUPAC + ".");

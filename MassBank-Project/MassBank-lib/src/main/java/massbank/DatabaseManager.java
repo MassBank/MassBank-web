@@ -329,6 +329,7 @@ public class DatabaseManager {
 	 */
 	public Record getAccessionData(String accessionId) {
 		Record.Contributor Contributor=getContributorFromAccession(accessionId);
+		if (Contributor==null) return null;
 		String contributor=Contributor.SHORT_NAME;
 		Record acc = new Record(contributor);
 		try {
@@ -511,8 +512,6 @@ public class DatabaseManager {
 			e.printStackTrace();
 			return null;
 		}
-//		this.openConnection();
-		
 		return acc;
 	}
 	

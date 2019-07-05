@@ -21,12 +21,9 @@
  ******************************************************************************/
 package massbank;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -38,17 +35,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,11 +49,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLFilterImpl;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 @WebServlet("/RecordDisplay2")
 public class RecordDisplay extends HttpServlet {
@@ -116,26 +103,70 @@ public class RecordDisplay extends HttpServlet {
 		sb.append("<b>CH$COMPOUND_CLASS:</b> " + String.join("; ", record.CH_COMPOUND_CLASS()) + "<br>\n");
 		sb.append("<b>CH$FORMULA:</b> <a href=\"http://www.chemspider.com/Search.aspx?q=" + record.CH_FORMULA() + "\" target=\"_blank\">" + record.CH_FORMULA1() + "</a><br>\n");
 		sb.append("<b>CH$EXACT_MASS:</b> " + record.CH_EXACT_MASS() + "<br>\n");
-		
-		
-		
-		
-				
-		
-		sb.append("CH$SMILES: " + record.CH_SMILES() + "<br>\n");
-		sb.append("CH$IUPAC: " + record.CH_IUPAC() + "<br>\n");
+		sb.append("<b>CH$SMILES:</b> " + record.CH_SMILES() + "<br>\n");
+		sb.append("<b>CH$IUPAC:</b> " + record.CH_IUPAC() + "<br>\n");
 		
 		for (Pair<String,String> link : record.CH_LINK()) {
-			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "<br>\n");
+			switch(link.getKey()){
+				case "CAS":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.google.com/search?q=&quot;" + link.getValue() + "&quot;\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "CAYMAN":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.caymanchem.com/product/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "CHEBI":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "CHEMSPIDER":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.chemspider.com/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "COMPTOX":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "HMDB":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://www.hmdb.ca/metabolites/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "INCHIKEY":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.google.com/search?q=&quot;" + link.getValue() + "&quot;\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "KAPPAVIEW":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "KEGG":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.genome.jp/dbget-bin/www_bget?cpd:" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "KNAPSACK":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://www.knapsackfamily.com/knapsack_jsp/information.jsp?sname=C_ID&word=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+
+				case "LIPIDBANK":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "LIPIDMAPS":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "NIKKAJI":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://jglobal.jst.go.jp/en/redirect?Nikkaji_No=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "PUBCHEM":{
+					if(link.getValue().startsWith("CID:")) sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/compound/" + link.getValue().substring("CID:".length()) + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					else if(link.getValue().startsWith("SID:")) sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/substance/" + link.getValue().substring("SID:".length()) + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					else sb.append("<b>CH$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+					break;
+				}
+				default:
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+			}
 		}
+		
 		if (record.SP_SCIENTIFIC_NAME() != null)
-			sb.append("SP$SCIENTIFIC_NAME: " + record.SP_SCIENTIFIC_NAME() + "<br>\n");
+			sb.append("<b>SP$SCIENTIFIC_NAME:</b> " + record.SP_SCIENTIFIC_NAME() + "<br>\n");
 		if (record.SP_LINEAGE() != null)
-			sb.append("SP$LINEAGE: " + record.SP_LINEAGE() + "<br>");
+			sb.append("<b>SP$LINEAGE:</b> " + record.SP_LINEAGE() + "<br>");
 		for (Pair<String,String> link : record.SP_LINK())
-			sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "<br>");
+			sb.append("<b>SP$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>");
 		for (String sample : record.SP_SAMPLE())
-				sb.append("SP$SAMPLE: " + sample + "<br>");
+				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>");
 
 		
 		sb.append("<hr>");
@@ -234,10 +265,6 @@ public class RecordDisplay extends HttpServlet {
 		return sb.toString();
 	}	
 	
-//	case "CH$COMPOUND_CLASS":
-//	sb.append(tag + ": " + value + "\n");
-//	compoundClass	= value;
-//	break;
 
 //		@id  https://massbank.eu/MassBank/RecordDisplay.jsp?id=WA001202&dsn=Waters
 //		measurementTechnique LC-ESI-Q
@@ -259,57 +286,6 @@ public class RecordDisplay extends HttpServlet {
 //		  ]
 //		}
 		
-
-//		File file	= FileUtil.getFile(databaseName, accession);//new File(Config.get().DataRootPath() + databaseName + File.separator + accession + ".txt");
-//		List<String> list	= FileUtil.readFromFile(file);
-//		
-//		// process record
-//		// TODO property="schema:fileFormat"
-//		// TODO property="schema:isAccessibleForFree"
-//		// TODO property="schema:keywords"
-//		// TODO property="schema:publisher"
-//		final String delimiter	= ": ";
-//		String inchi			= null;
-//		String smiles			= null;
-//		String recordTitle		= null;
-//		
-//		String msType			= null;
-//		String name				= null;
-//		String compoundClass	= null;
-//		String inchiKey			= null;
-//		String splash			= null;
-//		String instrumentType	= null;
-//		String ionization		= null;
-//		String ionMode			= null;
-//		String fragmentation	= null;
-//		String collisionEnergy	= null;
-//		String resolution		= null;
-//		
-//		// CH, AC, MS, PK
-//		boolean ch	= false;
-//		boolean ac	= false;
-//		boolean ms	= false;
-//		boolean pk	= false;
-//		int PK_PEAK_idx	= -1;
-//		
-//		for(int lineIdx = 0; lineIdx < list.size(); lineIdx++){
-//			String line	= list.get(lineIdx);
-//			int delimiterIndex	= line.indexOf(delimiter);
-//			if(delimiterIndex == -1){
-//				sb.append(line + "\n");
-//				continue;
-//			}
-//			
-//			String tag		= line.substring(0, delimiterIndex);
-//			String value	= line.substring(delimiterIndex + delimiter.length());
-//			
-//			// horizontal ruler
-//			if(tag.startsWith("CH$") && (!ch))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	ch	= true;	}
-//			if(tag.startsWith("AC$") && (!ac))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	ac	= true;	}
-//			if(tag.startsWith("MS$") && (!ms))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	ms	= true;	}
-//			if(tag.startsWith("PK$") && (!pk))	{	sb.append("<hr size=\"1\" color=\"silver\" width=\"98%\" align=\"left\">");	pk	= true;	}
-//			
-//			switch(tag){
 
 //			case "AUTHORS":
 //				//sb.append(tag + ": " + value + "\n");
@@ -357,14 +333,7 @@ public class RecordDisplay extends HttpServlet {
 //				break;
 
 
-//			case "CH$SMILES":
-//				sb.append(tag + ": " + value + "\n");
-//				smiles	= value;
-//				break;
-//			case "CH$IUPAC":
-//				sb.append(tag + ": " + value + "\n");
-//				inchi	= value;
-//				break;
+
 //			case "CH$CDK_DEPICT_SMILES":
 //			case "CH$CDK_DEPICT_GENERIC_SMILES":
 //			case "CH$CDK_DEPICT_STRUCTURE_SMILES":
@@ -378,48 +347,7 @@ public class RecordDisplay extends HttpServlet {
 //				else
 //					sb.append(tag + ": " + value + "\n");
 //				break;
-//			case "CH$LINK":
-//				String delimiter2	= " ";
-//				int delimiterIndex2	= value.indexOf(delimiter2);
-//				
-//				if(delimiterIndex2 == -1){
-//					sb.append(tag + ": " + value + "\n");
-//					break;
-//				}
-//				
-//				String CH$LINK_NAME	= value.substring(0, delimiterIndex2);
-//				String CH$LINK_ID	= value.substring(delimiterIndex2 + delimiter2.length());
-//				
-//				if(CH$LINK_NAME == "INCHIKEY")	inchiKey	= CH$LINK_ID;
-//				
-//				switch(CH$LINK_NAME){
-//					case "CAS":								CH$LINK_ID	= "<a href=\"https://www.google.com/search?q=&quot;" + CH$LINK_ID + "&quot;"									+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "CAYMAN":                      	CH$LINK_ID	= "<a href=\"https://www.caymanchem.com/app/template/Product.vm/catalog/" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "CHEBI":                       	CH$LINK_ID	= "<a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + CH$LINK_ID								+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "CHEMPDB":                     	CH$LINK_ID	= "<a href=\"https://www.ebi.ac.uk/msd-srv/chempdb/cgi-bin/cgi.pl?FUNCTION=getByCode&amp;CODE=" + CH$LINK_ID	+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "CHEMSPIDER":                  	CH$LINK_ID	= "<a href=\"https://www.chemspider.com/" + CH$LINK_ID															+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "COMPTOX": 	                	CH$LINK_ID	= "<a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "FLAVONOIDVIEWER":             	CH$LINK_ID	= "<a href=\"http://www.metabolome.jp/software/FlavonoidViewer/"												+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "HMDB":                        	CH$LINK_ID	= "<a href=\"http://www.hmdb.ca/metabolites/" + CH$LINK_ID														+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "INCHIKEY":                    	CH$LINK_ID	= "<a href=\"https://www.google.com/search?q=&quot;" + CH$LINK_ID + "&quot;"									+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "KAPPAVIEW":                   	CH$LINK_ID	= "<a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=" + CH$LINK_ID						+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "KEGG":                        	CH$LINK_ID	= "<a href=\"http://www.genome.jp/dbget-bin/www_bget?cpd:" + CH$LINK_ID											+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "KNAPSACK":                    	CH$LINK_ID	= "<a href=\"http://kanaya.naist.jp/knapsack_jsp/info.jsp?sname=C_ID&word=" + CH$LINK_ID						+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "LIPIDBANK":                   	CH$LINK_ID	= "<a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + CH$LINK_ID											+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "LIPIDMAPS":                   	CH$LINK_ID	= "<a href=\"http://www.lipidmaps.org/data/get_lm_lipids_dbgif.php?LM_ID=" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "NIKKAJI":                     	CH$LINK_ID	= "<a href=\"https://jglobal.jst.go.jp/en/redirect?Nikkaji_No=" + CH$LINK_ID + "&CONTENT=syosai"		+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "OligosaccharideDataBase":     	CH$LINK_ID	= "<a href=\"http://www.fukuyama-u.ac.jp/life/bio/biochem/" + CH$LINK_ID + ".html" + CH$LINK_ID					+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "OligosaccharideDataBase2D":   	CH$LINK_ID	= "<a href=\"http://www.fukuyama-u.ac.jp/life/bio/biochem/" + CH$LINK_ID + ".html"								+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "NCBI-TAXONOMY":               	CH$LINK_ID	= "<a href=\"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=" + CH$LINK_ID							+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>"; break;
-//					case "PUBCHEM":{
-//						if(CH$LINK_ID.startsWith("CID:"))	CH$LINK_ID	= "<a href=\"https://pubchem.ncbi.nlm.nih.gov/compound/" + CH$LINK_ID.substring("CID:".length())				+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>";
-//						if(CH$LINK_ID.startsWith("SID:"))	CH$LINK_ID	= "<a href=\"https://pubchem.ncbi.nlm.nih.gov/substance/" + CH$LINK_ID.substring("SID:".length())				+ "\" target=\"_blank\">" + CH$LINK_ID + "</a>";
-//						break;
-//					}
-//				}
-//				
-//				sb.append(tag + ": " + CH$LINK_NAME + delimiter2 + CH$LINK_ID + "\n");
-//				break;
+
 //			// AC$INSTRUMENT
 //			case "AC$INSTRUMENT_TYPE":
 //				// TODO property="schema:measurementTechnique"
@@ -672,8 +600,9 @@ public class RecordDisplay extends HttpServlet {
 				String recordstring = createRecordString(record);
 				String structureddata = createStructuredData(record);
 				IAtomContainer mol = record.CH_SMILES_obj();
+				String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);				
 				
-				
+				//adjust svg to fit nicely in RecordDisplay page
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 				factory.setNamespaceAware(false);
 				factory.setValidating(false);
@@ -681,44 +610,16 @@ public class RecordDisplay extends HttpServlet {
 				factory.setFeature("http://xml.org/sax/features/validation", false);
 				factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
 				factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				
-				
-				long a, b, c, d, e, f, g, h, i, j;
-				a = System.currentTimeMillis();
-				String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);
-				b = System.currentTimeMillis();
-				Document svgDoc = builder.parse(new InputSource(new StringReader(svg)));
-				c = System.currentTimeMillis();
-				
+				Document svgDoc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(svg)));
 				Element svgNode = (Element) svgDoc.getElementsByTagName("svg").item(0);
 				NamedNodeMap attr = svgNode.getAttributes();
-				d = System.currentTimeMillis();
 				attr.getNamedItem("width").setTextContent("100%");
-				e = System.currentTimeMillis();
 				attr.getNamedItem("height").setTextContent("200px");
-				f = System.currentTimeMillis();
 				svgNode.setAttribute("preserveAspectRatio", "xMinYMin meet");
-				//attr.getNamedItem("preserveAspectRatio").setTextContent("xMinYMin meet");
-				g = System.currentTimeMillis();
 				StringWriter writer = new StringWriter();
-				h = System.currentTimeMillis();
 				TransformerFactory.newInstance().newTransformer().transform(new DOMSource(svgDoc), new StreamResult(writer));
-				i = System.currentTimeMillis();
 				svg = writer.getBuffer().toString();   
-				j = System.currentTimeMillis();
-				
-				System.out.println("1 took "+(b-a)+"mil to execute. ("+((b-a)/1000)+" seconds)");
-				System.out.println("2 took "+(c-b)+"mil to execute. ("+((c-b)/1000)+" seconds)");
-				System.out.println("3 took "+(d-c)+"mil to execute. ("+((d-c)/1000)+" seconds)");
-				
-				System.out.println("4 took "+(e-d)+"mil to execute. ("+((e-d)/1000)+" seconds)");
-				System.out.println("5 took "+(f-e)+"mil to execute. ("+((f-e)/1000)+" seconds)");
-				System.out.println("6 took "+(g-f)+"mil to execute. ("+((g-f)/1000)+" seconds)");
-				                                                            
-				System.out.println("7 took "+(h-g)+"mil to execute. ("+((h-g)/1000)+" seconds)");
-				System.out.println("8 took "+(i-h)+"mil to execute. ("+((i-h)/1000)+" seconds)");
-				System.out.println("9 took "+(j-i)+"mil to execute. ("+((j-i)/1000)+" seconds)");
+
 				
 				request.setAttribute("accession", accession);
 				request.setAttribute("short_name", shortname);
