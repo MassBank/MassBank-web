@@ -91,7 +91,7 @@
 		<h3><b>Search for:</b></h3>
 		<div class="w3-bar w3-margin-bottom" style="display:flex;flex-wrap:wrap">
 			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-red w3-white" 
-				id="KeywordButton" onclick="openSearch('Keyword')" style="flex:1 1">Keyword</button>
+				id="BasicButton" onclick="openSearch('Basic')" style="flex:1 1">Basic Search</button>
 			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-amber w3-white"
 				id="PeakListButton" onclick="openSearch('PeakList')" style="flex:1 1">Peak List</button>
 			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-teal w3-white" 
@@ -104,8 +104,8 @@
 				id="SplashButton" onclick="openSearch('Splash')" style="flex:1 1">SPLASH</button>
 		</div>
 
-		<div id="Keyword" class="w3-animate-opacity search_keyword" style="display:none">
-			<form name="keyword_query" class="query" action="Result.jsp">
+		<div id="Basic" class="w3-animate-opacity search_keyword" style="display:none">
+			<form name="basic_query" class="query" action="Result.jsp">
 			<div class="w3-container w3-card-4 w3-padding-small">
 				<h5>Compound Information</h5>
 				<div class="w3-cell-row w3-border">
@@ -555,8 +555,8 @@
 			$("#"+searchName).show();
 			localStorage.setItem("searchName", searchName);
 		}
-		// get last open search tab from localStorage or load default Keyword if empty
-		var searchTab = localStorage.getItem("searchName") || "Keyword";
+		// get last open search tab from localStorage or load default Basic if empty
+		var searchTab = localStorage.getItem("searchName") || "Basic";
 		// show search tab
 		openSearch(searchTab);
 		</script>
