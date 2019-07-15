@@ -83,20 +83,7 @@
 		</div>
 	</div>
 
-	<div class="w3-container w3-large" style="max-width:90%;height:auto;margin:auto;">
-		<ul class="w3-text-blue">
-			<li><a href="./api/services/MassBankAPI?wsdl" target="_blank">WEB-API WSDL</a></li>
-		</ul>
-		<h4><b>Announcements</b></h4>
-		<p>
-		Dear customers,<br> The Java applet technology was deprecated.
-		Therefore many services of MassBank are out of service (e.g.
-		spectral search). The main services quick search, record index and
-		record display are working properly. Our apologies for any
-		inconvience.
-		</p>
-	</div>
-	
+	<jsp:include page="news.html"/>
 	<jsp:include page="copyrightline.html"/>
 	
 </body>
