@@ -162,52 +162,54 @@ public class RecordDisplay extends HttpServlet {
 		if (record.SP_SCIENTIFIC_NAME() != null)
 			sb.append("<b>SP$SCIENTIFIC_NAME:</b> " + record.SP_SCIENTIFIC_NAME() + "<br>\n");
 		if (record.SP_LINEAGE() != null)
-			sb.append("<b>SP$LINEAGE:</b> " + record.SP_LINEAGE() + "<br>");
+			sb.append("<b>SP$LINEAGE:</b> " + record.SP_LINEAGE() + "<br>\n");
 		for (Pair<String,String> link : record.SP_LINK())
-			sb.append("<b>SP$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>");
+			sb.append("<b>SP$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
 		for (String sample : record.SP_SAMPLE())
-				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>");
+				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>\n");
 
 		
-		sb.append("<hr>");
-		sb.append("AC$INSTRUMENT: " + record.AC_INSTRUMENT() + "<br>");
-		sb.append("AC$INSTRUMENT_TYPE: " + record.AC_INSTRUMENT_TYPE() + "<br>");
-		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>");
-		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + record.AC_MASS_SPECTROMETRY_ION_MODE() + "<br>");
+		sb.append("<hr>\n");
+		sb.append("<b>AC$INSTRUMENT:</b> " + record.AC_INSTRUMENT() + "<br>\n");
+		sb.append("<b>AC$INSTRUMENT_TYPE:</b> " + record.AC_INSTRUMENT_TYPE() + "<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> MS_TYPE: " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> ION_MODE: " + record.AC_MASS_SPECTROMETRY_ION_MODE() + "<br>\n");
 		for (Pair<String,String> ac_mass_spectrometry : record.AC_MASS_SPECTROMETRY())
-			sb.append("AC$MASS_SPECTROMETRY: " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "<br>");
+			sb.append("<b>AC$MASS_SPECTROMETRY:</b> " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "<br>\n");
 		for (Pair<String,String> ac_chromatography : record.AC_CHROMATOGRAPHY())
-			sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "<br>");
+			sb.append("<b>AC$CHROMATOGRAPHY:</b> " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "<br>\n");
 		
 		
-		if (!record.MS_FOCUSED_ION().isEmpty() || !record.MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>");
+		if (!record.MS_FOCUSED_ION().isEmpty() || !record.MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>\n");
 		for (Pair<String,String> ms_focued_ion : record.MS_FOCUSED_ION())
-			sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "<br>");
+			sb.append("<b>MS$FOCUSED_ION:</b> " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "<br>\n");
 		for (Pair<String,String> ms_data_processing : record.MS_DATA_PROCESSING())
-				sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "<br>");
+				sb.append("<b>MS$DATA_PROCESSING:</b> " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "<br>\n");
 		
-		sb.append("<hr>");
-		sb.append("PK$SPLASH: " + record.PK_SPLASH() + "<br>");
+		sb.append("<hr>\n");
+		sb.append("<b>PK$SPLASH:</b> <a href=\"http://www.google.com/search?q=" + record.PK_SPLASH() + "\" target=\"_blank\">" + record.PK_SPLASH() + "</a><br>\n");
+		
+
 		if (!record.PK_ANNOTATION_HEADER().isEmpty()) {
-			sb.append("PK$ANNOTATION:");
+			sb.append("<b>PK$ANNOTATION:</b>");
 			for (String annotation_header_item : record.PK_ANNOTATION_HEADER())
 				sb.append(" " + annotation_header_item);
-			sb.append("<br>");
+			sb.append("<br>\n");
 			for (List<String> annotation_line :  record.PK_ANNOTATION()) {
 				sb.append("&nbsp");
 				for (String annotation_item : annotation_line )
 					sb.append("&nbsp" + annotation_item);
-				sb.append("<br>");
+				sb.append("<br>\n");
 			}
 		}
 
-		sb.append("PK$NUM_PEAK: " + record.PK_NUM_PEAK() + "<br>");
-		sb.append("PK$PEAK: m/z int. rel.int.<br>");
+		sb.append("<b>PK$NUM_PEAK:</b> " + record.PK_NUM_PEAK() + "<br>\n");
+		sb.append("<b>PK$PEAK:</b> m/z int. rel.int.<br>\n");
 		for (List<Double> peak_line :  record.PK_PEAK()) {
 			sb.append("&nbsp");
 			for (Double peak_line_item : peak_line )
 				sb.append("&nbsp" + peak_line_item.toString());
-			sb.append("<br>");
+			sb.append("<br>\n");
 		}
 		
 		sb.append("//");
@@ -354,51 +356,7 @@ public class RecordDisplay extends HttpServlet {
 //				sb.append(tag + ": <span property=\"schema:measurementTechnique\">" + value + "</span>\n");
 //				instrumentType	= value;
 //				break;
-//			case "AC$MASS_SPECTROMETRY":
-//				sb.append(tag + ": " + value + "\n");
-//				
-//				String[] tokens2	= value.split(" ");
-//				String subTag	= tokens2[0];
-//				switch(subTag){
-//					case "MS_TYPE":
-//						msType			= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
-//						break;
-//					case "IONIZATION":
-//						ionization		= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
-//						break;
-//					case "ION_MODE":
-//						ionMode			= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
-//						break;
-//					case "FRAGMENTATION_MODE":
-//						fragmentation	= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
-//						break;
-//					case "COLLISION_ENERGY":
-//						collisionEnergy	= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
-//						break;
-//					case "RESOLUTION":
-//						resolution		= String.join(" ", Arrays.copyOfRange(tokens2, 1, tokens2.length));
-//						break;
-//				}
-//				
-//				break;
-//			// AC$CHROMATOGRAPHY
-//			// MS$FOCUSED_ION
-//			// MS$DATA_PROCESSING
-//			case "PK$SPLASH":
-//				sb.append(tag + ": " + "<a href=\"http://www.google.com/search?q=" + value + "\" target=\"_blank\">" + value + "</a>" + "\n"); // https://www.google.com/search?q=&quot;%s&quot;
-//				splash	= value;
-//				break;
-//			// PK$NUM_PEAK
-//			case "PK$PEAK":{
-//				PK_PEAK_idx	= lineIdx;
-//				sb.append(line + "\n");
-//				break;
-//			}
-//			default:
-//				sb.append(line + "\n");
-//				break;
-//			}
-//		}
+
 //		
 //		// get peaks for specktackle
 //		StringBuilder sbPeaks	= new StringBuilder();
