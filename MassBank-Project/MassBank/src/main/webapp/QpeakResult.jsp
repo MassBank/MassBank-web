@@ -129,7 +129,7 @@
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
-		out.println( "<iframe src=\"menu.jsp\" width=\"860\" height=\"30px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<jsp:include page=\"menu.html\"/>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<table width=\"900\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
@@ -296,7 +296,7 @@
 			</td>
 		</tr>
 	</table>
-<iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<jsp:include page="menu.html"/>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
 <%-- <jsp:include page="pserver/ServerInfo.jsp" /> --%>

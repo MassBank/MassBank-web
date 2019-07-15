@@ -518,7 +518,7 @@
 				</td>
 			</tr>
 		</table>
-		<iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+		<jsp:include page="menu.html"/>
 		<hr size="1">
 		<br>
 		<font size="+1" style="background-color:LightCyan"><%=recordTitle%></font>
