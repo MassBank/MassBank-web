@@ -1352,6 +1352,6 @@
 </form>
 
 <hr size="1">
-<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
+<jsp:include page="copyrightline.html"/>
 </body>
 </html>

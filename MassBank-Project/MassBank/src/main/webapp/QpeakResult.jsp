@@ -575,7 +575,6 @@
 %>
 </form>
 <hr size="1">
-<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
-<span id="menu"></span>
+<jsp:include page="copyrightline.html"/><span id="menu"></span>
 </body>
 </html>
