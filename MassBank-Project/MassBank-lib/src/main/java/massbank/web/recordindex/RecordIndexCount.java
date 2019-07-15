@@ -118,7 +118,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			e.printStackTrace();
 		}
 		
-		sql = "SELECT COUNT(DISTINCT DATABASE_ID) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
+		sql = "SELECT COUNT(DISTINCT SUBSTRING(DATABASE_ID,1,14)) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
 		try {
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
@@ -130,7 +130,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 			e.printStackTrace();
 		}
 		
-		sql = "SELECT COUNT(DISTINCT SUBSTRING(DATABASE_ID,1,14)) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
+		sql = "SELECT COUNT(DISTINCT DATABASE_ID) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
 		try {
 			stmnt = databaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
