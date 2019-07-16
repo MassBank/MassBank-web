@@ -35,8 +35,8 @@
 	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
-	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.6.3-web/css/all.min.css">
-	<script src="js/jquery-3.3.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.9.0-web/css/all.min.css">
+	<script src="js/jquery-3.4.1.min.js"></script>
 	<script src="js/MassCalc.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>

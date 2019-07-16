@@ -499,7 +499,7 @@
 		<link rel="stylesheet" type="text/css" href="css/Common.css">
 		<script type="text/javascript" src="script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
-		<script type="text/javascript" src="js/jquery-3.3.1.min.js" ></script>
+		<script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
 		<script type="text/javascript" src="script/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
