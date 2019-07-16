@@ -35,7 +35,7 @@
 	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
 	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
-	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/jquery-3.4.1.min.js"></script>
 	<script src="script/Piwik.js"></script>
 </head>
 
