@@ -1,6 +1,8 @@
 #!/bin/bash
 CURRENT_UID=$(id -u):$(id -g)
 export CURRENT_UID
+VERSION=2.1.0
+export VERSION
 
 usage () {
 	echo "Usage: install.sh <operation> <instance>"
@@ -19,16 +21,18 @@ case $2 in
 	;;
 esac
 
+
 case $1 in
 	start)
 		docker-compose -f compose/full-service.yml -p $TAG pull 
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project package
+		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project clean package
+		docker-compose -f compose/full-service.yml -p $TAG up -d mariadb
+		echo "Wait 30s for database to be ready..."
+                sleep 30
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
-		echo "Wait 20s for database to be ready..."
-		sleep 20
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
-			/project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
+			/project/MassBank-lib/target/MassBank-lib-${VERSION}-default/MassBank-lib-${VERSION}/bin/RefreshDatabase
 	;;
 	stop)
 		docker-compose -f compose/full-service.yml -p $TAG rm -s
@@ -36,11 +40,11 @@ case $1 in
 	refresh)
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
-			/project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
+			/project/MassBank-lib/target/MassBank-lib-${VERSION}-default/MassBank-lib-${VERSION}/bin/RefreshDatabase
 	;;
 	deploy)
 		docker-compose -f compose/full-service.yml -p $TAG pull
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project package
+		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG rm -s tomcat
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
 	;;
