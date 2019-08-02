@@ -102,7 +102,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Last line of a MassBank Record is // .
 		def("tagsep", StringParser.of(": "));
 		def("valuesep", StringParser.of("; "));
-		def("endtag", StringParser.of("//").trim());
+		def("endtag", StringParser.of("//").seq(Token.NEWLINE_PARSER));
 		def("multiline_start", StringParser.of("  "));
 		
 		def("uint_primitive", digit().plus().flatten());
