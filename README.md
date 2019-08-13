@@ -96,12 +96,10 @@ The tracking code for http://your_server_url/MassBank is called from /var/www/ht
 Make sure to replace the default code with your customised tracking code. Exclude the script tags.
 Make also sure that you customise your superuser if using the default bootstrap.sh!
 
-#Release strategy
+# Release strategy
 
 ## Main branches
-We use two main branches, master and dev. All development should happen is dev and we define every commit to master to be a release.
-When the source code in the dev branch reaches a stable point and is ready to be released, all of the changes should be merged back
-into master somehow and then tagged with a release number. How this is done in detail will be discussed further on.
+We use two main branches, `master` and `dev`. All development should happen in `dev` and we define every commit to `master` to be a release. When the source code in the `dev` branch reaches a stable point and is ready to be released, all of the changes should be merged back into `master` somehow and then tagged with a release number. How this is done in detail will be discussed further on.
 
 ## Supporting branches
 The different types of branches we may use are:
