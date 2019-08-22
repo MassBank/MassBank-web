@@ -1770,6 +1770,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 			}
 			
+			// max 600 characters are supported in database for RECORD_TITLE
+			if (callback.RECORD_TITLE1().length()>600) {
+				return context.failure("RECORD_TITLE length exeeds database limit of 600 characters.\n");
+			}
+			
 			
 			// check for duplicate entries in CH$NAME
 			List<String> ch_name = callback.CH_NAME();
