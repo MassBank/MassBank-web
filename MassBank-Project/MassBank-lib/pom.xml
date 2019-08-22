@@ -109,7 +109,8 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.1</version>
 				<configuration>
-<!-- 					<appendAssemblyId>false</appendAssemblyId> -->
+					<appendAssemblyId>false</appendAssemblyId>
+					<finalName>MassBank-lib</finalName>
 					<descriptors>
 						<descriptor>src/main/assembly/assembly.xml</descriptor>
 					</descriptors>
