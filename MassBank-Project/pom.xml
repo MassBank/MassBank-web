@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
@@ -18,8 +16,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axis2.version>1.7.9</axis2.version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
-		<cdk.version>2.2</cdk.version>
-		<jdbc.version>2.4.2</jdbc.version>
+		<cdk.version>2.3</cdk.version>
+		<jdbc.version>2.4.3</jdbc.version>
 		<versionName>${project.version}</versionName>
 	</properties>
 
