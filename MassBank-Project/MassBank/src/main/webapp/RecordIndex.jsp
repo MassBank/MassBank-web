@@ -250,6 +250,19 @@
 			</ul>
 		</div>
 	</div>
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Database version</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+				<li>${version}</li>
+			</ul>
+		</div>
+	</div>
 	
 	<div class="w3-padding">
 		<div class="w3-padding-small">
