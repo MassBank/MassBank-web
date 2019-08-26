@@ -20,6 +20,7 @@
  ******************************************************************************/
 package massbank;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -52,6 +53,9 @@ public class RefreshDatabase {
 			logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
 			DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
 			
+			logger.trace("Get version of data source.");
+			String version	= FileUtils.readFileToString(new File(Config.get().DataRootPath()+"/VERSION"), StandardCharsets.UTF_8);
+			
 			logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
 			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.get().DataRootPath()));
 			for (Path contributorPath : path) {
@@ -79,7 +83,8 @@ public class RefreshDatabase {
 			path.close();
 			
 			logger.trace("Setting Timestamp in database");
-			PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME) VALUES (CURRENT_TIMESTAMP);");
+			PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
+			stmnt.setString(1, version);
 			stmnt.executeUpdate();
 			db.getConnection().commit();
 			db.closeConnection();
