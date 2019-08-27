@@ -99,7 +99,8 @@ Make also sure that you customise your superuser if using the default bootstrap.
 # Release strategy
 
 ## Main branches
-We use two main branches, `master` and `dev`. All development should happen in `dev` and we define every commit to `master` to be a release. When the source code in the `dev` branch reaches a stable point and is ready to be released, all of the changes should be merged back into `master` somehow and then tagged with a release number. How this is done in detail will be discussed further on.
+We use two main branches, `master` and `dev`. All development should happen in `dev` and we define every commit to `master` to be a release. When the source code in the `dev` branch reaches a stable point and is ready to be released, all of the changes should be merged back into `master` somehow and then tagged with a release number. How this is done in detail will be discussed further on. To use all of the command lines below the [github/hub](https://docs.docker.com/install/linux/docker-ce/ubuntu/) tool is required.
+
 
 ## Supporting branches
 The different types of branches we may use are:
@@ -149,26 +150,23 @@ $ ./bump-version.sh 2.1
 Files modified successfully, version bumped to 2.1.
 git commit -a -m "Bumped version number to 2.1"
 [release-2.1 74d9424] Bumped version number to 2.1
-
+$ git push --set-upstream origin release-2.1
 ```
 #### Finishing a release branch
-When the state of the release branch is ready to become a real release, the release branch is merged into master and tagged for easy future reference.
+When the state of the release branch is ready to become a real release, the release branch is merged into master with a pull request and tagged for easy future reference.
 
 ```
-$ git checkout master
-Switched to branch 'master'
-$ git merge --no-ff release-2.1
-Merge made by recursive.
-(Summary of changes)
-$ git tag -a 2.1
-
+$ hub pull-request -m 'Release version 2.1'
 ```
+Check the PR on github and merge.
+
+
 If there were any changes in the release branch we need to merge them back to `dev`.
 
 ```
 $ git checkout dev
 Switched to branch 'dev'
-$ git merge --no-ff release-1.2
+$ git merge --no-ff release-2.1
 Merge made by recursive.
 (Summary of changes)
 ```
