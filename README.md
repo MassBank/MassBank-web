@@ -158,7 +158,14 @@ When the state of the release branch is ready to become a real release, the rele
 ```
 $ hub pull-request -m 'Release version 2.1'
 ```
-Check the PR on github and merge.
+Wait for all checks to finish. Now the release can be merged to `Master`. 
+```
+$ git checkout master
+$ git merge --no-ff release-2.1
+$ git push origin master
+$ git tag -a 2.1 -m 'Release version 2.1'
+$ git push origin 2.1
+```
 
 
 If there were any changes in the release branch we need to merge them back to `dev`.
