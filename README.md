@@ -138,7 +138,7 @@ Branch off from: `dev`
 
 Must merge back into: `dev` and `master`
 
-Branch naming: anything except `release-*`
+Branch naming: `release-*`
 
 Release branches support preparation of a new production release. They allow for minor bug fixes and preparing the version number for a release. It is exactly at the start of a release branch that the upcoming release gets assigned a version number.
 
@@ -153,12 +153,12 @@ git commit -a -m "Bumped version number to 2.1"
 $ git push --set-upstream origin release-2.1
 ```
 #### Finishing a release branch
-When the state of the release branch is ready to become a real release, the release branch is merged into master with a pull request and tagged for easy future reference.
+When the state of the release branch is ready to become a real release, the release branch is merged into `master` with a pull request and tagged for easy future reference.
 
 ```
 $ hub pull-request -m 'Release version 2.1'
 ```
-Wait for all checks to finish. Now the release can be merged to `Master`. 
+Wait for all checks to finish. Now the release can be merged to `master`. 
 ```
 $ git checkout master
 $ git merge --no-ff release-2.1
@@ -166,8 +166,6 @@ $ git push origin master
 $ git tag -a 2.1 -m 'Release version 2.1'
 $ git push origin 2.1
 ```
-
-
 If there were any changes in the release branch we need to merge them back to `dev`.
 
 ```
@@ -190,7 +188,7 @@ Branch off from: `master`
 
 Must merge back into: `dev` and `master`
 
-Branch naming: anything except `hotfix-*`
+Branch naming: `hotfix-*`
 
 Hotfix branches are very much like release branches in that they are also meant to prepare for a new production release. They arise from the necessity to act immediately upon an undesired state of a live production version.
 
@@ -209,20 +207,22 @@ Then, fix the bug and commit the fix in one or more separate commits.
 #### Finishing a hotfix branch
 When finished, the bugfix needs to be merged back into `master`, but also needs to be merged back into `dev`.
 First, update `master` and tag the release.
-
+```
+$ hub pull-request -m 'Release version 2.1.1'
+```
+Wait for all checks to finish. Now the release can be merged to `master`. 
 ```
 $ git checkout master
-Switched to branch 'master'
 $ git merge --no-ff hotfix-2.1.1
-Merge made by recursive.
-(Summary of changes)
-$ git tag -a 2.1.1
+$ git push origin master
+$ git tag -a 2.1.1 -m 'Release version 2.1.1'
+$ git push origin 2.1.1
 ```
 Next, include the bugfix in `dev`, too:
 
 ```
-$ git checkout develop
-Switched to branch 'develop'
+$ git checkout dev
+Switched to branch 'dev'
 $ git merge --no-ff hotfix-2.1.1
 Merge made by recursive.
 (Summary of changes)
