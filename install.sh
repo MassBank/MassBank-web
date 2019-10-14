@@ -1,8 +1,6 @@
 #!/bin/bash
 CURRENT_UID=$(id -u):$(id -g)
 export CURRENT_UID
-VERSION=2.1.0
-export VERSION
 
 usage () {
 	echo "Usage: install.sh <operation> <instance>"
@@ -32,7 +30,7 @@ case $1 in
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
-			/project/MassBank-lib/target/MassBank-lib-${VERSION}-default/MassBank-lib-${VERSION}/bin/RefreshDatabase
+			/project/MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RefreshDatabase
 	;;
 	stop)
 		docker-compose -f compose/full-service.yml -p $TAG rm -s
@@ -40,7 +38,7 @@ case $1 in
 	refresh)
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
-			/project/MassBank-lib/target/MassBank-lib-${VERSION}-default/MassBank-lib-${VERSION}/bin/RefreshDatabase
+			/project/MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RefreshDatabase
 	;;
 	deploy)
 		docker-compose -f compose/full-service.yml -p $TAG pull

@@ -4,3 +4,4 @@
 **/.settings
 **/.classpath
 **/target
+**/pom.xml.versionsBackup

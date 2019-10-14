@@ -202,6 +202,7 @@ public class RecordIndex extends HttpServlet {
 			request.setAttribute("spectra", result.spectraCount);
 			request.setAttribute("compounds", result.compoundCount);
 			request.setAttribute("isomers", result.isomerCount);
+			request.setAttribute("version", timestamp.getVersion());
 			request.setAttribute("sitechartSVG", sitechartSVG);
 			request.setAttribute("instchartSVG", instchartSVG);
 			request.setAttribute("mschartSVG", mschartSVG);
