@@ -23,10 +23,8 @@ esac
 case $1 in
 	start)
 		docker-compose -f compose/full-service.yml -p $TAG pull 
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG up -d mariadb
-		echo "Wait 30s for database to be ready..."
-                sleep 30
+		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
@@ -42,7 +40,7 @@ case $1 in
 	;;
 	deploy)
 		docker-compose -f compose/full-service.yml -p $TAG pull
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project clean package
+		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG rm -s tomcat
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
 	;;
