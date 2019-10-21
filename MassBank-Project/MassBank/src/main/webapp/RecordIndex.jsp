@@ -258,7 +258,7 @@
 			<b>:</b>
 		</div>
 		<div class="w3-rest">
-			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;white-space:nowrap;">
 				<li>${version}</li>
 			</ul>
 		</div>

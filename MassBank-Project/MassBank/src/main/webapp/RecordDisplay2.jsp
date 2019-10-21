@@ -117,6 +117,7 @@ ${structureddata}
 	</div>
 	
 	<div class="monospace w3-padding w3-small" style="height:auto;margin:auto">
+		<hr>
 		${recordstring}
 	</div>
 	
