@@ -62,8 +62,7 @@ public class Inspector {
 			String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);				
 			
 			
-			String css = FileUtils.readFileToString(new File(arguments[0]), StandardCharsets.UTF_8);
-
+			String css = "";
 			
 			
 			StringBuilder sb = new StringBuilder();
