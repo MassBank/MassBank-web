@@ -703,6 +703,16 @@ public class Record {
 		return sb.toString();
 	}
 	
+	public String createPeakListForSpectrumViewer() {
+        // convert a list of lists [[mz, int, rel.int], [...], ...]
+        // to String "mz,rel.int@mz,rel.int@..."
+		List<String> peaks = new ArrayList<>();
+		for (List<Double> peak : PK_PEAK()) {
+			peaks.add(peak.get(0)+","+peak.get(2));
+		}
+		return String.join("@", peaks);
+	}
+	
 	public static class Structure{
 		public final String CH_SMILES;
 		public final String CH_IUPAC;

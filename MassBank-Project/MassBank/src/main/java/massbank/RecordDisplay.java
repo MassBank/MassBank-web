@@ -56,17 +56,6 @@ public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(RecordDisplay.class);
 	
-	private static String createPeakListForSpectrumViewer(Record record) {
-        // convert a list of lists [[mz, int, rel.int], [...], ...]
-        // to String "mz,rel.int@mz,rel.int@..."
-		List<String> peaks = new ArrayList<>();
-		for (List<Double> peak : record.PK_PEAK()) {
-			peaks.add(peak.get(0)+","+peak.get(2));
-		}
-		return String.join("@", peaks);
-	}
-	
-
 //		@id  https://massbank.eu/MassBank/RecordDisplay.jsp?id=WA001202&dsn=Waters
 //		measurementTechnique LC-ESI-Q
 
@@ -382,7 +371,7 @@ public class RecordDisplay extends HttpServlet {
 				request.setAttribute("short_name", shortname);
 		        request.setAttribute("keywords", keywords);
 		        request.setAttribute("record_title", record.RECORD_TITLE1());	        		
-		        request.setAttribute("peaks", createPeakListForSpectrumViewer(record));
+		        request.setAttribute("peaks", record.createPeakListForSpectrumViewer());
 				request.setAttribute("description", description);
 				request.setAttribute("recordstring", recordstring);
 		        request.setAttribute("structureddata", structureddata);

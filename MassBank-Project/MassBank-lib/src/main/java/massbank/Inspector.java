@@ -1,9 +1,15 @@
 package massbank;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -21,8 +27,18 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 public class Inspector {
 	private static final Logger logger = LogManager.getLogger(Inspector.class);
 	
-
+	static String getResourceFileAsString(String fileName) throws IOException {
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		try (InputStream is = classLoader.getResourceAsStream(fileName)) {
+			if (is == null)
+				return null;
+			try (InputStreamReader isr = new InputStreamReader(is); BufferedReader reader = new BufferedReader(isr)) {
+				return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+			}
+		}
+	}
 	
+
 	public static void main(String[] arguments) throws Exception {
 		if (arguments.length==2) {
 			String input = FileUtils.readFileToString(new File(arguments[0]), StandardCharsets.UTF_8);
@@ -62,7 +78,18 @@ public class Inspector {
 			String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);				
 			
 			
-			String css = "";
+			String css = "<style>\n" + 
+			getResourceFileAsString("massbank.css") + "\n" + 
+			getResourceFileAsString("Common.css") + "\n" +
+			getResourceFileAsString("st.css") + "\n" +
+			"</style>\n";
+			
+			String js = "<script type=\"text/javascript\">\n" +
+			getResourceFileAsString("Common.js") + "\n" +
+			getResourceFileAsString("d3.v3.min.js") + "\n" +
+			getResourceFileAsString("st.min.js") + "\n" +
+			getResourceFileAsString("massbank_specktackle.js") + "\n" +
+			"</script>\n";
 			
 			
 			StringBuilder sb = new StringBuilder();
@@ -73,32 +100,22 @@ public class Inspector {
 			"	<title>"+shortname+"</title>\n" + 
 			"	<meta charset=\"UTF-8\">\n" + 
 			"	<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\n" + 
-			"	<link rel=\"stylesheet\" href=\"https://www.w3schools.com/w3css/4/w3.css\">\n" + 
-			"	<link rel=\"stylesheet\" href=\"https://www.w3schools.com/lib/w3-theme-grey.css\">\n" + 
-			"	<link rel=\"stylesheet\" type=\"text/css\" href=\"css.new/massbank.css\">\n" + 
+//			"	<link rel=\"stylesheet\" href=\"https://www.w3schools.com/w3css/4/w3.css\">\n" + 
+//			"	<link rel=\"stylesheet\" href=\"https://www.w3schools.com/lib/w3-theme-grey.css\">\n" + 
 			"	<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js\"></script>\n" + 
 
 			"	<!-- 	hier anpassen -->\n" + 
 			"	<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n" + 
 			"	<meta name=\"variableMeasured\" content=\"m/z\">\n" + 
-			"	\n" + 
-			"	<link rel=\"stylesheet\" type=\"text/css\" href=\"css/Common.css\">\n" + 
-			"	<script type=\"text/javascript\" src=\"script/Common.js\"></script>\n" + 
-			"	<!-- SpeckTackle dependencies-->\n" + 
-			"	<script src=\"https://d3js.org/d3.v3.min.js\"></script>\n" + 
-			"	<!-- SpeckTackle library-->\n" + 
-			"	<script type=\"text/javascript\" src=\"script/st.min.js\" charset=\"utf-8\"></script>\n" + 
-			"	<!-- SpeckTackle style sheet-->\n" + 
-			"	<link rel=\"stylesheet\" href=\"css/st.css\" type=\"text/css\" />\n" + 
-			"	<!-- SpeckTackle MassBank loading script-->\n" + 
-			"	<script type=\"text/javascript\" src=\"script/massbank_specktackle.js\"></script>\n" + 
+ 
 			structureddata + "\n" +
 			css + "\n" +
 			"</head>\n"
 			);
 			
 			sb.append(
-			"<body class=\"w3-theme-gradient\">\n" + 
+			"<body class=\"w3-theme-gradient\">\n" +
+			js + "\n" +
 			"  	<header class=\"w3-container w3-top w3-text-dark-grey w3-grey\">\n" + 
 			"		<div class=\"w3-bar\">\n" + 
 			"			<div class=\"w3-left\">\n" + 
@@ -111,7 +128,7 @@ public class Inspector {
 			"			<div class=\"w3-row w3-padding-small\">\n" + 
 			"				<div class=\"w3-twothird w3-text-grey w3-small w3-padding-small\">\n" + 
 			"					Mass Spectrum\n" + 
-			"					<div id=\"spectrum_canvas\" peaks=\"${peaks}\" style=\"height:200px; width:600px; max-width:100%; background-color:white\"></div>\n" + 
+			"					<div id=\"spectrum_canvas\" peaks=\"" + record.createPeakListForSpectrumViewer() + "\" style=\"height:200px; width:600px; max-width:100%; background-color:white\"></div>\n" + 
 			"				</div>\n" + 
 			"				<div class=\"w3-third w3-text-grey w3-small w3-padding-small\">\n" + 
 			"					Chemical Structure<br>\n" + 
