@@ -496,7 +496,7 @@
 		<meta name="variableMeasured" content="m/z">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
-		<link rel="stylesheet" type="text/css" href="css/Common.css">
+		<link rel="stylesheet" type="text/css" href="css.old/Common.css">
 		<script type="text/javascript" src="script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
 		<script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
@@ -504,7 +504,7 @@
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
 		<!-- SpeckTackle style sheet-->
-		<link rel="stylesheet" href="css/st.css" type="text/css" />
+		<link rel="stylesheet" href="css.old/st.css" type="text/css" />
 		<!-- SpeckTackle MassBank loading script-->
 		<script type="text/javascript" src="script/massbank_specktackle.js"></script>
 		<title><%=shortName%></title>

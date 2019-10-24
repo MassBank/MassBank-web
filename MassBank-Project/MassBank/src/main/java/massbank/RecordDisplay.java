@@ -24,12 +24,7 @@ package massbank;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -145,14 +140,6 @@ public class RecordDisplay extends HttpServlet {
 //				instrumentType	= value;
 //				break;
 
-//		
-//		// get peaks for specktackle
-//		StringBuilder sbPeaks	= new StringBuilder();
-//		for(int lineIdx = PK_PEAK_idx + 1; lineIdx < list.size() - 1; lineIdx++){
-//			String[] tokens	= list.get(lineIdx).trim().split(" ");
-//			sbPeaks.append(tokens[0] + "," + tokens[2] + "@");
-//		}
-//		String peaks	= sbPeaks.toString();
 //		
 //		if(recordTitle == null)
 //			recordTitle	= "NA";
@@ -366,12 +353,11 @@ public class RecordDisplay extends HttpServlet {
 				TransformerFactory.newInstance().newTransformer().transform(new DOMSource(svgDoc), new StreamResult(writer));
 				svg = writer.getBuffer().toString();   
 
-				
+				request.setAttribute("peaklist", record.createPeakListData());
 				request.setAttribute("accession", accession);
 				request.setAttribute("short_name", shortname);
 		        request.setAttribute("keywords", keywords);
 		        request.setAttribute("record_title", record.RECORD_TITLE1());	        		
-		        request.setAttribute("peaks", record.createPeakListForSpectrumViewer());
 				request.setAttribute("description", description);
 				request.setAttribute("recordstring", recordstring);
 		        request.setAttribute("structureddata", structureddata);

@@ -32,31 +32,37 @@
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
 	<link href="favicon.ico" rel="icon" type="image/x-icon">
 	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
-	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
-	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css/w3.css">
+	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.9.0-web/css/all.min.css">
-	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
-	<script src="js/jquery-3.4.1.min.js"></script>
+	<script src="js/jquery-3.4.1.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script src="js/MassCalc.js"></script>
 	<script>svg4everybody();</script>
-
-	<!-- 	hier anpassen -->
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta name="variableMeasured" content="m/z">
+	<!-- SpeckTackle CSS containing chart stylings -->
+    <link rel="stylesheet" type="text/css" href="css/st.css">
+    <!-- SpeckTackle dependencies-->
+    <script src="js/d3.v3.min.js"></script>
+	<!-- SpeckTackle library -->
+    <script src="js/st.js"></script>
+    <!-- SpeckTackle MassBank loading script-->
+	<script src="js/massbank_specktackle.js"></script>
+<!-- 	<script src="js/my_massbank_specktackle.js"></script> -->
 	
-	<link rel="stylesheet" type="text/css" href="css/Common.css">
-	<script type="text/javascript" src="script/Common.js"></script>
-	<!-- SpeckTackle dependencies-->
-	<script type="text/javascript" src="script/d3.v3.min.js"></script>
-	<!-- SpeckTackle library-->
-	<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
-	<!-- SpeckTackle style sheet-->
-	<link rel="stylesheet" href="css/st.css" type="text/css" />
-	<!-- SpeckTackle MassBank loading script-->
-	<script type="text/javascript" src="script/massbank_specktackle.js"></script>
+    
+	<!-- 	hier anpassen -->
+<!-- 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
+<!-- 	<meta name="variableMeasured" content="m/z"> -->
+
 ${structureddata}
 </head>
+
+<script type="text/javascript">
+
+var data=${peaklist};
+
+</script>
 
 <body class="w3-theme-gradient">
 	<noscript>
