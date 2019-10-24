@@ -38,9 +38,9 @@
 	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.9.0-web/css/all.min.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<script src="js/jquery-3.4.1.min.js"></script>
-	<script src="js/jquery-confirm.min.js"></script>
-	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script src="js/MassCalc.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
+	<script src="js/jquery-confirm.min.js"></script>
 	<script src="js/search.js"></script>
 	<script>svg4everybody();</script>
 </head>

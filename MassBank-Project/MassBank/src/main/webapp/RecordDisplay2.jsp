@@ -37,8 +37,8 @@
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.9.0-web/css/all.min.css">
 	<script src="js/jquery-3.4.1.js"></script>
-	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script src="js/MassCalc.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
 	<!-- SpeckTackle CSS containing chart stylings -->
     <link rel="stylesheet" type="text/css" href="css/st.css">
@@ -59,9 +59,7 @@ ${structureddata}
 </head>
 
 <script type="text/javascript">
-
-var data=${peaklist};
-
+	var data=${peaklist};
 </script>
 
 <body class="w3-theme-gradient">
@@ -112,7 +110,7 @@ var data=${peaklist};
 			<div class="w3-row w3-padding-small">
 				<div class="w3-twothird w3-text-grey w3-small w3-padding-small">
 					Mass Spectrum
-					<div id="spectrum_canvas" peaks="${peaks}" style="height:200px; width:600px; max-width:100%; background-color:white"></div>
+					<div id="spectrum_canvas" style="height:200px; width:600px; max-width:100%; background-color:white"></div>
 				</div>
 				<div class="w3-third w3-text-grey w3-small w3-padding-small">
 					Chemical Structure<br>
