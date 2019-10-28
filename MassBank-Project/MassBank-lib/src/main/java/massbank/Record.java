@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -713,6 +715,16 @@ public class Record {
 		return String.join("@", peaks);
 	}
 	
+	public JSONObject createPeakListData() {
+		JSONObject result = new JSONObject();
+		JSONArray peaklist = new JSONArray();
+		for (List<Double> peak : PK_PEAK()) {
+			peaklist.put(new JSONObject().put("intensity", peak.get(2)).put("mz", peak.get(0)));
+		}
+		result.put("peaks", peaklist);
+		return result;
+	}
+	
 	public static class Structure{
 		public final String CH_SMILES;
 		public final String CH_IUPAC;
@@ -732,13 +744,10 @@ public class Record {
 			this.FULL_NAME	= FULL_NAME;
 		}
 	}
-	public static Map<String, String> listToMap(List<Pair<String, String>> list) {
+	
+	private static Map<String, String> listToMap(List<Pair<String, String>> list) {
 		Map<String, String> map	= new HashMap<String, String>();
-		
-		for (Pair<String, String> pair : list)
-			map.put(pair.getKey(), pair.getValue());
-		
-		return map;
-		
+		for (Pair<String, String> pair : list) map.put(pair.getKey(), pair.getValue());
+		return map;		
 	}
 }

@@ -114,7 +114,7 @@
 		out.println( " <meta name=\"description\" content=\"Mass Spectrum Quick Search Results\">" );
 		out.println( " <meta name=\"keywords\" content=\"Results\">" );
 		out.println( " <meta name=\"revisit_after\" content=\"10 days\">" );
-		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"css/Common.css\">" );
+		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"css.old/Common.css\">" );
 		out.println( " <script type=\"text/javascript\" src=\"script/Common.js\"></script>" );
 		out.println( " <script type=\"text/javascript\" src=\"script/QpeakResult.js\"></script>" );
 		out.println( " <title>MassBank | Database | Quick Search Results</title>" );
@@ -267,9 +267,9 @@
 <meta name="description" content="Mass Spectrum Quick Search Results">
 <meta name="keywords" content="Results">
 <meta name="revisit_after" content="10 days">
-<link rel="stylesheet" type="text/css" href="css/Common.css">
-<link rel="stylesheet" type="text/css" href="css/QpeakResult.css">
-<link rel="stylesheet" type="text/css" href="css/QpeakResultMenu.css">
+<link rel="stylesheet" type="text/css" href="css.old/Common.css">
+<link rel="stylesheet" type="text/css" href="css.old/QpeakResult.css">
+<link rel="stylesheet" type="text/css" href="css.old/QpeakResultMenu.css">
 <script type="text/javascript" src="script/Common.js"></script>
 <script type="text/javascript" src="script/QpeakResult.js"></script>
 <script type="text/javascript" src="script/QpeakResultMenu.js"></script>
@@ -280,7 +280,7 @@
 <!-- SpeckTackle library-->
 <script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
 <!-- SpeckTackle style sheet-->
-<link rel="stylesheet" href="css/st.css" type="text/css" />	
+<link rel="stylesheet" href="css.old/st.css" type="text/css" />	
 <!-- SpeckTackle MassBank loading script-->
 <script type="text/javascript" src="script/massbank_specktackle.js"></script>
 <title>MassBank | Database | Quick Search Results</title>
