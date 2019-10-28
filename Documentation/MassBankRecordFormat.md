@@ -467,7 +467,7 @@ COMMENT: [Profile] CA000185.jpg
 Comment subtags. Optional and Iterative
 
 ##### 2.1.10 Subtag: CONFIDENCE
-Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to [Schymanski et al.](https://dx.doi.org/10.1021/es5002105)
+Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to [Schymanski et al. 2014](https://dx.doi.org/10.1021/es5002105)
 
 Example:
 ```
@@ -930,23 +930,13 @@ AC$MASS_SPECTROMETRY: SCANNING_SETTING 1 cycle/sec
 ```
 
 ##### 2.4.5 Subtag: SOURCE\_TEMPERATURE
-Temperature of the Ion Source in GC-MS and LC-MS (aka Ion Source Temperature or Injection Temperature), for Example of the EI Source or the Heated ESI Source.
+Temperature of the Ion Source in GC-MS and LC-MS (aka Ion Source Temperature), for Example of the EI Source or the Heated ESI Source.
 
 Example:
 
 ```
 AC$MASS_SPECTROMETRY: SOURCE_TEMPERATURE 280 C
 ```
-
-##### 2.4.5 Subtag: SOURCE\_TEMPERATURE_GRADIENT
-Temperature of the Ion Source in GC-MS in Case of Cold Injection, Thermodesorption or other Trapping Systems (aka Ion Source Temperature Gradient or Injection Temperature Gradient).
-
-Example:
-
-```
-AC$MASS_SPECTROMETRY: SOURCE_TEMPERATURE 10 C at 0 sec, 90 C at 1 sec, 170 C at 2 sec, 250 C at 3 sec
-```
-
 
 ##### Undocumented Subtags
 `ACTIVATION_PARAMETER`
@@ -1051,6 +1041,23 @@ Example:
 
 ```
 AC$CHROMATOGRAPHY: FLOW_RATE 0.25 mL/min
+```
+##### 2.4.5 Subtag: INJECTION\_TEMPERATURE
+Temperature of the Injection Port in GC-MS.
+
+Example:
+
+```
+AC$CHROMATOGRAPHY: INJECTION_TEMPERATURE 250 C
+```
+
+##### 2.4.5 Subtag: INJECTION\_TEMPERATURE_GRADIENT
+Temperature of the Injection Port in GC-MS in Case of Cold Injection, Thermodesorption or other Trapping Systems.
+
+Example:
+
+```
+AC$CHROMATOGRAPHY: INJECTION_TEMPERATURE_GRADIENT 10 C at 0 sec, 250 C at 3 sec with 80 C/sec
 ```
 
 ##### 2.4.6 Subtag: KOVATS\_RTI
@@ -1284,7 +1291,10 @@ MS$DATA_PROCESSING: RECALIBRATE loess on assigned fragments and MS1
 ##### 2.5.2 Subtag: WHOLE
 Whole Process in Single Method / Software.
 
-Example: `MS$DATA_PROCESSING: WHOLE Analyst 1.4.2`
+Example:
+```
+MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
+```
 
 ##### undocumented Subtags
 `DEPROFILE`
@@ -1294,7 +1304,7 @@ Example: `MS$DATA_PROCESSING: WHOLE Analyst 1.4.2`
 
 ### 2.6 Information of Mass Spectral Peaks
 #### <a name="2.6.1"></a>2.6.1 PK$SPLASH
-Hashed Identifier of Mass Spectra.   Mandatory and Single Line Information
+Hashed Identifier of Mass Spectra. Mandatory and Single Line Information
 
 Example:
 ```
