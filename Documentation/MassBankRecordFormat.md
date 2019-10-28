@@ -938,6 +938,16 @@ Example:
 AC$MASS_SPECTROMETRY: SOURCE_TEMPERATURE 280 C
 ```
 
+##### 2.4.5 Subtag: SOURCE\_TEMPERATURE_GRADIENT
+Temperature of the Ion Source in GC-MS in Case of Cold Injection, Thermodesorption or other Trapping Systems (aka Ion Source Temperature Gradient or Injection Temperature Gradient).
+
+Example:
+
+```
+AC$MASS_SPECTROMETRY: SOURCE_TEMPERATURE 10 C at 0 sec, 90 C at 1 sec, 170 C at 2 sec, 250 C at 3 sec
+```
+
+
 ##### Undocumented Subtags
 `ACTIVATION_PARAMETER`
 `ACTIVATION_TIME`
@@ -1023,7 +1033,7 @@ Dynamic Column Temperature Gradient (aka Oven Temperature) in GC-MS and LC-MS.
 
 Example:
 ```
-AC$CHROMATOGRAPHY: COLUMN_TEMPERATURE_GRADIENT
+AC$CHROMATOGRAPHY: COLUMN_TEMPERATURE_GRADIENT 55 C at 0 min, 55 C at 3 min, 180 C at 11.33 min, 280 C at 26.72 min, 280 C at 31.72 min, 300 C at 33.72 min, 300 C at 39 min
 ```
 
 ##### 2.4.6 Subtag: FLOW\_GRADIENT
@@ -1202,12 +1212,12 @@ Types currently used in MassBank are:
 [2M-H-C6H10O5]-
 ```
 
-##### 2.5.1 Subtag: PRECURSOR\_M/Z
+##### 2.5.1 Subtag: PRECURSOR\_MZ
 m/z of Precursor Ion in MSn spectrum.
 
 Example:
 ```
-MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123
+MS$FOCUSED_ION: PRECURSOR_MZ 289.07123
 ```
 
 Calculated exact mass is preferred to the measured accurate mass of the precursor ion.
