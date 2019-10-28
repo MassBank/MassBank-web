@@ -1,7 +1,7 @@
 # MassBank Record Format 2.4
 MassBank Consortium (October 28, 2019)
 #### Updated
-- **October 2019**: Add UVPD fragmentation and undocumented or new tags related to GC-MS.
+- **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
 - **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUBO-PSI
 - **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
 - **June 2017**: CH$LINK: COMPTOX added to link the CompTox Chemistry Dashboard
@@ -369,7 +369,7 @@ Example:
 RECORD_TITLE: (-)-Nicotine; ESI-QQ; MS2; CE 40 V; [M+H]+
 ```
 
-It consists of the values of `CH$NAME ; AC$INSTRUMENT_TYPE ; AC$MASS_SPECTROMETRY: MS_TYPE`.
+It consists of the values of `CH$NAME`; `AC$INSTRUMENT_TYPE`; `AC$MASS_SPECTROMETRY: MS_TYPE`.
 
 #### <a name="2.1.3"></a>2.1.3 DATE
 Date of the Creation or the Last Modification of MassBank Record. Mandatory
@@ -467,7 +467,7 @@ COMMENT: [Profile] CA000185.jpg
 Comment subtags. Optional and Iterative
 
 ##### 2.1.10 Subtag: CONFIDENCE
-Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to Schymanski et al. [DOI: 10.1021/es5002105]
+Description of a confidence level (e.g. Reference Standard or Standard Compound) and/or the confidence according to [Schymanski et al.](https://dx.doi.org/10.1021/es5002105)
 
 Example:
 ```
@@ -584,6 +584,7 @@ Currently MassBank records have links to the following external databases:
 CAS
 CAYMAN
 CHEBI
+CHEMBL
 CHEMPDB
 CHEMSPIDER
 COMPTOX
@@ -597,7 +598,6 @@ LIPIDMAPS
 NIKKAJI
 PUBCHEM
 ZINC
-CHEMBL
 ```
 
 CH$LINK fields should be arranged by the alphabetical order of database names.
@@ -659,22 +659,48 @@ AC$INSTRUMENT_TYPE: LC-ESI-QTOF
 
 Format is `(Separation tool type-)Ionization method-Ion analyzer type(Ion analyzer type)`.
 
-Separation tool types are `CE`, `GC`, `LC`.
+Separation tool types are:
+```
+CE
+GC
+LC
+```
 
-Ionization methods are `APCI`, `APPI`, `EI`, `ESI`, `FAB`, `MALDI`, `FD`, `CI`, `FI`, `SI`.
+Ionization methods are:
+```
+APCI
+APPI
+EI
+ESI
+FAB
+MALDI
+FD
+CI
+FI
+SIMS
+```
 
-Ion analyzer types are `B`, `E`, `FT`, `IT`, `Q`, `TOF`. In tandem mass analyzers, no `-` is inserted between ion analyzers.
+Ion analyzer types are:
+```
+B
+E
+FT
+IT
+Q
+TOF
+```
+
+In tandem mass analyzers, no `-` is inserted between ion analyzers.
 `FT` includes `FTICR` and other type analyzers using `FT`, such as Orbitrap(R). `IT` comprises quadrupole ion trap analyzers such as 3D ion trap and linear ion trap. 
 
-Other examples of `AC$INSTRUMENT_TYPE` data are as follows:
+Other examples of `AC$INSTRUMENT_TYPE` data are:
 ```
 ESI-QQ
 ESI-QTOF
 GC-EI-EB
 LC-ESI-ITFT
 ```
-Cross-reference to HUBO-PSI: 
-
+Cross-reference to HUBO-PSI:
 Ionization methods [MS:1000008]: APCI[MS:1000070], APPI[MS:1000382], EI[MS:1000389], ESI[MS:1000073], FAB[MS:1000074], MALDI[MS:1000075], FD[MS:1000257], CI[MS:1000071], FI[MS:1000258], SI[MS:1000402].
 
 Ion analyzer types [MS:1000443]: B[MS:1000080], E[MS:1000254], IT[MS:1000264], Q[MS:1000081], TOF[MS:1000084]
@@ -698,8 +724,9 @@ MS4
 Brief definition of terms used in `MS_TYPE`:
 * `MS2` is 1st generation product ion spectrum(of `MS`)
 * `MS3` is 2nd generation product ion spectrum(of `MS`)
-* `MS2` is the precursor ion spectrum of `MS3`
-* [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
+* `MS2` is the precursor ion spectrum of `MS3`*
+
+Reference: [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
 
 #### <a name="2.4.4"></a>2.4.4 AC$MASS\_SPECTROMETRY: ION\_MODE
 Polarity of Ion Detection. Mandatory
@@ -781,7 +808,7 @@ Example:
 AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE CID
 ```
 
-Data of type `AC$FRAGMENTATION_MODE` are for example:
+Data of type `AC$FRAGMENTATION_MODE` are:
 
 ```
 BIRD
@@ -802,9 +829,12 @@ Cross-reference to HUBO-PSI: dissociation method [MS:1000044]
 ##### 2.4.5 Subtag: IONIZATION
 The method by which gas phase ions are generated from the sample.
 
-Example: `AC$MASS_SPECTROMETRY: IONIZATION ESI`
+Example:
+```
+AC$MASS_SPECTROMETRY: IONIZATION ESI
+```
 
-Data of typ `AC$MASS_SPECTROMETRY: IONIZATION` are:
+Ionization methods are:
 
 ```
 APCI
@@ -816,6 +846,7 @@ MALDI
 FD
 CI
 FI
+SIMS
 ```
 
 Cross-reference to HUBO-PSI: ionization type [MS:1000008]
@@ -856,7 +887,7 @@ AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000
 ```
 
 ##### 2.4.5 Subtag: MASS\_RANGE\_MZ`
-Mass Range of the Scan (aka Scanning Range, Scan Range) in m/z.
+Mass Range of the Scan (aka Scanning Range or Scan Range) in m/z.
 
 Example:
 ```
@@ -872,7 +903,7 @@ AC$MASS_SPECTROMETRY: REAGENT_GAS ammonia
 ```
 
 ##### 2.4.5 Subtag: RESOLUTION
-Resolution (aka mass resolution or resolving power) is the smallest mass difference between two equal magnitude peaks so that the valley between them is a specified fraction of the peak height.
+Resolution (aka Mass Resolution or Resolving Power) is the smallest mass difference between two equal magnitude peaks so that the valley between them is a specified fraction of the peak height.
 
 Example:
 ```
@@ -907,7 +938,7 @@ Example:
 AC$MASS_SPECTROMETRY: SOURCE_TEMPERATURE 280 C
 ```
 
-##### undocumented Subtags
+##### Undocumented Subtags
 `ACTIVATION_PARAMETER`
 `ACTIVATION_TIME`
 `ATOM_GUN_CURRENT`
@@ -988,7 +1019,7 @@ AC$CHROMATOGRAPHY: COLUMN_TEMPERATURE 40 C
 ```
 
 ##### 2.4.6 Subtag: COLUMN\_TEMPERATURE\_GRADIENT
-Dynamic Column Temperature Gradient (aka oven temperature) in GC-MS and LC-MS.
+Dynamic Column Temperature Gradient (aka Oven Temperature) in GC-MS and LC-MS.
 
 Example:
 ```
@@ -1015,34 +1046,35 @@ AC$CHROMATOGRAPHY: FLOW_RATE 0.25 mL/min
 ##### 2.4.6 Subtag: KOVATS\_RTI
 C8-C30 n-Alkanes Based Retention Time Index for GC-MS.
 
-Reference: E. Kovats, Adv. Chromatogr. 1 (1965) 229
-Reference: E. Kovats, Helv. Chim. Acta 41 (1958) 1915
-Reference: [Rostad et al. 1986](https://doi.org/10.1002/jhrc.1240090603)
-
 Example:
 ```
 AC$CHROMATOGRAPHY: KOVATS_RTI 2000
 ```
 
+Reference: E. Kovats, Adv. Chromatogr. 1 (1965) 229
+Reference: E. Kovats, Helv. Chim. Acta 41 (1958) 1915
+Reference: [Rostad et al. 1986](https://doi.org/10.1002/jhrc.1240090603)
+
 ##### 2.4.6 Subtag: LEE\_RTI
 Polycyclic Aromatic Hydrocarbons Based Retention Time Index for GC-MS.
-
-Reference: [Rostad et al. 1986](https://doi.org/10.1002/jhrc.1240090603)
 
 Example:
 ```
 AC$CHROMATOGRAPHY: LEE_RTI 200
 ```
 
+Reference: [Rostad et al. 1986](https://doi.org/10.1002/jhrc.1240090603)
+
+
 ##### 2.4.6 Subtag: NAPS\_RTI
 N-alkylpyrinium-3-sulfonate Based Retention Time Index for LC-MS.
-
-Reference: [http://nparc.cisti-icist.nrc-cnrc.gc.ca/eng/view/object/?id=b4db3589-ae0b-497e-af03-264785d7922f]
 
 Example:
 ```
 AC$CHROMATOGRAPHY: NAPS_RTI 100
 ```
+
+Reference: [Quilliam et al. 2015](https://nrc-publications.canada.ca/eng/view/fulltext/?id=b4db3589-ae0b-497e-af03-264785d7922f)
 
 ##### 2.4.6 Subtag: RETENTION\_TIME
 Retention Time on Chromatography.
@@ -1073,7 +1105,7 @@ AC$CHROMATOGRAPHY: TRANSFERLINE_TEMPERATURE 200 C
 ```
 
 
-##### undocumented Subtags
+##### Undocumented Subtags
 `ANALYTICAL_TIME`
 `COLUMN_PRESSURE`
 `INTERNAL_STANDARD`
@@ -1191,11 +1223,22 @@ Example for MS3:
 ```
 MS$FOCUSED_ION: PRECURSOR_TYPE [M+CH3COO]-/[M-CH3]-
 ```
+
 The syntax is `[<n>M<+-><molecular formula>]<charge>`
 
-Examples: `[M]+`, `[M+Na]+`, `[2M-H]-`, `[2M-H-CO2]-`. Cross-reference to HUBO-PSI: isolation window attribute [MS: 1000792]
+Example: 
+```
+[M]+
+[M+Na]+
+[2M-H]-
+[2M-H-CO2]-
+```
 
-##### undocumented Subtags
+See see <a href="#2.5.1">2.5.1</a> `mS$DATA_ION_TYPE ` for a full list.
+
+Cross-reference to HUBO-PSI: isolation window attribute [MS: 1000792]
+
+##### Undocumented Subtags
 `FULL_SCAN_FRAGMENT_ION_PEAK`
 
 
