@@ -1286,6 +1286,14 @@ Data Processing Method of Peak Detection. Optional
 
 `MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to HUBO-PSI: Data processing [MS:1000543]
 
+##### 2.5.2 Subtag: DEPROFILE
+Method for the Centroiding of Profile Data.
+
+Example:
+```
+MS$DATA_PROCESSING: DEPROFILE Proteowizard 3.0.19022
+```
+
 ##### 2.5.2 Subtag: FIND\_PEAK
 Peak Detection.
 
