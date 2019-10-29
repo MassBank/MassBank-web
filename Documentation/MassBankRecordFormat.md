@@ -1094,7 +1094,7 @@ AC$CHROMATOGRAPHY: NAPS_RTI 100
 Reference: [Quilliam et al. 2015](https://nrc-publications.canada.ca/eng/view/fulltext/?id=b4db3589-ae0b-497e-af03-264785d7922f)
 
 ##### 2.4.6 Subtag: RETENTION\_TIME
-Retention Time on Chromatography.
+Experimental Retention Time based on Chromatography.
 
 Example:
 ```
@@ -1102,6 +1102,17 @@ AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min
 ```
 
 Cross-reference to HUBO-PSI: Retention time [MS:1000016]
+
+
+##### 2.4.6 Subtag: TRAMS\_PREDICTED\_RETENTION\_TIME
+Predicted Retention Time for LC-MS based on the QSRR Approach of University of Athens, Trace Analysis and Mass Spectrometry Group.
+
+Example:
+```
+AC$CHROMATOGRAPHY: TRAMS_PREDICTED_RETENTION_TIME 40.3 min
+```
+
+Reference: [Aalizadeh et al. 2019](https://doi.org/10.1016/j.jhazmat.2018.09.047)
 
 ##### 2.4.6 Subtag: SOLVENT
 Chemical Composition of Buffer Solution.  Iterative
@@ -1120,7 +1131,6 @@ Example:
 ```
 AC$CHROMATOGRAPHY: TRANSFERLINE_TEMPERATURE 200 C
 ```
-
 
 ##### Undocumented Subtags
 `ANALYTICAL_TIME`
