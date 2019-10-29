@@ -387,6 +387,18 @@ Example:
 AUTHORS: Akimoto N, Grad Sch Pharm Sci, Kyoto Univ and Maoka T, Res Inst Prod Dev.
 ```
 
+If appropriate, it is suggested (but not mandatory) to add [MARC relator terms](https://locmirror.coffeecode.net/marc/relators/relaterm.html) after names to clarify the contributions of different authors. In particular, the following tags are suggested:
+ * `[dtc]`: Data contributor, i.e. the person(s) who contribute the data, e.g. who acquired the raw data in-house, or who deposited raw/converted data files in a public repository
+ * `[dtc]`: Data contributor, i.e. the person(s) who contribute the data, e.g. who acquired the raw data in-house, or who deposited data files that serve as the basis for the record in a public repository. This person or entity is not necessarily involved in the creation of the record.
+ * `[com]`: Compiler, i.e. the person who created the record but did not necessarily acquire the data or has any other scientific involvement).
+ * `[com]`: Compiler, i.e. the person who created the record but did not necessarily acquire the data or has any other scientific involvement).
+
+
+Example:
+```
+AUTHORS: Earll M, EMBL-EBI [dtc]; Beisken S, EMBL-EBI [dtc]; Stravs MA, Eawag [com]
+```
+
 #### <a name="2.1.5"></a>2.1.5 LICENSE
 Creative Commons License of Re-use of MassBank Record. Mandatory
 
