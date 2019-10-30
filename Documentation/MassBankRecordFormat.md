@@ -1179,11 +1179,11 @@ Experimental Methods and Conditions which are not included in other sections. Op
 AC$GENERAL fields should be arranged by the alphabetical order of subtag names.
 
 ##### 2.4.7 Subtag: CONCENTRATION
-Concentration of Analytical Standard Used for the Generation of MassBank Records. The mandatory concentration unit is mg/L.
+Concentration of Analytical Standard Used for the Generation of MassBank Records. The mandatory concentration unit is ug/L.
 
 Example:
 ```
-AC$GENERAL: CONCENTRATION 1 mg/L
+AC$GENERAL: CONCENTRATION 1 ug/L
 ```
 
 
