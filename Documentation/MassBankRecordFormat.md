@@ -1,5 +1,5 @@
 # MassBank Record Format 2.4
-MassBank Consortium (October 28, 2019)
+MassBank Consortium (October 30, 2019)
 #### Updated
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
 - **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUBO-PSI
