@@ -971,7 +971,7 @@ AC$MASS_SPECTROMETRY: SOURCE_TEMPERATURE 280 C
 `ION_SPRAY_VOLTAGE`
 `IT_SIDE_OCTOPOLES_BIAS_VOLTAGE`
 `LENS_VOLTAGE`
-`NEBULIZER` `very different settings`
+`NEBULIZER`
 `NEBULIZING_GAS` 
 `NEEDLE_VOLTAGE`
 `OCTPOLE_VOLTAGE`
@@ -1105,6 +1105,27 @@ AC$CHROMATOGRAPHY: NAPS_RTI 100
 
 Reference: [Quilliam et al. 2015](https://nrc-publications.canada.ca/eng/view/fulltext/?id=b4db3589-ae0b-497e-af03-264785d7922f)
 
+##### 2.4.6 Subtag: UOA\_RTI
+Experimental Retention Time Index (Range 1-1000) for LC-MS based on the QSRR Approach of University of Athens, Trace Analysis and Mass Spectrometry Group.
+
+Example:
+```
+AC$CHROMATOGRAPHY: UOA_RTI 50
+```
+
+Reference: [Aalizadeh et al. 2019](https://doi.org/10.1016/j.jhazmat.2018.09.047)
+
+##### 2.4.6 Subtag: UOA\_PREDICTED\_RTI
+Predicted Retention Time Index (Range 1-1000) for LC-MS based on the QSRR Approach of University of Athens, Trace Analysis and Mass Spectrometry Group.
+
+Example:
+```
+AC$CHROMATOGRAPHY: TRAMS_PREDICTED_RTI 50
+```
+
+Reference: [Aalizadeh et al. 2019](https://doi.org/10.1016/j.jhazmat.2018.09.047)
+
+
 ##### 2.4.6 Subtag: RETENTION\_TIME
 Experimental Retention Time based on Chromatography.
 
@@ -1116,7 +1137,7 @@ AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min
 Cross-reference to HUBO-PSI: Retention time [MS:1000016]
 
 
-##### 2.4.6 Subtag: TRAMS\_PREDICTED\_RETENTION\_TIME
+##### 2.4.6 Subtag: UOA\_PREDICTED\_RETENTION\_TIME
 Predicted Retention Time for LC-MS based on the QSRR Approach of University of Athens, Trace Analysis and Mass Spectrometry Group.
 
 Example:
@@ -1286,6 +1307,15 @@ Data Processing Method of Peak Detection. Optional
 
 `MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to HUBO-PSI: Data processing [MS:1000543]
 
+
+##### 2.5.2 Subtag: COMMENT
+Addtional Comments on Data Processing.
+
+Example:
+```
+MS$DATA_PROCESSING: COMMENT Relative m/z normalised by peak(m/z=68.9396). set 999 for peak(m/z=568.9187,rel=1046).
+```
+
 ##### 2.5.2 Subtag: DEPROFILE
 Method for the Centroiding of Profile Data.
 
@@ -1299,7 +1329,7 @@ Peak Detection.
 
 Example:
 ```
-MS$DATA_PROCESSING: FIND_PEAK convexity search; threshold = 9.1
+MS$DATA_PROCESSING: FIND_PEAK Convexity search; threshold = 9.1
 ```
 
 ##### 2.5.2 Subtag: REANALYZE
@@ -1325,12 +1355,6 @@ Example:
 ```
 MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
 ```
-
-##### undocumented Subtags
-`DEPROFILE`
-`IGNORE`
-`RELATIVE_M/Z`
-
 
 ### 2.6 Information of Mass Spectral Peaks
 #### <a name="2.6.1"></a>2.6.1 PK$SPLASH
