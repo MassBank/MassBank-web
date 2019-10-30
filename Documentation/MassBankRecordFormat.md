@@ -1262,6 +1262,15 @@ Types currently used in MassBank are:
 [2M-H-C6H10O5]-
 ```
 
+##### 2.5.1 Subtag: PRECURSOR\_INT
+Intensity of Focused Ion.
+
+Example: 
+
+```
+MS$FOCUSED_ION: PRECURSOR_INT 10000
+```
+
 ##### 2.5.1 Subtag: PRECURSOR\_MZ
 m/z of Precursor Ion in MSn spectrum.
 
