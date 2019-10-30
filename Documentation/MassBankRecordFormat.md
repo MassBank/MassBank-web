@@ -259,6 +259,14 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
     <td>Analytical conditions of chromatographic separation</td>
     <td><a href="#2.4.6">2.4.6</a></td>
   </tr>
+    <tr>
+    <td>AC$GENERAL: subtag</td>
+    <td>O</td>
+    <td>U/I</td>
+    <td>S</td>
+    <td>General analytical conditions and information</td>
+    <td><a href="#2.4.7">2.4.7</a></td>
+  </tr>
   <tr>
     <td colspan="6"><b>Description of mass spectral data</b></td>
   </tr>
@@ -1054,7 +1062,7 @@ Example:
 ```
 AC$CHROMATOGRAPHY: FLOW_RATE 0.25 mL/min
 ```
-##### 2.4.5 Subtag: INJECTION\_TEMPERATURE
+##### 2.4.6 Subtag: INJECTION\_TEMPERATURE
 Temperature of the Injection Port in GC-MS.
 
 Example:
@@ -1063,7 +1071,7 @@ Example:
 AC$CHROMATOGRAPHY: INJECTION_TEMPERATURE 250 C
 ```
 
-##### 2.4.5 Subtag: INJECTION\_TEMPERATURE_GRADIENT
+##### 2.4.6 Subtag: INJECTION\_TEMPERATURE_GRADIENT
 Temperature of the Injection Port in GC-MS in Case of Cold Injection, Thermodesorption or other Trapping Systems.
 
 Example:
@@ -1164,6 +1172,20 @@ Example:
 ```
 AC$CHROMATOGRAPHY: TRANSFERLINE_TEMPERATURE 200 C
 ```
+
+#### <a name="2.4.7"></a>2.4.7 AC$GENERAL: subtag Description
+Experimental Methods and Conditions which are not included in other sections. Optional
+
+AC$GENERAL fields should be arranged by the alphabetical order of subtag names.
+
+##### 2.4.7 Subtag: CONCENTRATION
+Concentration of Analytical Standard Used for the Generation of MassBank Records. The mandatory concentration unit is mg/L.
+
+Example:
+```
+AC$GENERAL: CONCENTRATION 1 mg/L
+```
+
 
 ##### Undocumented Subtags
 `ANALYTICAL_TIME`
