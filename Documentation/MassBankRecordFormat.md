@@ -1128,7 +1128,7 @@ Predicted Retention Time Index (Range 1-1000) for LC-MS based on the QSRR Approa
 
 Example:
 ```
-AC$CHROMATOGRAPHY: TRAMS_PREDICTED_RTI 50
+AC$CHROMATOGRAPHY: UOA_PREDICTED_RTI 50
 ```
 
 Reference: [Aalizadeh et al. 2019](https://doi.org/10.1016/j.jhazmat.2018.09.047)
