@@ -15,10 +15,10 @@ Vagrant.configure("2") do |config|
     ./install.sh start 0
     apt install apache2 -y
     a2enmod ssl rewrite proxy_http
-    cp massbank.conf /etc/apache2/sites-available/massbank.conf
-    cp massbank-ssl.conf /etc/apache2/sites-available/massbank-ssl.conf
+    cp -r conf/apache2/* /etc/apache2/
     a2dissite 000-default
     a2ensite massbank massbank-ssl
+    systemctl reload apache2
   SHELL
   
   # Create a private network, which allows host-only access to the machine
