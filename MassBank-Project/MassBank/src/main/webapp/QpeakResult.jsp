@@ -48,6 +48,8 @@
 <%@ page import="massbank.web.SearchExecution" %>
 <%@ page import="massbank.web.quicksearch.Search" %>
 <%@ page import="massbank.web.quicksearch.Search.SearchResult" %>
+<%@ page import="org.json.JSONArray" %>
+<%@ page import="org.json.JSONObject" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -185,6 +187,9 @@
 	String errMsg = "";
 	Double maxInte = 0.0;
 	
+	JSONObject SpecktacklePeaklist = new JSONObject();
+	JSONArray peaklist = new JSONArray();
+		
 	if ( peakList.size() == 0 ) {
 		isError = true;
 		errMsg = "No input data.";
@@ -203,6 +208,7 @@
 					isError = true;
 					break;
 				}
+				peaklist.put(new JSONObject().put("intensity", Double.parseDouble(inte)).put("mz", Double.parseDouble(peak)));
 				// CGI,Appletのパラメータをセット
 				// 強度MAX値
 				if ( Double.parseDouble(inte) > maxInte ) {
@@ -219,6 +225,8 @@
 		  && paramMz.charAt( paramMz.length()-1 ) == ',' ) {
 			paramMz.deleteCharAt( paramMz.length()-1 );
 		}
+		SpecktacklePeaklist.put("peaks", peaklist);
+		
 	}
 	
 	// Cutoff Threshold の値が数値以外の場合はエラー
@@ -276,13 +284,13 @@
 <script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
 
 <!-- SpeckTackle dependencies-->
-<script type="text/javascript" src="script/d3.v3.min.js"></script>
+<script type="text/javascript" src="js/d3.v3.min.js"></script>
 <!-- SpeckTackle library-->
-<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/st.js" charset="utf-8"></script>
 <!-- SpeckTackle style sheet-->
-<link rel="stylesheet" href="css.old/st.css" type="text/css" />	
+<link rel="stylesheet" href="css/st.css" type="text/css" />	
 <!-- SpeckTackle MassBank loading script-->
-<script type="text/javascript" src="script/massbank_specktackle.js"></script>
+<script type="text/javascript" src="js/massbank_specktackle.js"></script>
 <title>MassBank | Database | Quick Search Results</title>
 </head>
 <body class="msbkFont cursorDefault">
@@ -339,12 +347,16 @@
 		//-------------------------------------
 		// 検索パラメータ（クエリスペクトル）表示
 		//-------------------------------------
+		out.println( "<script type=\"text/javascript\">");
+		out.println( "var data="+SpecktacklePeaklist);
+		out.println( "</script>");
 		out.println( "<a name=\"resultsTop\"></a>" );
 		out.println( "<b>Query :</b><br>" );
 		out.println( "<table border=\"0\" cellpadding=\"1\" cellspacing=\"5\">" );
 		out.println( " <tr>" );
 		out.println( "  <td>" );
-		out.println("<div id=\"spectrum_canvas\" peaks=\"" + paramPeak.toString() + "\" style=\"height: 200px; width: 750px; background-color: white\"></div>");
+		out.println("<div id=\"spectrum_canvas\" style=\"height: 200px; width: 750px; max-width:100%; background-color: white\"></div>");
+		//out.println("<div id=\"spectrum_canvas\" peaks=\"" + paramPeak.toString() + "\" style=\"height: 200px; width: 750px; background-color: white\"></div>");
 		out.println( "  </td>" );
 		out.println( " </tr>" );
 		out.println( " <tr>" );
