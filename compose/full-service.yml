@@ -2,7 +2,9 @@ version: '3'
 
 services:
   mariadb:
-    image: mariadb:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-mariadb
     volumes:
       - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     environment:

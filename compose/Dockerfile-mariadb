@@ -1,0 +1,3 @@
+FROM mariadb:latest
+ADD waitforSQL.sh /root/
+RUN chmod +x /root/waitforSQL.sh
