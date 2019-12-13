@@ -19,16 +19,18 @@ case $2 in
 	;;
 esac
 
+
 case $1 in
 	start)
 		docker-compose -f compose/full-service.yml -p $TAG pull 
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project package
+		docker-compose -f compose/full-service.yml -p $TAG build
+		docker-compose -f compose/full-service.yml -p $TAG up -d mariadb
+		docker exec ${TAG}_mariadb_1 /root/waitforSQL.sh
+		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
-		echo "Wait 20s for database to be ready..."
-		sleep 20
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
-			/project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
+			/project/MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RefreshDatabase
 	;;
 	stop)
 		docker-compose -f compose/full-service.yml -p $TAG rm -s
@@ -36,11 +38,11 @@ case $1 in
 	refresh)
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
-			/project/MassBank-lib/target/MassBank-lib-0.0.1-default/MassBank-lib-0.0.1/bin/RefreshDatabase
+			/project/MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RefreshDatabase
 	;;
 	deploy)
 		docker-compose -f compose/full-service.yml -p $TAG pull
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -Duser.home=/var/maven -f /project package
+		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG rm -s tomcat
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
 	;;

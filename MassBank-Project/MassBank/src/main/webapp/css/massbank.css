@@ -5,6 +5,10 @@ html {
 	background:#ececec;
 }
 
+hr {
+	margin: 6px 0;
+}
+
 .w3-padding-small{padding:4px 4px!important}
 
 .w3-theme-gradient {
@@ -45,6 +49,4 @@ hr {
 
 .monospace {
 	font-family: "Lucida Console", Monaco, monospace
-}
-
 }
