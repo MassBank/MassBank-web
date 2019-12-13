@@ -74,6 +74,9 @@ The deployment uses the codebase in MassBank-web and the data in MassBank-data i
    |-MassBank-data
 ```
 With this layout its easy to have several instances with different codebase / data on the same server. To start MassBank1 go to MassBank1/MassBank-web and use `./install.sh start 1`. Your server will be at http://\<your-ip\>:8081/MassBank. To start MassBank2 go to MassBank2/MassBank-web and use `./install.sh start 2`. Your server will be at http://\<your-ip\>:8082/MassBank. The second parameter of the install script is used to separate the different instances by using different subnets and ports on the local machine. 
+
+## Install as server system with Vagrant
+A `Vagrantfile` is provided for easy installation of a MassBank-server. This config creates a Ubuntu VM with IP `192.168.35.18`. Inside this VM the `docker-compose` mechanism as described above is used to create a MassBank-server on port 8080. Additionally a Apache2 http server is installed as reverse proxy. The config can be found in `conf/apache2`. Please modify if needed. The final MassBank site will be available at [https://192.168.35.18/MassBank](https://192.168.35.18/MassBank/). The installation uses the MassBank-data repository from `../MassBank-data`. You can modify the location in the Vagrantfile. The installation can be started with `vagrant up`.
  
 ## PIWIK log analyser (https://piwik.org/)
 The default MassBank server installation includes the PIWIK log analyser. Consider that user tracking has privacy issues.
@@ -99,7 +102,8 @@ Make also sure that you customise your superuser if using the default bootstrap.
 # Release strategy
 
 ## Main branches
-We use two main branches, `master` and `dev`. All development should happen in `dev` and we define every commit to `master` to be a release. When the source code in the `dev` branch reaches a stable point and is ready to be released, all of the changes should be merged back into `master` somehow and then tagged with a release number. How this is done in detail will be discussed further on.
+We use two main branches, `master` and `dev`. All development should happen in `dev` and we define every commit to `master` to be a release. When the source code in the `dev` branch reaches a stable point and is ready to be released, all of the changes should be merged back into `master` somehow and then tagged with a release number. How this is done in detail will be discussed further on. To use all of the command lines below the [github/hub](https://docs.docker.com/install/linux/docker-ce/ubuntu/) tool is required.
+
 
 ## Supporting branches
 The different types of branches we may use are:
@@ -137,7 +141,7 @@ Branch off from: `dev`
 
 Must merge back into: `dev` and `master`
 
-Branch naming: anything except `release-*`
+Branch naming: `release-*`
 
 Release branches support preparation of a new production release. They allow for minor bug fixes and preparing the version number for a release. It is exactly at the start of a release branch that the upcoming release gets assigned a version number.
 
@@ -149,26 +153,28 @@ $ ./bump-version.sh 2.1
 Files modified successfully, version bumped to 2.1.
 git commit -a -m "Bumped version number to 2.1"
 [release-2.1 74d9424] Bumped version number to 2.1
-
+$ git push --set-upstream origin release-2.1
 ```
 #### Finishing a release branch
-When the state of the release branch is ready to become a real release, the release branch is merged into master and tagged for easy future reference.
+When the state of the release branch is ready to become a real release, the release branch is merged into `master` with a pull request and tagged for easy future reference.
 
 ```
+$ hub pull-request -m 'Release version 2.1'
+```
+Wait for all checks to finish. Now the release can be merged to `master`. 
+```
 $ git checkout master
-Switched to branch 'master'
 $ git merge --no-ff release-2.1
-Merge made by recursive.
-(Summary of changes)
-$ git tag -a 2.1
-
+$ git push origin master
+$ git tag -a 2.1 -m 'Release version 2.1'
+$ git push origin 2.1
 ```
 If there were any changes in the release branch we need to merge them back to `dev`.
 
 ```
 $ git checkout dev
 Switched to branch 'dev'
-$ git merge --no-ff release-1.2
+$ git merge --no-ff release-2.1
 Merge made by recursive.
 (Summary of changes)
 ```
@@ -185,7 +191,7 @@ Branch off from: `master`
 
 Must merge back into: `dev` and `master`
 
-Branch naming: anything except `hotfix-*`
+Branch naming: `hotfix-*`
 
 Hotfix branches are very much like release branches in that they are also meant to prepare for a new production release. They arise from the necessity to act immediately upon an undesired state of a live production version.
 
@@ -204,20 +210,22 @@ Then, fix the bug and commit the fix in one or more separate commits.
 #### Finishing a hotfix branch
 When finished, the bugfix needs to be merged back into `master`, but also needs to be merged back into `dev`.
 First, update `master` and tag the release.
-
+```
+$ hub pull-request -m 'Release version 2.1.1'
+```
+Wait for all checks to finish. Now the release can be merged to `master`. 
 ```
 $ git checkout master
-Switched to branch 'master'
 $ git merge --no-ff hotfix-2.1.1
-Merge made by recursive.
-(Summary of changes)
-$ git tag -a 2.1.1
+$ git push origin master
+$ git tag -a 2.1.1 -m 'Release version 2.1.1'
+$ git push origin 2.1.1
 ```
 Next, include the bugfix in `dev`, too:
 
 ```
-$ git checkout develop
-Switched to branch 'develop'
+$ git checkout dev
+Switched to branch 'dev'
 $ git merge --no-ff hotfix-2.1.1
 Merge made by recursive.
 (Summary of changes)

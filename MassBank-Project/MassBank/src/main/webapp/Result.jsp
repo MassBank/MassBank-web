@@ -110,7 +110,7 @@
 	if ( type == null /*&& !refInchi && !refSplash*/) {
 		out.println( "<html>" );
 		out.println( "<head>" );
-		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"css/Common.css\">" );
+		out.println( " <link rel=\"stylesheet\" type=\"text/css\" href=\"css.old/Common.css\">" );
 		out.println( " <title>MassBank | Database | Results</title>" );
 		out.println( "</head>" );
 		out.println( "<body class=\"msbkFont cursorDefault\">" );
@@ -362,21 +362,21 @@
 	<meta name="description" content="Mass Spectrum Search Results">
 	<meta name="keywords" content="Results">
 	<meta name="revisit_after" content="10 days">
-	<link rel="stylesheet" type="text/css" href="css/Common.css">
-	<link rel="stylesheet" type="text/css" href="css/Result.css">
-	<link rel="stylesheet" type="text/css" href="css/ResultMenu.css">
+	<link rel="stylesheet" type="text/css" href="css.old/Common.css">
+	<link rel="stylesheet" type="text/css" href="css.old/Result.css">
+	<link rel="stylesheet" type="text/css" href="css.old/ResultMenu.css">
 	<script type="text/javascript" src="script/Common.js"></script>
 	<script type="text/javascript" src="script/Result.js"></script>
 	<script type="text/javascript" src="script/ResultMenu.js"></script>
 	<script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
 	<!-- SpeckTackle dependencies-->
-	<script type="text/javascript" src="script/d3.v3.min.js"></script>
+	<script type="text/javascript" src="js/d3.v3.min.js"></script>
 	<!-- SpeckTackle library-->
-	<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/st.min.js" charset="utf-8"></script>
 	<!-- SpeckTackle style sheet-->
-	<link rel="stylesheet" href="css/st.css" type="text/css" />	
+	<link rel="stylesheet" href="css.old/st.css" type="text/css" />	
 	<!-- SpeckTackle MassBank loading script-->
-	<script type="text/javascript" src="script/massbank_specktackle.js"></script>	
+	<script type="text/javascript" src="js/massbank_specktackle.js"></script>	
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
