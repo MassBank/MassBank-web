@@ -107,12 +107,12 @@ ${structureddata}
 	<div class="w3-padding">
 		<h3><b>${record_title}</b></h3>
 		<c:if test="${not isDeprecated}">
-			<div class="w3-row w3-padding-small">
-				<div class="w3-twothird w3-text-grey w3-small w3-padding-small">
+			<div class="w3-row">
+				<div class="w3-twothird w3-text-grey w3-small">
 					Mass Spectrum
 					<div id="spectrum_canvas" style="height:200px; width:600px; max-width:100%; background-color:white"></div>
 				</div>
-				<div class="w3-third w3-text-grey w3-small w3-padding-small">
+				<div class="w3-third w3-text-grey w3-small">
 					Chemical Structure<br>
 					${svg}
 				</div>

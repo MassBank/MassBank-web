@@ -6,7 +6,7 @@ function initializeMSSpecTackle() {
     MSchart = st.chart.ms()
     	.xlabel("m/z")
     	.ylabel("Abundance")
-    	.margins([10,20,60,130]); // t, r, b, l
+        .margins([10,20,65,115]); // t, r, b, l
     MSchart.render("#spectrum_canvas");
     MSData = st.data.set()
     	.x("peaks.mz")

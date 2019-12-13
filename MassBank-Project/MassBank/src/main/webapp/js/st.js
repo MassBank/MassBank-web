@@ -2520,9 +2520,9 @@ function chart () {
         renderAxes: function () {
             var margins = this.opts.margins;
             // format numbers to four decimals: 1.2345678 to 1.2346
-            var xFormat = d3.format(',.4g');
+            var xFormat = d3.format('.4g');
             // format numbers to two decimals: 1.2345678 to 1.23
-            var yFormat= d3.format(',.2g');
+            var yFormat= d3.format('.4g');
             
             this.xaxis = d3.svg.axis()  // define the x-axis
                 .scale(this.scales.x)
@@ -2977,7 +2977,7 @@ function chart () {
                 .duration(300)
                 .style('opacity', 0.9);
             // format numbers to two decimals: 1.2345678 to 1.23
-            var format = d3.format('.2f');
+            var format = d3.format('.4f');
             // get the mouse position of the event on the panel
             // var pointer = d3.mouse(event);
             // get the translated transformation matrix...
