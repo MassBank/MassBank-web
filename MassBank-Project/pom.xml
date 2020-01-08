@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
 	<version>2.1.3-SNAPSHOT</version>
 	<name>MassBank Project</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/MassBank/MassBank-web</url>
 	<packaging>pom</packaging>
 	<modules>
 		<module>MassBank-lib</module>
 		<module>MassBank</module>
+		<module>MassBank-OpenAPI</module>
 	</modules>
 
 	<properties>
@@ -17,7 +20,7 @@
 		<axis2.version>1.7.9</axis2.version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.3</cdk.version>
-		<jdbc.version>2.5.1</jdbc.version>
+		<jdbc.version>2.5.3</jdbc.version>
 		<versionName>${project.version}</versionName>
 	</properties>
 
@@ -28,8 +31,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<release>11</release>
 				</configuration>
 			</plugin>
 		</plugins>
