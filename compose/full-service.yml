@@ -12,7 +12,7 @@ services:
     restart: always
 
   tomcat:
-    image: tomcat:latest
+    image: tomcat:jdk11
     volumes:
       - $PWD/MassBank-Project/MassBank/target/MassBank.war:/usr/local/tomcat/webapps/MassBank.war
       - $PWD/conf/full-service.conf:/etc/massbank.conf
