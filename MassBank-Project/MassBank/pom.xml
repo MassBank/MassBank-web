@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>de.ipb-halle.msbi</groupId>
 		<artifactId>MassBank-Project</artifactId>
+		<groupId>de.ipb-halle.msbi</groupId>
 		<version>2.1.3-SNAPSHOT</version>
 	</parent>
+	
 	<artifactId>MassBank</artifactId>
 	<packaging>war</packaging>
+	
 	<name>MassBank servlet</name>
-	<url>http://maven.apache.org</url>
-
-
 	<dependencies>
 		<dependency>
 			<groupId>de.ipb-halle.msbi</groupId>
@@ -46,7 +47,7 @@
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
-<!-- 	https://www.triology.de/blog/versionsnamen-mit-maven-erzeugen-des-versionsnamens -->
+		<!-- https://www.triology.de/blog/versionsnamen-mit-maven-erzeugen-des-versionsnamens -->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
