@@ -15,9 +15,13 @@
 		<module>MassBank-OpenAPI</module>
 	</modules>
 
+	<prerequisites>
+		<maven>3.6.0</maven>
+	</prerequisites>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<axis2.version>1.7.9</axis2.version>
+		<servlet-api-version>4.0.1</servlet-api-version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.3</cdk.version>
 		<jdbc.version>2.5.3</jdbc.version>
@@ -29,7 +33,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
 				<configuration>
 					<release>11</release>
 				</configuration>

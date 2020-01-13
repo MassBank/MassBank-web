@@ -14,20 +14,27 @@
 
 	<name>MassBank-OpenAPI REST interface</name>
 
+	<properties>
+		<swagger-version>2.1.1</swagger-version>
+		<jersey2-version>2.30</jersey2-version>
+		<jetty-version>9.4.24.v20191120</jetty-version>
+		<jackson-version>2.10.2</jackson-version>
+		<logback-version>1.2.3</logback-version>
+	</properties>
+
 	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
+		<finalName>${project.artifactId}</finalName>
+<!-- 		<sourceDirectory>src/main/java</sourceDirectory> -->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.6</version>
 				<executions>
 					<execution>
 						<goals>
@@ -40,7 +47,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.4.24.v20191120</version>
+				<version>${jetty-version}</version>
 				<configuration>
 					<webApp>
 						<contextPath>/</contextPath>
@@ -105,7 +112,6 @@
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 			<version>${jackson-version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -117,13 +123,6 @@
 			<artifactId>logback-core</artifactId>
 			<version>${logback-version}</version>
 			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-			<version>${junit-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -172,30 +171,4 @@
 			<version>2.3.0</version>
 		</dependency>
 	</dependencies>
-	<properties>
-		<joda-version>1.2</joda-version>
-		<joda-time-version>2.2</joda-time-version>
-		<swagger-version>2.1.1</swagger-version>
-		<swagger-ui-version>2.1.4</swagger-ui-version>
-		<scala-version>2.10.4</scala-version>
-		<felix-version>2.3.4</felix-version>
-		<servlet-api-version>4.0.1</servlet-api-version>
-		<jersey2-version>2.26</jersey2-version>
-		<jetty-version>9.4.9.v20180320</jetty-version>
-		<jackson-version>2.9.10</jackson-version>
-		<logback-version>1.0.1</logback-version>
-
-		<junit-version>4.8.1</junit-version>
-		<maven-plugin-version>1.0.0</maven-plugin-version>
-		<commons-lang-version>3.2.1</commons-lang-version>
-		<slf4j-version>1.6.3</slf4j-version>
-		<scala-test-version>2.1.3</scala-test-version>
-		<scala-maven-plugin-version>3.1.5</scala-maven-plugin-version>
-		<coverage.complexity.minimum>0.90</coverage.complexity.minimum>
-		<coverage.line.minimum>0.90</coverage.line.minimum>
-		<coverage.missed.classes>0</coverage.missed.classes>
-	</properties>
-
-
-
 </project>
