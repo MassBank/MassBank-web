@@ -137,6 +137,7 @@ public class AddMetaData {
 			citeproc.setOutputFormat("text");
 			citeproc.registerCitationItems(p.getIds());
 			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
+			citeproc.close();
 			// call twice because of bug https://github.com/michel-kraemer/citeproc-java/issues/53
 			// formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
 			// remove some formating characters
