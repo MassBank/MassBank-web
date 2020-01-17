@@ -1,0 +1,38 @@
+openapi: 3.0.2
+info:
+  title: MassBank-OpenAPI
+  description: This is the MassBank REST API
+  version: "0.0.1"
+  termsOfService: 'https://massbank.eu'
+  contact:
+    email: denbi-mash@ipb-halle.de
+  license:
+    name: GPL
+    url: http://www.gnu.org/licenses/gpl-3.0
+    
+servers:
+  - url: http://localhost:8080/MassBank-OpenAPI
+    description: dev server
+
+
+paths:
+  /record/{id}:
+    get:
+      summary: Returns the content of one record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: SM861901
+          description: The record id
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: record not found
