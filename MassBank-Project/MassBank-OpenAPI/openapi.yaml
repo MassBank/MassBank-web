@@ -14,11 +14,16 @@ servers:
   - url: http://localhost:8080/MassBank-OpenAPI
     description: dev server
 
-
+tags:
+  - name: record
+    description: Search and list records
+    
 paths:
   /record/{id}:
     get:
       summary: Returns the content of one record
+      tags:
+        - record
       parameters:
         - in: path
           name: id
@@ -31,8 +36,45 @@ paths:
         '200':
           description: successful operation
           content:
-            application/json:
+            text/plain:
               schema:
                 type: string
-        '400':
+        '404':
           description: record not found
+        '500':
+          description: database error
+          
+  /record:
+    get:
+      summary: Returns all records matching the search
+      description: |
+        This resource reports all record ids which fulfill the criteria in the search string.
+        The search strings support the syntax described at
+        [jirutka/rsql-parser](https://github.com/jirutka/rsql-parser). 
+        
+        The following selectors are supported:
+        Selector | Operators | Argument Type,<br>Examples and Comments | Description
+        ---|---|---|---
+        name | == | String with simple wildcard `*`<br>Example:<br> 1. **name==nicotin\*** matches **nicotine** and **nicotinamide** but not **1-methylnicotinamide**<br> 2. **name==\*nicotin\*** matches also **1-methylnicotinamide** | matches Strings in the `CH$NAME` field
+        ---|---|---|---|
+        
+      tags:
+        - record
+      parameters:
+        - in: query
+          name: search
+          required: true
+          schema:
+            type: string
+            example: name==*nicotine*
+          description: the search string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        

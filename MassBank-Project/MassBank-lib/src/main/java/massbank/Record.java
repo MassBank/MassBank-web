@@ -109,6 +109,7 @@ public class Record {
 		deprecated = value;
 	}
 	
+	// everything after the keyword "DEPRECATED: "
 	public String DEPRECATED_CONTENT() {
 		return deprecated_content;
 	}
