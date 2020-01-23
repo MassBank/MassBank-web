@@ -147,54 +147,14 @@
 			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson-version}</version>
+			<groupId>cz.jirutka.rsql</groupId>
+			<artifactId>rsql-parser</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback-version}</version>
-			<scope>compile</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.30</version>
 		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>${logback-version}</version>
-			<scope>compile</scope>
-		</dependency>
-
-
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.glassfish.jersey.media</groupId> -->
-		<!-- <artifactId>jersey-media-json-jackson</artifactId> -->
-		<!-- <version>${jersey2-version}</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>javax.activation</groupId> -->
-		<!-- <artifactId>javax.activation-api</artifactId> -->
-		<!-- <version>1.2.0</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.xml.bind</groupId> -->
-		<!-- <artifactId>jaxb-impl</artifactId> -->
-		<!-- <version>2.3.0</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.xml.bind</groupId> -->
-		<!-- <artifactId>jaxb-core</artifactId> -->
-		<!-- <version>2.3.0</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.xml.bind</groupId> -->
-		<!-- <artifactId>jaxb-jxc</artifactId> -->
-		<!-- <version>2.3.0</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.xml.bind</groupId> -->
-		<!-- <artifactId>jaxb-xjc</artifactId> -->
-		<!-- <version>2.3.0</version> -->
-		<!-- </dependency> -->
 	</dependencies>
 </project>

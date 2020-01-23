@@ -35,7 +35,7 @@ import javax.validation.constraints.*;
 @Path("/record")
 
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2020-01-17T13:53:26.722Z[GMT]")public class RecordApi  {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2020-01-23T13:41:36.240Z[GMT]")public class RecordApi  {
    private final RecordApiService delegate;
 
    public RecordApi(@Context ServletConfig servletContext) {
@@ -60,14 +60,32 @@ import javax.validation.constraints.*;
    }
 
     @GET
+    
+    
+    @Produces({ "application/json" })
+    @Operation(summary = "Returns all records matching the search", description = "This resource reports all record ids which fulfill the criteria in the search string. The search strings support the syntax described at [jirutka/rsql-parser](https://github.com/jirutka/rsql-parser).   The following selectors are supported: Selector | Operators | Argument Type,<br>Examples and Comments | Description ---|---|---|--- name | == | String with simple wildcard **\\***<br>Example:<br> 1. **name==nicotin\\*** matches **nicotine** and **nicotinamide** but not **1-methylnicotinamide**<br> 2. **name==\\*nicotin\\*** matches also **1-methylnicotinamide** | matches Strings in the `CH$NAME` field ---|---|---|---| ", tags={ "record" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(array = @ArraySchema(schema = @Schema(implementation = String.class)))),
+        
+        @ApiResponse(responseCode = "400", description = "syntax error"),
+        
+        @ApiResponse(responseCode = "500", description = "database error") })
+    public Response recordGet(@Parameter(in = ParameterIn.QUERY, description = "the search string",required=true) @QueryParam("search") String search
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.recordGet(search,securityContext);
+    }
+    @GET
     @Path("/{id}")
     
     @Produces({ "text/plain" })
-    @Operation(summary = "Returns the content of one record", description = "", tags={  })
+    @Operation(summary = "Returns the content of one record", description = "", tags={ "record" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = String.class))),
         
-        @ApiResponse(responseCode = "400", description = "record not found") })
+        @ApiResponse(responseCode = "404", description = "record not found"),
+        
+        @ApiResponse(responseCode = "500", description = "database error") })
     public Response recordIdGet(@Parameter(in = ParameterIn.PATH, description = "The record id",required=true) @PathParam("id") String id
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
