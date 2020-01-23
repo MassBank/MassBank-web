@@ -11,8 +11,10 @@ info:
     url: http://www.gnu.org/licenses/gpl-3.0
     
 servers:
-  - url: http://localhost:8080/MassBank-OpenAPI
+  - url: https://msbi.ipb-halle.de/MassBank-OpenAPI/
     description: dev server
+  - url: http://localhost:8080/MassBank-OpenAPI
+    description: local dev server
 
 tags:
   - name: record
@@ -55,7 +57,7 @@ paths:
         The following selectors are supported:
         Selector | Operators | Argument Type,<br>Examples and Comments | Description
         ---|---|---|---
-        name | == | String with simple wildcard `*`<br>Example:<br> 1. **name==nicotin\*** matches **nicotine** and **nicotinamide** but not **1-methylnicotinamide**<br> 2. **name==\*nicotin\*** matches also **1-methylnicotinamide** | matches Strings in the `CH$NAME` field
+        name | == | String with simple wildcard **\***<br>Example:<br> 1. **name==nicotin\*** matches **nicotine** and **nicotinamide** but not **1-methylnicotinamide**<br> 2. **name==\*nicotin\*** matches also **1-methylnicotinamide** | matches Strings in the `CH$NAME` field
         ---|---|---|---|
         
       tags:
