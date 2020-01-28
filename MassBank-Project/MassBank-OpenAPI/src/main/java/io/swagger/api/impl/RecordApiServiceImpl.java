@@ -2,7 +2,6 @@ package io.swagger.api.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -11,25 +10,33 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
-
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.RSQLParserException;
+import cz.jirutka.rsql.parser.ast.AndNode;
+import cz.jirutka.rsql.parser.ast.ComparisonNode;
+import cz.jirutka.rsql.parser.ast.NoArgRSQLVisitorAdapter;
 import cz.jirutka.rsql.parser.ast.Node;
+import cz.jirutka.rsql.parser.ast.OrNode;
 import io.swagger.api.NotFoundException;
 import io.swagger.api.RecordApiService;
 import massbank.DatabaseManager;
 import massbank.Record;
+
+
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2020-01-23T13:41:36.240Z[GMT]")public class RecordApiServiceImpl extends RecordApiService {    
 	@Override
     public Response recordGet( @NotNull String search, SecurityContext securityContext) throws NotFoundException {
         System.out.println(search);
         try {
-        Node rootNode = new RSQLParser().parse(search);
+        	Node rootNode = new RSQLParser().parse(search);
+        	testvisitor mytestvisitor = new testvisitor();
+        	rootNode.accept(mytestvisitor);
+        
         } catch (RSQLParserException | IllegalArgumentException e) {
         	return Response.status(Status.BAD_REQUEST).entity(Map.of("code", "400", "message", "Can not parse \"" + search + "\". Check syntax!")).build();
         }
-        //Node rootNode = new RSQLParser().parse(search);
+        
 
         //System.out.println(rootNode.toString());
         
@@ -59,6 +66,28 @@ import massbank.Record;
     	String recordstring = record.toString();
         return Response.ok().entity(recordstring).build();
     }
+	
+	public class testvisitor extends NoArgRSQLVisitorAdapter<String> {
+
+		@Override
+		public String visit(AndNode node) {
+			System.out.println("AndNode "+node.toString());
+			return null;
+		}
+
+		@Override
+		public String visit(OrNode node) {
+			System.out.println("OrNode "+node.toString());
+			return null;
+		}
+
+		@Override
+		public String visit(ComparisonNode node) {
+			System.out.println("ComparisonNode "+node.toString());
+			return null;
+		}
+		
+	}
 }
 
 
