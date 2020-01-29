@@ -22,6 +22,7 @@
 		<cdk.version>2.3</cdk.version>
 		<jdbc.version>2.5.3</jdbc.version>
 		<versionName>${project.version}</versionName>
+		<petitparser-version>2.3.1</petitparser-version>
 	</properties>
 
 	<build>

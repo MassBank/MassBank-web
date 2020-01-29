@@ -147,9 +147,9 @@
 			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>cz.jirutka.rsql</groupId>
-			<artifactId>rsql-parser</artifactId>
-			<version>2.1.0</version>
+			<groupId>com.github.petitparser</groupId>
+			<artifactId>petitparser-core</artifactId>
+			<version>${petitparser-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

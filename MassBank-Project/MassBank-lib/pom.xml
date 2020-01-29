@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.github.petitparser</groupId>
 			<artifactId>petitparser-core</artifactId>
-			<version>2.3.1</version>
+			<version>${petitparser-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.ucdavis.fiehnlab.splash</groupId>

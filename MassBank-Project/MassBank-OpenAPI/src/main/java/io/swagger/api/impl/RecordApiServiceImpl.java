@@ -10,17 +10,13 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import cz.jirutka.rsql.parser.RSQLParser;
-import cz.jirutka.rsql.parser.RSQLParserException;
-import cz.jirutka.rsql.parser.ast.AndNode;
-import cz.jirutka.rsql.parser.ast.ComparisonNode;
-import cz.jirutka.rsql.parser.ast.NoArgRSQLVisitorAdapter;
-import cz.jirutka.rsql.parser.ast.Node;
-import cz.jirutka.rsql.parser.ast.OrNode;
+import org.petitparser.context.Result;
+
 import io.swagger.api.NotFoundException;
 import io.swagger.api.RecordApiService;
 import massbank.DatabaseManager;
 import massbank.Record;
+import massbank.RecordSearchParser;
 
 
 
@@ -28,12 +24,10 @@ import massbank.Record;
 	@Override
     public Response recordGet( @NotNull String search, SecurityContext securityContext) throws NotFoundException {
         System.out.println(search);
-        try {
-        	Node rootNode = new RSQLParser().parse(search);
-        	testvisitor mytestvisitor = new testvisitor();
-        	rootNode.accept(mytestvisitor);
-        
-        } catch (RSQLParserException | IllegalArgumentException e) {
+       	RecordSearchParser parser = new RecordSearchParser();
+       	Result res = parser.parse(search);
+
+		if (res.isFailure()) {
         	return Response.status(Status.BAD_REQUEST).entity(Map.of("code", "400", "message", "Can not parse \"" + search + "\". Check syntax!")).build();
         }
         
@@ -66,28 +60,7 @@ import massbank.Record;
     	String recordstring = record.toString();
         return Response.ok().entity(recordstring).build();
     }
-	
-	public class testvisitor extends NoArgRSQLVisitorAdapter<String> {
 
-		@Override
-		public String visit(AndNode node) {
-			System.out.println("AndNode "+node.toString());
-			return null;
-		}
-
-		@Override
-		public String visit(OrNode node) {
-			System.out.println("OrNode "+node.toString());
-			return null;
-		}
-
-		@Override
-		public String visit(ComparisonNode node) {
-			System.out.println("ComparisonNode "+node.toString());
-			return null;
-		}
-		
-	}
 }
 
 
