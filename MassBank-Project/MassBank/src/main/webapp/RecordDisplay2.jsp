@@ -117,6 +117,13 @@ ${structureddata}
 					${svg}
 				</div>
 			</div>
+			<div class="w3-row">
+				<div class="w3-twothird w3-text-grey w3-small">
+					<a
+						href="https://metabolomics-usi.ucsd.edu/spectrum/?usi=mzspec:MASSBANK:${accession}"
+						target=”_blank”>metabolomics-usi visualisation</a>
+				</div>
+			</div>
 		</c:if>
 	</div>
 	
