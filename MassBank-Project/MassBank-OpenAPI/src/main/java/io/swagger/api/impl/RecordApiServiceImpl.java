@@ -27,9 +27,9 @@ import massbank.RecordSearchParser;
        	RecordSearchParser parser = new RecordSearchParser();
        	Result res = parser.parse(search);
 
-		if (res.isFailure()) {
-        	return Response.status(Status.BAD_REQUEST).entity(Map.of("code", "400", "message", "Can not parse \"" + search + "\". Check syntax!")).build();
-        }
+//		if (res.isFailure()) {
+//        	return Response.status(Status.BAD_REQUEST).entity(Map.of("code", "400", "message", "Can not parse \"" + search + "\". Check syntax!")).build();
+//        }
         
 
         //System.out.println(rootNode.toString());

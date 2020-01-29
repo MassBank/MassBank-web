@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Context;
 import org.petitparser.context.Result;
+import org.petitparser.parser.primitive.StringParser;
 import org.petitparser.tools.GrammarDefinition;
 
 public class RecordSearchParserDefinition extends GrammarDefinition {
@@ -15,6 +16,10 @@ public class RecordSearchParserDefinition extends GrammarDefinition {
 		def("start",
 				ref("accession")
 				.end()
+		);
+		
+		def("accession", 
+				StringParser.of("ACCESSION")
 		);
 	}
 }
