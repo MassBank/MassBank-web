@@ -553,6 +553,9 @@
 						<img src="image/not_available_s.gif" width="200" height="200" style="margin:0px;">
 					<%}%></td>
 			</tr>
+			<tr>
+			<td><a href="https://metabolomics-usi.ucsd.edu/spectrum/?usi=mzspec:MASSBANK:<%=accession%>" target=”_blank”>metabolomics-usi visualisation</a></td>
+			</tr>
 		</table>
 		<%}%>		
 <hr size="1">
