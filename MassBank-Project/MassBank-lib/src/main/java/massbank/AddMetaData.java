@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public class AddMetaData {
 		String publication = record.PUBLICATION();
 		if (publication == null) return recordstring;
 		
-		String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
+		String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/<>:a-zA-Z0-9]+[a-zA-Z0-9]";
 		Pattern pattern_doi = Pattern.compile(".*" + "(" + regex_doi + ")" + ".*");
 		Matcher matcher_doi = pattern_doi.matcher(publication);
 
@@ -121,25 +122,30 @@ public class AddMetaData {
 		if (doi == null) return recordstring;
 		
 		// look up https://www.doi.org/
+		// https://crosscite.org/
 		// curl -LH "Accept: application/x-bibtex" https://doi.org/<doi>
 		String formated_citation=null;
 		try {
-			URLConnection conn = new URL("https://www.doi.org/"+doi).openConnection();
+			// URL encode the doi
+			String EncDoi=URLEncoder.encode(doi, StandardCharsets.UTF_8.toString());
+			URLConnection conn = new URL("https://www.doi.org/"+EncDoi).openConnection();
 			conn.setRequestProperty("Accept", "application/x-bibtex");
 			BibTeXItemDataProvider p = new BibTeXItemDataProvider();
+			// feed the bibtex string into CSL
 			p.addDatabase(new BibTeXConverter().loadDatabase(conn.getInputStream()));
 			CSL citeproc = new CSL(p, "MassBank");
 			citeproc.setOutputFormat("text");
 			citeproc.registerCitationItems(p.getIds());
 			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
 			// call twice because of bug https://github.com/michel-kraemer/citeproc-java/issues/53
-			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
+			// formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
+			// remove some formating characters
 			formated_citation=formated_citation.replaceAll("\\$\\\\less\\$I\\$\\\\greater\\$", "");
 			formated_citation=formated_citation.replaceAll("\\$\\\\less\\$/I\\$\\\\greater\\$", "");
 
 			String fetched_doi=null;
 			matcher_doi = pattern_doi.matcher(formated_citation);
-			
+
 			if (matcher_doi.matches()) {
 				fetched_doi=formated_citation.substring(matcher_doi.start(1), matcher_doi.end(1));
 			}

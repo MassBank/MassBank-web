@@ -41,6 +41,8 @@
 <%@ page import="massbank.Record" %>
 <%@ page import="massbank.StructureToSvgStringGenerator" %>
 <%@ page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData" %>
+<%@ page import="org.json.JSONArray" %>
+<%@ page import="org.json.JSONObject" %>
 <%
 	// ##################################################################################################
 	// get parameters
@@ -116,8 +118,8 @@
 	String shortName = null;
 	String inchiKey = null;
 	String recordTitle = null;
-	String peaks = null;
 	String svgMedium = null;
+	JSONObject peaks = null;
 	if (record.DEPRECATED()) {
 		sb.append("<pre>\n");
 		for(String line : list) sb.append(line+"\n");
@@ -435,12 +437,15 @@
 		}
 		
 		// get peaks for specktackle
-		StringBuilder sbPeaks	= new StringBuilder();
+		peaks = new JSONObject();
+		JSONArray peaklist = new JSONArray();
 		for(int lineIdx = PK_PEAK_idx + 1; lineIdx < list.size() - 1; lineIdx++){
 			String[] tokens	= list.get(lineIdx).trim().split(" ");
-			sbPeaks.append(tokens[0] + "," + tokens[2] + "@");
+			peaklist.put(new JSONObject().put("mz", Double.parseDouble(tokens[0])).put("intensity", Double.parseDouble(tokens[2])));
 		}
-		peaks	= sbPeaks.toString();
+		peaks.put("peaks", peaklist);
+		//System.out.println(peaks.toString());
+
 		
 		if(recordTitle == null)
 			recordTitle	= "NA";
@@ -496,17 +501,17 @@
 		<meta name="variableMeasured" content="m/z">
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		<meta http-equiv="Content-Script-Type" content="text/javascript">
-		<link rel="stylesheet" type="text/css" href="css/Common.css">
+		<link rel="stylesheet" type="text/css" href="css.old/Common.css">
 		<script type="text/javascript" src="script/Common.js"></script>
 		<!-- SpeckTackle dependencies-->
 		<script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
-		<script type="text/javascript" src="script/d3.v3.min.js"></script>
+		<script type="text/javascript" src="js/d3.v3.min.js"></script>
 		<!-- SpeckTackle library-->
-		<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/st.js" charset="utf-8"></script>
 		<!-- SpeckTackle style sheet-->
 		<link rel="stylesheet" href="css/st.css" type="text/css" />
 		<!-- SpeckTackle MassBank loading script-->
-		<script type="text/javascript" src="script/massbank_specktackle.js"></script>
+		<script type="text/javascript" src="js/massbank_specktackle.js"></script>
 		<title><%=shortName%></title>
 	</head>
 	<body style="font-family:Times;" typeof="schema:WebPage">
@@ -524,13 +529,18 @@
 		<font size="+1" style="background-color:LightCyan"><%=recordTitle%></font>
 		
 		<%if (!record.DEPRECATED()) {%>
+		<script type="text/javascript">
+			var data=<%out.println(peaks.toString());%>;
+			console.log(data);
+			
+		</script>
 		<hr size="1">
 		<table>
 			<tr>
 				<td valign="top">
 					<font style="font-size:10pt;" color="dimgray">Mass Spectrum</font>
 					<br>
-					<div id="spectrum_canvas" peaks="<%=peaks%>" style="height: 200px; width: 750px; background-color: white"></div>
+					<div id="spectrum_canvas" style="height: 200px; width: 750px; background-color: white"></div>
 				</td>
 				<td valign="top">
 					<font style="font-size:10pt;" color="dimgray">Chemical Structure</font><br>
@@ -542,6 +552,9 @@
 						// no structure there or svg generation failed%>
 						<img src="image/not_available_s.gif" width="200" height="200" style="margin:0px;">
 					<%}%></td>
+			</tr>
+			<tr>
+			<td><a href="https://metabolomics-usi.ucsd.edu/spectrum/?usi=mzspec:MASSBANK:<%=accession%>" target=”_blank”>metabolomics-usi visualisation</a></td>
 			</tr>
 		</table>
 		<%}%>		

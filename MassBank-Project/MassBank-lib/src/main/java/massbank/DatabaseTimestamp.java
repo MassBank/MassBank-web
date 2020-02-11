@@ -38,12 +38,13 @@ import org.apache.logging.log4j.Logger;
  * current on in the database.
  * 
  * @author rmeier
- * @version 23-04-2019
+ * @version 23-08-2019
  *
  */
 public class DatabaseTimestamp {
 	private static final Logger logger = LogManager.getLogger(DatabaseTimestamp.class);
 	private Date timestamp = new Date();
+	private String version = "unknown";
 	
 	public DatabaseTimestamp() throws SQLException, ConfigurationException {
 		// get timestamp of last db change from database
@@ -59,6 +60,17 @@ public class DatabaseTimestamp {
 		else {
 			timestamp = db_timestamp;
 		}
+		stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(VERSION) FROM LAST_UPDATE;");			
+		res = stmnt.executeQuery();
+		res.next();
+		String db_version = res.getString(1);
+		if ( db_version == null) {
+			logger.error("Version from database is 'null'; using defaults.");
+		}
+		else {
+			version = db_version;
+		}
+		
 		databaseManager.closeConnection();
 		logger.trace("Create DatabaseTimestamp with: " + timestamp);
 	}
@@ -86,5 +98,15 @@ public class DatabaseTimestamp {
 		logger.trace("Own Timestamp: " + timestamp);
 		logger.trace("isOutdated(): " + timestamp.before(db_timestamp));
 		return timestamp.before(db_timestamp);
+	}
+	
+	/**
+	 * Return the String of the 'VERSION' file from the data repo at the time of database creation.
+	 * 
+	 * @return Return the version.
+	 *
+	 */
+	public String getVersion() {
+		return version;
 	}
 }

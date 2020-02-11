@@ -5,10 +5,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -509,6 +513,218 @@ public class Record {
 		return sb.toString();
 	}
 	
+	public String createRecordString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<b>ACCESSION:</b> " + ACCESSION() + "<br>\n");
+		sb.append("<b>RECORD_TITLE:</b> " + RECORD_TITLE1() + "<br>\n");
+		sb.append("<b>DATE:</b> " + DATE() + "<br>\n");
+		sb.append("<b>AUTHORS:</b> " + AUTHORS() + "<br>\n");
+		sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + LICENSE() + "</a><br>\n");
+		if (COPYRIGHT() != null) sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
+		if (PUBLICATION() != null) {
+			String pub=PUBLICATION();
+			String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
+			String regex_pmid = "PMID:[ ]?\\d{8,8}";
+			Pattern pattern_doi = Pattern.compile(".*" + "(" + regex_doi+ ")" + ".*");
+			Pattern pattern_pmid = Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
+			Matcher matcher_doi = pattern_doi.matcher(pub);
+		    Matcher matcher_pmid = pattern_pmid.matcher(pub);
+		    if(matcher_doi.matches()){
+				//link doi
+				String doi=pub.substring(matcher_doi.start(1), matcher_doi.end(1));
+				pub.replaceAll(doi, "<a href=\"https:\\/\\/doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
+			} else if (matcher_pmid.matches()) {
+				String PMID = pub.substring(matcher_pmid.start(1), matcher_pmid.end(1));
+		    	String id = PMID.substring("PMID:".length()).trim();
+		    	pub = pub.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
+			}
+			sb.append("<b>PUBLICATION:</b> " + pub + "<br>\n");
+		}
+		for (String comment : COMMENT())
+			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
+		sb.append("<hr>\n");
+		for (String ch_name : CH_NAME())
+			sb.append("<b>CH$NAME:</b> " + ch_name + "<br>\n");
+		sb.append("<b>CH$COMPOUND_CLASS:</b> " + String.join("; ", CH_COMPOUND_CLASS()) + "<br>\n");
+		sb.append("<b>CH$FORMULA:</b> <a href=\"http://www.chemspider.com/Search.aspx?q=" + CH_FORMULA() + "\" target=\"_blank\">" + CH_FORMULA1() + "</a><br>\n");
+		sb.append("<b>CH$EXACT_MASS:</b> " + CH_EXACT_MASS() + "<br>\n");
+		sb.append("<b>CH$SMILES:</b> " + CH_SMILES() + "<br>\n");
+		sb.append("<b>CH$IUPAC:</b> " + CH_IUPAC() + "<br>\n");
+		
+		for (Pair<String,String> link : CH_LINK()) {
+			switch(link.getKey()){
+				case "CAS":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.google.com/search?q=&quot;" + link.getValue() + "&quot;\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "CAYMAN":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.caymanchem.com/product/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "CHEBI":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "CHEMSPIDER":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.chemspider.com/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "COMPTOX":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "HMDB":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://www.hmdb.ca/metabolites/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "INCHIKEY":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.google.com/search?q=&quot;" + link.getValue() + "&quot;\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "KAPPAVIEW":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "KEGG":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.genome.jp/dbget-bin/www_bget?cpd:" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "KNAPSACK":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://www.knapsackfamily.com/knapsack_jsp/information.jsp?sname=C_ID&word=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+
+				case "LIPIDBANK":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "LIPIDMAPS":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "NIKKAJI":
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://jglobal.jst.go.jp/en/redirect?Nikkaji_No=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					break;
+				case "PUBCHEM":{
+					if(link.getValue().startsWith("CID:")) sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/compound/" + link.getValue().substring("CID:".length()) + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					else if(link.getValue().startsWith("SID:")) sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/substance/" + link.getValue().substring("SID:".length()) + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					else sb.append("<b>CH$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+					break;
+				}
+				default:
+					sb.append("<b>CH$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+			}
+		}
+		
+		if (SP_SCIENTIFIC_NAME() != null)
+			sb.append("<b>SP$SCIENTIFIC_NAME:</b> " + SP_SCIENTIFIC_NAME() + "<br>\n");
+		if (SP_LINEAGE() != null)
+			sb.append("<b>SP$LINEAGE:</b> " + SP_LINEAGE() + "<br>\n");
+		for (Pair<String,String> link : SP_LINK())
+			sb.append("<b>SP$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+		for (String sample : SP_SAMPLE())
+				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>\n");
+
+		
+		sb.append("<hr>\n");
+		sb.append("<b>AC$INSTRUMENT:</b> " + AC_INSTRUMENT() + "<br>\n");
+		sb.append("<b>AC$INSTRUMENT_TYPE:</b> " + AC_INSTRUMENT_TYPE() + "<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "<br>\n");
+		for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
+			sb.append("<b>AC$MASS_SPECTROMETRY:</b> " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "<br>\n");
+		for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
+			sb.append("<b>AC$CHROMATOGRAPHY:</b> " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "<br>\n");
+		
+		
+		if (!MS_FOCUSED_ION().isEmpty() || !MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>\n");
+		for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
+			sb.append("<b>MS$FOCUSED_ION:</b> " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "<br>\n");
+		for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
+				sb.append("<b>MS$DATA_PROCESSING:</b> " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "<br>\n");
+		
+		sb.append("<hr>\n");
+		sb.append("<b>PK$SPLASH:</b> <a href=\"http://www.google.com/search?q=" + PK_SPLASH() + "\" target=\"_blank\">" + PK_SPLASH() + "</a><br>\n");
+		
+
+		if (!PK_ANNOTATION_HEADER().isEmpty()) {
+			sb.append("<b>PK$ANNOTATION:</b>");
+			for (String annotation_header_item : PK_ANNOTATION_HEADER())
+				sb.append(" " + annotation_header_item);
+			sb.append("<br>\n");
+			for (List<String> annotation_line :  PK_ANNOTATION()) {
+				sb.append("&nbsp");
+				for (String annotation_item : annotation_line )
+					sb.append("&nbsp" + annotation_item);
+				sb.append("<br>\n");
+			}
+		}
+
+		sb.append("<b>PK$NUM_PEAK:</b> " + PK_NUM_PEAK() + "<br>\n");
+		sb.append("<b>PK$PEAK:</b> m/z int. rel.int.<br>\n");
+		for (List<Double> peak_line :  PK_PEAK()) {
+			sb.append("&nbsp");
+			for (Double peak_line_item : peak_line )
+				sb.append("&nbsp" + peak_line_item.toString());
+			sb.append("<br>\n");
+		}
+		
+		sb.append("//");
+
+		return sb.toString();
+	}
+	
+	public String createStructuredData() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<script type=\"application/ld+json\">\n");
+		sb.append("[\n");
+		sb.append("{\n");
+		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
+		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+ACCESSION()+"\",\n");
+		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
+		if (CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ CH_NAME().get(0) +"\",\n");
+		else if (CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", CH_NAME()) +"\"],\n");
+		
+		sb.append("\"molecularFormula\": \""+CH_FORMULA()+"\",\n");
+		sb.append("\"monoisotopicMolecularWeight\": \""+CH_EXACT_MASS()+"\",\n");
+		sb.append("\"inChI\": \""+CH_IUPAC()+"\",\n");
+		sb.append("\"smiles\": \""+CH_SMILES()+"\",\n");
+		sb.append("\"@context\": \"http://schema.org\",\n");
+		sb.append("\"@type\": \"MolecularEntity\"\n");
+		sb.append("},\n");
+		sb.append("{\n");
+		
+		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
+		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+ACCESSION()+"\",\n");
+		sb.append("\"headline\": \""+RECORD_TITLE1()+"\",\n");
+		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
+		String[] tokens	= DATE1();
+		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
+		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
+		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
+		sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
+		sb.append("\"citation\": \""+PUBLICATION()+"\",\n");
+		if (COMMENT().size() == 1)  sb.append("\"comment\": \""+ COMMENT().get(0) +"\",\n");
+		else if (COMMENT().size() >= 1) sb.append("\"comment\": [\""+ String.join("\", \"", COMMENT()) +"\"],\n");
+		if (CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ CH_NAME().get(0) +"\",\n");
+		else if (CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", CH_NAME()) +"\"],\n");
+		
+		sb.append("\"@context\": \"http://schema.org\",\n");
+		sb.append("\"@type\": \"Dataset\"\n");
+		sb.append("}\n");
+		sb.append("]\n");
+		sb.append("</script>");
+		return sb.toString();
+	}
+	
+	public String createPeakListForSpectrumViewer() {
+        // convert a list of lists [[mz, int, rel.int], [...], ...]
+        // to String "mz,rel.int@mz,rel.int@..."
+		List<String> peaks = new ArrayList<>();
+		for (List<Double> peak : PK_PEAK()) {
+			peaks.add(peak.get(0)+","+peak.get(2));
+		}
+		return String.join("@", peaks);
+	}
+	
+	public JSONObject createPeakListData() {
+		JSONObject result = new JSONObject();
+		JSONArray peaklist = new JSONArray();
+		for (List<Double> peak : PK_PEAK()) {
+			peaklist.put(new JSONObject().put("intensity", peak.get(2)).put("mz", peak.get(0)));
+		}
+		result.put("peaks", peaklist);
+		return result;
+	}
+	
 	public static class Structure{
 		public final String CH_SMILES;
 		public final String CH_IUPAC;
@@ -528,13 +744,10 @@ public class Record {
 			this.FULL_NAME	= FULL_NAME;
 		}
 	}
-	public static Map<String, String> listToMap(List<Pair<String, String>> list) {
+	
+	private static Map<String, String> listToMap(List<Pair<String, String>> list) {
 		Map<String, String> map	= new HashMap<String, String>();
-		
-		for (Pair<String, String> pair : list)
-			map.put(pair.getKey(), pair.getValue());
-		
-		return map;
-		
+		for (Pair<String, String> pair : list) map.put(pair.getKey(), pair.getValue());
+		return map;		
 	}
 }

@@ -73,7 +73,7 @@
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project" />
 	<meta name="description" content="Mass Calculator is a basic mass calculation tool that you can use everywhere in MassBank. There are Formula to m/z and m/z to formula as a function.">
 	<meta name="keywords" content="Mass,Calc,Calculator,mz,Formula">
-	<link rel="stylesheet" type="text/css" href="./css/Common.css">
+	<link rel="stylesheet" type="text/css" href="./css.old/Common.css">
 	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
 	<script type="text/javascript" src="./script/MassCalc.js"></script>
 	<title>MassBank | Mass Calculator</title>

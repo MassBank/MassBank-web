@@ -32,9 +32,9 @@
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" >
 	<link href="favicon.ico" rel="icon" type="image/x-icon">
 	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
-	<link rel="stylesheet" type="text/css" href="css.new/w3.css">
-	<link rel="stylesheet" type="text/css" href="css.new/w3-theme-grey.css">
-	<link rel="stylesheet" type="text/css" href="css.new/massbank.css">
+	<link rel="stylesheet" type="text/css" href="css/w3.css">
+	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
+	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.9.0-web/css/all.min.css">
 	<script src="js/jquery-3.4.1.min.js"></script>
 	<script src="js/MassCalc.js"></script>
@@ -247,6 +247,19 @@
 		<div class="w3-rest">
 			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;">
 				<li>${isomers}</li>
+			</ul>
+		</div>
+	</div>
+	<div class="w3-row w3-padding">
+		<div class="w3-col" style="width:120px">
+			<b>Database version</b>
+		</div>
+		<div class="w3-col" style="width:10px">
+			<b>:</b>
+		</div>
+		<div class="w3-rest">
+			<ul style="-webkit-columns:100px 7;-moz-columns:100px 7;columns:100px 7;margin:0px;list-style:none;white-space:nowrap;">
+				<li>${version}</li>
 			</ul>
 		</div>
 	</div>
