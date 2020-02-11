@@ -45,6 +45,9 @@ import massbank.RecordSearchParser;
 			line++;
 		}
 	}
+       	else {
+       	    System.out.println("SUCCESS");
+       	}
 
 //		if (res.isFailure()) {
 //        	return Response.status(Status.BAD_REQUEST).entity(Map.of("code", "400", "message", "Can not parse \"" + search + "\". Check syntax!")).build();

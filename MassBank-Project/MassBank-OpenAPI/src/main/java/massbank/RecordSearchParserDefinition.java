@@ -1,5 +1,7 @@
 package massbank;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.petitparser.parser.primitive.CharacterParser;
@@ -12,6 +14,10 @@ public class RecordSearchParserDefinition extends GrammarDefinition {
 	public RecordSearchParserDefinition() {
 		def("start",
 			ref("name")
+			.map((List<?> value) -> {
+				System.out.println(value);
+				return value;
+			})
 			.end()
 		);
 
@@ -62,16 +68,37 @@ public class RecordSearchParserDefinition extends GrammarDefinition {
 		def("name",
 			StringParser.of("name")
 			.seq(ref("eq"))
-			.seq(StringParser.of("nicotine"))
+			.seq(ref("value"))
 		);
 
 		def("value",
 			ref("unreserved-str")
 			.or(ref("double-quoted"))
-			.or(ref("single-quoted"))
+			//.or(ref("single-quoted"))
+
 		);
 		def("unreserved-str",
-			CharacterParser.any()
+			CharacterParser.noneOf("\"\'();, ").plus().flatten()
+			.map((List<?> value) -> {
+			    	System.out.println("unreserved-str");
+				System.out.println(value);
+				return value;
+			})
+		);
+		def("double-quoted",
+			CharacterParser.of('"')
+			.seq(
+				CharacterParser.noneOf("\\\"")
+				.or(StringParser.of("\\\""))
+				.or(StringParser.of("\\\\"))
+				.star().flatten()
+			)
+			.seq(CharacterParser.of('"'))
+			.map((List<?> value) -> {
+			    	System.out.println("double-quoted");
+				System.out.println(value);
+				return value;
+			})
 		);
 
 	}
