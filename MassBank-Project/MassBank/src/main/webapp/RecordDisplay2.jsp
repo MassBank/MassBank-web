@@ -48,6 +48,7 @@
     <script src="js/st.js"></script>
     <!-- SpeckTackle MassBank loading script-->
 	<script src="js/massbank_specktackle.js"></script>
+	<script src="js/Matomo.js"></script>
 <!-- 	<script src="js/my_massbank_specktackle.js"></script> -->
 	
     
