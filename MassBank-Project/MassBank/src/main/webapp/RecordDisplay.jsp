@@ -429,7 +429,7 @@
 				PK_PEAK_idx	= lineIdx;
 				sb.append(line + "\n");
 				break;
-			}
+			}	
 			default:
 				sb.append(line + "\n");
 				break;
@@ -506,10 +506,12 @@
 		<!-- SpeckTackle dependencies-->
 		<script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
 		<script type="text/javascript" src="js/d3.v3.min.js"></script>
+		<script type="text/javascript" src="js/Matomo.js"></script>
 		<!-- SpeckTackle library-->
 		<script type="text/javascript" src="js/st.js" charset="utf-8"></script>
 		<!-- SpeckTackle style sheet-->
 		<link rel="stylesheet" href="css/st.css" type="text/css" />
+		
 		<!-- SpeckTackle MassBank loading script-->
 		<script type="text/javascript" src="js/massbank_specktackle.js"></script>
 		<title><%=shortName%></title>
