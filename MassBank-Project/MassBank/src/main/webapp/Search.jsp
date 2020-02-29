@@ -42,7 +42,7 @@
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script src="js/jquery-confirm.min.js"></script>
 	<script src="js/search.js"></script>
-	<script src="js/Matomo.js"></script>
+	<script src="js/piwik.js"></script>
 	<script>svg4everybody();</script>
 </head>
 

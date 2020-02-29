@@ -39,7 +39,7 @@
 	<script src="js/jquery-3.4.1.min.js"></script>
 	<script src="js/MassCalc.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
-	<script src="js/Matomo.js"></script>
+	<script src="js/piwik.js"></script>
 	<script>svg4everybody();</script>
 </head>
 
