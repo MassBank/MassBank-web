@@ -1,15 +1,15 @@
-<!-- Piwik -->
+<!-- Matomo -->
+<script type="text/javascript">
   var _paq = _paq || [];
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
   (function() {
-    var u="//192.168.35.18/piwik/";
+    var u="https://www.ufz.de/stats/";
     _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '1']);
+    _paq.push(['setSiteId', '24']);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
-<!-- End Piwik Code -->
-
-
+</script>
+<!-- End Matomo Code -->

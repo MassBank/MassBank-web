@@ -36,7 +36,7 @@
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<script src="js/jquery-3.4.1.min.js"></script>
-	<script src="script/Piwik.js"></script>
+	<script src="js/Matomo.js"></script>
 </head>
 
 <body class="w3-theme-gradient">
