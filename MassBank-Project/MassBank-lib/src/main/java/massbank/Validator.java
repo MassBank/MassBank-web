@@ -3,11 +3,14 @@ package massbank;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -98,18 +101,34 @@ public class Validator {
 			System.out.println("Validator version: " + properties.getProperty("version"));
 			
 			if (arguments.length==0) {
-				System.out.println("usage: Validator <FILE> [<FILE> ...]");
+				System.out.println("usage: Validator <FILE|DIR> [<FILE|DIR> ...]");
 				System.exit(1);
 			}
 			
-			logger.trace("Validating " + arguments.length + " files");
+			// validate all files in arguments and all *.txt files in directories and subdirectories
+			// specified in arguments 
+			List<File> recordfiles = new ArrayList<>();
+			for (String argument : arguments) {
+				File argumentf = new File(argument);
+				if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
+					recordfiles.add(argumentf);
+				}
+				else if (argumentf.isDirectory()) {
+					recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
+				}
+				else {
+					logger.warn("Argument" + argument + "could not be processed.");
+				}
+			}
+			
+			logger.trace("Validating " + recordfiles.size() + " files");
 		
 			AtomicBoolean haserror = new AtomicBoolean(false);
-			Arrays.asList(arguments).parallelStream().forEach(filename -> {
+			recordfiles.parallelStream().forEach(filename -> {
 				String recordstring;
 				Record record=null;
 				try {
-					recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
+					recordstring = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 					hasNonStandardChars(recordstring);
 					record = validate(recordstring, "");
 					if (record == null) {
