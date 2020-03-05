@@ -39,6 +39,7 @@ public class Record {
 	private String authors;
 	private String license;	
 	private String copyright; // optional
+	private String project; // optional
 	private String publication; // optional
 	private List<String> comment; // optional
 	private List<String> ch_name;
@@ -178,6 +179,14 @@ public class Record {
 	}
 	
 	
+	public String PROJECT() {
+		return project;
+	}
+	public void PROJECT(String value) {
+		project=value;
+	}
+
+
 	public List<String> COMMENT() {
 		return comment;
 	}
