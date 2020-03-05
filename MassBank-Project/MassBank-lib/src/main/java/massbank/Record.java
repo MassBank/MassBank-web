@@ -438,10 +438,8 @@ public class Record {
 			sb.append("COPYRIGHT: " + COPYRIGHT() + "\n");
 		if (PUBLICATION() != null)
 			sb.append("PUBLICATION: " + PUBLICATION() + "\n");
-		if (COMMENT() != null) {
-			for (String comment : COMMENT())
-				sb.append("COMMENT: " + comment + "\n");
-		}
+		if (PROJECT() != null)
+			sb.append("PROJECT: " + PROJECT() + "\n");
 		if (CH_NAME() != null) {
 			for (String ch_name : CH_NAME())
 				sb.append("CH$NAME: " + ch_name + "\n");
@@ -550,6 +548,8 @@ public class Record {
 			}
 			sb.append("<b>PUBLICATION:</b> " + pub + "<br>\n");
 		}
+		if (PROJECT() != null)
+			sb.append("<b>PROJECT:</b> " + PROJECT() + "<br>\n");
 		for (String comment : COMMENT())
 			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
 		sb.append("<hr>\n");
