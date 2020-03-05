@@ -20,7 +20,7 @@ import org.petitparser.parser.Parser;
 /**
  * This class validates a record file or String by using the syntax of {@link RecordParserDefinition}.
  * @author rmeier
- * @version 01-03-2019
+ * @version 05-03-2020
  */
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
@@ -117,7 +117,7 @@ public class Validator {
 					recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
 				}
 				else {
-					logger.warn("Argument" + argument + "could not be processed.");
+					logger.warn("Argument " + argument + " could not be processed.");
 				}
 			}
 			

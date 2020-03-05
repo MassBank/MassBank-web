@@ -1,5 +1,6 @@
 # MassBank Record Format 2.5
 MassBank Consortium (March 05, 2020)
+
 #### Updated
 - **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
@@ -331,8 +332,6 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
   </tr>
 </table>
 
-(Last modified: March 1, 2016)
-  
 * General note. Decimal point should be a period, `.`, but not a comma, `,`.  For example, `m/z 425.7`.  No thousand separator is inserted.
 
 ## 2. MassBank Record Information
