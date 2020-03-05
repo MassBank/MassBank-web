@@ -1,5 +1,5 @@
-# MassBank Record Format 2.4
-MassBank Consortium (October 30, 2019)
+# MassBank Record Format 2.5
+MassBank Consortium (March 05, 2020)
 #### Updated
 - **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
