@@ -1087,9 +1087,13 @@ Example:
 AC$CHROMATOGRAPHY: INLET_TYPE flow injection analysis
 ```
 
-Data of type `AC$CHROMATOGRAPHY: INJECTION_TYPE` are:
+Data of type `AC$CHROMATOGRAPHY: INLET_TYPE` are:
 
 ```
+atmospheric pressure inlet
+capillary flow technology
+cold injection inlet
+cold on column inlet
 direct inlet
 direct insertion probe
 direct liquid introduction
@@ -1097,9 +1101,11 @@ electrospray inlet
 flow injection analysis
 infusion
 nanospray inlet
+split inlet
+splitless inlet
 ```
 
-Cross-reference to HUPO-PSI: ionization type [MS:1000007]
+Cross-reference to HUPO-PSI: inlet type [MS:1000007]
 
 
 ##### 2.4.6 Subtag: KOVATS\_RTI
