@@ -1060,6 +1060,7 @@ Example:
 ```
 AC$CHROMATOGRAPHY: FLOW_RATE 0.25 mL/min
 ```
+
 ##### 2.4.6 Subtag: INJECTION\_TEMPERATURE
 Temperature of the Injection Port in GC-MS.
 
@@ -1077,6 +1078,29 @@ Example:
 ```
 AC$CHROMATOGRAPHY: INJECTION_TEMPERATURE_GRADIENT 10 C at 0 sec, 250 C at 3 sec with 80 C/sec
 ```
+
+##### 2.4.6 Subtag: INLET\_TYPE
+Type of the Injection or of the Injection Port
+
+Example:
+```
+AC$CHROMATOGRAPHY: INLET_TYPE Flow Injection Analysis
+```
+
+Data of type `AC$CHROMATOGRAPHY: INJECTION_TYPE` are:
+
+```
+direct inlet
+direct insertion probe
+direct liquid introduction
+electrospray inlet
+flow injection analysis
+infusion
+nanospray inlet
+```
+
+Cross-reference to HUPO-PSI: ionization type [MS:1000007]
+
 
 ##### 2.4.6 Subtag: KOVATS\_RTI
 C8-C30 n-Alkanes Based Retention Time Index for GC-MS.
