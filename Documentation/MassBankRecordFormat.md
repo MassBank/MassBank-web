@@ -1,6 +1,7 @@
 # MassBank Record Format 2.4
 MassBank Consortium (October 30, 2019)
 #### Updated
+- **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
 - **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUPO-PSI
 - **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
