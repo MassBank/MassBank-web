@@ -385,7 +385,6 @@
 			<td><h1><%=hTitle%></h1></td>
 			<td align="right" class="font12px">
 				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
@@ -1138,14 +1137,14 @@
 				// 	url = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor;
 				// }
 				if ( refPeak ) {
-					url = "RecordDisplay.jsp" + "?id=" + rec.getId() + "&dsn=" + contributor + recordParam;
+					url = "RecordDisplay" + "?id=" + rec.getId() + "&dsn=" + contributor + recordParam;
 				}
 				if ( refPeakDiff ) {
 					typeName = MassBankCommon.TYPE_TBL[MassBankCommon.CGI_TBL_TYPE_DISP];
-					url = "RecordDisplay.jsp" + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor + recordParam;
+					url = "RecordDisplay" + "?type=" + typeName  + "&id=" + rec.getId() + "&dsn=" + contributor + recordParam;
 				}
 				if( refQuick || refRecIndex || refStruct || refInchi || refSplash) {
-					url = "RecordDisplay.jsp" + "?id=" + rec.getId() + "&dsn=" + contributor;
+					url = "RecordDisplay" + "?id=" + rec.getId() + "&dsn=" + contributor;
 				}
 				
 				//------------------------------------

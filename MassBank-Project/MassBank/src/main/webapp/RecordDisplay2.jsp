@@ -48,8 +48,6 @@
     <script src="js/st.js"></script>
     <!-- SpeckTackle MassBank loading script-->
 	<script src="js/massbank_specktackle.js"></script>
-<!-- 	<script src="js/my_massbank_specktackle.js"></script> -->
-	
     
 	<!-- 	hier anpassen -->
 <!-- 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
@@ -76,17 +74,7 @@ ${structureddata}
 					<b>MassBank Record: ${accession}</b>
 				</h1>
 			</div>
-			<div
-				style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
-				<div class="w3-container">
-					<div class="w3-text-blue">
-						<svg viewBox="0 0 32 28" style="width: 16px">
-							<use href="img/arrow.svg#arrow_right" />
-						</svg>
-						<a class="w3-text-dark-grey" href="manuals/UserManual_en.pdf"
-							target="_blank"><b>user manual</b></a>
-					</div>
-				</div>
+			<div style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
 				<div class="w3-container">
 					<div class="w3-text-blue">
 						<svg viewBox="0 0 32 28" style="width: 16px">

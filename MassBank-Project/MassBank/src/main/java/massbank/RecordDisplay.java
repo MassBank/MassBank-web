@@ -46,7 +46,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
-@WebServlet("/RecordDisplay2")
+@WebServlet("/RecordDisplay")
 public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(RecordDisplay.class);
@@ -255,8 +255,6 @@ public class RecordDisplay extends HttpServlet {
 		Record record = null;
 		try {
 			// get parameters
-			// http://localhost/MassBank/jsp/RecordDisplay.jsp?id=XXX00001
-			// String accession = "XXX00001";
 			String accession = null;
 			
 			Enumeration<String> names = request.getParameterNames();

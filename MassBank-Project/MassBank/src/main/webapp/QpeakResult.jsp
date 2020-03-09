@@ -127,7 +127,6 @@
 		out.println( "   <td><h1>Quick Search Results</h1></td>" );
 		out.println( "   <td align=\"right\" class=\"font12px\">" );
 		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"javascript:openMassCalc();\">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
-		out.println( "    <img src=\"image/bullet_link.gif\" width=\"10\" height=\"10\">&nbsp;<b><a class=\"text\" href=\"manuals/UserManual_en.pdf\" target=\"_blank\">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" );
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
@@ -299,7 +298,6 @@
 			<td><h1>Quick Search Results</h1></td>
 			<td align="right" class="font12px">
 				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="manuals/UserManual_en.pdf" target="_blank">user manual</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		</tr>
 	</table>
@@ -460,7 +458,7 @@
 				// typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 				// String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
 				// 				 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
-				String linkUrl = "RecordDisplay.jsp" + "?id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
+				String linkUrl = "RecordDisplay" + "?id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
 				
 				
 				String valstr = name.replace("\"", "&quot;") + "\t" + id + "\t" + formula + "\t0\t" + site;
