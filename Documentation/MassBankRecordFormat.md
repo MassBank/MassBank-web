@@ -448,7 +448,7 @@ PROJECT: NATOXAQ Natural Toxins and Drinking Water Quality - From Source to Tap
 PROJECT: SOLUTIONS for present and future emerging pollutants in land and water resources management
 ```
 
-#### <a name="2.1.8"></a>2.1.9 COMMENT
+#### <a name="2.1.9"></a>2.1.9 COMMENT
 Comments. Optional and Iterative
  
 In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments specific to the following five examples.
