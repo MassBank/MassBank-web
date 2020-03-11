@@ -1,10 +1,16 @@
 package massbank;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,166 +20,10 @@ import org.petitparser.parser.Parser;
 /**
  * This class validates a record file or String by using the syntax of {@link RecordParserDefinition}.
  * @author rmeier
- * @version 01-03-2019
+ * @version 05-03-2020
  */
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
-	
-	// just a test String
-	public static String recordstringExample = 
-			"ACCESSION: BSU00002\n" +
-			"RECORD_TITLE: Veratramine; LC-ESI-QTOF; MS2; CE: 50 V\n" +
-			"DATE: 2016.01.19 (Created 2012.12.18, modified 2013.07.16)\n" +
-			"AUTHORS: Chandler, C. and Habig, J. Boise State University\n" +
-			"LICENSE: CC BY-SA\n" +
-			"COPYRIGHT: Chandler, C., Habig, J. and McDougal O. Boise State University\n" +
-			"PUBLICATION: Iida T, Tamura T, et al, J Lipid Res. 29, 165-71 (1988). [PMID: 3367086]\n" +
-			"COMMENT: Data obtained from a veratramine standard purchased from Logan Natural Products, Logan, Utah USA.\n" +
-			"COMMENT: Data obtained from a veratramine standard purchased from Logan Natural Products, Logan, Utah USA.\n" +
-			"CH$NAME: Veratramine\n" + 
-			"CH$NAME: {(3beta,23R)-14,15,16,17-Tetradehydroveratraman-3,23-diol\n" +
-			"CH$COMPOUND_CLASS: N/A; Environmental Standard; grr\n" +
-			"CH$FORMULA: C27H41NO2\n" +
-			"CH$EXACT_MASS: 409.29807\n" +
-			"CH$SMILES: CC1CC2C(C(C3(O2)CCC4C5CC=C6CC(CCC6(C5CC4=C3C)C)O)C)NC1\n" + 
-			"CH$IUPAC: InChI=1S/C27H41NO2/c1-15-11-24-25(28-14-15)17(3)27(30-24)10-8-20-21-6-5-18-12-19(29)7-9-26(18,4)23(21)13-22(20)16(27)2/h5,15,17,19-21,23-25,28-29H,6-14H2,1-4H3/t15-,17+,19-,20-,21-,23-,24+,25-,26-,27-/m0/s1\n" +
-			"CH$LINK: INCHIKEY 60-70-8\n" +
-			"CH$LINK: CAS 60-70-8\n" + 
-			"CH$LINK: CHEBI 9951\n" + 
-			"CH$LINK: CHEMSPIDER 5845\n" +
-			"CH$LINK: KEGG C10829\n" + 
-			"CH$LINK: KNAPSACK C00002270\n" + 
-			"CH$LINK: PUBCHEM 13012\n" +
-			"SP$SCIENTIFIC_NAME: Mus musculus\n" +
-			"SP$LINK: NCBI-TAXONOMY 10090\n" +
-			"SP$LINK: NCBI-TAXONOMY 10090\n" +
-			"SP$SAMPLE: Liver extracts\n" +
-			"SP$SAMPLE: Liver extracts\n" +
-			"AC$INSTRUMENT: Bruker maXis ESI-QTOF\n" +
-			"AC$INSTRUMENT_TYPE: LC-ESI-QTOF\n" +
-			"AC$MASS_SPECTROMETRY: MS_TYPE MS2\n" + 
-			"AC$MASS_SPECTROMETRY: ION_MODE POSITIVE\n" + 
-			"AC$MASS_SPECTROMETRY: COLLISION_ENERGY 50 eV\n" + 
-			"AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE CID\n" + 
-			"AC$MASS_SPECTROMETRY: IONIZATION ESI\n" + 
-			"AC$MASS_SPECTROMETRY: RESOLUTION 35000\n" + 
-			"AC$CHROMATOGRAPHY: COLUMN_NAME Acclaim RSLC C18 2.2um, 2.1x100mm, Thermo\n" + 
-			"AC$CHROMATOGRAPHY: FLOW_GRADIENT 99/1 at 0-1 min, 61/39 at 3 min, 0.1/99.9 at 14-16 min, 99/1 at 16.1-20 min\n" + 
-			"AC$CHROMATOGRAPHY: FLOW_RATE 200 uL/min at 0-3 min, 400 uL/min at 14 min, 480 uL/min at 16-19 min, 200 uL/min at 19.1-20 min\n" +
-			"AC$CHROMATOGRAPHY: NAPS_RTI 100\n" +
-			"AC$CHROMATOGRAPHY: RETENTION_TIME 6.2 min\n" + 
-			"AC$CHROMATOGRAPHY: SOLVENT A 90:10 water:methanol with 0.01% formic acid and 5mM ammonium formate\n" + 
-			"AC$CHROMATOGRAPHY: SOLVENT B methanol with 0.01% formic acid and 5mM ammonium formate\n" +
-			"MS$FOCUSED_ION: PRECURSOR_M/Z 410.3\n" +
-			"MS$FOCUSED_ION: PRECURSOR_TYPE [M+2H]2+\n" +
-			"PK$SPLASH: splash10-0002-0960000000-77302b0326a418630a84\n" +
-			"PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)\n" +
-			"  134.0594 C8H8NO+ 2 134.0600 -4.77\n" +
-			"  135.0618 C7[13]CH8NO+ 2 135.0632 10.37\n" +
-			"  140.016 C6H6NOS+ 1 140.0165 -3.22\n" +
-			"PK$NUM_PEAK: 100\n" +
-			"PK$PEAK: m/z int. rel.int.\n" +
-			"  84.1 12461 32\n" +
-			"  105.1 2208 6\n" +
-			"  107.1 2394 6\n" +
-			"  114.1 40390 105\n" +
-			"  115.1 2816 7\n" +
-			"  119.1 3122 8\n" +
-			"  121.1 2233 6\n" +
-			"  124.1 31739 82\n" +
-			"  125.1 2905 8\n" +
-			"  129.1 2850 7\n" +
-			"  131.1 49572 129\n" +
-			"  132.1 4865 13\n" +
-			"  133.1 81554 212\n" +
-			"  134.1 8725 23\n" +
-			"  141.1 1570 4\n" +
-			"  144.1 1940 5\n" +
-			"  145.1 41441 108\n" +
-			"  146.1 4421 11\n" +
-			"  147.1 5354 14\n" +
-			"  151.1 3257 8\n" +
-			"  154.1 1568 4\n" +
-			"  155.1 10003 26\n" +
-			"  156.1 6505 17\n" +
-			"  157.1 143020 372\n" +
-			"  158.1 17481 45\n" +
-			"  159.1 82905 215\n" +
-			"  160.1 11221 29\n" +
-			"  161.1 2347 6\n" +
-			"  167.1 2176 6\n" +
-			"  168.1 2768 7\n" +
-			"  169.1 46331 120\n" +
-			"  170.1 6508 17\n" +
-			"  171.1 134721 350\n" +
-			"  172.1 18235 47\n" +
-			"  173.1 3731 10\n" +
-			"  175.1 2015 5\n" +
-			"  179.1 1858 5\n" +
-			"  180.1 1535 4\n" +
-			"  181.1 10257 27\n" +
-			"  182.1 4717 12\n" +
-			"  183.1 41396 108\n" +
-			"  184.1 7101 18\n" +
-			"  185.1 6914 18\n" +
-			"  192.1 1409 4\n" +
-			"  193.1 6170 16\n" +
-			"  194.1 2234 6\n" +
-			"  195.1 14163 37\n" +
-			"  196.1 4474 12\n" +
-			"  197.1 15633 41\n" +
-			"  198.1 2557 7\n" +
-			"  199.1 1506 4\n" +
-			"  206.1 3117 8\n" +
-			"  207.1 10875 28\n" +
-			"  208.1 3128 8\n" +
-			"  209.1 8959 23\n" +
-			"  210.1 1778 5\n" +
-			"  211.1 19727 51\n" +
-			"  212.2 3417 9\n" +
-			"  219.1 2485 6\n" +
-			"  220.1 4278 11\n" +
-			"  221.1 13267 34\n" +
-			"  222.1 5170 13\n" +
-			"  223.1 4101 11\n" +
-			"  225.2 1653 4\n" +
-			"  233.1 6156 16\n" +
-			"  234.1 3148 8\n" +
-			"  235.2 13261 34\n" +
-			"  236.2 4846 13\n" +
-			"  237.2 4596 12\n" +
-			"  247.2 6331 16\n" +
-			"  248.2 6908 18\n" +
-			"  249.2 6605 17\n" +
-			"  251.2 2136 6\n" +
-			"  261.2 1339 3\n" +
-			"  262.2 16113 42\n" +
-			"  263.2 4055 11\n" +
-			"  265.2 1366 4\n" +
-			"  277.2 29461 77\n" +
-			"  278.2 6409 17\n" +
-			"  280.2 6501 17\n" +
-			"  281.2 8268 21\n" +
-			"  282.2 1857 5\n" +
-			"  295.2 384391 999\n" +
-			"  296.2 86672 225\n" +
-			"  297.2 10146 26\n" +
-			"  309.2 2642 7\n" +
-			"  319.2 3763 10\n" +
-			"  320.2 2207 6\n" +
-			"  333.2 3370 9\n" +
-			"  362.3 1851 5\n" +
-			"  363.3 1716 4\n" +
-			"  375.3 2380 6\n" +
-			"  376.3 1392 4\n" +
-			"  377.3 1755 5\n" +
-			"  392.3 23807 62\n" +
-			"  393.3 6937 18\n" +
-			"  396.3 2914 8\n" +
-			"  410.3 6059 16\n" +
-			"  411.3 1871 5\n" +
-			"  414.3 9233 24\n" +
-			"//";	
 	
 	/**
 	 * Returns <code>true</code> if there is any suspicious character in <code>recordstring</code>.
@@ -244,28 +94,58 @@ public class Validator {
 		return record;
 	}
 
-	public static void main(String[] arguments) throws Exception {
-		boolean haserror = false;
-		if (arguments.length==0) {
-			Record record = validate(recordstringExample, "");
-			if (record == null) logger.fatal("Error.");
-			else logger.trace(record.toString());
-		}
-		else {
-			System.out.println("Validating " + arguments.length + " files");
-			for (String filename : arguments) {
-				String recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
-				hasNonStandardChars(recordstring);
-				Record record = validate(recordstring, "");
-				if (record == null) {
-					logger.error("error in " + filename);
-					haserror = true;
+	public static void main(String[] arguments) {
+		final Properties properties = new Properties();
+		try {
+			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
+			System.out.println("Validator version: " + properties.getProperty("version"));
+			
+			if (arguments.length==0) {
+				System.out.println("usage: Validator <FILE|DIR> [<FILE|DIR> ...]");
+				System.exit(1);
+			}
+			
+			// validate all files in arguments and all *.txt files in directories and subdirectories
+			// specified in arguments 
+			List<File> recordfiles = new ArrayList<>();
+			for (String argument : arguments) {
+				File argumentf = new File(argument);
+				if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
+					recordfiles.add(argumentf);
+				}
+				else if (argumentf.isDirectory()) {
+					recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
 				}
 				else {
-					logger.trace("validation passed for " + filename);
+					logger.warn("Argument " + argument + " could not be processed.");
 				}
 			}
+			
+			logger.trace("Validating " + recordfiles.size() + " files");
+		
+			AtomicBoolean haserror = new AtomicBoolean(false);
+			recordfiles.parallelStream().forEach(filename -> {
+				String recordstring;
+				Record record=null;
+				try {
+					recordstring = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+					hasNonStandardChars(recordstring);
+					record = validate(recordstring, "");
+					if (record == null) {
+						logger.error("error in " + filename);
+						haserror.set(true);
+					}
+					else {
+						logger.trace("validation passed for " + filename);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
-		if (haserror) System.exit(1);
 	}
 }
