@@ -50,7 +50,6 @@
 	<script src="js/massbank_specktackle.js"></script>
     
 	<!-- 	hier anpassen -->
-<!-- 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
 <!-- 	<meta name="variableMeasured" content="m/z"> -->
 
 ${structureddata}
