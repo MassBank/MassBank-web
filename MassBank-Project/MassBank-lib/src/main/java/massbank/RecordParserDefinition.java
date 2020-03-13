@@ -53,6 +53,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(ref("authors"))
 					.seq(ref("license"))
 					.seq(ref("copyright").optional())
+					.seq(ref("project").optional())
 					.seq(ref("publication").optional())
 					.seq(ref("comment").optional())
 					.seq(ref("ch_name"))
@@ -349,7 +350,33 @@ public class RecordParserDefinition extends GrammarDefinition {
 //			})
 		);
 		
-		// 2.1.8 COMMENT
+		// 2.1.8 PROJECT
+		// A project tag of a project related to the record. Optional Project tags currently used are listed in the “Project Tag” 
+		// column of the MassBank List of contributors, prefixes and projects.
+		// Example
+		// PROJECT: NATOXAQ Natural Toxins and Drinking Water Quality - From Source to Tap
+		// PROJECT: SOLUTIONS for present and future emerging pollutants in land and water resources management
+		def("project",
+			StringParser.of("PROJECT")
+			.seq(ref("tagsep"))
+			.seq(Token.NEWLINE_PARSER.not())
+			.seq(
+				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
+				.flatten()
+				.map((String value) -> {
+					callback.PROJECT(value);
+					return value;
+				})
+			)
+			.seq(Token.NEWLINE_PARSER)
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
+
+		
+		// 2.1.9 COMMENT
 		// Comments.   Optional and Iterative 
 		// In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank
 		// records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments

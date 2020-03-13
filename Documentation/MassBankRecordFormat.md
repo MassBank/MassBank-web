@@ -1,8 +1,10 @@
-# MassBank Record Format 2.4
-MassBank Consortium (October 30, 2019)
+# MassBank Record Format 2.5
+MassBank Consortium (March 05, 2020)
+
 #### Updated
+- **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
-- **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUBO-PSI
+- **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUPO-PSI
 - **July 2017**: CH$CDK\_DEPICT added to render partially defined structures with CDK depict. AC$CHROMATOGRAPHY: NAPS\_RTI added to provide relative retention time information.
 - **June 2017**: CH$LINK: COMPTOX added to link the CompTox Chemistry Dashboard
 - **March 2016**: The default Creative Commons license of MassBank record is defined as CC BY. Two new tags are added, CH$LINK: INCHIKEY and PK$SPLASH. InChI key in CH$LINK: INCHIKEY is a hashed version of InChI code and used as an optional, common link based on chemical structures.  SPLASH in PK$SPLASH (Section 2.6.1) is a mandatory, hashed identifier of mass spectra.
@@ -26,7 +28,7 @@ Last line of a MassBank Record is `//`.
 MassBank Record Information in a MassBank Record is arranged in a fixed order (see Section 2).
 
 ### 1.3 Others
-`[MS : space value ]` is the HUBO-PSI ID in [OLS](https://www.ebi.ac.uk/ols/index).
+`[MS : space value ]` is the HUPO-PSI ID in [OLS](https://www.ebi.ac.uk/ols/index).
 
 
 ## Table 1.  MassBank Record Format (Summary)
@@ -330,8 +332,6 @@ MassBank Record Information in a MassBank Record is arranged in a fixed order (s
   </tr>
 </table>
 
-(Last modified: March 1, 2016)
-  
 * General note. Decimal point should be a period, `.`, but not a comma, `,`.  For example, `m/z 425.7`.  No thousand separator is inserted.
 
 ## 2. MassBank Record Information
@@ -448,7 +448,7 @@ PROJECT: NATOXAQ Natural Toxins and Drinking Water Quality - From Source to Tap
 PROJECT: SOLUTIONS for present and future emerging pollutants in land and water resources management
 ```
 
-#### <a name="2.1.8"></a>2.1.9 COMMENT
+#### <a name="2.1.9"></a>2.1.9 COMMENT
 Comments. Optional and Iterative
  
 In MassBank, COMMENT fields are often used to show the relations of the present record with other MassBank records and with data files. In these cases, the terms in brackets [ and ] are reserved for the comments specific to the following five examples.
@@ -664,7 +664,7 @@ Example:
 AC$INSTRUMENT: LC-10ADVPmicro HPLC, Shimadzu; LTQ Orbitrap, Thermo Electron.
 ```
 
-Cross-reference to HUBO-PSI: Instrument model [MS:1000031]
+Cross-reference to HUPO-PSI: Instrument model [MS:1000031]
 All the instruments are given together in a single line. This record is not iterative.
 
 #### <a name="2.4.2"></a>2.4.2 AC$INSTRUMENT\_TYPE
@@ -718,7 +718,7 @@ ESI-QTOF
 GC-EI-EB
 LC-ESI-ITFT
 ```
-Cross-reference to HUBO-PSI:
+Cross-reference to HUPO-PSI:
 Ionization methods [MS:1000008]: APCI[MS:1000070], APPI[MS:1000382], EI[MS:1000389], ESI[MS:1000073], FAB[MS:1000074], MALDI[MS:1000075], FD[MS:1000257], CI[MS:1000071], FI[MS:1000258], SI[MS:1000402].
 
 Ion analyzer types [MS:1000443]: B[MS:1000080], E[MS:1000254], IT[MS:1000264], Q[MS:1000081], TOF[MS:1000084]
@@ -754,7 +754,7 @@ Example:
 AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
 ```
 
-Either of POSITIVE or NEGATIVE is allowed. Cross-reference to HUBO-PSI: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+Either of POSITIVE or NEGATIVE is allowed. Cross-reference to HUPO-PSI: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
 
 #### <a name="2.4.5"></a>2.4.5 AC$MASS\_SPECTROMETRY: subtag Description
 Other Optional Experimental Methods and Conditions of Mass Spectrometry.
@@ -797,7 +797,7 @@ Example:
 AC$MASS_SPECTROMETRY: COLLISION_GAS N2
 ```
 
-Cross-reference to HUBO-PSI: Collision gas [MS:1000419]
+Cross-reference to HUPO-PSI: Collision gas [MS:1000419]
 
 ##### 2.4.5 Subtag: DATE
 Date of Analysis.
@@ -842,7 +842,7 @@ SID
 UVPD
 ```
 
-Cross-reference to HUBO-PSI: dissociation method [MS:1000044]
+Cross-reference to HUPO-PSI: dissociation method [MS:1000044]
 
 ##### 2.4.5 Subtag: IONIZATION
 The method by which gas phase ions are generated from the sample.
@@ -867,7 +867,7 @@ FI
 SIMS
 ```
 
-Cross-reference to HUBO-PSI: ionization type [MS:1000008]
+Cross-reference to HUPO-PSI: ionization type [MS:1000008]
 
 ##### 2.4.5 Subtag: IONIZATION\_ENERGY
 Energy of Ionization (aka 	FRAGMENT_VOLTAGE, IONIZATION_POTENTIAL).
@@ -927,7 +927,7 @@ Example:
 ```
 AC$MASS_SPECTROMETRY: RESOLUTION 15000
 ```
-Cross-reference to HUBO-PSI: mass resolution [MS:1000011]
+Cross-reference to HUPO-PSI: mass resolution [MS:1000011]
 
 ##### 2.4.5 Subtag: SCANNING\_SETTING
 Setting of the Scan Event without Range which should be given in <a href="#2.4.5">2.4.5</a> `AC$MASS_SPECTROMETRY: MASS_RANGE_M/Z`.
@@ -1060,6 +1060,7 @@ Example:
 ```
 AC$CHROMATOGRAPHY: FLOW_RATE 0.25 mL/min
 ```
+
 ##### 2.4.6 Subtag: INJECTION\_TEMPERATURE
 Temperature of the Injection Port in GC-MS.
 
@@ -1077,6 +1078,35 @@ Example:
 ```
 AC$CHROMATOGRAPHY: INJECTION_TEMPERATURE_GRADIENT 10 C at 0 sec, 250 C at 3 sec with 80 C/sec
 ```
+
+##### 2.4.6 Subtag: INLET\_TYPE
+Type of the Injection or of the Injection Port
+
+Example:
+```
+AC$CHROMATOGRAPHY: INLET_TYPE flow injection analysis
+```
+
+Data of type `AC$CHROMATOGRAPHY: INLET_TYPE` are:
+
+```
+atmospheric pressure inlet
+capillary flow technology
+cold injection inlet
+cold on column inlet
+direct inlet
+direct insertion probe
+direct liquid introduction
+electrospray inlet
+flow injection analysis
+infusion
+nanospray inlet
+split inlet
+splitless inlet
+```
+
+Cross-reference to HUPO-PSI: inlet type [MS:1000007]
+
 
 ##### 2.4.6 Subtag: KOVATS\_RTI
 C8-C30 n-Alkanes Based Retention Time Index for GC-MS.
@@ -1140,7 +1170,7 @@ Example:
 AC$CHROMATOGRAPHY: RETENTION_TIME 40.3 min
 ```
 
-Cross-reference to HUBO-PSI: Retention time [MS:1000016]
+Cross-reference to HUPO-PSI: Retention time [MS:1000016]
 
 
 ##### 2.4.6 Subtag: UOA\_PREDICTED\_RETENTION\_TIME
@@ -1213,7 +1243,7 @@ Example:
 MS$FOCUSED_ION: BASE_PEAK 73
 ```
 
-Cross-reference to HUBO-PSI: precursor m/z [MS:1000504]
+Cross-reference to HUPO-PSI: precursor m/z [MS:1000504]
 
 ##### 2.5.1 Subtag: DERIVATIVE\_FORM
 Molecular Formula of Derivative for GC-MS.
@@ -1325,7 +1355,7 @@ Example:
 
 See see <a href="#2.5.1">2.5.1</a> `mS$DATA_ION_TYPE ` for a full list.
 
-Cross-reference to HUBO-PSI: isolation window attribute [MS: 1000792]
+Cross-reference to HUPO-PSI: isolation window attribute [MS: 1000792]
 
 ##### Undocumented Subtags
 `FULL_SCAN_FRAGMENT_ION_PEAK`
@@ -1334,7 +1364,7 @@ Cross-reference to HUBO-PSI: isolation window attribute [MS: 1000792]
 #### <a name="2.5.2"></a>2.5.2 MS$DATA\_PROCESSING: subtag
 Data Processing Method of Peak Detection. Optional
 
-`MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to HUBO-PSI: Data processing [MS:1000543]
+`MS$DATA_PROCESSING` fields should be arranged by the alphabetical order of subtag names. Cross-reference to HUPO-PSI: Data processing [MS:1000543]
 
 
 ##### 2.5.2 Subtag: COMMENT
