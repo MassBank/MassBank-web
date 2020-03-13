@@ -554,9 +554,7 @@
 					<%}%></td>
 			</tr>
 			<tr>
-				<td><a
-					href="https://metabolomics-usi.ucsd.edu/spectrum/?usi=mzspec:MASSBANK:<%=accession%>"
-					target=”_blank”>metabolomics-usi visualisation</a></td>
+			<td><a href="https://metabolomics-usi.ucsd.edu/spectrum/?usi=mzspec:MASSBANK:<%=accession%>" target=”_blank”>metabolomics-usi visualisation</a></td>
 			</tr>
 		</table>
 		<%}%>		
