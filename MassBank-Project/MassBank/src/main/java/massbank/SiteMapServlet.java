@@ -86,7 +86,7 @@ public class SiteMapServlet extends HttpServlet {
 			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT ACCESSION FROM RECORD");
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
-				wsg.addUrl(sitemapbaseurl + "RecordDisplay.jsp?id=" + res.getString(1));
+				wsg.addUrl(sitemapbaseurl + "RecordDisplay?id=" + res.getString(1));
 			}
 			databaseManager.closeConnection();
 			

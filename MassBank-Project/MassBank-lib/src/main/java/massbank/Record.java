@@ -39,6 +39,7 @@ public class Record {
 	private String authors;
 	private String license;	
 	private String copyright; // optional
+	private String project; // optional
 	private String publication; // optional
 	private List<String> comment; // optional
 	private List<String> ch_name;
@@ -109,6 +110,7 @@ public class Record {
 		deprecated = value;
 	}
 	
+	// everything after the keyword "DEPRECATED: "
 	public String DEPRECATED_CONTENT() {
 		return deprecated_content;
 	}
@@ -177,6 +179,14 @@ public class Record {
 	}
 	
 	
+	public String PROJECT() {
+		return project;
+	}
+	public void PROJECT(String value) {
+		project=value;
+	}
+
+
 	public List<String> COMMENT() {
 		return comment;
 	}
@@ -428,10 +438,8 @@ public class Record {
 			sb.append("COPYRIGHT: " + COPYRIGHT() + "\n");
 		if (PUBLICATION() != null)
 			sb.append("PUBLICATION: " + PUBLICATION() + "\n");
-		if (COMMENT() != null) {
-			for (String comment : COMMENT())
-				sb.append("COMMENT: " + comment + "\n");
-		}
+		if (PROJECT() != null)
+			sb.append("PROJECT: " + PROJECT() + "\n");
 		if (CH_NAME() != null) {
 			for (String ch_name : CH_NAME())
 				sb.append("CH$NAME: " + ch_name + "\n");
@@ -540,6 +548,8 @@ public class Record {
 			}
 			sb.append("<b>PUBLICATION:</b> " + pub + "<br>\n");
 		}
+		if (PROJECT() != null)
+			sb.append("<b>PROJECT:</b> " + PROJECT() + "<br>\n");
 		for (String comment : COMMENT())
 			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
 		sb.append("<hr>\n");

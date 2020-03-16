@@ -165,6 +165,9 @@ Wait for all checks to finish. Now the release can be merged to `master`.
 ```
 $ git checkout master
 $ git merge --no-ff release-2.1
+```
+There might be conflicts. Resolve and commit them.
+```
 $ git push origin master
 $ git tag -a 2.1 -m 'Release version 2.1'
 $ git push origin 2.1
