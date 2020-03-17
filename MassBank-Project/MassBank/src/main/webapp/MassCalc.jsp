@@ -77,7 +77,6 @@
 	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
 	<script type="text/javascript" src="./script/MassCalc.js"></script>
 	<title>MassBank | Mass Calculator</title>
-	<script type="text/javascript" src="./script/Piwik.js"></script>
 	</head>
 <body class="msbkFont backgroundImg cursorDefault" bgcolor="#cee6f2">
 	<h2 style="margin:0px;">Mass Calculator</h2>

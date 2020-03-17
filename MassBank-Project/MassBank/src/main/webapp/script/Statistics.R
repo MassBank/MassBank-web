@@ -38,7 +38,6 @@ HTMLheader <- '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <meta name="keywords" content="Statistics, MassBank, resolution, mass, spectral, database" />
     <link rel="stylesheet" href="./css/stats.css" type="text/css" media="all" />
     <title>massbank.eu | Statistics</title>
-	<script type="text/javascript" src="./script/Piwik.js"></script>
     </head>
     
     <body id="stats">
