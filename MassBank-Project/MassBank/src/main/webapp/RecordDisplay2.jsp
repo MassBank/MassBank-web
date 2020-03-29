@@ -60,7 +60,7 @@ ${structureddata}
 	var data=${peaklist};
 </script>
 
-<body class="w3-theme-gradient">
+<body class="w3-theme-gradient-light">
 	<noscript>
 		<div class="w3-panel w3-yellow">
   			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
