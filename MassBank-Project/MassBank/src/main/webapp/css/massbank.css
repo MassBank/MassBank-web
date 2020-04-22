@@ -13,27 +13,52 @@ hr {
 
 .w3-theme-gradient {
 	color: #000 !important;
-	background: -webkit-linear-gradient(#ececec , #ffffff 75%)
+	background: -webkit-linear-gradient(#ececec 25%, #ffffff 75%)
 }
 
 .w3-theme-gradient {
 	color: #000 !important;
-	background: -moz-linear-gradient(#ececec , #ffffff 75%)
+	background: -moz-linear-gradient(#ececec 25%, #ffffff 75%)
 }
 
 .w3-theme-gradient {
 	color: #000 !important;
-	background: -o-linear-gradient(#ececec , #ffffff 75%)
+	background: -o-linear-gradient(#ececec 25%, #ffffff 75%)
 }
 
 .w3-theme-gradient {
 	color: #000 !important;
-	background: -ms-linear-gradient(#ececec , #ffffff 75%)
+	background: -ms-linear-gradient(#ececec 25%, #ffffff 75%)
 }
 
 .w3-theme-gradient {
 	color: #000 !important;
 	background: linear-gradient(#ececec 25%, #ffffff 75%)
+}
+
+.w3-theme-gradient-light {
+	color: #000 !important;
+	background: -webkit-linear-gradient(#f9f9f9 25%, #ffffff 75%)
+}
+
+.w3-theme-gradient-light {
+	color: #000 !important;
+	background: -moz-linear-gradient(#f9f9f9 25%, #ffffff 75%)
+}
+
+.w3-theme-gradient-light {
+	color: #000 !important;
+	background: -o-linear-gradient(#f9f9f9 25%, #ffffff 75%)
+}
+
+.w3-theme-gradient-light {
+	color: #000 !important;
+	background: -ms-linear-gradient(#f9f9f9 25%, #ffffff 75%)
+}
+
+.w3-theme-gradient-light {
+	color: #000 !important;
+	background: linear-gradient(#f9f9f9 25%, #ffffff 75%)
 }
 
 svg {
