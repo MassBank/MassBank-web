@@ -904,12 +904,12 @@ Example:
 AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000
 ```
 
-##### 2.4.5 Subtag: MASS\_RANGE\_MZ`
+##### 2.4.5 Subtag: MASS\_RANGE\_M/Z`
 Mass Range of the Scan (aka Scanning Range or Scan Range) in m/z.
 
 Example:
 ```
-AC$MASS_SPECTROMETRY: MASS_RANGE_MZ 100-1000
+AC$MASS_SPECTROMETRY: MASS_RANGE_M/Z 100-1000
 ```
 
 ##### 2.4.5 Subtag: REAGENT\_GAS
@@ -1321,12 +1321,12 @@ Example:
 MS$FOCUSED_ION: PRECURSOR_INT 10000
 ```
 
-##### 2.5.1 Subtag: PRECURSOR\_MZ
+##### 2.5.1 Subtag: PRECURSOR\_M/Z
 m/z of Precursor Ion in MSn spectrum.
 
 Example:
 ```
-MS$FOCUSED_ION: PRECURSOR_MZ 289.07123
+MS$FOCUSED_ION: PRECURSOR_M/Z 289.07123
 ```
 
 Calculated exact mass is preferred to the measured accurate mass of the precursor ion.
@@ -1485,8 +1485,8 @@ PK$PEAK: m/z int. rel.int.
 Line 1:  fixed string which denotes the format of Line 2 or later.
 `PK$PEAK: m/z int. rel.int.`
 
-Line 2 or later: `space` `space` `MZ` `space` `INT` `space` `REL`
-- MZ: m/z of the peak.
+Line 2 or later: `space` `space` `M/Z` `space` `INT` `space` `REL`
+- M/Z: m/z of the peak.
 - INT: intensity of the peak.
 - REL: an integer from 1 to 999 which denotes relative intensity of the peak.
 
