@@ -107,6 +107,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("multiline_start", StringParser.of("  "));
 		
 		def("uint_primitive", digit().plus().flatten());
+		def("number_primitive",
+				digit().plus()
+				.seq(
+			       	CharacterParser.of('.')
+			       	.seq(digit().plus()).optional()
+				)
+			    .seq(
+			    	CharacterParser.anyOf("eE")
+			    	.seq(digit().plus()).optional()
+			    ).flatten()	
+			);
 
 		// 2.1 Record Specific Information
 		// 2.1.1 ACCESSION
@@ -633,23 +644,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$EXACT_MASS: 430.38108
 		// A value with 5 digits after the decimal point is recommended.
-		def("number",
-			digit().plus()
-			.seq(
-		       	CharacterParser.of('.')
-		       	.seq(digit().plus()).optional()
-			)
-		    .seq(
-		    	CharacterParser.anyOf("eE")
-		    	.seq(digit().plus()).optional()
-		    ).flatten()	
-		);
-		
 		def("ch_exact_mass",
 			StringParser.of("CH$EXACT_MASS")
 			.seq(ref("tagsep"))
 			.seq(
-				ref("number")
+				ref("number_primitive")
 				.map((String value) -> {
 	        		double d = Double.parseDouble(value);
 	        		callback.CH_EXACT_MASS(d);
@@ -1514,7 +1513,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(
 				StringParser.of("  ")
-				.seq(ref("number").trim())
+				.seq(ref("number_primitive").trim())
 				.pick(1)
 				.seq(
 					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
@@ -1580,16 +1579,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				StringParser.of("  ")
 				.seq(
-					ref("number")
+					ref("number_primitive")
 					.seq(CharacterParser.of(' ')).pick(0)
 				)
 				.pick(1)
 				.seq(
-					ref("number")
+					ref("number_primitive")
 					.seq(CharacterParser.of(' ')).pick(0)
 				)
 				.seq(
-					ref("number")
+					ref("uint_primitive")
 				)
 				.map((List<String> value) -> {
 					//System.out.println(value);

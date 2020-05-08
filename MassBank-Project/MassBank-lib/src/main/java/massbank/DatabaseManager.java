@@ -401,9 +401,9 @@ public class DatabaseManager {
 				}
 				
 				tmp = this.statementPEAK.executeQuery();
-//				acc.add("PK$PEAK", null, "m/z int. rel.int.");
 				while (tmp.next()) {
-					acc.PK_PEAK_ADD_LINE(Arrays.asList((Double) tmp.getDouble("PK_PEAK_MZ"), (Double) (double) tmp.getFloat("PK_PEAK_INTENSITY"), (Double) (double) tmp.getShort("PK_PEAK_RELATIVE")));
+					System.out.println(Arrays.asList(tmp.getDouble("PK_PEAK_MZ"), tmp.getDouble("PK_PEAK_INTENSITY"), Double.valueOf(tmp.getInt("PK_PEAK_RELATIVE"))));
+					acc.PK_PEAK_ADD_LINE(Arrays.asList(tmp.getDouble("PK_PEAK_MZ"), tmp.getDouble("PK_PEAK_INTENSITY"), Double.valueOf(tmp.getInt("PK_PEAK_RELATIVE"))));
 					String PK_ANNOTATION	= tmp.getString("PK_ANNOTATION");
 					if(PK_ANNOTATION != null)
 						acc.PK_ANNOTATION_ADD_LINE(Arrays.asList(PK_ANNOTATION.split(" ")));
@@ -552,6 +552,7 @@ public class DatabaseManager {
 	public void persistAccessionFile(Record acc) {
 		boolean bulk=false;
 		
+		// get contributor ID
 		Integer conId = -1;
 		try {
 			String sql = "SELECT ID FROM CONTRIBUTOR WHERE SHORT_NAME = ?";
@@ -849,16 +850,13 @@ public class DatabaseManager {
 				}
 		
 				//System.out.println(System.nanoTime());
+				
 				for (List<Double> peak : acc.PK_PEAK()) {
 					statementInsertPEAK.setString(1, accession);
-					statementInsertPEAK.setDouble(2, peak.get(0));
-					statementInsertPEAK.setFloat(3, (float)(double) peak.get(1));
-					statementInsertPEAK.setShort(4, (short)(double) peak.get(2));
+					statementInsertPEAK.setDouble(2, peak.get(0).doubleValue());
+					statementInsertPEAK.setDouble(3, peak.get(1).doubleValue());
+					statementInsertPEAK.setInt(4, peak.get(2).intValue());
 					statementInsertPEAK.setNull(5, java.sql.Types.VARCHAR);
-		//			statementInsertPEAK.setNull(5, java.sql.Types.VARCHAR);
-		//			statementInsertPEAK.setNull(6, java.sql.Types.SMALLINT);
-		//			statementInsertPEAK.setNull(7, java.sql.Types.FLOAT);
-		//			statementInsertPEAK.setNull(8, java.sql.Types.FLOAT);
 		//			statementInsertPEAK.executeUpdate();
 					statementInsertPEAK.addBatch();
 				}
