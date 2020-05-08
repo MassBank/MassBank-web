@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -36,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -128,7 +130,7 @@ public class DatabaseManager {
 	private final static String insertAC_CHROMATOGRAPHY = "INSERT INTO AC_CHROMATOGRAPHY VALUES(?,?,?)";
 	private final static String insertMS_FOCUSED_ION = "INSERT INTO MS_FOCUSED_ION VALUES(?,?,?)";
 	private final static String insertMS_DATA_PROCESSING = "INSERT INTO MS_DATA_PROCESSING VALUES(?,?,?)";
-	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?)";
+	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?,?,?)";
 	private final static String updatePEAKs = "UPDATE PEAK SET PK_ANNOTATION = ? WHERE RECORD = ? AND PK_PEAK_MZ = ?";
 	private final static String insertANNOTATION_HEADER = "INSERT INTO ANNOTATION_HEADER VALUES(?,?)";
 	
@@ -402,8 +404,9 @@ public class DatabaseManager {
 				
 				tmp = this.statementPEAK.executeQuery();
 				while (tmp.next()) {
-					System.out.println(Arrays.asList(tmp.getDouble("PK_PEAK_MZ"), tmp.getDouble("PK_PEAK_INTENSITY"), Double.valueOf(tmp.getInt("PK_PEAK_RELATIVE"))));
-					acc.PK_PEAK_ADD_LINE(Arrays.asList(tmp.getDouble("PK_PEAK_MZ"), tmp.getDouble("PK_PEAK_INTENSITY"), Double.valueOf(tmp.getInt("PK_PEAK_RELATIVE"))));
+					BigDecimal mz = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_MZ")))).setScale(tmp.getInt("PK_PEAK_MZ_SIGNIFICANT"));
+					BigDecimal intensity = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_INTENSITY")))).setScale(tmp.getInt("PK_PEAK_INTENSITY_SIGNIFICANT"));
+					acc.PK_PEAK_ADD_LINE(Triple.of(mz, intensity, tmp.getInt("PK_PEAK_RELATIVE")));
 					String PK_ANNOTATION	= tmp.getString("PK_ANNOTATION");
 					if(PK_ANNOTATION != null)
 						acc.PK_ANNOTATION_ADD_LINE(Arrays.asList(PK_ANNOTATION.split(" ")));
@@ -851,12 +854,16 @@ public class DatabaseManager {
 		
 				//System.out.println(System.nanoTime());
 				
-				for (List<Double> peak : acc.PK_PEAK()) {
+				for (Triple<BigDecimal,BigDecimal,Integer> peak : acc.PK_PEAK()) {
 					statementInsertPEAK.setString(1, accession);
-					statementInsertPEAK.setDouble(2, peak.get(0).doubleValue());
-					statementInsertPEAK.setDouble(3, peak.get(1).doubleValue());
-					statementInsertPEAK.setInt(4, peak.get(2).intValue());
-					statementInsertPEAK.setNull(5, java.sql.Types.VARCHAR);
+					statementInsertPEAK.setDouble(2, peak.getLeft().doubleValue());
+					statementInsertPEAK.setInt(3, peak.getLeft().scale());
+					
+					statementInsertPEAK.setDouble(4, peak.getMiddle().doubleValue());
+					statementInsertPEAK.setInt(5, peak.getMiddle().scale());
+					
+					statementInsertPEAK.setInt(6, peak.getRight().intValue());
+					statementInsertPEAK.setNull(7, java.sql.Types.VARCHAR);
 		//			statementInsertPEAK.executeUpdate();
 					statementInsertPEAK.addBatch();
 				}
