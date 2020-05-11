@@ -435,7 +435,7 @@ public class DatabaseManager {
 			set = this.statementCOMPOUND.executeQuery();
 			while (set.next()) {
 				acc.CH_FORMULA(set.getString("CH_FORMULA"));
-				acc.CH_EXACT_MASS(set.getDouble("CH_EXACT_MASS"));
+				acc.CH_EXACT_MASS(new BigDecimal(set.getDouble("CH_EXACT_MASS")));
 				acc.CH_SMILES(set.getString("CH_SMILES"));
 				acc.CH_IUPAC(set.getString("CH_IUPAC"));
 								
@@ -606,7 +606,7 @@ public class DatabaseManager {
 				//System.out.println(System.nanoTime());
 				statementInsertCompound.setNull(1, java.sql.Types.INTEGER);
 				statementInsertCompound.setString(2, acc.CH_FORMULA());
-				statementInsertCompound.setDouble(3, acc.CH_EXACT_MASS());
+				statementInsertCompound.setDouble(3, acc.CH_EXACT_MASS().doubleValue());
 				statementInsertCompound.setString(4, acc.CH_SMILES());
 				statementInsertCompound.setString(5, acc.CH_IUPAC());
 				

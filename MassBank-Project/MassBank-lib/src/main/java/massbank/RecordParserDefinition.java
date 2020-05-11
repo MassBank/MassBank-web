@@ -110,16 +110,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		
 		def("uint_primitive", digit().plus().flatten());
 		def("number_primitive",
-				digit().plus()
-				.seq(
-			       	CharacterParser.of('.')
-			       	.seq(digit().plus()).optional()
-				)
-			    .seq(
-			    	CharacterParser.anyOf("eE")
-			    	.seq(digit().plus()).optional()
-			    ).flatten()	
-			);
+			digit().plus()
+			.seq(
+				CharacterParser.of('.')
+				.seq(digit().plus()).optional()
+			)
+			.seq(
+				CharacterParser.anyOf("eE")
+				.seq(CharacterParser.anyOf("+-").optional())
+				.seq(digit().plus()).optional()
+			).flatten()
+		);
 
 		// 2.1 Record Specific Information
 		// 2.1.1 ACCESSION
@@ -652,10 +653,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				ref("number_primitive")
 				.map((String value) -> {
-	        		double d = Double.parseDouble(value);
-	        		callback.CH_EXACT_MASS(d);
-	        		return value;
-	        	})
+					BigDecimal d = new BigDecimal(value);
+					callback.CH_EXACT_MASS(d);
+					return value;
+				})
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {

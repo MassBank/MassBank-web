@@ -72,7 +72,7 @@ public class Record {
 	private List<String> ch_name;
 	private List<String> ch_compound_class;
 	private String ch_formula;
-	private double ch_exact_mass;
+	private BigDecimal ch_exact_mass;
 	private String ch_smiles;
 	private String ch_iupac;
 	private List<Pair<String, String>> ch_link; // optional
@@ -253,10 +253,10 @@ public class Record {
 	}
 	
 	
-	public double CH_EXACT_MASS() {
+	public BigDecimal CH_EXACT_MASS() {
 		return ch_exact_mass;
 	}
-	public void CH_EXACT_MASS(double value) {
+	public void CH_EXACT_MASS(BigDecimal value) {
 		ch_exact_mass=value;
 	}
 	
@@ -517,7 +517,10 @@ public class Record {
 		sb.append("PK$NUM_PEAK: " + PK_NUM_PEAK() + "\n");
 		sb.append("PK$PEAK: m/z int. rel.int.\n");
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
-			sb.append("  " + peak.getLeft() + " " + peak.getMiddle() + " " + peak.getRight() + "\n");
+			String intensity1 = peak.getMiddle().toPlainString();
+			String intensity2 = peak.getMiddle().toString();
+			String intensity = (intensity1.length() <  intensity2.length() ) ? intensity1 : intensity2;
+			sb.append("  " + peak.getLeft() + " " + intensity + " " + peak.getRight() + "\n");
 		}
 		sb.append("//\n");
 
@@ -526,24 +529,6 @@ public class Record {
 	
 	public String createRecordString() {
 		StringBuilder sb = new StringBuilder();
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
-		
-
-		
-		
-		
-		
 		
 		sb.append("<b>ACCESSION:</b> " + ACCESSION() + "<br>\n");
 		sb.append("<b>RECORD_TITLE:</b> " + RECORD_TITLE1() + "<br>\n");

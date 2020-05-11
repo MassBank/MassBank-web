@@ -132,7 +132,7 @@ public class Validator {
 					hasNonStandardChars(recordString);
 					record = validate(recordString, "");
 					if (record == null) {
-						logger.error("error in " + filename);
+						logger.error("Error in \'" + filename + "\'.");
 						haserror.set(true);
 					}
 					else {
@@ -143,6 +143,7 @@ public class Validator {
 					String recordStringFromRecord = record.toString();
 					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
 					if (position != -1) {
+						logger.error("Error in \'" + filename + "\'.");
 						logger.error("File content differs from generated record string.\nThis might be a code problem. Please Report!");
 						String[] tokens = recordStringFromRecord.split("\\n");
 						int line = 0, col = 0, offset = 0;
@@ -150,7 +151,7 @@ public class Validator {
 							offset = offset + token.length() + 1;
 							if (position < offset) {
 								col = position - (offset - (token.length() + 1));
-								logger.error("Error in line " + line + ".");
+								logger.error("Error in line " + line+1 + ".");
 								logger.error(tokens[line]);
 								StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 								error_at.append('^');

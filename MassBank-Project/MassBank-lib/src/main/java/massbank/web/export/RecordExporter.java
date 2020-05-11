@@ -259,7 +259,7 @@ Num Peaks: 7
 			list.add("Collision_energy" + ": " + record.AC_MASS_SPECTROMETRY_asMap().get("COLLISION_ENERGY"));
 		
 		list.add("Formula" + ": " + record.CH_FORMULA());
-		list.add("MW" + ": " + Math.round(record.CH_EXACT_MASS()));
+		list.add("MW" + ": " + Math.round(record.CH_EXACT_MASS().floatValue()));
 		list.add("ExactMass" + ": " + record.CH_EXACT_MASS());
 		
 		// remaining stuff:
