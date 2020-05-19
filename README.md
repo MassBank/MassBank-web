@@ -151,8 +151,8 @@ $ git checkout -b release-2.1 dev
 Switched to a new branch "release-2.1"
 $ ./bump-version.sh 2.1
 Files modified successfully, version bumped to 2.1.
-git commit -a -m "Bumped version number to 2.1"
-[release-2.1 74d9424] Bumped version number to 2.1
+git commit -a -m "Bump version number to 2.1"
+[release-2.1 74d9424] Bump version number to 2.1
 $ git push --set-upstream origin release-2.1
 ```
 #### Finishing a release branch
@@ -169,8 +169,12 @@ $ git merge --no-ff release-2.1
 There might be conflicts. Resolve and commit them.
 ```
 $ git push origin master
+```
+Prepare a release.
+```
 $ git tag -a 2.1 -m 'Release version 2.1'
 $ git push origin 2.1
+$ hub release create -m 'Release version 2.1' 2.1
 ```
 If there were any changes in the release branch we need to merge them back to `dev`.
 
@@ -187,6 +191,12 @@ Now we are done and the release branch may be removed.
 ```
 $ git branch -d release-2.1
 Deleted branch release-2.1 (was ff452fe).
+```
+As a last step bump the version of the dev branch to X.X-SNAPSHOT.
+```
+./bump-version.sh 2.1-SNAPSHOT
+git commit -a -m "Bump version number to 2.1-SNAPSHOT"
+git push
 ```
 
 ### Hotfix branches
