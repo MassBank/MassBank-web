@@ -1,5 +1,26 @@
+/*******************************************************************************
+ * Copyright (C) 2017 MassBank consortium
+ * 
+ * This file is part of MassBank.
+ * 
+ * MassBank is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * 
+ ******************************************************************************/
 package massbank;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -26,26 +48,31 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import net.sf.jniinchi.INCHI_RET;
 
+/**
+ * This class keeps all data of a record.
+ * @author rmeier
+ * @version 05-05-2020
+ */
 public class Record {
 	private static final Logger logger = LogManager.getLogger(Record.class);
 
 	private final String contributor;
 	
 	private String accession;
-	private boolean deprecated = false;
-	private String deprecated_content = null;
+	private boolean deprecated;
+	private String deprecated_content;
 	private List<String> record_title;
 	private String date;
 	private String authors;
 	private String license;	
 	private String copyright; // optional
-	private String project; // optional
 	private String publication; // optional
+	private String project; // optional
 	private List<String> comment; // optional
 	private List<String> ch_name;
 	private List<String> ch_compound_class;
 	private String ch_formula;
-	private double ch_exact_mass;
+	private BigDecimal ch_exact_mass;
 	private String ch_smiles;
 	private String ch_iupac;
 	private List<Pair<String, String>> ch_link; // optional
@@ -65,7 +92,7 @@ public class Record {
 	private List<String> pk_annotation_header; // optional
 	private final List<List<String>> pk_annotation; // optional
 	private int pk_num_peak;
-	private final List<List<Double>> pk_peak;
+	private final List<Triple<BigDecimal,BigDecimal,Integer>> pk_peak;
 	
 	public Record(String contributor) {
 		this.contributor	= contributor;
@@ -81,12 +108,10 @@ public class Record {
 		ms_data_processing		= new ArrayList<Pair<String, String>>();
 		pk_annotation_header	= new ArrayList<String>();
 		pk_annotation			= new ArrayList<List<String>>();
-		copyright				= null;
-		publication				= null;
 		
 		// set default values for mandatory fields
 		pk_num_peak				= -1;
-		pk_peak					= new ArrayList<List<Double>>();
+		pk_peak					= new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
 	}
 	
 	public String CONTRIBUTOR() {
@@ -228,10 +253,10 @@ public class Record {
 	}
 	
 	
-	public double CH_EXACT_MASS() {
+	public BigDecimal CH_EXACT_MASS() {
 		return ch_exact_mass;
 	}
-	public void CH_EXACT_MASS(double value) {
+	public void CH_EXACT_MASS(BigDecimal value) {
 		ch_exact_mass=value;
 	}
 	
@@ -413,12 +438,12 @@ public class Record {
 		pk_num_peak	= value;
 	}
 
-	// PK_PEAK is a two-dimensional List
-	public List<List<Double>> PK_PEAK() {
+	// PK_PEAK is a List with Triple values M/Z, intensity, rel. intensity
+	public List<Triple<BigDecimal,BigDecimal,Integer>> PK_PEAK() {
 		return pk_peak;
 	}
-	public void PK_PEAK_ADD_LINE(List<Double> value) {
-		pk_peak.add(new ArrayList<Double>(value));
+	public void PK_PEAK_ADD_LINE(Triple<BigDecimal,BigDecimal,Integer> peak) {
+		pk_peak.add(peak);
 	}
 
 	public String toString() {
@@ -440,61 +465,43 @@ public class Record {
 			sb.append("PUBLICATION: " + PUBLICATION() + "\n");
 		if (PROJECT() != null)
 			sb.append("PROJECT: " + PROJECT() + "\n");
-		if (CH_NAME() != null) {
-			for (String ch_name : CH_NAME())
-				sb.append("CH$NAME: " + ch_name + "\n");
-		}
+		for (String comment : COMMENT())
+			sb.append("COMMENT: " + comment + "\n");
 		
-		sb.append("CH$COMPOUND_CLASS: " + CH_COMPOUND_CLASS().get(0));
-		for (String ch_compound_class : CH_COMPOUND_CLASS().subList(1, CH_COMPOUND_CLASS().size())) {
-			sb.append("; " + ch_compound_class );
-		}
-		sb.append("\n");
-				
+		for (String ch_name : CH_NAME())
+			sb.append("CH$NAME: " + ch_name + "\n");
+		sb.append("CH$COMPOUND_CLASS: " + String.join("; ", CH_COMPOUND_CLASS()) + "\n");
 		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
 		sb.append("CH$SMILES: " + CH_SMILES() + "\n");
 		sb.append("CH$IUPAC: " + CH_IUPAC() + "\n");
+		for (Pair<String,String> link : CH_LINK())
+			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
 		
-		if (CH_LINK() != null) {
-			for (Pair<String,String> link : CH_LINK())
-				sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
-		}
 		if (SP_SCIENTIFIC_NAME() != null)
 			sb.append("SP$SCIENTIFIC_NAME: " + SP_SCIENTIFIC_NAME() + "\n");
 		if (SP_LINEAGE() != null)
 			sb.append("SP$LINEAGE: " + SP_LINEAGE() + "\n");
-		if (SP_LINK() != null) {
-			for (Pair<String,String> link : SP_LINK())
-				sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "\n");
-		}
-		if (SP_SAMPLE() != null) {
-			for (String sample : SP_SAMPLE())
-				sb.append("SP$SAMPLE: " + sample + "\n");
-		}
+		for (Pair<String,String> link : SP_LINK())
+			sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "\n");
+		for (String sample : SP_SAMPLE())
+			sb.append("SP$SAMPLE: " + sample + "\n");
+		
 		sb.append("AC$INSTRUMENT: " + AC_INSTRUMENT() + "\n");
 		sb.append("AC$INSTRUMENT_TYPE: " + AC_INSTRUMENT_TYPE() + "\n");
-		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "\n");
-		sb.append("AC$MASS_SPECTROMETRY: ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "\n");
-		if (AC_MASS_SPECTROMETRY() != null) {
-			for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
-				sb.append("AC$MASS_SPECTROMETRY: " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "\n");
-		}
-		if (AC_CHROMATOGRAPHY() != null) {
-			for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
-				sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "\n");
-		}
-		if (MS_FOCUSED_ION() != null) {
-			for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
-				sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "\n");
-		}
-		if (MS_DATA_PROCESSING() != null) {
-			for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
-				sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "\n");
-		}
+		sb.append("AC$MASS_SPECTROMETRY: MS_TYPE " + AC_MASS_SPECTROMETRY_MS_TYPE() + "\n");
+		sb.append("AC$MASS_SPECTROMETRY: ION_MODE " + AC_MASS_SPECTROMETRY_ION_MODE() + "\n");
+		for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
+			sb.append("AC$MASS_SPECTROMETRY: " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "\n");
+		for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
+			sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "\n");
+		for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
+			sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "\n");
+		for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
+			sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "\n");
+
 		sb.append("PK$SPLASH: " + PK_SPLASH() + "\n");
-		
-		if (PK_ANNOTATION_HEADER() != null) {
+		if (!PK_ANNOTATION_HEADER().isEmpty()) {
 			sb.append("PK$ANNOTATION:");
 			for (String annotation_header_item : PK_ANNOTATION_HEADER())
 				sb.append(" " + annotation_header_item);
@@ -509,26 +516,27 @@ public class Record {
 
 		sb.append("PK$NUM_PEAK: " + PK_NUM_PEAK() + "\n");
 		sb.append("PK$PEAK: m/z int. rel.int.\n");
-		for (List<Double> peak_line :  PK_PEAK()) {
-			sb.append(" ");
-			for (Double peak_line_item : peak_line )
-				sb.append(" " + peak_line_item.toString());
-			sb.append("\n");
+		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
+			String intensity1 = peak.getMiddle().toPlainString();
+			String intensity2 = peak.getMiddle().toString();
+			String intensity = (intensity1.length() <  intensity2.length() ) ? intensity1 : intensity2;
+			sb.append("  " + peak.getLeft() + " " + intensity + " " + peak.getRight() + "\n");
 		}
-		
-		sb.append("//");
+		sb.append("//\n");
 
 		return sb.toString();
 	}
 	
 	public String createRecordString() {
 		StringBuilder sb = new StringBuilder();
+		
 		sb.append("<b>ACCESSION:</b> " + ACCESSION() + "<br>\n");
 		sb.append("<b>RECORD_TITLE:</b> " + RECORD_TITLE1() + "<br>\n");
 		sb.append("<b>DATE:</b> " + DATE() + "<br>\n");
 		sb.append("<b>AUTHORS:</b> " + AUTHORS() + "<br>\n");
 		sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + LICENSE() + "</a><br>\n");
-		if (COPYRIGHT() != null) sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
+		if (COPYRIGHT() != null) 
+			sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
 		if (PUBLICATION() != null) {
 			String pub=PUBLICATION();
 			String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
@@ -553,6 +561,7 @@ public class Record {
 		for (String comment : COMMENT())
 			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
 		sb.append("<hr>\n");
+		
 		for (String ch_name : CH_NAME())
 			sb.append("<b>CH$NAME:</b> " + ch_name + "<br>\n");
 		sb.append("<b>CH$COMPOUND_CLASS:</b> " + String.join("; ", CH_COMPOUND_CLASS()) + "<br>\n");
@@ -560,7 +569,6 @@ public class Record {
 		sb.append("<b>CH$EXACT_MASS:</b> " + CH_EXACT_MASS() + "<br>\n");
 		sb.append("<b>CH$SMILES:</b> " + CH_SMILES() + "<br>\n");
 		sb.append("<b>CH$IUPAC:</b> " + CH_IUPAC() + "<br>\n");
-		
 		for (Pair<String,String> link : CH_LINK()) {
 			switch(link.getKey()){
 				case "CAS":
@@ -622,29 +630,25 @@ public class Record {
 			sb.append("<b>SP$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
 		for (String sample : SP_SAMPLE())
 				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>\n");
-
-		
 		sb.append("<hr>\n");
+		
 		sb.append("<b>AC$INSTRUMENT:</b> " + AC_INSTRUMENT() + "<br>\n");
 		sb.append("<b>AC$INSTRUMENT_TYPE:</b> " + AC_INSTRUMENT_TYPE() + "<br>\n");
-		sb.append("<b>AC$MASS_SPECTROMETRY:</b> MS_TYPE: " + AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>\n");
-		sb.append("<b>AC$MASS_SPECTROMETRY:</b> ION_MODE: " + AC_MASS_SPECTROMETRY_ION_MODE() + "<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> MS_TYPE " + AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> ION_MODE " + AC_MASS_SPECTROMETRY_ION_MODE() + "<br>\n");
 		for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
 			sb.append("<b>AC$MASS_SPECTROMETRY:</b> " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "<br>\n");
 		for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
 			sb.append("<b>AC$CHROMATOGRAPHY:</b> " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "<br>\n");
+		sb.append("<hr>\n");
 		
-		
-		if (!MS_FOCUSED_ION().isEmpty() || !MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>\n");
 		for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
 			sb.append("<b>MS$FOCUSED_ION:</b> " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "<br>\n");
 		for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
 				sb.append("<b>MS$DATA_PROCESSING:</b> " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "<br>\n");
+		if (!MS_FOCUSED_ION().isEmpty() || !MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>\n");
 		
-		sb.append("<hr>\n");
 		sb.append("<b>PK$SPLASH:</b> <a href=\"http://www.google.com/search?q=" + PK_SPLASH() + "\" target=\"_blank\">" + PK_SPLASH() + "</a><br>\n");
-		
-
 		if (!PK_ANNOTATION_HEADER().isEmpty()) {
 			sb.append("<b>PK$ANNOTATION:</b>");
 			for (String annotation_header_item : PK_ANNOTATION_HEADER())
@@ -657,14 +661,10 @@ public class Record {
 				sb.append("<br>\n");
 			}
 		}
-
 		sb.append("<b>PK$NUM_PEAK:</b> " + PK_NUM_PEAK() + "<br>\n");
 		sb.append("<b>PK$PEAK:</b> m/z int. rel.int.<br>\n");
-		for (List<Double> peak_line :  PK_PEAK()) {
-			sb.append("&nbsp");
-			for (Double peak_line_item : peak_line )
-				sb.append("&nbsp" + peak_line_item.toString());
-			sb.append("<br>\n");
+		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
+			sb.append("&nbsp&nbsp" + peak.getLeft() + "&nbsp" + peak.getMiddle() + "&nbsp" + peak.getRight() + "<br>\n");
 		}
 		
 		sb.append("//");
@@ -719,8 +719,8 @@ public class Record {
         // convert a list of lists [[mz, int, rel.int], [...], ...]
         // to String "mz,rel.int@mz,rel.int@..."
 		List<String> peaks = new ArrayList<>();
-		for (List<Double> peak : PK_PEAK()) {
-			peaks.add(peak.get(0)+","+peak.get(2));
+		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
+			peaks.add(peak.getRight()+","+peak.getLeft());
 		}
 		return String.join("@", peaks);
 	}
@@ -728,8 +728,8 @@ public class Record {
 	public JSONObject createPeakListData() {
 		JSONObject result = new JSONObject();
 		JSONArray peaklist = new JSONArray();
-		for (List<Double> peak : PK_PEAK()) {
-			peaklist.put(new JSONObject().put("intensity", peak.get(2)).put("mz", peak.get(0)));
+		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
+			peaklist.put(new JSONObject().put("intensity", peak.getRight()).put("mz", peak.getLeft()));
 		}
 		result.put("peaks", peaklist);
 		return result;

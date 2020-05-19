@@ -3,6 +3,7 @@ package massbank;
 import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -107,6 +109,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("multiline_start", StringParser.of("  "));
 		
 		def("uint_primitive", digit().plus().flatten());
+		def("number_primitive",
+			digit().plus()
+			.seq(
+				CharacterParser.of('.')
+				.seq(digit().plus()).optional()
+			)
+			.seq(
+				CharacterParser.anyOf("eE")
+				.seq(CharacterParser.anyOf("+-").optional())
+				.seq(digit().plus()).optional()
+			).flatten()
+		);
 
 		// 2.1 Record Specific Information
 		// 2.1.1 ACCESSION
@@ -633,28 +647,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// CH$EXACT_MASS: 430.38108
 		// A value with 5 digits after the decimal point is recommended.
-		def("number",
-			digit().plus()
-			.seq(
-		       	CharacterParser.of('.')
-		       	.seq(digit().plus()).optional()
-			)
-		    .seq(
-		    	CharacterParser.anyOf("eE")
-		    	.seq(digit().plus()).optional()
-		    ).flatten()	
-		);
-		
 		def("ch_exact_mass",
 			StringParser.of("CH$EXACT_MASS")
 			.seq(ref("tagsep"))
 			.seq(
-				ref("number")
+				ref("number_primitive")
 				.map((String value) -> {
-	        		double d = Double.parseDouble(value);
-	        		callback.CH_EXACT_MASS(d);
-	        		return value;
-	        	})
+					BigDecimal d = new BigDecimal(value);
+					callback.CH_EXACT_MASS(d);
+					return value;
+				})
 			)
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
@@ -1514,7 +1516,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			)
 			.seq(
 				StringParser.of("  ")
-				.seq(ref("number").trim())
+				.seq(ref("number_primitive").trim())
 				.pick(1)
 				.seq(
 					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
@@ -1580,23 +1582,23 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				StringParser.of("  ")
 				.seq(
-					ref("number")
+					ref("number_primitive")
 					.seq(CharacterParser.of(' ')).pick(0)
 				)
 				.pick(1)
 				.seq(
-					ref("number")
+					ref("number_primitive")
 					.seq(CharacterParser.of(' ')).pick(0)
 				)
 				.seq(
-					ref("number")
+					ref("uint_primitive")
 				)
 				.map((List<String> value) -> {
 					//System.out.println(value);
-					List<Double> list	= new ArrayList<Double>();
-					for(String val : value)
-						list.add(Double.parseDouble(val));
-					callback.PK_PEAK_ADD_LINE(list);
+					Triple<BigDecimal,BigDecimal,Integer> peak = Triple.of(new BigDecimal(value.get(0)), 
+							new BigDecimal(value.get(1)), 
+							Integer.parseInt(value.get(2)));
+					callback.PK_PEAK_ADD_LINE(peak);
 					return value;
 				})
 				.seq(Token.NEWLINE_PARSER).plus()
@@ -1751,7 +1753,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			
 			// validate the number of peaks in the peaklist
 			Integer num_peak= callback.PK_NUM_PEAK();
-			List<List<Double>> pk_peak = callback.PK_PEAK();
+			List<Triple<BigDecimal,BigDecimal,Integer>> pk_peak = callback.PK_PEAK();
 			if (pk_peak.size() != num_peak) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Incorrect number of peaks in peaklist. ");
@@ -1762,8 +1764,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 			
 			// validate the SPLASH
 			List<Ion> ions = new ArrayList<Ion>();
-			for (List<Double> peak_line :  pk_peak) {
-				ions.add(new Ion(peak_line.get(0), peak_line.get(1)));
+			for (Triple<BigDecimal,BigDecimal,Integer> peak :  pk_peak) {
+				ions.add(new Ion(peak.getLeft().doubleValue(), peak.getMiddle().doubleValue()));
 			}
 			Splash splashFactory = SplashFactory.create();
 			Spectrum spectrum = new SpectrumImpl(ions, SpectraType.MS);
@@ -1779,7 +1781,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			
 			// check peak sorting
 			for (int i=0; i<pk_peak.size()-1; i++) {
-				if ((pk_peak.get(i).get(0).compareTo(pk_peak.get(i+1).get(0)))>=0) {
+				if ((pk_peak.get(i).getLeft().compareTo(pk_peak.get(i+1).getLeft()))>=0) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("The peaks in the peak list are not sorted.\n");
 					sb.append("Error in line " + pk_peak.get(i).toString() + ".\n");
