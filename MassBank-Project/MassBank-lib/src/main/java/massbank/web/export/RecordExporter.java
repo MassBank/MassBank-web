@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.smiles.SmilesGenerator;
@@ -257,7 +259,7 @@ Num Peaks: 7
 			list.add("Collision_energy" + ": " + record.AC_MASS_SPECTROMETRY_asMap().get("COLLISION_ENERGY"));
 		
 		list.add("Formula" + ": " + record.CH_FORMULA());
-		list.add("MW" + ": " + Math.round(record.CH_EXACT_MASS()));
+		list.add("MW" + ": " + Math.round(record.CH_EXACT_MASS().floatValue()));
 		list.add("ExactMass" + ": " + record.CH_EXACT_MASS());
 		
 		// remaining stuff:
@@ -331,13 +333,13 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		list.add("Splash" + ": " + record.PK_SPLASH());
 		list.add("Num Peaks" + ": " + record.PK_NUM_PEAK());
 		
-		for(List<Double> peak : record.PK_PEAK()){
+		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK()){
 //			StringBuilder peakS	= new StringBuilder();
 //			peakS.append(peak.get(0));
 //			for(int i = 1; i < peak.size(); i++)
 //				peakS.append(" " + peak.get(i));
 //			list.add(peakS.toString());
-			list.add(peak.get(0) + " " + peak.get(2));
+			list.add(peak.getLeft() + " " + peak.getRight());
 		}
 		
 		return list;
@@ -458,8 +460,8 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		list.add("LINKS"			+ ": " + links);
 		list.add("Comment"			+ ": " + comment);
 		list.add("Num Peaks"		+ ": " + record.PK_NUM_PEAK());
-		for(List<Double> peak : record.PK_PEAK())
-			list.add(peak.get(0) + "\t" + peak.get(2));
+		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK())
+			list.add(peak.getLeft() + "\t" + peak.getRight());
 		
 		return list;
 	}

@@ -46,7 +46,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
-@WebServlet("/RecordDisplay2")
+@WebServlet("/RecordDisplay")
 public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(RecordDisplay.class);
@@ -255,8 +255,6 @@ public class RecordDisplay extends HttpServlet {
 		Record record = null;
 		try {
 			// get parameters
-			// http://localhost/MassBank/jsp/RecordDisplay.jsp?id=XXX00001
-			// String accession = "XXX00001";
 			String accession = null;
 			
 			Enumeration<String> names = request.getParameterNames();
@@ -294,8 +292,10 @@ public class RecordDisplay extends HttpServlet {
 			if (record.DEPRECATED()) {
 				logger.trace("Show deprecated record " + accession + ".");
 				String shortname = "DEPRECATED RECORD " + accession;
-				request.setAttribute("accession", accession);
 				request.setAttribute("short_name", shortname);
+				request.setAttribute("description", shortname);
+				
+				request.setAttribute("accession", accession);
 				request.setAttribute("isDeprecated", true);
 				request.setAttribute("record_title", accession + " has been deprecated.");	
 				request.setAttribute("recordstring", "<pre>\nACCESSION: "+ accession + "\nDEPRECATED: "+ record.DEPRECATED_CONTENT() + "\n<pre>");
@@ -303,6 +303,7 @@ public class RecordDisplay extends HttpServlet {
 			} else {
 				logger.trace("Show record "+accession+".");
 				String shortname = record.RECORD_TITLE().get(0)+ " Mass Spectrum";
+				request.setAttribute("short_name", shortname);
 				// find InChIKey in CH_LINK
 				String inchikey = null;
 				for (Pair<String,String> link : record.CH_LINK()) {
@@ -310,26 +311,32 @@ public class RecordDisplay extends HttpServlet {
 						inchikey=link.getValue();
 					}
 				}
+				String description	= 
+						"This MassBank Record with Accession " + accession + 
+						" contains the " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum" + 
+						" of '" + record.RECORD_TITLE().get(0) + "'" +
+						(inchikey != null ? " with the InChIKey '" + inchikey + "'" : "") + 
+						//(!compoundClass2.equals("N/A")	? " with the compound class '" + compoundClass2 + "'"	: "") + 
+						//"." +
+						//" The mass spectrum was acquired on a " + instrumentType + 
+						//" with " + (ionization != null	? ionization											: "") + 
+						//" with " + ionMode + " ionisation" +
+						//(fragmentation		!= null		? " using " + fragmentation + " fragmentation"			: "") +
+						//(collisionEnergy	!= null		? " with the collision energy '" + collisionEnergy + "'": "") + 
+						//(collisionEnergy	!= null		? " at a resolution of " + resolution					: "") + 
+						//(splash				!= null		? " and has the SPLASH '" + splash + "'"				: "") +
+						".";
+				request.setAttribute("description", description);
+
+
+				
+				
 				String keywords =
 					accession + ", " 
 					+ shortname +", "
 					+ (inchikey != null ? inchikey + ", " : "")
 				    + "mass spectrum, MassBank record, mass spectrometry, mass spectral library";
-				String description	= 
-					"This MassBank Record with Accession " + accession + 
-					" contains the " + record.AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum" + 
-					" of '" + record.RECORD_TITLE().get(0) + "'" +
-					(inchikey != null ? " with the InChIKey '" + inchikey + "'" : "") + 
-					//(!compoundClass2.equals("N/A")	? " with the compound class '" + compoundClass2 + "'"	: "") + 
-					//"." +
-					//" The mass spectrum was acquired on a " + instrumentType + 
-					//" with " + (ionization != null	? ionization											: "") + 
-					//" with " + ionMode + " ionisation" +
-					//(fragmentation		!= null		? " using " + fragmentation + " fragmentation"			: "") +
-					//(collisionEnergy	!= null		? " with the collision energy '" + collisionEnergy + "'": "") + 
-					//(collisionEnergy	!= null		? " at a resolution of " + resolution					: "") + 
-					//(splash				!= null		? " and has the SPLASH '" + splash + "'"				: "") +
-					".";
+				
 				String recordstring = record.createRecordString();
 				String structureddata = record.createStructuredData();
 				IAtomContainer mol = record.CH_SMILES_obj();
@@ -355,10 +362,9 @@ public class RecordDisplay extends HttpServlet {
 
 				request.setAttribute("peaklist", record.createPeakListData());
 				request.setAttribute("accession", accession);
-				request.setAttribute("short_name", shortname);
 		        request.setAttribute("keywords", keywords);
 		        request.setAttribute("record_title", record.RECORD_TITLE1());	        		
-				request.setAttribute("description", description);
+				
 				request.setAttribute("recordstring", recordstring);
 		        request.setAttribute("structureddata", structureddata);
 		        request.setAttribute("svg", svg);

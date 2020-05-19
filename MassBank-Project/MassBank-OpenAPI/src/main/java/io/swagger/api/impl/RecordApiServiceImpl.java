@@ -2,51 +2,67 @@ package io.swagger.api.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import cz.jirutka.rsql.parser.RSQLParser;
-import cz.jirutka.rsql.parser.RSQLParserException;
-import cz.jirutka.rsql.parser.ast.AndNode;
-import cz.jirutka.rsql.parser.ast.ComparisonNode;
-import cz.jirutka.rsql.parser.ast.NoArgRSQLVisitorAdapter;
-import cz.jirutka.rsql.parser.ast.Node;
-import cz.jirutka.rsql.parser.ast.OrNode;
+import org.apache.commons.lang3.StringUtils;
+import org.petitparser.context.Result;
+
 import io.swagger.api.NotFoundException;
 import io.swagger.api.RecordApiService;
 import massbank.DatabaseManager;
 import massbank.Record;
+import massbank.RecordSearchParser;
 
 
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2020-01-23T13:41:36.240Z[GMT]")public class RecordApiServiceImpl extends RecordApiService {    
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2020-01-23T13:41:36.240Z[GMT]")public class RecordApiServiceImpl extends RecordApiService {
 	@Override
     public Response recordGet( @NotNull String search, SecurityContext securityContext) throws NotFoundException {
         System.out.println(search);
-        try {
-        	Node rootNode = new RSQLParser().parse(search);
-        	testvisitor mytestvisitor = new testvisitor();
-        	rootNode.accept(mytestvisitor);
-        
-        } catch (RSQLParserException | IllegalArgumentException e) {
-        	return Response.status(Status.BAD_REQUEST).entity(Map.of("code", "400", "message", "Can not parse \"" + search + "\". Check syntax!")).build();
-        }
-        
+       	RecordSearchParser parser = new RecordSearchParser();
+       	Result res = parser.parse(search);
+
+       	if (res.isFailure()) {
+		System.out.println(res.getMessage());
+		int position = res.getPosition();
+		String[] tokens = search.split("\\n");
+
+		int line = 0, col = 0, offset = 0;
+		for (String token : tokens) {
+			offset = offset + token.length() + 1;
+			if (position < offset) {
+				col = position - (offset - (token.length() + 1));
+				System.out.println(tokens[line]);
+				StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
+				error_at.append('^');
+				System.out.println(error_at);
+				break;
+			}
+			line++;
+		}
+	}
+       	else {
+       	    System.out.println("SUCCESS");
+       	}
+
+//		if (res.isFailure()) {
+//        	return Response.status(Status.BAD_REQUEST).entity(Map.of("code", "400", "message", "Can not parse \"" + search + "\". Check syntax!")).build();
+//        }
+
 
         //System.out.println(rootNode.toString());
-        
-        ArrayList<String> result = new ArrayList<String>();
+
+        ArrayList<String> result = new ArrayList<>();
         result.add("AAA00001");
         result.add("AAA00002");
         result.add("AAA00003");
         return Response.ok().entity(result).build();
     }
-    
+
 	@Override
     public Response recordIdGet(String id, SecurityContext securityContext) throws NotFoundException {
     	Record record = null;
@@ -57,37 +73,16 @@ import massbank.Record;
 			record	= dbMan.getAccessionData(id);
 	    	dbMan.closeConnection();
 		} catch (SQLException | ConfigurationException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Database connection error").build();		
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Database connection error").build();
 		}
     	if(record == null) {
     		return Response.status(Status.NOT_FOUND).entity("Record \""+id+"\" not found").build();
     	}
-    	
+
     	String recordstring = record.toString();
         return Response.ok().entity(recordstring).build();
     }
-	
-	public class testvisitor extends NoArgRSQLVisitorAdapter<String> {
 
-		@Override
-		public String visit(AndNode node) {
-			System.out.println("AndNode "+node.toString());
-			return null;
-		}
-
-		@Override
-		public String visit(OrNode node) {
-			System.out.println("OrNode "+node.toString());
-			return null;
-		}
-
-		@Override
-		public String visit(ComparisonNode node) {
-			System.out.println("ComparisonNode "+node.toString());
-			return null;
-		}
-		
-	}
 }
 
 
