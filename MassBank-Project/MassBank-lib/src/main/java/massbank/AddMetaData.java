@@ -392,6 +392,7 @@ public class AddMetaData {
 		options.addOption("p", "publication", false, "format PUBLICATION tag from given DOI to follow the guidelines of ACS");
 		options.addOption("n", "name", false, "fix common problems in CH$NAME tag");
 		options.addOption("l", "link", false, "add links to CH$LINK tag");
+		options.addOption("r", "rewrite", false, "read and rewrite the file.");
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
 		CommandLine cmd = null;
 		try {
@@ -445,6 +446,8 @@ public class AddMetaData {
 		if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
 		if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record, recordstring2);
 		if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
+		
+		if (cmd.hasOption("r")) recordstring2=record.toString();
 		
 		if (!recordstring.equals(recordstring2)) {
 			Record record2 = Validator.validate(recordstring2, "");

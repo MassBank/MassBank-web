@@ -115,7 +115,7 @@ ${structureddata}
 		</c:if>
 	</div>
 	
-	<div class="w3-padding" style="height:auto;margin:auto">
+	<div class="w3-padding">
 		<hr>
 		${recordstring}
 	</div>

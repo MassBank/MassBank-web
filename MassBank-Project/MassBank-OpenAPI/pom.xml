@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>MassBank-Project</artifactId>
 		<groupId>de.ipb-halle.msbi</groupId>
-		<version>2.1.3.1</version>
+		<version>2.1.4</version>
 	</parent>
 
 	<artifactId>MassBank-OpenAPI</artifactId>
@@ -15,7 +15,7 @@
 	<name>MassBank-OpenAPI REST interface</name>
 
 	<properties>
-		<swagger-version>2.1.1</swagger-version>
+		<swagger-version>2.1.2</swagger-version>
 		<jersey2-version>2.30</jersey2-version>
 		<jackson-version>2.10.2</jackson-version>
 		<jetty-version>9.4.24.v20191120</jetty-version>
