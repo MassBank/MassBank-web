@@ -1230,6 +1230,59 @@ AC$GENERAL: CONCENTRATION 1 ug/L
 `TIME_PROGRAM`
 `WASHING_BUFFER`
 
+#### <a name="2.4.8"></a>2.4.8 AC$ION_MOBILITY: subtag Description
+Experimental Methods and Conditions of Ion Mobility Separation. Optional
+
+AC$ION_MOBILITY fields should be arranged by the alphabetical order of subtag names.
+
+##### 2.4.6 Subtag: CCS
+Collisional Cross Section (CCS) obtained after calibration.
+
+Example 1:
+
+```
+AC$CHROMATOGRAPHY: CCS 152.4
+```
+
+##### 2.4.6 Subtag: DRIFT\_GAS
+Drift gas used for ion mobility separation.
+
+Example 1:
+
+```
+AC$CHROMATOGRAPHY: DRIFT_GAS Helium
+```
+
+##### 2.4.6 Subtag: DRIFT\_TIME
+Drift time in ms.
+
+Example 1:
+
+```
+AC$CHROMATOGRAPHY: DRIFT_TIME 56.2
+```
+
+##### 2.4.6 Subtag: INSTRUMENT\_TYPE
+Type of ion mobility separation used.
+
+Data of type `AC$CHROMATOGRAPHY: INSTRUMENT_TYPE` are:
+`DT`
+`TWIMS`
+`TIMS`
+
+Example 1:
+
+```
+AC$CHROMATOGRAPHY: INSTRUMENT_TYPE DT
+```
+##### 2.4.6 Subtag: INVERSE\_REDUCED\_ION\_MOBILITY
+Carrier Gas Used for GC-MS.
+
+Example 1:
+
+```
+AC$CHROMATOGRAPHY: INVERSE_REDUCED_ION_MOBILITY 56.2
+```
 
 ### 2.5 Description of Mass Spectral Data
 #### <a name="2.5.1"></a>2.5.1 MS$FOCUSED\_ION: subtag Description
