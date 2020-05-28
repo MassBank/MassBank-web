@@ -180,7 +180,7 @@ public class Validator {
 						offset = offset + token.length() + 1;
 						if (position < offset) {
 							col = position - (offset - (token.length() + 1));
-							logger.error("Error in line " + line+1 + ".");
+							logger.error("Error in line " + (line+1) + ".");
 							logger.error(tokens[line]);
 							StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 							error_at.append('^');
@@ -219,7 +219,7 @@ public class Validator {
 							offset = offset + token.length() + 1;
 							if (position < offset) {
 								col = position - (offset - (token.length() + 1));
-								logger.error("Error in line " + line+1 + ".");
+								logger.error("Error in line " + (line+1) + ".");
 								logger.error(tokens[line]);
 								StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 								error_at.append('^');
