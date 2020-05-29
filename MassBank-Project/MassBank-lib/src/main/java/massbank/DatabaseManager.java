@@ -55,26 +55,77 @@ public class DatabaseManager {
 	private String databaseName;
 	private final String connectUrl;
 	private Connection con;
+	
+	// TABLE CONTRIBUTOR
+	private final static String insertCONTRIBUTOR = "INSERT INTO CONTRIBUTOR(ACRONYM, SHORT_NAME, FULL_NAME) VALUES (?,?,?)";
+	private final PreparedStatement statementInsertCONTRIBUTOR;
+	private final static String selectCONTRIBUTORIdByACRONYM = "SELECT * FROM CONTRIBUTOR WHERE ACRONYM = ?";
+	private final PreparedStatement statementSelectCONTRIBUTORIdByACRONYM;
+	// TABLE COMPOUND
+	private final static String insertCOMPOUND 
+		= "INSERT INTO COMPOUND(CH_FORMULA, CH_EXACT_MASS, CH_EXACT_MASS_SIGNIFICANT, CH_SMILES, CH_IUPAC, CH_CDK_DEPICT_SMILES, CH_CDK_DEPICT_GENERIC_SMILES, CH_CDK_DEPICT_STRUCTURE_SMILES) "
+		+ "VALUES(?,?,?,?,?,?,?,?)";
+	private final PreparedStatement statementInsertCOMPOUND;
+	private final static String selectCOMPOUND = "SELECT * FROM COMPOUND WHERE ID = ?";
+	private final PreparedStatement statementSelectCOMPOUND;
+	// TABLE COMPOUND_CLASS
+	private final static String insertCOMPOUND_CLASS = "INSERT INTO COMPOUND_CLASS(DATABASE_NAME, DATABASE_ID, CH_COMPOUND_CLASS) VALUES(?,?,?)";
+	private final PreparedStatement statementInsertCOMPOUND_CLASS;
+	private final static String selectCOMPOUND_CLASS = "SELECT * FROM COMPOUND_CLASS WHERE ID = ?";
+	private final PreparedStatement statementSelectCOMPOUND_CLASS;
+	// TABLE COMPOUND_COMPOUND_CLASS
+	private final static String insertCOMPOUND_COMPOUND_CLASS = "INSERT INTO COMPOUND_COMPOUND_CLASS(COMPOUND, CLASS) VALUES(?,?)";
+	private final PreparedStatement statementInsertCOMPOUND_COMPOUND_CLASS;
+	private final static String selectCOMPOUND_COMPOUND_CLASS = "SELECT * FROM COMPOUND_COMPOUND_CLASS WHERE COMPOUND = ?";
+	private final PreparedStatement statementSelectCOMPOUND_COMPOUND_CLASS;
+	// TABLE NAME
+	private final static String insertNAME = "INSERT INTO NAME(CH_NAME) VALUES(?)";
+	private final PreparedStatement statementInsertNAME;
+	private final static String selectNAME = "SELECT * FROM NAME WHERE ID = ?";
+	private final PreparedStatement statementSelectNAME;
+	// TABLE COMPOUND_NAME
+	private final static String insertCOMPOUND_NAME = "INSERT IGNORE INTO COMPOUND_NAME VALUES(?,?)";
+	private final PreparedStatement statementInsertCOMPOUND_NAME;
+	private final static String selectCOMPOUND_NAME = "SELECT * FROM COMPOUND_NAME WHERE COMPOUND = ? ORDER BY NAME";
+	private final PreparedStatement statementSelectCOMPOUND_NAME;
 
-	private final static String sqlAC_CHROMATOGRAPHY = "SELECT * FROM AC_CHROMATOGRAPHY WHERE RECORD = ?";
-	private final static String sqlAC_MASS_SPECTROMETRY = "SELECT * FROM AC_MASS_SPECTROMETRY WHERE RECORD = ?";
-	private final static String sqlCH_LINK = "SELECT * FROM CH_LINK WHERE COMPOUND = ?";
-	private final static String sqlCOMMENT = "SELECT * FROM COMMENT WHERE RECORD = ?";
-	private final static String sqlCOMPOUND = "SELECT * FROM COMPOUND WHERE ID = ?";
-	private final static String sqlCOMPOUND_CLASS = "SELECT * FROM COMPOUND_CLASS WHERE ID = ?";
-	private final static String sqlCOMPOUND_COMPOUND_CLASS = "SELECT * FROM COMPOUND_COMPOUND_CLASS WHERE COMPOUND = ?";
-	private final static String sqlCOMPOUND_NAME = "SELECT * FROM COMPOUND_NAME WHERE COMPOUND = ?";
+	
+	
+	
+	
+	
+	
+	
+	// TABLE COMMENT
+	private final static String insertCOMMENT = "INSERT INTO COMMENT(RECORD, COMMENT) VALUES(?,?)";
+	private final PreparedStatement statementInsertCOMMENT;
+	private final static String selectCOMMENT = "SELECT * FROM COMMENT WHERE RECORD = ? ORDER BY ID";
+	private final PreparedStatement statementSelectCOMMENT;
+
+	
+	
+	// TABLE ANNOTATION
+	private final static String insertANNOTATION = "INSERT INTO ANNOTATION VALUES(?,?,?,?)";
+	private final PreparedStatement statementInsertANNOTATION;
+	private final static String selectANNOTATION = "SELECT * FROM ANNOTATION WHERE RECORD = ?";
+	private final PreparedStatement statementSelectANNOTATION;
+	
+
+	
+	
+	private final static String sqlAC_CHROMATOGRAPHY = "SELECT * FROM AC_CHROMATOGRAPHY WHERE RECORD = ? ORDER BY ID";
+	private final static String sqlAC_MASS_SPECTROMETRY = "SELECT * FROM AC_MASS_SPECTROMETRY WHERE RECORD = ? ORDER BY ID";
+	private final static String sqlCH_LINK = "SELECT * FROM CH_LINK WHERE COMPOUND = ? ORDER BY ID";
 	private final static String sqlINSTRUMENT = "SELECT * FROM INSTRUMENT WHERE ID = ?";
-	private final static String sqlMS_DATA_PROCESSING = "SELECT * FROM MS_DATA_PROCESSING WHERE RECORD = ?";
-	private final static String sqlMS_FOCUSED_ION = "SELECT * FROM MS_FOCUSED_ION WHERE RECORD = ?";
-	private final static String sqlNAME = "SELECT * FROM NAME WHERE ID = ?";
+	private final static String sqlMS_DATA_PROCESSING = "SELECT * FROM MS_DATA_PROCESSING WHERE RECORD = ? ORDER BY ID";
+	private final static String sqlMS_FOCUSED_ION = "SELECT * FROM MS_FOCUSED_ION WHERE RECORD = ? ORDER BY ID";
 	private final static String sqlPEAK = "SELECT * FROM PEAK WHERE RECORD = ?";
 	private final static String sqlPK_NUM_PEAK = "SELECT * FROM PK_NUM_PEAK WHERE RECORD = ?";
 	private final static String sqlRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
 	private final static String sqlDEPRECATED_RECORD = "SELECT * FROM DEPRECATED_RECORD WHERE ACCESSION = ?";
 	private final static String sqlSAMPLE = "SELECT * FROM SAMPLE WHERE ID = ?";
 	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE RECORD = ?";
-	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE RECORD = ?";
+	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE RECORD = ? ORDER BY ID";
 	private final static String sqlANNOTATION_HEADER = "SELECT * FROM ANNOTATION_HEADER WHERE RECORD = ?";
 	private final static String sqlGetContributorFromAccession = 
 			"SELECT ACRONYM, SHORT_NAME, FULL_NAME FROM CONTRIBUTOR WHERE ID =" +
@@ -94,15 +145,9 @@ public class DatabaseManager {
 	private final PreparedStatement statementAC_CHROMATOGRAPHY;
 	private final PreparedStatement statementAC_MASS_SPECTROMETRY;
 	private final PreparedStatement statementCH_LINK;
-	private final PreparedStatement statementCOMMENT;
-	private final PreparedStatement statementCOMPOUND;
-	private final PreparedStatement statementCOMPOUND_CLASS;
-	private final PreparedStatement statementCOMPOUND_COMPOUND_CLASS;
-	private final PreparedStatement statementCOMPOUND_NAME;
 	private final PreparedStatement statementINSTRUMENT;
 	private final PreparedStatement statementMS_DATA_PROCESSING;
 	private final PreparedStatement statementMS_FOCUSED_ION;
-	private final PreparedStatement statementNAME;
 	private final PreparedStatement statementPEAK;
 	private final PreparedStatement statementPK_NUM_PEAK;
 	private final PreparedStatement statementRECORD;
@@ -114,44 +159,30 @@ public class DatabaseManager {
 	private final PreparedStatement statementGetContributorFromAccession;
 	private final PreparedStatement statementGetAccessions;
 	
-	private final static String insertCompound = "INSERT INTO COMPOUND VALUES(?,?,?,?,?,?,?,?)";
-	private final static String insertCompound_Class = "INSERT INTO COMPOUND_CLASS VALUES(?,?,?,?)";
-	private final static String insertCompound_Compound_Class = "INSERT INTO COMPOUND_COMPOUND_CLASS VALUES(?,?)";
-	private final static String insertName = "INSERT INTO NAME VALUES(?,?)";
-	private final static String insertCompound_Name = "INSERT IGNORE INTO COMPOUND_NAME VALUES(?,?)";
-	private final static String insertCH_LINK = "INSERT INTO CH_LINK VALUES(?,?,?)";
+	private final static String insertCH_LINK = "INSERT INTO CH_LINK(COMPOUND, DATABASE_NAME, DATABASE_ID) VALUES(?,?,?)";
 	private final static String insertSAMPLE = "INSERT INTO SAMPLE VALUES(?,?,?)";
 	private final static String insertSP_LINK = "INSERT INTO SP_LINK VALUES(?,?)";
-	private final static String insertSP_SAMPLE = "INSERT INTO SP_SAMPLE VALUES(?,?)";
+	private final static String insertSP_SAMPLE = "INSERT INTO SP_SAMPLE(RECORD, SP_SAMPLE) VALUES(?,?)";
 	private final static String insertINSTRUMENT = "INSERT INTO INSTRUMENT VALUES(?,?,?)";
 	private final static String insertRECORD = "INSERT INTO RECORD VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private final static String insertCOMMENT = "INSERT INTO COMMENT VALUES(?,?)";
-	private final static String insertAC_MASS_SPECTROMETRY = "INSERT INTO AC_MASS_SPECTROMETRY VALUES(?,?,?)";
-	private final static String insertAC_CHROMATOGRAPHY = "INSERT INTO AC_CHROMATOGRAPHY VALUES(?,?,?)";
-	private final static String insertMS_FOCUSED_ION = "INSERT INTO MS_FOCUSED_ION VALUES(?,?,?)";
-	private final static String insertMS_DATA_PROCESSING = "INSERT INTO MS_DATA_PROCESSING VALUES(?,?,?)";
-	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?,?,?)";
-	private final static String updatePEAKs = "UPDATE PEAK SET PK_ANNOTATION = ? WHERE RECORD = ? AND PK_PEAK_MZ = ?";
+	private final static String insertAC_MASS_SPECTROMETRY = "INSERT INTO AC_MASS_SPECTROMETRY(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
+	private final static String insertAC_CHROMATOGRAPHY = "INSERT INTO AC_CHROMATOGRAPHY(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
+	private final static String insertMS_FOCUSED_ION = "INSERT INTO MS_FOCUSED_ION(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
+	private final static String insertMS_DATA_PROCESSING = "INSERT INTO MS_DATA_PROCESSING(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
+	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?,?)";
 	private final static String insertANNOTATION_HEADER = "INSERT INTO ANNOTATION_HEADER VALUES(?,?)";
 	
-	private final PreparedStatement statementInsertCompound;
-	private final PreparedStatement statementInsertCompound_Class;
-	private final PreparedStatement statementInsertCompound_Compound_Class;
-	private final PreparedStatement statementInsertName;
-	private final PreparedStatement statementInsertCompound_Name;
 	private final PreparedStatement statementInsertCH_LINK;
 	private final PreparedStatement statementInsertSAMPLE;
 	private final PreparedStatement statementInsertSP_LINK;
 	private final PreparedStatement statementInsertSP_SAMPLE;
 	private final PreparedStatement statementInsertINSTRUMENT;
 	private final PreparedStatement statementInsertRECORD;
-	private final PreparedStatement statementInsertCOMMENT;
 	private final PreparedStatement statementInsertAC_MASS_SPECTROMETRY;
 	private final PreparedStatement statementInsertAC_CHROMATOGRAPHY;
 	private final PreparedStatement statementInsertMS_FOCUSED_ION;
 	private final PreparedStatement statementInsertMS_DATA_PROCESSING;
 	private final PreparedStatement statementInsertPEAK;
-	private final PreparedStatement statementUpdatePEAKs;
 	private final PreparedStatement statementInsertANNOTATION_HEADER;
 	
 	
@@ -251,18 +282,49 @@ public class DatabaseManager {
 			+ "&password=" + Config.get().dbPassword();
 		this.openConnection();
 		
+		
+		statementInsertCONTRIBUTOR = this.con.prepareStatement(insertCONTRIBUTOR, Statement.RETURN_GENERATED_KEYS);
+		statementSelectCONTRIBUTORIdByACRONYM = this.con.prepareStatement(selectCONTRIBUTORIdByACRONYM);
+				
+		statementInsertCOMPOUND = this.con.prepareStatement(insertCOMPOUND, Statement.RETURN_GENERATED_KEYS);
+		statementSelectCOMPOUND = this.con.prepareStatement(selectCOMPOUND);
+		
+		statementInsertCOMPOUND_CLASS = this.con.prepareStatement(insertCOMPOUND_CLASS, Statement.RETURN_GENERATED_KEYS);
+		statementSelectCOMPOUND_CLASS = this.con.prepareStatement(selectCOMPOUND_CLASS);
+		
+		statementInsertCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(insertCOMPOUND_COMPOUND_CLASS);
+		statementSelectCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(selectCOMPOUND_COMPOUND_CLASS);
+		
+		statementInsertNAME = this.con.prepareStatement(insertNAME, Statement.RETURN_GENERATED_KEYS);
+		statementSelectNAME = this.con.prepareStatement(selectNAME);
+		
+		statementInsertCOMPOUND_NAME = this.con.prepareStatement(insertCOMPOUND_NAME);
+		statementSelectCOMPOUND_NAME = this.con.prepareStatement(selectCOMPOUND_NAME);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
+		statementSelectCOMMENT = this.con.prepareStatement(selectCOMMENT);
+		
+		statementInsertANNOTATION = this.con.prepareStatement(insertANNOTATION);
+		statementSelectANNOTATION = this.con.prepareStatement(selectANNOTATION);
+		
+		
+		
 		statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
 		statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
 		statementCH_LINK = this.con.prepareStatement(sqlCH_LINK);
-		statementCOMMENT = this.con.prepareStatement(sqlCOMMENT);
-		statementCOMPOUND = this.con.prepareStatement(sqlCOMPOUND);
-		statementCOMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_CLASS);
-		statementCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(sqlCOMPOUND_COMPOUND_CLASS);
-		statementCOMPOUND_NAME = this.con.prepareStatement(sqlCOMPOUND_NAME);
 		statementINSTRUMENT = this.con.prepareStatement(sqlINSTRUMENT);
 		statementMS_DATA_PROCESSING = this.con.prepareStatement(sqlMS_DATA_PROCESSING);
 		statementMS_FOCUSED_ION = this.con.prepareStatement(sqlMS_FOCUSED_ION);
-		statementNAME = this.con.prepareStatement(sqlNAME);
 		statementPEAK = this.con.prepareStatement(sqlPEAK);
 		statementPK_NUM_PEAK = this.con.prepareStatement(sqlPK_NUM_PEAK);
 		statementRECORD = this.con.prepareStatement(sqlRECORD);
@@ -273,26 +335,17 @@ public class DatabaseManager {
 		statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
 		statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
 		statementGetAccessions = this.con.prepareStatement(sqlGetAccessions);
-		
-		statementInsertCompound = this.con.prepareStatement(insertCompound, Statement.RETURN_GENERATED_KEYS);
-		statementInsertCompound_Class = this.con.prepareStatement(insertCompound_Class, Statement.RETURN_GENERATED_KEYS);
-		statementInsertCompound_Compound_Class = this.con.prepareStatement(insertCompound_Compound_Class);
-		statementInsertName = this.con.prepareStatement(insertName, Statement.RETURN_GENERATED_KEYS);
-		statementInsertCompound_Name = this.con.prepareStatement(insertCompound_Name);
 		statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
 		statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);
 		statementInsertSP_LINK = this.con.prepareStatement(insertSP_LINK);
 		statementInsertSP_SAMPLE = this.con.prepareStatement(insertSP_SAMPLE);
 		statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS);
 		statementInsertRECORD = this.con.prepareStatement(insertRECORD);
-		statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
 		statementInsertAC_MASS_SPECTROMETRY = this.con.prepareStatement(insertAC_MASS_SPECTROMETRY);
 		statementInsertAC_CHROMATOGRAPHY = this.con.prepareStatement(insertAC_CHROMATOGRAPHY);
 		statementInsertMS_FOCUSED_ION = this.con.prepareStatement(insertMS_FOCUSED_ION);
 		statementInsertMS_DATA_PROCESSING = this.con.prepareStatement(insertMS_DATA_PROCESSING);
 		statementInsertPEAK = this.con.prepareStatement(insertPEAK);
-//		statementUpdatePEAK = this.con.prepareStatement(updatePEAK);
-		statementUpdatePEAKs = this.con.prepareStatement(updatePEAKs);
 		statementInsertANNOTATION_HEADER = this.con.prepareStatement(insertANNOTATION_HEADER);
 
 	}
@@ -320,377 +373,106 @@ public class DatabaseManager {
 	public Connection getConnection() {
 		return this.con;
 	}
-
+	
 	/**
-	 * Returns the complete record TODO solve 1:1 relations by a single sql
-	 * statement with joins (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff,
-	 * SP_SCIENTIFIC_NAME, SP_LINEAGE, AC_INSTRUMENT, AC_INSTRUMENT_TYPE)
+	 * Store the content of the given record in the database
 	 * 
-	 * @param accessionId
-	 * @return Record
+	 * @param  acc the record to store
+	 * 
+	 * @author rmeier
+	 * @version 25-05-2020
 	 */
-	public Record getAccessionData(String accessionId) {
-		Record.Contributor Contributor=getContributorFromAccession(accessionId);
-		if (Contributor==null) return null;
-		String contributor=Contributor.SHORT_NAME;
-		Record acc = new Record(contributor);
-		try {
-			this.statementRECORD.setString(1, accessionId);
-			ResultSet set = this.statementRECORD.executeQuery();
-			int compoundID = -1;
-			int sampleID = -1;
-			int instrumentID = -1;
-			if (set.next()) {
-				acc.ACCESSION(set.getString("ACCESSION"));
-				acc.RECORD_TITLE1(set.getString("RECORD_TITLE"));
-				acc.DATE(set.getString("DATE"));
-				acc.AUTHORS(set.getString("AUTHORS"));
-				acc.LICENSE(set.getString("LICENSE"));
-				acc.COPYRIGHT(set.getString("COPYRIGHT"));
-				acc.PUBLICATION(set.getString("PUBLICATION"));
-				compoundID = set.getInt("CH");
-				sampleID = set.getInt("SP");
-				instrumentID = set.getInt("AC_INSTRUMENT");
-				acc.AC_MASS_SPECTROMETRY_MS_TYPE(set.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
-				acc.AC_MASS_SPECTROMETRY_ION_MODE(set.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
-				acc.PK_SPLASH(set.getString("PK_SPLASH"));
-				this.statementAC_CHROMATOGRAPHY.setString(1, set.getString("ACCESSION"));
-				this.statementAC_MASS_SPECTROMETRY.setString(1, set.getString("ACCESSION"));
-				this.statementMS_DATA_PROCESSING.setString(1, set.getString("ACCESSION"));
-				this.statementMS_FOCUSED_ION.setString(1, set.getString("ACCESSION"));
-				this.statementCOMMENT.setString(1, set.getString("ACCESSION"));
-				this.statementPEAK.setString(1, set.getString("ACCESSION"));
-				this.statementPK_NUM_PEAK.setString(1, set.getString("ACCESSION"));
-				this.statementANNOTATION_HEADER.setString(1, accessionId);
-				
-				ResultSet tmp = this.statementAC_CHROMATOGRAPHY.executeQuery();
-				List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
-				while (tmp.next())
-					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
-				acc.AC_CHROMATOGRAPHY(tmpList);
-				
-				tmp = this.statementAC_MASS_SPECTROMETRY.executeQuery();
-				tmpList.clear();
-				while (tmp.next())
-					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
-				acc.AC_MASS_SPECTROMETRY(tmpList);
-				
-				tmp = this.statementMS_DATA_PROCESSING.executeQuery();
-				tmpList.clear();
-				while (tmp.next())
-					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
-				acc.MS_DATA_PROCESSING(tmpList);
-				
-				tmp = this.statementMS_FOCUSED_ION.executeQuery();
-				tmpList.clear();
-				while (tmp.next())
-					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
-				acc.MS_FOCUSED_ION(tmpList);
-				
-				tmp = this.statementCOMMENT.executeQuery();
-				List<String> tmpList2	= new ArrayList<String>();
-				while (tmp.next())
-					tmpList2.add(tmp.getString("COMMENT"));
-				acc.COMMENT(tmpList2);
-				
-				tmp = this.statementANNOTATION_HEADER.executeQuery();
-//				int PK_ANNOTATION_HEADER_numberOfTokens	= -1;
-				if (tmp.next()) {
-					String PK_ANNOTATION_HEADER	= tmp.getString("HEADER");
-					String[] PK_ANNOTATION_HEADER_tokens	= PK_ANNOTATION_HEADER.split(" ");
-					acc.PK_ANNOTATION_HEADER(Arrays.asList(PK_ANNOTATION_HEADER_tokens));
-//					PK_ANNOTATION_HEADER_numberOfTokens	= PK_ANNOTATION_HEADER_tokens.length;
-				}
-				
-				tmp = this.statementPEAK.executeQuery();
-				while (tmp.next()) {
-					BigDecimal mz = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_MZ")))).setScale(tmp.getInt("PK_PEAK_MZ_SIGNIFICANT"));
-					BigDecimal intensity = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_INTENSITY")))).setScale(tmp.getInt("PK_PEAK_INTENSITY_SIGNIFICANT"));
-					acc.PK_PEAK_ADD_LINE(Triple.of(mz, intensity, tmp.getInt("PK_PEAK_RELATIVE")));
-					String PK_ANNOTATION	= tmp.getString("PK_ANNOTATION");
-					if(PK_ANNOTATION != null)
-						acc.PK_ANNOTATION_ADD_LINE(Arrays.asList(PK_ANNOTATION.split(" ")));
-				}
-				tmp = this.statementPK_NUM_PEAK.executeQuery();
-				while (tmp.next()) {
-					acc.PK_NUM_PEAK(Integer.valueOf(tmp.getInt("PK_NUM_PEAK")));
-				}
-			} else {
-				// try to find the ACCESSION in DEPRECATED_RECORD
-				this.statementDEPRECATED_RECORD.setString(1, accessionId);
-				set = this.statementDEPRECATED_RECORD.executeQuery();
-				if (set.next()) {
-					acc.ACCESSION(set.getString("ACCESSION"));
-					acc.DEPRECATED(true);
-					acc.DEPRECATED_CONTENT(set.getString("CONTENT"));
-					return acc;
-				} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
-			}
-			
-			
-			
-			if (compoundID == -1)
-				throw new IllegalStateException("compoundID is not set");
-			this.statementCOMPOUND.setInt(1, compoundID);
-			set = this.statementCOMPOUND.executeQuery();
-			while (set.next()) {
-				acc.CH_FORMULA(set.getString("CH_FORMULA"));
-				acc.CH_EXACT_MASS(new BigDecimal(set.getDouble("CH_EXACT_MASS")));
-				acc.CH_SMILES(set.getString("CH_SMILES"));
-				acc.CH_IUPAC(set.getString("CH_IUPAC"));
-								
-				// TODO CH$CDK_DEPICT_SMILES
-				// TODO CH$CDK_DEPICT_GENERIC_SMILES
-				// TODO CH$CDK_DEPICT_STRUCTURE_SMILES
-//				acc.add("CH$CDK_DEPICT_SMILES", null, set.getString("CH_CDK_DEPICT_SMILES"));
-//				acc.add("CH$CDK_DEPICT_GENERIC_SMILES", null, set.getString("CH_CDK_DEPICT_GENERIC_SMILES"));
-//				acc.add("CH$CDK_DEPICT_STRUCTURE_SMILES", null, set.getString("CH_CDK_DEPICT_STRUCTURE_SMILES"));
-			}
-			this.statementCH_LINK.setInt(1, compoundID);
-			set = this.statementCH_LINK.executeQuery();
-			List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
-			while (set.next()) {
-				tmpList.add(Pair.of(set.getString("DATABASE_NAME"), set.getString("DATABASE_ID")));
-			}
-			acc.CH_LINK(tmpList);
-			
-			this.statementCOMPOUND_COMPOUND_CLASS.setInt(1, compoundID);
-			set = this.statementCOMPOUND_COMPOUND_CLASS.executeQuery();
-			List<String> tmpList2	= new ArrayList<String>();
-			while (set.next()) {
-				this.statementCOMPOUND_CLASS.setInt(1, set.getInt("CLASS"));
-				ResultSet tmp = this.statementCOMPOUND_CLASS.executeQuery();
-				while (tmp.next()) {
-					tmpList2.add(tmp.getString("CH_COMPOUND_CLASS"));
-				}
-			}
-			acc.CH_COMPOUND_CLASS(tmpList2);
-			
-			this.statementCOMPOUND_NAME.setInt(1, compoundID);
-			set = this.statementCOMPOUND_NAME.executeQuery();
-			tmpList2.clear();
-			while (set.next()) {
-				this.statementNAME.setInt(1, set.getInt("NAME"));
-				ResultSet tmp = this.statementNAME.executeQuery();
-				while (tmp.next()) {
-					tmpList2.add(tmp.getString("CH_NAME"));
-				}
-			}
-			acc.CH_NAME(tmpList2);
-			
-			this.statementSAMPLE.setInt(1,sampleID);
-			set = this.statementSAMPLE.executeQuery();
-			if (set.next()) {
-				acc.SP_SCIENTIFIC_NAME(set.getString("SP_SCIENTIFIC_NAME"));
-				acc.SP_LINEAGE(set.getString("SP_LINEAGE"));
-			}
-			
-			this.statementSP_LINK.setString(1,acc.ACCESSION());
-			set = this.statementSP_LINK.executeQuery();
-			tmpList.clear();
-			while (set.next()) {
-				String spLink	= set.getString("SP_LINK");
-				String[] tokens	= spLink.split(" ");
-				tmpList.add(Pair.of(tokens[0], tokens[1]));
-			}
-			acc.SP_LINK(tmpList);
-				
-			this.statementSP_SAMPLE.setString(1,acc.ACCESSION());
-			set = this.statementSP_SAMPLE.executeQuery();
-			tmpList2.clear();
-			while (set.next()) {
-				tmpList2.add(set.getString("SP_SAMPLE"));
-			}
-			acc.SP_SAMPLE(tmpList2);
-			
-			if (instrumentID == -1)	throw new IllegalStateException("instrumentID is not set");
-			this.statementINSTRUMENT.setInt(1, instrumentID);
-			set = this.statementINSTRUMENT.executeQuery();
-			if (set.next()) {
-				acc.AC_INSTRUMENT(set.getString("AC_INSTRUMENT"));
-				acc.AC_INSTRUMENT_TYPE(set.getString("AC_INSTRUMENT_TYPE"));
-			} else	throw new IllegalStateException("instrumentID is not in database");
-		} catch (Exception e) {
-			System.out.println("error: " + accessionId);
-			e.printStackTrace();
-			return null;
-		}
-		return acc;
-	}
-	
-	
-	public Record.Structure getStructureOfAccession(String accessionId) {
-		String CH_SMILES	= null;
-		String CH_IUPAC		= null;
-		
-		try {
-			this.statementRECORD.setString(1, accessionId);
-			ResultSet set = this.statementRECORD.executeQuery();
-			int compoundID = -1;
-			if (set.next()) {
-				compoundID = set.getInt("CH");
-			} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
-			
-			if (compoundID == -1)
-				throw new IllegalStateException("compoundID is not set");
-			this.statementCOMPOUND.setInt(1, compoundID);
-			set = this.statementCOMPOUND.executeQuery();
-			while (set.next()) {
-				String smilesString	= set.getString("CH_SMILES");
-				if (!smilesString.equals("N/A")) CH_SMILES	= smilesString;
-				
-				String iupacString	= set.getString("CH_IUPAC");
-				if (!iupacString.equals("N/A")) CH_IUPAC	= iupacString;
-			}
-		} catch (Exception e) {
-			System.out.println("error: " + accessionId);
-			e.printStackTrace();
-			return null;
-		}
-		
-		return new Record.Structure(CH_SMILES, CH_IUPAC);
-	}
-	
-
 	public void persistAccessionFile(Record acc) {
 		boolean bulk=false;
 		
 		// get contributor ID
-		Integer conId = -1;
+		Integer contributorId = -1;
 		try {
-			String sql = "SELECT ID FROM CONTRIBUTOR WHERE SHORT_NAME = ?";
-			PreparedStatement stmnt = con.prepareStatement(sql);
-			stmnt.setString(1, acc.CONTRIBUTOR());
-			ResultSet res = stmnt.executeQuery();
-			if (res.next()) {
-				conId = res.getInt(1);
-			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		
-		if(conId == -1) {
-			try {
-				String sql = "INSERT INTO CONTRIBUTOR (ACRONYM, SHORT_NAME, FULL_NAME) VALUES (NULL,?,NULL)";
-				PreparedStatement stmnt = con.prepareStatement(sql);
-				stmnt.setString(1, acc.CONTRIBUTOR());
-				stmnt.executeUpdate();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			
-			try {
-				String sql = "SELECT ID FROM CONTRIBUTOR WHERE SHORT_NAME = ?";
-				PreparedStatement stmnt = con.prepareStatement(sql);
-				stmnt.setString(1, acc.CONTRIBUTOR());
-				ResultSet res = stmnt.executeQuery();
-				if (res.next()) {
-					conId = res.getInt(1);
+			statementSelectCONTRIBUTORIdByACRONYM.setString(1, acc.CONTRIBUTOR());
+			try (ResultSet set = statementSelectCONTRIBUTORIdByACRONYM.executeQuery()) {
+				if (set.next()) {
+					contributorId = set.getInt(1);
 				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		}
-		
-		try {
-			if (acc.DEPRECATED()) {
-				// deprecated records go into table DEPRECATED_RECORD
-				String sql = "INSERT INTO DEPRECATED_RECORD (ACCESSION, CONTRIBUTOR, CONTENT) VALUES (?,?,?)";
-				PreparedStatement stmnt = con.prepareStatement(sql);
-				stmnt.setString(1, acc.ACCESSION());
-				stmnt.setInt(2, conId);
-				stmnt.setBlob(3, new ByteArrayInputStream(acc.DEPRECATED_CONTENT().getBytes()));
-				stmnt.executeUpdate();
-			}
-			else {		
-				//System.out.println(System.nanoTime());
-				statementInsertCompound.setNull(1, java.sql.Types.INTEGER);
-				statementInsertCompound.setString(2, acc.CH_FORMULA());
-				statementInsertCompound.setDouble(3, acc.CH_EXACT_MASS().doubleValue());
-				statementInsertCompound.setString(4, acc.CH_SMILES());
-				statementInsertCompound.setString(5, acc.CH_IUPAC());
-				
-				// TODO support CH$CDK_DEPICT_SMILES
-				// TODO support CH$CDK_DEPICT_GENERIC_SMILES
-				// TODO support CH$CDK_DEPICT_STRUCTURE_SMILES
-		//		if (acc.get("CH$CDK_DEPICT_SMILES").size() != 0) {
-		//			statementInsertCompound.setString(6, acc.get("CH$CDK_DEPICT_SMILES").get(0)[2]);
-		//		} else {
-					statementInsertCompound.setNull(6, java.sql.Types.VARCHAR);
-		//		}
-		//		if (acc.get("CH$CDK_DEPICT_GENERIC_SMILES").size() != 0) {
-		//			statementInsertCompound.setString(7, acc.get("CH$CDK_DEPICT_GENERIC_SMILES").get(0)[2]);
-		//		} else {
-					statementInsertCompound.setNull(7, java.sql.Types.VARCHAR);
-		//		}
-		//		if (acc.get("CH$CDK_DEPICT_STRUCTURE_SMILES").size() != 0) {
-		//			statementInsertCompound.setString(8, acc.get("CH$CDK_DEPICT_STRUCTURE_SMILES").get(0)[2]);
-		//		} else {
-					statementInsertCompound.setNull(8, java.sql.Types.VARCHAR);
-		//		}
-				statementInsertCompound.executeUpdate();
-				ResultSet set = statementInsertCompound.getGeneratedKeys();
-				set.next();
-				int compoundId = set.getInt("ID");
-				
-				
-				//System.out.println(System.nanoTime());
-				int compoundClassId;
-		//		String insertCompoundClass = "INSERT INTO COMPOUND_CLASS VALUES(?,?,?,?)";
-		//		stmnt = con.prepareStatement(insertCompoundClass);
-				for (String el : acc.CH_COMPOUND_CLASS()) {
-					statementInsertCompound_Class.setNull(1, java.sql.Types.INTEGER);		
-					statementInsertCompound_Class.setString(2, null);
-					statementInsertCompound_Class.setString(3, null);
-					statementInsertCompound_Class.setString(4, el);
-					statementInsertCompound_Class.executeUpdate();
-					set = statementInsertCompound_Class.getGeneratedKeys();
-					set.next();
-					compoundClassId = set.getInt("ID");
-					
-		//			String insertCompoundCompoundClass = "INSERT INTO COMPOUND_COMPOUND_CLASS VALUES(?,?)";
-		//			stmnt = con.prepareStatement(insertCompoundCompoundClass);
-					statementInsertCompound_Compound_Class.setInt(1, compoundId);
-					statementInsertCompound_Compound_Class.setInt(2, compoundClassId);
-					statementInsertCompound_Compound_Class.executeUpdate();
-				}
-				
-				//System.out.println(System.nanoTime());
-				int nameId;
-		//		String insertName = "INSERT INTO NAME VALUES(?,?)";
-		//		stmnt = con.prepareStatement(insertName);
-				for (String el : acc.CH_NAME()) {
-					statementInsertName.setNull(1, java.sql.Types.INTEGER);
-					statementInsertName.setString(2, el);
-					try {
-						statementInsertName.executeUpdate();
-						set = statementInsertName.getGeneratedKeys();
-						set.next();
-						nameId = set.getInt("ID");
-		
-		//				String insertCompoundName = "INSERT INTO COMPOUND_NAME VALUES(?,?)";
-		//				stmnt = con.prepareStatement(insertCompoundName);
-						statementInsertCompound_Name.setInt(1, compoundId);
-						statementInsertCompound_Name.setInt(2, nameId);
-						statementInsertCompound_Name.executeUpdate();
-					} catch (SQLException e) {
-						if (e.getErrorCode() == 1062) {
-							PreparedStatement retrieveIdForName = con.prepareStatement("SELECT ID FROM NAME WHERE CH_NAME = ?");
-							retrieveIdForName.setString(1, el);
-							set = retrieveIdForName.executeQuery();
-							set.next();
-							nameId = set.getInt("ID");
-							statementInsertCompound_Name.setInt(1, compoundId);
-							statementInsertCompound_Name.setInt(2, nameId);
-							statementInsertCompound_Name.executeUpdate();
-						} else {
-							this.closeConnection();
-							throw e;
-		//					e.printStackTrace();
-		//					nameId = -1;
-						}
+				else {
+					statementInsertCONTRIBUTOR.setString(1, acc.CONTRIBUTOR());
+					statementInsertCONTRIBUTOR.setString(2, acc.CONTRIBUTOR());
+					statementInsertCONTRIBUTOR.setString(3, acc.CONTRIBUTOR());
+					statementInsertCONTRIBUTOR.executeUpdate();
+					try (ResultSet set2 = statementInsertCONTRIBUTOR.getGeneratedKeys()) {
+						set2.next();
+						contributorId = set2.getInt("ID");
 					}
 				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		if (acc.DEPRECATED()) {
+			// deprecated records go into table DEPRECATED_RECORD
+			String sql = "INSERT INTO DEPRECATED_RECORD (ACCESSION, CONTRIBUTOR, CONTENT) VALUES (?,?,?)";
+			try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+				stmnt.setString(1, acc.ACCESSION());
+				stmnt.setInt(2, contributorId);
+				stmnt.setBlob(3, new ByteArrayInputStream(acc.DEPRECATED_CONTENT().getBytes()));
+				stmnt.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		try {
+			statementInsertCOMPOUND.setString(1, acc.CH_FORMULA());
+			statementInsertCOMPOUND.setDouble(2, acc.CH_EXACT_MASS().doubleValue());
+			statementInsertCOMPOUND.setInt(3, acc.CH_EXACT_MASS().scale());
+			statementInsertCOMPOUND.setString(4, acc.CH_SMILES());
+			statementInsertCOMPOUND.setString(5, acc.CH_IUPAC());
+			// TODO support CH$CDK_DEPICT_SMILES
+			// TODO support CH$CDK_DEPICT_GENERIC_SMILES
+			// TODO support CH$CDK_DEPICT_STRUCTURE_SMILES
+			statementInsertCOMPOUND.setNull(6, java.sql.Types.VARCHAR);
+			statementInsertCOMPOUND.setNull(7, java.sql.Types.VARCHAR);
+			statementInsertCOMPOUND.setNull(8, java.sql.Types.VARCHAR);
+			statementInsertCOMPOUND.executeUpdate();
+			int compoundId = -1;
+			try (ResultSet set = statementInsertCOMPOUND.getGeneratedKeys()) {
+				set.next();
+				compoundId = set.getInt("ID");
+			}
+				
+			int compoundClassId;
+			for (String el : acc.CH_COMPOUND_CLASS()) {
+				statementInsertCOMPOUND_CLASS.setString(1, null);
+				statementInsertCOMPOUND_CLASS.setString(2, null);
+				statementInsertCOMPOUND_CLASS.setString(3, el);
+				statementInsertCOMPOUND_CLASS.executeUpdate();
+				try (ResultSet set = statementInsertCOMPOUND_CLASS.getGeneratedKeys()) {
+					set.next();
+					compoundClassId = set.getInt("ID");
+				}
+				statementInsertCOMPOUND_COMPOUND_CLASS.setInt(1, compoundId);
+				statementInsertCOMPOUND_COMPOUND_CLASS.setInt(2, compoundClassId);
+				statementInsertCOMPOUND_COMPOUND_CLASS.executeUpdate();
+			}
+				
+			int nameId;
+	//		String insertName = "INSERT INTO NAME VALUES(?,?)";
+	//		stmnt = con.prepareStatement(insertName);
+			for (String el : acc.CH_NAME()) {
+				statementInsertNAME.setString(1, el);
+//				try {
+				statementInsertNAME.executeUpdate();
+					ResultSet set = statementInsertNAME.getGeneratedKeys();
+					set.next();
+					nameId = set.getInt("ID");
+	
+	//				String insertCompoundName = "INSERT INTO COMPOUND_NAME VALUES(?,?)";
+	//				stmnt = con.prepareStatement(insertCompoundName);
+					statementInsertCOMPOUND_NAME.setInt(1, compoundId);
+					statementInsertCOMPOUND_NAME.setInt(2, nameId);
+					statementInsertCOMPOUND_NAME.executeUpdate();
+			}
 				
 				//System.out.println(System.nanoTime());
 		//		String insertChLink = "INSERT INTO CH_LINK VALUES(?,?,?)";
@@ -719,9 +501,9 @@ public class DatabaseManager {
 				} else {
 					statementInsertSAMPLE.setNull(3, java.sql.Types.VARCHAR);
 				}
-				if (acc.SP_SCIENTIFIC_NAME() != null && acc.SP_LINEAGE() != null) {
+				if (acc.SP_SCIENTIFIC_NAME() != null || acc.SP_LINEAGE() != null) {
 					statementInsertSAMPLE.executeUpdate();
-					set = statementInsertSAMPLE.getGeneratedKeys();
+					ResultSet set = statementInsertSAMPLE.getGeneratedKeys();
 					set.next();
 					sampleId = set.getInt("ID");
 				}
@@ -731,7 +513,7 @@ public class DatabaseManager {
 				statementInsertINSTRUMENT.setString(2, acc.AC_INSTRUMENT());
 				statementInsertINSTRUMENT.setString(3, acc.AC_INSTRUMENT_TYPE());
 				statementInsertINSTRUMENT.executeUpdate();
-				set = statementInsertINSTRUMENT.getGeneratedKeys();
+				ResultSet set = statementInsertINSTRUMENT.getGeneratedKeys();
 				set.next();
 				int instrumentId = set.getInt("ID");
 				
@@ -765,7 +547,7 @@ public class DatabaseManager {
 				statementInsertRECORD.setString(11, acc.AC_MASS_SPECTROMETRY_MS_TYPE());
 				statementInsertRECORD.setString(12, acc.AC_MASS_SPECTROMETRY_ION_MODE());
 				statementInsertRECORD.setString(13, acc.PK_SPLASH());
-				statementInsertRECORD.setInt(14, conId);
+				statementInsertRECORD.setInt(14, contributorId);
 				statementInsertRECORD.executeUpdate();
 				
 				//System.out.println(System.nanoTime());
@@ -863,7 +645,6 @@ public class DatabaseManager {
 					statementInsertPEAK.setInt(5, peak.getMiddle().scale());
 					
 					statementInsertPEAK.setInt(6, peak.getRight().intValue());
-					statementInsertPEAK.setNull(7, java.sql.Types.VARCHAR);
 		//			statementInsertPEAK.executeUpdate();
 					statementInsertPEAK.addBatch();
 				}
@@ -871,44 +652,31 @@ public class DatabaseManager {
 					statementInsertPEAK.executeBatch();
 				}
 				
-				//System.out.println(System.nanoTime());
-				List<List<String>> annotation = acc.PK_ANNOTATION();
-				if (annotation.size() != 0) {
+				
+				
+				List<String> annotationHeader = acc.PK_ANNOTATION_HEADER();
+				if (!annotationHeader.isEmpty()) {
 					statementInsertANNOTATION_HEADER.setString(1, accession);
-					statementInsertANNOTATION_HEADER.setString(2, String.join(" ", annotation.get(0)));
+					statementInsertANNOTATION_HEADER.setString(2, String.join(" ", annotationHeader));
 					statementInsertANNOTATION_HEADER.executeUpdate();
+				
+					for (Pair<BigDecimal, List<String>> annotation : acc.PK_ANNOTATION()) {
+						statementInsertANNOTATION.setString(1, accession);
+						statementInsertANNOTATION.setDouble(2, annotation.getLeft().doubleValue());
+						statementInsertANNOTATION.setInt(3, annotation.getLeft().scale());
+						statementInsertANNOTATION.setString(4, String.join(" ",annotation.getRight()));
+						statementInsertANNOTATION.addBatch();
+					}
 				}
-				for (int i = 1; i < annotation.size(); i++) {
-					String values = String.join(" ", annotation.get(i));
-					Float mz = Float.parseFloat(annotation.get(i).get(0));
-		//			values = values.substring(values.indexOf(" ")+1, values.length());
-					statementUpdatePEAKs.setString(1, values);
-					statementUpdatePEAKs.setString(2, accession);
-					statementUpdatePEAKs.setFloat(3, mz);
-		//			statementUpdatePEAK.setString(1, values.substring(0, values.indexOf(" ")));
-		//			values = values.substring(values.indexOf(" ")+1, values.length());
-		//			statementUpdatePEAK.setShort(2, Short.parseShort(values.substring(0, values.indexOf(" "))));
-		//			values = values.substring(values.indexOf(" ")+1, values.length());
-		//			statementUpdatePEAK.setFloat(3, Float.parseFloat(values.substring(0, values.indexOf(" "))));
-		//			values = values.substring(values.indexOf(" ")+1, values.length());
-		//			statementUpdatePEAK.setFloat(4, Float.parseFloat(values.substring(0, values.length())));
-		//			statementUpdatePEAK.setString(5, accession);
-		//			statementUpdatePEAK.setFloat(6, mz);
-		//			statementUpdatePEAK.executeUpdate();
-					statementUpdatePEAKs.addBatch();
-				}
+				
 				if (!bulk) {
-					statementUpdatePEAKs.executeBatch();
+					statementInsertANNOTATION.executeBatch();
 				}
-			}
+			
 		
 		
 		
-		
-		
-		//System.out.println(System.nanoTime());
 		con.commit();
-		//System.out.println(System.nanoTime());
 		
 		} catch (SQLException e) {
 			StringBuilder tmp = new StringBuilder();
@@ -960,6 +728,253 @@ public class DatabaseManager {
 		}
 //		this.closeConnection();
 	}
+	
+	
+	/**
+	 * Returns the complete record TODO solve 1:1 relations by a single sql
+	 * statement with joins (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff,
+	 * SP_SCIENTIFIC_NAME, SP_LINEAGE, AC_INSTRUMENT, AC_INSTRUMENT_TYPE)
+	 * 
+	 * @param accessionId
+	 * @return Record
+	 */
+	public Record getAccessionData(String accessionId) {
+		Record.Contributor Contributor=getContributorFromAccession(accessionId);
+		if (Contributor==null) return null;
+		String contributor=Contributor.SHORT_NAME;
+		Record acc = new Record(contributor);
+		try {
+			this.statementRECORD.setString(1, accessionId);
+			ResultSet set = this.statementRECORD.executeQuery();
+			int compoundID = -1;
+			int sampleID = -1;
+			int instrumentID = -1;
+			if (set.next()) {
+				acc.ACCESSION(set.getString("ACCESSION"));
+				acc.RECORD_TITLE1(set.getString("RECORD_TITLE"));
+				acc.DATE(set.getString("DATE"));
+				acc.AUTHORS(set.getString("AUTHORS"));
+				acc.LICENSE(set.getString("LICENSE"));
+				acc.COPYRIGHT(set.getString("COPYRIGHT"));
+				acc.PUBLICATION(set.getString("PUBLICATION"));
+				compoundID = set.getInt("CH");
+				sampleID = set.getInt("SP");
+				instrumentID = set.getInt("AC_INSTRUMENT");
+				acc.AC_MASS_SPECTROMETRY_MS_TYPE(set.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
+				acc.AC_MASS_SPECTROMETRY_ION_MODE(set.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+				acc.PK_SPLASH(set.getString("PK_SPLASH"));
+				this.statementAC_CHROMATOGRAPHY.setString(1, set.getString("ACCESSION"));
+				this.statementAC_MASS_SPECTROMETRY.setString(1, set.getString("ACCESSION"));
+				this.statementMS_DATA_PROCESSING.setString(1, set.getString("ACCESSION"));
+				this.statementMS_FOCUSED_ION.setString(1, set.getString("ACCESSION"));
+				this.statementSelectCOMMENT.setString(1, set.getString("ACCESSION"));
+				this.statementPEAK.setString(1, set.getString("ACCESSION"));
+				this.statementPK_NUM_PEAK.setString(1, set.getString("ACCESSION"));
+				this.statementANNOTATION_HEADER.setString(1, accessionId);
+				
+				ResultSet tmp = this.statementAC_CHROMATOGRAPHY.executeQuery();
+				List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.AC_CHROMATOGRAPHY(tmpList);
+				
+				tmp = this.statementAC_MASS_SPECTROMETRY.executeQuery();
+				tmpList.clear();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.AC_MASS_SPECTROMETRY(tmpList);
+				
+				tmp = this.statementMS_DATA_PROCESSING.executeQuery();
+				tmpList.clear();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.MS_DATA_PROCESSING(tmpList);
+				
+				tmp = this.statementMS_FOCUSED_ION.executeQuery();
+				tmpList.clear();
+				while (tmp.next())
+					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
+				acc.MS_FOCUSED_ION(tmpList);
+				
+				tmp = this.statementSelectCOMMENT.executeQuery();
+				List<String> tmpList2	= new ArrayList<String>();
+				while (tmp.next())
+					tmpList2.add(tmp.getString("COMMENT"));
+				acc.COMMENT(tmpList2);
+				
+				tmp = this.statementANNOTATION_HEADER.executeQuery();
+//				int PK_ANNOTATION_HEADER_numberOfTokens	= -1;
+				if (tmp.next()) {
+					String PK_ANNOTATION_HEADER	= tmp.getString("HEADER");
+					String[] PK_ANNOTATION_HEADER_tokens	= PK_ANNOTATION_HEADER.split(" ");
+					acc.PK_ANNOTATION_HEADER(Arrays.asList(PK_ANNOTATION_HEADER_tokens));
+//					PK_ANNOTATION_HEADER_numberOfTokens	= PK_ANNOTATION_HEADER_tokens.length;
+					
+					this.statementSelectANNOTATION.setString(1, set.getString("ACCESSION"));
+					tmp = this.statementSelectANNOTATION.executeQuery();
+					while (tmp.next()) {
+						BigDecimal mz = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_MZ")))).setScale(tmp.getInt("PK_PEAK_MZ_SIGNIFICANT"));
+						List<String> annotation = Arrays.asList(tmp.getString("PK_ANNOTATION").split(" "));
+						acc.PK_ANNOTATION_ADD_LINE(Pair.of(mz, annotation));
+					}
+					
+				}
+				
+				tmp = this.statementPEAK.executeQuery();
+				while (tmp.next()) {
+					BigDecimal mz = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_MZ")))).setScale(tmp.getInt("PK_PEAK_MZ_SIGNIFICANT"));
+					BigDecimal intensity = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_INTENSITY")))).setScale(tmp.getInt("PK_PEAK_INTENSITY_SIGNIFICANT"));
+					acc.PK_PEAK_ADD_LINE(Triple.of(mz, intensity, tmp.getInt("PK_PEAK_RELATIVE")));
+				}
+				tmp = this.statementPK_NUM_PEAK.executeQuery();
+				while (tmp.next()) {
+					acc.PK_NUM_PEAK(Integer.valueOf(tmp.getInt("PK_NUM_PEAK")));
+				}
+				
+			} else {
+				// try to find the ACCESSION in DEPRECATED_RECORD
+				this.statementDEPRECATED_RECORD.setString(1, accessionId);
+				set = this.statementDEPRECATED_RECORD.executeQuery();
+				if (set.next()) {
+					acc.ACCESSION(set.getString("ACCESSION"));
+					acc.DEPRECATED(true);
+					acc.DEPRECATED_CONTENT(set.getString("CONTENT"));
+					return acc;
+				} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+			}
+			set.close();
+			
+			
+			if (compoundID == -1)
+				throw new IllegalStateException("compoundID is not set");
+			this.statementSelectCOMPOUND.setInt(1, compoundID);
+			set = this.statementSelectCOMPOUND.executeQuery();
+			while (set.next()) {
+				acc.CH_FORMULA(set.getString("CH_FORMULA"));
+				BigDecimal exactMass = (new BigDecimal(String.valueOf(set.getDouble("CH_EXACT_MASS")))).setScale(set.getInt("CH_EXACT_MASS_SIGNIFICANT"));
+				acc.CH_EXACT_MASS(exactMass);
+				acc.CH_SMILES(set.getString("CH_SMILES"));
+				acc.CH_IUPAC(set.getString("CH_IUPAC"));
+								
+				// TODO CH$CDK_DEPICT_SMILES
+				// TODO CH$CDK_DEPICT_GENERIC_SMILES
+				// TODO CH$CDK_DEPICT_STRUCTURE_SMILES
+//				acc.add("CH$CDK_DEPICT_SMILES", null, set.getString("CH_CDK_DEPICT_SMILES"));
+//				acc.add("CH$CDK_DEPICT_GENERIC_SMILES", null, set.getString("CH_CDK_DEPICT_GENERIC_SMILES"));
+//				acc.add("CH$CDK_DEPICT_STRUCTURE_SMILES", null, set.getString("CH_CDK_DEPICT_STRUCTURE_SMILES"));
+			}
+			set.close();
+			
+			this.statementCH_LINK.setInt(1, compoundID);
+			set = this.statementCH_LINK.executeQuery();
+			List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
+			while (set.next()) {
+				Pair<String, String> link = Pair.of(set.getString("DATABASE_NAME"), set.getString("DATABASE_ID"));
+				tmpList.add(link);
+			}
+			acc.CH_LINK(tmpList);
+			
+			this.statementSelectCOMPOUND_COMPOUND_CLASS.setInt(1, compoundID);
+			set = this.statementSelectCOMPOUND_COMPOUND_CLASS.executeQuery();
+			List<String> tmpList2	= new ArrayList<String>();
+			while (set.next()) {
+				this.statementSelectCOMPOUND_CLASS.setInt(1, set.getInt("CLASS"));
+				ResultSet tmp = this.statementSelectCOMPOUND_CLASS.executeQuery();
+				while (tmp.next()) {
+					tmpList2.add(tmp.getString("CH_COMPOUND_CLASS"));
+				}
+			}
+			acc.CH_COMPOUND_CLASS(tmpList2);
+			
+			this.statementSelectCOMPOUND_NAME.setInt(1, compoundID);
+			set = this.statementSelectCOMPOUND_NAME.executeQuery();
+			tmpList2.clear();
+			while (set.next()) {
+				int name = set.getInt("NAME") ;
+				this.statementSelectNAME.setInt(1, name);	
+				//this.statementSelectNAME.setInt(1, set.getInt("NAME"));
+				ResultSet tmp = this.statementSelectNAME.executeQuery();
+				while (tmp.next()) {
+					tmpList2.add(tmp.getString("CH_NAME"));
+				}
+			}
+			acc.CH_NAME(tmpList2);
+			
+			this.statementSAMPLE.setInt(1,sampleID);
+			set = this.statementSAMPLE.executeQuery();
+			if (set.next()) {
+				acc.SP_SCIENTIFIC_NAME(set.getString("SP_SCIENTIFIC_NAME"));
+				acc.SP_LINEAGE(set.getString("SP_LINEAGE"));
+			}
+			
+			this.statementSP_LINK.setString(1,acc.ACCESSION());
+			set = this.statementSP_LINK.executeQuery();
+			tmpList.clear();
+			while (set.next()) {
+				String spLink	= set.getString("SP_LINK");
+				String[] tokens	= spLink.split(" ");
+				tmpList.add(Pair.of(tokens[0], tokens[1]));
+			}
+			acc.SP_LINK(tmpList);
+				
+			this.statementSP_SAMPLE.setString(1,acc.ACCESSION());
+			set = this.statementSP_SAMPLE.executeQuery();
+			tmpList2.clear();
+			while (set.next()) {
+				tmpList2.add(set.getString("SP_SAMPLE"));
+			}
+			acc.SP_SAMPLE(tmpList2);
+			
+			if (instrumentID == -1)	throw new IllegalStateException("instrumentID is not set");
+			this.statementINSTRUMENT.setInt(1, instrumentID);
+			set = this.statementINSTRUMENT.executeQuery();
+			if (set.next()) {
+				acc.AC_INSTRUMENT(set.getString("AC_INSTRUMENT"));
+				acc.AC_INSTRUMENT_TYPE(set.getString("AC_INSTRUMENT_TYPE"));
+			} else	throw new IllegalStateException("instrumentID is not in database");
+		} catch (Exception e) {
+			System.out.println("error: " + accessionId);
+			e.printStackTrace();
+			return null;
+		}
+		return acc;
+	}
+	
+	
+	public Record.Structure getStructureOfAccession(String accessionId) {
+		String CH_SMILES	= null;
+		String CH_IUPAC		= null;
+		
+		try {
+			this.statementRECORD.setString(1, accessionId);
+			ResultSet set = this.statementRECORD.executeQuery();
+			int compoundID = -1;
+			if (set.next()) {
+				compoundID = set.getInt("CH");
+			} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+			
+			if (compoundID == -1)
+				throw new IllegalStateException("compoundID is not set");
+			this.statementSelectCOMPOUND.setInt(1, compoundID);
+			set = this.statementSelectCOMPOUND.executeQuery();
+			while (set.next()) {
+				String smilesString	= set.getString("CH_SMILES");
+				if (!smilesString.equals("N/A")) CH_SMILES	= smilesString;
+				
+				String iupacString	= set.getString("CH_IUPAC");
+				if (!iupacString.equals("N/A")) CH_IUPAC	= iupacString;
+			}
+		} catch (Exception e) {
+			System.out.println("error: " + accessionId);
+			e.printStackTrace();
+			return null;
+		}
+		
+		return new Record.Structure(CH_SMILES, CH_IUPAC);
+	}
+	
+
+
 
 	
 	public Record.Contributor getContributorFromAccession(String accessionId) {
