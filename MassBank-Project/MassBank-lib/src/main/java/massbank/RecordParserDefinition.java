@@ -1528,11 +1528,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.map((List<?> value) -> {
 					//System.out.println(value.toString());
 					@SuppressWarnings("unchecked")
-					List<String> list = (List<String>) value.subList(0, 1);
-					@SuppressWarnings("unchecked")
-					List<String> list2 = (List<String>) value. get(1);
-					list.addAll(list2);
-					callback.PK_ANNOTATION_ADD_LINE(list);
+					Pair<BigDecimal,List<String>> annotation = Pair.of(new BigDecimal((String)value.get(0)), (List<String>)value.get(1));
+					callback.PK_ANNOTATION_ADD_LINE(annotation);
 					return value;						
 				})
 				// call a Continuation Parser to validate the count of PK$ANNOTATION items per line
@@ -1540,16 +1537,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
 						List<String> pk_annotation_header = callback.PK_ANNOTATION_HEADER();
-						List<List<String>> pk_annotation = callback.PK_ANNOTATION();
-						if (pk_annotation_header.size() != pk_annotation.get(pk_annotation.size() - 1).size()) {
+						List<Pair<BigDecimal, List<String>>> pk_annotation = callback.PK_ANNOTATION();
+						Pair<BigDecimal, List<String>> pk_annotationItem = pk_annotation.get(pk_annotation.size() - 1);
+						if (pk_annotation_header.size() != pk_annotationItem.getRight().size() + 1) {
 							StringBuilder sb = new StringBuilder();
 							sb.append("Incorrect number of fields per PK$ANNOTATION line. ");
-							sb.append(pk_annotation_header.size() + " fields expected, but " + pk_annotation.get(pk_annotation.size() - 1).size() + " fields found.\n");
+							sb.append(pk_annotation_header.size() + " fields expected, but " + (pk_annotationItem.getRight().size() + 1) + " fields found.\n");
 							sb.append("Defined by:\n");
 							sb.append("PK$ANNOTATION:");
-							for (String annotation_header_item : callback.PK_ANNOTATION_HEADER())
-								sb.append(" " + annotation_header_item);
-							System.out.println(sb.toString());
+							for (String pk_annotation_headerItem : callback.PK_ANNOTATION_HEADER())
+								sb.append(" " + pk_annotation_headerItem);
+							sb.append("  " + pk_annotationItem.getLeft() + " " + String.join(" ", pk_annotationItem.getRight()));
 							return context.failure(sb.toString());
 						}
 					}
@@ -1789,6 +1787,16 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 			}
 			
+			// check annotation sorting
+			List<Pair<BigDecimal, List<String>>> pk_annotation =callback.PK_ANNOTATION();
+			for (int i=0; i<pk_annotation.size()-1; i++) {
+				if ((pk_annotation.get(i).getLeft().compareTo(pk_annotation.get(i+1).getLeft()))>=0) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("The peaks in the annotation list are not sorted.\n");
+					sb.append("Error in line " + pk_annotation.get(i).toString() + ".\n");
+					return context.failure(sb.toString());
+				}
+			}
 			
 			// max 600 characters are supported in database for PUBLICATION
 			if (callback.PUBLICATION()!=null) {
