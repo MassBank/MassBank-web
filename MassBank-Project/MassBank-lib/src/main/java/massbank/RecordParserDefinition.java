@@ -1788,9 +1788,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 			}
 			
 			// check annotation sorting
-			List<Pair<BigDecimal, List<String>>> pk_annotation =callback.PK_ANNOTATION();
+			List<Pair<BigDecimal, List<String>>> pk_annotation = callback.PK_ANNOTATION();
 			for (int i=0; i<pk_annotation.size()-1; i++) {
-				if ((pk_annotation.get(i).getLeft().compareTo(pk_annotation.get(i+1).getLeft()))>=0) {
+				if ((pk_annotation.get(i).getLeft().compareTo(pk_annotation.get(i+1).getLeft()))>0) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("The peaks in the annotation list are not sorted.\n");
 					sb.append("Error in line " + pk_annotation.get(i).toString() + ".\n");
