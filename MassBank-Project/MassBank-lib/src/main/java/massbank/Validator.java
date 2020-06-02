@@ -6,9 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -153,7 +157,7 @@ public class Validator {
 		
 		AtomicBoolean haserror = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
-		recordfiles.parallelStream().forEach(filename -> {
+		List<String> accessions = recordfiles.parallelStream().map(filename -> {
 			String recordString;
 			Record record=null;
 			try {
@@ -166,54 +170,20 @@ public class Validator {
 				}
 				else {
 					logger.trace("validation passed for " + filename);
-				}
 					
-				// validate correct serialisation: String -> Record class -> String
-				String recordStringFromRecord = record.toString();
-				int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
-				if (position != -1) {
-					logger.error("Error in \'" + filename + "\'.");
-					logger.error("File content differs from generated record string.\nThis might be a code problem. Please Report!");
-					String[] tokens = recordStringFromRecord.split("\\n");
-					int line = 0, col = 0, offset = 0;
-					for (String token : tokens) {
-						offset = offset + token.length() + 1;
-						if (position < offset) {
-							col = position - (offset - (token.length() + 1));
-							logger.error("Error in line " + (line+1) + ".");
-							logger.error(tokens[line]);
-							StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
-							error_at.append('^');
-							logger.error(error_at);
-							break;
-						}
-						line++;
-					}
-				}
-				
-				// validate correct serialisation with db: String -> Record class -> db -> Record class -> String
-				if (doDatbase.get()) {
-					Record recordDatabase = null;
-					try {
-						DatabaseManager dbMan = new DatabaseManager("MassBank");
-						recordDatabase = dbMan.getAccessionData(record.ACCESSION());
-						dbMan.closeConnection();
-					} catch (SQLException | ConfigurationException e) {
-						e.printStackTrace();
-						System.exit(1);
-					}
-					if(recordDatabase == null) {
-						String errormsg	= "retrieval of '" + record.ACCESSION() + "' from database failed";
-						logger.error(errormsg);
-						System.exit(1);
+					// compare ACCESSION with filename
+					if (!record.ACCESSION().equals(FilenameUtils.getBaseName(filename.toString()))) {
+						logger.error("Error in \'" + filename.getName().toString() + "\'.");
+						logger.error("ACCESSION \'" + record.ACCESSION() + "\' does not match filename \'" + filename.getName().toString() + "\'");
 					}
 					
-					String recordStringFromDB = recordDatabase.toString();
-					position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromDB});
+					// validate correct serialisation: String -> Record class -> String
+					String recordStringFromRecord = record.toString();
+					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
 					if (position != -1) {
 						logger.error("Error in \'" + filename + "\'.");
-						logger.error("File content differs from generated record string from database content.\nThis might be a code problem. Please Report!");
-						String[] tokens = recordStringFromDB.split("\\n");
+						logger.error("File content differs from generated record string.\nThis might be a code problem. Please Report!");
+						String[] tokens = recordStringFromRecord.split("\\n");
 						int line = 0, col = 0, offset = 0;
 						for (String token : tokens) {
 							offset = offset + token.length() + 1;
@@ -229,11 +199,65 @@ public class Validator {
 							line++;
 						}
 					}
+				
+					// validate correct serialisation with db: String -> Record class -> db -> Record class -> String
+					if (doDatbase.get()) {
+						Record recordDatabase = null;
+						try {
+							DatabaseManager dbMan = new DatabaseManager("MassBank");
+							recordDatabase = dbMan.getAccessionData(record.ACCESSION());
+							dbMan.closeConnection();
+						} catch (SQLException | ConfigurationException e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
+						if(recordDatabase == null) {
+							String errormsg	= "retrieval of '" + record.ACCESSION() + "' from database failed";
+							logger.error(errormsg);
+							System.exit(1);
+						}
+						
+						String recordStringFromDB = recordDatabase.toString();
+						position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromDB});
+						if (position != -1) {
+							logger.error("Error in \'" + filename + "\'.");
+							logger.error("File content differs from generated record string from database content.\nThis might be a code problem. Please Report!");
+							String[] tokens = recordStringFromDB.split("\\n");
+							int line = 0, col = 0, offset = 0;
+							for (String token : tokens) {
+								offset = offset + token.length() + 1;
+								if (position < offset) {
+									col = position - (offset - (token.length() + 1));
+									logger.error("Error in line " + (line+1) + ".");
+									logger.error(tokens[line]);
+									StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
+									error_at.append('^');
+									logger.error(error_at);
+									break;
+								}
+								line++;
+							}
+						}
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.exit(1);
 			}
-		});
+			return record.ACCESSION();
+		})
+		.collect(Collectors.toList());;
+		
+		Set<String> duplicates = new LinkedHashSet<String>();
+		Set<String> uniques = new HashSet<String>();
+		for(String c : accessions) {
+			if(!uniques.add(c)) {
+				duplicates.add(c);
+			}
+		}
+		if (duplicates.size()>0) {
+			logger.error("There are duplicates in all accessions:");
+			logger.error(duplicates.toString());
+		}
 	}
 }
