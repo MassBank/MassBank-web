@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,7 +32,7 @@ import org.petitparser.parser.Parser;
 /**
  * This class validates a record file or String by using the syntax of {@link RecordParserDefinition}.
  * @author rmeier
- * @version 05-03-2020
+ * @version 03-06-2020
  */
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
@@ -106,6 +107,7 @@ public class Validator {
 	}
 
 	public static void main(String[] arguments) {
+		// load version and print
 		final Properties properties = new Properties();
 		try {
 			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
@@ -113,10 +115,11 @@ public class Validator {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
 		System.out.println("Validator version: " + properties.getProperty("version"));
+
+		// parse command line
 		Options options = new Options();
-		options.addOption(null, "db", false, "also read record from database and compare with original Record");
+		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -128,15 +131,13 @@ public class Validator {
 			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
 	    }
-		
 		if (cmd.getArgList().size() == 0) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
 		}
-
-			
-		// validate all files in arguments and all *.txt files in directories and subdirectories
+		
+		// find all files in arguments and all *.txt files in directories and subdirectories
 		// specified in arguments 
 		List<File> recordfiles = new ArrayList<>();
 		for (String argument : cmd.getArgList()) {
@@ -152,9 +153,9 @@ public class Validator {
 			}
 		}
 			
-		
+
+		// validate all files
 		logger.trace("Validating " + recordfiles.size() + " files");
-		
 		AtomicBoolean haserror = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
 		List<String> accessions = recordfiles.parallelStream().map(filename -> {
@@ -167,14 +168,15 @@ public class Validator {
 				if (record == null) {
 					logger.error("Error in \'" + filename + "\'.");
 					haserror.set(true);
+					return null;
 				}
 				else {
 					logger.trace("validation passed for " + filename);
-					
 					// compare ACCESSION with filename
 					if (!record.ACCESSION().equals(FilenameUtils.getBaseName(filename.toString()))) {
 						logger.error("Error in \'" + filename.getName().toString() + "\'.");
 						logger.error("ACCESSION \'" + record.ACCESSION() + "\' does not match filename \'" + filename.getName().toString() + "\'");
+						haserror.set(true);
 					}
 					
 					// validate correct serialisation: String -> Record class -> String
@@ -194,10 +196,12 @@ public class Validator {
 								StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 								error_at.append('^');
 								logger.error(error_at);
+								haserror.set(true);
 								break;
 							}
 							line++;
 						}
+						
 					}
 				
 					// validate correct serialisation with db: String -> Record class -> db -> Record class -> String
@@ -216,7 +220,6 @@ public class Validator {
 							logger.error(errormsg);
 							System.exit(1);
 						}
-						
 						String recordStringFromDB = recordDatabase.toString();
 						position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromDB});
 						if (position != -1) {
@@ -233,6 +236,7 @@ public class Validator {
 									StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 									error_at.append('^');
 									logger.error(error_at);
+									haserror.set(true);
 									break;
 								}
 								line++;
@@ -246,11 +250,14 @@ public class Validator {
 			}
 			return record.ACCESSION();
 		})
+		.filter(Objects::nonNull)
 		.collect(Collectors.toList());;
 		
+		// check duplicates
 		Set<String> duplicates = new LinkedHashSet<String>();
 		Set<String> uniques = new HashSet<String>();
 		for(String c : accessions) {
+			//System.out.println(c);
 			if(!uniques.add(c)) {
 				duplicates.add(c);
 			}
@@ -258,6 +265,11 @@ public class Validator {
 		if (duplicates.size()>0) {
 			logger.error("There are duplicates in all accessions:");
 			logger.error(duplicates.toString());
+			haserror.set(true);
 		}
+		
+		// return 1 if there were errors
+		if (haserror.get()) System.exit(1);
+		else System.exit(0);
 	}
 }
