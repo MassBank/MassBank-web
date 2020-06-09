@@ -46,7 +46,7 @@ import org.apache.logging.log4j.LogManager;
  * This class provides the code for storage and retrieval of records in SQL databases. 
  * 
  * @author rmeier
- * @version 23-04-2019
+ * @version 09-06-2020
  *
  */
 public class DatabaseManager {
@@ -170,11 +170,6 @@ public class DatabaseManager {
 
 	
 	
-	
-	
-	
-	
-	
 	private final static String sqlGetContributorFromAccession = 
 			"SELECT ACRONYM, SHORT_NAME, FULL_NAME FROM CONTRIBUTOR WHERE ID =" +
 			"(" +
@@ -270,16 +265,8 @@ public class DatabaseManager {
 		
 		
 		
-		
-		
-		
-		
-		
 		statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
 		statementGetAccessions = this.con.prepareStatement(sqlGetAccessions);
-		
-		
-
 	}
 	
 	
@@ -300,7 +287,6 @@ public class DatabaseManager {
 		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
 		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'utf8';");
 		stmt.executeUpdate("USE " + dbName + ";");
-		
 		
 		logger.trace("Executing sql statements in file at: \"" + DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql") + "\".");
 		ScriptRunner runner = new ScriptRunner(connection, false, false);
@@ -387,9 +373,6 @@ public class DatabaseManager {
 	 * Store the content of the given record in the database
 	 * 
 	 * @param  acc the record to store
-	 * 
-	 * @author rmeier
-	 * @version 25-05-2020
 	 */
 	public void persistAccessionFile(Record acc) {
 		boolean bulk=false;

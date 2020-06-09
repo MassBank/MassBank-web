@@ -32,6 +32,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
@@ -69,23 +71,50 @@ public class RefreshDatabase {
 			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, true));
 		}
 		
-		for (File recordfile : recordfiles) {
-			logger.info("Validating \"" + recordfile + "\".");
-			String contributor = recordfile.getParentFile().getName();
+		List<Record> accessions = recordfiles.parallelStream().map(filename -> {
+			Record record=null;
+			logger.info("Validating \"" + filename + "\".");
+			String contributor = filename.getParentFile().getName();
 			try {
-				String recordAsString = FileUtils.readFileToString(recordfile, StandardCharsets.UTF_8);
-				Record record = Validator.validate(recordAsString, contributor);
-				if (record == null) {
-					logger.error("Error reading and validating record \"" + recordfile.toString() + "\".");
-					return;
-				}
-				logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
-				db.persistAccessionFile(record);
+				String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				record = Validator.validate(recordAsString, contributor);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if (record == null) {
+				logger.error("Error reading/validating record \"" + filename.toString() + "\".");
+			}
+			return record;
+		})
+		.filter(Objects::nonNull)
+		.collect(Collectors.toList());
+		
+		System.out.println(accessions.size());
+		
+		for (Record accession : accessions) {
+			logger.trace("Writing record \"" + accession.ACCESSION() + "\" to database.");
+			db.persistAccessionFile(accession);
 		}
+		
+//		for (File recordfile : recordfiles) {
+//			logger.info("Validating \"" + recordfile + "\".");
+//			String contributor = recordfile.getParentFile().getName();
+//			try {
+//				String recordAsString = FileUtils.readFileToString(recordfile, StandardCharsets.UTF_8);
+//				Record record = Validator.validate(recordAsString, contributor);
+//				if (record == null) {
+//					logger.error("Error reading and validating record \"" + recordfile.toString() + "\".");
+//					return;
+//				}
+//				logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
+//				db.persistAccessionFile(record);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+
 		
 		logger.trace("Setting Timestamp in database");
 		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
