@@ -30,8 +30,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,51 +49,53 @@ import org.apache.logging.log4j.Logger;
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
-	
+
 	public static void main(String[] args) throws FileNotFoundException, SQLException, ConfigurationException, IOException {
-			logger.trace("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
-			DatabaseManager.init_db(Config.get().tmpdbName());
-			
-			logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
-			DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
-			
-			logger.trace("Get version of data source.");
-			String version	= FileUtils.readFileToString(new File(Config.get().DataRootPath()+"/VERSION"), StandardCharsets.UTF_8);
-			
-			logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
-			DirectoryStream<Path> path = Files.newDirectoryStream(FileSystems.getDefault().getPath(Config.get().DataRootPath()));
-			for (Path contributorPath : path) {
-				if (!Files.isDirectory(contributorPath)) continue;
-				if (contributorPath.endsWith(".git")) continue;
-				if (contributorPath.endsWith(".scripts")) continue;
-				if (contributorPath.endsWith("figure")) continue;
-				
-				String contributor = contributorPath.getFileName().toString();
-				logger.trace("Opening contributor path \"" + contributor + "\" and iterate over content.");
-				DirectoryStream<Path> path2 = Files.newDirectoryStream(contributorPath);
-				for (Path recordPath : path2) {
-					logger.info("Validating \"" + recordPath + "\".");
-					String recordAsString	= FileUtils.readFileToString(recordPath.toFile(), StandardCharsets.UTF_8);
-					Record record = Validator.validate(recordAsString, contributor);
-					if (record == null) {
-						logger.error("Error reading and validating record \"" + recordPath.toString() + "\".");
-						continue;
-					}
-					logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
-					db.persistAccessionFile(record);
+		logger.trace("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
+		DatabaseManager.init_db(Config.get().tmpdbName());
+		
+		logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
+		DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
+		
+		logger.trace("Get version of data source.");
+		String version	= FileUtils.readFileToString(new File(Config.get().DataRootPath()+"/VERSION"), StandardCharsets.UTF_8);
+		
+		logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
+		File dataRootPath = new File(Config.get().DataRootPath());
+		List<File> recordfiles = new ArrayList<>();
+		for (String file : dataRootPath.list(DirectoryFileFilter.INSTANCE)) {
+			if (file.equals(".scripts")) continue;
+			if (file.equals(".figure")) continue;
+			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, true));
+		}
+		
+		for (File recordfile : recordfiles) {
+			logger.info("Validating \"" + recordfile + "\".");
+			String contributor = recordfile.getParentFile().getName();
+			try {
+				String recordAsString = FileUtils.readFileToString(recordfile, StandardCharsets.UTF_8);
+				Record record = Validator.validate(recordAsString, contributor);
+				if (record == null) {
+					logger.error("Error reading and validating record \"" + recordfile.toString() + "\".");
+					return;
 				}
-				path2.close();
+				logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
+				db.persistAccessionFile(record);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			path.close();
-			
-			logger.trace("Setting Timestamp in database");
-			PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
-			stmnt.setString(1, version);
-			stmnt.executeUpdate();
-			db.getConnection().commit();
-			db.closeConnection();
-						
-			logger.trace("Moving new database to MassBank database.");
-			DatabaseManager.move_temp_db_to_main_massbank();
+		}
+		
+		logger.trace("Setting Timestamp in database");
+		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
+		stmnt.setString(1, version);
+		stmnt.executeUpdate();
+		db.getConnection().commit();
+		db.closeConnection();
+					
+		logger.trace("Moving new database to MassBank database.");
+		DatabaseManager.move_temp_db_to_main_massbank();
+		
 	}
 }
