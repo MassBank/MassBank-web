@@ -88,7 +88,19 @@ public class DatabaseManager {
 	private final PreparedStatement statementInsertCOMPOUND_NAME;
 	private final static String selectCOMPOUND_NAME = "SELECT * FROM COMPOUND_NAME WHERE COMPOUND = ? ORDER BY NAME";
 	private final PreparedStatement statementSelectCOMPOUND_NAME;
-
+	// TABLE CH_LINK
+	private final static String insertCH_LINK = "INSERT INTO CH_LINK(COMPOUND, DATABASE_NAME, DATABASE_ID) VALUES(?,?,?)";
+	private final PreparedStatement statementInsertCH_LINK;
+	private final static String selectCH_LINK = "SELECT * FROM CH_LINK WHERE COMPOUND = ? ORDER BY ID";
+	private final PreparedStatement statementSelectCH_LINK;
+	// TABLE SAMPLE
+	private final static String insertSAMPLE = "INSERT INTO SAMPLE(SP_SCIENTIFIC_NAME, SP_LINEAGE) VALUES(?,?)";
+	private final PreparedStatement statementInsertSAMPLE;
+	private final static String selectSAMPLE = "SELECT * FROM SAMPLE WHERE ID = ?";
+	private final PreparedStatement statementSelectSAMPLE;
+	
+	
+	
 	
 	
 	
@@ -113,9 +125,12 @@ public class DatabaseManager {
 
 	
 	
+	
+	
+	
+	
 	private final static String sqlAC_CHROMATOGRAPHY = "SELECT * FROM AC_CHROMATOGRAPHY WHERE RECORD = ? ORDER BY ID";
 	private final static String sqlAC_MASS_SPECTROMETRY = "SELECT * FROM AC_MASS_SPECTROMETRY WHERE RECORD = ? ORDER BY ID";
-	private final static String sqlCH_LINK = "SELECT * FROM CH_LINK WHERE COMPOUND = ? ORDER BY ID";
 	private final static String sqlINSTRUMENT = "SELECT * FROM INSTRUMENT WHERE ID = ?";
 	private final static String sqlMS_DATA_PROCESSING = "SELECT * FROM MS_DATA_PROCESSING WHERE RECORD = ? ORDER BY ID";
 	private final static String sqlMS_FOCUSED_ION = "SELECT * FROM MS_FOCUSED_ION WHERE RECORD = ? ORDER BY ID";
@@ -123,7 +138,6 @@ public class DatabaseManager {
 	private final static String sqlPK_NUM_PEAK = "SELECT * FROM PK_NUM_PEAK WHERE RECORD = ?";
 	private final static String sqlRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
 	private final static String sqlDEPRECATED_RECORD = "SELECT * FROM DEPRECATED_RECORD WHERE ACCESSION = ?";
-	private final static String sqlSAMPLE = "SELECT * FROM SAMPLE WHERE ID = ?";
 	private final static String sqlSP_LINK = "SELECT * FROM SP_LINK WHERE RECORD = ?";
 	private final static String sqlSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE RECORD = ? ORDER BY ID";
 	private final static String sqlANNOTATION_HEADER = "SELECT * FROM ANNOTATION_HEADER WHERE RECORD = ?";
@@ -144,7 +158,6 @@ public class DatabaseManager {
 	
 	private final PreparedStatement statementAC_CHROMATOGRAPHY;
 	private final PreparedStatement statementAC_MASS_SPECTROMETRY;
-	private final PreparedStatement statementCH_LINK;
 	private final PreparedStatement statementINSTRUMENT;
 	private final PreparedStatement statementMS_DATA_PROCESSING;
 	private final PreparedStatement statementMS_FOCUSED_ION;
@@ -152,15 +165,12 @@ public class DatabaseManager {
 	private final PreparedStatement statementPK_NUM_PEAK;
 	private final PreparedStatement statementRECORD;
 	private final PreparedStatement statementDEPRECATED_RECORD;
-	private final PreparedStatement statementSAMPLE;
 	private final PreparedStatement statementSP_LINK;
 	private final PreparedStatement statementSP_SAMPLE;
 	private final PreparedStatement statementANNOTATION_HEADER;
 	private final PreparedStatement statementGetContributorFromAccession;
 	private final PreparedStatement statementGetAccessions;
 	
-	private final static String insertCH_LINK = "INSERT INTO CH_LINK(COMPOUND, DATABASE_NAME, DATABASE_ID) VALUES(?,?,?)";
-	private final static String insertSAMPLE = "INSERT INTO SAMPLE VALUES(?,?,?)";
 	private final static String insertSP_LINK = "INSERT INTO SP_LINK VALUES(?,?)";
 	private final static String insertSP_SAMPLE = "INSERT INTO SP_SAMPLE(RECORD, SP_SAMPLE) VALUES(?,?)";
 	private final static String insertINSTRUMENT = "INSERT INTO INSTRUMENT VALUES(?,?,?)";
@@ -172,8 +182,6 @@ public class DatabaseManager {
 	private final static String insertPEAK = "INSERT INTO PEAK VALUES(?,?,?,?,?,?)";
 	private final static String insertANNOTATION_HEADER = "INSERT INTO ANNOTATION_HEADER VALUES(?,?)";
 	
-	private final PreparedStatement statementInsertCH_LINK;
-	private final PreparedStatement statementInsertSAMPLE;
 	private final PreparedStatement statementInsertSP_LINK;
 	private final PreparedStatement statementInsertSP_SAMPLE;
 	private final PreparedStatement statementInsertINSTRUMENT;
@@ -226,10 +234,7 @@ public class DatabaseManager {
 		logger.trace("Opening database connection with url\"" + link + "\".");
 		Connection connection = DriverManager.getConnection(link);
 		
-		// remove trigger
 		StringBuilder sb = new StringBuilder();
-		sb.append("DROP TRIGGER MassBank.upd_check;\n");
-		sb.append("DROP TRIGGER MassBankNew.upd_check;\n");
 		
 		// get all tables
 		Statement stmt = connection.createStatement();
@@ -256,17 +261,6 @@ public class DatabaseManager {
 		sb.append("DROP DATABASE " + Config.get().tmpdbName() + ";\n");
 		sb.append("DROP DATABASE MassBankBackup;\n");
 		
-		// add trigger to MassBank
-		sb.append(	"USE MassBank;\n" +
-					"delimiter //\n" + 
-					"CREATE TRIGGER upd_check BEFORE INSERT ON SAMPLE\n" + 
-					"	FOR EACH ROW\n" + 
-					"	BEGIN\n" + 
-					"	IF ((NEW.SP_SCIENTIFIC_NAME IS NULL) AND (NEW.SP_LINEAGE IS NULL)) THEN\n" + 
-					"		SET NEW.ID = -1;\n" + 
-					"	END IF;\n" + 
-					"END;//");
-
 		logger.trace("Running sql commands:\n" + sb.toString());
 		ScriptRunner runner = new ScriptRunner(connection, false, false);
 		runner.runScript(new StringReader(sb.toString()));
@@ -301,10 +295,11 @@ public class DatabaseManager {
 		statementInsertCOMPOUND_NAME = this.con.prepareStatement(insertCOMPOUND_NAME);
 		statementSelectCOMPOUND_NAME = this.con.prepareStatement(selectCOMPOUND_NAME);
 		
+		statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
+		statementSelectCH_LINK = this.con.prepareStatement(selectCH_LINK);
 		
-		
-		
-		
+		statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);
+		statementSelectSAMPLE = this.con.prepareStatement(selectSAMPLE);
 		
 		
 		
@@ -321,7 +316,7 @@ public class DatabaseManager {
 		
 		statementAC_CHROMATOGRAPHY = this.con.prepareStatement(sqlAC_CHROMATOGRAPHY);
 		statementAC_MASS_SPECTROMETRY = this.con.prepareStatement(sqlAC_MASS_SPECTROMETRY);
-		statementCH_LINK = this.con.prepareStatement(sqlCH_LINK);
+		
 		statementINSTRUMENT = this.con.prepareStatement(sqlINSTRUMENT);
 		statementMS_DATA_PROCESSING = this.con.prepareStatement(sqlMS_DATA_PROCESSING);
 		statementMS_FOCUSED_ION = this.con.prepareStatement(sqlMS_FOCUSED_ION);
@@ -329,14 +324,12 @@ public class DatabaseManager {
 		statementPK_NUM_PEAK = this.con.prepareStatement(sqlPK_NUM_PEAK);
 		statementRECORD = this.con.prepareStatement(sqlRECORD);
 		statementDEPRECATED_RECORD = this.con.prepareStatement(sqlDEPRECATED_RECORD);
-		statementSAMPLE = this.con.prepareStatement(sqlSAMPLE);
+		
 		statementSP_LINK = this.con.prepareStatement(sqlSP_LINK);
 		statementSP_SAMPLE = this.con.prepareStatement(sqlSP_SAMPLE);
 		statementANNOTATION_HEADER = this.con.prepareStatement(sqlANNOTATION_HEADER);
 		statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
 		statementGetAccessions = this.con.prepareStatement(sqlGetAccessions);
-		statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
-		statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);
 		statementInsertSP_LINK = this.con.prepareStatement(insertSP_LINK);
 		statementInsertSP_SAMPLE = this.con.prepareStatement(insertSP_SAMPLE);
 		statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS);
@@ -490,16 +483,15 @@ public class DatabaseManager {
 				
 				//System.out.println(System.nanoTime());
 				int sampleId = -1;
-				statementInsertSAMPLE.setNull(1, java.sql.Types.INTEGER);
 				if (acc.SP_SCIENTIFIC_NAME() != null) {
-					statementInsertSAMPLE.setString(2, acc.SP_SCIENTIFIC_NAME());
+					statementInsertSAMPLE.setString(1, acc.SP_SCIENTIFIC_NAME());
 				} else {
-					statementInsertSAMPLE.setNull(2, java.sql.Types.VARCHAR);
+					statementInsertSAMPLE.setNull(1, java.sql.Types.VARCHAR);
 				}
 				if (acc.SP_LINEAGE() != null) {
-					statementInsertSAMPLE.setString(3, acc.SP_LINEAGE());
+					statementInsertSAMPLE.setString(2, acc.SP_LINEAGE());
 				} else {
-					statementInsertSAMPLE.setNull(3, java.sql.Types.VARCHAR);
+					statementInsertSAMPLE.setNull(2, java.sql.Types.VARCHAR);
 				}
 				if (acc.SP_SCIENTIFIC_NAME() != null || acc.SP_LINEAGE() != null) {
 					statementInsertSAMPLE.executeUpdate();
@@ -564,7 +556,7 @@ public class DatabaseManager {
 				for (Pair<String, String> el : acc.SP_LINK()) {
 					statementInsertSP_LINK.setString(1, acc.ACCESSION());
 					statementInsertSP_LINK.setString(2, el.getLeft() + " " + el.getRight());
-		//			statementInsertSP_LINK.executeUpdate();
+		//			statementInsertSP_LINK.executeUpdate();Select
 					statementInsertSP_LINK.addBatch();
 				}
 				if (!bulk) {
@@ -865,8 +857,8 @@ public class DatabaseManager {
 			}
 			set.close();
 			
-			this.statementCH_LINK.setInt(1, compoundID);
-			set = this.statementCH_LINK.executeQuery();
+			this.statementSelectCH_LINK.setInt(1, compoundID);
+			set = this.statementSelectCH_LINK.executeQuery();
 			List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
 			while (set.next()) {
 				Pair<String, String> link = Pair.of(set.getString("DATABASE_NAME"), set.getString("DATABASE_ID"));
@@ -900,8 +892,8 @@ public class DatabaseManager {
 			}
 			acc.CH_NAME(tmpList2);
 			
-			this.statementSAMPLE.setInt(1,sampleID);
-			set = this.statementSAMPLE.executeQuery();
+			this.statementSelectSAMPLE.setInt(1,sampleID);
+			set = this.statementSelectSAMPLE.executeQuery();
 			if (set.next()) {
 				acc.SP_SCIENTIFIC_NAME(set.getString("SP_SCIENTIFIC_NAME"));
 				acc.SP_LINEAGE(set.getString("SP_LINEAGE"));
