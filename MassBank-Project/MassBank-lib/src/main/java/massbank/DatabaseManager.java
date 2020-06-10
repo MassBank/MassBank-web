@@ -396,23 +396,22 @@ public class DatabaseManager {
 					}
 				}
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		if (acc.DEPRECATED()) {
-			// deprecated records go into table DEPRECATED_RECORD
-			try {
+			if (acc.DEPRECATED()) {
 				statementInsertDEPRECATED_RECORD.setString(1, acc.ACCESSION());
 				statementInsertDEPRECATED_RECORD.setInt(2, contributorId);
 				statementInsertDEPRECATED_RECORD.setBlob(3, new ByteArrayInputStream(acc.DEPRECATED_CONTENT().getBytes()));
 				statementInsertDEPRECATED_RECORD.executeUpdate();
-			} catch (SQLException e) {
-				e.printStackTrace();
+				return;
 			}
-			return;
+			
+			
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		
+				
 		try {
 			statementInsertCOMPOUND.setString(1, acc.CH_FORMULA());
 			statementInsertCOMPOUND.setDouble(2, acc.CH_EXACT_MASS().doubleValue());

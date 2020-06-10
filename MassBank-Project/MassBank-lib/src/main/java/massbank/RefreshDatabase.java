@@ -24,10 +24,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,7 +43,7 @@ import org.apache.logging.log4j.Logger;
  * and move the new database to <i>dbName</i>.
  *
  * @author rmeier
- * @version 23-04-2019
+ * @version 10-06-2020
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
@@ -57,7 +53,7 @@ public class RefreshDatabase {
 		DatabaseManager.init_db(Config.get().tmpdbName());
 		
 		logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
-		DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
+		final DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
 		
 		logger.trace("Get version of data source.");
 		String version	= FileUtils.readFileToString(new File(Config.get().DataRootPath()+"/VERSION"), StandardCharsets.UTF_8);
@@ -96,25 +92,6 @@ public class RefreshDatabase {
 			logger.trace("Writing record \"" + accession.ACCESSION() + "\" to database.");
 			db.persistAccessionFile(accession);
 		}
-		
-//		for (File recordfile : recordfiles) {
-//			logger.info("Validating \"" + recordfile + "\".");
-//			String contributor = recordfile.getParentFile().getName();
-//			try {
-//				String recordAsString = FileUtils.readFileToString(recordfile, StandardCharsets.UTF_8);
-//				Record record = Validator.validate(recordAsString, contributor);
-//				if (record == null) {
-//					logger.error("Error reading and validating record \"" + recordfile.toString() + "\".");
-//					return;
-//				}
-//				logger.trace("Writing record \"" + record.ACCESSION() + "\" to database.");
-//				db.persistAccessionFile(record);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-
 		
 		logger.trace("Setting Timestamp in database");
 		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
