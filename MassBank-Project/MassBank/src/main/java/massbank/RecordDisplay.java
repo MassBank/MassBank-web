@@ -369,7 +369,7 @@ public class RecordDisplay extends HttpServlet {
 		        request.setAttribute("structureddata", structureddata);
 		        request.setAttribute("svg", svg);
 			}
-	        request.getRequestDispatcher("/RecordDisplay2.jsp").forward(request, response);
+	        request.getRequestDispatcher("/RecordDisplay.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Cannot load record", e);
         }
