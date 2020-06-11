@@ -46,6 +46,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
+import massbank.db.DatabaseManager;
+
 @WebServlet("/RecordDisplay")
 public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;

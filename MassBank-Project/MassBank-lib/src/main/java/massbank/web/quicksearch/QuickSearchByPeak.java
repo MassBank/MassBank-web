@@ -2,7 +2,7 @@ package massbank.web.quicksearch;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.DatabaseManager;
+import massbank.db.DatabaseManager;
 import massbank.web.SearchFunction;
 import massbank.web.quicksearch.Search.SearchResult;
 

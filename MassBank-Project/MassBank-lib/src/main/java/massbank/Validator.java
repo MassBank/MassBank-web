@@ -29,6 +29,8 @@ import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
+import massbank.db.DatabaseManager;
+
 /**
  * This class validates a record file or String by using the syntax of {@link RecordParserDefinition}.
  * @author rmeier

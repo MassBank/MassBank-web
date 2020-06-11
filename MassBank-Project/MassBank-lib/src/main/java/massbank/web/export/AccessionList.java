@@ -8,8 +8,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.DatabaseManager;
 import massbank.Record;
+import massbank.db.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class AccessionList implements SearchFunction<Record[]> {

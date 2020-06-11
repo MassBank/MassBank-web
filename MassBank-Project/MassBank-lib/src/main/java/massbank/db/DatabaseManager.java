@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  ******************************************************************************/
-package massbank;
+package massbank.db;
 
 import java.io.InputStreamReader;
 import java.io.ByteArrayInputStream;
@@ -39,6 +39,10 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.Logger;
+
+import massbank.Config;
+import massbank.Record;
+import massbank.ScriptRunner;
 import org.apache.logging.log4j.LogManager;
 
 /**

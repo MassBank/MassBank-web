@@ -2,7 +2,7 @@ package massbank.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.DatabaseManager;
+import massbank.db.DatabaseManager;
 
 public interface SearchFunction<E> {
 	

@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import massbank.DatabaseManager;
 import massbank.ResultRecord;
+import massbank.db.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {

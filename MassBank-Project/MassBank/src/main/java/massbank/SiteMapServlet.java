@@ -43,6 +43,9 @@ import org.apache.logging.log4j.Logger;
 import com.redfin.sitemapgenerator.SitemapIndexGenerator;
 import com.redfin.sitemapgenerator.WebSitemapGenerator;
 
+import massbank.db.DatabaseManager;
+import massbank.db.DatabaseTimestamp;
+
 /**
  * 
  * This servlet generates dynamic sitemap files. It serves a index

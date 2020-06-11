@@ -37,6 +37,8 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import massbank.db.DatabaseManager;
+
 /**
  * This class is called from command line to create a new temporary
  * database <i>tmpdbName</i>, fill it with all records found in <i>DataRootPath</i>
