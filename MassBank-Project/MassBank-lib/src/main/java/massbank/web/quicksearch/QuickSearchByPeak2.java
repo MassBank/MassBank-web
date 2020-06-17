@@ -13,74 +13,158 @@ import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
-public class Search {
+import massbank.db.DatabaseManager;
+import massbank.web.SearchFunction;
+import massbank.web.quicksearch.QuickSearchByPeak2.SearchResult;
 
+public class QuickSearchByPeak2 implements SearchFunction<SearchResult[]> {
+	
+	public static class SearchQueryParam {
+		public int threshold;
+		public int cutoff;
+		public float tolerance;
+		public boolean weight;
+		public boolean norm;
+		public String tolUnit;
+		public String val;
+		public String instType;
+		public String ion;
+		public int precursor;
+		public String mstype;
+		
+		public String toString() {
+			return 
+					"threshold=" + threshold + "; " + 
+					"cutoff=" + cutoff + "; " + 
+					"tolerance=" + tolerance + "; " + 
+					"weight=" + weight + "; " + 
+					"norm=" + norm + "; " + 
+					"tolUnit=" + tolUnit + "; " + 
+					"val=" + val + "; " +
+					"instType=" + instType + "; " +
+					"ion=" + ion + "; " +
+					"precursor=" + precursor + "; " +
+					"mstype=" + mstype;
+		}
+	}
+	
+	public static class SearchHitPeak {
+
+		public String qMz;
+		public double qVal;
+		public String hitMz;
+		public double hitVal;
+
+		public String toString() {
+			return 
+					"qMz=" + qMz + "; " +
+					"qVal=" + qVal + "; " +
+					"hitMz=" + hitMz + "; " +
+					"hitVal=" + hitVal;
+		}
+	}
+	
+	public static class SearchResScore{
+
+		public String id;
+		public int hitNumber;
+		public double hitScore;
+
+		public String toString() {
+			return 
+					"id=" + id + "; " +
+					"hitNumber=" + hitNumber + "; " +
+					"hitScore=" + hitScore;
+		}
+	}
+	
+	public static class SearchResult {
+		public final String accession;
+		public final String recordTitle;
+		public final int hitNumber;
+		public final double hitScore;
+		public final String ION_MODE;
+		public final String formula;
+		public final double exactMass;
+		public SearchResult(String accession, String recordTitle, int hitNumber, double hitScore, String ION_MODE, String formula, double exactMass) {
+			this.accession	= accession;
+			this.recordTitle	= recordTitle;
+			this.hitNumber	= hitNumber;
+			this.hitScore	= hitScore;
+			this.ION_MODE	= ION_MODE;
+			this.formula		= formula;
+			this.exactMass	= exactMass;
+		}
+	}
+	
+	private ArrayList<SearchResult> result = new ArrayList<SearchResult>();
+	
 	private static boolean PARAM_WEIGHT_LINEAR = true;
-
 	private static boolean PARAM_WEIGHT_SQUARE = false;
-
 	private static boolean PARAM_NORM_LOG = true;
-
 	private static boolean PARAM_NORM_SQRT = false;
-
-	private HttpServletRequest request;
-
+	
 	private ResultSet resMySql;
-
 	private HashMap<String, ArrayList<String>> mapReqParam = new HashMap<String, ArrayList<String>>();
-
 	private SearchQueryParam queryParam = new SearchQueryParam();
-
 	private ArrayList<String> queryMz = new ArrayList<String>();
-
 	private ArrayList<Double> queryVal = new ArrayList<Double>();
-
 	private HashMap<String, ArrayList<SearchHitPeak>> mapHitPeak = new HashMap<String, ArrayList<SearchHitPeak>>();
-
 	private HashMap<String, Integer> mapMzCnt = new HashMap<String, Integer>();
-
 	private ArrayList<SearchResScore> vecScore = new ArrayList<SearchResScore>();
-
 	private double m_fLen;
-
-	private double m_fSum;
-
 	private int m_iCnt;
-
-	private boolean isQuick = false;
-
-//	private boolean isInteg = false;
-
-	private boolean isAPI = false;
-
 	private Connection con;
+	
+	
+	public void getParameters(HttpServletRequest request) {
+		String strKey;
+		String[] strVal;
 
-	public Search(HttpServletRequest request, Connection con) {
-		this.request = request;
-		this.con = con;
-		execute();
+		String strReqType = request.getMethod();
+		if (strReqType.equals("GET") || strReqType.equals("POST")) {
+			Map<String, String[]> parameterMap = request.getParameterMap();
+
+			for (Entry<String, String[]> e : parameterMap.entrySet()) {
+				strKey = e.getKey().toUpperCase();
+				strVal = e.getValue();
+				for (String s : strVal) {
+					String[] split = s.split("\n");
+					for (String s2 : split) {
+						if (mapReqParam.containsKey(strKey)) {
+							mapReqParam.get(strKey).add(s2);
+						} else {
+							mapReqParam.put(strKey.toUpperCase(), new ArrayList<String>());
+							mapReqParam.get(strKey).add(s2);
+						}
+					}
+				}
+			}
+		} 
 	}
 
+	public SearchResult[] search(DatabaseManager databaseManager) {
+		con = databaseManager.getConnection();
+		execute();
+		return result.toArray(new SearchResult[result.size()]);
+	}
+	
+
+
+
+	
+
 	public void execute() {
-		
 //		System.out.println();
 //		System.out.println("PARAM_WEIGHT_LINEAR: " + PARAM_WEIGHT_LINEAR);
 //		System.out.println("PARAM_WEIGHT_SQUARE: " + PARAM_WEIGHT_SQUARE);
 //		System.out.println("PARAM_NORM_LOG: " + PARAM_NORM_LOG);
 //		System.out.println("PARAM_NORM_SQRT: " + PARAM_NORM_SQRT);
-//		System.out.println("isQuick: " + isQuick);
-////		System.out.println("isInteg: " + isInteg);
-//		System.out.println("isAPI: " + isAPI);
-		
-//		System.out.println();
-//		System.out.println("getReqParam");
-		getReqParam();		// fill HashMap<String, ArrayList<String>> mapReqParam (in case of POST method)
-//		System.out.println("mapReqParam: " + mapReqParam.size());
-//		System.out.println(mapReqParam);
-//		System.out.println();
-//		System.out.println("setQueryParam");
+
+
+		//System.out.println("setQueryParam");
 		setQueryParam();	// fill SearchQueryParam queryParam from HashMap<String, ArrayList<String>> mapReqParam
-//		System.out.println("queryParam: " + queryParam);
+		//System.out.println("queryParam: " + queryParam);
 //		System.out.println();
 //		System.out.println("setQueryPeak");
 		setQueryPeak();		// fill queryMz, queryVal, m_fLen, m_fSum, m_iCnt from queryParam
@@ -92,12 +176,12 @@ public class Search {
 //		System.out.println();
 //		System.out.println("searchPeak");
 		searchPeak();		// get hits from DB filling HashMap<String, ArrayList<SearchHitPeak>> mapHitPeak and HashMap<String, Integer> mapMzCnt
-//		System.out.println("mapHitPeak: " + mapHitPeak.size());
-//		System.out.println(mapHitPeak);
+		//System.out.println("mapHitPeak: " + mapHitPeak.size());
+		//System.out.println(mapHitPeak);
 //		for(Entry<String, ArrayList<SearchHitPeak>> entry : mapHitPeak.entrySet())
 //			System.out.println(entry.getKey() + "\t" + entry.getValue());
-//		System.out.println("mapMzCnt: " + mapMzCnt.size());
-//		System.out.println(mapMzCnt);
+		System.out.println("mapMzCnt: " + mapMzCnt.size());
+		System.out.println(mapMzCnt);
 //		System.out.println();
 //		System.out.println("setScore");
 		setScore();			// score hits filling ArrayList<SearchResScore> vecScore
@@ -110,11 +194,7 @@ public class Search {
 //		System.out.println(result);
 	}
 
-	private ArrayList<SearchResult> result = new ArrayList<SearchResult>();
-
-	public SearchResult[] getResult() {
-		return this.result.toArray(new SearchResult[this.result.size()]);
-	}
+	
 
 	private void outResult() {
 		// sort by score
@@ -136,16 +216,9 @@ public class Search {
 			for (int i = 0; i < resultObjects.length; i++) {
 				SearchResScore resScore = resultObjects[i];
 
-				if (isQuick || isAPI) {
-					sql = "SELECT RECORD_TITLE, AC_MASS_SPECTROMETRY_ION_MODE, CH_FORMULA, CH_EXACT_MASS "
-							+ "FROM RECORD R, COMPOUND C " + "WHERE R.ACCESSION = '" + resScore.id
-							+ "' AND R.CH = C.ID";
-//				} else if (isInteg) {
-//					sql = "SELECT NAME, ION, ID FROM PARENT_SPECTRUM WHERE SPECTRUM_NO=" + resScore.id;
-				} else {
-					sql = "SELECT RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD WHERE ACCESSION ='"
+				sql = "SELECT RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD WHERE ACCESSION ='"
 							+ resScore.id + "'";
-				}
+
 				stmnt = con.prepareStatement(sql);
 				resMySql = stmnt.executeQuery();
 				while (resMySql.next()) {
@@ -154,28 +227,10 @@ public class Search {
 //					String strIon = resMySql.getString(2);
 					String strIon = resMySql.getString("AC_MASS_SPECTROMETRY_ION_MODE");
 					String strId;
-//					if (isInteg) {
-////						strId = resMySql.getString(1);
-//						strId = resMySql.getString("NAME");
-//					} else {
-						strId = resScore.id;
-//					}
-					
-//					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
-//					sb.append(strId + "\t" + strName + "\t" + resScore.hitNumber + "\t" + resScore.hitScore + "\t" + strIon);
+					strId = resScore.id;
 					String formula	= null;
-					if (isQuick || isAPI) {
-//						String formula = resMySql.getString(3);
-						formula = resMySql.getString("CH_FORMULA");
-//						sb.append("\t" + formula);
-					}
 					double exactMass	= Double.NaN;
-					if (isAPI) {
-//						String emass = resMySql.getString(4);
-						String emass = resMySql.getString("CH_EXACT_MASS");
-						exactMass	= Double.parseDouble(emass);
-//						sb.append("\t" + emass);
-					}
+
 					
 					SearchResult searchResult	= new SearchResult(strId, strName, resScore.hitNumber, resScore.hitScore, strIon, formula, exactMass);
 //					result.add(sb.toString());
@@ -189,17 +244,11 @@ public class Search {
 	}
 
 	private void setScore() {
-		if (!queryParam.colType.equals("COSINE")) throw new IllegalArgumentException("Unknown score function");
 		
 		String sql;
 		PreparedStatement stmnt;
 		ArrayList<SearchHitPeak> vecHitPeak = new ArrayList<SearchHitPeak>();
 
-		String tblName = "PEAK";
-		if (existHeapTable("PEAK_HEAP")) {
-			// TODO
-			tblName = "PEAK_HEAP";
-		}
 
 		Set<Entry<String, ArrayList<SearchHitPeak>>> mapEntrySet = mapHitPeak.entrySet();
 		for (Entry<String, ArrayList<SearchHitPeak>> pIte1 : mapEntrySet) {
@@ -216,10 +265,7 @@ public class Search {
 				continue;
 			}
 
-			double fSum = 0;
 			double fLen = 0;
-			int iCnt = 0;
-
 			try {
 //				if (isInteg) {
 //					sql = "SELECT MZ, RELATIVE FROM PARENT_PEAK WHERE SPECTRUM_NO = " + strId + " AND RELATIVE >= "
@@ -268,8 +314,6 @@ public class Search {
 						iMul = 1;
 					}
 					fLen += fVal * fVal * iMul;
-					fSum += fVal * iMul;
-					iCnt += iMul;
 				}
 				resMySql.close();
 			} catch (SQLException e) {
@@ -301,9 +345,6 @@ public class Search {
 		}
 	}
 
-	private boolean existHeapTable(String string) {
-		return false;
-	}
 
 	private boolean searchPeak() {
 		String sql = "";
@@ -337,11 +378,12 @@ public class Search {
 			sql = "SHOW COLUMNS FROM RECORD LIKE 'AC_MASS_SPECTROMETRY_MS_TYPE'";
 			try {
 				stmnt = con.prepareStatement(sql);
+				System.out.println("1:" + sql);
+
 				resMySql = stmnt.executeQuery();
 				while (resMySql.next()) {
 					isMsType = true;
 					String ms = queryParam.mstype;
-					int idx;
 					sqlw2 = " AND T.MS_TYPE IN(";
 					for(String ms_token : ms.split(",")) {
 						sqlw2Params.add(ms_token);
@@ -385,7 +427,6 @@ public class Search {
 					sql += sqlw2;
 				}
 				sql += " ORDER BY ID";
-				
 				try {
 					/*
 SELECT T.ID 
@@ -398,6 +439,7 @@ FROM
 WHERE T.ION = ? ORDER BY ID
 					 */
 					int paramIdx = 1;
+					System.out.println(sql);
 					stmnt = con.prepareStatement(sql);
 					if (queryParam.ion.equals("-1")) {
 						stmnt.setString(paramIdx, "NEGATIVE");
@@ -419,6 +461,7 @@ WHERE T.ION = ? ORDER BY ID
 							paramIdx++;
 						}
 					}
+					System.out.println("2:" + sql);
 
 					// TODO does this have to be here
 					resMySql = stmnt.executeQuery();
@@ -452,6 +495,7 @@ WHERE T.ION = ? ORDER BY ID
 					strInstType += "?,";
 				}
 			}
+			
 			strInstType = strInstType.substring(0, strInstType.length() - 1);
 			sql = "SELECT ID FROM INSTRUMENT WHERE AC_INSTRUMENT_TYPE IN(";
 			sql += strInstType;
@@ -461,10 +505,12 @@ WHERE T.ION = ? ORDER BY ID
 				stmnt = con.prepareStatement(sql);
 				int paramIdx = 1;
 				for (String s : vecInstType) {
+					//System.out.println(s);
 					stmnt.setString(paramIdx, s);
 					paramIdx++;
 				}
-				
+				//System.out.println("3:" + sql);
+
 				resMySql = stmnt.executeQuery();
 				boolean isEmpty = true;
 				// ------------------------------------------------------------
@@ -516,7 +562,6 @@ WHERE T.ION = ? ORDER BY ID
 			}
 
 			sql += " ORDER BY ID";
-			
 			try {
 				stmnt = con.prepareStatement(sql);
 				int paramIdx = 1;
@@ -563,7 +608,6 @@ WHERE T.ION = ? ORDER BY ID
 						}
 					}
 				}
-
 				resMySql = stmnt.executeQuery();
 				isFilter = true;
 				// ------------------------------------------------------------
@@ -585,6 +629,128 @@ WHERE T.ION = ? ORDER BY ID
 		double fMin;
 		double fMax;
 		String sqlw;
+		
+		
+//		sql = "SELECT RECORD, PK_PEAK_RELATIVE, PK_PEAK_MZ FROM PEAK WHERE PK_PEAK_RELATIVE >= " + queryParam.cutoff + " AND (";
+//		for (int i = 0; i < queryMz.size(); i++) {
+//			String strMz = queryMz.get(i);
+//			double fMz = Double.parseDouble(strMz);
+//			double fVal = queryVal.get(i);
+//			
+//			float fTolerance = queryParam.tolerance;
+//			if (queryParam.tolUnit.equals("unit")) {
+//				fMin = fMz - fTolerance;
+//				fMax = fMz + fTolerance;
+//			} else {
+//				// PPM
+//				fMin = fMz * (1 - fTolerance / 1000000);
+//				fMax = fMz * (1 + fTolerance / 1000000);
+//			}
+//			fMin -= 0.00001;
+//			fMax += 0.00001;
+//			
+//			sql = sql + "(PK_PEAK_MZ BETWEEN " + fMin + " AND " + fMax + ")";
+//			if (i< queryMz.size()-1) sql = sql + " OR ";
+//		}
+//		sql = sql + ") GROUP BY RECORD";
+//		System.out.println(sql);
+//		
+//		try {
+//			stmnt = con.prepareStatement(sql);
+//			//System.out.println("5:" + sql);
+//
+//			resMySql = stmnt.executeQuery();
+//
+//			int prevAryNum = 0;
+//			while (resMySql.next()) {
+//				String strId = resMySql.getString("RECORD");
+//				
+//				if (isFilter) {
+//					boolean isFound = false;
+//					for (int j = prevAryNum; j < vecTargetId.size(); j++) {
+//						if (strId.compareTo(vecTargetId.get(j)) == 0) {
+//							isFound = true;
+//							prevAryNum = j + 1;
+//							break;
+//						}
+//					}
+//					if (!isFound) {
+//						continue;
+//					}
+//				}
+//
+//				double fHitVal = resMySql.getDouble("PK_PEAK_RELATIVE");
+//				double fHitMz = resMySql.getDouble("PK_PEAK_MZ");
+//				String strHitMz = Double.toString(fHitMz);
+//				System.out.println("fHitVal PK_PEAK_RELATIVE "+ fHitVal);
+//				System.out.println("fHitMz PK_PEAK_MZ "+ fHitMz);
+//				if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
+//					fHitVal *= fHitVal / 10;
+//				} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
+//					fHitVal *= fHitMz * fHitMz / 100;
+//				}
+//				System.out.println("* fHitVal PK_PEAK_RELATIVE "+ fHitVal);
+//
+//				if (queryParam.norm == PARAM_NORM_LOG) {
+//					fHitVal = Math.log(fHitVal);
+//				} else if (queryParam.norm == PARAM_NORM_SQRT) {
+//					fHitVal = Math.sqrt(fHitVal);
+//				}
+//				
+//				System.out.println("** fHitVal PK_PEAK_RELATIVE "+ fHitVal);
+//				System.out.println("** fHitMz M/Z "+ fHitMz);
+//				System.out.println("** strId ACCESSION "+ strId);
+//
+//
+//				// m/z, rel.int
+//				SearchHitPeak pHitPeak = new SearchHitPeak();
+//				for (int i = 0; i < queryMz.size(); i++) {
+//					String strMz = queryMz.get(i);
+//					double fMz = Double.parseDouble(strMz);
+//					double fVal = queryVal.get(i);
+//					
+//					float fTolerance = queryParam.tolerance;
+//					if (queryParam.tolUnit.equals("unit")) {
+//						fMin = fMz - fTolerance;
+//						fMax = fMz + fTolerance;
+//					} else {
+//						// PPM
+//						fMin = fMz * (1 - fTolerance / 1000000);
+//						fMax = fMz * (1 + fTolerance / 1000000);
+//					}
+//					fMin -= 0.00001;
+//					fMax += 0.00001;
+//					if (fHitMz>=fMin && fHitMz<=fMax) {
+//						pHitPeak.qMz = strMz;
+//						pHitPeak.qVal = fVal;
+//						continue;
+//					}
+//				}
+//				pHitPeak.hitMz = strHitMz;
+//				pHitPeak.hitVal = fHitVal;
+//				
+//				if (!mapHitPeak.containsKey(strId))
+//					mapHitPeak.put(strId, new ArrayList<SearchHitPeak>());
+//				mapHitPeak.get(strId).add(pHitPeak);
+//
+//				String key = strId + " " + strHitMz;
+//				Integer value = mapMzCnt.get(key);
+//				if (value == null) {
+//					mapMzCnt.put(key, 1);
+//				} else {
+//					mapMzCnt.put(key, value + 1);
+//				}
+//			}
+//			resMySql.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//		System.out.println(mapHitPeak.toString());
+//		System.out.println("mapHitPeak.size()" + mapHitPeak.size());
+
+		
+
 		for (int i = 0; i < queryMz.size(); i++) {
 			String strMz = queryMz.get(i);
 			double fMz = Double.parseDouble(strMz);
@@ -602,23 +768,21 @@ WHERE T.ION = ? ORDER BY ID
 			fMin -= 0.00001;
 			fMax += 0.00001;
 
-//			if (isInteg) {
-//				sql = "SELECT SPECTRUM_NO, MAX(PK_PEAK_RELATIVE), MZ FROM PARENT_PEAK WHERE ";
-//				sqlw = "PK_PEAK_RELATIVE >= " + queryParam.cutoff + " AND (MZ BETWEEN " + fMin + " AND " + fMax
-//						+ ") GROUP BY SPECTRUM_NO";
-//			} else {
-				sql = "SELECT MAX(CONCAT(LPAD(PK_PEAK_RELATIVE, 3, ' '), ' ', RECORD, ' ', PK_PEAK_MZ)) FROM PEAK WHERE ";
-				sqlw = "PK_PEAK_RELATIVE >= " + queryParam.cutoff + " AND (PK_PEAK_MZ BETWEEN " + fMin + " AND " + fMax
+			sql = "SELECT MAX(CONCAT(LPAD(PK_PEAK_RELATIVE, 3, ' '), ' ', RECORD, ' ', PK_PEAK_MZ)) FROM PEAK WHERE ";
+			sqlw = "PK_PEAK_RELATIVE >= " + queryParam.cutoff + " AND (PK_PEAK_MZ BETWEEN " + fMin + " AND " + fMax
 						+ ") GROUP BY RECORD";
-//			}
+
 			sql += sqlw;
 			try {
 				stmnt = con.prepareStatement(sql);
+				//System.out.println("5:" + sql);
+
 				resMySql = stmnt.executeQuery();
 
 				int prevAryNum = 0;
 				while (resMySql.next()) {
 					String[] vacVal = resMySql.getString(1).trim().split(" ");
+					//System.out.println(Arrays.deepToString(vacVal));
 					String strId = vacVal[1];
 
 					if (isFilter) {
@@ -634,21 +798,29 @@ WHERE T.ION = ? ORDER BY ID
 							continue;
 						}
 					}
-
+					
 					double fHitVal = Double.parseDouble(vacVal[0]);
 					String strHitMz = vacVal[2];
 					double fHitMz = Double.parseDouble(strHitMz);
-
+					System.out.println("fHitVal PK_PEAK_RELATIVE "+ fHitVal);
+					System.out.println("fHitMz PK_PEAK_MZ "+ fHitMz);
+					
 					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
 						fHitVal *= fHitVal / 10;
 					} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
 						fHitVal *= fHitMz * fHitMz / 100;
 					}
+					System.out.println("* fHitVal PK_PEAK_RELATIVE "+ fHitVal);
+
 					if (queryParam.norm == PARAM_NORM_LOG) {
 						fHitVal = Math.log(fHitVal);
 					} else if (queryParam.norm == PARAM_NORM_SQRT) {
 						fHitVal = Math.sqrt(fHitVal);
 					}
+					
+					System.out.println("** fHitVal PK_PEAK_RELATIVE "+ fHitVal);
+					System.out.println("** fHitMz M/Z "+ fHitMz);
+					System.out.println("** strId ACCESSION "+ strId);
 
 					// m/z, rel.int
 					SearchHitPeak pHitPeak = new SearchHitPeak();
@@ -674,6 +846,9 @@ WHERE T.ION = ? ORDER BY ID
 				return false;
 			}
 		}
+		System.out.println(mapHitPeak.toString());
+		System.out.println("mapHitPeak.size()" + mapHitPeak.size());
+
 		return true;
 	}
 
@@ -697,7 +872,6 @@ WHERE T.ION = ? ORDER BY ID
 				queryMz.add(sMz);
 				queryVal.add(fVal);
 				m_fLen += fVal * fVal;
-				m_fSum += fVal;
 				m_iCnt++;
 			}
 		}
@@ -728,31 +902,46 @@ WHERE T.ION = ? ORDER BY ID
 	}
 
 	public void setQueryParam() {
+		
+		//qpeak=273.096+22%0D%0A289.086+107%0D%0A290.118+14%0D%0A291.096+999%0D%0A292.113+162%0D%0A293.054+34%0D%0A579.169+37%0D%0A580.179+15%0D%0A
+		//&CUTOFF=5
+		//&num=50
+		//&type=quick
+		//&searchType=peak
+		//&sortKey=not
+		//&sortAction=1
+		//&pageNo=1
+		//&exec=
+		//&inst_grp=ESI
+		//&inst=CE-ESI-TOF
+		//&inst=ESI-ITFT
+		//&inst=ESI-ITTOF
+		//&inst=ESI-QIT
+		//&inst=ESI-QTOF
+		//&inst=ESI-TOF
+		//&inst=LC-ESI-IT
+		//&inst=LC-ESI-ITFT
+		//&inst=LC-ESI-ITTOF
+		//&inst=LC-ESI-Q
+		//&inst=LC-ESI-QFT
+		//&inst=LC-ESI-QIT
+		//&inst=LC-ESI-QQ
+		//&inst=LC-ESI-QQQ
+		//&inst=LC-ESI-QTOF
+		//&inst=LC-ESI-TOF
+		//&ms=MS
+		//&ion=0
 		int val;
-		queryParam.start = 1;
-		queryParam.num = 0;
-		queryParam.floor = 1;
-		queryParam.celing = 1000;
 		queryParam.threshold = 3;
 		queryParam.cutoff = 20;
 		queryParam.tolerance = 0.3f;
-		queryParam.colType = "COSINE";
 		queryParam.weight = PARAM_WEIGHT_SQUARE;
 		queryParam.norm = PARAM_NORM_SQRT;
 		queryParam.tolUnit = "unit";
 		queryParam.precursor = 0;
 		queryParam.mstype = "";
 
-		if (mapReqParam.containsKey("START")) {
-			val = Integer.parseInt(mapReqParam.get("Start").get(0));
-			if (val > 0)
-				queryParam.start = val;
-		}
-		if (mapReqParam.containsKey("NUM")) {
-			val = Integer.parseInt(mapReqParam.get("NUM").get(0));
-			if (val > 0)
-				queryParam.num = val;
-		}
+		
 		if (mapReqParam.containsKey("NUMTHRESHOLD")) {
 			queryParam.threshold = Integer.parseInt(mapReqParam.get("NUMTHRESHOLD").get(0));
 		}
@@ -763,9 +952,6 @@ WHERE T.ION = ? ORDER BY ID
 			queryParam.tolerance = Float.parseFloat(mapReqParam.get("TOLERANCE").get(0));
 		}
 
-		if (mapReqParam.containsKey("CORTYPE")) {
-			queryParam.colType = mapReqParam.get("CORTYPE").get(0);
-		}
 		if (mapReqParam.containsKey("WEIGHT")) {
 			if (mapReqParam.get("WEIGHT").get(0).compareTo("LINEAR") == 0) {
 				queryParam.weight = PARAM_WEIGHT_LINEAR;
@@ -801,23 +987,6 @@ WHERE T.ION = ? ORDER BY ID
 			s = s.substring(0, s.length() - 1);
 			queryParam.val = s;
 		}
-		// TODO there are no parameters like quick but type with value quick
-		if (mapReqParam.containsKey("QUICK")) {
-			isQuick = true;
-		}
-		isQuick = true;
-
-		if (mapReqParam.containsKey("INTEG")) {
-			String strVal = mapReqParam.get("INTEG").get(0);
-			if (strVal.equals("true")) {
-				throw new IllegalArgumentException("Parameter 'INTEG' not supported (any more)");
-//				isInteg = true;
-			}
-		}
-
-		if (mapReqParam.containsKey("API")) {
-			isAPI = true;
-		}
 
 		if (mapReqParam.containsKey("INST")) {
 			StringBuilder sb = new StringBuilder();
@@ -825,6 +994,7 @@ WHERE T.ION = ? ORDER BY ID
 				sb.append(s + ",");
 			}
 			String s = sb.toString();
+			System.out.println(s);
 			s = s.substring(0, s.length() - 1);
 			queryParam.instType = s;
 		}
@@ -852,141 +1022,7 @@ WHERE T.ION = ? ORDER BY ID
 		}
 	}
 
-	public boolean getReqParam() {
-		String strLine;
-		String strKey;
-		String[] strVal;
 
-		// REQUEST_METHOD
-		String strReqType = request.getMethod();
-		if (strReqType == null || strReqType.isEmpty())
-			return false;
-
-		String strParam;
-		// GET
-		if (strReqType.equals("GET")) {
-			strParam = request.getQueryString();
-			if (strParam == null || strParam.isEmpty())
-				return false;
-		}
-
-		// POST
-		else if (strReqType.equals("POST")) {
-			int iLen = request.getContentLength();
-			if (iLen < 0) {
-				return false;
-			} else {
-				Map<String, String[]> parameterMap = request.getParameterMap();
-				for (Entry<String, String[]> e : parameterMap.entrySet()) {
-					strKey = e.getKey().toUpperCase();
-					strVal = e.getValue();
-					for (String s : strVal) {
-						String[] split = s.split("\n");
-						for (String s2 : split) {
-							if (mapReqParam.containsKey(strKey)) {
-								mapReqParam.get(strKey).add(s2);
-							} else {
-								mapReqParam.put(strKey.toUpperCase(), new ArrayList<String>());
-								mapReqParam.get(strKey).add(s2);
-							}
-						}
-					}
-				}
-			}
-		} else {
-			return false;
-		}
-		return true;
-	}
 	
-	public static class SearchQueryParam {
-		public int start;
-		public int num;
-		public int floor;
-		public int celing;
-		public int threshold;
-		public int cutoff;
-		public float tolerance;
-		public String colType;
-		public boolean weight;
-		public boolean norm;
-		public String tolUnit;
-		public String val;
-		public String instType;
-		public String ion;
-		public int precursor;
-		public String mstype;
-		
-		public SearchQueryParam() {
-		}
-		public String toString() {
-			return 
-					"start=" + start + "; " + 
-					"num=" + num + "; " + 
-					"floor=" + floor + "; " + 
-					"celing=" + celing + "; " + 
-					"threshold=" + threshold + "; " + 
-					"cutoff=" + cutoff + "; " + 
-					"tolerance=" + tolerance + "; " + 
-					"colType=" + colType + "; " + 
-					"weight=" + weight + "; " + 
-					"norm=" + norm + "; " + 
-					"tolUnit=" + tolUnit + "; " + 
-					"val=" + val + "; " +
-					"instType=" + instType + "; " +
-					"ion=" + ion + "; " +
-					"precursor=" + precursor + "; " +
-					"mstype=" + mstype;
-		}
-	}
-	public static class SearchHitPeak {
 
-		public String qMz;
-		public double qVal;
-		public String hitMz;
-		public double hitVal;
-
-		public SearchHitPeak() {
-		}
-		public String toString() {
-			return 
-					"qMz=" + qMz + "; " +
-					"qVal=" + qVal + "; " +
-					"hitMz=" + hitMz + "; " +
-					"hitVal=" + hitVal;
-		}
-	}
-	public static class SearchResScore{
-
-		public String id;
-		public int hitNumber;
-		public double hitScore;
-
-		SearchResScore() {
-		}
-		public String toString() {
-			return 
-					"id=" + id + "; " +
-					"hitNumber=" + hitNumber + "; " +
-					"hitScore=" + hitScore;
-		}
-	}
-	public static class SearchResult {
-		public final String accession;
-		public final String recordTitle;
-		public final int hitNumber;
-		public final double hitScore;
-		public final String ION_MODE;
-		public final String formula;
-		public final double exactMass;
-		public SearchResult(String accession, String recordTitle, int hitNumber, double hitScore, String ION_MODE, String formula, double exactMass) {
-			this.accession	= accession;
-			this.recordTitle	= recordTitle;
-			this.hitNumber	= hitNumber;
-			this.hitScore	= hitScore;
-			this.ION_MODE	= ION_MODE;
-			this.formula		= formula;
-			this.exactMass	= exactMass;
-		}
-	}
 }
