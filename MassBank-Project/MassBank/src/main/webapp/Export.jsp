@@ -25,18 +25,17 @@
 <head>
 	<title>MassBank | Database | Export</title>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Export of defined collections of spectra in MassBank.eu.">
 	<meta name="keywords" content="APCI,ITFT,QFT,ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative,QIT,ITTOF,EB,mass spectra,MassBank,m/z">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" >
-	<link href="favicon.ico" rel="icon" type="image/x-icon">
-	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.9.0-web/css/all.min.css">
-	<script src="js/jquery-3.4.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.13.1-web/css/all.min.css">
+	<script src="js/jquery-3.5.1.min.js"></script>
 	<script src="js/MassCalc.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
@@ -62,7 +61,17 @@
 						<svg viewBox="0 0 32 28" style="width: 16px">
 							<use href="img/arrow.svg#arrow_right" />
 						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
+						<a class="w3-text-dark-grey" href="#" onclick="document.getElementById('id01').style.display='block'">
+							<b>Documentation</b>
+						</a>						
+					</div>
+				</div>
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>Mass calculator</b></a>
 					</div>
 				</div>
 			</div>
@@ -89,5 +98,25 @@
 	<br>
 	<jsp:include page="copyrightline.html"/>
 
+	<div id="id01" class="w3-modal">
+		<div class="w3-modal-content w3-animate-top" style="height: 90%;">
+			<header class="w3-container w3-indigo">
+				<div class="w3-display-topright">
+					<a href="https://massbank.github.io/MassBank-documentation/" target="_blank"
+						onclick="document.getElementById('id01').style.display='none'" class="w3-button">
+						&#8599;
+					</a>
+					<span onclick="document.getElementById('id01').style.display='none'" class="w3-button">
+						&times;
+					</span>
+				</div>
+				<h4>Documentation at
+					https://massbank.github.io/MassBank-documentation/</h4>
+			</header>
+
+			<iframe src="https://massbank.github.io/MassBank-documentation/"
+				id="docs" style="width: 100%; height: 100%;"></iframe>
+		</div>
+	</div>
 </body>
 </html>
