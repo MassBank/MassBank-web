@@ -35,8 +35,6 @@
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<script src="js/jquery-3.5.1.min.js"></script>
-	<script src="js/svg4everybody-2.1.9.min.js"></script>
-	<script>svg4everybody();</script>
 	<script src="js/iframeResizer.min.js"></script>
 </head>
 
