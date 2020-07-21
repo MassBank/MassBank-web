@@ -24,7 +24,7 @@ services:
     depends_on:
       - mariadb
     environment:
-      JAVA_OPTS: -Xmx4g -Xms4g
+      JAVA_OPTS: -Xmx4g -Xms1g
     links:
       - "mariadb:massbank_mariadb"
 
