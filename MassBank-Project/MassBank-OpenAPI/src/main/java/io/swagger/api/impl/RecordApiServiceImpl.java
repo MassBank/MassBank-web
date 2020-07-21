@@ -13,9 +13,9 @@ import org.petitparser.context.Result;
 
 import io.swagger.api.NotFoundException;
 import io.swagger.api.RecordApiService;
-import massbank.DatabaseManager;
 import massbank.Record;
 import massbank.RecordSearchParser;
+import massbank.db.DatabaseManager;
 
 
 

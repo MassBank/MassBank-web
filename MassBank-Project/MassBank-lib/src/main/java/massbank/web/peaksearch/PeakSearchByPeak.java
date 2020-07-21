@@ -10,8 +10,8 @@ import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.DatabaseManager;
 import massbank.ResultRecord;
+import massbank.db.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {

@@ -44,8 +44,11 @@ import net.sf.jniinchi.INCHI_RET;
 
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
-
+	private int pk_num_peak;
+	
 	public RecordParserDefinition(Record callback, boolean strict) {
+		pk_num_peak = -1;
+		
 		def("start",
 			ref("accession")
 			.seq(ref("deprecated_record")
@@ -1564,8 +1567,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				digit().plus().flatten()
 				.map((String value) -> {
-	        		Integer i = Integer.parseUnsignedInt(value);
-	        		callback.PK_NUM_PEAK(i);
+					pk_num_peak = Integer.parseUnsignedInt(value);
 	        		return value;
 	        	})
 			)
@@ -1750,12 +1752,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 
 			
 			// validate the number of peaks in the peaklist
-			Integer num_peak= callback.PK_NUM_PEAK();
 			List<Triple<BigDecimal,BigDecimal,Integer>> pk_peak = callback.PK_PEAK();
-			if (pk_peak.size() != num_peak) {
+			if (pk_peak.size() != pk_num_peak) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Incorrect number of peaks in peaklist. ");
-				sb.append(num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
+				sb.append(pk_num_peak + " peaks are declared in PK$NUM_PEAK line, but " + pk_peak.size()+ " peaks are found.\n");
 				return context.failure(sb.toString());
 			}
 			

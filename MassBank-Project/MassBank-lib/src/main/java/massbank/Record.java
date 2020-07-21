@@ -91,7 +91,6 @@ public class Record {
 	private String pk_splash;
 	private List<String> pk_annotation_header; // optional
 	private final List<Pair<BigDecimal, List<String>>> pk_annotation; // optional
-	private int pk_num_peak;
 	private final List<Triple<BigDecimal,BigDecimal,Integer>> pk_peak;
 	
 	public Record(String contributor) {
@@ -110,7 +109,6 @@ public class Record {
 		pk_annotation			= new ArrayList<Pair<BigDecimal, List<String>>>();
 		
 		// set default values for mandatory fields
-		pk_num_peak				= -1;
 		pk_peak					= new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
 	}
 	
@@ -432,10 +430,7 @@ public class Record {
 	}
 
 	public int PK_NUM_PEAK() {
-		return pk_num_peak;
-	}
-	public void PK_NUM_PEAK(int value) {
-		pk_num_peak	= value;
+		return pk_peak.size();
 	}
 
 	// PK_PEAK is a List with Triple values M/Z, intensity, rel. intensity

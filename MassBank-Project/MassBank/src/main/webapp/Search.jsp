@@ -65,7 +65,17 @@
 						<svg viewBox="0 0 32 28" style="width: 16px">
 							<use href="img/arrow.svg#arrow_right" />
 						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
+						<a class="w3-text-dark-grey" href="#" onclick="document.getElementById('id01').style.display='block'">
+							<b>Documentation</b>
+						</a>						
+					</div>
+				</div>
+				<div class="w3-container">
+					<div class="w3-text-blue">
+						<svg viewBox="0 0 32 28" style="width: 16px">
+							<use href="img/arrow.svg#arrow_right" />
+						</svg>
+						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>Mass calculator</b></a>
 					</div>
 				</div>
 			</div>
@@ -594,6 +604,26 @@
 
 	<br>
 	<jsp:include page="copyrightline.html"/>
+	
+	<div id="id01" class="w3-modal">
+		<div class="w3-modal-content w3-animate-top" style="height: 90%;">
+			<header class="w3-container w3-indigo">
+				<div class="w3-display-topright">
+					<a href="https://massbank.github.io/MassBank-documentation/" target="_blank"
+						onclick="document.getElementById('id01').style.display='none'" class="w3-button">
+						&#8599;
+					</a>
+					<span onclick="document.getElementById('id01').style.display='none'" class="w3-button">
+						&times;
+					</span>
+				</div>
+				<h4>Documentation at
+					https://massbank.github.io/MassBank-documentation/</h4>
+			</header>
 
+			<iframe src="https://massbank.github.io/MassBank-documentation/"
+				id="docs" style="width: 100%; height: 100%;"></iframe>
+		</div>
+	</div>
 </body>
 </html>
