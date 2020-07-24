@@ -15,9 +15,9 @@
 	<name>MassBank-OpenAPI REST interface</name>
 
 	<properties>
-		<swagger-version>2.1.2</swagger-version>
+		<swagger-version>2.1.3</swagger-version>
 		<jersey2-version>2.31</jersey2-version>
-		<jackson-version>2.11.0</jackson-version>
+		<jackson-version>2.11.1</jackson-version>
 		<jetty-version>9.4.24.v20191120</jetty-version>
 		<logback-version>1.2.3</logback-version>
 	</properties>
