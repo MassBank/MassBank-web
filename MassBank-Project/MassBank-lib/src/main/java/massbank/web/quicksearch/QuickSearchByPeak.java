@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import massbank.db.DatabaseManager;
 import massbank.web.SearchFunction;
-import massbank.web.quicksearch.QuickSearchByPeak.SearchResult;
+import massbank.web.quicksearch.Search.SearchResult;
 
 public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 	
@@ -94,25 +94,6 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 		}
 	}
 	
-	public static class SearchResult {
-		public final String accession;
-		public final String recordTitle;
-		public final int hitNumber;
-		public final double hitScore;
-		public final String ION_MODE;
-		public final String formula;
-		public final double exactMass;
-		public SearchResult(String accession, String recordTitle, int hitNumber, double hitScore, String ION_MODE, String formula, double exactMass) {
-			this.accession	= accession;
-			this.recordTitle	= recordTitle;
-			this.hitNumber	= hitNumber;
-			this.hitScore	= hitScore;
-			this.ION_MODE	= ION_MODE;
-			this.formula		= formula;
-			this.exactMass	= exactMass;
-		}
-	}
-	
 	private ArrayList<SearchResult> result = new ArrayList<SearchResult>();
 	
 	private static boolean PARAM_WEIGHT_LINEAR = true;
@@ -142,14 +123,14 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 		String[] strVal;
 
 		// REQUEST_METHOD
-		System.out.println(request.getRequestURI());
+		//System.out.println(request.getRequestURI());
 		String strReqType = request.getMethod();
 		if (strReqType.equals("GET") || strReqType.equals("POST")) {
-			System.out.println(strReqType);
+			//System.out.println(strReqType);
 			Map<String, String[]> parameterMap = request.getParameterMap();
 
 			for (Entry<String, String[]> e : parameterMap.entrySet()) {
-				System.out.println(e.getKey() + " " + Arrays.toString(e.getValue()));
+				//System.out.println(e.getKey() + " " + Arrays.toString(e.getValue()));
 				strKey = e.getKey().toUpperCase();
 				strVal = e.getValue();
 				for (String s : strVal) {
@@ -465,9 +446,9 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 				return false;
 			}
 		}
-		System.out.println(sqlw1);
-		System.out.println(sqlw2);
-		System.out.println(sql);
+		//System.out.println(sqlw1);
+		//System.out.println(sqlw2);
+		//System.out.println(sql);
 		// ####################################################################################
 		// get accessions with right instrument type, MS type, precursor m/z
 		boolean isFilter = false;
