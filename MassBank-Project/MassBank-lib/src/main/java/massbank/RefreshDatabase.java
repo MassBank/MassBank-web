@@ -88,8 +88,6 @@ public class RefreshDatabase {
 		.filter(Objects::nonNull)
 		.collect(Collectors.toList());
 		
-		System.out.println(accessions.size());
-		
 		for (Record accession : accessions) {
 			logger.trace("Writing record \"" + accession.ACCESSION() + "\" to database.");
 			db.persistAccessionFile(accession);
