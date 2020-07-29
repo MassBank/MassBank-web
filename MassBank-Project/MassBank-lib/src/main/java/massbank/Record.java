@@ -90,8 +90,7 @@ public class Record {
 	private List<Pair<String, String>> ms_data_processing; // optional
 	private String pk_splash;
 	private List<String> pk_annotation_header; // optional
-	private final List<List<String>> pk_annotation; // optional
-	private int pk_num_peak;
+	private final List<Pair<BigDecimal, List<String>>> pk_annotation; // optional
 	private final List<Triple<BigDecimal,BigDecimal,Integer>> pk_peak;
 	
 	public Record(String contributor) {
@@ -107,10 +106,9 @@ public class Record {
 		ms_focused_ion			= new ArrayList<Pair<String, String>>();
 		ms_data_processing		= new ArrayList<Pair<String, String>>();
 		pk_annotation_header	= new ArrayList<String>();
-		pk_annotation			= new ArrayList<List<String>>();
+		pk_annotation			= new ArrayList<Pair<BigDecimal, List<String>>>();
 		
 		// set default values for mandatory fields
-		pk_num_peak				= -1;
 		pk_peak					= new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
 	}
 	
@@ -424,18 +422,15 @@ public class Record {
 	}
 
 	// PK_ANNOTATION is a two-dimensional List
-	public List<List<String>> PK_ANNOTATION() {
+	public List<Pair<BigDecimal, List<String>>> PK_ANNOTATION() {
 		return pk_annotation;
 	}
-	public void PK_ANNOTATION_ADD_LINE(List<String> value) {
-		pk_annotation.add(new ArrayList<String>(value));
+	public void PK_ANNOTATION_ADD_LINE(Pair<BigDecimal, List<String>> annotation) {
+		pk_annotation.add(annotation);
 	}
 
 	public int PK_NUM_PEAK() {
-		return pk_num_peak;
-	}
-	public void PK_NUM_PEAK(int value) {
-		pk_num_peak	= value;
+		return pk_peak.size();
 	}
 
 	// PK_PEAK is a List with Triple values M/Z, intensity, rel. intensity
@@ -506,11 +501,8 @@ public class Record {
 			for (String annotation_header_item : PK_ANNOTATION_HEADER())
 				sb.append(" " + annotation_header_item);
 			sb.append("\n");
-			for (List<String> annotation_line :  PK_ANNOTATION()) {
-				sb.append(" ");
-				for (String annotation_item : annotation_line )
-					sb.append(" " + annotation_item);
-				sb.append("\n");
+			for (Pair<BigDecimal, List<String>> annotation_line :  PK_ANNOTATION()) {
+				sb.append("  " + annotation_line.getLeft() + " " + String.join(" ", annotation_line.getRight()) + "\n");
 			}
 		}
 
@@ -654,11 +646,8 @@ public class Record {
 			for (String annotation_header_item : PK_ANNOTATION_HEADER())
 				sb.append(" " + annotation_header_item);
 			sb.append("<br>\n");
-			for (List<String> annotation_line :  PK_ANNOTATION()) {
-				sb.append("&nbsp");
-				for (String annotation_item : annotation_line )
-					sb.append("&nbsp" + annotation_item);
-				sb.append("<br>\n");
+			for (Pair<BigDecimal, List<String>> annotation_line :  pk_annotation) {
+				sb.append("&nbsp&nbsp" + annotation_line.getLeft() + "&nbsp" + String.join("&nbsp", annotation_line.getRight()) + "<br>\n");
 			}
 		}
 		sb.append("<b>PK$NUM_PEAK:</b> " + PK_NUM_PEAK() + "<br>\n");

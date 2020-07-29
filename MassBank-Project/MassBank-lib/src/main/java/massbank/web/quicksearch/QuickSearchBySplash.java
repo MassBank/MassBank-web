@@ -8,8 +8,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import massbank.DatabaseManager;
 import massbank.ResultRecord;
+import massbank.db.DatabaseManager;
 import massbank.web.SearchFunction;
 
 public class QuickSearchBySplash implements SearchFunction<ResultRecord[]> {

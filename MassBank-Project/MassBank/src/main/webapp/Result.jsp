@@ -1,5 +1,5 @@
 <%@page import="massbank.Config" %>
-<%@page import="massbank.DatabaseManager"%>
+<%@page import="massbank.db.DatabaseManager"%>
 <%@page import="massbank.StructureToSvgStringGenerator"%>
 <%@page import="massbank.StructureToSvgStringGenerator.ClickablePreviewImageData"%>
 

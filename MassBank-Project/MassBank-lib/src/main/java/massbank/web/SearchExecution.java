@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
-import massbank.DatabaseManager;
+import massbank.db.DatabaseManager;
 
 
 public class SearchExecution {

@@ -46,6 +46,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
+import massbank.db.DatabaseManager;
+
 @WebServlet("/RecordDisplay")
 public class RecordDisplay extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -369,7 +371,7 @@ public class RecordDisplay extends HttpServlet {
 		        request.setAttribute("structureddata", structureddata);
 		        request.setAttribute("svg", svg);
 			}
-	        request.getRequestDispatcher("/RecordDisplay2.jsp").forward(request, response);
+	        request.getRequestDispatcher("/RecordDisplay.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Cannot load record", e);
         }

@@ -37,23 +37,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.redfin.sitemapgenerator.SitemapIndexGenerator;
 import com.redfin.sitemapgenerator.WebSitemapGenerator;
 
+import massbank.db.DatabaseManager;
+import massbank.db.DatabaseTimestamp;
+
 /**
  * 
- * This servlet generates dynamic sitemap.xml files. It serves a index
- * at /sitemap.xml and the actual sitemaps at /sitemap/sitemap*.xml
+ * This servlet generates dynamic sitemap files. It serves a index
+ * at /sitemapindex.xml and the actual sitemaps at /sitemap/sitemap*.xml
  * 
  * @author rmeier
  * @version 18-05-2020
  *
  */
-@WebServlet({"/sitemap.xml","/sitemap/*"})
+@WebServlet({"/sitemapindex.xml", "/sitemap/*"})
 public class SiteMapServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(SiteMapServlet.class);
@@ -64,22 +66,18 @@ public class SiteMapServlet extends HttpServlet {
 		logger.trace("ServletContext.TEMPDIR: " + getServletContext().getAttribute(ServletContext.TEMPDIR));
 		File tmpdir = (File)getServletContext().getAttribute(ServletContext.TEMPDIR);
 		// remove old index
-		try {
-			FileUtils.deleteQuietly(new File(tmpdir, "sitemap.xml"));
-			File sitemapDir = new File(tmpdir, "sitemap");
-			if (sitemapDir.exists()) FileUtils.forceDelete(new File(tmpdir, "sitemap"));
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-			throw new ServletException("Could not clean sitemp directory.");
+		for (File file : tmpdir.listFiles()) {
+			if (file.getName().matches("sitemap.*\\.xml$")) {
+				logger.trace("Remove old sitemap: " + file.toString());
+				file.delete();
+			}
 		}
 		
 		try {
 			// create sitemap generator
 			String sitemapbaseurl = Config.get().SitemapBaseURL();
 			if (!sitemapbaseurl.endsWith("/")) sitemapbaseurl = sitemapbaseurl + "/";
-			File sitemapDir = new File(tmpdir, "sitemap");
-			sitemapDir.mkdir();
-			WebSitemapGenerator wsg = new WebSitemapGenerator(sitemapbaseurl, sitemapDir);
+			WebSitemapGenerator wsg = new WebSitemapGenerator(sitemapbaseurl, tmpdir);
 
 			// add static content
 			wsg.addUrl(sitemapbaseurl);
@@ -98,12 +96,12 @@ public class SiteMapServlet extends HttpServlet {
 			
 			// write new sitemaps
 			List<File> sitemaps=wsg.write();
-			logger.trace("Files written:\n" + sitemaps);
+			logger.trace("File(s) written:\n" + sitemaps);
 			
 			// write sitemap index
-			SitemapIndexGenerator sig = new SitemapIndexGenerator(sitemapbaseurl, new File(tmpdir, "sitemap.xml"));
+			SitemapIndexGenerator sig = new SitemapIndexGenerator(sitemapbaseurl, new File(tmpdir, "sitemapindex.xml"));
 			for (File sitemap : sitemaps) {
-				sig.addUrl(sitemapbaseurl+"sitemap/"+sitemap.getName());
+				sig.addUrl(sitemapbaseurl + "sitemap/" + sitemap.getName());
 			}
 			sig.write();
 			
@@ -126,22 +124,20 @@ public class SiteMapServlet extends HttpServlet {
 		}
 		
 		File sitemap; 
-		if ((request.getPathInfo() == null) && "/sitemap.xml".equals(request.getServletPath())) {
-			sitemap=new File((File)getServletContext().getAttribute(ServletContext.TEMPDIR), "sitemap.xml");
+		if ((request.getPathInfo() == null) && "/sitemapindex.xml".equals(request.getServletPath())) {
+			sitemap=new File((File)getServletContext().getAttribute(ServletContext.TEMPDIR), request.getServletPath());
 			if (!sitemap.exists()) {
 				// send 404 if index is missing
 	            response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
 	            return;
 	        }
 		} else if (request.getServletPath().equals("/sitemap")) {
-			
-			sitemap=new File(((File)getServletContext().getAttribute(ServletContext.TEMPDIR)).toString() + File.separator + "sitemap" + File.separator + request.getPathInfo());
-			
+			sitemap=new File((File)getServletContext().getAttribute(ServletContext.TEMPDIR), request.getPathInfo());
 			if (!sitemap.exists()) {
 				// send 404 if index is missing
-	            response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
-	            return;
-	        }
+				response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+				return;
+			}
 		}
 		else {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.

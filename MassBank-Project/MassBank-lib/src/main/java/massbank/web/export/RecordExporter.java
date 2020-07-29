@@ -20,8 +20,8 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.smiles.SmilesGenerator;
 
-import massbank.DatabaseManager;
 import massbank.Record;
+import massbank.db.DatabaseManager;
 
 public class RecordExporter {
 	/*
