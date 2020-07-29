@@ -6,15 +6,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -515,28 +530,197 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		recordExport(file, exportFormat, records);
 		System.out.println("Finished");
 	}
-	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
-		if(false) {
-			DatabaseManager dbMan	= new DatabaseManager("MassBank");
-			Record record	= dbMan.getAccessionData("AU100601");
-			dbMan.closeConnection();
-			//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
-			
-			System.out.println(record.toString());
-			System.out.println();
-			
-			List<String> export	= recordToNIST_MSP(record);
-			System.out.println(String.join("\n", export));
-			
-			
-			File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
-			recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
-			
-			File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
-			recordExport(file2, ExportFormat.NIST_MSP, record);
+	
+	
+//	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
+//		if(false) {
+//			DatabaseManager dbMan	= new DatabaseManager("MassBank");
+//			Record record	= dbMan.getAccessionData("AU100601");
+//			dbMan.closeConnection();
+//			//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
+//			
+//			System.out.println(record.toString());
+//			System.out.println();
+//			
+//			List<String> export	= recordToNIST_MSP(record);
+//			System.out.println(String.join("\n", export));
+//			
+//			
+//			File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
+//			recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
+//			
+//			File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
+//			recordExport(file2, ExportFormat.NIST_MSP, record);
+//		}
+//		
+//		File file	= new File("/home/htreutle/Downloads/tmp/190516_MassBank.msp");
+//		exportWholeMassBank(ExportFormat.RIKEN_MSP, file);
+//	}
+	
+	public static void main(String[] arguments) {
+		// load version and print
+		final Properties properties = new Properties();
+		try {
+			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		System.out.println("Exporter version: " + properties.getProperty("version"));
+
+		// parse command line
+		Options options = new Options();
+		options.addOption("o", "outfile", true, "name of output file");
+		CommandLine cmd = null;
+		try {
+			cmd = new DefaultParser().parse( options, arguments);
+		}
+		catch(ParseException e) {
+	        // oops, something went wrong
+	        System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
+	        HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+	        System.exit(1);
+	    }
+		if (cmd.getArgList().size() == 0) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+	        System.exit(1);
 		}
 		
-		File file	= new File("/home/htreutle/Downloads/tmp/190516_MassBank.msp");
-		exportWholeMassBank(ExportFormat.RIKEN_MSP, file);
+		// find all files in arguments and all *.txt files in directories and subdirectories
+		// specified in arguments 
+		List<File> recordfiles = new ArrayList<>();
+		for (String argument : cmd.getArgList()) {
+			File argumentf = new File(argument);
+			if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
+				recordfiles.add(argumentf);
+			}
+			else if (argumentf.isDirectory()) {
+				recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
+			}
+			else {
+				logger.warn("Argument " + argument + " could not be processed.");
+			}
+		}
+			
+
+		// validate all files
+		logger.trace("Validating " + recordfiles.size() + " files");
+		AtomicBoolean haserror = new AtomicBoolean(false);
+		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
+		List<String> accessions = recordfiles.parallelStream().map(filename -> {
+			String recordString;
+			Record record=null;
+			try {
+				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				hasNonStandardChars(recordString);
+				record = validate(recordString, "");
+				if (record == null) {
+					logger.error("Error in \'" + filename + "\'.");
+					haserror.set(true);
+					return null;
+				}
+				else {
+					logger.trace("validation passed for " + filename);
+					// compare ACCESSION with filename
+					if (!record.ACCESSION().equals(FilenameUtils.getBaseName(filename.toString()))) {
+						logger.error("Error in \'" + filename.getName().toString() + "\'.");
+						logger.error("ACCESSION \'" + record.ACCESSION() + "\' does not match filename \'" + filename.getName().toString() + "\'");
+						haserror.set(true);
+					}
+					
+					// validate correct serialisation: String -> Record class -> String
+					String recordStringFromRecord = record.toString();
+					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
+					if (position != -1) {
+						logger.error("Error in \'" + filename + "\'.");
+						logger.error("File content differs from generated record string.\nThis might be a code problem. Please Report!");
+						String[] tokens = recordStringFromRecord.split("\\n");
+						int line = 0, col = 0, offset = 0;
+						for (String token : tokens) {
+							offset = offset + token.length() + 1;
+							if (position < offset) {
+								col = position - (offset - (token.length() + 1));
+								logger.error("Error in line " + (line+1) + ".");
+								logger.error(tokens[line]);
+								StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
+								error_at.append('^');
+								logger.error(error_at);
+								haserror.set(true);
+								break;
+							}
+							line++;
+						}
+						
+					}
+				
+					// validate correct serialisation with db: String -> Record class -> db -> Record class -> String
+					if (doDatbase.get()) {
+						Record recordDatabase = null;
+						try {
+							DatabaseManager dbMan = new DatabaseManager("MassBank");
+							recordDatabase = dbMan.getAccessionData(record.ACCESSION());
+							dbMan.closeConnection();
+						} catch (SQLException | ConfigurationException e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
+						if(recordDatabase == null) {
+							String errormsg	= "retrieval of '" + record.ACCESSION() + "' from database failed";
+							logger.error(errormsg);
+							System.exit(1);
+						}
+						String recordStringFromDB = recordDatabase.toString();
+						position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromDB});
+						if (position != -1) {
+							logger.error("Error in \'" + filename + "\'.");
+							logger.error("File content differs from generated record string from database content.\nThis might be a code problem. Please Report!");
+							String[] tokens = recordStringFromDB.split("\\n");
+							int line = 0, col = 0, offset = 0;
+							for (String token : tokens) {
+								offset = offset + token.length() + 1;
+								if (position < offset) {
+									col = position - (offset - (token.length() + 1));
+									logger.error("Error in line " + (line+1) + ".");
+									logger.error(tokens[line]);
+									StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
+									error_at.append('^');
+									logger.error(error_at);
+									haserror.set(true);
+									break;
+								}
+								line++;
+							}
+						}
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			return record.ACCESSION();
+		})
+		.filter(Objects::nonNull)
+		.collect(Collectors.toList());;
+		
+		// check duplicates
+		Set<String> duplicates = new LinkedHashSet<String>();
+		Set<String> uniques = new HashSet<String>();
+		for(String c : accessions) {
+			//System.out.println(c);
+			if(!uniques.add(c)) {
+				duplicates.add(c);
+			}
+		}
+		if (duplicates.size()>0) {
+			logger.error("There are duplicates in all accessions:");
+			logger.error(duplicates.toString());
+			haserror.set(true);
+		}
+		
+		// return 1 if there were errors
+		if (haserror.get()) System.exit(1);
+		else System.exit(0);
 	}
 }
