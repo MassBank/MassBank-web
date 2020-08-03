@@ -9,14 +9,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -29,16 +26,20 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.smiles.SmilesGenerator;
 
 import massbank.Record;
+import massbank.Validator;
 import massbank.db.DatabaseManager;
 
 public class RecordExporter {
+	private static final Logger logger = LogManager.getLogger(RecordExporter.class);
+	
 	/*
 .ms2 text format: peptides
 -----------------
@@ -192,7 +193,7 @@ Num Peaks: 7
 		RIKEN_MSP,
 		MASSBANK_RECORDS;
 	}
-	public static void recordExport(File file, ExportFormat format, Record... records) throws CDKException{
+	public static void recordExport(File file, ExportFormat format, List<Record> records) throws CDKException{
 		switch (format) {
 			case NIST_MSP:{
 				recordsToNIST_MSP(file, records);
@@ -217,7 +218,7 @@ Num Peaks: 7
 	 * @param records
 	 * @throws CDKException
 	 */
-	public static void recordsToNIST_MSP(File file, Record... records) throws CDKException{
+	public static void recordsToNIST_MSP(File file, List<Record> records) throws CDKException{
 		// collect data
 		List<String> list	= new ArrayList<String>();
 		for(Record record : records) {
@@ -366,7 +367,7 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 	 * @param records
 	 * @throws CDKException
 	 */
-	public static void recordsToRIKEN_MSP(File file, Record... records) throws CDKException{
+	public static void recordsToRIKEN_MSP(File file, List<Record> records) throws CDKException{
 		// collect data
 		List<String> list	= new ArrayList<String>();
 		for(Record record : records) {
@@ -481,7 +482,7 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		return list;
 	}
 	
-	public static void recordsToZipFile(File file, Record... records){
+	public static void recordsToZipFile(File file, List<Record> records){
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 			ZipOutputStream zos = new ZipOutputStream(fos);
@@ -518,9 +519,9 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		System.out.println("Fetching accession codes");
 		String[] accessions	= dbMan.getAccessions();
 		System.out.println("Fetching " + accessions.length + " records");
-		Record[] records	= new Record[accessions.length];
+		ArrayList<Record> records	= new ArrayList<Record>();
 		for(int i = 0; i < accessions.length; i++)
-			records[i]	= dbMan.getAccessionData(accessions[i]);
+			records.add(dbMan.getAccessionData(accessions[i]));
 		System.out.println("Closing DB connection");
 		dbMan.closeConnection();
 		
@@ -532,30 +533,9 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 	}
 	
 	
-//	public static void main(String[] args) throws SQLException, ConfigurationException, CDKException {
-//		if(false) {
-//			DatabaseManager dbMan	= new DatabaseManager("MassBank");
-//			Record record	= dbMan.getAccessionData("AU100601");
-//			dbMan.closeConnection();
-//			//Record record	= new DatabaseManager("MassBank").getAccessionData("UA006601");
-//			
-//			System.out.println(record.toString());
-//			System.out.println();
-//			
-//			List<String> export	= recordToNIST_MSP(record);
-//			System.out.println(String.join("\n", export));
-//			
-//			
-//			File file	= new File("/home/htreutle/Downloads/tmp/Test.zip");
-//			recordExport(file, ExportFormat.MASSBANK_RECORDS, record);
-//			
-//			File file2	= new File("/home/htreutle/Downloads/tmp/Test.txt");
-//			recordExport(file2, ExportFormat.NIST_MSP, record);
-//		}
-//		
-//		File file	= new File("/home/htreutle/Downloads/tmp/190516_MassBank.msp");
-//		exportWholeMassBank(ExportFormat.RIKEN_MSP, file);
-//	}
+
+
+
 	
 	public static void main(String[] arguments) {
 		// load version and print
@@ -570,7 +550,7 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 
 		// parse command line
 		Options options = new Options();
-		options.addOption("o", "outfile", true, "name of output file");
+		options.addRequiredOption("o", "outfile", true, "name of output file");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -588,139 +568,52 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 	        System.exit(1);
 		}
 		
+		// loop over all arguments
 		// find all files in arguments and all *.txt files in directories and subdirectories
 		// specified in arguments 
-		List<File> recordfiles = new ArrayList<>();
-		for (String argument : cmd.getArgList()) {
-			File argumentf = new File(argument);
-			if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
-				recordfiles.add(argumentf);
+		List<Record> records = cmd.getArgList().parallelStream().map(argument -> {
+			// find all files in arguments and all *.txt files in directories and subdirectories
+			// specified in arguments 
+			File argumentFile = new File(argument);
+			List<File> filesToProcess = new ArrayList<File>();			 
+			if (argumentFile.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
+				filesToProcess.add(argumentFile);
 			}
-			else if (argumentf.isDirectory()) {
-				recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
+			else if (argumentFile.isDirectory()) {
+				filesToProcess.addAll(FileUtils.listFiles(argumentFile, new String[] {"txt"}, true));
 			}
 			else {
 				logger.warn("Argument " + argument + " could not be processed.");
 			}
-		}
 			
-
-		// validate all files
-		logger.trace("Validating " + recordfiles.size() + " files");
-		AtomicBoolean haserror = new AtomicBoolean(false);
-		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
-		List<String> accessions = recordfiles.parallelStream().map(filename -> {
-			String recordString;
-			Record record=null;
-			try {
-				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-				hasNonStandardChars(recordString);
-				record = validate(recordString, "");
-				if (record == null) {
-					logger.error("Error in \'" + filename + "\'.");
-					haserror.set(true);
-					return null;
+			// read all files and process to Record
+			List<Record> argumentRecords = filesToProcess.parallelStream().map(filename -> {
+				Record record=null;
+				try {
+					String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+					record = Validator.validate(recordString, "");
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				else {
-					logger.trace("validation passed for " + filename);
-					// compare ACCESSION with filename
-					if (!record.ACCESSION().equals(FilenameUtils.getBaseName(filename.toString()))) {
-						logger.error("Error in \'" + filename.getName().toString() + "\'.");
-						logger.error("ACCESSION \'" + record.ACCESSION() + "\' does not match filename \'" + filename.getName().toString() + "\'");
-						haserror.set(true);
-					}
-					
-					// validate correct serialisation: String -> Record class -> String
-					String recordStringFromRecord = record.toString();
-					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
-					if (position != -1) {
-						logger.error("Error in \'" + filename + "\'.");
-						logger.error("File content differs from generated record string.\nThis might be a code problem. Please Report!");
-						String[] tokens = recordStringFromRecord.split("\\n");
-						int line = 0, col = 0, offset = 0;
-						for (String token : tokens) {
-							offset = offset + token.length() + 1;
-							if (position < offset) {
-								col = position - (offset - (token.length() + 1));
-								logger.error("Error in line " + (line+1) + ".");
-								logger.error(tokens[line]);
-								StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
-								error_at.append('^');
-								logger.error(error_at);
-								haserror.set(true);
-								break;
-							}
-							line++;
-						}
-						
-					}
-				
-					// validate correct serialisation with db: String -> Record class -> db -> Record class -> String
-					if (doDatbase.get()) {
-						Record recordDatabase = null;
-						try {
-							DatabaseManager dbMan = new DatabaseManager("MassBank");
-							recordDatabase = dbMan.getAccessionData(record.ACCESSION());
-							dbMan.closeConnection();
-						} catch (SQLException | ConfigurationException e) {
-							e.printStackTrace();
-							System.exit(1);
-						}
-						if(recordDatabase == null) {
-							String errormsg	= "retrieval of '" + record.ACCESSION() + "' from database failed";
-							logger.error(errormsg);
-							System.exit(1);
-						}
-						String recordStringFromDB = recordDatabase.toString();
-						position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromDB});
-						if (position != -1) {
-							logger.error("Error in \'" + filename + "\'.");
-							logger.error("File content differs from generated record string from database content.\nThis might be a code problem. Please Report!");
-							String[] tokens = recordStringFromDB.split("\\n");
-							int line = 0, col = 0, offset = 0;
-							for (String token : tokens) {
-								offset = offset + token.length() + 1;
-								if (position < offset) {
-									col = position - (offset - (token.length() + 1));
-									logger.error("Error in line " + (line+1) + ".");
-									logger.error(tokens[line]);
-									StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
-									error_at.append('^');
-									logger.error(error_at);
-									haserror.set(true);
-									break;
-								}
-								line++;
-							}
-						}
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-			return record.ACCESSION();
+				return record;
+			}).collect(Collectors.toList());
+			return argumentRecords;
 		})
+		// concat all results
+		.flatMap(Collection::stream)
 		.filter(Objects::nonNull)
-		.collect(Collectors.toList());;
+		// output as List
+		.collect(Collectors.toList());		
+		//System.out.println(recordfiles.toString());
+		System.out.println(records.size());
 		
-		// check duplicates
-		Set<String> duplicates = new LinkedHashSet<String>();
-		Set<String> uniques = new HashSet<String>();
-		for(String c : accessions) {
-			//System.out.println(c);
-			if(!uniques.add(c)) {
-				duplicates.add(c);
-			}
-		}
-		if (duplicates.size()>0) {
-			logger.error("There are duplicates in all accessions:");
-			logger.error(duplicates.toString());
-			haserror.set(true);
-		}
 		
-		// return 1 if there were errors
-		if (haserror.get()) System.exit(1);
-		else System.exit(0);
+		File outfile	= new File(cmd.getOptionValue("o"));
+		try {
+			recordExport(outfile, ExportFormat.NIST_MSP, records);
+		} catch (CDKException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
