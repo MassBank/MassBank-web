@@ -463,15 +463,15 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 //		if(!record.AC_MASS_SPECTROMETRY_ION_MODE().equals("NEGATIVE"))	return list;
 		
 		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
-		list.add("PRECURSORMZ"		+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : ""));
-		list.add("PRECURSORTYPE"	+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE") : "NA"));
+		list.add("PRECURSORMZ"	+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : ""));
+		list.add("ADDUCTIONNAME"	+ ": " + (record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE") ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE") : "NA"));
 		list.add("INSTRUMENTTYPE"	+ ": " + record.AC_INSTRUMENT_TYPE());
 		list.add("INSTRUMENT"		+ ": " + record.AC_INSTRUMENT());
 		list.add("SMILES"			+ ": " + smiles);
 		list.add("INCHIKEY"			+ ": " + inchiKey);
 		list.add("INCHI"			+ ": " + inchi);
 		list.add("FORMULA"			+ ": " + record.CH_FORMULA());
-		list.add("RETENTIONTIME"	+ ": " + (record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "NA"));
+		list.add("RETENTIONTIME"	+ ": " + (record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "0"));
 		list.add("IONMODE"			+ ": " + record.AC_MASS_SPECTROMETRY_ION_MODE());
 		list.add("LINKS"			+ ": " + links);
 		list.add("Comment"			+ ": " + comment);
@@ -510,32 +510,6 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 			e.printStackTrace();
 		}
 	}
-	
-	public static void exportWholeMassBank(ExportFormat exportFormat, File file) throws SQLException, ConfigurationException, CDKException {
-		// #################################################################
-		// get data
-		System.out.println("Creating DB connection");
-		DatabaseManager dbMan	= new DatabaseManager("MassBank");
-		System.out.println("Fetching accession codes");
-		String[] accessions	= dbMan.getAccessions();
-		System.out.println("Fetching " + accessions.length + " records");
-		ArrayList<Record> records	= new ArrayList<Record>();
-		for(int i = 0; i < accessions.length; i++)
-			records.add(dbMan.getAccessionData(accessions[i]));
-		System.out.println("Closing DB connection");
-		dbMan.closeConnection();
-		
-		// #################################################################
-		// export data
-		System.out.println("Exporting records to file " + file.getAbsolutePath());
-		recordExport(file, exportFormat, records);
-		System.out.println("Finished");
-	}
-	
-	
-
-
-
 	
 	public static void main(String[] arguments) {
 		// load version and print
@@ -610,7 +584,7 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		
 		File outfile	= new File(cmd.getOptionValue("o"));
 		try {
-			recordExport(outfile, ExportFormat.NIST_MSP, records);
+			recordExport(outfile, ExportFormat.RIKEN_MSP, records);
 		} catch (CDKException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
