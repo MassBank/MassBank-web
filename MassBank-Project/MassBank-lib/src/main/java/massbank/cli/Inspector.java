@@ -1,4 +1,4 @@
-package massbank;
+package massbank.cli;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.interfaces.IAtomContainer;
+
+import massbank.Record;
 
 
 /**

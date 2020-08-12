@@ -1,4 +1,4 @@
-package massbank;
+package massbank.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +29,9 @@ import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
+import massbank.Record;
+import massbank.RecordParser;
+import massbank.RecordParserDefinition;
 import massbank.db.DatabaseManager;
 
 /**

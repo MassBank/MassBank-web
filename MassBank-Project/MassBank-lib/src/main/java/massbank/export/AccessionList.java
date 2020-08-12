@@ -1,4 +1,4 @@
-package massbank.web.export;
+package massbank.export;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -1,4 +1,4 @@
-package massbank.web.export;
+package massbank.cli;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,7 +34,6 @@ import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.smiles.SmilesGenerator;
 
 import massbank.Record;
-import massbank.Validator;
 import massbank.db.DatabaseManager;
 
 public class RecordExporter {
