@@ -6,4 +6,4 @@ DIST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
 LIB_DIR="$DIST_DIR/lib"
 
 $JAVA_EXECUTABLE -cp "$LIB_DIR/*" \
-massbank.AddMetaData "$@"
+massbank.cli.AddMetaData "$@"
