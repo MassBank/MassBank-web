@@ -1,46 +1,32 @@
 package massbank.cli;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.inchi.InChIGeneratorFactory;
-import org.openscience.cdk.smiles.SmilesGenerator;
-
 import massbank.Record;
-import massbank.db.DatabaseManager;
+import massbank.export.RecordToNIST_MSP;
 import massbank.export.RecordToRIKEN_MSP;
 
 public class RecordExporter {
 	private static final Logger logger = LogManager.getLogger(RecordExporter.class);
 	
-	/*
+/*
 .ms2 text format: peptides
 -----------------
 https://skyline.ms/wiki/home/software/BiblioSpec/page.view?name=BiblioSpec%20input%20and%20output%20file%20formats
@@ -92,269 +78,9 @@ Num peaks: 124
 227.3	484	"b2-17/0.18 12/12 0.9"
 228.4	62	"b2-17i/1.28 7/10 0.2"
 
+*/
 
 
-
-MONA *.msp format III:
-----------------
-http://mona.fiehnlab.ucdavis.edu/downloads
-
-Name: CLC_301.1468_14.3
-Synon: Chlorcyclizine
-Synon: 1-[(4-chlorophenyl)-phenylmethyl]-4-methylpiperazine
-SYNON: $:00in-source
-DB#: ET010001
-InChIKey: WFNAKBGANONZEQ-UHFFFAOYSA-N
-Precursor_type: [M+H]+
-Spectrum_type: MS2
-PrecursorMZ: 301.1466
-Instrument_type: LC-ESI-QFT
-Instrument: Q Exactive Orbitrap Thermo Scientific
-Ion_mode: P
-Collision_energy: 15, 30, 45, 60, 70 or 90 (nominal)
-InChIKey: WFNAKBGANONZEQ-UHFFFAOYSA-N
-Formula: C18H21ClN2
-MW: 300
-ExactMass: 300.13932635199996
-Comments: "accession=ET010001" "author=R. Gulde, E. Schymanski, K. Fenner, Department of Environmental Chemistry, Eawag" "license=CC BY" "copyright=Copyright (C) 2016 Eawag, Duebendorf, Switzerland" "publication=Gulde, Meier, Schymanski, Kohler, Helbling, Derrer, Rentsch & Fenner; ES&T 2016 50(6):2908-2920. DOI: 10.1021/acs.est.5b05186. Systematic Exploration of Biotransformation Reactions of Amine-containing Micropollutants in Activated Sludge" "comment=CONFIDENCE Parent Substance with Reference Standard (Level 1)" "comment=INTERNAL_ID 100" "exact mass=300.1393" "instrument=Q Exactive Orbitrap Thermo Scientific" "instrument type=LC-ESI-QFT" "ms level=MS2" "ionization=ESI" "fragmentation mode=HCD" "collision energy=15, 30, 45, 60, 70 or 90 (nominal)" "resolution=17500" "column=Atlantis T3 3um, 3x150mm, Waters with guard column" "flow gradient=95/5 at 0 min, 5/95 at 15 min, 5/95 at 20 min, 95/5 at 20.1 min, 95/5 at 25 min" "flow rate=300 uL/min" "retention time=14.6 min" "solvent a=water with 0.1% formic acid" "solvent b=methanol with 0.1% formic acid" "precursor m/z=301.1466" "precursor type=[M+H]+" "ionization mode=positive" "mass accuracy=0.007810149499385606" "mass error=-2.351999967231677E-6" "SMILES=CN1CCN(CC1)C(C1=CC=CC=C1)C1=CC=C(Cl)C=C1" "cas=82-93-9" "pubchem cid=2710" "chemspider=2609" "InChI=InChI=1S/C18H21ClN2/c1-20-11-13-21(14-12-20)18(15-5-3-2-4-6-15)16-7-9-17(19)10-8-16/h2-10,18H,11-14H2,1H3" "InChIKey=WFNAKBGANONZEQ-UHFFFAOYSA-N" "molecular formula=C18H21ClN2" "total exact mass=300.13932635199996" "SMILES=CN1CCN(CC1)C(C2=CC=CC=C2)C3=CC=C(C=C3)Cl"
-Num Peaks: 5
-99.0915 0.440287
-165.0694 1.883217
-166.0777 3.318937
-201.0466 100.000000
-
-Name: CLC_301.1468_14.3
-Synon: Chlorcyclizine
-Synon: 1-[(4-chlorophenyl)-phenylmethyl]-4-methylpiperazine
-SYNON: $:00in-source
-DB#: ET010002
-InChIKey: WFNAKBGANONZEQ-UHFFFAOYSA-N
-Precursor_type: [M+H]+
-Spectrum_type: MS2
-PrecursorMZ: 301.1466
-Instrument_type: LC-ESI-QFT
-Instrument: Q Exactive Orbitrap Thermo Scientific
-Ion_mode: P
-Collision_energy: 15, 30, 45, 60, 70 or 90 (nominal)
-InChIKey: WFNAKBGANONZEQ-UHFFFAOYSA-N
-Formula: C18H21ClN2
-MW: 300
-ExactMass: 300.13932635199996
-Comments: "accession=ET010002" "author=R. Gulde, E. Schymanski, K. Fenner, Department of Environmental Chemistry, Eawag" "license=CC BY" "copyright=Copyright (C) 2016 Eawag, Duebendorf, Switzerland" "publication=Gulde, Meier, Schymanski, Kohler, Helbling, Derrer, Rentsch & Fenner; ES&T 2016 50(6):2908-2920. DOI: 10.1021/acs.est.5b05186. Systematic Exploration of Biotransformation Reactions of Amine-containing Micropollutants in Activated Sludge" "comment=CONFIDENCE Parent Substance with Reference Standard (Level 1)" "comment=INTERNAL_ID 100" "exact mass=300.1393" "instrument=Q Exactive Orbitrap Thermo Scientific" "instrument type=LC-ESI-QFT" "ms level=MS2" "ionization=ESI" "fragmentation mode=HCD" "collision energy=15, 30, 45, 60, 70 or 90 (nominal)" "resolution=17500" "column=Atlantis T3 3um, 3x150mm, Waters with guard column" "flow gradient=95/5 at 0 min, 5/95 at 15 min, 5/95 at 20 min, 95/5 at 20.1 min, 95/5 at 25 min" "flow rate=300 uL/min" "retention time=14.6 min" "solvent a=water with 0.1% formic acid" "solvent b=methanol with 0.1% formic acid" "precursor m/z=301.1466" "precursor type=[M+H]+" "ionization mode=positive" "mass accuracy=0.007810149499385606" "mass error=-2.351999967231677E-6" "SMILES=CN1CCN(CC1)C(C1=CC=CC=C1)C1=CC=C(Cl)C=C1" "cas=82-93-9" "pubchem cid=2710" "chemspider=2609" "InChI=InChI=1S/C18H21ClN2/c1-20-11-13-21(14-12-20)18(15-5-3-2-4-6-15)16-7-9-17(19)10-8-16/h2-10,18H,11-14H2,1H3" "InChIKey=WFNAKBGANONZEQ-UHFFFAOYSA-N" "molecular formula=C18H21ClN2" "total exact mass=300.13932635199996" "SMILES=CN1CCN(CC1)C(C2=CC=CC=C2)C3=CC=C(C=C3)Cl"
-Num Peaks: 7
-99.0916 0.527554
-165.07 14.
-183.0805 3.771867
-201.0466 100.000000
-
-	 */
-	
-	
-	public static enum ExportFormat {
-		NIST_MSP,
-		MASSBANK_RECORDS;
-	}
-	public static void recordExport(File file, ExportFormat format, List<Record> records) throws CDKException{
-		switch (format) {
-			case NIST_MSP:{
-				recordsToNIST_MSP(file, records);
-				break;
-			}
-			
-			case MASSBANK_RECORDS: {
-				recordsToZipFile(file, records);
-				break;
-			}
-			default:
-				throw new IllegalArgumentException("Unknown Export-Format '" + format + "'!");
-		}
-	}
-	
-	/**
-	 * wrapper for individual record export function and write
-	 * @param file
-	 * @param records
-	 * @throws CDKException
-	 */
-	public static void recordsToNIST_MSP(File file, List<Record> records) throws CDKException{
-		// collect data
-		List<String> list	= new ArrayList<String>();
-		for(Record record : records) {
-			try {
-				list.addAll(recordToNIST_MSP(record));
-				list.add("");
-			} catch (Exception e) {
-				System.out.println("Error in file " + record.CONTRIBUTOR() + "/" + record.ACCESSION());
-				e.printStackTrace();
-			}
-		}
-		
-		try {
-			FileUtils.writeStringToFile(
-					file, 
-					String.join("\n", list.toArray(new String[list.size()])), 
-					Charset.forName("UTF-8")
-			);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-	/**
-	 * NIST format, also used by MONA
-	 * @param record
-	 * @return
-	 * @throws CDKException
-	 */
-	public static List<String> recordToNIST_MSP(Record record) throws CDKException{
-		List<String> list	= new ArrayList<String>();
-		
-		List<String> tmpList	= record.CH_NAME();
-		list.add("Name" + ": " + tmpList.get(0));
-		for(int i = 1; i < tmpList.size(); i++)
-			list.add("Synon" + ": " + tmpList.get(i));
-		
-		list.add("DB#" + ": " + record.ACCESSION());
-		if(record.CH_LINK_asMap().containsKey("INCHIKEY"))
-			list.add("InChIKey" + ": " + record.CH_LINK_asMap().get("INCHIKEY"));
-		list.add("InChI" + ": " + record.CH_IUPAC());
-		list.add("SMILES" + ": " + record.CH_SMILES());
-		
-		if(record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_TYPE"))
-			list.add("Precursor_type" + ": " + record.MS_FOCUSED_ION_asMap().get("PRECURSOR_TYPE"));
-		list.add("Spectrum_type" + ": " + record.AC_MASS_SPECTROMETRY_MS_TYPE());
-		if(record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z"))
-			list.add("PrecursorMZ" + ": " + record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z"));
-		
-		list.add("Instrument_type" + ": " + record.AC_INSTRUMENT_TYPE());
-		list.add("Instrument" + ": " + record.AC_INSTRUMENT());
-		list.add("Ion_mode" + ": " + record.AC_MASS_SPECTROMETRY_ION_MODE());
-		
-		if(record.AC_MASS_SPECTROMETRY_asMap().containsKey("COLLISION_ENERGY"))
-			list.add("Collision_energy" + ": " + record.AC_MASS_SPECTROMETRY_asMap().get("COLLISION_ENERGY"));
-		
-		list.add("Formula" + ": " + record.CH_FORMULA());
-		list.add("MW" + ": " + Math.round(record.CH_EXACT_MASS().floatValue()));
-		list.add("ExactMass" + ": " + record.CH_EXACT_MASS());
-		
-		// remaining stuff:
-		/*
-#################################################################
-## legend
-+	exported
--	not exported
-/	partially exported
-
-#################################################################
-## fields
--	private final String contributor;
-
-+	private String accession;
--	private String record_title;
-+	private String record_title_name;
-/	private String record_title_condition;
-		+ Instrument, MS_TYPE, collision energy
-		- RESOLUTION (-> AC$MASS_SPECTROMETRY)
--	private LocalDate date;
--	private String authors;
--	private String license;	
--	private String copyright;
--	private String publication;
--	private List<String> comment;
-+	private List<String> ch_name;
--	private List<String> ch_compound_class;
-+	private IMolecularFormula ch_formula;
-+	private double ch_exact_mass;
-+	private IAtomContainer ch_smiles;
-+	private IAtomContainer ch_iupac;
-/	private List<Pair<String, String>> ch_link;
-		+ INCHIKEY
-		- Rest
--	private String sp_scientific_name;
--	private String sp_lineage;
--	private List<Pair<String, String>> sp_link;
--	private List<String> sp_sample;
-+	private String ac_instrument;
-+	private String ac_instrument_type;
-+	private String ac_mass_spectrometry_ms_type;
-+	private String ac_mass_spectrometry_ion_mode;
-/	private List<Pair<String, String>> ac_mass_spectrometry;
-		+ COLLISION_ENERGY
-		- Rest
--	private List<Pair<String, String>> ac_chromatography;
-/	private List<Pair<String, String>> ms_focused_ion;
-		+ PRECURSOR_TYPE, PRECURSOR_M/Z
-		- Rest
--	private List<Pair<String, String>> ms_data_processing;
-+	private String pk_splash;
--	private List<String> pk_annotation_header;
--	private final List<List<String>> pk_annotation;
-+	private int pk_num_peak;
-+	private final List<List<Double>> pk_peak;
-		 */
-		
-		/*
-https://chemdata.nist.gov/mass-spc/ftp/mass-spc/PepLib.pdf:
-Comments are composed of a series of space delimited field=value pairs, where values may be embedded within double quotes. 
-All field names are described in Table 3. 
-There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/z required for searching.
-		 */
-		
-		list.add("Comments" + ": " + 
-				"Parent=" + ((record.MS_FOCUSED_ION_asMap().containsKey("PRECURSOR_M/Z")) ? record.MS_FOCUSED_ION_asMap().get("PRECURSOR_M/Z") : -1)
-		);
-		//Comments: "accession=ET010001" "author=R. Gulde, E. Schymanski, K. Fenner, Department of Environmental Chemistry, Eawag" "license=CC BY" "copyright=Copyright (C) 2016 Eawag, Duebendorf, Switzerland" "publication=Gulde, Meier, Schymanski, Kohler, Helbling, Derrer, Rentsch & Fenner; ES&T 2016 50(6):2908-2920. DOI: 10.1021/acs.est.5b05186. Systematic Exploration of Biotransformation Reactions of Amine-containing Micropollutants in Activated Sludge" "comment=CONFIDENCE Parent Substance with Reference Standard (Level 1)" "comment=INTERNAL_ID 100" "exact mass=300.1393" "instrument=Q Exactive Orbitrap Thermo Scientific" "instrument type=LC-ESI-QFT" "ms level=MS2" "ionization=ESI" "fragmentation mode=HCD" "collision energy=15, 30, 45, 60, 70 or 90 (nominal)" "resolution=17500" "column=Atlantis T3 3um, 3x150mm, Waters with guard column" "flow gradient=95/5 at 0 min, 5/95 at 15 min, 5/95 at 20 min, 95/5 at 20.1 min, 95/5 at 25 min" "flow rate=300 uL/min" "retention time=14.6 min" "solvent a=water with 0.1% formic acid" "solvent b=methanol with 0.1% formic acid" "precursor m/z=301.1466" "precursor type=[M+H]+" "ionization mode=positive" "mass accuracy=0.007810149499385606" "mass error=-2.351999967231677E-6" "SMILES=CN1CCN(CC1)C(C1=CC=CC=C1)C1=CC=C(Cl)C=C1" "cas=82-93-9" "pubchem cid=2710" "chemspider=2609" "InChI=InChI=1S/C18H21ClN2/c1-20-11-13-21(14-12-20)18(15-5-3-2-4-6-15)16-7-9-17(19)10-8-16/h2-10,18H,11-14H2,1H3" "InChIKey=WFNAKBGANONZEQ-UHFFFAOYSA-N" "molecular formula=C18H21ClN2" "total exact mass=300.13932635199996" "SMILES=CN1CCN(CC1)C(C2=CC=CC=C2)C3=CC=C(C=C3)Cl"
-		
-		list.add("Splash" + ": " + record.PK_SPLASH());
-		list.add("Num Peaks" + ": " + record.PK_NUM_PEAK());
-		
-		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK()){
-//			StringBuilder peakS	= new StringBuilder();
-//			peakS.append(peak.get(0));
-//			for(int i = 1; i < peak.size(); i++)
-//				peakS.append(" " + peak.get(i));
-//			list.add(peakS.toString());
-			list.add(peak.getLeft() + " " + peak.getRight());
-		}
-		
-		return list;
-	}
-	
-	/**
-	 * wrapper for individual record export function and write
-	 * @param file
-	 * @param records
-	 * @throws CDKException
-	 */
-	
-	public static void recordsToZipFile(File file, List<Record> records){
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
-			ZipOutputStream zos = new ZipOutputStream(fos);
-			
-			for(Record record : records) {
-				try {
-					String fileName	= record.ACCESSION() + ".txt";
-					
-					ZipEntry zipEntry = new ZipEntry(fileName);
-					zos.putNextEntry(zipEntry);
-					zos.write(record.toString().getBytes());
-					zos.closeEntry();
-				} catch (Exception e) {
-					System.out.println("Error in file " + record.CONTRIBUTOR() + "/" + record.ACCESSION());
-					e.printStackTrace();
-				}
-			}
-			
-			zos.close();
-			fos.close();
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public static void main(String[] arguments) {
 		// load version and print
 		final Properties properties = new Properties();
@@ -369,6 +95,7 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		// parse command line
 		Options options = new Options();
 		options.addRequiredOption("o", "outfile", true, "name of output file");
+		options.addOption("f", "format", true, "output format; possible values: RIKEN_MSP, NIST_MSP; default is RIKEN_MSP");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -384,6 +111,14 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
+		}
+		String format = cmd.getOptionValue("f");
+		if (format != null) {
+			if (!Arrays.asList("RIKEN_MSP", "NIST_MSP").contains(format)) {
+				HelpFormatter formatter = new HelpFormatter();
+				formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+		        System.exit(1);
+			}
 		}
 		
 		// loop over all arguments
@@ -422,11 +157,27 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		.filter(Objects::nonNull)
 		// output as List
 		.collect(Collectors.toList());		
-		//System.out.println(recordfiles.toString());
-		System.out.println(records.size());
-		
+		//System.out.println(recordfiles.toString());		
 		
 		File outfile	= new File(cmd.getOptionValue("o"));
-		RecordToRIKEN_MSP.recordsToRIKEN_MSP(outfile, records);
+		
+		// default output format is RIREN_MSP
+		if (format == null) {
+			format="RIKEN_MSP";
+		}
+		switch(format){            
+        case "RIKEN_MSP":
+        	RecordToRIKEN_MSP.recordsToRIKEN_MSP(outfile, records);
+            break;
+        case "NIST_MSP":
+        	RecordToNIST_MSP.recordsToNIST_MSP(outfile, records);
+            break;
+        default:
+        	logger.error("This code should not run.");
+            System.exit(1);
+        } 
+		
+		
+		
 	}
 }
