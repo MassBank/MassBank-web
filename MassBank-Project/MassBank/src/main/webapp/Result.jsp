@@ -377,6 +377,7 @@
 	<link rel="stylesheet" href="css.old/st.css" type="text/css" />	
 	<!-- SpeckTackle MassBank loading script-->
 	<script type="text/javascript" src="js/massbank_specktackle.js"></script>	
+	<script type="text/javascript" src="js/piwik.js"></script>
 	<title>MassBank | Database | <%=title%></title>
 </head>
 <body class="msbkFont cursorDefault">
