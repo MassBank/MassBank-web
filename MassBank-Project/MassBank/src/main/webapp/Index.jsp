@@ -97,7 +97,7 @@
 	</div>
 	
 	<div style="max-width: 90%; height: auto; margin: auto;">
-		<iframe src="https://massbank.github.io/MassBank-documentation/news.html" 
+		<iframe src="https://massbank.github.io/massbank.eu-documentation/news.html" 
 			id="news" style="min-width: 100%;border:none;"></iframe>
 		<script>
   			iFrameResize({ log: true }, '#news')
