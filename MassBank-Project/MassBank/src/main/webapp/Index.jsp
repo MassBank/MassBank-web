@@ -109,7 +109,7 @@
 		<div class="w3-modal-content w3-animate-top" style="height: 90%;">
 			<header class="w3-container w3-indigo">
 				<div class="w3-display-topright">
-					<a href="https://massbank.github.io/MassBank-documentation/" target="_blank"
+					<a href="https://massbank.github.io/massbank.eu-documentation/" target="_blank"
 						onclick="document.getElementById('id01').style.display='none'" class="w3-button">
 						&#8599;
 					</a>
@@ -118,10 +118,10 @@
 					</span>
 				</div>
 				<h4>Documentation at
-					https://massbank.github.io/MassBank-documentation/</h4>
+					https://massbank.github.io/massbank.eu-documentation/</h4>
 			</header>
 
-			<iframe src="https://massbank.github.io/MassBank-documentation/"
+			<iframe src="https://massbank.github.io/massbank.eu-documentation/"
 				id="docs" style="width: 100%; height: 100%;"></iframe>
 		</div>
 	</div>
