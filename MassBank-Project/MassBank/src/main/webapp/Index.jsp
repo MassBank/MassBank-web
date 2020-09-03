@@ -57,11 +57,11 @@
 	</div>
 
 	<div class="w3-row w3-white w3-round" style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-quarter w3-panel w3-white">
+		<div class="w3-third w3-panel w3-white">
 			<div class="w3-panel w3-leftbar w3-border-teal w3-light-grey w3-text-blue w3-round">
 				<h5>
 					<a href="Search"><b>Search</b></a>
-					<a href="Search"><img src="img/search.gif" style="width:100%;"></a>
+					<a href="Search"><img src="img/search.svg" style="width:100%;"></a>
 				</h5>
 			</div>
 		</div>
@@ -76,7 +76,7 @@
 <!-- 			</div> -->
 <!-- 		</div> -->
 
-		<div class="w3-quarter w3-panel w3-white">
+		<div class="w3-third w3-panel w3-white">
 			<div class="w3-panel w3-leftbar w3-border-pink w3-light-grey w3-text-blue w3-round">
 				<h5>
 					<a href="RecordIndex"><b>Record Index</b></a>
@@ -85,7 +85,7 @@
 			</div>
 		</div>
 		
-		<div class="w3-quarter w3-panel w3-white">
+		<div class="w3-third w3-panel w3-white">
 			<div class="w3-panel w3-leftbar w3-border-indigo w3-light-grey w3-text-blue w3-round">
 				<h5>
 					<a href="#" onclick="document.getElementById('id01').style.display='block'"><b>Documentation</b></a>
