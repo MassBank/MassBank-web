@@ -1,4 +1,4 @@
-package massbank;
+package massbank.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +42,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import massbank.Record;
 import net.sf.jniinchi.INCHI_RET;
 
 /**

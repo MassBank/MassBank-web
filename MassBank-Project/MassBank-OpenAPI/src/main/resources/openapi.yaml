@@ -50,26 +50,22 @@ paths:
     get:
       summary: Returns all records matching the search
       description: |
-        This resource reports all record ids which fulfill the criteria in the search string.
-        The search strings support the syntax described at
-        [jirutka/rsql-parser](https://github.com/jirutka/rsql-parser). 
-        
-        The following selectors are supported:
-        Selector | Operators | Argument Type,<br>Examples and Comments | Description
-        ---|---|---|---
-        name | == | String with simple wildcard **\***<br>Example:<br> 1. **name==nicotin\*** matches **nicotine** and **nicotinamide** but not **1-methylnicotinamide**<br> 2. **name==\*nicotin\*** matches also **1-methylnicotinamide** | matches Strings in the `CH$NAME` field
-        ---|---|---|---|
-        
+        This resource reports all record ids which fulfill the criteria in the search parameters.
       tags:
         - record
       parameters:
         - in: query
-          name: search
-          required: true
+          name: name
           schema:
             type: string
-            example: name==*nicotine*
-          description: the search string
+            example: '*nicotine*'
+          description: Search records with the specified string in RECORD_TITLE or CH$NAME.
+        - in: query
+          name: formula
+          schema:
+            type: string
+            example: 'C9H15NO3S'
+          description: Search records with the specified formula CH$FORMULA.
       responses:
         '200':
           description: successful operation

@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  ******************************************************************************/
-package massbank;
+package massbank.cli;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,6 +37,8 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import massbank.Config;
+import massbank.Record;
 import massbank.db.DatabaseManager;
 
 /**

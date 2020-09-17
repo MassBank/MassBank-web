@@ -28,8 +28,6 @@ public class PeakSearchByPeakDifference implements SearchFunction<ResultRecord[]
 
 	private String[] mz;
 
-	private String[] fom;
-
 	private String tol;
 
 	private String intens;
@@ -47,11 +45,9 @@ public class PeakSearchByPeakDifference implements SearchFunction<ResultRecord[]
 		
 		this.op		= new String[this.num];
 		this.mz		= new String[this.num];
-		this.fom	= new String[this.num];
 		for (int i = 0; i < this.num; i++) {
 			this.op[i]	= request.getParameter("op" + i);
 			this.mz[i]	= request.getParameter("mz" + i).trim();
-			this.fom[i]	= request.getParameter("fom" + i).trim();
 		}
 		this.tol	= request.getParameter("tol").trim();
 		this.intens	= request.getParameter("int").trim();

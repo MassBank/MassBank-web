@@ -1,4 +1,4 @@
-package massbank;
+package massbank.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +29,9 @@ import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
+import massbank.Record;
+import massbank.RecordParser;
+import massbank.RecordParserDefinition;
 import massbank.db.DatabaseManager;
 
 /**
@@ -162,26 +165,29 @@ public class Validator {
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
 		List<String> accessions = recordfiles.parallelStream().map(filename -> {
 			String recordString;
-			Record record=null;
+			String accession=null;
 			try {
 				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 				hasNonStandardChars(recordString);
-				record = validate(recordString, "");
+				// basic validation
+				Record record = validate(recordString, "");
 				if (record == null) {
 					logger.error("Error in \'" + filename + "\'.");
 					haserror.set(true);
-					return null;
 				}
+				
+				// additional tests
 				else {
 					logger.trace("validation passed for " + filename);
 					// compare ACCESSION with filename
-					if (!record.ACCESSION().equals(FilenameUtils.getBaseName(filename.toString()))) {
+					accession=record.ACCESSION();
+					if (!accession.equals(FilenameUtils.getBaseName(filename.toString()))) {
 						logger.error("Error in \'" + filename.getName().toString() + "\'.");
 						logger.error("ACCESSION \'" + record.ACCESSION() + "\' does not match filename \'" + filename.getName().toString() + "\'");
 						haserror.set(true);
 					}
 					
-					// validate correct serialisation: String -> Record class -> String
+					// validate correct serialization: String -> Record class -> String
 					String recordStringFromRecord = record.toString();
 					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
 					if (position != -1) {
@@ -203,10 +209,9 @@ public class Validator {
 							}
 							line++;
 						}
-						
 					}
 				
-					// validate correct serialisation with db: String -> Record class -> db -> Record class -> String
+					// validate correct serialization with db: String -> Record class -> db -> Record class -> String
 					if (doDatbase.get()) {
 						Record recordDatabase = null;
 						try {
@@ -250,10 +255,10 @@ public class Validator {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			return record.ACCESSION();
+			return accession;
 		})
 		.filter(Objects::nonNull)
-		.collect(Collectors.toList());;
+		.collect(Collectors.toList());
 		
 		// check duplicates
 		Set<String> duplicates = new LinkedHashSet<String>();
