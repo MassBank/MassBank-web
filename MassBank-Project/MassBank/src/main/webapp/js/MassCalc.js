@@ -31,21 +31,25 @@ function closeMassCalc() {
 	$("#MassCalc").fadeOut();
 }
 function resetMassCalc() {
-	$(".fMass").val("");
-	$(".fFormula").val("");
-	$(".fFormula:eq(0)").focus();
+	$(".Mass").val("");
+	$(".Formula").val("");
+	$(".Formula:eq(0)").focus();
 }
 
 $(document).ready(function() {
 	$('#openMassCalc').click(function(){ openMassCalc(); return false; });
 	$('#closeMassCalc').click(function(){ closeMassCalc(); return false; });
 	//update mass according to formula
-	$(".fFormula").on("keyup", function(){
+	$(".Formula").on("keyup", function(){
 			var inputFormula = $(this).val();
 			inputFormula = inputFormula.trim();
 			inputFormula = getAtomicArray(inputFormula);
 			mass = massCalc(inputFormula);
-			$(".fMass:eq("+$(".fFormula").index(this)+")").val(mass);
+			if (mass > 0) {
+				$(".Mass:eq("+$(".Formula").index(this)+")").val(mass);
+			} else {
+				$(".Mass:eq("+$(".Formula").index(this)+")").val("");
+			}
         }  
     );
 });

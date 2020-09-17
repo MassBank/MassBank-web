@@ -34,8 +34,8 @@
 	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-    <link rel="stylesheet" type="text/css" href="css/jquery-confirm.min.css">
-	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.9.0-web/css/all.min.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-confirm.min.css">
+	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.13.1-web/css/all.min.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<script src="js/jquery-3.4.1.min.js"></script>
 	<script src="js/MassCalc.js"></script>
@@ -225,7 +225,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
 								<label><b>Formula</b></label>
-								<input class="w3-input w3-round w3-border Formula" name="fom0" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -242,7 +242,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom1" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -259,7 +259,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom2" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -276,7 +276,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom3" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -293,7 +293,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom4" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -310,7 +310,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom5" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 					</div>	
@@ -373,7 +373,7 @@
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
 								<label><b>Formula</b></label>
-								<input class="w3-input w3-round w3-border Formula" name="fom0" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -390,7 +390,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom1" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -407,7 +407,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom2" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -424,7 +424,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom3" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -441,7 +441,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom4" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 						<div class="w3-cell-row">
@@ -458,7 +458,7 @@
 								</svg>
 							</div>
 							<div class="w3-cell w3-mobile w3-padding-small">
-								<input class="w3-input w3-round w3-border Formula" name="fom5" type="text">
+								<input class="w3-input w3-round w3-border Formula" type="text">
 							</div>						
 						</div>
 					</div>	
