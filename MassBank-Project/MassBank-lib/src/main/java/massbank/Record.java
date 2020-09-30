@@ -664,6 +664,7 @@ public class Record {
 	public String DESCRIPTION() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("This MassBank record with Accession " + ACCESSION() + " contains the " +	MS_TYPE()" mass spectrum" + " of '" + RECORD_TITLE().get(0) + "' with the InChIkey '" + link.getKey("INCHIKEY") + "'."
+		return sb.toString();
 	}
 	
 		public String createStructuredData() {
