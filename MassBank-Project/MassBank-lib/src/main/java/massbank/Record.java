@@ -661,7 +661,12 @@ public class Record {
 		return sb.toString();
 	}
 	
-	public String createStructuredData() {
+	public String DESCRIPTION() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("This MassBank record with Accession " + ACCESSION() + " contains the " +	MS_TYPE()" mass spectrum" + " of '" + RECORD_TITLE().get(0) + "' with the InChIkey '" + link.getKey("INCHIKEY") + "'."
+	}
+	
+		public String createStructuredData() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script type=\"application/ld+json\">\n");
 		sb.append("[\n");
@@ -671,7 +676,8 @@ public class Record {
 		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
 		if (CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ CH_NAME().get(0) +"\",\n");
 		else if (CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", CH_NAME()) +"\"],\n");
-		
+		sb.append("\inchikey\": \"" + link.getKey("INCHIKEY") + "\",\n");
+		sb.append("\"description\": \"" + DESCRIPTION() + "\",\n");
 		sb.append("\"molecularFormula\": \""+CH_FORMULA()+"\",\n");
 		sb.append("\"monoisotopicMolecularWeight\": \""+CH_EXACT_MASS()+"\",\n");
 		sb.append("\"inChI\": \""+CH_IUPAC()+"\",\n");
