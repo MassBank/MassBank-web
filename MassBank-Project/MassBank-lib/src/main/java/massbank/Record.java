@@ -688,7 +688,7 @@ public class Record {
 
 		sb.append("{\n");
 		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
-		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+ACCESSION()+"\",\n");
+		sb.append("\"url\": \"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"\",\n");
 		sb.append("\"headline\": \""+RECORD_TITLE1()+"\",\n");
 		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
 		sb.append("\"description\": \"" + description + "\",\n");
