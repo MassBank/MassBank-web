@@ -308,11 +308,3 @@ create view peaks as select
        PEAK.PK_PEAK_MZ as mz,
        PEAK.PK_PEAK_INTENSITY as intensity
 from PEAK;
-
-create user 'massbank'@'%';
-grant select on MassBank.peaks to 'massbank'@'%';
-grant select on MassBank.spectra_data to 'massbank'@'%';
-grant select on MassBank.compound to 'massbank'@'%';
-grant show view on MassBank.peaks to 'massbank'@'%';
-grant show view on MassBank.spectra_data to 'massbank'@'%';
-grant show view on MassBank.spectra_data_full to 'massbank'@'%';
