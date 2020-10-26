@@ -20,7 +20,7 @@
 		<servlet-api-version>4.0.1</servlet-api-version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.3</cdk.version>
-		<jdbc.version>2.6.2</jdbc.version>
+		<jdbc.version>2.7.0</jdbc.version>
 		<versionName>${project.version}</versionName>
 		<petitparser-version>2.3.1</petitparser-version>
 	</properties>
