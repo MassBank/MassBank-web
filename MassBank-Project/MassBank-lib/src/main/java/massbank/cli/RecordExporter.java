@@ -133,7 +133,7 @@ Num peaks: 124
 				filesToProcess.add(argumentFile);
 			}
 			else if (argumentFile.isDirectory()) {
-				filesToProcess.addAll(FileUtils.listFiles(argumentFile, new String[] {"txt"}, true));
+				if (!argumentFile.getName().startsWith(".")) filesToProcess.addAll(FileUtils.listFiles(argumentFile, new String[] {"txt"}, true));
 			}
 			else {
 				logger.warn("Argument " + argument + " could not be processed.");

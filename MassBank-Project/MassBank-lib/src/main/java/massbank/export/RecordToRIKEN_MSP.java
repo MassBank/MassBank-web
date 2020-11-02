@@ -1,6 +1,8 @@
 package massbank.export;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
@@ -72,7 +74,12 @@ public class RecordToRIKEN_MSP {
 	 * @param record to convert
 	 */
 	public static List<String> convert(Record record) {
+		System.out.println(record.ACCESSION());
 		List<String> list	= new ArrayList<String>();
+		if (record.DEPRECATED()) {
+			logger.warn(record.ACCESSION() + " is deprecated. No export possible.");
+			return list;
+		}
 				
 		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
 		Map<String, String> MS_FOCUSED_ION = record.MS_FOCUSED_ION_asMap();
@@ -94,14 +101,12 @@ public class RecordToRIKEN_MSP {
 		String links	= String.join("; ", list_links);
 		list.add("LINKS"			+ ": " + links);
 		
-		String comment	= null;
-		for(String comment2 : record.COMMENT())
-			if(comment2.startsWith("CONFIDENCE"))
-				comment	= comment2.substring("CONFIDENCE".length() + 1);
-		if(comment == null)
-			comment	= String.join("; ", record.COMMENT());
-		if(comment.equals(""))
-			comment	= "N/A";
+		List<String> recordComment = record.COMMENT();
+		for (int i = 0; i < recordComment.size(); i++) {
+			if(recordComment.get(i).startsWith("CONFIDENCE")) recordComment.set(i,recordComment.get(i).substring("CONFIDENCE".length()).trim());
+        }
+		String comment= String.join("; ", recordComment);
+		if(comment.equals("")) comment	= "N/A";
 		list.add("Comment"			+ ": " + comment);
 		list.add("Num Peaks"		+ ": " + record.PK_NUM_PEAK());
 		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK())
@@ -132,6 +137,15 @@ public class RecordToRIKEN_MSP {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		
+//		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+//		//Loop over the elements in the string array and write each line.
+//		for (String line : array) {
+//			writer.write(line);
+//			writer.newLine();
+//		}
+//		writer.close();
+		
 	}
 
 }
