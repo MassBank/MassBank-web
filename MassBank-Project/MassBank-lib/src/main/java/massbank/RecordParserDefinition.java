@@ -30,6 +30,7 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.petitparser.context.Context;
 import org.petitparser.context.Result;
 import org.petitparser.context.Token;
+import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
 import org.petitparser.tools.GrammarDefinition;
@@ -420,7 +421,21 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("COMMENT")
 			.seq(ref("tagsep"))
 			.seq(Token.NEWLINE_PARSER.not())
-			.seq(CharacterParser.any().repeatLazy(Token.NEWLINE_PARSER, 1, 600).flatten())
+			.seq(
+				CharacterParser.any().repeatLazy(Token.NEWLINE_PARSER, 1, 600).flatten()
+				.callCC((Function<Context, Result> continuation, Context context) -> {
+					Result r = continuation.apply(context);
+					if (r.isSuccess()) {
+						String comment=r.get();
+						if ("CONFIDENCE".equals(comment.trim())) {
+							logger.error("Empty \'COMMENT: CONFIDENCE\' field.");
+							return context.failure("Empty \'COMMENT: CONFIDENCE\' field.");
+						}
+								
+					}
+					return r;
+				})
+			)
 			.seq(Token.NEWLINE_PARSER).pick(3)
 			.plus()
 			.map((List<String> value) -> {
