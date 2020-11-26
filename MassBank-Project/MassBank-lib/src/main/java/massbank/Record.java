@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -302,7 +303,6 @@ public class Record {
 	public void CH_IUPAC(String value) {
 		ch_iupac=value;
 	}
-
 	
 	public List<Pair<String, String>> CH_LINK() {
 		return ch_link;
@@ -662,16 +662,22 @@ public class Record {
 	}
 	
 	public String createStructuredData() {
+		String InChiKey = CH_LINK_asMap().get("INCHIKEY");
+		String description = "This MassBank record with Accession " + ACCESSION() 
+			+ " contains the " + AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum of '" + RECORD_TITLE().get(0)
+			+ ((InChiKey!=null) ? "'." : "' with the InChIkey '" + InChiKey + "'.");
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script type=\"application/ld+json\">\n");
 		sb.append("[\n");
 		sb.append("{\n");
 		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
-		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+ACCESSION()+"\",\n");
+		sb.append("\"url\": \"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"\",\n");
 		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
 		if (CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ CH_NAME().get(0) +"\",\n");
 		else if (CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", CH_NAME()) +"\"],\n");
-		
+		if (InChiKey!=null) sb.append("\"inchikey\": \"" + InChiKey + "\",\n");
+		sb.append("\"description\": \"" + description + "\",\n");
 		sb.append("\"molecularFormula\": \""+CH_FORMULA()+"\",\n");
 		sb.append("\"monoisotopicMolecularWeight\": \""+CH_EXACT_MASS()+"\",\n");
 		sb.append("\"inChI\": \""+CH_IUPAC()+"\",\n");
@@ -679,12 +685,13 @@ public class Record {
 		sb.append("\"@context\": \"http://schema.org\",\n");
 		sb.append("\"@type\": \"MolecularEntity\"\n");
 		sb.append("},\n");
+
 		sb.append("{\n");
-		
 		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
-		sb.append("\"url\": \"https://massbank.eu/RecordDisplay?id="+ACCESSION()+"\",\n");
+		sb.append("\"url\": \"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"\",\n");
 		sb.append("\"headline\": \""+RECORD_TITLE1()+"\",\n");
 		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
+		sb.append("\"description\": \"" + description + "\",\n");
 		String[] tokens	= DATE1();
 		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
 		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
