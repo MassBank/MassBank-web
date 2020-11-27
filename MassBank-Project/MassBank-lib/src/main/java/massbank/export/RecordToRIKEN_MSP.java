@@ -97,7 +97,7 @@ public class RecordToRIKEN_MSP {
 		
 		List<String> list_links	= new ArrayList<String>();
 		for(Entry<String, String> entry : record.CH_LINK_asMap().entrySet())
-			list_links.add(entry.getValue() + ":" + entry.getKey());
+			list_links.add(entry.getKey() + ":" + entry.getValue());
 		String links	= String.join("; ", list_links);
 		list.add("LINKS"			+ ": " + links);
 		
@@ -105,8 +105,13 @@ public class RecordToRIKEN_MSP {
 		for (int i = 0; i < recordComment.size(); i++) {
 			if(recordComment.get(i).startsWith("CONFIDENCE")) recordComment.set(i,recordComment.get(i).substring("CONFIDENCE".length()).trim());
         }
-		String comment= String.join("; ", recordComment);
-		if(comment.equals("")) comment	= "N/A";
+		
+		String accession = "DB#="+record.ACCESSION()+"; origin=MassBank";
+		System.out.println(accession);
+		String comment = String.join("; ", recordComment);
+		
+		if(comment.equals("")) comment = accession;
+		else comment = accession +"; " + comment;
 		list.add("Comment"			+ ": " + comment);
 		list.add("Num Peaks"		+ ": " + record.PK_NUM_PEAK());
 		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK())
