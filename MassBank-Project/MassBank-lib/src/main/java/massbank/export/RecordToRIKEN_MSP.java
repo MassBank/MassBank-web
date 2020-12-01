@@ -64,7 +64,7 @@ Num Peaks: 17
 /**
  * This class creates RIKEN PRIME msp from the given Record.
  * @author rmeier, htreutle
- * @version 21-08-2020
+ * @version 01-12-2020
  */
 public class RecordToRIKEN_MSP {
 	private static final Logger logger = LogManager.getLogger(RecordToRIKEN_MSP.class);
@@ -74,7 +74,6 @@ public class RecordToRIKEN_MSP {
 	 * @param record to convert
 	 */
 	public static List<String> convert(Record record) {
-		System.out.println(record.ACCESSION());
 		List<String> list	= new ArrayList<String>();
 		if (record.DEPRECATED()) {
 			logger.warn(record.ACCESSION() + " is deprecated. No export possible.");
@@ -103,11 +102,10 @@ public class RecordToRIKEN_MSP {
 		
 		List<String> recordComment = record.COMMENT();
 		for (int i = 0; i < recordComment.size(); i++) {
-			if(recordComment.get(i).startsWith("CONFIDENCE")) recordComment.set(i,recordComment.get(i).substring("CONFIDENCE".length()).trim());
+			if(recordComment.get(i).startsWith("CONFIDENCE")) recordComment.set(i,"Annotation " + recordComment.get(i).substring("CONFIDENCE".length()).trim());
         }
 		
 		String accession = "DB#="+record.ACCESSION()+"; origin=MassBank";
-		System.out.println(accession);
 		String comment = String.join("; ", recordComment);
 		
 		if(comment.equals("")) comment = accession;
@@ -133,24 +131,19 @@ public class RecordToRIKEN_MSP {
 			list.addAll(convert(record));
 			list.add("");
 		}
+		
+		BufferedWriter writer;
 		try {
-			FileUtils.writeStringToFile(
-					file, 
-					String.join("\n", list.toArray(new String[list.size()])), 
-					Charset.forName("UTF-8")
-			);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			writer = new BufferedWriter(new FileWriter(file));
+			for (String line : list) {
+				writer.write(line);
+				writer.newLine();
+			}
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-//		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-//		//Loop over the elements in the string array and write each line.
-//		for (String line : array) {
-//			writer.write(line);
-//			writer.newLine();
-//		}
-//		writer.close();
-		
 	}
 
 }
