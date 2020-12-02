@@ -82,7 +82,12 @@ public class RecordToNIST_MSP {
 	 * @param record to convert
 	 */
 	public static List<String> convert(Record record) {
+		System.out.println(record.ACCESSION());
 		List<String> list	= new ArrayList<String>();
+		if (record.DEPRECATED()) {
+			logger.warn(record.ACCESSION() + " is deprecated. No export possible.");
+			return list;
+		}
 		
 		List<String> tmpList	= record.CH_NAME();
 		list.add("Name" + ": " + tmpList.get(0));
