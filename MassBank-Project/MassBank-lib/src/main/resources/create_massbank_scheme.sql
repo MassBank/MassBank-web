@@ -288,7 +288,7 @@ create view msms_spectrum_peak as select
       PEAK.PK_PEAK_INTENSITY as intensity
 from PEAK;
 
-create view compound as select
+create view ms_compound as select
       COMPOUND.ID as compound_id,
       COMPOUND.CH_FORMULA as formula,
       COMPOUND.CH_EXACT_MASS as exactmass,
