@@ -36,6 +36,7 @@
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<script src="js/jquery-3.5.1.min.js"></script>
 	<script src="js/iframeResizer.min.js"></script>
+	<script src="js/piwik.js"></script>
 </head>
 
 <body class="w3-theme-gradient">
