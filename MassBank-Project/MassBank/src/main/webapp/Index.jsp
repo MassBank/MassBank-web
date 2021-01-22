@@ -34,9 +34,9 @@
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<script src="js/jquery-3.5.1.min.js"></script>
-	<script src="js/iframeResizer.min.js"></script>
-	<script src="js/piwik.js"></script>
+	<script src="js/jquery-3.5.1.min.js" type="text/javascript"></script>
+	<script src="js/iframeResizer.min.js" type="text/javascript"></script>
+	<script src="js/piwik.js" type="text/javascript"></script>
 </head>
 
 <body class="w3-theme-gradient">
