@@ -1,19 +1,49 @@
 <!-- Matomo -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(["setCookieDomain", "*.massbank.eu"]);
-  _paq.push(["setDomains", ["*.massbank.ufz.de","*.massbank.eu","*.massbank.eu","*.massbank.ufz.de"]]);
-  _paq.push(["disableCookies"]);
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="https://www.ufz.de/stats/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '24']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
+		<script src="https://www.ufz.de/stats/piwik.js" type="text/javascript"></script>
+			<script type="text/javascript">
+				            try  {
+                var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
+                if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
+                    piwikTracker.disableCookies();
+                }
+                piwikTracker.trackPageView();
+                piwikTracker.enableLinkTracking();
+            } catch( err ) {}
+		</script>
+		
+		<noscript>
+			<img src="https://www.ufz.de/stats/piwik.php?idsite=24" style="border:0" alt="" />
+		</noscript>
+
+        <script type="text/javascript">
+               $(document).ready(function() {
+                   if(localStorage.getItem('cookie-banner') === null) {
+                       $('#cookie-banner').modal();
+                        
+                        $('#cookie-banner button.btn-secondary').off('click').on('click', function() {
+                           localStorage.setItem('cookie-banner', '0');
+                                        try  {
+				var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
+                if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
+                    piwikTracker.disableCookies();
+                }
+                piwikTracker.trackPageView();
+                piwikTracker.enableLinkTracking();
+            } catch( err ) {}
+                        });
+                        $('#cookie-banner button.btn-success').off('click').on('click', function() {
+                            localStorage.setItem('cookie-banner', '1');
+                                        try  {
+                var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
+                if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
+                    piwikTracker.disableCookies();
+                }
+                piwikTracker.trackPageView();
+                piwikTracker.enableLinkTracking();
+            } catch( err ) {}
+                        });
+                    }
+				});
+		</script>
 <!-- End Matomo Code -->
 
