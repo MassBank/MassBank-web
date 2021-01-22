@@ -36,10 +36,10 @@
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.13.1-web/css/all.min.css">
-	<script src="js/jquery-3.4.1.min.js"></script>
-	<script src="js/MassCalc.js"></script>
-	<script src="js/svg4everybody-2.1.9.min.js"></script>
-	<script src="js/piwik.js"></script>
+	<script src="js/jquery-3.4.1.min.js" type="text/javascript"></script>
+	<script src="js/MassCalc.js" type="text/javascript"></script>
+	<script src="js/svg4everybody-2.1.9.min.js" type="text/javascript"></script>
+	<script src="js/piwik.js" type="text/javascript"></script>
 	<script>svg4everybody();</script>
 </head>
 
