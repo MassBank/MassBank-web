@@ -34,12 +34,12 @@
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<link rel="stylesheet" type="text/css" href="css/cookieconsent-3.1.1.css">
-	<script src="js/cookieconsent-3.1.1.min.js" type="text/javascript"></script>
 	<script src="js/jquery-3.5.1.min.js" type="text/javascript"></script>
 	<script src="js/iframeResizer.min.js" type="text/javascript"></script>
-	<script src="https://www.ufz.de/stats/piwik.js" type="text/javascript"></script>
 	
+	<!-- Matomo -->
+	<link rel="stylesheet" type="text/css" href="css/cookieconsent-3.1.1.min.css">
+	<script src="https://www.ufz.de/stats/piwik.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	try  {
         var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
@@ -173,9 +173,9 @@
 				id="docs" style="width: 100%; height: 100%;"></iframe>
 		</div>
 	</div>
-	
-	
+		
 	<!-- This script was generated with the onsano configuration wizard (https://www.osano.com/cookieconsent/download) -->
+	<script src="js/cookieconsent-3.1.1.min.js" type="text/javascript"></script>
 	<script>
 	window.cookieconsent.initialise({
 	  "palette": {
@@ -189,7 +189,7 @@
 	  },
 	  "position": "bottom-right",
 	  "content": {
-		"message": "This website uses technical necessary cookies storing the session ID token and in addition the Matomo web analytics tool. Matomo enables us to statistically evaluate the use of our website. Matomo is open source and compliant to GDPR (Directive 95/46/EC). Your consent to the use of Matomo can be revoked at any time via the data privacy policy.",
+		"message": "This website uses technical necessary cookies and in addition the Matomo web analytics tool. Matomo enables us to statistically evaluate the use of our website. Matomo is open source and compliant to GDPR (Directive 95/46/EC). Your consent to the use of Matomo can be revoked at any time via the data privacy policy.",
 		"link": "Data Privacy Policy",
 		"href": "https://www.ufz.de/index.php?en=44326"
 	  }
