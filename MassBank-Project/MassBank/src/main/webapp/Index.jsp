@@ -34,8 +34,58 @@
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<link rel="stylesheet" type="text/css" href="css/cookieconsent-3.1.1.css">
+	<script src="js/cookieconsent-3.1.1.min.js" type="text/javascript"></script>
 	<script src="js/jquery-3.5.1.min.js" type="text/javascript"></script>
 	<script src="js/iframeResizer.min.js" type="text/javascript"></script>
+	<script src="https://www.ufz.de/stats/piwik.js" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+	try  {
+        var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
+            if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
+                piwikTracker.disableCookies();
+            }
+            piwikTracker.trackPageView();
+            piwikTracker.enableLinkTracking();
+        } catch( err ) {}
+	</script>
+	
+	<noscript>
+		<img src="https://www.ufz.de/stats/piwik.php?idsite=2" style="border:0" alt="" />
+	</noscript>
+	
+	<script type="text/javascript">
+            $(document).ready(function() {
+                    if(localStorage.getItem('cookie-banner') === null) {
+                        $('#cookie-banner').modal();
+                        
+                        $('#cookie-banner button.btn-secondary').off('click').on('click', function() {
+                            localStorage.setItem('cookie-banner', '0');
+                                        try  {
+                var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
+                if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
+                    piwikTracker.disableCookies();
+                }
+                piwikTracker.trackPageView();
+                piwikTracker.enableLinkTracking();
+            } catch( err ) {}
+                        });
+                        $('#cookie-banner button.btn-success').off('click').on('click', function() {
+                            localStorage.setItem('cookie-banner', '1');
+                                        try  {
+                var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
+                if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
+                    piwikTracker.disableCookies();
+                }
+                piwikTracker.trackPageView();
+                piwikTracker.enableLinkTracking();
+            } catch( err ) {}
+                        });
+                    }
+				});
+	</script>
+
 	</head>
 
 <body class="w3-theme-gradient">
@@ -116,13 +166,35 @@
 						&times;
 					</span>
 				</div>
-				<h4>Documentation at
-					https://massbank.github.io/massbank.eu-documentation/</h4>
+				<h4>Documentation at https://massbank.github.io/massbank.eu-documentation/</h4>
 			</header>
 
 			<iframe src="https://massbank.github.io/massbank.eu-documentation/"
 				id="docs" style="width: 100%; height: 100%;"></iframe>
 		</div>
 	</div>
+	
+	
+	<!-- This script was generated with the onsano configuration wizard (https://www.osano.com/cookieconsent/download) -->
+	<script>
+	window.cookieconsent.initialise({
+	  "palette": {
+		"popup": {
+		  "background": "#237afc"
+		},
+		"button": {
+		  "background": "#fff",
+		  "text": "#237afc"
+		}
+	  },
+	  "position": "bottom-right",
+	  "content": {
+		"message": "This website uses technical necessary cookies storing the session ID token and in addition the Matomo web analytics tool. Matomo enables us to statistically evaluate the use of our website. Matomo is open source and compliant to GDPR (Directive 95/46/EC). Your consent to the use of Matomo can be revoked at any time via the data privacy policy.",
+		"link": "Data Privacy Policy",
+		"href": "https://www.ufz.de/index.php?en=44326"
+	  }
+	});
+	</script>
+	
 </body>
 </html>
