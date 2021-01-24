@@ -698,6 +698,15 @@ public class Record {
 		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
 		// sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
 		sb.append("\"license\": \""+LICENSE() +"\",\n");
+		
+		// Convert licenses to URLs
+		if (LICENSE() == "CC0") sb.append("\"license\": \"https://creativecommons.org/share-your-work/public-domain/cc0\",\n");
+		else if (LICENSE() == "CC BY-SA" || LICENSE() == "CC BY SA" || LICENSE() == "CC-BY SA" || LICENSE() == "CC-BY-SA") sb.append("\"license\": \"https://creativecommons.org/licenses/by-sa/4.0\",\n");
+		else if (LICENSE() == "CC BY" || LICENSE() == "CC-BY" || LICENSE() == "BY CC" || LICENSE() == "BY-CC") sb.append("\"license\": \"https://creativecommons.org/licenses/by/4.0\",\n");
+		else if (LICENSE() == "CC BY-NC" || LICENSE() == "CC-BY-NC" || LICENSE() == "CC BY NC" || LICENSE() == "CC-BY NC") sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc/4.0\",\n");
+		else if (LICENSE() == "CC BY-SA NC" || LICENSE() == "CC BY-NC-SA 4.0 International" || LICENSE() == "CC BY-NC-SA") sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-sa/4.0\",\n");
+		else if (LICENSE() == "CC BY-NC-ND") sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-nd/4.0\",\n");
+
 		sb.append("\"citation\": \""+PUBLICATION()+"\",\n");
 		if (COMMENT().size() == 1)  sb.append("\"comment\": \""+ COMMENT().get(0) +"\",\n");
 		else if (COMMENT().size() >= 1) sb.append("\"comment\": [\""+ String.join("\", \"", COMMENT()) +"\"],\n");
