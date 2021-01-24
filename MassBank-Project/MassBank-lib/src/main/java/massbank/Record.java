@@ -692,6 +692,7 @@ public class Record {
 		sb.append("\"headline\": \""+RECORD_TITLE1()+"\",\n");
 		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
 		sb.append("\"description\": \"" + description + "\",\n");
+		sb.append("\"measurementTechnique\": \"mass spectrometry\",\n");
 		String[] tokens	= DATE1();
 		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
 		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
