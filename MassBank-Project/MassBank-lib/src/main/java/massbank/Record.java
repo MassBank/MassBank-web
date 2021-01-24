@@ -696,7 +696,8 @@ public class Record {
 		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
 		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
 		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
-		sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
+		// sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
+		sb.append("\"license\": \""+LICENSE() +"\",\n");
 		sb.append("\"citation\": \""+PUBLICATION()+"\",\n");
 		if (COMMENT().size() == 1)  sb.append("\"comment\": \""+ COMMENT().get(0) +"\",\n");
 		else if (COMMENT().size() >= 1) sb.append("\"comment\": [\""+ String.join("\", \"", COMMENT()) +"\"],\n");
