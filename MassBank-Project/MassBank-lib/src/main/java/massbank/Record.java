@@ -674,6 +674,7 @@ public class Record {
 		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
 		sb.append("\"url\": \"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"\",\n");
 		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
+		sb.append("\"creator\": \""+AUTHORS()+"\",\n");
 		if (CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ CH_NAME().get(0) +"\",\n");
 		else if (CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", CH_NAME()) +"\"],\n");
 		if (InChiKey!=null) sb.append("\"inchikey\": \"" + InChiKey + "\",\n");
