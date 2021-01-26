@@ -130,7 +130,7 @@
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
-		out.println( "<jsp:include page=\"menu.html\"/>" );
+		out.println( "<jsp:include page=\"menu.jsp\"/>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<table width=\"900\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
@@ -280,7 +280,7 @@
 <script type="text/javascript" src="script/Common.js"></script>
 <script type="text/javascript" src="script/QpeakResult.js"></script>
 <script type="text/javascript" src="script/QpeakResultMenu.js"></script>
-<script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js" ></script>
 
 <!-- SpeckTackle dependencies-->
 <script type="text/javascript" src="js/d3.v3.min.js"></script>
@@ -301,7 +301,7 @@
 			</td>
 		</tr>
 	</table>
-<jsp:include page="menu.html"/>
+<jsp:include page="menu.jsp"/>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
 <%-- <jsp:include page="pserver/ServerInfo.jsp" /> --%>

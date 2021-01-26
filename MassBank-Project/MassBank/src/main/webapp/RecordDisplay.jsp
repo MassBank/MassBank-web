@@ -29,17 +29,15 @@
 	<meta name="description" content="${description}">
 	<meta name="keywords" content="${keywords}">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<link href="favicon.ico" rel="icon" type="image/x-icon">
-	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	<meta name="copyright" content="2006 MassBank Project, 2011 NORMAN Association, 2017 MassBank Consortium"/>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.13.1-web/css/all.min.css">
-	<script src="js/jquery-3.4.1.js"></script>
-	<script src="js/MassCalc.js"></script>
+	<script src="js/jquery-3.5.1.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
+	
 	<!-- SpeckTackle CSS containing chart stylings -->
     <link rel="stylesheet" type="text/css" href="css/st.css">
     <!-- SpeckTackle dependencies-->
@@ -49,9 +47,6 @@
     <!-- SpeckTackle MassBank loading script-->
 	<script src="js/massbank_specktackle.js"></script>
     
-	<!-- 	hier anpassen -->
-<!-- 	<meta name="variableMeasured" content="m/z"> -->
-
 ${structureddata}
 </head>
 
@@ -60,36 +55,26 @@ ${structureddata}
 </script>
 
 <body class="w3-theme-gradient">
+
 	<noscript>
 		<div class="w3-panel w3-yellow">
   			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
   		</div>
   	</noscript>
   	
-  	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
+	<div>
+		<jsp:include page="menu.jsp"/>
+	</div>
+	
+	<header class="w3-container w3-text-dark-grey w3-grey">
 		<div class="w3-bar">
 			<div class="w3-left">
 				<h1>
 					<b>MassBank Record: ${accession}</b>
 				</h1>
 			</div>
-			<div style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
-				<div class="w3-container">
-					<div class="w3-text-blue">
-						<svg viewBox="0 0 32 28" style="width: 16px">
-							<use href="img/arrow.svg#arrow_right" />
-						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<jsp:include page="masscalc.html"/>
+		</div>	
 	</header>
-	
-	<div style="padding-top:74px">
-		<jsp:include page="menu.html"/>
-	</div>
 	
 	<div class="w3-padding">
 		<h3><b>${record_title}</b></h3>

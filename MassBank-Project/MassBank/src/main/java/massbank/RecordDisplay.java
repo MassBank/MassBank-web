@@ -291,6 +291,9 @@ public class RecordDisplay extends HttpServlet {
 				return;
 			}
 			
+			String sitename = Config.get().LongName();
+	        request.setAttribute("sitename", sitename);
+			
 			if (record.DEPRECATED()) {
 				logger.trace("Show deprecated record " + accession + ".");
 				String shortname = "DEPRECATED RECORD " + accession;

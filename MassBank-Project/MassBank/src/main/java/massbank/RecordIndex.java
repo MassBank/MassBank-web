@@ -196,6 +196,9 @@ public class RecordIndex extends HttpServlet {
 		}
 		
 		try {
+			String sitename = Config.get().LongName();
+	        request.setAttribute("sitename", sitename);
+	        
 			request.setAttribute("sites", result.mapSiteToRecordCount);
 			request.setAttribute("instruments", result.mapInstrumentToRecordCount);
 			request.setAttribute("mstypes", result.mapMsTypeToRecordCount);

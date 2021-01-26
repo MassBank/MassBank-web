@@ -115,7 +115,7 @@
 		out.println( "</head>" );
 		out.println( "<body class=\"msbkFont cursorDefault\">" );
 		out.println( "<h1>Results</h1>" );
-		out.println( "<jsp:include page=\"menu.html\"/>" );
+		out.println( "<jsp:include page=\"menu.jsp\"/>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<b>Search Parameters :</b><br>" );
 		out.println( "<div class=\"divSpacer9px\"></div>" );
@@ -368,11 +368,11 @@
 	<script type="text/javascript" src="script/Common.js"></script>
 	<script type="text/javascript" src="script/Result.js"></script>
 	<script type="text/javascript" src="script/ResultMenu.js"></script>
-	<script type="text/javascript" src="js/jquery-3.4.1.min.js" ></script>
+	<script type="text/javascript" src="js/jquery-3.5.1.min.js" ></script>
 	<!-- SpeckTackle dependencies-->
 	<script type="text/javascript" src="js/d3.v3.min.js"></script>
 	<!-- SpeckTackle library-->
-	<script type="text/javascript" src="js/st.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/st.js" charset="utf-8"></script>
 	<!-- SpeckTackle style sheet-->
 	<link rel="stylesheet" href="css.old/st.css" type="text/css" />	
 	<!-- SpeckTackle MassBank loading script-->
@@ -383,12 +383,9 @@
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
 			<td><h1><%=hTitle%></h1></td>
-			<td align="right" class="font12px">
-				<img src="image/bullet_link.gif" width="10" height="10">&nbsp;<b><a class="text" href="javascript:openMassCalc();">mass calculator</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			</td>
 		</tr>
 	</table>
-<jsp:include page="menu.html"/>
+<jsp:include page="menu.jsp"/>
 <hr size="1">
 <%
 	/*
