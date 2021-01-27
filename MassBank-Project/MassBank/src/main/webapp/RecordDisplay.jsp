@@ -28,7 +28,7 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta name="description" content="${description}">
 	<meta name="keywords" content="${keywords}">
-	<meta name="author" content="MassBank">
+	<meta name="author" content="${author}">
 	<meta name="copyright" content="2006 MassBank Project, 2011 NORMAN Association, 2017 MassBank Consortium"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">

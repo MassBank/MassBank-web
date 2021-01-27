@@ -304,6 +304,7 @@ public class RecordDisplay extends HttpServlet {
 				request.setAttribute("isDeprecated", true);
 				request.setAttribute("record_title", accession + " has been deprecated.");	
 				request.setAttribute("recordstring", "<pre>\nACCESSION: "+ accession + "\nDEPRECATED: "+ record.DEPRECATED_CONTENT() + "\n<pre>");
+				request.setAttribute("author","MassBank");
 				
 			} else {
 				logger.trace("Show record "+accession+".");
@@ -333,14 +334,14 @@ public class RecordDisplay extends HttpServlet {
 						".";
 				request.setAttribute("description", description);
 
-
-				
-				
 				String keywords =
 					accession + ", " 
 					+ shortname +", "
 					+ (inchikey != null ? inchikey + ", " : "")
 				    + "mass spectrum, MassBank record, mass spectrometry, mass spectral library";
+				request.setAttribute("keywords", keywords);
+				String author = record.AUTHORS();
+				request.setAttribute("author", author);				
 				
 				String recordstring = record.createRecordString();
 				String structureddata = record.createStructuredData();
@@ -367,7 +368,7 @@ public class RecordDisplay extends HttpServlet {
 
 				request.setAttribute("peaklist", record.createPeakListData());
 				request.setAttribute("accession", accession);
-		        request.setAttribute("keywords", keywords);
+		        
 		        request.setAttribute("record_title", record.RECORD_TITLE1());	        		
 				
 				request.setAttribute("recordstring", recordstring);
