@@ -29,8 +29,8 @@
 		<button class="w3-btn w3-round w3-text-blue w3-hover-blue">More&#9660;</button>
 			<div class="w3-dropdown-content w3-bar-block w3-border">
 				<a href="https://massbank.github.io/MassBank-documentation/" target="_blank" class="w3-bar-item w3-button">Documentation</a>
-				<a href="https://massbank.github.io/MassBank-documentation/about.html" class="w3-bar-item w3-button">About MassBank</a>
-				<a href="https://massbank.github.io/MassBank-documentation/news_archive.html" class="w3-bar-item w3-button">News Archive</a>
+				<a href="About" class="w3-bar-item w3-button">About MassBank</a>
+				<a href="NewsArchive" class="w3-bar-item w3-button">News Archive</a>
 				<a href="#" class="w3-bar-item w3-button">Imprint</a>
 			</div>
 	</div> 
