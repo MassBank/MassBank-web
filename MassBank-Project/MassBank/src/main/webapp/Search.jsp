@@ -63,7 +63,7 @@
 		</div>	
 	</header>
 
-	<div style="max-width:90%;height:auto;margin:auto;">
+	<div class="w3-container">
 
 		 <div class="w3-cell-row">
 		 	 <div class="w3-cell">
