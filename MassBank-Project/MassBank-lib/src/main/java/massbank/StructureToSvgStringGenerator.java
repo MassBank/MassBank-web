@@ -140,9 +140,10 @@ public class StructureToSvgStringGenerator {
 		String tmpFileMedium		= (new File(tmpFileFolder + fileNameMedium	)).getPath();
 		String tmpFileBig			= (new File(tmpFileFolder + fileNameBig		)).getPath();
 		
-		String tmpUrlSmall			= tmpUrlFolder + "/" + fileNameSmall;
-		String tmpUrlMedium			= tmpUrlFolder + "/" + fileNameMedium;
-		String tmpUrlBig			= tmpUrlFolder + "/" + fileNameBig;
+		if (!tmpUrlFolder.endsWith("/")) tmpUrlFolder= tmpUrlFolder + "/";
+		String tmpUrlSmall			= tmpUrlFolder + fileNameSmall;
+		String tmpUrlMedium			= tmpUrlFolder + fileNameMedium;
+		String tmpUrlBig			= tmpUrlFolder + fileNameBig;
 		
 		// adapt size of svg image
 		String svgSmall		= StructureToSvgStringGenerator.resizeSvg(svg, sizeSmall,	sizeSmall);
