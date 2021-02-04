@@ -1458,6 +1458,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example: MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
 		def ("ms_data_processing_subtag",
 			StringParser.of("CHARGE_DECONVOLUTION ")
+			.or(StringParser.of("COMMENT "))
 			.or(StringParser.of("CONVERT "))
 			.or(StringParser.of("DEPROFILE "))
 			.or(StringParser.of("FIND_PEAK "))
