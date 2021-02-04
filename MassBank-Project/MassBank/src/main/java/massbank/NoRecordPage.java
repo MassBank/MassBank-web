@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 MassBank consortium
+ * Copyright (C) 2021 MassBank consortium
  * 
  * This file is part of MassBank.
  * 
@@ -63,10 +63,6 @@ public class NoRecordPage extends HttpServlet {
 					default: logger.warn("unused argument '" + key + "=" + val + "'.");
 				}
 			}
-			
-			String sitename = Config.get().LongName();
-	        request.setAttribute("sitename", sitename);
-	        
 			request.getRequestDispatcher("/NoRecordPage.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Cannot load NoRecordPage", e);

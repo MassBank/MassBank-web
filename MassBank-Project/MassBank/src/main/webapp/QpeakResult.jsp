@@ -130,7 +130,7 @@
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
-		out.println( "<jsp:include page=\"menu.jsp\"/>" );
+		out.println( "<jsp:include page=\"menu.html\"/>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<table width=\"900\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
@@ -301,7 +301,7 @@
 			</td>
 		</tr>
 	</table>
-<jsp:include page="menu.jsp"/>
+<jsp:include page="menu.html"/>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
 <%-- <jsp:include page="pserver/ServerInfo.jsp" /> --%>

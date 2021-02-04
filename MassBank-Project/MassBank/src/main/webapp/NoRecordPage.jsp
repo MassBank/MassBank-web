@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<!-- Copyright (C) 2010 JST-BIRD MassBank -->
-<!-- Copyright (C) 2017 MassBank consortium -->
+<!-- Copyright (C) 2021 MassBank consortium -->
 
 <!-- This file is part of MassBank. -->
 
@@ -29,11 +28,13 @@
 	<meta name="description" content="MassBank Record of ${accession} not found">
 	<meta name="keywords" content="No MassBank record">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="2006 MassBank Project, 2011 NORMAN Association, 2017 MassBank Consortium"/>
+	<meta name="copyright" content="MassBank Consortium"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
 	<script src="js/jquery-3.5.1.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
@@ -43,31 +44,38 @@
 
 	<noscript>
 		<div class="w3-panel w3-yellow">
-  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
-  		</div>
-  	</noscript>
-  	
-  	<div>
-		<jsp:include page="menu.jsp"/>
+			<p>Your JavaScript is disabled. To properly show MassBank please
+				enable JavaScript and reload.</p>
+		</div>
+	</noscript>
+
+	<div>
+		<jsp:include page="menu.html" />
 	</div>
-  	
-  	<header class="w3-container w3-text-dark-grey w3-grey">
+
+	<header class="w3-container w3-text-dark-grey w3-grey">
 		<div class="w3-bar">
 			<div class="w3-left">
 				<h1>
 					<b>No Mass Spectrum</b>
 				</h1>
 			</div>
-		</div>	
+		</div>
 	</header>
-	
-  	<div class="w3-padding">
+
+	<div class="w3-container">
   	<c:if test="${not empty accession}">
-		No MassBank record exists for accession ${accession}.<br>
-	</c:if>
-	<c:if test="${not empty error}">
-		<b>Error message: ${error}</b>
-	</c:if>	
+		<p>
+			No MassBank record exists for accession '${accession}'.
+		</p>
+		<p>
+			If you want to make a 'Keyword' search please visit our
+			<a href="Search" title="Search">Search</a> page.
+		</p>
+		</c:if>
+		<c:if test="${not empty error}">
+			<b>Error message: ${error}</b>
+		</c:if>	
 	</div>	
 	
 	<br>

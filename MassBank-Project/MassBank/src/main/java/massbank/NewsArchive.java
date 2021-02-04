@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 MassBank consortium
+ * Copyright (C) 2021 MassBank consortium
  * 
  * This file is part of MassBank.
  * 
@@ -42,8 +42,6 @@ public class NewsArchive extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Preprocess request: load sitename in JSP.
 		try {
-			String sitename = Config.get().LongName();
-	        request.setAttribute("sitename", sitename);
 	        request.getRequestDispatcher("/NewsArchive.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Cannot load sitename", e);

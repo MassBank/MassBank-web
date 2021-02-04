@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<!-- Copyright (C) 2010 JST-BIRD MassBank -->
-<!-- Copyright (C) 2017 MassBank consortium -->
+<!-- Copyright (C) 2021 MassBank consortium -->
 
 <!-- This file is part of MassBank. -->
 
@@ -29,11 +28,13 @@
 	<meta name="description" content="Categorized list of spectra in MassBank.eu. Here we list up all spectra in a specific category including contributors, instrument types and ionization modes.">
 	<meta name="keywords" content="APCI,ITFT,QFT,ESI,EI,LC,IT,GC,TOF,QTOF,FAB,MALDI,APPI,MS,MS/MS,MS2,MS3,MS4,CI,FI,FD,QQ,Merged,Positive,Negative,QIT,ITTOF,EB,mass spectra,MassBank,m/z">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="2006 MassBank Project, 2011 NORMAN Association, 2017 MassBank Consortium"/>
+	<meta name="copyright" content="MassBank Consortium"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
 	<script src="js/jquery-3.5.1.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
@@ -48,7 +49,7 @@
   	</noscript>
   	
   	<div>
-		<jsp:include page="menu.jsp"/>
+		<jsp:include page="menu.html"/>
 	</div>
 	
 	<header class="w3-container w3-text-dark-grey w3-grey">
@@ -224,7 +225,7 @@
 		<div style="display:none" property="schema:citation" typeof="schema:ScholarlyArticle">
 			<div property="schema:name">Horai, Arita, Kanaya, Nihei, Ikeda, Suwa, Ojima, Tanaka, Tanaka, Aoshima, Oda, Kakazu, Kusano, Tohge, Matsuda, Sawada, Hirai, Nakanishi, Ikeda, Akimoto, Maoka, Takahashi, Ara, Sakurai, Suzuki, Shibata, Neumann, Iida, Tanaka, Funatsu, Matsuura, Soga, Taguchi, Saito, Nishioka. MassBank: a public repository for sharing mass spectral data for life sciences. Journal of mass spectrometry. 2010 Jul;45(7):703-14. doi: 10.1002/jms.1777.</div>
 			<div property="schema:headline">MassBank: a public repository for sharing mass spectral data for life sciences.</div>
-			<div property="schema:image">https://massbank.eu/MassBank/img/sub_logo.jpg</div>
+			<div property="schema:image">https://massbank.eu/MassBank/img/logo.svg</div>
 		</div>
 		<div style="display:none" property="schema:description">
 			<div property="schema:name">Categorized list of spectra in MassBank.eu. Here we list up all spectra in a specific category including contributors, instrument types and ionization modes.</div>

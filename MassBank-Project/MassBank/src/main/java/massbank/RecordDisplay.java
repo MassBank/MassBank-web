@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 MassBank consortium
+ * Copyright (C) 2021 MassBank consortium
  * 
  * This file is part of MassBank.
  * 
@@ -219,9 +219,6 @@ public class RecordDisplay extends HttpServlet {
 				response.sendRedirect(request.getContextPath()+redirectUrl);
 				return;
 			}
-			
-			String sitename = Config.get().LongName();
-	        request.setAttribute("sitename", sitename);
 			
 			if (record.DEPRECATED()) {
 				logger.trace("Show deprecated record " + accession + ".");

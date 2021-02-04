@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (C) 2017 MassBank consortium
+ * Copyright (C) 2008 JST-BIRD MassBank
+ * Copyright (C) 2021 MassBank consortium
  * 
  * This file is part of MassBank.
  * 
@@ -63,16 +64,16 @@ import massbank.web.recordindex.RecordIndexCount.RecordIndexCountResult;
 
 /**
  * 
- * This servlet generates dynamic content for the RecordIndex.
+ * This servlet generates dynamic content for the Contents section.
  * 
  * @author rmeier
  * @version 30-04-2019
  *
  */
-@WebServlet("/RecordIndex")
-public class RecordIndex extends HttpServlet {
+@WebServlet("/Contents")
+public class Contents extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LogManager.getLogger(RecordIndex.class);
+	private static final Logger logger = LogManager.getLogger(Contents.class);
 	// generated RecordIndex represent state of the database at 'timestamp'
 	private DatabaseTimestamp timestamp;
 	private RecordIndexCountResult result;
@@ -195,10 +196,7 @@ public class RecordIndex extends HttpServlet {
 			logger.error(e.getMessage());
 		}
 		
-		try {
-			String sitename = Config.get().LongName();
-	        request.setAttribute("sitename", sitename);
-	        
+		try {	        
 			request.setAttribute("sites", result.mapSiteToRecordCount);
 			request.setAttribute("instruments", result.mapInstrumentToRecordCount);
 			request.setAttribute("mstypes", result.mapMsTypeToRecordCount);
@@ -212,7 +210,7 @@ public class RecordIndex extends HttpServlet {
 			request.setAttribute("instchartSVG", instchartSVG);
 			request.setAttribute("mschartSVG", mschartSVG);
 			
-			request.getRequestDispatcher("/RecordIndex.jsp").forward(request, response);
+			request.getRequestDispatcher("/Contents.jsp").forward(request, response);
 		} catch (Exception e) {
 			throw new ServletException("Error preparing record index", e);
 		}

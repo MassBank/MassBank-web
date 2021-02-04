@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<!-- Copyright (C) 2010 JST-BIRD MassBank -->
-<!-- Copyright (C) 2017 MassBank consortium -->
+<!-- Copyright (C) 2021 MassBank consortium -->
 
 <!-- This file is part of MassBank. -->
 
@@ -29,11 +28,13 @@
 	<meta name="description" content="Search of spectra by chemical name, peak, InChIKey or SPLASH.">
 	<meta name="keywords" content="Search,Compound,ExactMass,Formula,InChIKey,SPLASH">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="2006 MassBank Project, 2011 NORMAN Association, 2017 MassBank Consortium"/>
+	<meta name="copyright" content="MassBank Consortium"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
 	<script src="js/jquery-3.5.1.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script src="js/MassCalc.js"></script>
@@ -50,7 +51,7 @@
   	</noscript>
   	
   	<div>
-		<jsp:include page="menu.jsp"/>
+		<jsp:include page="menu.html"/>
 	</div>
 	
 	<header class="w3-container w3-text-dark-grey w3-grey">

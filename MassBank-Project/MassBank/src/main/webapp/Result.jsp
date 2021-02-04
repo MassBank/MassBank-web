@@ -115,7 +115,7 @@
 		out.println( "</head>" );
 		out.println( "<body class=\"msbkFont cursorDefault\">" );
 		out.println( "<h1>Results</h1>" );
-		out.println( "<jsp:include page=\"menu.jsp\"/>" );
+		out.println( "<jsp:include page=\"menu.html\"/>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<b>Search Parameters :</b><br>" );
 		out.println( "<div class=\"divSpacer9px\"></div>" );
@@ -385,7 +385,7 @@
 			<td><h1><%=hTitle%></h1></td>
 		</tr>
 	</table>
-<jsp:include page="menu.jsp"/>
+<jsp:include page="menu.html"/>
 <hr size="1">
 <%
 	/*

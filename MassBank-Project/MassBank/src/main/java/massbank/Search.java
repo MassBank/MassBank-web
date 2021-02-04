@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 MassBank consortium
+ * Copyright (C) 2021 MassBank consortium
  * 
  * This file is part of MassBank.
  * 
@@ -49,8 +49,6 @@ public class Search extends HttpServlet {
 			String[] msInfo = instInfo.getMsAll();
 			List<String> ms_info = Arrays.asList(msInfo); 
 			
-			String sitename = Config.get().LongName();
-	        request.setAttribute("sitename", sitename);
 	        request.setAttribute("instrument_info", instrument_info);
 	        request.setAttribute("ms_info", ms_info);
 	        request.getRequestDispatcher("/Search.jsp").forward(request, response);
