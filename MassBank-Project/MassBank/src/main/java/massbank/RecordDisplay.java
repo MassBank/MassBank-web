@@ -21,6 +21,7 @@
  ******************************************************************************/
 package massbank;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -272,7 +273,7 @@ public class RecordDisplay extends HttpServlet {
 				String recordstring = record.createRecordString();
 				String structureddata = record.createStructuredData();
 				IAtomContainer mol = record.CH_SMILES_obj();
-				String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);				
+				String svg = new DepictionGenerator().withAtomColors().withMolTitle().withTitleColor(Color.black).depict(mol).toSvgStr(Depiction.UNITS_PX);				
 				
 				//adjust svg to fit nicely in RecordDisplay page
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
