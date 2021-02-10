@@ -33,12 +33,13 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
+
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
@@ -223,7 +224,7 @@ public class AddMetaData {
 			if (!"N/A".equals(ch_iupac)) {
 				try {
 					// Get InChIToStructure
-					InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, DefaultChemObjectBuilder.getInstance());
+					InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
 					INCHI_RET ret = intostruct.getReturnStatus();
 					if (ret == INCHI_RET.WARNING) {
 						// Structure generated, but with warning message

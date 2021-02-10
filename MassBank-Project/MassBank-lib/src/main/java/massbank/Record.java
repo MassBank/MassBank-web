@@ -28,22 +28,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
@@ -244,7 +241,7 @@ public class Record {
 	* Returns the molecular formula as an String with HTML sup tags.
 	*/
 	public String CH_FORMULA1() {
-		IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, DefaultChemObjectBuilder.getInstance());
+		IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, SilentChemObjectBuilder.getInstance());
 		return MolecularFormulaManipulator.getHTML(m);
 	}
 	public void CH_FORMULA(String value) {
@@ -264,12 +261,12 @@ public class Record {
 		return ch_smiles;
 	}
 	public IAtomContainer CH_SMILES_obj() {
-		if ("N/A".equals(ch_smiles)) return new AtomContainer();
+		if ("N/A".equals(ch_smiles)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		try {
-			return new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
+			return new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
 		} catch (InvalidSmilesException e) {
 			logger.error("Structure generation from SMILES failed. Error: \""+ e.getMessage() + "\" for \"" + ch_smiles + "\".");
-			return new AtomContainer();
+			return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}
 	}
 	public void CH_SMILES(String value) {
@@ -281,10 +278,10 @@ public class Record {
 		return ch_iupac;
 	}
 	public IAtomContainer CH_IUPAC_obj() {
-		if ("N/A".equals(ch_iupac)) return new AtomContainer();
+		if ("N/A".equals(ch_iupac)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		try {
 			// Get InChIToStructure
-			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, DefaultChemObjectBuilder.getInstance());
+			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
 			INCHI_RET ret = intostruct.getReturnStatus();
 			if (ret == INCHI_RET.WARNING) {
 				// Structure generated, but with warning message
@@ -293,11 +290,12 @@ public class Record {
 			else if (ret != INCHI_RET.OKAY) {
 				// Structure generation failed
 				logger.error("Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for \"" + ch_iupac + "\".");
+				return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 			}
 			return intostruct.getAtomContainer();
 		} catch (CDKException e) {
 			logger.error("Structure generation from InChI failed. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
-			return new AtomContainer();
+			return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}		 			
 	}
 	public void CH_IUPAC(String value) {
