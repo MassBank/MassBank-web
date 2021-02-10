@@ -22,8 +22,6 @@
 package massbank;
 
 import java.io.IOException;
-import java.util.Enumeration;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -40,12 +38,7 @@ public class About extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// Preprocess request: load sitename in JSP.
-		try {
-	        request.getRequestDispatcher("/About.jsp").forward(request, response);
-		} catch (Exception e) {
-			throw new ServletException("Cannot load sitename", e);
-        }
+		request.getRequestDispatcher("/About.jsp").forward(request, response);
      }
 
 }
