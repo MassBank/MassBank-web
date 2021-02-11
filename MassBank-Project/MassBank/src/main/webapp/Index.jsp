@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<!-- Copyright (C) 2010 JST-BIRD MassBank -->
-<!-- Copyright (C) 2017 MassBank consortium -->
+<!-- Copyright (C) 2021 MassBank consortium -->
 
 <!-- This file is part of MassBank. -->
 
@@ -20,7 +19,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
-<html lang="en" style="max-width:900px">
+<html lang="en">
 
 <head>
 	<title>MassBank | ${sitename} Mass Spectral DataBase</title>
@@ -29,96 +28,74 @@
 	<meta name="description" content="Mass Spectral DataBase">
 	<meta name="keywords" content="Mass,Spectral,Database,MassBank">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+	<meta name="copyright" content="MassBank Consortium"/>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
 	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script src="js/iframeResizer.min.js"></script>
+	<script>svg4everybody();</script>
 </head>
 
 <body class="w3-theme-gradient">
+
 	<noscript>
 		<div class="w3-panel w3-yellow">
   			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
   		</div>
-  	</noscript>
+  </noscript>
   	
-	<header class="w3-center w3-text-grey w3-topbar w3-border-light-grey">
-		<img src="img/sub_logo.jpg" alt="MassBank" style="max-width:100%;height:auto;">
-		<h2>
-			<b>${sitename}</b>
-		</h2>
-	</header>
-	
-	<div class="w3-row w3-white w3-round" style="max-width:90%;height:auto;margin:auto;">
-		<div class="w3-third w3-panel w3-white">
-			<div class="w3-panel w3-leftbar w3-border-teal w3-light-grey w3-text-blue w3-round">
-				<h5>
-					<a href="Search"><b>Search</b></a>
-					<a href="Search"><img src="img/search.svg" style="width:100%;"></a>
-				</h5>
-			</div>
-		</div>
-
-<!-- 		<div class="w3-third w3-panel w3-white"> -->
-<!-- 			<div class="w3-panel w3-leftbar w3-border-amber w3-light-grey w3-text-blue w3-round"> -->
-<!-- 				<h5> -->
-<!-- 					<a href="Export"><b>Export</b></a> -->
-<!-- 					<a href="Export"><img src="img/export.gif" style="width:100%;"></a> -->
-<!-- 				</h5> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-
-		<div class="w3-third w3-panel w3-white">
-			<div class="w3-panel w3-leftbar w3-border-pink w3-light-grey w3-text-blue w3-round">
-				<h5>
-					<a href="RecordIndex"><b>Record Index</b></a>
-					<a href="RecordIndex"><img src="img/index.svg" style="width:100%;"></a>
-				</h5>
-			</div>
-		</div>
-		
-		<div class="w3-third w3-panel w3-white">
-			<div class="w3-panel w3-leftbar w3-border-indigo w3-light-grey w3-text-blue w3-round">
-				<h5>
-					<a href="#" onclick="document.getElementById('id01').style.display='block'"><b>Documentation</b></a>
-					<a href="#" onclick="document.getElementById('id01').style.display='block'"><img src="img/book.svg" style="width:100%;"></a>
-				</h5>
-			</div>
-		</div>
-
+ 	<div>
+		<jsp:include page="menu.html"/>
 	</div>
 	
-	<div style="max-width: 90%; height: auto; margin: auto;">
+	<header class="w3-container w3-text-dark-grey w3-grey">
+		<div class="w3-bar">
+			<div class="w3-left">
+				<h1>
+					<b>${sitename}</b>
+				</h1>
+			</div>
+		</div>	
+	</header>
+  	
+	<div class="w3-container w3-margin-top w3-section">
+		<div class="w3-cell-row w3-section">
+			<div class="w3-cell w3-mobile w3-cell-middle" style="width:40%">
+				<img src="img/logo.svg"  style="width:100%">
+			</div>
+			<div class="w3-cell w3-mobile" style="width:10%"></div>
+			
+			<div class="w3-cell w3-mobile w3-cell-middle">
+				<div class="w3-col w3-xlarge">
+				
+					<div class="w3-margin-bottom w3-animate-right w3-blue w3-text-dark-grey w3-hover-text-white w3-padding w3-round">
+						<a href="Search" style="text-decoration: none;"><b>>> Search Spectra</b></a>
+					</div>
+					<div class="w3-cell-row">
+						<div class="w3-cell" style="width:25%"></div>
+						<div class="w3-cell w3-animate-right w3-blue w3-text-dark-grey w3-hover-text-white w3-padding w3-round"">
+							<a href="About" style="text-decoration: none;"><b>>> Learn More</b></a>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	<div>
 		<iframe src="https://massbank.github.io/MassBank-documentation/news.html" 
 			id="news" style="min-width: 100%;border:none;"></iframe>
 		<script>
-  			iFrameResize({ log: true }, '#news')
+			iFrameResize({ log: true }, '#news')
 		</script>
 	</div>
+	
 	<jsp:include page="copyrightline.html"/>
-
-	<div id="id01" class="w3-modal">
-		<div class="w3-modal-content w3-animate-top" style="height: 90%;">
-			<header class="w3-container w3-indigo">
-				<div class="w3-display-topright">
-					<a href="https://massbank.github.io/MassBank-documentation/" target="_blank"
-						onclick="document.getElementById('id01').style.display='none'" class="w3-button">
-						&#8599;
-					</a>
-					<span onclick="document.getElementById('id01').style.display='none'" class="w3-button">
-						&times;
-					</span>
-				</div>
-				<h4>Documentation at
-					https://massbank.github.io/MassBank-documentation/</h4>
-			</header>
-
-			<iframe src="https://massbank.github.io/MassBank-documentation/"
-				id="docs" style="width: 100%; height: 100%;"></iframe>
-		</div>
-	</div>
+	
 </body>
 </html>

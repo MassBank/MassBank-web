@@ -28,22 +28,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
@@ -244,7 +241,7 @@ public class Record {
 	* Returns the molecular formula as an String with HTML sup tags.
 	*/
 	public String CH_FORMULA1() {
-		IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, DefaultChemObjectBuilder.getInstance());
+		IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, SilentChemObjectBuilder.getInstance());
 		return MolecularFormulaManipulator.getHTML(m);
 	}
 	public void CH_FORMULA(String value) {
@@ -264,12 +261,12 @@ public class Record {
 		return ch_smiles;
 	}
 	public IAtomContainer CH_SMILES_obj() {
-		if ("N/A".equals(ch_smiles)) return new AtomContainer();
+		if ("N/A".equals(ch_smiles)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		try {
-			return new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
+			return new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
 		} catch (InvalidSmilesException e) {
 			logger.error("Structure generation from SMILES failed. Error: \""+ e.getMessage() + "\" for \"" + ch_smiles + "\".");
-			return new AtomContainer();
+			return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}
 	}
 	public void CH_SMILES(String value) {
@@ -281,10 +278,10 @@ public class Record {
 		return ch_iupac;
 	}
 	public IAtomContainer CH_IUPAC_obj() {
-		if ("N/A".equals(ch_iupac)) return new AtomContainer();
+		if ("N/A".equals(ch_iupac)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		try {
 			// Get InChIToStructure
-			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, DefaultChemObjectBuilder.getInstance());
+			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
 			INCHI_RET ret = intostruct.getReturnStatus();
 			if (ret == INCHI_RET.WARNING) {
 				// Structure generated, but with warning message
@@ -293,11 +290,12 @@ public class Record {
 			else if (ret != INCHI_RET.OKAY) {
 				// Structure generation failed
 				logger.error("Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for \"" + ch_iupac + "\".");
+				return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 			}
 			return intostruct.getAtomContainer();
 		} catch (CDKException e) {
 			logger.error("Structure generation from InChI failed. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
-			return new AtomContainer();
+			return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}		 			
 	}
 	public void CH_IUPAC(String value) {
@@ -692,11 +690,22 @@ public class Record {
 		sb.append("\"headline\": \""+RECORD_TITLE1()+"\",\n");
 		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
 		sb.append("\"description\": \"" + description + "\",\n");
+		sb.append("\"measurementTechnique\": \"mass spectrometry\",\n");
 		String[] tokens	= DATE1();
 		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
 		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
 		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
-		sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
+		// sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
+		// sb.append("\"license\": \""+LICENSE() +"\",\n");
+		// Convert licenses to URLs
+		if (LICENSE().equals("CC0")) { sb.append("\"license\": \"https://creativecommons.org/share-your-work/public-domain/cc0\",\n");
+		} else if (LICENSE().equals("CC BY-SA") || LICENSE().equals("CC BY SA") || LICENSE().equals("CC-BY SA") || LICENSE().equals("CC-BY-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-sa/4.0\",\n");
+		} else if (LICENSE().equals("CC BY") || LICENSE().equals("CC-BY") || LICENSE().equals("BY CC") || LICENSE().equals("BY-CC")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by/4.0\",\n");
+		} else if (LICENSE().equals("CC BY-NC") || LICENSE().equals("CC-BY-NC") || LICENSE().equals("CC BY NC") || LICENSE().equals("CC-BY NC")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc/4.0\",\n");
+		} else if (LICENSE().equals("CC BY-SA NC") || LICENSE().equals("CC BY-NC-SA 4.0 International") || LICENSE().equals("CC BY-NC-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-sa/4.0\",\n");
+		} else if (LICENSE().equals("CC BY-NC-ND")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-nd/4.0\",\n");
+		} else sb.append("\"license\": \"null\",\n");
+
 		sb.append("\"citation\": \""+PUBLICATION()+"\",\n");
 		if (COMMENT().size() == 1)  sb.append("\"comment\": \""+ COMMENT().get(0) +"\",\n");
 		else if (COMMENT().size() >= 1) sb.append("\"comment\": [\""+ String.join("\", \"", COMMENT()) +"\"],\n");

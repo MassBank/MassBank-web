@@ -22,11 +22,11 @@
 <html lang="en">
 
 <head>
-	<title>No Mass Spectrum</title>
+	<title>MassBank | Database | News Archive</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<meta name="description" content="MassBank Record of ${accession} not found">
-	<meta name="keywords" content="No MassBank record">
+	<meta name="description" content="Mass Spectral DataBase">
+	<meta name="keywords" content="Mass,Spectral,Database,MassBank">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="MassBank Consortium"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -36,6 +36,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
 	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/iframeResizer.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
 </head>
@@ -44,41 +45,32 @@
 
 	<noscript>
 		<div class="w3-panel w3-yellow">
-			<p>Your JavaScript is disabled. To properly show MassBank please
-				enable JavaScript and reload.</p>
-		</div>
-	</noscript>
-
-	<div>
-		<jsp:include page="menu.html" />
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
+  	
+  	<div>
+		<jsp:include page="menu.html"/>
 	</div>
-
+	
 	<header class="w3-container w3-text-dark-grey w3-grey">
 		<div class="w3-bar">
 			<div class="w3-left">
 				<h1>
-					<b>No Mass Spectrum</b>
+					<b>News Archive</b>
 				</h1>
 			</div>
-		</div>
+		</div>	
 	</header>
-
-	<div class="w3-container">
-  	<c:if test="${not empty accession}">
-		<p>
-			No MassBank record exists for accession '${accession}'.
-		</p>
-		<p>
-			If you want to make a 'Keyword' search please visit our
-			<a href="Search" title="Search">Search</a> page.
-		</p>
-		</c:if>
-		<c:if test="${not empty error}">
-			<b>Error message: ${error}</b>
-		</c:if>	
-	</div>	
+  	
+	<div>
+		<iframe src="https://massbank.github.io/MassBank-documentation/news_archive.html" 
+			id="news_archive" style="min-width: 100%;border:none;"></iframe>
+		<script>
+			iFrameResize({ log: true }, '#news_archive')
+		</script>
+	</div>
 	
-	<br>
 	<jsp:include page="copyrightline.html"/>
 	
 </body>

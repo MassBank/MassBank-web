@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<!-- Copyright (C) 2010 JST-BIRD MassBank -->
-<!-- Copyright (C) 2017 MassBank consortium -->
+<!-- Copyright (C) 2021 MassBank consortium -->
 
 <!-- This file is part of MassBank. -->
 
@@ -29,66 +28,59 @@
 	<meta name="description" content="Search of spectra by chemical name, peak, InChIKey or SPLASH.">
 	<meta name="keywords" content="Search,Compound,ExactMass,Formula,InChIKey,SPLASH">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<link href="favicon.ico" rel="icon" type="image/x-icon">
-	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	<meta name="copyright" content="MassBank Consortium"/>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
-	<link rel="stylesheet" type="text/css" href="css/jquery-confirm.min.css">
-	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.13.1-web/css/all.min.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<script src="js/jquery-3.4.1.min.js"></script>
-	<script src="js/MassCalc.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
+	<script src="js/jquery-3.5.1.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
-	<script src="js/jquery-confirm.min.js"></script>
+	<script src="js/MassCalc.js"></script>
 	<script src="js/search.js"></script>
 	<script>svg4everybody();</script>
 </head>
 
 <body class="w3-theme-gradient">
+
 	<noscript>
 		<div class="w3-panel w3-yellow">
   			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
   		</div>
   	</noscript>
+  	
+  	<div>
+		<jsp:include page="menu.html"/>
+	</div>
 	
-	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
+	<header class="w3-container w3-text-dark-grey w3-grey">
 		<div class="w3-bar">
 			<div class="w3-left">
 				<h1>
 					<b>Search</b>
 				</h1>
 			</div>
-			<div style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
-				<div class="w3-container">
-					<div class="w3-text-blue">
-						<svg viewBox="0 0 32 28" style="width: 16px">
-							<use href="img/arrow.svg#arrow_right" />
-						</svg>
-						<a class="w3-text-dark-grey" href="#" onclick="document.getElementById('id01').style.display='block'">
-							<b>Documentation</b>
-						</a>						
-					</div>
-				</div>
-				<div class="w3-container">
-					<div class="w3-text-blue">
-						<svg viewBox="0 0 32 28" style="width: 16px">
-							<use href="img/arrow.svg#arrow_right" />
-						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>Mass calculator</b></a>
-					</div>
+		</div>	
+	</header>
+
+	<div class="w3-container">
+
+		 <div class="w3-cell-row">
+		 	 <div class="w3-cell">
+		 	 	<h3><b>Search for:</b></h3>
+			</div>
+			<div class="w3-cell">
+				<div class="w3-text-blue w3-right-align">
+					<svg viewBox="0 0 32 28" style="width: 16px">
+						<use href="img/arrow.svg#arrow_right" />
+					</svg>
+					<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>Mass calculator</b></a>
 				</div>
 			</div>
 		</div>
-		<jsp:include page="masscalc.html"/>
-	</header>
-
-	<div style="padding-top:74px">
-		<jsp:include page="menu.html"/>
-	</div>
-
-	<div style="max-width:90%;height:auto;margin:auto;">
-		<h3><b>Search for:</b></h3>
+		<jsp:include page="masscalc.html"/>		 
+		
 		<div class="w3-bar w3-margin-bottom" style="display:flex;flex-wrap:wrap">
 			<button class="search_button w3-bar-item w3-round w3-border w3-bottombar w3-border-red w3-white" 
 				id="BasicButton" onclick="openSearch('Basic')" style="flex:1 1">Basic Search</button>
@@ -605,25 +597,5 @@
 	<br>
 	<jsp:include page="copyrightline.html"/>
 	
-	<div id="id01" class="w3-modal">
-		<div class="w3-modal-content w3-animate-top" style="height: 90%;">
-			<header class="w3-container w3-indigo">
-				<div class="w3-display-topright">
-					<a href="https://massbank.github.io/MassBank-documentation/" target="_blank"
-						onclick="document.getElementById('id01').style.display='none'" class="w3-button">
-						&#8599;
-					</a>
-					<span onclick="document.getElementById('id01').style.display='none'" class="w3-button">
-						&times;
-					</span>
-				</div>
-				<h4>Documentation at
-					https://massbank.github.io/MassBank-documentation/</h4>
-			</header>
-
-			<iframe src="https://massbank.github.io/MassBank-documentation/"
-				id="docs" style="width: 100%; height: 100%;"></iframe>
-		</div>
-	</div>
 </body>
 </html>

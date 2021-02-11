@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 MassBank consortium
+ * Copyright (C) 2021 MassBank consortium
  * 
  * This file is part of MassBank.
  * 
@@ -48,7 +48,6 @@ public class Search extends HttpServlet {
 			Map<String, List<String>> instrument_info = instInfo.getTypeGroup();
 			String[] msInfo = instInfo.getMsAll();
 			List<String> ms_info = Arrays.asList(msInfo); 
-			
 			
 	        request.setAttribute("instrument_info", instrument_info);
 	        request.setAttribute("ms_info", ms_info);

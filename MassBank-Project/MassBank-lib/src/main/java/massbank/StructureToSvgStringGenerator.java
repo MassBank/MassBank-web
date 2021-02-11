@@ -4,12 +4,12 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 
 public class StructureToSvgStringGenerator {
@@ -19,7 +19,7 @@ public class StructureToSvgStringGenerator {
 		try {
 			// get atom container
 			InChIGeneratorFactory inchiFactory = InChIGeneratorFactory.getInstance();
-			InChIToStructure inchi2structure = inchiFactory.getInChIToStructure(inchi, DefaultChemObjectBuilder.getInstance());
+			InChIToStructure inchi2structure = inchiFactory.getInChIToStructure(inchi, SilentChemObjectBuilder.getInstance());
 			mol	= inchi2structure.getAtomContainer();
 		} catch (CDKException e) {
 			System.out.println("Warning: " + e.getLocalizedMessage());
@@ -32,7 +32,7 @@ public class StructureToSvgStringGenerator {
 		IAtomContainer mol	= null;
 		try {
 			// get atom container
-	    	SmilesParser smipar = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+	    	SmilesParser smipar = new SmilesParser(SilentChemObjectBuilder.getInstance());
 	    	mol = smipar.parseSmiles(smiles);
 		} catch (CDKException e) {
 			System.out.println("Warning: " + e.getLocalizedMessage());
@@ -140,9 +140,10 @@ public class StructureToSvgStringGenerator {
 		String tmpFileMedium		= (new File(tmpFileFolder + fileNameMedium	)).getPath();
 		String tmpFileBig			= (new File(tmpFileFolder + fileNameBig		)).getPath();
 		
-		String tmpUrlSmall			= tmpUrlFolder + "/" + fileNameSmall;
-		String tmpUrlMedium			= tmpUrlFolder + "/" + fileNameMedium;
-		String tmpUrlBig			= tmpUrlFolder + "/" + fileNameBig;
+		if (!tmpUrlFolder.endsWith("/")) tmpUrlFolder= tmpUrlFolder + "/";
+		String tmpUrlSmall			= tmpUrlFolder + fileNameSmall;
+		String tmpUrlMedium			= tmpUrlFolder + fileNameMedium;
+		String tmpUrlBig			= tmpUrlFolder + fileNameBig;
 		
 		// adapt size of svg image
 		String svgSmall		= StructureToSvgStringGenerator.resizeSvg(svg, sizeSmall,	sizeSmall);

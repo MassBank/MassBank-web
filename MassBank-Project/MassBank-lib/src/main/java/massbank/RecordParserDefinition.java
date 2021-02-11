@@ -17,20 +17,20 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.petitparser.context.Context;
 import org.petitparser.context.Result;
 import org.petitparser.context.Token;
-import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
 import org.petitparser.tools.GrammarDefinition;
@@ -45,11 +45,16 @@ import net.sf.jniinchi.INCHI_RET;
 
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
-	private int pk_num_peak;
+
+	IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
+	IAtomContainer fromCH_SMILES = SilentChemObjectBuilder.getInstance().newAtomContainer();
+	String InChiKeyFromCH_SMILES = "";
+	boolean smilesHasWildcards = false;
+	IAtomContainer fromCH_IUPAC = SilentChemObjectBuilder.getInstance().newAtomContainer();
+	String InChiKeyFromCH_IUPAC = "";
+	private int pk_num_peak = -1;
 	
 	public RecordParserDefinition(Record callback, boolean strict) {
-		pk_num_peak = -1;
-		
 		def("start",
 			ref("accession")
 			.seq(ref("deprecated_record")
@@ -647,6 +652,23 @@ public class RecordParserDefinition extends GrammarDefinition {
 						)
 					)
 				).flatten()
+				// call a Continuation Parser to validate content of formula
+				.callCC((Function<Context, Result> continuation, Context context) -> {
+					Result r = continuation.apply(context);
+					if (r.isSuccess()) {
+						if (!"N/A".equals(r.get())) {
+							// validate formula
+							fromCH_FORMULA = MolecularFormulaManipulator.getMolecularFormula(r.get(), SilentChemObjectBuilder.getInstance());
+							String formulaFromCH_FORMULA = MolecularFormulaManipulator.getString(fromCH_FORMULA);
+							if (!formulaFromCH_FORMULA.equals(r.get())) {
+								return context.failure("Can not parse formula in \"CH$FORMULA\" field.\n"
+										+ "Formula from CH$FORMULA: " + r.get() + "\n"
+										+ "Formula after parsing  : " + formulaFromCH_FORMULA);		 				
+							}
+						}
+					}
+					return r;
+				})
 				.map((String value) -> {
 					callback.CH_FORMULA(value);
 					return value;						
@@ -701,10 +723,32 @@ public class RecordParserDefinition extends GrammarDefinition {
 						if (!"N/A".equals(r.get())) {
 							// validate SMILES
 							try {
-								new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(r.get());
+								fromCH_SMILES = new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(r.get());
 							} catch (InvalidSmilesException e) { 
-								return context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage() + " for " + r.get());		 				
+								return context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError from CDK:\n"+ e.getMessage());		 				
 							}
+							// create InChIKey from SMILES if it is a full defined structure
+							for (IAtom atom : fromCH_SMILES.atoms()) {
+								if (atom.getAtomicNumber()==0) smilesHasWildcards=true;
+							}
+							if (!smilesHasWildcards) {							
+								try {
+									InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_SMILES);
+									INCHI_RET ret = inchiGen.getReturnStatus();
+									if (ret == INCHI_RET.WARNING) {
+										// Structure generated, but with warning message
+										logger.warn("InChI warning: " + inchiGen.getMessage());
+									} 
+									else if (ret != INCHI_RET.OKAY) {
+										// InChI generation failed
+										return context.failure("Can not create InChIKey from SMILES string in \"CH$SMILES\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
+									}
+									InChiKeyFromCH_SMILES = inchiGen.getInchiKey();
+								} catch (CDKException e) {
+									return context.failure("Can not create InChIKey from SMILES string in \"CH$SMILES\" field.\nError from CDK:\n"+ e.getMessage());
+								}
+							}
+							
 						}
 					}
 					return r;
@@ -714,14 +758,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 					return value;						
 				})
 			)
-			
 			.seq(Token.NEWLINE_PARSER)
 //			.map((List<?> value) -> {
 //				System.out.println(value.toString());
 //				return value;						
 //			})
 		);
-
+		
 		// 2.2.6 CH$IUPAC *
 		// IUPAC International Chemical Identifier (InChI Code). Mandatory
 		// Example
@@ -734,28 +777,52 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(
 				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
 				.flatten()
-				// call a Continuation Parser to validate content of InChi string
+				// call a Continuation Parser to validate content of CH$IUPAC
 				.callCC((Function<Context, Result> continuation, Context context) -> {
 					Result r = continuation.apply(context);
 					if (r.isSuccess()) {
 						if (!"N/A".equals(r.get())) {
 							// validate InChI
 							try {
-								// Get InChIToStructure
-								InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), DefaultChemObjectBuilder.getInstance());
-								INCHI_RET ret = intostruct.getReturnStatus();
+								InChIToStructure intoStruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), SilentChemObjectBuilder.getInstance());
+								INCHI_RET ret = intoStruct.getReturnStatus();
 								if (ret == INCHI_RET.WARNING) {
 									// Structure generated, but with warning message
-									logger.warn("InChI warning: " + intostruct.getMessage());
+									logger.warn("InChI warning: " + intoStruct.getMessage());
 									logger.warn(callback.ACCESSION());
 								} 
 								else if (ret != INCHI_RET.OKAY) {
 									// Structure generation failed
-									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + r.get() + ".");
+									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + ret.toString() + " [" + intoStruct.getMessage() + "] for " + r.get() + ".");
 								}
+								fromCH_IUPAC = intoStruct.getAtomContainer();
 							} catch (CDKException e) {
-								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + r.get() + "\".");		 				
-							}		 			
+								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());		 				
+							}
+							// create an InChiKey
+							try {
+								InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_IUPAC);
+								INCHI_RET ret = inchiGen.getReturnStatus();
+								if (ret == INCHI_RET.WARNING) {
+									// Structure generated, but with warning message
+									logger.warn("InChI warning: " + inchiGen.getMessage());
+								} 
+								else if (ret != INCHI_RET.OKAY) {
+									// Structure generation failed
+									return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
+								}
+								
+								// compare the temporary InChI from generator with the original InChI, should be the same, otherwise could be a problem
+								String tmpInChI = inchiGen.getInchi(); 
+								if (!tmpInChI.equals(r.get())) {
+									return context.failure("Temporary InChI for InChIKey generation differs from InChI string in \"CH$IUPAC\" field.\n" 
+											+ "InChI from CH$IUPAC: " + r.get() + "\n"
+											+ "Temporary InChI:     " + tmpInChI);
+								}
+								InChiKeyFromCH_IUPAC = inchiGen.getInchiKey();
+							} catch (CDKException e) {
+								return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());
+							}
 						}
 					}
 					return r;
@@ -771,7 +838,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 //				return value;						
 //			})
 		);
-
+	
 		// TODO no record implements CH$CDK_DEPICT
 		// 2.2.7 CH$CDK_DEPICT
 		
@@ -794,22 +861,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("CHEMSPIDER "))
 			.or(StringParser.of("COMPTOX "))
 			.or(StringParser.of("HMDB "))
-			.or(
-				StringParser.of("INCHIKEY ")
-				// validate INCHIKEY against InChI
-				.callCC((Function<Context, Result> continuation, Context context) -> {
-					Result r = continuation.apply(context);
-					if (r.isSuccess()) {
-						// get InCHI
-						String InChI = callback.CH_IUPAC();
-						if ("N/A".equals(InChI)) {
-							logger.error("Found INCHIKEY while \"CH$IUPAC: N/A\" is set.");
-							return context.failure("Found INCHIKEY while CH$IUPAC is missing.");
-						}
-					}
-					return r; 
-				})
-			)
+			.or(StringParser.of("INCHIKEY "))
 			.or(StringParser.of("KAPPAVIEW "))
 			.or(StringParser.of("KEGG "))
 			.or(StringParser.of("KNAPSACK "))
@@ -828,6 +880,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.map((List<String> value) -> {
 				return Pair.of(value.get(0).trim(), value.get(1));
 			})
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				Result r = continuation.apply(context);
+				if (r.isSuccess()) {
+					Pair<String,String> p = r.get();
+					if ("INCHIKEY".equals(p.getKey())) {
+						if (!p.getValue().equals(InChiKeyFromCH_IUPAC)) {
+							logger.error("InChIKey generated from InChI string in \"CH$IUPAC\" field does not match InChIKey in \"CH$LINK\".\n"
+									+ "CH$LINK: INCHIKEY:  " + p.getValue() + "\n"
+									+ "InChIKey generated: " + InChiKeyFromCH_IUPAC);
+							return context.failure("InChIKey generated from InChI string in \"CH$IUPAC\" field does not match InChIKey in \"CH$LINK\".\n"
+									+ "CH$LINK: INCHIKEY:  " + p.getValue() + "\n"
+									+ "InChIKey generated: " + InChiKeyFromCH_IUPAC);
+						}
+					}
+				}
+				return r;
+			})
+
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()		
 			.map((List<Pair<String,String>> value) -> {
@@ -1458,6 +1528,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example: MS$DATA_PROCESSING: WHOLE Analyst 1.4.2
 		def ("ms_data_processing_subtag",
 			StringParser.of("CHARGE_DECONVOLUTION ")
+			.or(StringParser.of("COMMENT "))
 			.or(StringParser.of("CONVERT "))
 			.or(StringParser.of("DEPROFILE "))
 			.or(StringParser.of("FIND_PEAK "))
@@ -1629,141 +1700,36 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback, boolean strict) {
 		Result r = continuation.apply(context);
 		if (r.isSuccess()) {
-			String ch_formula=callback.CH_FORMULA();
-			String ch_smiles=callback.CH_SMILES();
-			String ch_iupac=callback.CH_IUPAC();
-			String InChiKey_from_CH_IUPAC = null;
-			
-			// validate the three sources of formulas against each other
-			
-			// if any structural information is in smiles or InChI then CH$FORMULA must be defined
-			if ("N/A".equals(ch_formula)) {
-				if (!("N/A".equals(ch_smiles)) && ("N/A".equals(ch_iupac))) {
-					return context.failure("\"CH$FORMULA: N/A\" requires \"CH$SMILES: N/A\" and \"CH$IUPAC: N/A\".");
+			// if any structural information is in CH$IUPAC, then CH$FORMULA and CH$SMILES must be defined and match
+			if (!"N/A".equals(callback.CH_IUPAC()))
+			{
+				if ("N/A".equals(callback.CH_SMILES())) return context.failure("If CH$IUPAC is defined, CH$SMILES can not be \"N/A\".");
+				// compare the structures in CH$SMILES and CH$IUPAC with the help of InChIKeys
+				logger.trace("InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES);
+				logger.trace("InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+				// only field1 of InChIKey atm
+				//if (!InChiKey_from_SMILES.equals(InChiKey_from_CH_IUPAC)) {
+				if (InChiKeyFromCH_SMILES.length()!=27 || InChiKeyFromCH_IUPAC.length()!=27 || !InChiKeyFromCH_SMILES.substring(0,14).equals(InChiKeyFromCH_IUPAC.substring(0,14))) {
+					return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\".\n"
+							+ "InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES +"\n"
+							+ "InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+				}
+				
+				if ("N/A".equals(callback.CH_FORMULA())) return context.failure("If CH$IUPAC is defined, CH$FORMULA can not be \"N/A\".");
+				// this code compares the molecular formula from the InChI with CH$FORMULA
+				String formulaFromInChI = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(fromCH_IUPAC));
+				logger.trace("Formula from CH$FORMULA: " + callback.CH_FORMULA());
+				logger.trace("Formula from CH$IUPAC:   " + formulaFromInChI);
+				if (!formulaFromInChI.equals(callback.CH_FORMULA())) {
+					return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\".\n"
+							+ "Formula from CH$IUPAC:   " + formulaFromInChI + "\n"
+							+ "Formula from CH$FORMULA: " + callback.CH_FORMULA());
 				}
 			}
-			else {
-				IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, DefaultChemObjectBuilder.getInstance());
-				String ch_formula_from_cdk = MolecularFormulaManipulator.getString(m);
-				if (!(ch_formula.equals(ch_formula_from_cdk))) {
-					logger.warn("CH$FORMULA is \"" + ch_formula + "\"");
-					logger.warn("but after parsing it is interpreted as \"" + ch_formula_from_cdk + "\". Please check!");
-					logger.warn(callback.ACCESSION());
-				}
-			}
-			
-			// if InChI is available SMILES is also possible and the other way around
-			if (!("N/A".equals(ch_smiles)) && "N/A".equals(ch_iupac)) {
-				return context.failure("CH$SMILES is available but CH$IUPAC is empty.");
-			}
-			if ("N/A".equals(ch_smiles) && !("N/A".equals(ch_iupac))) {
-				return context.failure("CH$IUPAC is available but CH$SMILES is empty.");
-			}
-			
-			// check CH$IUPAC
-			if (!"N/A".equals(ch_iupac)) {
-				try {
-					// Get InChIToStructure
-					InChIToStructure intoStruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, DefaultChemObjectBuilder.getInstance());
-					INCHI_RET ret = intoStruct.getReturnStatus();
-					if (ret == INCHI_RET.WARNING) {
-						// Structure generated, but with warning message
-						logger.warn("InChI warning: " + intoStruct.getMessage());
-					} 
-					else 
-					if (ret != INCHI_RET.OKAY) {
-						// Structure generation failed
-						return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intoStruct.getMessage() + "] for " + ch_iupac + ".");
-					}
-					// Structure generation succeeded
-					IAtomContainer m = intoStruct.getAtomContainer();
-					// get the molecular formula from the InChI and compare it with CH$FORMULA
-					String formula_inchi = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
-					logger.trace("Formula from InChI: \"" + formula_inchi + "\".");
-					if (!formula_inchi.equals(callback.CH_FORMULA())) {
-						logger.trace("Formula from record file " + callback.CH_FORMULA() + ".");
-						return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\". "
-								+ formula_inchi + "!= \"CH$FORMULA: " + ch_formula + "\"");
-					}
-					
-					// create an InChiKey for comparison with SMILES
-					InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
-					ret = inchiGen.getReturnStatus();
-					if (ret == INCHI_RET.WARNING) {
-						// Structure generated, but with warning message
-						logger.warn("InChI warning: " + inchiGen.getMessage());
-					} 
-					else if (ret != INCHI_RET.OKAY) {
-						// Structure generation failed
-						return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
-					}
-					// compare the temporary InChI for InChIKey generation with the original InChI
-					String tmpInChI=inchiGen.getInchi();
-					logger.trace("Temporary InChI: \"" + tmpInChI + "\".");
-					if (!tmpInChI.equals(ch_iupac)) {
-						logger.trace("InChI from \"CH$IUPAC\" field: \"" + ch_iupac + "\".");
-						return context.failure("Temporary InChI for InChIKey generation differs from \"CH$IUPAC\". " + tmpInChI + "!= \"CH$IUPAC: " + ch_iupac + "\"");
-					}
-					InChiKey_from_CH_IUPAC = inchiGen.getInchiKey();
-				} catch (CDKException e) {
-					return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
-				}		 			
-			}
-		
-			// check CH$SMILES
-			if (!"N/A".equals(ch_smiles)) {
-				try {
-					// get the IAtomContainer formula from the SMILES
-					IAtomContainer m = new SmilesParser(DefaultChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
-					// compare it with CH$FORMULA
-					String formula_smiles = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(m));
-					logger.trace("Formula from SMILES: \"" + formula_smiles + "\".");
-					if (!formula_smiles.equals(ch_formula)) {
-						logger.trace("Formula from record file " + ch_formula + ".");
-						return context.failure("Formula generated from SMILES string in \"CH$SMILES\" field does not match formula in \"CH$FORMULA\". "
-								+ formula_smiles + "!= \"CH$FORMULA: " + ch_formula + "\"");
-					}
-					
-					// this code compares the structure in the SMILES with the structure in the InChI
-					// it is done by converting the SMILES structure to an InChIKey and compare that
-					// with the InChIKey from the InChI itself.
-					// compare it with CH$IUPAC
-					InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
-					INCHI_RET ret = inchiGen.getReturnStatus();
-					
-					if (ret == INCHI_RET.WARNING) {
-						// Structure generated, but with warning message
-						logger.warn("InChI warning: " + inchiGen.getMessage());
-					} 
-					else if (ret != INCHI_RET.OKAY) {
-						// InChI generation failed
-						return context.failure("Can not create InChiKey from SMILES string in \"CH$SMILES\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_smiles + ".");
-					}
-					String InChiKey_from_SMILES = inchiGen.getInchiKey();
-					logger.trace("InChIKey from InChI " + InChiKey_from_CH_IUPAC + ".");
-					logger.trace("InChI from SMILES " + inchiGen.getInchi() + ".");
-					logger.trace("InChIKey from SMILES " + InChiKey_from_SMILES + ".");
-					// only field1 of InChIKey atm
-					//if (!InChiKey_from_SMILES.equals(InChiKey_from_CH_IUPAC)) {
-					if (!InChiKey_from_SMILES.substring(0,14).equals(InChiKey_from_CH_IUPAC.substring(0,14))) {
-						return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\". "
-								+ InChiKey_from_SMILES + "!= " + InChiKey_from_CH_IUPAC + ".");
-					}
-				} catch (CDKException e) { 
-					return context.failure("Can not parse SMILES string in \"CH$SMILES\" field.\nError: "+ e.getMessage() + " for " + ch_smiles);		 				
-				}
-			}
-	
-			// check the InChIKey against the InChi
-			if (InChiKey_from_CH_IUPAC!= null) {
-				String InChiKey = callback.CH_LINK_asMap().get("INCHIKEY");
-				if (InChiKey!=null) {
-					// we have an InChIKey in CH$LINK and an InChIKey from CH$IUPAC 
-					if (!InChiKey.equals(InChiKey_from_CH_IUPAC)) {
-						return context.failure("InChIKey generated from InChI string in \"CH$IUPAC\" field does not match InChIKey in \"CH$LINK\". "
-							+ InChiKey_from_CH_IUPAC + " != \"CH$LINK: INCHIKEY " + InChiKey + "\"");
-					}
-				}
+			else if (!"N/A".equals(callback.CH_SMILES())) 
+			{
+				if (!smilesHasWildcards) return context.failure("If CH$SMILES is defined, CH$IUPAC can not be \"N/A\".");
+				logger.trace("SMILES with wildcards defined");
 			}
 
 			

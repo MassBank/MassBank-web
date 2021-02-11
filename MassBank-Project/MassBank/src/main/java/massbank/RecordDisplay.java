@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017 MassBank consortium
+ * Copyright (C) 2021 MassBank consortium
  * 
  * This file is part of MassBank.
  * 
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package massbank;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -179,77 +180,6 @@ public class RecordDisplay extends HttpServlet {
 //		
 //		// record
 //		String recordString	= sb.toString();
-//	%>
-//	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-//	<html lang="en">
-//		<head>
-//			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-//			<meta name="author" content="MassBank" />
-//			<meta name="coverage" content="worldwide" />
-//			<meta name="Targeted Geographic Area" content="worldwide" />
-//			<meta name="rating" content="general" />
-//			<meta name="copyright" content="Copyright (c) 2006 MassBank Project and (c) 2011 NORMAN Association" />
-//			<meta name="description" content="<%=description%>">
-//			<meta name="keywords" content="<%=accession%>, <%=shortName%>, <%=inchiKey%>, mass spectrum, MassBank record, mass spectrometry, mass spectral library">
-//			<meta name="revisit_after" content="30 days">
-//			<meta name="hreflang" content="en">
-//			<meta name="variableMeasured" content="m/z">
-//			<meta http-equiv="Content-Style-Type" content="text/css">
-//			<meta http-equiv="Content-Script-Type" content="text/javascript">
-//			<link rel="stylesheet" type="text/css" href="css/Common.css">
-//			<script type="text/javascript" src="script/Common.js"></script>
-//			<!-- SpeckTackle dependencies-->
-//			<script type="text/javascript" src="script/d3.v3.min.js"></script>
-//			<!-- SpeckTackle library-->
-//			<script type="text/javascript" src="script/st.min.js" charset="utf-8"></script>
-//			<!-- SpeckTackle style sheet-->
-//			<link rel="stylesheet" href="css/st.css" type="text/css" />
-//			<!-- SpeckTackle MassBank loading script-->
-//			<script type="text/javascript" src="script/massbank_specktackle.js"></script>
-//			<title><%=shortName%> Mass Spectrum</title>
-//		</head>
-//		<body style="font-family:Times;" typeof="schema:WebPage">
-//		<main context="http://schema.org" property="schema:about" resource="https://massbank.eu/MassBank/RecordDisplay.jsp?id=<%=accession%>&dsn=<%=databaseName%>" typeof="schema:Dataset" >
-//			<table border="0" cellpadding="0" cellspacing="0" width="100%">
-//				<tr>
-//					<td>
-//						<h1>MassBank Record: <%=accession%> </h1>
-//					</td>
-//				</tr>
-//			</table>
-//			<iframe src="menu.jsp" width="860" height="30px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
-//			<hr size="1">
-//			<br>
-//			<font size="+1" style="background-color:LightCyan">&nbsp;<%=recordTitle%>&nbsp;</font>
-//			<hr size="1">
-//			<table>
-//				<tr>
-//					<td valign="top">
-//						<font style="font-size:10pt;" color="dimgray">Mass Spectrum</font>
-//						<br>
-//						<div id="spectrum_canvas" peaks="<%=peaks%>" style="height: 200px; width: 750px; background-color: white"></div>
-//					</td>
-//					<td valign="top">
-//						<font style="font-size:10pt;" color="dimgray">Chemical Structure</font><br>
-//						<% // display svg
-//						if(clickablePreviewImageData != null){
-//							// paste small image to web site %>
-//							<%=svgMedium%><%
-//						} else {
-//							// no structure there or svg generation failed%>
-//							<img src="image/not_available_s.gif" width="200" height="200" style="margin:0px;">
-//						<%}%></td>
-//				</tr>
-//			</table>
-//	<hr size="1">
-//	<pre style="font-family:Courier New;font-size:10pt">
-//	<%=recordString%>
-//	</pre>
-//			<hr size=1>
-//			<iframe src="copyrightline.html" width="800" height="20px" frameborder="0" marginwidth="0" scrolling="no"></iframe>
-//		</main>
-//		</body>
-//	</html>
 		
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -301,6 +231,7 @@ public class RecordDisplay extends HttpServlet {
 				request.setAttribute("isDeprecated", true);
 				request.setAttribute("record_title", accession + " has been deprecated.");	
 				request.setAttribute("recordstring", "<pre>\nACCESSION: "+ accession + "\nDEPRECATED: "+ record.DEPRECATED_CONTENT() + "\n<pre>");
+				request.setAttribute("author","MassBank");
 				
 			} else {
 				logger.trace("Show record "+accession+".");
@@ -330,19 +261,19 @@ public class RecordDisplay extends HttpServlet {
 						".";
 				request.setAttribute("description", description);
 
-
-				
-				
 				String keywords =
 					accession + ", " 
 					+ shortname +", "
 					+ (inchikey != null ? inchikey + ", " : "")
 				    + "mass spectrum, MassBank record, mass spectrometry, mass spectral library";
+				request.setAttribute("keywords", keywords);
+				String author = record.AUTHORS();
+				request.setAttribute("author", author);				
 				
 				String recordstring = record.createRecordString();
 				String structureddata = record.createStructuredData();
 				IAtomContainer mol = record.CH_SMILES_obj();
-				String svg = new DepictionGenerator().withAtomColors().depict(mol).toSvgStr(Depiction.UNITS_PX);				
+				String svg = new DepictionGenerator().withAtomColors().withMolTitle().withTitleColor(Color.black).depict(mol).toSvgStr(Depiction.UNITS_PX);				
 				
 				//adjust svg to fit nicely in RecordDisplay page
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -364,7 +295,7 @@ public class RecordDisplay extends HttpServlet {
 
 				request.setAttribute("peaklist", record.createPeakListData());
 				request.setAttribute("accession", accession);
-		        request.setAttribute("keywords", keywords);
+		        
 		        request.setAttribute("record_title", record.RECORD_TITLE1());	        		
 				
 				request.setAttribute("recordstring", recordstring);

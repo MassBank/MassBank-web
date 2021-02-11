@@ -1,34 +1,36 @@
 html {
 	min-height: 100%;
-	height:auto;
-	margin:auto;
-	background:#ececec;
+	height: auto;
+	margin: auto;
+	background: #ececec;
 }
 
 hr {
 	margin: 6px 0;
 }
 
-.w3-padding-small{padding:4px 4px!important}
-
-.w3-theme-gradient {
-	color: #000 !important;
-	background: -webkit-linear-gradient(#ececec , #ffffff 75%)
+.w3-padding-small {
+	padding: 4px 4px !important
 }
 
 .w3-theme-gradient {
 	color: #000 !important;
-	background: -moz-linear-gradient(#ececec , #ffffff 75%)
+	background: -webkit-linear-gradient(#ececec, #ffffff 75%)
 }
 
 .w3-theme-gradient {
 	color: #000 !important;
-	background: -o-linear-gradient(#ececec , #ffffff 75%)
+	background: -moz-linear-gradient(#ececec, #ffffff 75%)
 }
 
 .w3-theme-gradient {
 	color: #000 !important;
-	background: -ms-linear-gradient(#ececec , #ffffff 75%)
+	background: -o-linear-gradient(#ececec, #ffffff 75%)
+}
+
+.w3-theme-gradient {
+	color: #000 !important;
+	background: -ms-linear-gradient(#ececec, #ffffff 75%)
 }
 
 .w3-theme-gradient {
@@ -49,4 +51,24 @@ hr {
 
 .monospace {
 	font-family: "Lucida Console", Monaco, monospace
+}
+
+.showme {
+	display: none;
+}
+
+.showhim:hover .showme {
+	display: inline;
+}
+
+.showhim:hover .ok {
+	display: none;
+}
+
+.w3-animate-right {
+	animation: animateright 2s
+}
+
+body, h1, h2, h3, h4, h5, h6 {
+	font-family: 'Mulish', Verdana, sans-serif;
 }
