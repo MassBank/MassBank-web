@@ -115,7 +115,7 @@
 		out.println( "</head>" );
 		out.println( "<body class=\"msbkFont cursorDefault\">" );
 		out.println( "<h1>Results</h1>" );
-		out.println( "<jsp:include page=\"menu.html\"/>" );
+		out.println( "<jsp:include page=\"menu_legacy.html\"/>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<b>Search Parameters :</b><br>" );
 		out.println( "<div class=\"divSpacer9px\"></div>" );
@@ -130,7 +130,7 @@
 		out.println( "</table>" );
 		out.println( "</form>" );
 		out.println( "<hr size=\"1\">" );
-		out.println( "<iframe src=\"copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<iframe src=\"copyrightline_legacy.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		out.println( "</body>" );
 		out.println( "</html>" );
 		return;
@@ -385,7 +385,7 @@
 			<td><h1><%=hTitle%></h1></td>
 		</tr>
 	</table>
-<jsp:include page="menu.html"/>
+<jsp:include page="menu_legacy.html"/>
 <hr size="1">
 <%
 	/*
@@ -762,7 +762,7 @@
 			out.println( "</tr>" );
 			out.println( "</table>" );
 			out.println( "<hr size=\"1\">" );
-			out.println( "<iframe src=\"copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+			out.println( "<iframe src=\"copyrightline_legacy.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 			out.println( "</body>" );
 			out.println( "</html>" );
 			
@@ -1348,6 +1348,6 @@
 </form>
 
 <hr size="1">
-<jsp:include page="copyrightline.html"/>
+<jsp:include page="copyrightline_legacy.html"/>
 </body>
 </html>

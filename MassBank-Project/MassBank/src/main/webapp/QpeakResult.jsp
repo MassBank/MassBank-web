@@ -130,7 +130,7 @@
 		out.println( "   </td>" );
 		out.println( "  </tr>" );
 		out.println( " </table>" );
-		out.println( "<jsp:include page=\"menu.html\"/>" );
+		out.println( "<jsp:include page=\"menu_legacy.html\"/>" );
 		out.println( "<hr size=\"1\">" );
 		out.println( "<table width=\"900\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">" );
 		out.println( " <tr>" );
@@ -154,7 +154,7 @@
 		out.println( "<input type=\"hidden\" name=\"searchType\" value=\"peak\">" );
 		out.println( "</form>" );
 		out.println( "<hr size=\"1\">" );
-		out.println( "<iframe src=\"copyrightline.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
+		out.println( "<iframe src=\"copyrightline_legacy.html\" width=\"800\" height=\"20px\" frameborder=\"0\" marginwidth=\"0\" scrolling=\"no\"></iframe>" );
 		out.println( "</body>" );
 		out.println( "</html>" );
 		return;
@@ -301,7 +301,7 @@
 			</td>
 		</tr>
 	</table>
-<jsp:include page="menu.html"/>
+<jsp:include page="menu_legacy.html"/>
 <hr size="1">
 <%/*↓ServerInfo.jspはプライマリサーバにのみ存在する(ファイルが無くてもエラーにはならない)*/%>
 <%-- <jsp:include page="pserver/ServerInfo.jsp" /> --%>
@@ -584,6 +584,6 @@
 %>
 </form>
 <hr size="1">
-<jsp:include page="copyrightline.html"/><span id="menu"></span>
+<jsp:include page="copyrightline_legacy.html"/><span id="menu"></span>
 </body>
 </html>
