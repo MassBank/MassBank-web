@@ -5,13 +5,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +61,7 @@ Num Peaks: 17
 /**
  * This class creates RIKEN PRIME msp from the given Record.
  * @author rmeier, htreutle
- * @version 21-08-2020
+ * @version 01-12-2020
  */
 public class RecordToRIKEN_MSP {
 	private static final Logger logger = LogManager.getLogger(RecordToRIKEN_MSP.class);
@@ -73,46 +70,45 @@ public class RecordToRIKEN_MSP {
 	 * A plain converter Record to String with RIKEN PRIME msp.
 	 * @param record to convert
 	 */
-	public static List<String> convert(Record record) {
-		System.out.println(record.ACCESSION());
-		List<String> list	= new ArrayList<String>();
+	public static String convert(Record record) {
+		StringBuilder sb = new StringBuilder();
+		
 		if (record.DEPRECATED()) {
 			logger.warn(record.ACCESSION() + " is deprecated. No export possible.");
-			return list;
+			return sb.toString();
 		}
-				
-		list.add("NAME"				+ ": " + record.CH_NAME().get(0));
-		Map<String, String> MS_FOCUSED_ION = record.MS_FOCUSED_ION_asMap();
-		list.add("PRECURSORMZ"	    + ": " + (MS_FOCUSED_ION.containsKey("PRECURSOR_M/Z") ? MS_FOCUSED_ION.get("PRECURSOR_M/Z") : ""));
-		list.add("ADDUCTIONNAME"	+ ": " + (MS_FOCUSED_ION.containsKey("PRECURSOR_TYPE") ? MS_FOCUSED_ION.get("PRECURSOR_TYPE") : "NA"));
-		list.add("INSTRUMENTTYPE"	+ ": " + record.AC_INSTRUMENT_TYPE());
-		list.add("INSTRUMENT"		+ ": " + record.AC_INSTRUMENT());
-		list.add("SMILES"			+ ": " + record.CH_SMILES());
-		Map<String, String> CH_LINK = record.CH_LINK_asMap();
-		list.add("INCHIKEY"			+ ": " + (CH_LINK.containsKey("INCHIKEY") ? CH_LINK.get("INCHIKEY") : "N/A"));
-		list.add("INCHI"			+ ": " + record.CH_IUPAC());
-		list.add("FORMULA"			+ ": " + record.CH_FORMULA());
-		list.add("RETENTIONTIME"	+ ": " + (record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "0"));
-		list.add("IONMODE"			+ ": " + record.AC_MASS_SPECTROMETRY_ION_MODE());
 		
-		List<String> list_links	= new ArrayList<String>();
-		for(Entry<String, String> entry : record.CH_LINK_asMap().entrySet())
-			list_links.add(entry.getValue() + ":" + entry.getKey());
-		String links	= String.join("; ", list_links);
-		list.add("LINKS"			+ ": " + links);
+		sb.append("NAME : ").append(record.CH_NAME().get(0)).append(System.getProperty("line.separator"));
+		Map<String, String> MS_FOCUSED_ION = record.MS_FOCUSED_ION_asMap();
+		sb.append("PRECURSORMZ: ").append((MS_FOCUSED_ION.containsKey("PRECURSOR_M/Z") ? MS_FOCUSED_ION.get("PRECURSOR_M/Z") : "")).append(System.getProperty("line.separator"));
+		sb.append("ADDUCTIONNAME: ").append((MS_FOCUSED_ION.containsKey("PRECURSOR_TYPE") ? MS_FOCUSED_ION.get("PRECURSOR_TYPE") : "NA")).append(System.getProperty("line.separator"));
+		sb.append("INSTRUMENTTYPE: ").append(record.AC_INSTRUMENT_TYPE()).append(System.getProperty("line.separator"));
+		sb.append("INSTRUMENT: ").append(record.AC_INSTRUMENT()).append(System.getProperty("line.separator"));
+		sb.append("SMILES: ").append(record.CH_SMILES()).append(System.getProperty("line.separator"));
+		sb.append("INCHIKEY: ").append(record.CH_LINK_asMap().containsKey("INCHIKEY") ? record.CH_LINK_asMap().get("INCHIKEY") : "N/A").append(System.getProperty("line.separator"));
+		sb.append("INCHI: ").append(record.CH_IUPAC()).append(System.getProperty("line.separator"));
+		sb.append("FORMULA: ").append(record.CH_FORMULA()).append(System.getProperty("line.separator"));
+		sb.append("RETENTIONTIME: ").append(record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "0").append(System.getProperty("line.separator"));
+		sb.append("IONMODE: ").append(record.AC_MASS_SPECTROMETRY_ION_MODE()).append(System.getProperty("line.separator"));
+		
+		List<String> links	= new ArrayList<String>();
+		for(Pair<String, String> entry : record.CH_LINK())
+			links.add(entry.getKey() + ":" + entry.getValue());
+		sb.append("LINKS: ").append(String.join("; ", links)).append(System.getProperty("line.separator"));
 		
 		List<String> recordComment = record.COMMENT();
 		for (int i = 0; i < recordComment.size(); i++) {
-			if(recordComment.get(i).startsWith("CONFIDENCE")) recordComment.set(i,recordComment.get(i).substring("CONFIDENCE".length()).trim());
+			if(recordComment.get(i).startsWith("CONFIDENCE")) recordComment.set(i,"Annotation " + recordComment.get(i).substring("CONFIDENCE".length()).trim());
         }
-		String comment= String.join("; ", recordComment);
-		if(comment.equals("")) comment	= "N/A";
-		list.add("Comment"			+ ": " + comment);
-		list.add("Num Peaks"		+ ": " + record.PK_NUM_PEAK());
+		recordComment.add(0, "DB#="+record.ACCESSION()+"; origin=MassBank");
+				
+		sb.append("Comment: ").append(String.join("; ", recordComment)).append(System.getProperty("line.separator"));
+		sb.append("Num Peaks"		+ ": " + record.PK_NUM_PEAK()).append(System.getProperty("line.separator"));
 		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK())
-			list.add(peak.getLeft().toPlainString() + "\t" + peak.getMiddle().toPlainString());
+			sb.append(peak.getLeft().toPlainString() + "\t" + peak.getMiddle().toPlainString()).append(System.getProperty("line.separator"));
 		
-		return list;
+		sb.append(System.getProperty("line.separator"));
+		return sb.toString();
 	}
 	
 	/**
@@ -125,27 +121,21 @@ public class RecordToRIKEN_MSP {
 		// collect data
 		List<String> list	= new ArrayList<String>();
 		for(Record record : records) {
-			list.addAll(convert(record));
+			list.add(convert(record));
 			list.add("");
 		}
+		
+		BufferedWriter writer;
 		try {
-			FileUtils.writeStringToFile(
-					file, 
-					String.join("\n", list.toArray(new String[list.size()])), 
-					Charset.forName("UTF-8")
-			);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			writer = new BufferedWriter(new FileWriter(file));
+			for (String line : list) {
+				writer.write(line);
+			}
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-//		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-//		//Loop over the elements in the string array and write each line.
-//		for (String line : array) {
-//			writer.write(line);
-//			writer.newLine();
-//		}
-//		writer.close();
-		
 	}
 
 }

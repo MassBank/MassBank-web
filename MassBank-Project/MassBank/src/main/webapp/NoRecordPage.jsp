@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-<!-- Copyright (C) 2010 JST-BIRD MassBank -->
-<!-- Copyright (C) 2017 MassBank consortium -->
+<!-- Copyright (C) 2021 MassBank consortium -->
 
 <!-- This file is part of MassBank. -->
 
@@ -26,19 +25,18 @@
 	<title>No Mass Spectrum</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<meta name="description" content="MassBank Record of ${accession}">
+	<meta name="description" content="MassBank Record of ${accession} not found">
 	<meta name="keywords" content="No MassBank record">
 	<meta name="author" content="MassBank">
-	<meta name="copyright" content="Copyright (c) 2006 MassBank Project and NORMAN Association (c) 2011" />
-	<link href="favicon.ico" rel="icon" type="image/x-icon">
-	<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	<meta name="copyright" content="MassBank Consortium"/>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
 	<link rel="stylesheet" type="text/css" href="css/w3-theme-grey.css">
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
-	<link rel="stylesheet" type="text/css" href="fontawesome-free-5.13.1-web/css/all.min.css">
-	<script src="js/jquery-3.4.1.min.js" type="text/javascript"></script>
-	<script src="js/MassCalc.js" type="text/javascript"></script>
-	<script src="js/svg4everybody-2.1.9.min.js" type="text/javascript"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
+	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
 	
 	<!-- Matomo -->
@@ -92,44 +90,41 @@
 </head>
 
 <body class="w3-theme-gradient">
+
 	<noscript>
 		<div class="w3-panel w3-yellow">
-  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
-  		</div>
-  	</noscript>
-  	
-  	<header class="w3-container w3-top w3-text-dark-grey w3-grey">
+			<p>Your JavaScript is disabled. To properly show MassBank please
+				enable JavaScript and reload.</p>
+		</div>
+	</noscript>
+
+	<div>
+		<jsp:include page="menu.html" />
+	</div>
+
+	<header class="w3-container w3-text-dark-grey w3-grey">
 		<div class="w3-bar">
 			<div class="w3-left">
 				<h1>
 					<b>No Mass Spectrum</b>
 				</h1>
 			</div>
-			<div style="position: absolute; transform: translateY(-50%); bottom: 0; right: 0">
-				<div class="w3-container">
-					<div class="w3-text-blue">
-						<svg viewBox="0 0 32 28" style="width: 16px">
-							<use href="img/arrow.svg#arrow_right" />
-						</svg>
-						<a id="openMassCalc" class="w3-text-dark-grey" href=""><b>mass calculator</b></a>
-					</div>
-				</div>
-			</div>
 		</div>
-		<jsp:include page="masscalc.html"/>
 	</header>
-	
-	<div style="padding-top:74px">
-		<jsp:include page="menu.html"/>
-	</div>
-  	
-  	<div class="w3-padding">
+
+	<div class="w3-container">
   	<c:if test="${not empty accession}">
-		No MassBank record exists for accession ${accession}.<br>
-	</c:if>
-	<c:if test="${not empty error}">
-		<b>Error message: ${error}</b>
-	</c:if>	
+		<p>
+			No MassBank record exists for accession '${accession}'.
+		</p>
+		<p>
+			If you want to make a 'Keyword' search please visit our
+			<a href="Search" title="Search">Search</a> page.
+		</p>
+		</c:if>
+		<c:if test="${not empty error}">
+			<b>Error message: ${error}</b>
+		</c:if>	
 	</div>	
 	
 	<br>
@@ -138,5 +133,6 @@
 	<script src="js/cookieconsent-3.1.1.min.js" type="text/javascript"></script>
 	<script src="js/cookieconsent-banner.js" type="text/javascript"></script>
 	
-	</body>
+</body>
 </html>
+
