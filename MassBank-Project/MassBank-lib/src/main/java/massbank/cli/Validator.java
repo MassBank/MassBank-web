@@ -14,7 +14,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -167,7 +166,7 @@ public class Validator {
 			String recordString;
 			String accession=null;
 			try {
-				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8).replaceAll("\\r\\n?", "\n");
 				hasNonStandardChars(recordString);
 				// basic validation
 				Record record = validate(recordString, "");
