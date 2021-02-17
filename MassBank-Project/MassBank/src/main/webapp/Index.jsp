@@ -40,65 +40,16 @@
 	<script src="js/iframeResizer.min.js"></script>
 	<script>svg4everybody();</script>
 
-	<!-- Matomo -->
-	<link rel="stylesheet" type="text/css" href="css/cookieconsent-3.1.1.min.css">
-	<script src="https://www.ufz.de/stats/piwik.js" type="text/javascript"></script>
-	<script type="text/javascript">
-		try  {
-			var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
-			if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
-				piwikTracker.disableCookies();
-			}
-			piwikTracker.trackPageView();
-			piwikTracker.enableLinkTracking();
-		} catch( err ) {}
-	</script>
-	
-	<script type="text/javascript">
-		$(document).ready(function() {
-			if(localStorage.getItem('cookie-banner') === null) {
-				$('#cookie-banner').modal();
-	
-				$('#cookie-banner button.btn-secondary').off('click').on('click', function() {
-					localStorage.setItem('cookie-banner', '0');
-					try  {
-						var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
-						if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
-							piwikTracker.disableCookies();
-						}
-						piwikTracker.trackPageView();
-						piwikTracker.enableLinkTracking();
-					} catch( err ) {}
-				});
-				$('#cookie-banner button.btn-success').off('click').on('click', function() {
-					localStorage.setItem('cookie-banner', '1');
-					try  {
-						var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
-						if(localStorage.getItem('cookie-banner') == '0' || localStorage.getItem('cookie-banner') === null) {
-							piwikTracker.disableCookies();
-						}
-						piwikTracker.trackPageView();
-						piwikTracker.enableLinkTracking();
-					} catch( err ) {}
-				});
-			}
-		});
-	</script>
-	<!-- Matomo end -->
+	<jsp:include page="matomo_head.html"/>
 </head>
 
-
 <body class="w3-theme-gradient">
-	<!-- Matomo -->
-	<noscript>
-		<img src="https://www.ufz.de/stats/piwik.php?idsite=24" style="border:0" alt="" />
-	</noscript>
-	<!-- Matomo end -->
+	<jsp:include page="matomo_body.html"/>
 	
 	<noscript>
 		<div class="w3-panel w3-yellow">
-  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
-  		</div>
+  		<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+ 		</div>
   </noscript>
   	
  	<div>
@@ -130,7 +81,7 @@
 					</div>
 					<div class="w3-cell-row">
 						<div class="w3-cell" style="width:25%"></div>
-						<div class="w3-cell w3-animate-right w3-blue w3-text-dark-grey w3-hover-text-white w3-padding w3-round"">
+						<div class="w3-cell w3-animate-right w3-blue w3-text-dark-grey w3-hover-text-white w3-padding w3-round">
 							<a href="About" style="text-decoration: none;"><b>>> Learn More</b></a>
 						</div>
 					</div>	

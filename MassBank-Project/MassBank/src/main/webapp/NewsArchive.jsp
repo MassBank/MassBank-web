@@ -39,17 +39,20 @@
 	<script src="js/iframeResizer.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
+	
+	<jsp:include page="matomo_head.html"/>
 </head>
 
 <body class="w3-theme-gradient">
+	<jsp:include page="matomo_body.html"/>
 
 	<noscript>
 		<div class="w3-panel w3-yellow">
-  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
-  		</div>
-  	</noscript>
+  		<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  	</div>
+ 	</noscript>
   	
-  	<div>
+ 	<div>
 		<jsp:include page="menu.html"/>
 	</div>
 	
