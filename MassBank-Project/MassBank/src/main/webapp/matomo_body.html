@@ -1,0 +1,51 @@
+<div id="analyticsconsent" class="w3-container w3-round w3-grey w3-padding" style="display:none;position:fixed;bottom:0">
+	<div class="w3-container w3-text-dark-grey">
+		<p>This website uses technical necessary cookies (e.g. session ID) and in
+		addition the Matomo web analytics tool. Matomo enables us to evaluate 
+		the use of our website in compliance with GDPR (Directive 95/46/EC). <a href="https://www.ufz.de/index.php?en=44326">Data Privacy Policy</a> <br>
+		This banner can be opend with the 'Data Privacy'-button. Your consent to the use of Matomo can be revoked any time.	To make that choice, please un-check below.</p>
+		<p>
+			<input type="checkbox" id="analytics" />
+			<label for="analytics"><strong></strong></label>
+		</p>
+		<div class="w3-bar">
+			<button id="ok" onclick="document.getElementById('analyticsconsent').style.display='none'" class="w3-button w3-mobile w3-round w3-text-blue w3-light-grey w3-hover-blue w3-right">Ok</button>
+		</div>
+	</div>
+</div>
+
+<script>
+function setAnalytics() {
+	var analyticsCheckbox =  $("#analytics").prop('checked');
+	document.querySelector('label[for=analytics] strong').innerText = analyticsCheckbox
+		? 'Tracking is enabled. Click here to decline.'
+		: 'Tracking is disabled. Click here to allow.';
+	localStorage.setItem('analytics', analyticsCheckbox ? '1' : '0');
+	try {
+		var piwikTracker = Piwik.getTracker("https://www.ufz.de/stats/piwik.php", 24);
+		piwikTracker.requireConsent();
+		piwikTracker.trackPageView();
+	  piwikTracker.enableLinkTracking();
+	  if (analyticsCheckbox) {
+		  piwikTracker.setConsentGiven();
+	  }
+	} catch(err) {}
+}
+
+$(document).ready(function() {
+	$("#analytics").on("change", setAnalytics);
+	//init settings from local storrage
+	if(localStorage.getItem('analytics') == '0' ) {
+		$("#analytics").prop("checked", false);
+	}
+	else if(localStorage.getItem('analytics') == '1' ) {
+		$("#analytics").prop("checked", true);
+	} else {
+		document.getElementById('analyticsconsent').style.display='block';
+		$("#analytics").prop("checked", true);
+	} 
+	setAnalytics();
+});
+</script>
+
+				
