@@ -11,7 +11,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>MassBank-lib</module>
-		<module>MassBank</module>
+		<module>MassBank-web</module>
 		<module>MassBank-OpenAPI</module>
 	</modules>
 

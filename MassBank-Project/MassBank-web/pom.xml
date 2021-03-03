@@ -9,7 +9,7 @@
 		<version>2.1.9-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>MassBank</artifactId>
+	<artifactId>MassBank-web</artifactId>
 	<packaging>war</packaging>
 	
 	<name>MassBank servlet</name>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.2</version>
+			<version>1.5.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
