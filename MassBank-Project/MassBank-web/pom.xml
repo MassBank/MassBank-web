@@ -46,7 +46,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>${project.artifactId}</finalName>
+		<finalName>MassBank</finalName>
 		<!-- https://www.triology.de/blog/versionsnamen-mit-maven-erzeugen-des-versionsnamens -->
 		<plugins>
 			<plugin>
