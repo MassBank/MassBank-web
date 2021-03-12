@@ -326,7 +326,7 @@ public class ResultRecord {
 		// レコード情報設定
 		this.info = info;
 
-		String[] tmp = info.split(";");
+		String[] tmp = info.split("; ");
 
 		// 化合物名設定
 		this.name = tmp[0].trim();
