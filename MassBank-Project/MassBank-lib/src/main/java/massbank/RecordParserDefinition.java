@@ -459,6 +459,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// protecting groups (TMS, etc.) is included.
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
+		// '; ' is not allowed in chemical names; '; ' is reserved as the delimiter of the title
 		def("ch_name_value",
 			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>#|;"))
 			.plusLazy(ref("valuesep").or(Token.NEWLINE_PARSER))
