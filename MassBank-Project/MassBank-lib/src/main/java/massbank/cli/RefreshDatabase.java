@@ -91,7 +91,7 @@ public class RefreshDatabase {
 		.entrySet().stream()
 		.map(Map.Entry::getValue);
 		
-		AtomicInteger processed = new AtomicInteger(0);
+		AtomicInteger processed = new AtomicInteger(1);
 		int numRecordFiles = recordfiles.size();
 		chunkedRecordfiles.forEach(chunk -> {
 			chunk.parallelStream().map(filename -> {
@@ -112,8 +112,8 @@ public class RefreshDatabase {
 			})
 			.filter(Objects::nonNull)
 			.forEachOrdered((r) -> {
-				System.out.print("Processed: "+processed.getAndIncrement()+"/"+numRecordFiles+"\r");
 				db.persistAccessionFile(r);
+				System.out.print("Processed: "+processed.getAndIncrement()+"/"+numRecordFiles+"\r");
 			});
 		});
 		
