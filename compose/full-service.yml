@@ -29,7 +29,7 @@ services:
       - "mariadb:massbank_mariadb"
 
   maven:
-    image: maven:3-jdk-11
+    image: maven:3.6-jdk-11
     volumes:
             #      - $HOME/.m2:/var/maven/.m2
       - $PWD/MassBank-Project:/project
