@@ -38,7 +38,7 @@ services:
         #user: ${CURRENT_UID}
 
   dbupdate:
-    image: maven:3-jdk-11
+    image: maven:3.6-jdk-11
     volumes:
       - $PWD/MassBank-Project:/project
       - $PWD/conf/full-service.conf:/etc/massbank.conf
