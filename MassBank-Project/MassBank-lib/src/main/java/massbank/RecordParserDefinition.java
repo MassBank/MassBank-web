@@ -307,13 +307,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// License of MassBank Record. Mandatory
 		// Example
 		// LICENSE: CC BY
+		def("allowed_licenses",
+			StringParser.of("CC0")
+			.or(StringParser.of("CC BY"))
+			.or(StringParser.of("CC BY-NC"))
+			.or(StringParser.of("CC BY-NC-ND"))
+			.or(StringParser.of("CC BY-NC-SA"))
+			.or(StringParser.of("CC BY-SA"))
+		);
 		def("license",
 			StringParser.of("LICENSE")
 			.seq(ref("tagsep"))
-			.seq(Token.NEWLINE_PARSER.not())
-			.seq(
-				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
-				.flatten()
+			.seq(ref("allowed_licenses")
 				.map((String value) -> {
 					callback.LICENSE(value);
 					return value;
