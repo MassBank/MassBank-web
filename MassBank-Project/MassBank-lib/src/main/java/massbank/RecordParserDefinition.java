@@ -1388,8 +1388,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(
 					CharacterParser.anyOf("+-").plus()
 					.or(
-						ref("uint_primitive")
-						.seq(CharacterParser.anyOf("+-"))
+						CharacterParser.of('1').seq(CharacterParser.anyOf("+-")).not()
+						.seq(ref("uint_primitive").seq(CharacterParser.anyOf("+-")))
 					)
 				)
 				.seq(CharacterParser.of('*').optional())
@@ -1469,6 +1469,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[2M-H-C6H10O5]-"))
 			.or(StringParser.of("[M-H-CO2-2HF]-"))
 		);
+		
 		def ("ms_focused_ion_subtag",
 			StringParser.of("BASE_PEAK ")
 			.or(StringParser.of("DERIVATIVE_FORM "))
@@ -1482,33 +1483,25 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ms_focused_ion",
 			StringParser.of("MS$FOCUSED_ION")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("ION_TYPE ")).pick(2)
-			.seq(ref("ion_type"))
+			.seq(				
+				StringParser.of("ION_TYPE ")
+				.seq(ref("ion_type"))
+				.or(
+					StringParser.of("PRECURSOR_TYPE ")
+					.seq(ref("precursor_type"))
+				)
+				.or(
+					ref("ms_focused_ion_subtag")
+					.seq(
+						Token.NEWLINE_PARSER.not()
+						.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()).pick(1)
+					)
+				)
+			)				
+			.seq(Token.NEWLINE_PARSER).pick(2)
 			.map((List<String> value) -> {
 				return Pair.of(value.get(0).trim(), value.get(1));
 			})
-			.seq(Token.NEWLINE_PARSER).pick(0)
-			.or(
-				StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PRECURSOR_TYPE ")).pick(2)
-				.seq(ref("precursor_type"))
-				.map((List<String> value) -> {
-					return Pair.of(value.get(0).trim(), value.get(1));
-				})
-				.seq(Token.NEWLINE_PARSER).pick(0)
-			)
-			.or(
-				StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(ref("ms_focused_ion_subtag"))
-				.seq(Token.NEWLINE_PARSER.not()).pick(2)
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.map((List<String> value) -> {
-					return Pair.of(value.get(0).trim(), value.get(1));
-				})
-				.seq(Token.NEWLINE_PARSER).pick(0)
-			)
 			.plus()
 			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
