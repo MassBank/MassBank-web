@@ -414,6 +414,8 @@ LICENSE: CC BY
 ```
 
 Contributors to MassBank are encouraged to show the license `CC BY`. This license mean that others are free to "share" (copy and redistribute the MassBank record in any medium or format) and to "adapt" (remix, transform, and build upon the MassBank record) for any purpose, even commercially. The contributors cannot revoke these freedoms as long as the others follow the license terms.
+Allowed licenses are: `CC0`, `CC BY`, `CC BY-NC`, `CC BY-NC-SA`, `CC BY-SA` check https://creativecommons.org/licenses/
+
 
 #### <a name="2.1.6"></a>2.1.6 COPYRIGHT
 Copyright of MassBank Record. Optional
