@@ -60,6 +60,7 @@
 							<filtering>true</filtering>
 							<includes>
 								<include>copyrightline.html</include>
+								<include>copyrightline_legacy.html</include>
 							</includes>
 						</resource>
 					</webResources>
