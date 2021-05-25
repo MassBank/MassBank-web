@@ -74,8 +74,8 @@ public class Validator {
 	 * Validate a <code>recordString</code> and return the parsed information in a {@link Record} 
 	 * or <code>null</code> if the validation was not successful. Be strict in validation.
 	 */
-	public static Record validate(String recordString, String contributor) {
-		return validate(recordString, contributor, true);
+	public static Record validate(String recordString, String contributor, boolean legacy) {
+		return validate(recordString, contributor, true, legacy);
 	}
 	
 	/**
@@ -83,9 +83,10 @@ public class Validator {
 	 * or <code>null</code> if the validation was not successful. Be less strict if 
 	 * <code>strict</code> is <code>false</code>. This is useful in automatic repair routines.
 	 */
-	public static Record validate(String recordString, String contributor, boolean strict) {
+	public static Record validate(String recordString, String contributor, boolean strict, boolean legacy) {
+		if (legacy) System.out.println("Validation mode: legacy");
 		Record record = new Record(contributor);
-		Parser recordparser = new RecordParser(record, strict);
+		Parser recordparser = new RecordParser(record, strict, legacy);
 		Result res = recordparser.parse(recordString);
 		if (res.isFailure()) {
 			logger.error(res.getMessage());
@@ -124,6 +125,7 @@ public class Validator {
 		// parse command line
 		Options options = new Options();
 		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
+		options.addOption(null, "legacy", false, "less strict mode for legacy records with minor problems.");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -162,6 +164,7 @@ public class Validator {
 		logger.trace("Validating " + recordfiles.size() + " files");
 		AtomicBoolean haserror = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
+		AtomicBoolean legacyMode = new AtomicBoolean(cmd.hasOption("legacy"));
 		List<String> accessions = recordfiles.parallelStream().map(filename -> {
 			String recordString;
 			String accession=null;
@@ -169,7 +172,7 @@ public class Validator {
 				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8).replaceAll("\\r\\n?", "\n");
 				hasNonStandardChars(recordString);
 				// basic validation
-				Record record = validate(recordString, "");
+				Record record = validate(recordString, "", legacyMode.get());
 				if (record == null) {
 					logger.error("Error in \'" + filename + "\'.");
 					haserror.set(true);
@@ -186,7 +189,7 @@ public class Validator {
 						haserror.set(true);
 					}
 					
-					// validate correct serialization: String -> Record class -> String
+					// validate correct serialization: String <-> String -> Record class -> String
 					String recordStringFromRecord = record.toString();
 					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
 					if (position != -1) {
@@ -210,7 +213,7 @@ public class Validator {
 						}
 					}
 				
-					// validate correct serialization with db: String -> Record class -> db -> Record class -> String
+					// validate correct serialization with db: String <-> db -> Record class -> String
 					if (doDatbase.get()) {
 						Record recordDatabase = null;
 						try {

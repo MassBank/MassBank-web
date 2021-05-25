@@ -45,7 +45,9 @@ import net.sf.jniinchi.INCHI_RET;
 
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
-
+	
+	private final boolean legacy;
+	
 	IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
 	IAtomContainer fromCH_SMILES = SilentChemObjectBuilder.getInstance().newAtomContainer();
 	String InChiKeyFromCH_SMILES = "";
@@ -54,7 +56,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 	String InChiKeyFromCH_IUPAC = "";
 	private int pk_num_peak = -1;
 	
-	public RecordParserDefinition(Record callback, boolean strict) {
+	public RecordParserDefinition(Record callback, boolean strict, boolean legacy) {
+		this.legacy = legacy;
 		def("start",
 			ref("accession")
 			.seq(ref("deprecated_record")
@@ -308,12 +311,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// LICENSE: CC BY
 		def("allowed_licenses",
-			StringParser.of("CC0")
-			.or(StringParser.of("CC BY"))
-			.or(StringParser.of("CC BY-NC"))
+			StringParser.of("CC0")			
 			.or(StringParser.of("CC BY-NC-ND"))
 			.or(StringParser.of("CC BY-NC-SA"))
+			.or(StringParser.of("CC BY-NC"))
 			.or(StringParser.of("CC BY-SA"))
+			.or(StringParser.of("CC BY"))
 		);
 		def("license",
 			StringParser.of("LICENSE")
@@ -1706,12 +1709,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 				// compare the structures in CH$SMILES and CH$IUPAC with the help of InChIKeys
 				logger.trace("InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES);
 				logger.trace("InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
-				// only field1 of InChIKey atm
-				//if (!InChiKey_from_SMILES.equals(InChiKey_from_CH_IUPAC)) {
-				if (InChiKeyFromCH_SMILES.length()!=27 || InChiKeyFromCH_IUPAC.length()!=27 || !InChiKeyFromCH_SMILES.substring(0,14).equals(InChiKeyFromCH_IUPAC.substring(0,14))) {
-					return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\".\n"
-							+ "InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES +"\n"
-							+ "InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+				
+				// in legacy mode only check field1 of InChIKey
+				if (legacy) {
+					if (InChiKeyFromCH_SMILES.length()!=27 || InChiKeyFromCH_IUPAC.length()!=27 || !InChiKeyFromCH_SMILES.substring(0,14).equals(InChiKeyFromCH_IUPAC.substring(0,14))) {
+						return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\".\n"
+								+ "InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES +"\n"
+								+ "InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+					}					
+				} else {
+					if (!InChiKeyFromCH_SMILES.equals(InChiKeyFromCH_IUPAC)) {
+						return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\".\n"
+								+ "InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES +"\n"
+								+ "InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+					}
 				}
 				
 				if ("N/A".equals(callback.CH_FORMULA())) return context.failure("If CH$IUPAC is defined, CH$FORMULA can not be \"N/A\".");

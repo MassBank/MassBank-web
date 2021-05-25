@@ -100,7 +100,7 @@ public class RefreshDatabase {
 				String contributor = filename.getParentFile().getName();
 				try {
 					String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					record = Validator.validate(recordAsString, contributor);
+					record = Validator.validate(recordAsString, contributor, true);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
