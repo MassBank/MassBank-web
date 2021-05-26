@@ -84,7 +84,6 @@ public class Validator {
 	 * <code>strict</code> is <code>false</code>. This is useful in automatic repair routines.
 	 */
 	public static Record validate(String recordString, String contributor, boolean strict, boolean legacy) {
-		if (legacy) System.out.println("Validation mode: legacy");
 		Record record = new Record(contributor);
 		Parser recordparser = new RecordParser(record, strict, legacy);
 		Result res = recordparser.parse(recordString);
@@ -142,6 +141,8 @@ public class Validator {
 			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
 		}
+		
+		if (cmd.hasOption("legacy")) System.out.println("Validation mode: legacy");
 		
 		// find all files in arguments and all *.txt files in directories and subdirectories
 		// specified in arguments 
