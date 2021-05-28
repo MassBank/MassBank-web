@@ -15,10 +15,10 @@
 	<name>MassBank OpenAPI REST interface</name>
 
 	<properties>
-		<swagger-codegen-version>3.0.24</swagger-codegen-version>
-		<swagger-core-version>2.1.7</swagger-core-version>
-		<jersey2-version>2.33</jersey2-version>
-		<jackson-version>2.12.1</jackson-version>
+		<swagger-codegen-version>3.0.25</swagger-codegen-version>
+		<swagger-core-version>2.1.9</swagger-core-version>
+		<jersey2-version>2.34</jersey2-version>
+		<jackson-version>2.12.3</jackson-version>
 		<jetty-version>9.4.24.v20191120</jetty-version>
 		<logback-version>1.2.3</logback-version>
 		<yaml.file>${project.basedir}/src/main/resources/openapi.yaml</yaml.file>

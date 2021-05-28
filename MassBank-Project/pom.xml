@@ -19,8 +19,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<servlet-api-version>4.0.1</servlet-api-version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
-		<cdk.version>2.3</cdk.version>
-		<jdbc.version>2.7.2</jdbc.version>
+		<cdk.version>2.5</cdk.version>
+		<jdbc.version>2.7.3</jdbc.version>
 		<versionName>${project.version}</versionName>
 		<petitparser-version>2.3.1</petitparser-version>
 	</properties>
