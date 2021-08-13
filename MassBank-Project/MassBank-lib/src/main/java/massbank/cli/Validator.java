@@ -163,6 +163,10 @@ public class Validator {
 
 		// validate all files
 		logger.trace("Validating " + recordfiles.size() + " files");
+		if (recordfiles.size() == 0 ) {
+			logger.error("No files found for validation.");
+			System.exit(1);
+		}
 		AtomicBoolean haserror = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
 		AtomicBoolean legacyMode = new AtomicBoolean(cmd.hasOption("legacy"));
