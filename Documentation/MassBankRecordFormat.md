@@ -1,7 +1,8 @@
-# MassBank Record Format 2.5
-MassBank Consortium (March 05, 2020)
+# MassBank Record Format 2.5.1
+MassBank Consortium (July 27, 2021)
 
 #### Updated
+- **July 2021**: Move to a semantic versioning scheme X.Y.Z with Z increases for changes in the description or fixing of typos, Y increases for changes that also change the Validator software and X increases with changes that break compatibility with older versions of the software.
 - **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
 - **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUPO-PSI
@@ -735,7 +736,7 @@ AC$MASS_SPECTROMETRY: MS_TYPE MS2
 
 Other examples of `AC$MASS_SPECTROMETRY` data are as follows:
 ```
-MS1
+MS
 MS2
 MS3
 MS4
