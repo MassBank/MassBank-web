@@ -1,0 +1,34 @@
+User-agent: *
+Allow: /MassBank/
+Disalow: /MassBank/css/
+Disalow: /MassBank/css.old/
+Disalow: /MassBank/fontawesome-free-5.13.1-web
+Disllow: /MassBank/temp/
+Disalow: /MassBank/image/
+Disalow: /MassBank/img/
+Disalow: /MassBank/js/
+Disalow: /MassBank/script/
+Disalow: *.svg
+
+Sitemap:  https://massbank.eu/MassBank/sitemapindex.xml
+
+User-agent: AdIdxBot
+Disallow: /
+
+User-agent: SemrushBot-SA
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: petalbot
+Disallow: /
+
+User-agent: MJ12Bot
+Disallow: /
