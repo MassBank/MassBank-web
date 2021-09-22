@@ -1,5 +1,5 @@
-# MassBank Record Format 2.5.1
-MassBank Consortium (July 27, 2021)
+# MassBank Record Format 2.5.2
+MassBank Consortium (September 22, 2021)
 
 #### Updated
 - **July 2021**: Move to a semantic versioning scheme X.Y.Z with Z increases for changes in the description or fixing of typos, Y increases for changes that also change the Validator software and X increases with changes that break compatibility with older versions of the software.
@@ -1364,7 +1364,7 @@ Types currently used in MassBank are:
 [M-2H+H2O]-
 [M-H+OH]-
 [2M-H]-
-[M+HCOO-]-
+[M+HCOO]-
 [(M+CH3COOH)-H]-
 [2M-H-CO2]-
 [2M-H-C6H10O5]-
