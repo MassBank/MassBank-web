@@ -45,7 +45,9 @@ import net.sf.jniinchi.INCHI_RET;
 
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
-
+	
+	private final boolean legacy;
+	
 	IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
 	IAtomContainer fromCH_SMILES = SilentChemObjectBuilder.getInstance().newAtomContainer();
 	String InChiKeyFromCH_SMILES = "";
@@ -54,7 +56,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 	String InChiKeyFromCH_IUPAC = "";
 	private int pk_num_peak = -1;
 	
-	public RecordParserDefinition(Record callback, boolean strict) {
+	public RecordParserDefinition(Record callback, boolean strict, boolean legacy) {
+		this.legacy = legacy;
 		def("start",
 			ref("accession")
 			.seq(ref("deprecated_record")
@@ -307,13 +310,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// License of MassBank Record. Mandatory
 		// Example
 		// LICENSE: CC BY
+		def("allowed_licenses",
+			StringParser.of("CC0")			
+			.or(StringParser.of("CC BY-NC-ND"))
+			.or(StringParser.of("CC BY-NC-SA"))
+			.or(StringParser.of("CC BY-NC"))
+			.or(StringParser.of("CC BY-SA"))
+			.or(StringParser.of("CC BY"))
+		);
 		def("license",
 			StringParser.of("LICENSE")
 			.seq(ref("tagsep"))
-			.seq(Token.NEWLINE_PARSER.not())
-			.seq(
-				CharacterParser.any().plusLazy(Token.NEWLINE_PARSER)
-				.flatten()
+			.seq(ref("allowed_licenses")
 				.map((String value) -> {
 					callback.LICENSE(value);
 					return value;
@@ -459,6 +467,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// protecting groups (TMS, etc.) is included.
 		// Chemical names which are listed in the compound list are recommended.  Synonyms could be added.
 		// If chemical compound is a stereoisomer, stereochemistry should be indicated.
+		// '; ' is not allowed in chemical names; '; ' is reserved as the delimiter of the title
 		def("ch_name_value",
 			CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>#|;"))
 			.plusLazy(ref("valuesep").or(Token.NEWLINE_PARSER))
@@ -1387,8 +1396,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(
 					CharacterParser.anyOf("+-").plus()
 					.or(
-						ref("uint_primitive")
-						.seq(CharacterParser.anyOf("+-"))
+						CharacterParser.of('1').seq(CharacterParser.anyOf("+-")).not()
+						.seq(ref("uint_primitive").seq(CharacterParser.anyOf("+-")))
 					)
 				)
 				.seq(CharacterParser.of('*').optional())
@@ -1468,6 +1477,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("[2M-H-C6H10O5]-"))
 			.or(StringParser.of("[M-H-CO2-2HF]-"))
 		);
+		
 		def ("ms_focused_ion_subtag",
 			StringParser.of("BASE_PEAK ")
 			.or(StringParser.of("DERIVATIVE_FORM "))
@@ -1481,33 +1491,25 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("ms_focused_ion",
 			StringParser.of("MS$FOCUSED_ION")
 			.seq(ref("tagsep"))
-			.seq(StringParser.of("ION_TYPE ")).pick(2)
-			.seq(ref("ion_type"))
+			.seq(				
+				StringParser.of("ION_TYPE ")
+				.seq(ref("ion_type"))
+				.or(
+					StringParser.of("PRECURSOR_TYPE ")
+					.seq(ref("precursor_type"))
+				)
+				.or(
+					ref("ms_focused_ion_subtag")
+					.seq(
+						Token.NEWLINE_PARSER.not()
+						.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten()).pick(1)
+					)
+				)
+			)				
+			.seq(Token.NEWLINE_PARSER).pick(2)
 			.map((List<String> value) -> {
 				return Pair.of(value.get(0).trim(), value.get(1));
 			})
-			.seq(Token.NEWLINE_PARSER).pick(0)
-			.or(
-				StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(StringParser.of("PRECURSOR_TYPE ")).pick(2)
-				.seq(ref("precursor_type"))
-				.map((List<String> value) -> {
-					return Pair.of(value.get(0).trim(), value.get(1));
-				})
-				.seq(Token.NEWLINE_PARSER).pick(0)
-			)
-			.or(
-				StringParser.of("MS$FOCUSED_ION")
-				.seq(ref("tagsep"))
-				.seq(ref("ms_focused_ion_subtag"))
-				.seq(Token.NEWLINE_PARSER.not()).pick(2)
-				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-				.map((List<String> value) -> {
-					return Pair.of(value.get(0).trim(), value.get(1));
-				})
-				.seq(Token.NEWLINE_PARSER).pick(0)
-			)
 			.plus()
 			.map((List<Pair<String,String>> value) -> {
 				//System.out.println(value);
@@ -1707,12 +1709,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 				// compare the structures in CH$SMILES and CH$IUPAC with the help of InChIKeys
 				logger.trace("InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES);
 				logger.trace("InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
-				// only field1 of InChIKey atm
-				//if (!InChiKey_from_SMILES.equals(InChiKey_from_CH_IUPAC)) {
-				if (InChiKeyFromCH_SMILES.length()!=27 || InChiKeyFromCH_IUPAC.length()!=27 || !InChiKeyFromCH_SMILES.substring(0,14).equals(InChiKeyFromCH_IUPAC.substring(0,14))) {
-					return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\".\n"
-							+ "InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES +"\n"
-							+ "InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+				
+				// in legacy mode only check field1 of InChIKey
+				if (legacy) {
+					if (InChiKeyFromCH_SMILES.length()!=27 || InChiKeyFromCH_IUPAC.length()!=27 || !InChiKeyFromCH_SMILES.substring(0,14).equals(InChiKeyFromCH_IUPAC.substring(0,14))) {
+						return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\".\n"
+								+ "InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES +"\n"
+								+ "InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+					}					
+				} else {
+					if (!InChiKeyFromCH_SMILES.equals(InChiKeyFromCH_IUPAC)) {
+						return context.failure("InChIKey generated from SMILES string in \"CH$SMILES\" field does not match InChIKey from \"CH$IUPAC\".\n"
+								+ "InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES +"\n"
+								+ "InChIKey from CH$IUPAC:  " + InChiKeyFromCH_IUPAC);
+					}
 				}
 				
 				if ("N/A".equals(callback.CH_FORMULA())) return context.failure("If CH$IUPAC is defined, CH$FORMULA can not be \"N/A\".");

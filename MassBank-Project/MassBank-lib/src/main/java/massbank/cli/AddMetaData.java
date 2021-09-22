@@ -452,7 +452,7 @@ public class AddMetaData {
 		if (cmd.hasOption("r")) recordstring2=record.toString();
 		
 		if (!recordstring.equals(recordstring2)) {
-			Record record2 = Validator.validate(recordstring2, "");
+			Record record2 = Validator.validate(recordstring2, "", false);
 			if (record2 == null) {
 				System.err.println( "Validation of new created record file failed. Exiting.");
 				System.exit(1);

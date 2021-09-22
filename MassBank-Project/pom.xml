@@ -5,13 +5,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
-	<version>2.1.8</version>
+	<version>2.1.9</version>
 	<name>MassBank Project</name>
 	<url>https://github.com/MassBank/MassBank-web</url>
 	<packaging>pom</packaging>
 	<modules>
 		<module>MassBank-lib</module>
-		<module>MassBank</module>
+		<module>MassBank-web</module>
 		<module>MassBank-OpenAPI</module>
 	</modules>
 
@@ -19,8 +19,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<servlet-api-version>4.0.1</servlet-api-version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
-		<cdk.version>2.3</cdk.version>
-		<jdbc.version>2.7.1</jdbc.version>
+		<cdk.version>2.5</cdk.version>
+		<jdbc.version>2.7.3</jdbc.version>
 		<versionName>${project.version}</versionName>
 		<petitparser-version>2.3.1</petitparser-version>
 	</properties>

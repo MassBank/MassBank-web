@@ -43,6 +43,7 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
+import org.petitparser.parser.primitive.StringParser;
 
 import net.sf.jniinchi.INCHI_RET;
 
@@ -695,15 +696,12 @@ public class Record {
 		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
 		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
 		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
-		// sb.append("\"license\": \"https://creativecommons.org/licenses\",\n");
-		// sb.append("\"license\": \""+LICENSE() +"\",\n");
 		// Convert licenses to URLs
 		if (LICENSE().equals("CC0")) { sb.append("\"license\": \"https://creativecommons.org/share-your-work/public-domain/cc0\",\n");
-		} else if (LICENSE().equals("CC BY-SA") || LICENSE().equals("CC BY SA") || LICENSE().equals("CC-BY SA") || LICENSE().equals("CC-BY-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-sa/4.0\",\n");
-		} else if (LICENSE().equals("CC BY") || LICENSE().equals("CC-BY") || LICENSE().equals("BY CC") || LICENSE().equals("BY-CC")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by/4.0\",\n");
-		} else if (LICENSE().equals("CC BY-NC") || LICENSE().equals("CC-BY-NC") || LICENSE().equals("CC BY NC") || LICENSE().equals("CC-BY NC")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc/4.0\",\n");
-		} else if (LICENSE().equals("CC BY-SA NC") || LICENSE().equals("CC BY-NC-SA 4.0 International") || LICENSE().equals("CC BY-NC-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-sa/4.0\",\n");
-		} else if (LICENSE().equals("CC BY-NC-ND")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-nd/4.0\",\n");
+		} else if (LICENSE().equals("CC BY-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-sa/4.0\",\n");
+		} else if (LICENSE().equals("CC BY")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by/4.0\",\n");
+		} else if (LICENSE().equals("CC BY-NC")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc/4.0\",\n");
+		} else if (LICENSE().equals("CC BY-NC-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-sa/4.0\",\n");
 		} else sb.append("\"license\": \"null\",\n");
 
 		sb.append("\"citation\": \""+PUBLICATION()+"\",\n");

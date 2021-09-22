@@ -45,7 +45,7 @@ public class Inspector {
 		if (arguments.length==2) {
 			String input = FileUtils.readFileToString(new File(arguments[0]), StandardCharsets.UTF_8);
 			Validator.hasNonStandardChars(input);
-			Record record = Validator.validate(input, "");
+			Record record = Validator.validate(input, "", false);
 			if (record == null) {
 				logger.error("Error in " + arguments[0]+ ". Exiting...");
 				System.exit(1);

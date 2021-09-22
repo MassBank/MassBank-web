@@ -144,7 +144,7 @@ Num peaks: 124
 				Record record=null;
 				try {
 					String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					record = Validator.validate(recordString, "");
+					record = Validator.validate(recordString, "", true);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

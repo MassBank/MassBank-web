@@ -14,7 +14,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -75,8 +74,8 @@ public class Validator {
 	 * Validate a <code>recordString</code> and return the parsed information in a {@link Record} 
 	 * or <code>null</code> if the validation was not successful. Be strict in validation.
 	 */
-	public static Record validate(String recordString, String contributor) {
-		return validate(recordString, contributor, true);
+	public static Record validate(String recordString, String contributor, boolean legacy) {
+		return validate(recordString, contributor, true, legacy);
 	}
 	
 	/**
@@ -84,9 +83,9 @@ public class Validator {
 	 * or <code>null</code> if the validation was not successful. Be less strict if 
 	 * <code>strict</code> is <code>false</code>. This is useful in automatic repair routines.
 	 */
-	public static Record validate(String recordString, String contributor, boolean strict) {
+	public static Record validate(String recordString, String contributor, boolean strict, boolean legacy) {
 		Record record = new Record(contributor);
-		Parser recordparser = new RecordParser(record, strict);
+		Parser recordparser = new RecordParser(record, strict, legacy);
 		Result res = recordparser.parse(recordString);
 		if (res.isFailure()) {
 			logger.error(res.getMessage());
@@ -125,6 +124,7 @@ public class Validator {
 		// parse command line
 		Options options = new Options();
 		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
+		options.addOption(null, "legacy", false, "less strict mode for legacy records with minor problems.");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -141,6 +141,8 @@ public class Validator {
 			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
 		}
+		
+		if (cmd.hasOption("legacy")) System.out.println("Validation mode: legacy");
 		
 		// find all files in arguments and all *.txt files in directories and subdirectories
 		// specified in arguments 
@@ -161,16 +163,21 @@ public class Validator {
 
 		// validate all files
 		logger.trace("Validating " + recordfiles.size() + " files");
+		if (recordfiles.size() == 0 ) {
+			logger.error("No files found for validation.");
+			System.exit(1);
+		}
 		AtomicBoolean haserror = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
+		AtomicBoolean legacyMode = new AtomicBoolean(cmd.hasOption("legacy"));
 		List<String> accessions = recordfiles.parallelStream().map(filename -> {
 			String recordString;
 			String accession=null;
 			try {
-				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8).replaceAll("\\r\\n?", "\n");
 				hasNonStandardChars(recordString);
 				// basic validation
-				Record record = validate(recordString, "");
+				Record record = validate(recordString, "", legacyMode.get());
 				if (record == null) {
 					logger.error("Error in \'" + filename + "\'.");
 					haserror.set(true);
@@ -187,7 +194,7 @@ public class Validator {
 						haserror.set(true);
 					}
 					
-					// validate correct serialization: String -> Record class -> String
+					// validate correct serialization: String <-> String -> Record class -> String
 					String recordStringFromRecord = record.toString();
 					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
 					if (position != -1) {
@@ -211,7 +218,7 @@ public class Validator {
 						}
 					}
 				
-					// validate correct serialization with db: String -> Record class -> db -> Record class -> String
+					// validate correct serialization with db: String <-> db -> Record class -> String
 					if (doDatbase.get()) {
 						Record recordDatabase = null;
 						try {

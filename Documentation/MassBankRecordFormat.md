@@ -1,7 +1,8 @@
-# MassBank Record Format 2.5
-MassBank Consortium (March 05, 2020)
+# MassBank Record Format 2.5.2
+MassBank Consortium (September 22, 2021)
 
 #### Updated
+- **July 2021**: Move to a semantic versioning scheme X.Y.Z with Z increases for changes in the description or fixing of typos, Y increases for changes that also change the Validator software and X increases with changes that break compatibility with older versions of the software.
 - **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
 - **September 2018**: Add a new PROJECT tag, some undocumented tags used in RMassBank (COMMENT: CONFIDENCE, COMMENT: INTERNAL_ID, AC$MASS_SPECTROMETRY: FRAGMENTATION_MODE, AC$MASS_SPECTROMETRY: RESOLUTION, MS$DATA_PROCESSING: REANALYZE, MS$DATA_PROCESSING: RECALIBRATION) and cross references to HUPO-PSI
@@ -414,6 +415,8 @@ LICENSE: CC BY
 ```
 
 Contributors to MassBank are encouraged to show the license `CC BY`. This license mean that others are free to "share" (copy and redistribute the MassBank record in any medium or format) and to "adapt" (remix, transform, and build upon the MassBank record) for any purpose, even commercially. The contributors cannot revoke these freedoms as long as the others follow the license terms.
+Allowed licenses are: `CC0`, `CC BY`, `CC BY-NC`, `CC BY-NC-SA`, `CC BY-SA` check https://creativecommons.org/licenses/
+
 
 #### <a name="2.1.6"></a>2.1.6 COPYRIGHT
 Copyright of MassBank Record. Optional
@@ -536,7 +539,7 @@ Example 2:
 CH$FORMULA: [C5H14NO]+
 ```
 
-It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> `CH$NAME`). If possible the neutral forn should be given. Charged molecules are given in square brackets with charge behind. Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
+It follows the Hill's System. No prosthetic molecule is included (see <a href="#2.2.1">2.2.1</a> `CH$NAME`). If possible the neutral form of a functional group should be given. Charged molecules are given in square brackets with charge behind. Molecular formulae of derivatives by chemical modification with TMS, etc. should be given in <a href="#2.5.1">2.5.1</a> `MS$FOCUSED_ION: DERIVATIVE_FORM`.
 
 #### <a name="2.2.4"></a>2.2.4 CH$EXACT\_MASS
 Monoisotopic Mass of Chemical Compound. Mandatory
@@ -733,7 +736,7 @@ AC$MASS_SPECTROMETRY: MS_TYPE MS2
 
 Other examples of `AC$MASS_SPECTROMETRY` data are as follows:
 ```
-MS1
+MS
 MS2
 MS3
 MS4
@@ -905,7 +908,9 @@ AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000
 ```
 
 ##### 2.4.5 Subtag: MASS\_RANGE\_M/Z`
-Mass Range of the Scan (aka Scanning Range or Scan Range) in m/z.
+Mass Range of the Scan (aka Scanning Range or Scan Range) in m/z. The m/z is given as an integer. The data could be extracted of the raw data automatically.
+If derived of existing data, decimals must be converted to the next lower integer in the case of the lower limit (e.g., 10.49 -> 10). In case of the upper limit, the m/z is converted
+to next larger integer (e.g. 10.49 -> 11).
 
 Example:
 ```
@@ -1359,7 +1364,7 @@ Types currently used in MassBank are:
 [M-2H+H2O]-
 [M-H+OH]-
 [2M-H]-
-[M+HCOO-]-
+[M+HCOO]-
 [(M+CH3COOH)-H]-
 [2M-H-CO2]-
 [2M-H-C6H10O5]-

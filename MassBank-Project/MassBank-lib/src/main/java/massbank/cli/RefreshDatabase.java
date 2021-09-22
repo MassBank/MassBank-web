@@ -28,8 +28,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
@@ -53,6 +57,16 @@ public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
 
 	public static void main(String[] args) throws FileNotFoundException, SQLException, ConfigurationException, IOException {
+		// load version and print
+		final Properties properties = new Properties();
+		try {
+			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		System.out.println("RefreshDatabase version: " + properties.getProperty("version"));
+		
 		logger.trace("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
 		DatabaseManager.init_db(Config.get().tmpdbName());
 		
@@ -71,29 +85,37 @@ public class RefreshDatabase {
 			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, true));
 		}
 		
-		List<Record> accessions = recordfiles.parallelStream().map(filename -> {
-			Record record=null;
-			logger.info("Validating \"" + filename + "\".");
-			String contributor = filename.getParentFile().getName();
-			try {
-				String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-				record = Validator.validate(recordAsString, contributor);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if (record == null) {
-				logger.error("Error reading/validating record \"" + filename.toString() + "\".");
-			}
-			return record;
-		})
-		.filter(Objects::nonNull)
-		.collect(Collectors.toList());
+		AtomicInteger index = new AtomicInteger(0);
+		int chunkSize = 5000;
+		Stream<List<File>> chunkedRecordfiles = recordfiles.stream().collect(Collectors.groupingBy(x -> index.getAndIncrement() / chunkSize))
+		.entrySet().stream()
+		.map(Map.Entry::getValue);
 		
-		for (Record accession : accessions) {
-			logger.trace("Writing record \"" + accession.ACCESSION() + "\" to database.");
-			db.persistAccessionFile(accession);
-		}
+		AtomicInteger processed = new AtomicInteger(1);
+		int numRecordFiles = recordfiles.size();
+		chunkedRecordfiles.forEach(chunk -> {
+			chunk.parallelStream().map(filename -> {
+				Record record=null;
+				logger.info("Validating \"" + filename + "\".");
+				String contributor = filename.getParentFile().getName();
+				try {
+					String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+					record = Validator.validate(recordAsString, contributor, true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (record == null) {
+					logger.error("Error reading/validating record \"" + filename.toString() + "\".");
+				}
+				return record;
+			})
+			.filter(Objects::nonNull)
+			.forEachOrdered((r) -> {
+				db.persistAccessionFile(r);
+				System.out.print("Processed: "+processed.getAndIncrement()+"/"+numRecordFiles+"\r");
+			});
+		});
 		
 		logger.trace("Setting Timestamp in database");
 		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
