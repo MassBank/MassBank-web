@@ -908,7 +908,9 @@ AC$MASS_SPECTROMETRY: MASS_ACCURACY 50 ppm over a range of about m/z 100-1000
 ```
 
 ##### 2.4.5 Subtag: MASS\_RANGE\_M/Z`
-Mass Range of the Scan (aka Scanning Range or Scan Range) in m/z.
+Mass Range of the Scan (aka Scanning Range or Scan Range) in m/z. The m/z is given as an integer. The data could be extracted of the raw data automatically.
+If derived of existing data, decimals must be converted to the next lower integer in the case of the lower limit (e.g., 10.49 -> 10). In case of the upper limit, the m/z is converted
+to next larger integer (e.g. 10.49 -> 11).
 
 Example:
 ```
