@@ -57,12 +57,7 @@ public class Inspector {
 			String accession = record.ACCESSION();
 			String shortname = record.RECORD_TITLE().get(0)+ " Mass Spectrum";
 			// find InChIKey in CH_LINK
-			String inchikey = null;
-			for (Pair<String,String> link : record.CH_LINK()) {
-				if ("INCHIKEY".equals(link.getKey())) {
-					inchikey=link.getValue();
-				}
-			}
+			String inchikey = record.CH_LINK().get("INCHIKEY");
 			String keywords =
 				accession + ", " 
 				+ shortname +", "

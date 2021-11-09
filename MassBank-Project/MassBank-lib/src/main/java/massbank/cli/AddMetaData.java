@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +107,7 @@ public class AddMetaData {
 		return Integer.toString(new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getJSONArray("results").getInt(0));
 	}
 	
+	
 	/**
 	 * Automatically format a PUBLICATION tag according to ACS rules if a DOI could be identified.
 	 */
@@ -197,28 +199,12 @@ public class AddMetaData {
 	/**
 	 * Automatically process CH$LINK section.
 	 */
-	public static String doLink(Record record, String recordstring) {
-		Pattern pattern = Pattern.compile("CH\\$IUPAC: .*\n");
-		Matcher matcher = pattern.matcher(recordstring);
-		int ch_linkPos = -1;
-		if (!matcher.find()) {
-			logger.error("Could not find end of \"CH$IUPAC\" line.");
-			return recordstring;
-		} else {
-			ch_linkPos = matcher.end();
-		}
-		recordstring=recordstring.replaceAll("CH\\$LINK: .*\n", "");
-		
-		
+	public static String doLink(Record record) {
 		// add InChI-Key if missing
-		boolean hasInchiKey=false;
-		String INCHIKEY = null;
-		for (Pair<String, String> link : record.CH_LINK()) {
-			if ("INCHIKEY".equals(link.getKey())) {
-				hasInchiKey=true;
-				INCHIKEY=link.getValue();
-			}
-		}
+		boolean hasInchiKey=record.CH_LINK().containsKey("INCHIKEY");
+		String INCHIKEY = record.CH_LINK().get("INCHIKEY");
+
+		
 		if (!hasInchiKey) {
 			String ch_iupac = record.CH_IUPAC();
 			if (!"N/A".equals(ch_iupac)) {
@@ -249,8 +235,8 @@ public class AddMetaData {
 						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
 					}
 					else {
-						List<Pair<String, String>>ch_link = record.CH_LINK();
-						ch_link.add(Pair.of("INCHIKEY",inchiGen.getInchiKey()));
+						LinkedHashMap<String, String> ch_link = record.CH_LINK();
+						ch_link.put("INCHIKEY",inchiGen.getInchiKey());
 						record.CH_LINK(ch_link);
 						INCHIKEY=inchiGen.getInchiKey();
 						hasInchiKey=true;
@@ -262,21 +248,14 @@ public class AddMetaData {
 		}
 		
 		// add database identifier
+		
 		if (hasInchiKey) {
-			
-			// add PUBCHEM cid if missing
-			List<String> PUBCHEM = new ArrayList<String>();
-			for (Pair<String, String> link : record.CH_LINK()) {
-				if ("PUBCHEM".equals(link.getKey())) {
-					PUBCHEM.add(link.getValue());
-					break;
-				}
-			}
-			if (PUBCHEM.isEmpty()) {
+			// add PUBCHEM if missing
+			if (!record.CH_LINK().containsKey("PUBCHEM")) {
 				try {
 					String PUBCHEMCID=getPubchemCID(INCHIKEY);
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("PUBCHEM", "CID:"+PUBCHEMCID));
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("INCHIKEY","CID:"+PUBCHEMCID);
 					record.CH_LINK(ch_link);
 				} catch (JSONException | IOException e) {
 					logger.warn("Could not fetch PUBCHEM cid.");
@@ -286,7 +265,7 @@ public class AddMetaData {
 			else {
 				try {
 					String PUBCHEMCID=getPubchemCID(INCHIKEY);;
-					if (!("CID:"+PUBCHEMCID).equals(PUBCHEM.get(0))) {
+					if (!("CID:"+PUBCHEMCID).equals(record.CH_LINK().get("PUBCHEM"))) {
 						logger.error("Wrong PUBCHEM database identifier in record file.");
 					}
 				} catch (JSONException | IOException e) {
@@ -296,18 +275,11 @@ public class AddMetaData {
 			}
 			
 			// add COMPTOX if missing
-			List<String> COMPTOX = new ArrayList<String>();
-			for (Pair<String, String> link : record.CH_LINK()) {
-				if ("COMPTOX".equals(link.getKey())) {
-					COMPTOX.add(link.getValue());
-					break;
-				}
-			}
-			if (COMPTOX.isEmpty()) {
+			if (!record.CH_LINK().containsKey("COMPTOX")) {
 				try {
 					String COMPTOXID=getComptoxID(INCHIKEY);
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("COMPTOX", COMPTOXID));
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("COMPTOX", COMPTOXID);
 					record.CH_LINK(ch_link);
 				} catch (JSONException | IOException e) {
 					logger.warn("Could not fetch COMPTOX id.");
@@ -317,7 +289,7 @@ public class AddMetaData {
 			else {
 				try {
 					String COMPTOXID=getComptoxID(INCHIKEY);
-					if (!COMPTOXID.equals(COMPTOX.get(0))) {
+					if (!COMPTOXID.equals(record.CH_LINK().get("COMPTOX"))) {
 						logger.error("Wrong COMPTOX database identifier in record file.");
 					}
 				} catch (JSONException | IOException e) {
@@ -326,19 +298,12 @@ public class AddMetaData {
 				}
 			}
 			
-			// add Chemspider
-			List<String> CHEMSPIDER = new ArrayList<String>();
-			for (Pair<String, String> link : record.CH_LINK()) {
-				if ("CHEMSPIDER".equals(link.getKey())) {
-					CHEMSPIDER.add(link.getValue());
-					break;
-				}
-			}
-			if (CHEMSPIDER.isEmpty()) {
+			// add Chemspider if missing
+			if (!record.CH_LINK().containsKey("CHEMSPIDER")) {
 				try {
 					String CHEMSPIDERID=getChemspiderID(INCHIKEY);
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("CHEMSPIDER", CHEMSPIDERID));
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("CHEMSPIDER", CHEMSPIDERID);
 					record.CH_LINK(ch_link);
 				} catch (JSONException | IOException e) {
 					logger.warn("Could not fetch CHEMSPIDER id.");
@@ -348,7 +313,7 @@ public class AddMetaData {
 			else {
 				try {
 					String CHEMSPIDERID=getChemspiderID(INCHIKEY);
-					if (!CHEMSPIDERID.equals(CHEMSPIDER.get(0))) {
+					if (!CHEMSPIDERID.equals(record.CH_LINK().get("CHEMSPIDER"))) {
 						logger.error("Wrong CHEMSPIDER database identifier in record file.");
 					}
 				} catch (JSONException | IOException e) {
@@ -358,13 +323,7 @@ public class AddMetaData {
 			}
 		}
 		
-		StringBuilder sb=new StringBuilder();
-		for (Pair<String, String> link : record.CH_LINK()) {
-			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
-		}
-		recordstring=recordstring.substring(0, ch_linkPos) + sb.toString() + recordstring.substring(ch_linkPos, recordstring.length());
-
-		return recordstring;
+		return record.toString();
 	}
 	
 	/**
@@ -387,6 +346,64 @@ public class AddMetaData {
 		
 		return recordstring;
 	}
+	
+	/**
+	 * Automatically add CH$LINK: INCHIKEY
+	 * 	if no CH$IUPAC entry is available - do nothing
+	 *  if CH$IUPAC entry is available and no CH$LINK: INCHIKEY - add InChIKey
+	 *  if CH$IUPAC entry is available and CH$LINK: INCHIKEY - correct InChIKey
+	 */
+	public static String doAddInchikey(Record record) {
+		String ch_iupac = record.CH_IUPAC();
+		
+		if ("N/A".equals(ch_iupac)) return record.toString();
+		
+		try {
+			// Get InChIToStructure
+			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
+			INCHI_RET ret = intostruct.getReturnStatus();
+			if (ret == INCHI_RET.WARNING) {
+				// Structure generated, but with warning message
+				logger.warn("InChI warning: " + intostruct.getMessage());
+				logger.warn(record.ACCESSION());
+			} 
+			else if (ret != INCHI_RET.OKAY) {
+				// Structure generation failed
+				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + ch_iupac + ".");
+				return record.toString();
+			}
+			// Structure generation succeeded
+			IAtomContainer m = intostruct.getAtomContainer();
+			// prepare an InChIGenerator
+			InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
+			ret = inchiGen.getReturnStatus();
+			if (ret == INCHI_RET.WARNING) {
+				// InChI generated, but with warning message
+				logger.warn("InChI warning: " + inchiGen.getMessage());
+				logger.warn(record.ACCESSION());
+			} else if (ret != INCHI_RET.OKAY) {
+				// InChI generation failed
+				logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+				return record.toString();
+			}
+			
+			String INCHIKEY=inchiGen.getInchiKey();
+			if (!record.CH_LINK().containsKey("INCHIKEY")) {
+				LinkedHashMap<String, String> ch_link = record.CH_LINK();
+				ch_link.put("INCHIKEY", INCHIKEY);
+				record.CH_LINK(ch_link);
+			}
+			else {
+				if (!INCHIKEY.equals(record.CH_LINK().get("INCHIKEY"))) {
+					logger.error("Wrong INCHIKEY identifier in record file.");
+				}
+			}
+		} catch (CDKException e) {
+			logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
+		}		 			
+		return record.toString();
+	}
+	
 
 	public static void main(String[] arguments) throws Exception {
 		Options options = new Options();
@@ -396,6 +413,8 @@ public class AddMetaData {
 		options.addOption("l", "link", false, "add links to CH$LINK tag");
 		options.addOption("r", "rewrite", false, "read and rewrite the file.");
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
+		options.addOption("add_inchikey", false, "Add a InChIKey from the value in CH$IUPAC");
+
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -446,8 +465,12 @@ public class AddMetaData {
 		String recordstring2 = recordstring;
 		if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
 		if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
-		if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record, recordstring2);
+		if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record);
 		if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
+		
+		if (cmd.hasOption("add_inchikey")) {
+			recordstring2=doAddInchikey(record);
+		}
 		
 		if (cmd.hasOption("r")) recordstring2=record.toString();
 		

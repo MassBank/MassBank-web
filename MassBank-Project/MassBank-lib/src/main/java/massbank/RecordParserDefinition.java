@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +55,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 	boolean smilesHasWildcards = false;
 	IAtomContainer fromCH_IUPAC = SilentChemObjectBuilder.getInstance().newAtomContainer();
 	String InChiKeyFromCH_IUPAC = "";
+	String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
 	
 	public RecordParserDefinition(Record callback, boolean strict, boolean legacy) {
@@ -893,6 +895,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 				Result r = continuation.apply(context);
 				if (r.isSuccess()) {
 					Pair<String,String> p = r.get();
+					LinkedHashMap<String, String> ch_link = callback.CH_LINK();
+					if (ch_link.containsKey(p.getKey())) {
+						logger.error("Dupplicate entry "+ p.getKey() + " in CH$LINK.\n");
+						return context.failure("Dupplicate entry "+ p.getKey() + " in CH$LINK.\n");
+					}
 					if ("INCHIKEY".equals(p.getKey())) {
 						if (!p.getValue().equals(InChiKeyFromCH_IUPAC)) {
 							logger.error("InChIKey generated from InChI string in \"CH$IUPAC\" field does not match InChIKey in \"CH$LINK\".\n"
@@ -902,16 +909,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 									+ "CH$LINK: INCHIKEY:  " + p.getValue() + "\n"
 									+ "InChIKey generated: " + InChiKeyFromCH_IUPAC);
 						}
+						InChiKeyFromCH_LINK=p.getValue();
 					}
-				}
+					ch_link.put(p.getKey(), p.getValue());
+					callback.CH_LINK(ch_link);
+				} 
 				return r;
 			})
 
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()		
 			.map((List<Pair<String,String>> value) -> {
-//				System.out.println(value);
-				callback.CH_LINK(value);
+//				LinkedHashMap<String, String> ch_link = new LinkedHashMap<String, String>();
+//				for (Pair<String,String> key : value) {
+//					ch_link.get(key)
+//				}
+//				
+////				System.out.println(value);
+//				callback.CH_LINK(value);
 				return value;
 			})
 		);
@@ -1702,9 +1717,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback, boolean strict) {
 		Result r = continuation.apply(context);
 		if (r.isSuccess()) {
-			// if any structural information is in CH$IUPAC, then CH$FORMULA and CH$SMILES must be defined and match
+			// if any structural information is in CH$IUPAC, then CH$FORMULA, CH$SMILES CH$LINK: INCHIKEY must be defined and match
 			if (!"N/A".equals(callback.CH_IUPAC()))
 			{
+				//compare SMILES
 				if ("N/A".equals(callback.CH_SMILES())) return context.failure("If CH$IUPAC is defined, CH$SMILES can not be \"N/A\".");
 				// compare the structures in CH$SMILES and CH$IUPAC with the help of InChIKeys
 				logger.trace("InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES);
@@ -1725,6 +1741,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					}
 				}
 				
+				//compare formula
 				if ("N/A".equals(callback.CH_FORMULA())) return context.failure("If CH$IUPAC is defined, CH$FORMULA can not be \"N/A\".");
 				// this code compares the molecular formula from the InChI with CH$FORMULA
 				String formulaFromInChI = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(fromCH_IUPAC));
@@ -1734,6 +1751,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 					return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\".\n"
 							+ "Formula from CH$IUPAC:   " + formulaFromInChI + "\n"
 							+ "Formula from CH$FORMULA: " + callback.CH_FORMULA());
+				}
+				
+				//compare InChIKey
+				if (InChiKeyFromCH_LINK.equals("")) {
+					return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
 				}
 			}
 			else if (!"N/A".equals(callback.CH_SMILES())) 
@@ -1824,23 +1846,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 					logger.warn("There are duplicate entries in \"CH$NAME\" field.");
 				}
 			}
-			
-			
-			// check for duplicate entries in CH$LINK
-			List<Pair<String, String>> ch_link = callback.CH_LINK();
-			duplicates = new LinkedHashSet<String>();
-			uniques = new HashSet<String>();
-			for(Pair<String, String> c : ch_link) {
-				if(!uniques.add(c.getKey())) {
-					duplicates.add(c.getKey());
-				}
-			}
-			if (duplicates.size()>0) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("There are duplicate entries in \"CH$LINK\" field.");
-				return context.failure(sb.toString());
-			}
-			
 		}
 		return r;
 	}

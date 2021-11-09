@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -44,6 +45,10 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.petitparser.parser.primitive.StringParser;
+
+import com.google.gson.FieldNamingStrategy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import net.sf.jniinchi.INCHI_RET;
 
@@ -74,7 +79,7 @@ public class Record {
 	private BigDecimal ch_exact_mass;
 	private String ch_smiles;
 	private String ch_iupac;
-	private List<Pair<String, String>> ch_link; // optional
+	private LinkedHashMap<String, String> ch_link; // optional
 	private String sp_scientific_name; // optional
 	private String sp_lineage; // optional
 	private List<Pair<String, String>> sp_link; // optional
@@ -97,7 +102,7 @@ public class Record {
 		
 		// set default values for optional fields
 		comment					= new ArrayList<String>();
-		ch_link					= new ArrayList<Pair<String, String>>();
+		ch_link					= new LinkedHashMap<String, String>();
 		sp_link					= new ArrayList<Pair<String, String>>();
 		sp_sample				= new ArrayList<String>();
 		ac_mass_spectrometry	= new ArrayList<Pair<String, String>>();
@@ -302,15 +307,12 @@ public class Record {
 	public void CH_IUPAC(String value) {
 		ch_iupac=value;
 	}
-	
-	public List<Pair<String, String>> CH_LINK() {
+		
+	public LinkedHashMap<String, String> CH_LINK() {
 		return ch_link;
 	}
-	public Map<String, String> CH_LINK_asMap() {
-		return listToMap(ch_link);
-	}
-	public void CH_LINK(List<Pair<String, String>> value) {
-		ch_link=new ArrayList<Pair<String, String>>(value);
+	public void CH_LINK(LinkedHashMap<String, String> value) {
+		ch_link=value;
 	}
 
 	public String SP_SCIENTIFIC_NAME() {
@@ -469,8 +471,9 @@ public class Record {
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
 		sb.append("CH$SMILES: " + CH_SMILES() + "\n");
 		sb.append("CH$IUPAC: " + CH_IUPAC() + "\n");
-		for (Pair<String,String> link : CH_LINK())
-			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
+		CH_LINK().forEach((key,value) -> {
+			sb.append("CH$LINK: " + key + " " + value + "\n");		    
+		});
 		
 		if (SP_SCIENTIFIC_NAME() != null)
 			sb.append("SP$SCIENTIFIC_NAME: " + SP_SCIENTIFIC_NAME() + "\n");
@@ -560,58 +563,58 @@ public class Record {
 		sb.append("<b>CH$EXACT_MASS:</b> " + CH_EXACT_MASS() + "<br>\n");
 		sb.append("<b>CH$SMILES:</b> " + CH_SMILES() + "<br>\n");
 		sb.append("<b>CH$IUPAC:</b> " + CH_IUPAC() + "<br>\n");
-		for (Pair<String,String> link : CH_LINK()) {
-			switch(link.getKey()){
+		CH_LINK().forEach((key,value) -> {
+			switch(key){
 				case "CAS":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.google.com/search?q=&quot;" + link.getValue() + "&quot;\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.google.com/search?q=&quot;" + value + "&quot;\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "CAYMAN":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.caymanchem.com/product/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.caymanchem.com/product/" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "CHEBI":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "CHEMSPIDER":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.chemspider.com/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.chemspider.com/" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "COMPTOX":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "HMDB":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://www.hmdb.ca/metabolites/" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://www.hmdb.ca/metabolites/" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "INCHIKEY":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.google.com/search?q=&quot;" + link.getValue() + "&quot;\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.google.com/search?q=&quot;" + value + "&quot;\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "KAPPAVIEW":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "KEGG":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.genome.jp/dbget-bin/www_bget?cpd:" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.genome.jp/dbget-bin/www_bget?cpd:" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "KNAPSACK":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://www.knapsackfamily.com/knapsack_jsp/information.jsp?sname=C_ID&word=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://www.knapsackfamily.com/knapsack_jsp/information.jsp?sname=C_ID&word=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 
 				case "LIPIDBANK":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "LIPIDMAPS":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "NIKKAJI":
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://jglobal.jst.go.jp/en/redirect?Nikkaji_No=" + link.getValue() + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://jglobal.jst.go.jp/en/redirect?Nikkaji_No=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
 					break;
 				case "PUBCHEM":{
-					if(link.getValue().startsWith("CID:")) sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/compound/" + link.getValue().substring("CID:".length()) + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
-					else if(link.getValue().startsWith("SID:")) sb.append("<b>CH$LINK:</b> " + link.getKey() + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/substance/" + link.getValue().substring("SID:".length()) + "\" target=\"_blank\">" + link.getValue() + "</a><br>\n");
-					else sb.append("<b>CH$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+					if(value.startsWith("CID:")) sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/compound/" + value.substring("CID:".length()) + "\" target=\"_blank\">" + value + "</a><br>\n");
+					else if(value.startsWith("SID:")) sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/substance/" + value.substring("SID:".length()) + "\" target=\"_blank\">" + value + "</a><br>\n");
+					else sb.append("<b>CH$LINK:</b> " + key + " " + value + "<br>\n");
 					break;
 				}
 				default:
-					sb.append("<b>CH$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+					sb.append("<b>CH$LINK:</b> " + key + " " + value + "<br>\n");
 			}
-		}
+		});
 		
 		if (SP_SCIENTIFIC_NAME() != null)
 			sb.append("<b>SP$SCIENTIFIC_NAME:</b> " + SP_SCIENTIFIC_NAME() + "<br>\n");
@@ -660,11 +663,112 @@ public class Record {
 		return sb.toString();
 	}
 	
-	public String createStructuredData() {
-		String InChiKey = CH_LINK_asMap().get("INCHIKEY");
+	public class MolecularEntity {  
+	    String identifier;
+	    String url;
+	    String name;
+	    List<String> alternateName;
+	    String inchikey;
+	    String description;
+	    String molecularFormula;
+	    
+	  
+	    MolecularEntity(
+	    	String identifier,
+	    	String url,
+	    	String name,
+	    	List<String> alternateName,
+	    	String inchikey,
+	    	String description,
+	    	String molecularFormula
+	    )
+	    {
+	    	this.identifier=identifier;
+	    	this.url=url;
+	    	this.name=name;
+	    	this.alternateName=alternateName;
+	    	this.inchikey=inchikey;
+	    	this.description=description;
+	    	this.molecularFormula=molecularFormula;
+	    }
+	}
+	
+//	sb.append("\"molecularFormula\": \""+CH_FORMULA()+"\",\n");
+//	sb.append("\"monoisotopicMolecularWeight\": \""+CH_EXACT_MASS()+"\",\n");
+//	sb.append("\"inChI\": \""+CH_IUPAC()+"\",\n");
+//	sb.append("\"smiles\": \""+CH_SMILES()+"\",\n");
+//	sb.append("\"@context\": \"http://schema.org\",\n");
+//	sb.append("\"@type\": \"MolecularEntity\"\n");
+//	sb.append("},\n");
+
+//	[
+//	{
+//	"identifier": "LQB00001",
+//	"url": "https://massbank.eu/MassBank/RecordDisplay?id=LQB00001",
+//	"name": "Cer[AP] t34:0",
+//	"alternateName": "Cer[AP] t34:0",
+//	"inchikey": "RHIXBFQKTNYVCX-UHFFFAOYSA-N",
+//	"description": "This MassBank record with Accession LQB00001 contains the MS2 mass spectrum of 'Cer[AP] t34:0'.",
+//	"molecularFormula": "C34H69NO5",
+//	"monoisotopicMolecularWeight": "571.928",
+//	"inChI": "InChI=1S/C34H69NO5/c1-3-5-7-9-11-13-15-17-19-21-23-25-27-31(37)33(39)30(29-36)35-34(40)32(38)28-26-24-22-20-18-16-14-12-10-8-6-4-2/h30-33,36-39H,3-29H2,1-2H3,(H,35,40)",
+//	"smiles": "CCCCCCCCCCCCCCC(O)C(O)C(CO)NC(=O)C(O)CCCCCCCCCCCCCC",
+//	"@context": "http://schema.org",
+//	"@type": "MolecularEntity"
+//	},
+//	{
+//	"identifier": "LQB00001",
+//	"url": "https://massbank.eu/MassBank/RecordDisplay?id=LQB00001",
+//	"headline": "Cer[AP] t34:0; LC-ESI-QTOF; MS2",
+//	"name": "Cer[AP] t34:0",
+//	"description": "This MassBank record with Accession LQB00001 contains the MS2 mass spectrum of 'Cer[AP] t34:0'.",
+//	"datePublished": "2016-10-03",
+//	"license": "https://creativecommons.org/licenses",
+//	"citation": "null",
+//	"comment": "Found in mouse small intestine; TwoDicalId=238; MgfFile=160907_Small_Intestine_normal_Neg_01_never; MgfId=1081",
+//	"alternateName": "Cer[AP] t34:0",
+//	"@context": "http://schema.org",
+//	"@type": "Dataset"
+//	}
+//	]
+	
+//	Thanks for the contribution of markup within MassBank. As discussed in PR 274 there are some refinements that should be made.
+//
+//	Add DataCatalog and Dataset markup to the landing page https://massbank.eu/MassBank/
+//	Use DataRecord instead of Dataset on MassBank Record pages such as LQB00001
+//
+//	    Replace the value in the @type property so that it is DataRecord instead of Dataset
+//	    Include the comment text with the schema:description property
+//
+//	Include the comment text with the schema:description property
+//
+//	    Include the chemical image with the schema:image property
+//
+//	You should ensure that there are different identifiers used for the DataRecord (currently Dataset) and the MolecularEntity.
+//
+//	Once you've made these refinements, we'll be able to add you to the DataRecord, Dataset, and DataCatalog list of live deploys.
+
+	//https://github.com/BioSchemas/specifications/issues/198
+	
+	public String createStructuredData() {		
+		String InChiKey = CH_LINK().get("INCHIKEY");
 		String description = "This MassBank record with Accession " + ACCESSION() 
-			+ " contains the " + AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum of '" + RECORD_TITLE().get(0)
-			+ ((InChiKey!=null) ? "'." : "' with the InChIkey '" + InChiKey + "'.");
+			+ " contains the " + AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum of " + RECORD_TITLE().get(0)
+			+ ((InChiKey!=null) ? "." : " with the InChIkey " + InChiKey + ".");
+		
+		
+		MolecularEntity molecularEntity = new MolecularEntity(
+				ACCESSION(),
+				"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION(),
+				RECORD_TITLE().get(0),
+				CH_NAME(),
+				CH_LINK().get("INCHIKEY"),
+				description,
+				CH_FORMULA()
+				);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String molecularEntityJson = gson.toJson(molecularEntity);  
+		System.out.println(molecularEntityJson);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script type=\"application/ld+json\">\n");

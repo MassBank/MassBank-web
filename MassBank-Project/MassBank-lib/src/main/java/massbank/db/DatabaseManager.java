@@ -34,7 +34,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
+
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -471,13 +475,23 @@ public class DatabaseManager {
 				//System.out.println(System.nanoTime());
 		//		String insertChLink = "INSERT INTO CH_LINK VALUES(?,?,?)";
 		//		stmnt = con.prepareStatement(insertChLink);
-				for (Pair<String, String> el : acc.CH_LINK()) {
+				Iterator<Entry<String,String>> itr = acc.CH_LINK().entrySet().iterator();
+				while (itr.hasNext()) { 
+					Entry<String,String> entry = itr.next();
 					statementInsertCH_LINK.setInt(1,compoundId);
-					statementInsertCH_LINK.setString(2, el.getLeft());
-					statementInsertCH_LINK.setString(3, el.getRight());
-		//			statementInsertCH_LINK.executeUpdate();
-					statementInsertCH_LINK.addBatch();
+					statementInsertCH_LINK.setString(2, entry.getKey());
+					statementInsertCH_LINK.setString(3, entry.getValue());
+	//				statementInsertCH_LINK.executeUpdate();
+					statementInsertCH_LINK.addBatch();		
 				}
+			
+//				for (Pair<String, String> el : acc.CH_LINK()) {
+//					statementInsertCH_LINK.setInt(1,compoundId);
+//					statementInsertCH_LINK.setString(2, el.getLeft());
+//					statementInsertCH_LINK.setString(3, el.getRight());
+//		//			statementInsertCH_LINK.executeUpdate();
+//					statementInsertCH_LINK.addBatch();
+//				}
 				if (!bulk) {
 					statementInsertCH_LINK.executeBatch();
 				}
@@ -854,12 +868,11 @@ public class DatabaseManager {
 			
 			this.statementSelectCH_LINK.setInt(1, compoundID);
 			set = this.statementSelectCH_LINK.executeQuery();
-			List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
+			LinkedHashMap<String, String> tmpMap = new LinkedHashMap<String, String>();
 			while (set.next()) {
-				Pair<String, String> link = Pair.of(set.getString("DATABASE_NAME"), set.getString("DATABASE_ID"));
-				tmpList.add(link);
+				tmpMap.put(set.getString("DATABASE_NAME"), set.getString("DATABASE_ID"));
 			}
-			acc.CH_LINK(tmpList);
+			acc.CH_LINK(tmpMap);
 			
 			this.statementSelectCOMPOUND_COMPOUND_CLASS.setInt(1, compoundID);
 			set = this.statementSelectCOMPOUND_COMPOUND_CLASS.executeQuery();
@@ -896,7 +909,7 @@ public class DatabaseManager {
 			
 			this.statementSelectSP_LINK.setString(1,acc.ACCESSION());
 			set = this.statementSelectSP_LINK.executeQuery();
-			tmpList.clear();
+			List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
 			while (set.next()) {
 				String spLink	= set.getString("SP_LINK");
 				String[] tokens	= spLink.split(" ");
