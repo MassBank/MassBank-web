@@ -3,17 +3,26 @@ package massbank;
 import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +41,7 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.petitparser.context.Context;
 import org.petitparser.context.Result;
 import org.petitparser.context.Token;
+import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
 import org.petitparser.tools.GrammarDefinition;
@@ -44,9 +54,10 @@ import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
 import net.sf.jniinchi.INCHI_RET;
 
+
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
-	
+		
 	private final boolean legacy;
 	
 	IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
@@ -57,6 +68,50 @@ public class RecordParserDefinition extends GrammarDefinition {
 	String InChiKeyFromCH_IUPAC = "";
 	String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
+	
+	private static List<String> getResourceFileAsList(String fileName)  {
+		// Try to load from user DataRootPath
+		File resourceFileFromDataRootPath = null;
+		try {
+			File configRootPath = new File(Config.get().DataRootPath(), ".config");
+			resourceFileFromDataRootPath = new File(configRootPath, fileName);
+		} catch (ConfigurationException e) {
+			logger.error("Can not get DataRootPath: " + e.getMessage());
+			// resourceFileFromDataRootPath stays null
+		}
+		if ((resourceFileFromDataRootPath != null) && resourceFileFromDataRootPath.exists()) {
+			logger.trace("Loading resource from DataRootPath at: " + resourceFileFromDataRootPath.getAbsolutePath());
+			try (FileReader fr = new FileReader(resourceFileFromDataRootPath); BufferedReader reader = new BufferedReader(fr)) {
+				return reader.lines().collect(Collectors.toList());
+			} catch (IOException e) {
+				logger.error("Can not read resource file: " + e.getMessage());
+			}
+		}
+		// If not found: try to load fallback from internal resources
+		else {
+			logger.trace("Loading internal resource: " + fileName);
+			try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)) {
+				if (is == null)
+				{
+					logger.error("Can not find internal resource file: " + fileName);
+					// no way to recover from this error
+					System.exit(1);
+				}
+				try (InputStreamReader isr = new InputStreamReader(is);
+						BufferedReader reader = new BufferedReader(isr)) {
+					return reader.lines().collect(Collectors.toList());
+				}
+			} catch (IOException e) {
+				logger.error("Can not read internal resource file: " + e.getMessage());
+				// no way to recover from this error
+				System.exit(1);
+			}
+		}
+		return null;
+	}
+	
+	
+	
 	
 	public RecordParserDefinition(Record callback, boolean strict, boolean legacy) {
 		this.legacy = legacy;
@@ -312,18 +367,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// License of MassBank Record. Mandatory
 		// Example
 		// LICENSE: CC BY
-		def("allowed_licenses",
-			StringParser.of("CC0")			
-			.or(StringParser.of("CC BY-NC-ND"))
-			.or(StringParser.of("CC BY-NC-SA"))
-			.or(StringParser.of("CC BY-NC"))
-			.or(StringParser.of("CC BY-SA"))
-			.or(StringParser.of("CC BY"))
-		);
+		Parser allowed_licenses = null;
+		{
+			Iterator<String> i = getResourceFileAsList("recordformat/license.ini").iterator();
+			if (i.hasNext()) {
+				allowed_licenses = StringParser.of(i.next());
+				while (i.hasNext()) {
+					allowed_licenses = allowed_licenses.or(StringParser.of(i.next()));
+				}
+			}
+		}
 		def("license",
 			StringParser.of("LICENSE")
 			.seq(ref("tagsep"))
-			.seq(ref("allowed_licenses")
+			.seq(allowed_licenses
 				.map((String value) -> {
 					callback.LICENSE(value);
 					return value;
@@ -863,29 +920,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// CH$LINK: KEGG C00037
 		// CH$LINK: PUBCHEM SID: 11916 CID:182232
 		// CH$LINK fields should be arranged by the alphabetical order of database names.
-		def("ch_link_subtag",
-			StringParser.of("CAS ")
-			.or(StringParser.of("CAYMAN "))
-			.or(StringParser.of("CHEBI "))
-			.or(StringParser.of("CHEMBL "))
-			.or(StringParser.of("CHEMPDB "))
-			.or(StringParser.of("CHEMSPIDER "))
-			.or(StringParser.of("COMPTOX "))
-			.or(StringParser.of("HMDB "))
-			.or(StringParser.of("INCHIKEY "))
-			.or(StringParser.of("KAPPAVIEW "))
-			.or(StringParser.of("KEGG "))
-			.or(StringParser.of("KNAPSACK "))
-			.or(StringParser.of("LIPIDBANK "))
-			.or(StringParser.of("LIPIDMAPS "))
-			.or(StringParser.of("NIKKAJI "))
-			.or(StringParser.of("PUBCHEM "))
-			.or(StringParser.of("ZINC "))
-		);
+		Parser ch_link_subtag = null;
+		{
+			Iterator<String> i = getResourceFileAsList("recordformat/ch_link.ini").iterator();
+			if (i.hasNext()) {
+				ch_link_subtag = StringParser.of(String.format("%s ", i.next()));
+				while (i.hasNext()) {
+					ch_link_subtag = ch_link_subtag.or(StringParser.of(String.format("%s ", i.next())));
+				}
+			}
+		}
 		def("ch_link",
 			StringParser.of("CH$LINK")
 			.seq(ref("tagsep"))
-			.seq(ref("ch_link_subtag"))
+			.seq(ch_link_subtag)
 			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.map((List<String> value) -> {
