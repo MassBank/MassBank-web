@@ -1798,9 +1798,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 							+ "Formula from CH$FORMULA: " + callback.CH_FORMULA());
 				}
 				
-				//compare InChIKey
-				if (InChiKeyFromCH_LINK.equals("")) {
-					return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
+				if (strict) {
+					//compare InChIKey
+					if (InChiKeyFromCH_LINK.equals("")) {
+						return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
+					}
 				}
 			}
 			else if (!"N/A".equals(callback.CH_SMILES())) 

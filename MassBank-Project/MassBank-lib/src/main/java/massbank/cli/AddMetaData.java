@@ -10,7 +10,6 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -24,6 +23,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
@@ -413,7 +413,7 @@ public class AddMetaData {
 		options.addOption("l", "link", false, "add links to CH$LINK tag");
 		options.addOption("r", "rewrite", false, "read and rewrite the file.");
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
-		options.addOption("add_inchikey", false, "Add a InChIKey from the value in CH$IUPAC");
+		options.addOption(Option.builder().longOpt( "add-inchikey" ).desc("Add a InChIKey from the value in CH$IUPAC").build());
 
 		CommandLine cmd = null;
 		try {
@@ -453,7 +453,7 @@ public class AddMetaData {
 		}
 		
 		// read record in less strict mode
-		Record record = Validator.validate(recordstring, "", false);
+		Record record = Validator.validate(recordstring, "", false ,true);
 		if (record == null) {
 			System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
 			System.exit(1);
@@ -468,14 +468,14 @@ public class AddMetaData {
 		if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record);
 		if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
 		
-		if (cmd.hasOption("add_inchikey")) {
+		if (cmd.hasOption("add-inchikey")) {
 			recordstring2=doAddInchikey(record);
 		}
 		
 		if (cmd.hasOption("r")) recordstring2=record.toString();
 		
 		if (!recordstring.equals(recordstring2)) {
-			Record record2 = Validator.validate(recordstring2, "", false);
+			Record record2 = Validator.validate(recordstring2, "",false, true);
 			if (record2 == null) {
 				System.err.println( "Validation of new created record file failed. Exiting.");
 				System.exit(1);
