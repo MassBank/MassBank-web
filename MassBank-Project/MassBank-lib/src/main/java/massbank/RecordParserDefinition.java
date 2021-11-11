@@ -76,7 +76,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			File configRootPath = new File(Config.get().DataRootPath(), ".config");
 			resourceFileFromDataRootPath = new File(configRootPath, fileName);
 		} catch (ConfigurationException e) {
-			logger.error("Can not get DataRootPath: " + e.getMessage());
+			logger.warn("Can not get DataRootPath: " + e.getMessage());
 			// resourceFileFromDataRootPath stays null
 		}
 		if ((resourceFileFromDataRootPath != null) && resourceFileFromDataRootPath.exists()) {
@@ -109,9 +109,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 		}
 		return null;
 	}
-	
-	
-	
 	
 	public RecordParserDefinition(Record callback, boolean strict, boolean legacy) {
 		this.legacy = legacy;
