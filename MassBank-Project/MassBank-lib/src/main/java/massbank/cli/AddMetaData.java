@@ -2,6 +2,7 @@ package massbank.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -10,12 +11,14 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,11 +44,17 @@ import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
+
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import massbank.Record;
 import net.sf.jniinchi.INCHI_RET;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 /**
  * This class adds meta information automatically where feasible and makes some automatic fixes. Supported functions are:<p>
@@ -387,10 +396,14 @@ public class AddMetaData {
 				return record.toString();
 			}
 			
-			String INCHIKEY=inchiGen.getInchiKey();
+			String INCHIKEY = inchiGen.getInchiKey();
 			if (!record.CH_LINK().containsKey("INCHIKEY")) {
 				LinkedHashMap<String, String> ch_link = record.CH_LINK();
 				ch_link.put("INCHIKEY", INCHIKEY);
+				//sort
+				ch_link=ch_link.entrySet().stream()
+						.sorted(Map.Entry.comparingByKey())
+						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
 				record.CH_LINK(ch_link);
 			}
 			else {
@@ -404,6 +417,125 @@ public class AddMetaData {
 		return record.toString();
 	}
 	
+	/**
+	 * Automatically fix CH$LINK: PUBCHEM if possible
+	 * 	if no CH$LINK: INCHIKEY is available - do nothing
+	 *  if CH$LINK: INCHIKEY is available and no CH$LINK: PUBCHEM - get and add PubChem CID
+	 */
+	// Respons class for json structure
+	static class ResponseCidFromInchikey {
+		// {
+		//  "IdentifierList": {
+		//   "CID": [
+		//    xxxxx,
+		//    xxxxx
+		//   ]
+		//  }
+		// }
+		@SerializedName("IdentifierList")
+		private IdentifierList identifierList;
+		class IdentifierList {
+			@SerializedName("CID")
+			List<Integer> CID;
+		}
+		public Integer getFirstCID() {
+			return identifierList.CID.get(0);
+		}
+		public List<Integer> getCID() {
+			return identifierList.CID;
+		}
+	}
+	public static List<Integer> getCidFromInchiKey(String inchiKey) {
+		ArrayList<Integer> resultList = new ArrayList<Integer>();
+		// get prefered cid
+		String jsonString = null;
+		try {
+			jsonString = IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
+					+ inchiKey + "/cids/JSON?cids_type=preferred"), Charset.forName("UTF-8"));
+		} catch (IOException e) {
+			// no CID for InChIKey -> return
+			logger.error("Not possible to retrive PubChem CID for InChIKey " + inchiKey + ".");
+			return resultList;
+		}
+		ResponseCidFromInchikey r = new Gson().fromJson(jsonString, ResponseCidFromInchikey.class);
+		resultList.add(r.getFirstCID());
+		// get full list of cids
+		jsonString = null;
+		try {
+			jsonString = IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
+					+ inchiKey + "/cids/JSON"), Charset.forName("UTF-8"));
+		} catch (IOException e) {
+			// no CID for InChIKey -> return
+			logger.error("Not possible to retrive PubChem CID for InChIKey " + inchiKey + ".");
+			return resultList;
+		}
+		r = new Gson().fromJson(jsonString, ResponseCidFromInchikey.class);
+		List<Integer> allCids = r.getCID();
+		for (Integer cid : allCids) {
+			if (!resultList.get(0).equals(cid)) {
+				resultList.add(cid);
+			}
+		}
+		return resultList;
+	}
+	//NIBCDDKWFDEBEP-UHFFFAOYSA-N
+	public static String doAddPubchemCID(Record record) {
+		
+		// get InChIKey first
+		if (!record.CH_LINK().containsKey("INCHIKEY")) {
+			// no InChIKey -> return
+			return record.toString();
+		}
+		String inchiKey = record.CH_LINK().get("INCHIKEY");
+		List<Integer> cids = getCidFromInchiKey(inchiKey);
+		if (!record.CH_LINK().containsKey("PUBCHEM")) {
+			if (!cids.isEmpty())
+			{
+				LinkedHashMap<String, String> ch_link = record.CH_LINK();
+				ch_link.put("PUBCHEM", "CID:"+cids.get(0));
+				//sort
+				ch_link = ch_link.entrySet().stream()
+						.sorted(Map.Entry.comparingByKey())
+						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+				record.CH_LINK(ch_link);
+			}
+		}
+		//PUBCHEM is defined	
+		else {
+			String cidFromCH_LINK = record.CH_LINK().get("PUBCHEM");
+			if (!cidFromCH_LINK.equals("CID:"+cids.get(0))) {
+				// check if cid in record is not the prefered cid, but in the list
+				boolean cidFromCH_LINKisNonLive = false;
+				for (Integer cid:cids) {
+					if (cidFromCH_LINK.equals("CID:"+cid)) {
+						cidFromCH_LINKisNonLive=true;
+						break;
+					}
+				}
+				if (cidFromCH_LINKisNonLive) {
+					// cid is correct but not the prefered cid
+					System.out.println("PubChem CID in record file is correct, but not the prefered CID.");
+					System.out.println("Replace " + cidFromCH_LINK + " with  CID:" + cids.get(0) + ".");
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("PUBCHEM", "CID:"+cids.get(0));
+					//sort
+					ch_link = ch_link.entrySet().stream()
+							.sorted(Map.Entry.comparingByKey())
+							.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+					record.CH_LINK(ch_link);
+				}
+				else {
+					logger.error("PubChem CID is incorrect.");
+
+				}
+			}
+			else {
+				System.out.println("PubChem CID is correct.");
+			}
+		}
+		return record.toString();
+	}
+	
 
 	public static void main(String[] arguments) throws Exception {
 		Options options = new Options();
@@ -413,7 +545,8 @@ public class AddMetaData {
 		options.addOption("l", "link", false, "add links to CH$LINK tag");
 		options.addOption("r", "rewrite", false, "read and rewrite the file.");
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
-		options.addOption(Option.builder().longOpt( "add-inchikey" ).desc("Add a InChIKey from the value in CH$IUPAC").build());
+		options.addOption(Option.builder().longOpt( "add-inchikey" ).desc("Add or fix InChIKey from the value in CH$IUPAC").build());
+		options.addOption(Option.builder().longOpt( "add-pubchemcid" ).desc("Add or fix PubChem CID from InChIKey and flag Problems.").build());
 
 		CommandLine cmd = null;
 		try {
@@ -470,6 +603,10 @@ public class AddMetaData {
 		
 		if (cmd.hasOption("add-inchikey")) {
 			recordstring2=doAddInchikey(record);
+		}
+		
+		if (cmd.hasOption("add-pubchemcid")) {
+			recordstring2=doAddPubchemCID(record);
 		}
 		
 		if (cmd.hasOption("r")) recordstring2=record.toString();
