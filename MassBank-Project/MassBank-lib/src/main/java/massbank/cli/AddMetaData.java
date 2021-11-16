@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -51,6 +52,7 @@ import com.google.gson.annotations.SerializedName;
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import massbank.PubchemResolver;
 import massbank.Record;
 import net.sf.jniinchi.INCHI_RET;
 import java.util.stream.Stream;
@@ -417,122 +419,113 @@ public class AddMetaData {
 		return record.toString();
 	}
 	
+	
 	/**
 	 * Automatically fix CH$LINK: PUBCHEM if possible
 	 * 	if no CH$LINK: INCHIKEY is available - do nothing
 	 *  if CH$LINK: INCHIKEY is available and no CH$LINK: PUBCHEM - get and add PubChem CID
 	 */
-	// Respons class for json structure
-	static class ResponseCidFromInchikey {
-		// {
-		//  "IdentifierList": {
-		//   "CID": [
-		//    xxxxx,
-		//    xxxxx
-		//   ]
-		//  }
-		// }
-		@SerializedName("IdentifierList")
-		private IdentifierList identifierList;
-		class IdentifierList {
-			@SerializedName("CID")
-			List<Integer> CID;
-		}
-		public Integer getFirstCID() {
-			return identifierList.CID.get(0);
-		}
-		public List<Integer> getCID() {
-			return identifierList.CID;
-		}
-	}
-	public static List<Integer> getCidFromInchiKey(String inchiKey) {
-		ArrayList<Integer> resultList = new ArrayList<Integer>();
-		// get prefered cid
-		String jsonString = null;
-		try {
-			jsonString = IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
-					+ inchiKey + "/cids/JSON?cids_type=preferred"), Charset.forName("UTF-8"));
-		} catch (IOException e) {
-			// no CID for InChIKey -> return
-			logger.error("Not possible to retrive PubChem CID for InChIKey " + inchiKey + ".");
-			return resultList;
-		}
-		ResponseCidFromInchikey r = new Gson().fromJson(jsonString, ResponseCidFromInchikey.class);
-		resultList.add(r.getFirstCID());
-		// get full list of cids
-		jsonString = null;
-		try {
-			jsonString = IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
-					+ inchiKey + "/cids/JSON"), Charset.forName("UTF-8"));
-		} catch (IOException e) {
-			// no CID for InChIKey -> return
-			logger.error("Not possible to retrive PubChem CID for InChIKey " + inchiKey + ".");
-			return resultList;
-		}
-		r = new Gson().fromJson(jsonString, ResponseCidFromInchikey.class);
-		List<Integer> allCids = r.getCID();
-		for (Integer cid : allCids) {
-			if (!resultList.get(0).equals(cid)) {
-				resultList.add(cid);
-			}
-		}
-		return resultList;
-	}
 	//NIBCDDKWFDEBEP-UHFFFAOYSA-N
 	public static String doAddPubchemCID(Record record) {
-		
 		// get InChIKey first
 		if (!record.CH_LINK().containsKey("INCHIKEY")) {
 			// no InChIKey -> return
 			return record.toString();
 		}
 		String inchiKey = record.CH_LINK().get("INCHIKEY");
-		List<Integer> cids = getCidFromInchiKey(inchiKey);
-		if (!record.CH_LINK().containsKey("PUBCHEM")) {
-			if (!cids.isEmpty())
-			{
-				LinkedHashMap<String, String> ch_link = record.CH_LINK();
-				ch_link.put("PUBCHEM", "CID:"+cids.get(0));
-				//sort
-				ch_link = ch_link.entrySet().stream()
-						.sorted(Map.Entry.comparingByKey())
-						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
-				record.CH_LINK(ch_link);
-			}
+		
+		// fetch PubChem CIDs
+		PubchemResolver pr = new PubchemResolver(inchiKey);
+		Integer preferedCid = pr.getPreferred();
+		if (preferedCid == null) {
+			// no prefered CID -> return 
+			logger.error("Could not fetch PubChem CID for " + inchiKey + ".");
+			return record.toString();
 		}
-		//PUBCHEM is defined	
+		
+		//if PUBCHEM is undefined -> add
+		if (!record.CH_LINK().containsKey("PUBCHEM")) {
+			LinkedHashMap<String, String> ch_link = record.CH_LINK();
+			ch_link.put("PUBCHEM", "CID:"+preferedCid);
+			//sort
+			ch_link = ch_link.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+			record.CH_LINK(ch_link);
+			return record.toString();
+		}
+		//else PUBCHEM is defined
 		else {
-			String cidFromCH_LINK = record.CH_LINK().get("PUBCHEM");
-			if (!cidFromCH_LINK.equals("CID:"+cids.get(0))) {
-				// check if cid in record is not the prefered cid, but in the list
-				boolean cidFromCH_LINKisNonLive = false;
-				for (Integer cid:cids) {
-					if (cidFromCH_LINK.equals("CID:"+cid)) {
-						cidFromCH_LINKisNonLive=true;
-						break;
-					}
-				}
-				if (cidFromCH_LINKisNonLive) {
-					// cid is correct but not the prefered cid
-					System.out.println("PubChem CID in record file is correct, but not the prefered CID.");
-					System.out.println("Replace " + cidFromCH_LINK + " with  CID:" + cids.get(0) + ".");
-					LinkedHashMap<String, String> ch_link = record.CH_LINK();
-					ch_link.put("PUBCHEM", "CID:"+cids.get(0));
-					//sort
-					ch_link = ch_link.entrySet().stream()
-							.sorted(Map.Entry.comparingByKey())
-							.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
-					record.CH_LINK(ch_link);
-				}
-				else {
-					logger.error("PubChem CID is incorrect.");
-
-				}
+			// parse existing CID
+			Integer cidFromCH_LINK = null;
+			String[] cidFromCH_LINKToken = record.CH_LINK().get("PUBCHEM").split(":");
+			if (cidFromCH_LINKToken.length == 2 || cidFromCH_LINKToken[0].equals("CID"))  {
+				cidFromCH_LINK  =Integer.parseInt(cidFromCH_LINKToken[1]);
+			}
+			
+			if (cidFromCH_LINK == null) {
+				// no well defined CID -> return
+				System.out.println("PubChem CID is not correct formated: " + record.CH_LINK().get("PUBCHEM"));
+				return record.toString();
+			}
+			
+			if (cidFromCH_LINK.equals(preferedCid)) {
+				// all good -> return
+				System.out.println("PubChem CID is correct.");
+				return record.toString();
 			}
 			else {
-				System.out.println("PubChem CID is correct.");
+				if  (pr.isCid(cidFromCH_LINK)) {
+					System.out.println("PubChem CID is correct but not preferred. Replacing...");
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("PUBCHEM", "CID:"+preferedCid);
+					//sort
+					ch_link = ch_link.entrySet().stream()
+						.sorted(Map.Entry.comparingByKey())
+						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+					record.CH_LINK(ch_link);
+					return record.toString();					
+				}
+				else {
+					System.out.println("PubChem CID is not correct.");
+				}
 			}
 		}
+		
+
+//		//PUBCHEM is defined	
+//		else {
+//			String cidFromCH_LINK = record.CH_LINK().get("PUBCHEM");
+//			if (!cidFromCH_LINK.equals("CID:"+cids.get(0))) {
+//				// check if cid in record is not the prefered cid, but in the list
+//				boolean cidFromCH_LINKisNonLive = false;
+//				for (Integer cid:cids) {
+//					if (cidFromCH_LINK.equals("CID:"+cid)) {
+//						cidFromCH_LINKisNonLive=true;
+//						break;
+//					}
+//				}
+//				if (cidFromCH_LINKisNonLive) {
+//					// cid is correct but not the prefered cid
+//					System.out.println("PubChem CID in record file is correct, but not the prefered CID.");
+//					System.out.println("Replace " + cidFromCH_LINK + " with  CID:" + cids.get(0) + ".");
+//					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+//					ch_link.put("PUBCHEM", "CID:"+cids.get(0));
+//					//sort
+//					ch_link = ch_link.entrySet().stream()
+//							.sorted(Map.Entry.comparingByKey())
+//							.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+//					record.CH_LINK(ch_link);
+//				}
+//				else {
+//					logger.error("PubChem CID is incorrect.");
+//
+//				}
+//			}
+//			else {
+//				System.out.println("PubChem CID is correct.");
+//			}
+//		}
 		return record.toString();
 	}
 	
