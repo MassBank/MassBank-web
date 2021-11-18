@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -45,7 +47,9 @@ public class Inspector {
 		if (arguments.length==2) {
 			String input = FileUtils.readFileToString(new File(arguments[0]), StandardCharsets.UTF_8);
 			Validator.hasNonStandardChars(input);
-			Record record = Validator.validate(input, "", false);
+			Set<String> config = new HashSet<String>();
+			config.add("legacy");
+			Record record = Validator.validate(input, "", config);
 			if (record == null) {
 				logger.error("Error in " + arguments[0]+ ". Exiting...");
 				System.exit(1);

@@ -57,16 +57,21 @@ import net.sf.jniinchi.INCHI_RET;
 
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
-		
-	private final boolean legacy;
 	
-	IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
-	IAtomContainer fromCH_SMILES = SilentChemObjectBuilder.getInstance().newAtomContainer();
-	String InChiKeyFromCH_SMILES = "";
-	boolean smilesHasWildcards = false;
-	IAtomContainer fromCH_IUPAC = SilentChemObjectBuilder.getInstance().newAtomContainer();
-	String InChiKeyFromCH_IUPAC = "";
-	String InChiKeyFromCH_LINK = "";
+	// legacy mode to let validation pass on legacy records until they are fixed
+	private final boolean legacy;
+	// weak validation mode to let validation pass for AddMetaData
+	private final boolean weak;
+	// torn on additional validation steps, which require online checks
+	private final boolean online;
+	
+	private IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
+	private IAtomContainer fromCH_SMILES = SilentChemObjectBuilder.getInstance().newAtomContainer();
+	private String InChiKeyFromCH_SMILES = "";
+	private boolean smilesHasWildcards = false;
+	private IAtomContainer fromCH_IUPAC = SilentChemObjectBuilder.getInstance().newAtomContainer();
+	private String InChiKeyFromCH_IUPAC = "";
+	private String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
 	
 	private static List<String> getResourceFileAsList(String fileName)  {
@@ -76,7 +81,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			File configRootPath = new File(Config.get().DataRootPath(), ".config");
 			resourceFileFromDataRootPath = new File(configRootPath, fileName);
 		} catch (ConfigurationException e) {
-			logger.warn("Can not get DataRootPath: " + e.getMessage());
+			logger.trace("Can not get DataRootPath: " + e.getMessage());
 			// resourceFileFromDataRootPath stays null
 		}
 		if ((resourceFileFromDataRootPath != null) && resourceFileFromDataRootPath.exists()) {
@@ -110,8 +115,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 		return null;
 	}
 	
-	public RecordParserDefinition(Record callback, boolean strict, boolean legacy) {
-		this.legacy = legacy;
+	public RecordParserDefinition(Record callback, Set<String> config) {
+		this.legacy = config.contains("legacy");
+		this.weak = config.contains("weak");
+		this.online = config.contains("online");
+		
 		def("start",
 			ref("accession")
 			.seq(ref("deprecated_record")
@@ -152,13 +160,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 //						System.out.println(value);
 //						return value;						
 //					})
-					// check semantic here
-					.callCC((Function<Context, Result> continuation, Context context) -> {
-						return checkSemantic(continuation, context, callback, strict);
-					})
+					
 				)
 			)
 			.end()
+			// check semantic here
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				return checkSemantic(continuation, context, callback);
+			})
 		);
 		
 		// 1.1 Syntax Rules
@@ -1759,7 +1768,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 		);
 	}
 	
-	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback, boolean strict) {
+	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback) {
 		Result r = continuation.apply(context);
 		if (r.isSuccess()) {
 			// if any structural information is in CH$IUPAC, then CH$FORMULA, CH$SMILES CH$LINK: INCHIKEY must be defined and match
@@ -1798,7 +1807,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 							+ "Formula from CH$FORMULA: " + callback.CH_FORMULA());
 				}
 				
-				if (strict) {
+				if (!weak) {
 					//compare InChIKey
 					if (InChiKeyFromCH_LINK.equals("")) {
 						return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
@@ -1885,7 +1894,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 			}
 			if (duplicates.size()>0) {
-				if (strict ) {
+				if (!weak) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("There are duplicate entries in \"CH$NAME\" field.");
 					return context.failure(sb.toString());
@@ -1893,6 +1902,35 @@ public class RecordParserDefinition extends GrammarDefinition {
 					logger.warn("There are duplicate entries in \"CH$NAME\" field.");
 				}
 			}
+			
+			// check things online
+			if (online) {
+				if (callback.CH_LINK().containsKey("INCHIKEY")) {
+					String inchiKey = callback.CH_LINK().get("INCHIKEY");
+					if (callback.CH_LINK().containsKey("PUBCHEM")) {
+						String pubChem = callback.CH_LINK().get("PUBCHEM");
+						PubchemResolver pr = new PubchemResolver(inchiKey);
+						Integer preferredCid = pr.getPreferred();
+						if (preferredCid != null) {
+							if (!pubChem.equals("CID:"+preferredCid)) {
+								StringBuilder sb = new StringBuilder();
+								sb.append("CH$LINK: PUBCHEM lists " + pubChem + "\n");
+								sb.append("but PUG rest reports CID:"+preferredCid + " preferred PubChem CID\n");
+								sb.append("for InChIKey " + inchiKey + ".");
+								return context.failure(sb.toString());
+							}
+						}
+						else {
+							StringBuilder sb = new StringBuilder();
+							sb.append("CH$LINK: PUBCHEM lists " + pubChem + "\n"); 
+							sb.append("but PUG rest reports no CID\n");
+							sb.append("for InChIKey " + inchiKey + ".");
+							return context.failure(sb.toString());
+						}
+					}
+				}
+			}
+			
 		}
 		return r;
 	}

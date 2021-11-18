@@ -72,21 +72,13 @@ public class Validator {
 	
 	/**
 	 * Validate a <code>recordString</code> and return the parsed information in a {@link Record} 
-	 * or <code>null</code> if the validation was not successful. Be strict in validation.
+	 * or <code>null</code> if the validation was not successful. Options are given in 
+	 * <code>config</code>.
 	 */
-	public static Record validate(String recordString, String contributor, boolean legacy) {
-		return validate(recordString, contributor, true, legacy);
-	}
-	
-	/**
-	 * Validate a <code>recordString</code> and return the parsed information in a {@link Record} 
-	 * or <code>null</code> if the validation was not successful. Be less strict if 
-	 * <code>strict</code> is <code>false</code>. This is useful in automatic repair routines.
-	 */
-	public static Record validate(String recordString, String contributor, boolean strict, boolean legacy) {
+	public static Record validate(String recordString, String contributor, Set<String> config) {
 		Record record = new Record(contributor);
-		Parser recordparser = new RecordParser(record, strict, legacy);
-		Result res = recordparser.parse(recordString);
+		RecordParser recordparser = new RecordParser(record, config);
+		Result res =  recordparser.parse(recordString);
 		if (res.isFailure()) {
 			logger.error(res.getMessage());
 			int position = res.getPosition();
@@ -106,7 +98,7 @@ public class Validator {
 				line++;
 			}
 			return null;
-		} 
+		}
 		return record;
 	}
 
@@ -125,6 +117,7 @@ public class Validator {
 		Options options = new Options();
 		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
 		options.addOption(null, "legacy", false, "less strict mode for legacy records with minor problems.");
+		options.addOption(null, "online", false, "also do online checks, like PubChem CID check.");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -170,6 +163,7 @@ public class Validator {
 		AtomicBoolean haserror = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
 		AtomicBoolean legacyMode = new AtomicBoolean(cmd.hasOption("legacy"));
+		AtomicBoolean onlineMode = new AtomicBoolean(cmd.hasOption("online"));
 		List<String> accessions = recordfiles.parallelStream().map(filename -> {
 			String recordString;
 			String accession=null;
@@ -177,7 +171,11 @@ public class Validator {
 				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8).replaceAll("\\r\\n?", "\n");
 				hasNonStandardChars(recordString);
 				// basic validation
-				Record record = validate(recordString, "", legacyMode.get());
+
+				Set<String> config = new HashSet<String>();
+				if (legacyMode.get()) config.add("legacy");
+				if (onlineMode.get()) config.add("online");
+				Record record = validate(recordString, "", config);
 				if (record == null) {
 					logger.error("Error in \'" + filename + "\'.");
 					haserror.set(true);

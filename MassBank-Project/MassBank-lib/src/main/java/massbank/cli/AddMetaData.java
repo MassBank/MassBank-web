@@ -538,8 +538,9 @@ public class AddMetaData {
 		options.addOption("l", "link", false, "add links to CH$LINK tag");
 		options.addOption("r", "rewrite", false, "read and rewrite the file.");
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
-		options.addOption(Option.builder().longOpt( "add-inchikey" ).desc("Add or fix InChIKey from the value in CH$IUPAC").build());
-		options.addOption(Option.builder().longOpt( "add-pubchemcid" ).desc("Add or fix PubChem CID from InChIKey and flag Problems.").build());
+		options.addOption(null, "add-inchikey", false, "Add or fix InChIKey from the value in CH$IUPAC");
+		options.addOption(null, "add-pubchemcid", false, "Add or fix PubChem CID from InChIKey and flag Problems.");
+
 
 		CommandLine cmd = null;
 		try {
@@ -579,7 +580,10 @@ public class AddMetaData {
 		}
 		
 		// read record in less strict mode
-		Record record = Validator.validate(recordstring, "", false ,true);
+		Set<String> config = new HashSet<String>();
+		config.add("legacy");
+		config.add("weak");
+		Record record = Validator.validate(recordstring, "", config);
 		if (record == null) {
 			System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
 			System.exit(1);
@@ -605,7 +609,7 @@ public class AddMetaData {
 		if (cmd.hasOption("r")) recordstring2=record.toString();
 		
 		if (!recordstring.equals(recordstring2)) {
-			Record record2 = Validator.validate(recordstring2, "",false, true);
+			Record record2 = Validator.validate(recordstring, "", config);
 			if (record2 == null) {
 				System.err.println( "Validation of new created record file failed. Exiting.");
 				System.exit(1);
