@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -39,37 +41,40 @@ import com.google.gson.annotations.SerializedName;
  * @version 11-16-2021
  */
 public class PubchemResolver {
+	class LookupObject {
+		List<Integer> cids = null;
+		List<Integer> preferredCids = null;
+		Integer preferredCid = null;
+	}
 	private static final Logger logger = LogManager.getLogger(PubchemResolver.class);
+	private static Map<String, LookupObject> lookup = new HashMap<String, LookupObject>();
 	String inchiKey = null;
 	List<Integer> cids = null;
 	List<Integer> preferredCids = null;
+	Integer preferredCid = null;
 	
 	public PubchemResolver(String inchiKey) {
 		this.inchiKey = inchiKey;
-		// get prefered cids
-		try {
-			String jsonString = IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
-					+ inchiKey + "/cids/JSON?cids_type=preferred"), Charset.forName("UTF-8"));
-			ResponseCidFromInchikey r = new Gson().fromJson(jsonString, ResponseCidFromInchikey.class);
-			preferredCids = r.getCID();
-		} catch (IOException e) {
-			logger.error("Not possible to retrive preferred PubChem CID for InChIKey " + inchiKey + ".");
+		if (lookup.containsKey(inchiKey)) {
+			this.cids = lookup.get(inchiKey).cids;
+			this.preferredCids = lookup.get(inchiKey).preferredCids;
+			this.preferredCid = lookup.get(inchiKey).preferredCid;
+			logger.info("Take cids for " + inchiKey + " from lookup");
+			return;
 		}
-				
+		
 		// get cids
 		try {
-			String jsonString = IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
-					+ inchiKey + "/cids/JSON"), Charset.forName("UTF-8"));
-			ResponseCidFromInchikey r = new Gson().fromJson(jsonString, ResponseCidFromInchikey.class);
-			cids = r.getCID();
+			ResponseCidFromInchikey r1 = new Gson().fromJson(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
+					+ inchiKey + "/cids/JSON?cids_type=preferred"), Charset.forName("UTF-8")), ResponseCidFromInchikey.class);
+			ResponseCidFromInchikey r2 = new Gson().fromJson(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/"
+					+ inchiKey + "/cids/JSON"), Charset.forName("UTF-8")), ResponseCidFromInchikey.class);
+			preferredCids = r1.getCID();
+			cids = r2.getCID();
 		} catch (IOException e) {
-			logger.error("Not possible to retrive PubChem CID for InChIKey " + inchiKey + ".");
+			logger.info("Not possible to retrive PubChem CIDs for InChIKey " + inchiKey + ".");
 		}
-		if (preferredCids.size() != cids.size()) logger.error("Size of preferredCids != Size of cids"); 
-	}
-	
-	public Integer getPreferred() {
-		Integer result = null;
+		
 		if (preferredCids!=null) {
 			for (Integer cid : preferredCids) {
 				if (!cid.equals(preferredCids.get(0)))  logger.error("preferredCids list has different entries"); 
@@ -81,26 +86,37 @@ public class PubchemResolver {
 			}
 			if (!preferredCidIsInCids) {
 				 logger.error("preferredCid is not in cids.");
-				 return null;
 			}
-			else result = preferredCids.get(0);
+			else preferredCid = preferredCids.get(0);
+
 			// check back InChIKey
-			String jsonString = null;
 			try {
-				jsonString = IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/"+result+"/property/InChIKey/JSON"), Charset.forName("UTF-8"));
+				ResponseInchikeyFromCid r = new Gson().fromJson(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/"+preferredCid+"/property/InChIKey/JSON"), Charset.forName("UTF-8")), ResponseInchikeyFromCid.class);
+				String inChIKeyFrompreferredCid = r.getInChIKey();
+				if (!inChIKeyFrompreferredCid.equals(inchiKey)) {
+					logger.error("InChIKey from preferred PubChem CID does not match InChIKey from constructor.");
+					logger.error("InChIKey from preferred PubChem CID: " + inChIKeyFrompreferredCid);
+					logger.error("InChIKey from constructor: " + inchiKey);
+					preferredCid = null;
+				}
 			} catch (IOException e) {
 				logger.error("Not possible to retrive InChIKey for preferred PubChem CID for InChIKey " + inchiKey + ".");
-			}
-			ResponseInchikeyFromCid r = new Gson().fromJson(jsonString, ResponseInchikeyFromCid.class);
-			String inChIKeyFrompreferredCid = r.getInChIKey();
-			if (!inChIKeyFrompreferredCid.equals(inchiKey)) {
-				logger.error("InChIKey from preferred PubChem CID does not match InChIKey from constructor.");
-				logger.error("InChIKey from preferred PubChem CID: " + inChIKeyFrompreferredCid);
-				logger.error("InChIKey from constructor: " + inchiKey);
-				return null;
+				preferredCid = null;
 			}
 		}
-		return result;
+			
+		if (cids != null && preferredCids != null && preferredCid != null) {
+			if (preferredCids.size() != cids.size()) logger.error("Size of preferredCids != Size of cids");
+			LookupObject lookupObject = new LookupObject();
+			lookupObject.cids = cids;
+			lookupObject.preferredCids = preferredCids;
+			lookupObject.preferredCid = preferredCid;
+			lookup.put(inchiKey, lookupObject);
+		}
+	}
+	
+	public Integer getPreferred() {
+		return preferredCid;
 	}
 	
 	public boolean isCid(Integer cid) {
