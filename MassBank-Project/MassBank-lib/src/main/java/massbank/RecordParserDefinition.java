@@ -1770,7 +1770,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 	
 	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback) {
 		Result r = continuation.apply(context);
-		if (r.isSuccess()) {
+		if (r.isSuccess() && !callback.DEPRECATED()) {
 			// if any structural information is in CH$IUPAC, then CH$FORMULA, CH$SMILES CH$LINK: INCHIKEY must be defined and match
 			if (!"N/A".equals(callback.CH_IUPAC()))
 			{

@@ -46,7 +46,7 @@ public class Validator {
 	 */
 	public static boolean hasNonStandardChars(String recordString) {
 		// the following are allowed
-		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó', 'é', 'µ', 'á', 'É'};
+		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó', 'é', 'µ', 'á', 'É', 'µ'};
 		Arrays.sort(myCharSet);
 		for (int i = 0; i < recordString.length(); i++) {
 			if (recordString.charAt(i) > 0x7F &&  (Arrays.binarySearch(myCharSet, recordString.charAt(i))<0)) {
@@ -171,6 +171,8 @@ public class Validator {
 				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8).replaceAll("\\r\\n?", "\n");
 				hasNonStandardChars(recordString);
 				// basic validation
+				
+				logger.info("Working on " + filename + ".");
 
 				Set<String> config = new HashSet<String>();
 				if (legacyMode.get()) config.add("legacy");
@@ -192,7 +194,7 @@ public class Validator {
 						haserror.set(true);
 					}
 					
-					// validate correct serialization: String <-> String -> Record class -> String
+					// validate correct serialization: String <-> (String -> Record class -> String)
 					String recordStringFromRecord = record.toString();
 					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
 					if (position != -1) {
@@ -216,7 +218,7 @@ public class Validator {
 						}
 					}
 				
-					// validate correct serialization with db: String <-> db -> Record class -> String
+					// validate correct serialization with db: String <-> (db -> Record class -> String)
 					if (doDatbase.get()) {
 						Record recordDatabase = null;
 						try {

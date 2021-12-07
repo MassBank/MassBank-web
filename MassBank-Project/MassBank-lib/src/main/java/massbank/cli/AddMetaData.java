@@ -73,23 +73,6 @@ public class AddMetaData {
 	
 	
 	/**
-	 * Try to fetch the PubChem CID for a given InChI-key using PUG REST. This function gets the first CID which has some SID associated.
-	 * CIDs without SIDs are marked as "Non-Live".
-	 */
-	public static String getPubchemCID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
-		JSONObject jo = new JSONObject(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/" + INCHIKEY + "/sids/JSON"), Charset.forName("UTF-8")));
-		logger.trace(jo.toString());
-		JSONArray Information = jo.getJSONObject("InformationList").getJSONArray("Information");
-		int len = Information.length();
-		for (int i=0;i<len;i++) {
-			if (Information.getJSONObject(i).has("SID")) {
-				return Integer.toString(Information.getJSONObject(i).getInt("CID"));
-			}
-		}
-		throw new JSONException("No CID found wich has some SIDs associated.");
-	}
-	
-	/**
 	 * Try to fetch the COMPTOX id for a given InChI-key.
 	 */
 	public static String getComptoxID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
@@ -260,31 +243,7 @@ public class AddMetaData {
 		
 		// add database identifier
 		
-		if (hasInchiKey) {
-			// add PUBCHEM if missing
-			if (!record.CH_LINK().containsKey("PUBCHEM")) {
-				try {
-					String PUBCHEMCID=getPubchemCID(INCHIKEY);
-					LinkedHashMap<String, String> ch_link = record.CH_LINK();
-					ch_link.put("INCHIKEY","CID:"+PUBCHEMCID);
-					record.CH_LINK(ch_link);
-				} catch (JSONException | IOException e) {
-					logger.warn("Could not fetch PUBCHEM cid.");
-					logger.trace(e.getMessage());
-				}
-			}
-			else {
-				try {
-					String PUBCHEMCID=getPubchemCID(INCHIKEY);;
-					if (!("CID:"+PUBCHEMCID).equals(record.CH_LINK().get("PUBCHEM"))) {
-						logger.error("Wrong PUBCHEM database identifier in record file.");
-					}
-				} catch (JSONException | IOException e) {
-					logger.warn("Could not fetch PUBCHEM id for comparision.");
-					logger.trace(e.getMessage());
-				}
-			}
-			
+		if (hasInchiKey) {			
 			// add COMPTOX if missing
 			if (!record.CH_LINK().containsKey("COMPTOX")) {
 				try {
