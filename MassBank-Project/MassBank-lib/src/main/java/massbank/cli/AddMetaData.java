@@ -2,7 +2,6 @@ package massbank.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -12,7 +11,6 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -20,22 +18,23 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openscience.cdk.exception.CDKException;
@@ -45,17 +44,12 @@ import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
-
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import massbank.PubchemResolver;
 import massbank.Record;
 import net.sf.jniinchi.INCHI_RET;
-import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 /**
@@ -384,7 +378,6 @@ public class AddMetaData {
 	 * 	if no CH$LINK: INCHIKEY is available - do nothing
 	 *  if CH$LINK: INCHIKEY is available and no CH$LINK: PUBCHEM - get and add PubChem CID
 	 */
-	//NIBCDDKWFDEBEP-UHFFFAOYSA-N
 	public static String doAddPubchemCID(Record record) {
 		// get InChIKey first
 		if (!record.CH_LINK().containsKey("INCHIKEY")) {
@@ -404,6 +397,7 @@ public class AddMetaData {
 		
 		//if PUBCHEM is undefined -> add
 		if (!record.CH_LINK().containsKey("PUBCHEM")) {
+			System.out.println("Add PubChem CID "+ preferedCid + ".");
 			LinkedHashMap<String, String> ch_link = record.CH_LINK();
 			ch_link.put("PUBCHEM", "CID:"+preferedCid);
 			//sort
@@ -450,46 +444,22 @@ public class AddMetaData {
 				}
 			}
 		}
-		
-
-//		//PUBCHEM is defined	
-//		else {
-//			String cidFromCH_LINK = record.CH_LINK().get("PUBCHEM");
-//			if (!cidFromCH_LINK.equals("CID:"+cids.get(0))) {
-//				// check if cid in record is not the prefered cid, but in the list
-//				boolean cidFromCH_LINKisNonLive = false;
-//				for (Integer cid:cids) {
-//					if (cidFromCH_LINK.equals("CID:"+cid)) {
-//						cidFromCH_LINKisNonLive=true;
-//						break;
-//					}
-//				}
-//				if (cidFromCH_LINKisNonLive) {
-//					// cid is correct but not the prefered cid
-//					System.out.println("PubChem CID in record file is correct, but not the prefered CID.");
-//					System.out.println("Replace " + cidFromCH_LINK + " with  CID:" + cids.get(0) + ".");
-//					LinkedHashMap<String, String> ch_link = record.CH_LINK();
-//					ch_link.put("PUBCHEM", "CID:"+cids.get(0));
-//					//sort
-//					ch_link = ch_link.entrySet().stream()
-//							.sorted(Map.Entry.comparingByKey())
-//							.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
-//					record.CH_LINK(ch_link);
-//				}
-//				else {
-//					logger.error("PubChem CID is incorrect.");
-//
-//				}
-//			}
-//			else {
-//				System.out.println("PubChem CID is correct.");
-//			}
-//		}
 		return record.toString();
 	}
 	
 
 	public static void main(String[] arguments) throws Exception {
+		// load version and print
+		final Properties properties = new Properties();
+		try {
+			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		System.out.println("AddMetaData version: " + properties.getProperty("version"));
+
+		// parse command line
 		Options options = new Options();
 		options.addOption("a", "all", false, "execute all operations");
 		options.addOption("p", "publication", false, "format PUBLICATION tag from given DOI to follow the guidelines of ACS");
@@ -499,89 +469,95 @@ public class AddMetaData {
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
 		options.addOption(null, "add-inchikey", false, "Add or fix InChIKey from the value in CH$IUPAC");
 		options.addOption(null, "add-pubchemcid", false, "Add or fix PubChem CID from InChIKey and flag Problems.");
-
-
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
 		}
-		catch(ParseException exp) {
+		catch(ParseException e) {
 	        // oops, something went wrong
-	        System.err.println( "Parsing command line failed. Reason: " + exp.getMessage() );
+	        System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
 	        HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
+			formatter.printHelp("AddMetaData [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
 	    }
-		
-		String filename = null;
-		if (cmd.getArgList().size() == 1) filename=cmd.getArgList().get(0);
-		else {
+		if (cmd.getArgList().size() == 0) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
-			System.exit(1);
+			formatter.printHelp("AddMetaData [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+	        System.exit(1);
 		}
 		
-		if (cmd.getOptions().length == 0) {
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
-			System.exit(1);
-		}
-		
-		
-		System.out.println("Formatting: \""+filename+"\"");
-		String recordstring = null;
-		try {
-			recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
-		}
-		catch(IOException exp) {
-			System.err.println( "Reading file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
-			System.exit(1);
-		}
-		
-		// read record in less strict mode
-		Set<String> config = new HashSet<String>();
-		config.add("legacy");
-		config.add("weak");
-		Record record = Validator.validate(recordstring, "", config);
-		if (record == null) {
-			System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
-			System.exit(1);
-		}
-		else if (record.DEPRECATED()) {
-			System.exit(0);
-		}
-		
-		String recordstring2 = recordstring;
-		if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
-		if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
-		if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record);
-		if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
-		
-		if (cmd.hasOption("add-inchikey")) {
-			recordstring2=doAddInchikey(record);
-		}
-		
-		if (cmd.hasOption("add-pubchemcid")) {
-			recordstring2=doAddPubchemCID(record);
-		}
-		
-		if (cmd.hasOption("r")) recordstring2=record.toString();
-		
-		if (!recordstring.equals(recordstring2)) {
-			Record record2 = Validator.validate(recordstring, "", config);
-			if (record2 == null) {
-				System.err.println( "Validation of new created record file failed. Exiting.");
-				System.exit(1);
+		// find all files in arguments and all *.txt files in directories and subdirectories
+		// specified in arguments 
+		List<File> recordfiles = new ArrayList<>();
+		for (String argument : cmd.getArgList()) {
+			File argumentf = new File(argument);
+			if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
+				recordfiles.add(argumentf);
+			} else if (argumentf.isDirectory()) {
+				recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
+			} else {
+				logger.warn("Argument " + argument + " could not be processed.");
 			}
+		}
+		
+		if (recordfiles.size() == 0 ) {
+			logger.error("No files found.");
+			System.exit(1);
+		}
+		
+		// validate all files
+		logger.trace("Validating " + recordfiles.size() + " files");
+		AtomicBoolean doAddPubchemCid = new AtomicBoolean(cmd.hasOption("add-pubchemcid"));
+		recordfiles.parallelStream().forEach(filename -> {
+			String recordString;
+			logger.info("Working on " + filename + ".");
 			try {
-				FileUtils.write(new File(filename), recordstring2, StandardCharsets.UTF_8);
-			}
-			catch(IOException exp) {
-				System.err.println( "Writing file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
+				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				// read record in less strict mode
+				Set<String> config = new HashSet<String>();
+				config.add("legacy");
+				config.add("weak");
+				Record record = Validator.validate(recordString, "", config);
+				if (record == null) {
+					System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
+					System.exit(1);
+				} else if (record.DEPRECATED()) {
+					System.exit(0);
+				}
+				
+				String recordstring2 = recordString;
+				//if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
+				//if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
+				//if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record);
+				//if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
+				
+				//if (cmd.hasOption("add-inchikey")) {
+				//	recordstring2=doAddInchikey(record);
+				//}
+				
+				if (doAddPubchemCid.get()) {
+					recordstring2=doAddPubchemCID(record);
+				}
+				
+				config = new HashSet<String>();
+				if (!recordString.equals(recordstring2)) {
+					Record record2 = Validator.validate(recordString, "", config);
+					if (record2 == null) {
+						System.err.println( "Validation of new created record file failed. Do not write.");
+					} else {
+						try {
+							FileUtils.write(filename, recordstring2, StandardCharsets.UTF_8);
+						}
+						catch(IOException exp) {
+							System.err.println( "Writing file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
+							System.exit(1);
+						}
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 				System.exit(1);
-			}
-		}
-		
-		System.exit(0);
+			}	
+		});
 	}
 }
