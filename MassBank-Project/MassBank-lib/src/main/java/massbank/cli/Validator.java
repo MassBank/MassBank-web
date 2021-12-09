@@ -42,13 +42,12 @@ import massbank.db.DatabaseManager;
  */
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
-	
+	private static Pattern nonStandardCharsPattern = Pattern.compile("[\\d\\w\\n\\-\\[\\]\\.\"\\\\ ;:–=+,|(){}/$%@'!?#`^*&<>µáćÉéóäöü©]+");
 	/**
 	 * Returns <code>true</code> if there is any suspicious character in <code>recordString</code>.
 	 */
 	public static boolean hasNonStandardChars(String recordString) {
-		Pattern p = Pattern.compile("[\\d\\w\\n\\-\\[\\]\\.\"\\\\ ;:–=+,|(){}/$%@'!?#`^*&<>µáćÉéóäöü©]+");
-		Matcher m = p.matcher(recordString);
+		Matcher m = nonStandardCharsPattern.matcher(recordString);
 		if (m.find()) {
 			int position = m.end();
 			String[] tokens = recordString.split("\\n");
@@ -157,14 +156,14 @@ public class Validator {
 				logger.warn("Argument " + argument + " could not be processed.");
 			}
 		}
-			
-
-		// validate all files
-		logger.trace("Validating " + recordfiles.size() + " files");
 		if (recordfiles.size() == 0 ) {
 			logger.error("No files found for validation.");
 			System.exit(1);
 		}
+			
+
+		// validate all files
+		logger.trace("Validating " + recordfiles.size() + " files");
 		AtomicBoolean haserror = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
 		AtomicBoolean legacyMode = new AtomicBoolean(cmd.hasOption("legacy"));
@@ -172,16 +171,15 @@ public class Validator {
 		List<String> accessions = recordfiles.parallelStream().map(filename -> {
 			String recordString;
 			String accession=null;
+			logger.info("Working on " + filename + ".");
 			try {
-				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);//.replaceAll("\\r\\n?", "\n");
+				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 				
 				if (hasNonStandardChars(recordString)) {
 					logger.warn("Check " + filename + ".");
 				};
 				
 				// basic validation
-				logger.info("Working on " + filename + ".");
-
 				Set<String> config = new HashSet<String>();
 				if (legacyMode.get()) config.add("legacy");
 				if (onlineMode.get()) config.add("online");
