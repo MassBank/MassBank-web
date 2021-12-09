@@ -13,6 +13,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -45,27 +47,30 @@ public class Validator {
 	 * Returns <code>true</code> if there is any suspicious character in <code>recordString</code>.
 	 */
 	public static boolean hasNonStandardChars(String recordString) {
-		// the following are allowed
-		char[] myCharSet = new char[] {'–', 'ä', 'ö', 'ü', 'ó', 'é', 'µ', 'á', 'É', 'µ'};
-		Arrays.sort(myCharSet);
-		for (int i = 0; i < recordString.length(); i++) {
-			if (recordString.charAt(i) > 0x7F &&  (Arrays.binarySearch(myCharSet, recordString.charAt(i))<0)) {
-				String[] tokens = recordString.split("\\r?\\n");
+		Pattern p = Pattern.compile("[\\d\\w\\n\\-\\[\\]\\.\"\\\\ ;:–=+,|(){}/$%@'!?#`^*&<>µáćÉéóäöü©]+");
+		Matcher m = p.matcher(recordString);
+		if (m.find()) {
+			int position = m.end();
+			String[] tokens = recordString.split("\\n");
+			if (position<recordString.length()) {
 				logger.warn("Non standard ASCII character found. This might be an error. Please check carefully.");
 				int line = 0, col = 0, offset = 0;
 				for (String token : tokens) {
 					offset = offset + token.length() + 1;
-					if (i < offset) {
-						col = i - (offset - (token.length() + 1));
+					if (position < offset) {
+						col = position - (offset - (token.length() + 1));
 						logger.warn(tokens[line]);
-						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", tokens[line].length()));
-						error_at.setCharAt(col, '^');
+						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
+						error_at.append('^');
 						logger.warn(error_at);
 						return true;
 					}
-				line++;
+					line++;
 				}
 			}
+		} else {
+			logger.warn("Standard character pattern does not work. Please check.");
+			return true;
 		}
 		return false;
 	}
@@ -168,10 +173,13 @@ public class Validator {
 			String recordString;
 			String accession=null;
 			try {
-				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8).replaceAll("\\r\\n?", "\n");
-				hasNonStandardChars(recordString);
-				// basic validation
+				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);//.replaceAll("\\r\\n?", "\n");
 				
+				if (hasNonStandardChars(recordString)) {
+					logger.warn("Check " + filename + ".");
+				};
+				
+				// basic validation
 				logger.info("Working on " + filename + ".");
 
 				Set<String> config = new HashSet<String>();
