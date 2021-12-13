@@ -757,18 +757,18 @@ public class Record {
 			+ ((InChiKey!=null) ? "." : " with the InChIkey " + InChiKey + ".");
 		
 		
-		MolecularEntity molecularEntity = new MolecularEntity(
-				ACCESSION(),
-				"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION(),
-				RECORD_TITLE().get(0),
-				CH_NAME(),
-				CH_LINK().get("INCHIKEY"),
-				description,
-				CH_FORMULA()
-				);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String molecularEntityJson = gson.toJson(molecularEntity);  
-		System.out.println(molecularEntityJson);
+//		MolecularEntity molecularEntity = new MolecularEntity(
+//				ACCESSION(),
+//				"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION(),
+//				RECORD_TITLE().get(0),
+//				CH_NAME(),
+//				CH_LINK().get("INCHIKEY"),
+//				description,
+//				CH_FORMULA()
+//				);
+//		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//		String molecularEntityJson = gson.toJson(molecularEntity);  
+//		System.out.println(molecularEntityJson);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script type=\"application/ld+json\">\n");
