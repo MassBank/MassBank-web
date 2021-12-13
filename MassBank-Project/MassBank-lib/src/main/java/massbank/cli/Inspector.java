@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -45,7 +47,9 @@ public class Inspector {
 		if (arguments.length==2) {
 			String input = FileUtils.readFileToString(new File(arguments[0]), StandardCharsets.UTF_8);
 			Validator.hasNonStandardChars(input);
-			Record record = Validator.validate(input, "", false);
+			Set<String> config = new HashSet<String>();
+			config.add("legacy");
+			Record record = Validator.validate(input, "", config);
 			if (record == null) {
 				logger.error("Error in " + arguments[0]+ ". Exiting...");
 				System.exit(1);
@@ -57,12 +61,7 @@ public class Inspector {
 			String accession = record.ACCESSION();
 			String shortname = record.RECORD_TITLE().get(0)+ " Mass Spectrum";
 			// find InChIKey in CH_LINK
-			String inchikey = null;
-			for (Pair<String,String> link : record.CH_LINK()) {
-				if ("INCHIKEY".equals(link.getKey())) {
-					inchikey=link.getValue();
-				}
-			}
+			String inchikey = record.CH_LINK().get("INCHIKEY");
 			String keywords =
 				accession + ", " 
 				+ shortname +", "

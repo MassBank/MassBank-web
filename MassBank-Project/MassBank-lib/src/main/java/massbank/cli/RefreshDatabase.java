@@ -27,10 +27,12 @@ import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -100,7 +102,9 @@ public class RefreshDatabase {
 				String contributor = filename.getParentFile().getName();
 				try {
 					String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					record = Validator.validate(recordAsString, contributor, true);
+					Set<String> config = new HashSet<String>();
+					config.add("legacy");
+					record = Validator.validate(recordAsString, contributor, config);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
