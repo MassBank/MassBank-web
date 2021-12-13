@@ -1,5 +1,7 @@
 package massbank;
 
+import java.util.Set;
+
 import org.petitparser.tools.GrammarParser;
 
 /**
@@ -12,7 +14,7 @@ import org.petitparser.tools.GrammarParser;
  * </pre>
  */
 public class RecordParser extends GrammarParser {
-  public RecordParser(Record callback, boolean strict) {
-    super(new RecordParserDefinition(callback, strict));
+  public RecordParser(Record callback, Set<String> config) {
+    super(new RecordParserDefinition(callback, config));
   }
 }

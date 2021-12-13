@@ -500,13 +500,12 @@
 				Record.Structure structure	= dbManager.getStructureOfAccession(accession);
 				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
 						accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
-						80, 250, 436
+						80, 436
 				);
 				
 				// display svg
 				if(clickablePreviewImageData != null){
 					// write big image and medium image as temp file
-					FileUtil.writeToFile(clickablePreviewImageData.svgMedium,	clickablePreviewImageData.tmpFileMedium);
 					FileUtil.writeToFile(clickablePreviewImageData.svgBig,		clickablePreviewImageData.tmpFileBig);
 					
 					// add expandMolView on click for small image
@@ -518,7 +517,7 @@
 					svgSmall	= StructureToSvgStringGenerator.setSvgStyle(svgSmall, "cursor:pointer");
 					
 					// paste small image to web site
-					out.println( "  <a href=\"" + clickablePreviewImageData.tmpUrlMedium + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
+					out.println( "  <a href=\"" + clickablePreviewImageData.tmpUrlBig + "\" class=\"preview_structure\" title=\"" + previewName.toString() + "\" onClick=\"return false\">" );
 					out.println( "   " + svgSmall);
 					out.println( "  </a>" );
 				} else {

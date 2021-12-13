@@ -14,7 +14,7 @@ services:
   tomcat:
     image: tomcat:9-jdk11
     volumes:
-      - $PWD/MassBank-Project/MassBank/target/MassBank.war:/usr/local/tomcat/webapps/MassBank.war
+      - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomcat/webapps/MassBank.war
       - $PWD/MassBank-Project/MassBank-OpenAPI/target/MassBank-OpenAPI.war:/usr/local/tomcat/webapps/MassBank-OpenAPI.war  
       - $PWD/conf/full-service.conf:/etc/massbank.conf
       - $PWD/../MassBank-data:/MassBank-data  
@@ -29,7 +29,7 @@ services:
       - "mariadb:massbank_mariadb"
 
   maven:
-    image: maven:3-jdk-11
+    image: maven:3.6-jdk-11
     volumes:
             #      - $HOME/.m2:/var/maven/.m2
       - $PWD/MassBank-Project:/project
@@ -38,7 +38,7 @@ services:
         #user: ${CURRENT_UID}
 
   dbupdate:
-    image: maven:3-jdk-11
+    image: maven:3.6-jdk-11
     volumes:
       - $PWD/MassBank-Project:/project
       - $PWD/conf/full-service.conf:/etc/massbank.conf

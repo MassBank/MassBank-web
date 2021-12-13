@@ -13,10 +13,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,11 +30,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openscience.cdk.exception.CDKException;
@@ -43,8 +47,10 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import massbank.PubchemResolver;
 import massbank.Record;
 import net.sf.jniinchi.INCHI_RET;
+import java.util.stream.Collectors;
 
 /**
  * This class adds meta information automatically where feasible and makes some automatic fixes. Supported functions are:<p>
@@ -59,23 +65,6 @@ public class AddMetaData {
 	private static final Logger logger = LogManager.getLogger(AddMetaData.class);
 	private static final String CHEMSPIDER_API_KEY = "";
 	
-	
-	/**
-	 * Try to fetch the PubChem CID for a given InChI-key using PUG REST. This function gets the first CID which has some SID associated.
-	 * CIDs without SIDs are marked as "Non-Live".
-	 */
-	public static String getPubchemCID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
-		JSONObject jo = new JSONObject(IOUtils.toString(new URL("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/" + INCHIKEY + "/sids/JSON"), Charset.forName("UTF-8")));
-		logger.trace(jo.toString());
-		JSONArray Information = jo.getJSONObject("InformationList").getJSONArray("Information");
-		int len = Information.length();
-		for (int i=0;i<len;i++) {
-			if (Information.getJSONObject(i).has("SID")) {
-				return Integer.toString(Information.getJSONObject(i).getInt("CID"));
-			}
-		}
-		throw new JSONException("No CID found wich has some SIDs associated.");
-	}
 	
 	/**
 	 * Try to fetch the COMPTOX id for a given InChI-key.
@@ -105,6 +94,7 @@ public class AddMetaData {
 		connection.setRequestProperty("apikey", CHEMSPIDER_API_KEY);
 		return Integer.toString(new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getJSONArray("results").getInt(0));
 	}
+	
 	
 	/**
 	 * Automatically format a PUBLICATION tag according to ACS rules if a DOI could be identified.
@@ -197,28 +187,12 @@ public class AddMetaData {
 	/**
 	 * Automatically process CH$LINK section.
 	 */
-	public static String doLink(Record record, String recordstring) {
-		Pattern pattern = Pattern.compile("CH\\$IUPAC: .*\n");
-		Matcher matcher = pattern.matcher(recordstring);
-		int ch_linkPos = -1;
-		if (!matcher.find()) {
-			logger.error("Could not find end of \"CH$IUPAC\" line.");
-			return recordstring;
-		} else {
-			ch_linkPos = matcher.end();
-		}
-		recordstring=recordstring.replaceAll("CH\\$LINK: .*\n", "");
-		
-		
+	public static String doLink(Record record) {
 		// add InChI-Key if missing
-		boolean hasInchiKey=false;
-		String INCHIKEY = null;
-		for (Pair<String, String> link : record.CH_LINK()) {
-			if ("INCHIKEY".equals(link.getKey())) {
-				hasInchiKey=true;
-				INCHIKEY=link.getValue();
-			}
-		}
+		boolean hasInchiKey=record.CH_LINK().containsKey("INCHIKEY");
+		String INCHIKEY = record.CH_LINK().get("INCHIKEY");
+
+		
 		if (!hasInchiKey) {
 			String ch_iupac = record.CH_IUPAC();
 			if (!"N/A".equals(ch_iupac)) {
@@ -249,8 +223,8 @@ public class AddMetaData {
 						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
 					}
 					else {
-						List<Pair<String, String>>ch_link = record.CH_LINK();
-						ch_link.add(Pair.of("INCHIKEY",inchiGen.getInchiKey()));
+						LinkedHashMap<String, String> ch_link = record.CH_LINK();
+						ch_link.put("INCHIKEY",inchiGen.getInchiKey());
 						record.CH_LINK(ch_link);
 						INCHIKEY=inchiGen.getInchiKey();
 						hasInchiKey=true;
@@ -262,52 +236,14 @@ public class AddMetaData {
 		}
 		
 		// add database identifier
-		if (hasInchiKey) {
-			
-			// add PUBCHEM cid if missing
-			List<String> PUBCHEM = new ArrayList<String>();
-			for (Pair<String, String> link : record.CH_LINK()) {
-				if ("PUBCHEM".equals(link.getKey())) {
-					PUBCHEM.add(link.getValue());
-					break;
-				}
-			}
-			if (PUBCHEM.isEmpty()) {
-				try {
-					String PUBCHEMCID=getPubchemCID(INCHIKEY);
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("PUBCHEM", "CID:"+PUBCHEMCID));
-					record.CH_LINK(ch_link);
-				} catch (JSONException | IOException e) {
-					logger.warn("Could not fetch PUBCHEM cid.");
-					logger.trace(e.getMessage());
-				}
-			}
-			else {
-				try {
-					String PUBCHEMCID=getPubchemCID(INCHIKEY);;
-					if (!("CID:"+PUBCHEMCID).equals(PUBCHEM.get(0))) {
-						logger.error("Wrong PUBCHEM database identifier in record file.");
-					}
-				} catch (JSONException | IOException e) {
-					logger.warn("Could not fetch PUBCHEM id for comparision.");
-					logger.trace(e.getMessage());
-				}
-			}
-			
+		
+		if (hasInchiKey) {			
 			// add COMPTOX if missing
-			List<String> COMPTOX = new ArrayList<String>();
-			for (Pair<String, String> link : record.CH_LINK()) {
-				if ("COMPTOX".equals(link.getKey())) {
-					COMPTOX.add(link.getValue());
-					break;
-				}
-			}
-			if (COMPTOX.isEmpty()) {
+			if (!record.CH_LINK().containsKey("COMPTOX")) {
 				try {
 					String COMPTOXID=getComptoxID(INCHIKEY);
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("COMPTOX", COMPTOXID));
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("COMPTOX", COMPTOXID);
 					record.CH_LINK(ch_link);
 				} catch (JSONException | IOException e) {
 					logger.warn("Could not fetch COMPTOX id.");
@@ -317,7 +253,7 @@ public class AddMetaData {
 			else {
 				try {
 					String COMPTOXID=getComptoxID(INCHIKEY);
-					if (!COMPTOXID.equals(COMPTOX.get(0))) {
+					if (!COMPTOXID.equals(record.CH_LINK().get("COMPTOX"))) {
 						logger.error("Wrong COMPTOX database identifier in record file.");
 					}
 				} catch (JSONException | IOException e) {
@@ -326,19 +262,12 @@ public class AddMetaData {
 				}
 			}
 			
-			// add Chemspider
-			List<String> CHEMSPIDER = new ArrayList<String>();
-			for (Pair<String, String> link : record.CH_LINK()) {
-				if ("CHEMSPIDER".equals(link.getKey())) {
-					CHEMSPIDER.add(link.getValue());
-					break;
-				}
-			}
-			if (CHEMSPIDER.isEmpty()) {
+			// add Chemspider if missing
+			if (!record.CH_LINK().containsKey("CHEMSPIDER")) {
 				try {
 					String CHEMSPIDERID=getChemspiderID(INCHIKEY);
-					List<Pair<String, String>>ch_link = record.CH_LINK();
-					ch_link.add(Pair.of("CHEMSPIDER", CHEMSPIDERID));
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("CHEMSPIDER", CHEMSPIDERID);
 					record.CH_LINK(ch_link);
 				} catch (JSONException | IOException e) {
 					logger.warn("Could not fetch CHEMSPIDER id.");
@@ -348,7 +277,7 @@ public class AddMetaData {
 			else {
 				try {
 					String CHEMSPIDERID=getChemspiderID(INCHIKEY);
-					if (!CHEMSPIDERID.equals(CHEMSPIDER.get(0))) {
+					if (!CHEMSPIDERID.equals(record.CH_LINK().get("CHEMSPIDER"))) {
 						logger.error("Wrong CHEMSPIDER database identifier in record file.");
 					}
 				} catch (JSONException | IOException e) {
@@ -358,13 +287,7 @@ public class AddMetaData {
 			}
 		}
 		
-		StringBuilder sb=new StringBuilder();
-		for (Pair<String, String> link : record.CH_LINK()) {
-			sb.append("CH$LINK: " + link.getKey() + " " + link.getValue() + "\n");
-		}
-		recordstring=recordstring.substring(0, ch_linkPos) + sb.toString() + recordstring.substring(ch_linkPos, recordstring.length());
-
-		return recordstring;
+		return record.toString();
 	}
 	
 	/**
@@ -387,8 +310,156 @@ public class AddMetaData {
 		
 		return recordstring;
 	}
+	
+	/**
+	 * Automatically add CH$LINK: INCHIKEY
+	 * 	if no CH$IUPAC entry is available - do nothing
+	 *  if CH$IUPAC entry is available and no CH$LINK: INCHIKEY - add InChIKey
+	 *  if CH$IUPAC entry is available and CH$LINK: INCHIKEY - correct InChIKey
+	 */
+	public static String doAddInchikey(Record record) {
+		String ch_iupac = record.CH_IUPAC();
+		
+		if ("N/A".equals(ch_iupac)) return record.toString();
+		
+		try {
+			// Get InChIToStructure
+			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
+			INCHI_RET ret = intostruct.getReturnStatus();
+			if (ret == INCHI_RET.WARNING) {
+				// Structure generated, but with warning message
+				logger.warn("InChI warning: " + intostruct.getMessage());
+				logger.warn(record.ACCESSION());
+			} 
+			else if (ret != INCHI_RET.OKAY) {
+				// Structure generation failed
+				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + ch_iupac + ".");
+				return record.toString();
+			}
+			// Structure generation succeeded
+			IAtomContainer m = intostruct.getAtomContainer();
+			// prepare an InChIGenerator
+			InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
+			ret = inchiGen.getReturnStatus();
+			if (ret == INCHI_RET.WARNING) {
+				// InChI generated, but with warning message
+				logger.warn("InChI warning: " + inchiGen.getMessage());
+				logger.warn(record.ACCESSION());
+			} else if (ret != INCHI_RET.OKAY) {
+				// InChI generation failed
+				logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+				return record.toString();
+			}
+			
+			String INCHIKEY = inchiGen.getInchiKey();
+			if (!record.CH_LINK().containsKey("INCHIKEY")) {
+				LinkedHashMap<String, String> ch_link = record.CH_LINK();
+				ch_link.put("INCHIKEY", INCHIKEY);
+				//sort
+				ch_link=ch_link.entrySet().stream()
+						.sorted(Map.Entry.comparingByKey())
+						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+				record.CH_LINK(ch_link);
+			}
+			else {
+				if (!INCHIKEY.equals(record.CH_LINK().get("INCHIKEY"))) {
+					logger.error("Wrong INCHIKEY identifier in record file.");
+				}
+			}
+		} catch (CDKException e) {
+			logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
+		}		 			
+		return record.toString();
+	}
+	
+	
+	/**
+	 * Automatically fix CH$LINK: PUBCHEM if possible
+	 * 	if no CH$LINK: INCHIKEY is available - do nothing
+	 *  if CH$LINK: INCHIKEY is available and no CH$LINK: PUBCHEM - get and add PubChem CID
+	 */
+	public static String doAddPubchemCID(Record record) {
+		// get InChIKey first
+		if (!record.CH_LINK().containsKey("INCHIKEY")) {
+			// no InChIKey -> return
+			return record.toString();
+		}
+		String inchiKey = record.CH_LINK().get("INCHIKEY");
+		
+		// fetch PubChem CIDs
+		PubchemResolver pr = new PubchemResolver(inchiKey);
+		Integer preferedCid = pr.getPreferred();
+		if (preferedCid == null) {
+			// no prefered CID -> return 
+			logger.error("Could not fetch PubChem CID for " + inchiKey + ".");
+			return record.toString();
+		}
+		
+		//if PUBCHEM is undefined -> add
+		if (!record.CH_LINK().containsKey("PUBCHEM")) {
+			System.out.println("Add PubChem CID "+ preferedCid + ".");
+			LinkedHashMap<String, String> ch_link = record.CH_LINK();
+			ch_link.put("PUBCHEM", "CID:"+preferedCid);
+			//sort
+			ch_link = ch_link.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+			record.CH_LINK(ch_link);
+			return record.toString();
+		}
+		//else PUBCHEM is defined
+		else {
+			// parse existing CID
+			Integer cidFromCH_LINK = null;
+			String[] cidFromCH_LINKToken = record.CH_LINK().get("PUBCHEM").split(":");
+			if (cidFromCH_LINKToken.length == 2 || cidFromCH_LINKToken[0].equals("CID"))  {
+				cidFromCH_LINK  =Integer.parseInt(cidFromCH_LINKToken[1]);
+			}
+			
+			if (cidFromCH_LINK == null) {
+				// no well defined CID -> return
+				System.out.println("PubChem CID is not correct formated: " + record.CH_LINK().get("PUBCHEM"));
+				return record.toString();
+			}
+			
+			if (cidFromCH_LINK.equals(preferedCid)) {
+				// all good -> return
+				System.out.println("PubChem CID is correct.");
+				return record.toString();
+			}
+			else {
+				if  (pr.isCid(cidFromCH_LINK)) {
+					System.out.println("PubChem CID is correct but not preferred. Replacing...");
+					LinkedHashMap<String, String> ch_link = record.CH_LINK();
+					ch_link.put("PUBCHEM", "CID:"+preferedCid);
+					//sort
+					ch_link = ch_link.entrySet().stream()
+						.sorted(Map.Entry.comparingByKey())
+						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
+					record.CH_LINK(ch_link);
+					return record.toString();					
+				}
+				else {
+					System.out.println("PubChem CID is not correct.");
+				}
+			}
+		}
+		return record.toString();
+	}
+	
 
 	public static void main(String[] arguments) throws Exception {
+		// load version and print
+		final Properties properties = new Properties();
+		try {
+			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		System.out.println("AddMetaData version: " + properties.getProperty("version"));
+
+		// parse command line
 		Options options = new Options();
 		options.addOption("a", "all", false, "execute all operations");
 		options.addOption("p", "publication", false, "format PUBLICATION tag from given DOI to follow the guidelines of ACS");
@@ -396,76 +467,97 @@ public class AddMetaData {
 		options.addOption("l", "link", false, "add links to CH$LINK tag");
 		options.addOption("r", "rewrite", false, "read and rewrite the file.");
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
+		options.addOption(null, "add-inchikey", false, "Add or fix InChIKey from the value in CH$IUPAC");
+		options.addOption(null, "add-pubchemcid", false, "Add or fix PubChem CID from InChIKey and flag Problems.");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
 		}
-		catch(ParseException exp) {
+		catch(ParseException e) {
 	        // oops, something went wrong
-	        System.err.println( "Parsing command line failed. Reason: " + exp.getMessage() );
+	        System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
 	        HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
+			formatter.printHelp("AddMetaData [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
 	    }
-		
-		String filename = null;
-		if (cmd.getArgList().size() == 1) filename=cmd.getArgList().get(0);
-		else {
+		if (cmd.getArgList().size() == 0) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
-			System.exit(1);
+			formatter.printHelp("AddMetaData [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+	        System.exit(1);
 		}
 		
-		if (cmd.getOptions().length == 0) {
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE>", options);
-			System.exit(1);
-		}
-		
-		
-		System.out.println("Formatting: \""+filename+"\"");
-		String recordstring = null;
-		try {
-			recordstring = FileUtils.readFileToString(new File(filename), StandardCharsets.UTF_8);
-		}
-		catch(IOException exp) {
-			System.err.println( "Reading file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
-			System.exit(1);
-		}
-		
-		// read record in less strict mode
-		Record record = Validator.validate(recordstring, "", false);
-		if (record == null) {
-			System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
-			System.exit(1);
-		}
-		else if (record.DEPRECATED()) {
-			System.exit(0);
-		}
-		
-		String recordstring2 = recordstring;
-		if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
-		if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
-		if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record, recordstring2);
-		if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
-		
-		if (cmd.hasOption("r")) recordstring2=record.toString();
-		
-		if (!recordstring.equals(recordstring2)) {
-			Record record2 = Validator.validate(recordstring2, "");
-			if (record2 == null) {
-				System.err.println( "Validation of new created record file failed. Exiting.");
-				System.exit(1);
+		// find all files in arguments and all *.txt files in directories and subdirectories
+		// specified in arguments 
+		List<File> recordfiles = new ArrayList<>();
+		for (String argument : cmd.getArgList()) {
+			File argumentf = new File(argument);
+			if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
+				recordfiles.add(argumentf);
+			} else if (argumentf.isDirectory()) {
+				recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
+			} else {
+				logger.warn("Argument " + argument + " could not be processed.");
 			}
+		}
+		
+		if (recordfiles.size() == 0 ) {
+			logger.error("No files found.");
+			System.exit(1);
+		}
+		
+		// validate all files
+		logger.trace("Validating " + recordfiles.size() + " files");
+		AtomicBoolean doAddPubchemCid = new AtomicBoolean(cmd.hasOption("add-pubchemcid"));
+		recordfiles.parallelStream().forEach(filename -> {
+			String recordString;
+			logger.info("Working on " + filename + ".");
 			try {
-				FileUtils.write(new File(filename), recordstring2, StandardCharsets.UTF_8);
-			}
-			catch(IOException exp) {
-				System.err.println( "Writing file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
+				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				// read record in less strict mode
+				Set<String> config = new HashSet<String>();
+				config.add("legacy");
+				config.add("weak");
+				Record record = Validator.validate(recordString, "", config);
+				if (record == null) {
+					System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
+					System.exit(1);
+				} else if (record.DEPRECATED()) {
+					System.exit(0);
+				}
+				
+				String recordstring2 = recordString;
+				//if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
+				//if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
+				//if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record);
+				//if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
+				
+				//if (cmd.hasOption("add-inchikey")) {
+				//	recordstring2=doAddInchikey(record);
+				//}
+				
+				if (doAddPubchemCid.get()) {
+					recordstring2=doAddPubchemCID(record);
+				}
+				
+				config = new HashSet<String>();
+				if (!recordString.equals(recordstring2)) {
+					Record record2 = Validator.validate(recordString, "", config);
+					if (record2 == null) {
+						System.err.println( "Validation of new created record file failed. Do not write.");
+					} else {
+						try {
+							FileUtils.write(filename, recordstring2, StandardCharsets.UTF_8);
+						}
+						catch(IOException exp) {
+							System.err.println( "Writing file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
+							System.exit(1);
+						}
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 				System.exit(1);
-			}
-		}
-		
-		System.exit(0);
+			}	
+		});
 	}
 }

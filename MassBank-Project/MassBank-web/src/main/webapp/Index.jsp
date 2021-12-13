@@ -84,9 +84,14 @@
 						<div class="w3-cell w3-animate-right w3-blue w3-text-dark-grey w3-hover-text-white w3-padding w3-round">
 							<a href="About" style="text-decoration: none;"><b>>> Learn More</b></a>
 						</div>
-					</div>	
+					</div>
 				</div>
 			</div>
+		</div>
+		<div class="w3-large">
+			MassBank is a community effort and <span class="w3-text-blue"><strong>you are invited to contribute</strong></span>. 
+			Please refer to our <a href="https://massbank.github.io/MassBank-documentation/" target="_blank">contributor documentation</a> 
+			and get in touch via <a href="https://github.com/MassBank/MassBank-data" target="_blank">github</a> or <a href="mailto:massbank@massbank.eu">email</a>. 
 		</div>
 	</div>
 		

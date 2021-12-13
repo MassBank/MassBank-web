@@ -6,9 +6,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -144,7 +146,9 @@ Num peaks: 124
 				Record record=null;
 				try {
 					String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					record = Validator.validate(recordString, "");
+					Set<String> config = new HashSet<String>();
+					config.add("legacy");
+					record = Validator.validate(recordString, "", config);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
