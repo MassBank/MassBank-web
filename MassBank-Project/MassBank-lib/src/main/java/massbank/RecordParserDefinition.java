@@ -3,16 +3,26 @@ package massbank;
 import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +41,7 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.petitparser.context.Context;
 import org.petitparser.context.Result;
 import org.petitparser.context.Token;
+import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;
 import org.petitparser.parser.primitive.StringParser;
 import org.petitparser.tools.GrammarDefinition;
@@ -43,21 +54,72 @@ import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
 import net.sf.jniinchi.INCHI_RET;
 
+
 public class RecordParserDefinition extends GrammarDefinition {
 	private static final Logger logger = LogManager.getLogger(RecordParserDefinition.class);
 	
+	// legacy mode to let validation pass on legacy records until they are fixed
 	private final boolean legacy;
+	// weak validation mode to let validation pass for AddMetaData
+	private final boolean weak;
+	// torn on additional validation steps, which require online checks
+	private final boolean online;
 	
-	IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
-	IAtomContainer fromCH_SMILES = SilentChemObjectBuilder.getInstance().newAtomContainer();
-	String InChiKeyFromCH_SMILES = "";
-	boolean smilesHasWildcards = false;
-	IAtomContainer fromCH_IUPAC = SilentChemObjectBuilder.getInstance().newAtomContainer();
-	String InChiKeyFromCH_IUPAC = "";
+	private IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
+	private IAtomContainer fromCH_SMILES = SilentChemObjectBuilder.getInstance().newAtomContainer();
+	private String InChiKeyFromCH_SMILES = "";
+	private boolean smilesHasWildcards = false;
+	private IAtomContainer fromCH_IUPAC = SilentChemObjectBuilder.getInstance().newAtomContainer();
+	private String InChiKeyFromCH_IUPAC = "";
+	private String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
 	
-	public RecordParserDefinition(Record callback, boolean strict, boolean legacy) {
-		this.legacy = legacy;
+	private static List<String> getResourceFileAsList(String fileName)  {
+		// Try to load from user DataRootPath
+		File resourceFileFromDataRootPath = null;
+		try {
+			File configRootPath = new File(Config.get().DataRootPath(), ".config");
+			resourceFileFromDataRootPath = new File(configRootPath, fileName);
+		} catch (ConfigurationException e) {
+			logger.trace("Can not get DataRootPath: " + e.getMessage());
+			// resourceFileFromDataRootPath stays null
+		}
+		if ((resourceFileFromDataRootPath != null) && resourceFileFromDataRootPath.exists()) {
+			logger.trace("Loading resource from DataRootPath at: " + resourceFileFromDataRootPath.getAbsolutePath());
+			try (FileReader fr = new FileReader(resourceFileFromDataRootPath); BufferedReader reader = new BufferedReader(fr)) {
+				return reader.lines().collect(Collectors.toList());
+			} catch (IOException e) {
+				logger.error("Can not read resource file: " + e.getMessage());
+			}
+		}
+		// If not found: try to load fallback from internal resources
+		else {
+			logger.trace("Loading internal resource: " + fileName);
+			try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)) {
+				if (is == null)
+				{
+					logger.error("Can not find internal resource file: " + fileName);
+					// no way to recover from this error
+					System.exit(1);
+				}
+				try (InputStreamReader isr = new InputStreamReader(is);
+						BufferedReader reader = new BufferedReader(isr)) {
+					return reader.lines().collect(Collectors.toList());
+				}
+			} catch (IOException e) {
+				logger.error("Can not read internal resource file: " + e.getMessage());
+				// no way to recover from this error
+				System.exit(1);
+			}
+		}
+		return null;
+	}
+	
+	public RecordParserDefinition(Record callback, Set<String> config) {
+		this.legacy = config.contains("legacy");
+		this.weak = config.contains("weak");
+		this.online = config.contains("online");
+		
 		def("start",
 			ref("accession")
 			.seq(ref("deprecated_record")
@@ -98,13 +160,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 //						System.out.println(value);
 //						return value;						
 //					})
-					// check semantic here
-					.callCC((Function<Context, Result> continuation, Context context) -> {
-						return checkSemantic(continuation, context, callback, strict);
-					})
+					
 				)
 			)
 			.end()
+			// check semantic here
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				return checkSemantic(continuation, context, callback);
+			})
 		);
 		
 		// 1.1 Syntax Rules
@@ -310,18 +373,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// License of MassBank Record. Mandatory
 		// Example
 		// LICENSE: CC BY
-		def("allowed_licenses",
-			StringParser.of("CC0")			
-			.or(StringParser.of("CC BY-NC-ND"))
-			.or(StringParser.of("CC BY-NC-SA"))
-			.or(StringParser.of("CC BY-NC"))
-			.or(StringParser.of("CC BY-SA"))
-			.or(StringParser.of("CC BY"))
-		);
+		Parser allowed_licenses = null;
+		{
+			Iterator<String> i = getResourceFileAsList("recordformat/license.ini").iterator();
+			if (i.hasNext()) {
+				allowed_licenses = StringParser.of(i.next());
+				while (i.hasNext()) {
+					allowed_licenses = allowed_licenses.or(StringParser.of(i.next()));
+				}
+			}
+		}
 		def("license",
 			StringParser.of("LICENSE")
 			.seq(ref("tagsep"))
-			.seq(ref("allowed_licenses")
+			.seq(allowed_licenses
 				.map((String value) -> {
 					callback.LICENSE(value);
 					return value;
@@ -861,29 +926,20 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// CH$LINK: KEGG C00037
 		// CH$LINK: PUBCHEM SID: 11916 CID:182232
 		// CH$LINK fields should be arranged by the alphabetical order of database names.
-		def("ch_link_subtag",
-			StringParser.of("CAS ")
-			.or(StringParser.of("CAYMAN "))
-			.or(StringParser.of("CHEBI "))
-			.or(StringParser.of("CHEMBL "))
-			.or(StringParser.of("CHEMPDB "))
-			.or(StringParser.of("CHEMSPIDER "))
-			.or(StringParser.of("COMPTOX "))
-			.or(StringParser.of("HMDB "))
-			.or(StringParser.of("INCHIKEY "))
-			.or(StringParser.of("KAPPAVIEW "))
-			.or(StringParser.of("KEGG "))
-			.or(StringParser.of("KNAPSACK "))
-			.or(StringParser.of("LIPIDBANK "))
-			.or(StringParser.of("LIPIDMAPS "))
-			.or(StringParser.of("NIKKAJI "))
-			.or(StringParser.of("PUBCHEM "))
-			.or(StringParser.of("ZINC "))
-		);
+		Parser ch_link_subtag = null;
+		{
+			Iterator<String> i = getResourceFileAsList("recordformat/ch_link.ini").iterator();
+			if (i.hasNext()) {
+				ch_link_subtag = StringParser.of(String.format("%s ", i.next()));
+				while (i.hasNext()) {
+					ch_link_subtag = ch_link_subtag.or(StringParser.of(String.format("%s ", i.next())));
+				}
+			}
+		}
 		def("ch_link",
 			StringParser.of("CH$LINK")
 			.seq(ref("tagsep"))
-			.seq(ref("ch_link_subtag"))
+			.seq(ch_link_subtag)
 			.seq(Token.NEWLINE_PARSER.not()).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.map((List<String> value) -> {
@@ -893,6 +949,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 				Result r = continuation.apply(context);
 				if (r.isSuccess()) {
 					Pair<String,String> p = r.get();
+					LinkedHashMap<String, String> ch_link = callback.CH_LINK();
+					if (ch_link.containsKey(p.getKey())) {
+						logger.error("Dupplicate entry "+ p.getKey() + " in CH$LINK.\n");
+						return context.failure("Dupplicate entry "+ p.getKey() + " in CH$LINK.\n");
+					}
 					if ("INCHIKEY".equals(p.getKey())) {
 						if (!p.getValue().equals(InChiKeyFromCH_IUPAC)) {
 							logger.error("InChIKey generated from InChI string in \"CH$IUPAC\" field does not match InChIKey in \"CH$LINK\".\n"
@@ -902,16 +963,24 @@ public class RecordParserDefinition extends GrammarDefinition {
 									+ "CH$LINK: INCHIKEY:  " + p.getValue() + "\n"
 									+ "InChIKey generated: " + InChiKeyFromCH_IUPAC);
 						}
+						InChiKeyFromCH_LINK=p.getValue();
 					}
-				}
+					ch_link.put(p.getKey(), p.getValue());
+					callback.CH_LINK(ch_link);
+				} 
 				return r;
 			})
 
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()		
 			.map((List<Pair<String,String>> value) -> {
-//				System.out.println(value);
-				callback.CH_LINK(value);
+//				LinkedHashMap<String, String> ch_link = new LinkedHashMap<String, String>();
+//				for (Pair<String,String> key : value) {
+//					ch_link.get(key)
+//				}
+//				
+////				System.out.println(value);
+//				callback.CH_LINK(value);
 				return value;
 			})
 		);
@@ -1699,12 +1768,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 		);
 	}
 	
-	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback, boolean strict) {
+	private Result checkSemantic(Function<Context, Result> continuation, Context context, Record callback) {
 		Result r = continuation.apply(context);
-		if (r.isSuccess()) {
-			// if any structural information is in CH$IUPAC, then CH$FORMULA and CH$SMILES must be defined and match
+		if (r.isSuccess() && !callback.DEPRECATED()) {
+			// if any structural information is in CH$IUPAC, then CH$FORMULA, CH$SMILES CH$LINK: INCHIKEY must be defined and match
 			if (!"N/A".equals(callback.CH_IUPAC()))
 			{
+				//compare SMILES
 				if ("N/A".equals(callback.CH_SMILES())) return context.failure("If CH$IUPAC is defined, CH$SMILES can not be \"N/A\".");
 				// compare the structures in CH$SMILES and CH$IUPAC with the help of InChIKeys
 				logger.trace("InChIKey from CH$SMILES: " + InChiKeyFromCH_SMILES);
@@ -1725,6 +1795,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					}
 				}
 				
+				//compare formula
 				if ("N/A".equals(callback.CH_FORMULA())) return context.failure("If CH$IUPAC is defined, CH$FORMULA can not be \"N/A\".");
 				// this code compares the molecular formula from the InChI with CH$FORMULA
 				String formulaFromInChI = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(fromCH_IUPAC));
@@ -1734,6 +1805,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 					return context.failure("Formula generated from InChI string in \"CH$IUPAC\" field does not match formula in \"CH$FORMULA\".\n"
 							+ "Formula from CH$IUPAC:   " + formulaFromInChI + "\n"
 							+ "Formula from CH$FORMULA: " + callback.CH_FORMULA());
+				}
+				
+				if (!weak) {
+					//compare InChIKey
+					if (InChiKeyFromCH_LINK.equals("")) {
+						return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
+					}
 				}
 			}
 			else if (!"N/A".equals(callback.CH_SMILES())) 
@@ -1816,7 +1894,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 			}
 			if (duplicates.size()>0) {
-				if (strict ) {
+				if (!weak) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("There are duplicate entries in \"CH$NAME\" field.");
 					return context.failure(sb.toString());
@@ -1825,20 +1903,32 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 			}
 			
-			
-			// check for duplicate entries in CH$LINK
-			List<Pair<String, String>> ch_link = callback.CH_LINK();
-			duplicates = new LinkedHashSet<String>();
-			uniques = new HashSet<String>();
-			for(Pair<String, String> c : ch_link) {
-				if(!uniques.add(c.getKey())) {
-					duplicates.add(c.getKey());
+			// check things online
+			if (online) {
+				if (callback.CH_LINK().containsKey("INCHIKEY")) {
+					String inchiKey = callback.CH_LINK().get("INCHIKEY");
+					if (callback.CH_LINK().containsKey("PUBCHEM")) {
+						String pubChem = callback.CH_LINK().get("PUBCHEM");
+						PubchemResolver pr = new PubchemResolver(inchiKey);
+						Integer preferredCid = pr.getPreferred();
+						if (preferredCid != null) {
+							if (!pubChem.equals("CID:"+preferredCid)) {
+								StringBuilder sb = new StringBuilder();
+								sb.append("CH$LINK: PUBCHEM lists " + pubChem + "\n");
+								sb.append("but PUG rest reports CID:"+preferredCid + " preferred PubChem CID\n");
+								sb.append("for InChIKey " + inchiKey + ".");
+								return context.failure(sb.toString());
+							}
+						}
+						else {
+							StringBuilder sb = new StringBuilder();
+							sb.append("CH$LINK: PUBCHEM lists " + pubChem + "\n"); 
+							sb.append("but PUG rest reports no CID\n");
+							sb.append("for InChIKey " + inchiKey + ".");
+							return context.failure(sb.toString());
+						}
+					}
 				}
-			}
-			if (duplicates.size()>0) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("There are duplicate entries in \"CH$LINK\" field.");
-				return context.failure(sb.toString());
 			}
 			
 		}

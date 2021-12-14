@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
-	<version>2.1.9-SNAPSHOT</version>
-	<name>MassBank Project</name>
+	<version>2.1.10-SNAPSHOT</version>
+	<name>MassBank-Project</name>
 	<url>https://github.com/MassBank/MassBank-web</url>
 	<packaging>pom</packaging>
 	<modules>
@@ -15,12 +15,25 @@
 		<module>MassBank-OpenAPI</module>
 	</modules>
 
+	<licenses>
+		<license>
+			<name>GPL-2.0-or-later</name>
+			<url>https://www.gnu.org/licenses/old-licenses/gpl-2.0-standalone.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>MassBank consortium</name>
+		<url>https://github.com/MassBank</url>
+	</organization>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<servlet-api-version>4.0.1</servlet-api-version>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.5</cdk.version>
-		<jdbc.version>2.7.3</jdbc.version>
+		<jdbc.version>2.7.4</jdbc.version>
 		<versionName>${project.version}</versionName>
 		<petitparser-version>2.3.1</petitparser-version>
 	</properties>
@@ -29,7 +42,6 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.0.0-M3</version>
 				<executions>
 					<execution>
 						<id>enforce-maven</id>
@@ -46,10 +58,43 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.0.0</version>
+				<configuration>
+					<licenseName>gpl_v2</licenseName>
+					<organizationName>MassBank consortium</organizationName>
+					<inceptionYear>2016</inceptionYear>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.spdx</groupId>
+				<artifactId>spdx-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-spdx</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>createSPDX</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<licenseDeclared>GPL-2.0-or-later</licenseDeclared>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.1</version>
 					<configuration>
@@ -59,49 +104,74 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>3.2.3</version>
+					<version>3.3.2</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>3.0.0-M4</version>
+					<version>3.0.0-M5</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>3.0.0-M1</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
 					<version>3.0.0-M1</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.9.0</version>
+					<version>3.9.1</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M4</version>
+					<version>3.0.0-M5</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>3.2.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
-				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>3.3.0</version>
+				</plugin>
+				<plugin>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-dependency-plugin</artifactId>
+                                        <version>3.2.0</version>
+                                </plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>2.0.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.spdx</groupId>
+					<artifactId>spdx-maven-plugin</artifactId>
+					<version>0.5.4</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
