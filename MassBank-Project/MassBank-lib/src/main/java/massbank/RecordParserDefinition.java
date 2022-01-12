@@ -52,7 +52,7 @@ import edu.ucdavis.fiehnlab.spectra.hash.core.SplashFactory;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.Ion;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
-import net.sf.jniinchi.INCHI_RET;
+import io.github.dan2097.jnainchi.InchiStatus;
 
 
 public class RecordParserDefinition extends GrammarDefinition {
@@ -808,12 +808,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 							if (!smilesHasWildcards) {							
 								try {
 									InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_SMILES);
-									INCHI_RET ret = inchiGen.getReturnStatus();
-									if (ret == INCHI_RET.WARNING) {
+									InchiStatus ret = inchiGen.getStatus();
+									if (ret == InchiStatus.WARNING) {
 										// Structure generated, but with warning message
 										logger.warn("InChI warning: " + inchiGen.getMessage());
 									} 
-									else if (ret != INCHI_RET.OKAY) {
+									else if (ret == InchiStatus.ERROR) {
 										// InChI generation failed
 										return context.failure("Can not create InChIKey from SMILES string in \"CH$SMILES\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
 									}
@@ -859,15 +859,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 							// validate InChI
 							try {
 								InChIToStructure intoStruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), SilentChemObjectBuilder.getInstance());
-								INCHI_RET ret = intoStruct.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
+								InchiStatus ret = intoStruct.getStatus();
+								if (ret == InchiStatus.WARNING) {
 									// Structure generated, but with warning message
 									logger.warn("InChI warning: " + intoStruct.getMessage());
 									logger.warn(callback.ACCESSION());
 								} 
-								else if (ret != INCHI_RET.OKAY) {
+								else if (ret == InchiStatus.ERROR) {
 									// Structure generation failed
-									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + ret.toString() + " [" + intoStruct.getMessage() + "] for " + r.get() + ".");
+									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + intoStruct.getMessage() + " for " + r.get() + ".");
 								}
 								fromCH_IUPAC = intoStruct.getAtomContainer();
 							} catch (CDKException e) {
@@ -876,14 +876,14 @@ public class RecordParserDefinition extends GrammarDefinition {
 							// create an InChiKey
 							try {
 								InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_IUPAC);
-								INCHI_RET ret = inchiGen.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
+								InchiStatus ret = inchiGen.getStatus();
+								if (ret == InchiStatus.WARNING) {
 									// Structure generated, but with warning message
 									logger.warn("InChI warning: " + inchiGen.getMessage());
 								} 
-								else if (ret != INCHI_RET.OKAY) {
+								else if (ret == InchiStatus.ERROR) {
 									// Structure generation failed
-									return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
+									return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + inchiGen.getMessage() + " for " + r.get() + ".");
 								}
 								
 								// compare the temporary InChI from generator with the original InChI, should be the same, otherwise could be a problem

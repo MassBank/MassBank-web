@@ -50,7 +50,7 @@ import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.sf.jniinchi.INCHI_RET;
+import io.github.dan2097.jnainchi.InchiStatus;
 
 /**
  * This class keeps all data of a record.
@@ -288,14 +288,14 @@ public class Record {
 		try {
 			// Get InChIToStructure
 			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
-			INCHI_RET ret = intostruct.getReturnStatus();
-			if (ret == INCHI_RET.WARNING) {
+			InchiStatus ret = intostruct.getStatus();
+			if (ret == InchiStatus.WARNING) {
 				// Structure generated, but with warning message
 				logger.warn("InChI warning: \"" + intostruct.getMessage() + "\" converting \"" + ch_iupac + "\".");
 			} 
-			else if (ret != INCHI_RET.OKAY) {
+			else if (ret == InchiStatus.ERROR) {
 				// Structure generation failed
-				logger.error("Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for \"" + ch_iupac + "\".");
+				logger.error("Structure generation failed: " + intostruct.getMessage() + " converting \"" + ch_iupac + "\".");
 				return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 			}
 			return intostruct.getAtomContainer();

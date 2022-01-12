@@ -47,9 +47,9 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import io.github.dan2097.jnainchi.InchiStatus;
 import massbank.PubchemResolver;
 import massbank.Record;
-import net.sf.jniinchi.INCHI_RET;
 import java.util.stream.Collectors;
 
 /**
@@ -199,28 +199,28 @@ public class AddMetaData {
 				try {
 					// Get InChIToStructure
 					InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
-					INCHI_RET ret = intostruct.getReturnStatus();
-					if (ret == INCHI_RET.WARNING) {
+					InchiStatus ret = intostruct.getStatus();
+					if (ret == InchiStatus.WARNING) {
 						// Structure generated, but with warning message
 						logger.warn("InChI warning: " + intostruct.getMessage());
 						logger.warn(record.ACCESSION());
 					} 
-					else if (ret != INCHI_RET.OKAY) {
+					else if (ret == InchiStatus.ERROR) {
 						// Structure generation failed
-						logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + ch_iupac + ".");
+						logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + intostruct.getMessage() + " for " + ch_iupac + ".");
 					}
 					// Structure generation succeeded
 					IAtomContainer m = intostruct.getAtomContainer();
 					// prepare an InChIGenerator
 					InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
-					ret = inchiGen.getReturnStatus();
-					if (ret == INCHI_RET.WARNING) {
+					ret = inchiGen.getStatus();
+					if (ret == InchiStatus.WARNING) {
 						// InChI generated, but with warning message
 						logger.warn("InChI warning: " + inchiGen.getMessage());
 						logger.warn(record.ACCESSION());
-					} else if (ret != INCHI_RET.OKAY) {
+					} else if (ret == InchiStatus.ERROR) {
 						// InChI generation failed
-						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + inchiGen.getMessage() + " for " + ch_iupac + ".");
 					}
 					else {
 						LinkedHashMap<String, String> ch_link = record.CH_LINK();
@@ -325,29 +325,29 @@ public class AddMetaData {
 		try {
 			// Get InChIToStructure
 			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
-			INCHI_RET ret = intostruct.getReturnStatus();
-			if (ret == INCHI_RET.WARNING) {
+			InchiStatus ret = intostruct.getStatus();
+			if (ret == InchiStatus.WARNING) {
 				// Structure generated, but with warning message
 				logger.warn("InChI warning: " + intostruct.getMessage());
 				logger.warn(record.ACCESSION());
 			} 
-			else if (ret != INCHI_RET.OKAY) {
+			else if (ret == InchiStatus.ERROR) {
 				// Structure generation failed
-				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + ch_iupac + ".");
+				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + intostruct.getMessage() + " for " + ch_iupac + ".");
 				return record.toString();
 			}
 			// Structure generation succeeded
 			IAtomContainer m = intostruct.getAtomContainer();
 			// prepare an InChIGenerator
 			InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
-			ret = inchiGen.getReturnStatus();
-			if (ret == INCHI_RET.WARNING) {
+			ret = inchiGen.getStatus();
+			if (ret == InchiStatus.WARNING) {
 				// InChI generated, but with warning message
 				logger.warn("InChI warning: " + inchiGen.getMessage());
 				logger.warn(record.ACCESSION());
-			} else if (ret != INCHI_RET.OKAY) {
+			} else if (ret == InchiStatus.ERROR) {
 				// InChI generation failed
-				logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+				logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + inchiGen.getMessage() + " for " + ch_iupac + ".");
 				return record.toString();
 			}
 			
