@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>MassBank-Project</artifactId>
@@ -15,7 +13,7 @@
 	<name>MassBank OpenAPI REST interface</name>
 
 	<properties>
-		<swagger-codegen-version>3.0.31</swagger-codegen-version>
+		<swagger-codegen-version>3.0.32</swagger-codegen-version>
 		<swagger-core-version>2.1.12</swagger-core-version>
 		<jersey2-version>2.35</jersey2-version>
 		<jackson-version>2.13.1</jackson-version>
@@ -97,58 +95,47 @@
 		<dependency>
 			<groupId>de.ipb-halle.msbi</groupId>
 			<artifactId>MassBank-lib</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.codegen.v3</groupId>
 			<artifactId>swagger-codegen-maven-plugin</artifactId>
-			<version>${swagger-codegen-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2</artifactId>
 			<scope>compile</scope>
-			<version>${swagger-core-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
-			<version>${jersey2-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-multipart</artifactId>
-			<version>${jersey2-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.inject</groupId>
 			<artifactId>jersey-hk2</artifactId>
-			<version>${jersey2-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
-			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.petitparser</groupId>
 			<artifactId>petitparser-core</artifactId>
-			<version>${petitparser-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.32</version>
 		</dependency>
 	</dependencies>
 </project>
