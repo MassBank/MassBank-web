@@ -11,11 +11,11 @@ services:
       MYSQL_ROOT_PASSWORD: 123blah321
     restart: always
 
-  tomcat:
-    image: tomcat:9-jdk11
+  tomee:
+    image: tomee:8
     volumes:
-      - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomcat/webapps/MassBank.war
-      - $PWD/MassBank-Project/MassBank-OpenAPI/target/MassBank-OpenAPI.war:/usr/local/tomcat/webapps/MassBank-OpenAPI.war  
+      - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomee/webapps/MassBank.war
+      - $PWD/MassBank-Project/MassBank-OpenAPI/target/MassBank-OpenAPI.war:/usr/local/tomee/webapps/MassBank-OpenAPI.war  
       - $PWD/conf/full-service.conf:/etc/massbank.conf
       - $PWD/../MassBank-data:/MassBank-data  
     ports:
