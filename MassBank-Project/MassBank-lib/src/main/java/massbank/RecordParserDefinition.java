@@ -53,6 +53,7 @@ import edu.ucdavis.fiehnlab.spectra.hash.core.types.Ion;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
 import io.github.dan2097.jnainchi.InchiStatus;
+import io.github.dan2097.jnainchi.JnaInchi;
 
 
 public class RecordParserDefinition extends GrammarDefinition {
@@ -874,29 +875,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());		 				
 							}
 							// create an InChiKey
-							try {
-								InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_IUPAC);
-								InchiStatus ret = inchiGen.getStatus();
-								if (ret == InchiStatus.WARNING) {
-									// Structure generated, but with warning message
-									logger.warn("InChI warning: " + inchiGen.getMessage());
-								} 
-								else if (ret == InchiStatus.ERROR) {
-									// Structure generation failed
-									return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + inchiGen.getMessage() + " for " + r.get() + ".");
-								}
-								
-								// compare the temporary InChI from generator with the original InChI, should be the same, otherwise could be a problem
-								String tmpInChI = inchiGen.getInchi(); 
-								if (!tmpInChI.equals(r.get())) {
-									return context.failure("Temporary InChI for InChIKey generation differs from InChI string in \"CH$IUPAC\" field.\n" 
-											+ "InChI from CH$IUPAC: " + r.get() + "\n"
-											+ "Temporary InChI:     " + tmpInChI);
-								}
-								InChiKeyFromCH_IUPAC = inchiGen.getInchiKey();
-							} catch (CDKException e) {
-								return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());
-							}
+							InChiKeyFromCH_IUPAC = JnaInchi.inchiToInchiKey(r.get()).getInchiKey();
 						}
 					}
 					return r;

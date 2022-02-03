@@ -135,6 +135,11 @@
 				<artifactId>httpclient</artifactId>
 				<version>4.5.13</version>
 			</dependency>
+			<dependency>
+				<groupId>io.github.dan2097</groupId>
+				<artifactId>jna-inchi-all</artifactId>
+				<version>1.1</version>
+			</dependency>
 			<!-- MassBank-web -->
 			<dependency>
 				<groupId>org.jfree</groupId>

@@ -81,6 +81,10 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.github.dan2097</groupId>
+			<artifactId>jna-inchi-all</artifactId>
+		</dependency>
 	</dependencies>
 
 
