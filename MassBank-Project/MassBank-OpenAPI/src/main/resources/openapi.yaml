@@ -1,4 +1,4 @@
-openapi: 3.0.2
+openapi: 3.0.3
 info:
   title: MassBank-OpenAPI
   description: This is the MassBank REST API
@@ -18,9 +18,46 @@ servers:
 
 tags:
   - name: record
-    description: Search and list records
+    description: Add and Search records
     
+components:
+  securitySchemes:
+    uploadBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    #JSON Web Token
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      
+
 paths:
+  /record/upload:
+    post:
+      summary: Uploads the record to the database
+      tags:
+        - record
+      security:
+        - uploadBearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+           description: Could not insert dataset
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                file:
+                  type: string
+                  format: binary
   /record/{id}:
     get:
       summary: Returns the content of one record

@@ -25,7 +25,14 @@ import javax.validation.constraints.*;
 
 
 public class RecordApiServiceImpl extends RecordApiService {
-    @Override
+    
+	@Override
+	public Response recordUploadPost(String filename, InputStream fileInputStream,
+			FormDataContentDisposition fileDetail, SecurityContext securityContext) throws NotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
     public Response recordGet( String name,  String formula, SecurityContext securityContext) throws NotFoundException {
     	System.out.println(name);
 //        RecordSearchParser parser = new RecordSearchParser();
@@ -88,4 +95,5 @@ public class RecordApiServiceImpl extends RecordApiService {
 		String recordstring = record.toString();
 		return Response.ok().entity(recordstring).build();
 	}
+	
 }
