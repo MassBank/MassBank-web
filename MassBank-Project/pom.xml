@@ -29,7 +29,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cdk.groupId>org.openscience.cdk</cdk.groupId>
 		<cdk.version>2.7.1</cdk.version>
-		<jdbc.version>3.0.3</jdbc.version>
+		<jdbc.version>2.7.5</jdbc.version>
 		<versionName>${project.version}</versionName>
 		<petitparser-version>2.3.1</petitparser-version>
 		<swagger-codegen-version>3.0.32</swagger-codegen-version>
