@@ -29,6 +29,12 @@ components:
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
+  schemas:
+    SomeObj:
+      type: object
+      properties:
+        someProp:
+          type: string
       
 
 paths:

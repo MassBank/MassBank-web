@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
@@ -27,17 +29,15 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<cdk.groupId>org.openscience.cdk</cdk.groupId>
+		<versionName>${project.version}</versionName>
 		<cdk.version>2.7.1</cdk.version>
 		<jdbc.version>3.0.4</jdbc.version>
-		<versionName>${project.version}</versionName>
 		<petitparser-version>2.3.1</petitparser-version>
-		<swagger-codegen-version>3.0.31</swagger-codegen-version>
-		<swagger-core-version>2.2.0</swagger-core-version>
 		<jersey2-version>3.0.4</jersey2-version>
 		<jackson-version>2.13.2</jackson-version>
 		<jetty-version>9.4.24.v20191120</jetty-version>
 		<logback-version>1.2.8</logback-version>
+		<slf4j-version>1.7.36</slf4j-version>
 	</properties>
 
 	<dependencyManagement>
@@ -161,21 +161,17 @@
 				<artifactId>sitemapgen4j</artifactId>
 				<version>1.1.2</version>
 			</dependency>
+
 			<!-- MassBank-OpenAPI -->
 			<dependency>
-				<groupId>io.swagger.codegen.v3</groupId>
-				<artifactId>swagger-codegen-maven-plugin</artifactId>
-				<version>${swagger-codegen-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-jaxrs2</artifactId>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-jersey2-jaxrs</artifactId>
 				<scope>compile</scope>
-				<version>${swagger-core-version}</version>
+				<version>1.5.18</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
-				<artifactId>jersey-container-servlet</artifactId>
+				<artifactId>jersey-container-servlet-core</artifactId>
 				<version>${jersey2-version}</version>
 			</dependency>
 			<dependency>
@@ -190,7 +186,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-joda</artifactId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
 				<version>${jackson-version}</version>
 			</dependency>
 			<dependency>
@@ -201,7 +197,7 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.7.32</version>
+				<version>${slf4j-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -263,7 +259,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
+					<version>3.10.1</version>
 					<configuration>
 						<release>11</release>
 					</configuration>
@@ -272,11 +268,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>3.3.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>3.0.0-M5</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -337,6 +328,11 @@
 					<groupId>org.spdx</groupId>
 					<artifactId>spdx-maven-plugin</artifactId>
 					<version>0.5.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.openapitools</groupId>
+					<artifactId>openapi-generator-maven-plugin</artifactId>
+					<version>5.4.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
