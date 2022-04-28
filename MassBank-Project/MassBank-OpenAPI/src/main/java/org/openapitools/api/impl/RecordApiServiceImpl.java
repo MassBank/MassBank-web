@@ -3,7 +3,6 @@ package org.openapitools.api.impl;
 import org.openapitools.api.*;
 import org.openapitools.model.*;
 
-import jakarta.ws.rs.core.Response.Status;
 import massbank.Record;
 import massbank.db.DatabaseManager;
 
@@ -39,15 +38,14 @@ public class RecordApiServiceImpl extends RecordApiService {
 			record = dbMan.getAccessionData(id);
 			dbMan.closeConnection();
 		} catch (SQLException | ConfigurationException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Database connection error").build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Database connection error").build();
 		}
 		if (record == null) {
-			return Response.status(Status.NOT_FOUND).entity("Record \"" + id + "\" not found").build();
+			return Response.status(Response.Status.NOT_FOUND).entity("Record \"" + id + "\" not found").build();
 		}
 
 		String recordstring = record.toString();
 		return Response.ok().entity(recordstring).build();
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
     public Response recordUploadPost(String filename, FormDataBodyPart fileBodypart, SecurityContext securityContext) throws NotFoundException {

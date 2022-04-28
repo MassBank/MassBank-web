@@ -33,7 +33,7 @@
 		<cdk.version>2.7.1</cdk.version>
 		<jdbc.version>3.0.4</jdbc.version>
 		<petitparser-version>2.3.1</petitparser-version>
-		<jersey2-version>3.0.4</jersey2-version>
+		<jersey2-version>2.35</jersey2-version>
 		<jackson-version>2.13.2</jackson-version>
 		<jetty-version>9.4.24.v20191120</jetty-version>
 		<logback-version>1.2.8</logback-version>
