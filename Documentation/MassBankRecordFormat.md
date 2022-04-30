@@ -2,6 +2,7 @@
 MassBank Consortium (September 22, 2021)
 
 #### Updated
+- **April 2022**: Added EAD (Electron Activated Dissocation) as allowed fragmentation mode.
 - **July 2021**: Move to a semantic versioning scheme X.Y.Z with Z increases for changes in the description or fixing of typos, Y increases for changes that also change the Validator software and X increases with changes that break compatibility with older versions of the software.
 - **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
@@ -843,6 +844,7 @@ MPD
 NETD
 SID
 UVPD
+EAD
 ```
 
 Cross-reference to HUPO-PSI: dissociation method [MS:1000044]
