@@ -31,11 +31,11 @@ services:
   maven:
     image: maven:3.6-jdk-11
     volumes:
-            #      - $HOME/.m2:/var/maven/.m2
+      - $HOME/.m2:/var/maven/.m2
       - $PWD/MassBank-Project:/project
-        #environment:
-        # MAVEN_CONFIG: /var/maven/.m2
-        #user: ${CURRENT_UID}
+    environment:
+      MAVEN_CONFIG: /var/maven/.m2
+    user: ${CURRENT_UID}
 
   dbupdate:
     image: maven:3.6-jdk-11
