@@ -1,0 +1,15 @@
+{
+  "basePackage": "massbank.openapi",
+  "configPackage": "massbank.openapi.config",
+  "apiPackage": "massbank.openapi.api",
+  "modelPackage": "massbank.openapi.model",
+  "parentArtifactId": "MassBank-Project",
+  "parentGroupId": "de.ipb-halle.msbi",
+  "parentVersion": "2.1.11-SNAPSHOT",
+  "artifactId": "MassBank-OpenAPI",
+  "groupId": "de.ipb-halle.msbi",
+  "artifactVersion": "2.1.11-SNAPSHOT",
+  "delegatePattern": true
+
+}
+
