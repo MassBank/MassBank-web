@@ -22,78 +22,75 @@ tags:
     
 components:
   securitySchemes:
-    uploadBearerAuth:
+    changeBearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT    #JSON Web Token
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
+    ForbiddenError:
+      description: Access token does not allow the operation
+    NotFoundError:
+      description: The record with the recordId was not found
+    DatabaseError:
+      description: There was in internal error during database access
+    SyntaxError:
+      description: The record or query was invalid
+      content:
+        application/json:
+          schema:
+            type: string
+            description: error message
   schemas:
-    SomeObj:
-      type: object
-      properties:
-        someProp:
-          type: string
-      
+    record:
+      type: string
+      description: a full massBank record file as a string
+    recordId:
+      type: string
+      description: a massBank id
+      example: "PR030008"
 
 paths:
-  /record/upload:
+  /record:
     post:
-      summary: Uploads the record to the database
+      summary: Uploads a record to the database
+      description: Uploads a new record to the massBank database if the ACCESSION in the record is unique
+      operationId: postRecord
       tags:
         - record
       security:
-        - uploadBearerAuth: []
+        - changeBearerAuth: []
       responses:
-        '200':
-          description: OK
-        '401':
+        201:
+          description: Created a new record
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+                example: 'https://msbi.ipb-halle.de/MassBank-OpenAPI/record/PR030008'
+        401:
           $ref: '#/components/responses/UnauthorizedError'
-        '409':
-           description: Could not insert dataset
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        409:
+           description: Could not insert dataset, because it already exists
+        400:
+           $ref: '#/components/responses/SyntaxError'
+        500:
+           $ref: '#/components/responses/DatabaseError'
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          text/plain:
             schema:
-              type: object
-              properties:
-                filename:
-                  type: string
-                file:
-                  type: string
-                  format: binary
-  /record/{id}:
-    get:
-      summary: Returns the content of one record
-      tags:
-        - record
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-            example: SM861901
-          description: The record id
-      responses:
-        '200':
-          description: successful operation
-          content:
-            text/plain:
-              schema:
-                type: string
-        '404':
-          description: record not found
-        '500':
-          description: database error
-          
-  /record:
+              '$ref': '#/components/schemas/record'
     get:
       summary: Returns all records matching the search
-      description: |
-        This resource reports all record ids which fulfill the criteria in the search parameters.
+      description: This resource reports all record ids which fulfill the criteria in the search parameters, 
+        or all records if the query parameters are missing or empty
+      operationId: getRecordsIds
       tags:
         - record
       parameters:
@@ -117,9 +114,83 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
-        '400':
-          description: syntax error
-        '500':
-          description: database error
-        
+                  $ref: '#/components/schemas/recordId'
+        400:
+          $ref: '#/components/responses/SyntaxError'
+        500:
+          $ref: '#/components/responses/DatabaseError'
+
+  /record/{recordId}:
+    parameters:
+      - in: path
+        name: recordId
+        required: true
+        schema:
+          $ref: '#/components/schemas/recordId'
+        description: The record id
+    get:
+      summary: Returns the content of one record
+      description: Returns the content of the record in MassBank format
+      operationId: getRecord
+      tags:
+        - record
+      responses:
+        200:
+          description: successful operation
+          content:
+            text/plain:
+              schema:
+                '$ref': '#/components/schemas/record'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/DatabaseError'
+    put:
+      summary: replace a record
+      description: replaces the record in with the specified id by a new record, which must have the same ACCESSION
+      operationId: replaceRecord
+      security:
+        - changeBearerAuth: []
+      tags:
+        - record
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/record'
+      responses:
+        204:
+          description: the record was successfully replaced
+        400:
+          $ref: '#/components/responses/SyntaxError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/DatabaseError'
+    delete:
+      summary: delete a record
+      description: deletes the record with the specified id from the massBank database
+      operationId: deleteRecord
+      security:
+        - changeBearerAuth: []
+      tags:
+        - record
+      responses:
+        204:
+          description: the record was successfully deleted
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/DatabaseError'
+          
+
+          
+
