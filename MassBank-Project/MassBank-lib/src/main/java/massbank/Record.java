@@ -60,7 +60,7 @@ import io.github.dan2097.jnainchi.InchiStatus;
 public class Record {
 	private static final Logger logger = LogManager.getLogger(Record.class);
 
-	private final String contributor;
+	private String contributor;
 	
 	private String accession;
 	private boolean deprecated;
@@ -97,9 +97,7 @@ public class Record {
 	private final List<Pair<BigDecimal, List<String>>> pk_annotation; // optional
 	private final List<Triple<BigDecimal,BigDecimal,Integer>> pk_peak;
 	
-	public Record(String contributor) {
-		this.contributor	= contributor;
-		
+	public Record() {
 		// set default values for optional fields
 		comment					= new ArrayList<String>();
 		ch_link					= new LinkedHashMap<String, String>();

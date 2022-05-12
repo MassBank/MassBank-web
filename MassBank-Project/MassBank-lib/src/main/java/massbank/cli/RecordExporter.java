@@ -148,7 +148,7 @@ Num peaks: 124
 					String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 					Set<String> config = new HashSet<String>();
 					config.add("legacy");
-					record = Validator.validate(recordString, "", config);
+					record = Validator.validate(recordString, config);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

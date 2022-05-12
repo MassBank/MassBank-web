@@ -49,7 +49,7 @@ public class Inspector {
 			Validator.hasNonStandardChars(input);
 			Set<String> config = new HashSet<String>();
 			config.add("legacy");
-			Record record = Validator.validate(input, "", config);
+			Record record = Validator.validate(input, config);
 			if (record == null) {
 				logger.error("Error in " + arguments[0]+ ". Exiting...");
 				System.exit(1);

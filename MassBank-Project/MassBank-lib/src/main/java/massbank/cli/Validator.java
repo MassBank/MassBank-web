@@ -79,8 +79,8 @@ public class Validator {
 	 * or <code>null</code> if the validation was not successful. Options are given in 
 	 * <code>config</code>.
 	 */
-	public static Record validate(String recordString, String contributor, Set<String> config) {
-		Record record = new Record(contributor);
+	public static Record validate(String recordString, Set<String> config) {
+		Record record = new Record();
 		RecordParser recordparser = new RecordParser(record, config);
 		Result res =  recordparser.parse(recordString);
 		if (res.isFailure()) {
@@ -183,7 +183,7 @@ public class Validator {
 				Set<String> config = new HashSet<String>();
 				if (legacyMode.get()) config.add("legacy");
 				if (onlineMode.get()) config.add("online");
-				Record record = validate(recordString, "", config);
+				Record record = validate(recordString, config);
 				if (record == null) {
 					logger.error("Error in \'" + filename + "\'.");
 					haserror.set(true);

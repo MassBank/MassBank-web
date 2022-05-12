@@ -517,7 +517,7 @@ public class AddMetaData {
 				Set<String> config = new HashSet<String>();
 				config.add("legacy");
 				config.add("weak");
-				Record record = Validator.validate(recordString, "", config);
+				Record record = Validator.validate(recordString, config);
 				if (record == null) {
 					System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
 					System.exit(1);
@@ -541,7 +541,7 @@ public class AddMetaData {
 				
 				config = new HashSet<String>();
 				if (!recordString.equals(recordstring2)) {
-					Record record2 = Validator.validate(recordString, "", config);
+					Record record2 = Validator.validate(recordString, config);
 					if (record2 == null) {
 						System.err.println( "Validation of new created record file failed. Do not write.");
 					} else {

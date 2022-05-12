@@ -202,23 +202,17 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.1.1 ACCESSION
 		// Identifier of the MassBank Record. Mandatory
 		// Example
-		// ACCESSION: ZMS00006
-		// 8-character fix-length string.
-		// Prefix two or three alphabetical capital characters.
+		// ACCESSION: MSBNK-AAFC-AC000101
+		// Format is ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}
+		// where ID is a database identifier, the first field([A-Z0–9_]{1,32}) is a contributor id and the second field([A-Z0–9_]{1,64}) is a record id.
 		def("accession", 
 			StringParser.of("ACCESSION")
 			.seq(ref("tagsep"))
-			.seq(
-				letter().times(2)
-				.seq(
-					digit().times(6)
-				)
-				.or(
-					letter().times(3)
-					.seq(
-						digit().times(5)
-					)
-				)
+			.seq(letter().or(digit()).repeat(1,10)
+				.seq(CharacterParser.of('-'))
+				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,32))
+				.seq(CharacterParser.of('-'))
+				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,64))
 				.flatten()
 				.map((String value) -> {
 					callback.ACCESSION(value);
