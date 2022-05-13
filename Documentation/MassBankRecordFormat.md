@@ -1,7 +1,8 @@
-# MassBank Record Format 2.5.2
+# MassBank Record Format 2.6.0
 MassBank Consortium (September 22, 2021)
 
 #### Updated
+- **May 2022**: With version 2.6.0 MassBank introduces a new ACCESSION scheme.ch offers more freedom for contributors in the naming of their records. The new scheme consists of three fields separated by 'minus' signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. Now it can be up to 32 characters long and is comprised of letters, digits and the '_' sign. The third field is the ID assigned by the contributor and can be up to 64 characters long and is also comprised of letters, digits and the '_' sign. 
 - **July 2021**: Move to a semantic versioning scheme X.Y.Z with Z increases for changes in the description or fixing of typos, Y increases for changes that also change the Validator software and X increases with changes that break compatibility with older versions of the software.
 - **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
@@ -356,17 +357,18 @@ Identifier of the MassBank Record. Mandatory
 
 Example:
 ```
-ACCESSION: ZMS00006
+ACCESSION: MSBNK-AAFC-AC000101
 ```
+The MassBank accession consists of three fields separated by 'minus' signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. It can be up to 32 characters long and is comprised of letters, digits and the '_' sign. The third field is the ID assigned by the contributor and an be up to 64 characters long and is also comprised of letters, digits and the '_' sign. 
 
-8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, database or contributor, where the record was submitted or who has contributed. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md). Rest of the field are decimal letters which are the identifier of the record at each site.
+The list of List of contributors and projects is maintained at https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md.
 
 A deprecated record is marked with the tag `DEPRECATED: ` followed by date and reason on the second line. The content of a deprecated record may not be valid.
 
 Example:
 ```
-ACCESSION: XY000010
-DEPRECATED: 2019-05-03 considered noisy
+ACCESSION: MSBNK-ISAS_Dortmund-IA000311
+DEPRECATED: 2019-11-25 Wrong MS measurement assigned
 ```
 
 

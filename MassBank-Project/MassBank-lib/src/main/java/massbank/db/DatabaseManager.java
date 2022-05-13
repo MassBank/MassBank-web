@@ -745,10 +745,7 @@ public class DatabaseManager {
 	 * @return Record
 	 */
 	public Record getAccessionData(String accessionId) {
-		Record.Contributor Contributor=getContributorFromAccession(accessionId);
-		if (Contributor==null) return null;
-		String contributor=Contributor.SHORT_NAME;
-		Record acc = new Record(contributor);
+		Record acc = new Record();
 		try {
 			this.statementSelectRECORD.setString(1, accessionId);
 			ResultSet set = this.statementSelectRECORD.executeQuery();

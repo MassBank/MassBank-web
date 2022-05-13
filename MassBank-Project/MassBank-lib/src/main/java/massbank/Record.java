@@ -61,7 +61,6 @@ public class Record {
 	private static final Logger logger = LogManager.getLogger(Record.class);
 
 	private String contributor;
-	
 	private String accession;
 	private boolean deprecated;
 	private String deprecated_content;
@@ -123,6 +122,8 @@ public class Record {
 		return accession;
 	}
 	public void ACCESSION(String value) {
+		String[] splitedAccession = value.split("-");
+		contributor=splitedAccession[1];
 		accession = value;
 	}
 	

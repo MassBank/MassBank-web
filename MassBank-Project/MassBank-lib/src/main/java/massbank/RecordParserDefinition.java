@@ -204,7 +204,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// Example
 		// ACCESSION: MSBNK-AAFC-AC000101
 		// Format is ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}
-		// where ID is a database identifier, the first field([A-Z0–9_]{1,32}) is a contributor id and the second field([A-Z0–9_]{1,64}) is a record id.
+		// Where ID is a database identifier, the first field([A-Z0–9_]{1,32}) is a contributor id and 
+		// the second field([A-Z0–9_]{1,64}) is a record id.
 		def("accession", 
 			StringParser.of("ACCESSION")
 			.seq(ref("tagsep"))
