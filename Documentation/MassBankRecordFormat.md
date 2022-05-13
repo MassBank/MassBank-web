@@ -359,7 +359,7 @@ Example:
 ```
 ACCESSION: MSBNK-AAFC-AC000101
 ```
-The MassBank accession consists of three fields separated by 'minus' signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. It can be up to 32 characters long and is comprised of letters, digits and the '_' sign. The third field is the ID assigned by the contributor and an be up to 64 characters long and is also comprised of letters, digits and the '_' sign. 
+The MassBank accession consists of three fields separated by `-` signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. It can be up to 32 characters long and is comprised of letters, digits and the `_` sign. The third field is the ID assigned by the contributor and an be up to 64 characters long and is also comprised of letters, digits and the `_` sign. 
 
 The list of List of contributors and projects is maintained at https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md.
 
