@@ -1,5 +1,5 @@
 # MassBank Record Format 2.6.0
-MassBank Consortium (September 22, 2021)
+MassBank Consortium (May 13, 2022)
 
 #### Updated
 - **May 2022**: With version 2.6.0 MassBank introduces a new ACCESSION scheme.ch offers more freedom for contributors in the naming of their records. The new scheme consists of three fields separated by 'minus' signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. Now it can be up to 32 characters long and is comprised of letters, digits and the '_' sign. The third field is the ID assigned by the contributor and can be up to 64 characters long and is also comprised of letters, digits and the '_' sign. 
