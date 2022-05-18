@@ -215,7 +215,7 @@ paths:
         200:
           description: successful operation
           content:
-            text/plain:
+            text/plain; charset=utf-8:
               schema:
                 '$ref': '#/components/schemas/record'
         404:
