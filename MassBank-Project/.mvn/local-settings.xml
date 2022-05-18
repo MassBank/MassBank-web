@@ -7,7 +7,7 @@
             <name>Fiehnlab Public Maven Repository</name>
             <mirrorOf>releases</mirrorOf>
             <url>http://gose.fiehnlab.ucdavis.edu:55000/content/groups/public</url>
+            <blocked>false</blocked>
         </mirror>
-
     </mirrors>
 </settings>
