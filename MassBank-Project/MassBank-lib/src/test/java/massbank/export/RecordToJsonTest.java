@@ -18,18 +18,22 @@ public class RecordToJsonTest {
 	@Test
 	public void testToJson() throws IOException, URISyntaxException {
 
-		String minimalRecord = Files
+		String minimalRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.txt").toURI()));
 		String minimalJson = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.json").toURI()));
-		Record record = Validator.validate(minimalRecord, new HashSet<String>());
-		String recordJson =  RecordToJson.convert(record);
-		//recordJson=recordJson.strip();
-		//minimalJson=minimalJson.strip();
-		System.out.println(minimalJson);
-		System.out.println(recordJson);
+		Record minimalRecord = Validator.validate(minimalRecordString, new HashSet<String>());
+		String minimalRecordJson =  RecordToJson.convert(minimalRecord);
+		assertEquals(minimalJson, minimalRecordJson);
 		
-		assertEquals(minimalJson, recordJson);
+		String maximalRecordString = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.txt").toURI()));
+		String maximalJson = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.json").toURI()));
+		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
+		String maximalRecordJson =  RecordToJson.convert(maximalRecord);
+		assertEquals(maximalJson, maximalRecordJson);
+		
 	}
 
 }

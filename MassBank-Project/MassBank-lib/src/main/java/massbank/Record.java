@@ -44,12 +44,6 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
-import org.petitparser.parser.primitive.StringParser;
-
-import com.google.gson.FieldNamingStrategy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import io.github.dan2097.jnainchi.InchiStatus;
 
 /**
@@ -71,7 +65,7 @@ public class Record {
 	private String COPYRIGHT; // optional
 	private String PUBLICATION; // optional
 	private String PROJECT; // optional
-	private List<String> COMMENT; // optional
+	private List<String> COMMENT = new ArrayList<String>();; // optional
 	private List<String> CH$NAME;
 	private List<String> CH$COMPOUND_CLASS;
 	private String CH$FORMULA;
@@ -81,7 +75,7 @@ public class Record {
 	private LinkedHashMap<String, String> CH$LINK; // optional
 	private String SP$SCIENTIFIC_NAME; // optional
 	private String SP$LINEAGE; // optional
-	private List<Pair<String, String>> SP$LINK; // optional
+	private LinkedHashMap<String, String> SP$LINK; // optional
 	private List<String> SP$SAMPLE; // optional
 	private String AC$INSTRUMENT;
 	private String AC$INSTRUMENT_TYPE;
@@ -93,24 +87,45 @@ public class Record {
 	private List<Pair<String, String>> MS$DATA_PROCESSING; // optional
 	private String PK$SPLASH;
 	private List<String> PK$ANNOTATION_HEADER; // optional
-	private final List<Pair<BigDecimal, List<String>>> PK$ANNOTATION; // optional
-	private final List<Triple<BigDecimal,BigDecimal,Integer>> PK$PEAK;
+	private List<Pair<BigDecimal, List<String>>> PK$ANNOTATION; // optional
+	private List<Triple<BigDecimal,BigDecimal,Integer>> PK$PEAK;
 	
 	public Record() {
-		// set default values for optional fields
-		COMMENT					= new ArrayList<String>();
-		CH$LINK					= new LinkedHashMap<String, String>();
-		SP$LINK					= new ArrayList<Pair<String, String>>();
-		SP$SAMPLE				= new ArrayList<String>();
-		AC$MASS_SPECTROMETRY	= new ArrayList<Pair<String, String>>();
-		AC$CHROMATOGRAPHY		= new ArrayList<Pair<String, String>>();
-		MS$FOCUSED_ION			= new ArrayList<Pair<String, String>>();
-		MS$DATA_PROCESSING		= new ArrayList<Pair<String, String>>();
-		PK$ANNOTATION_HEADER	= new ArrayList<String>();
-		PK$ANNOTATION			= new ArrayList<Pair<BigDecimal, List<String>>>();
-		
-		// set default values for mandatory fields
-		PK$PEAK					= new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
+		contributor = new String();
+		ACCESSION = new String();
+		deprecated = false;
+		deprecated_content = new String();
+		RECORD_TITLE = new ArrayList<String>();
+		DATE = new String();
+		AUTHORS = new String();
+		LICENSE = new String();
+		COPYRIGHT = new String(); // optional
+		PUBLICATION = new String(); // optional
+		PROJECT = new String(); // optional
+		COMMENT = new ArrayList<String>(); // optional
+		CH$NAME = new ArrayList<String>();
+		CH$COMPOUND_CLASS = new ArrayList<String>();
+		CH$FORMULA = new String();
+		CH$EXACT_MASS = new BigDecimal(0);
+		CH$SMILES = new String();
+		CH$IUPAC = new String();
+		CH$LINK = new LinkedHashMap<String, String>(); // optional
+		SP$SCIENTIFIC_NAME = new String(); // optional
+		SP$LINEAGE = new String(); // optional
+		SP$LINK = new LinkedHashMap<String, String>(); // optional
+		SP$SAMPLE = new ArrayList<String>(); // optional
+		AC$INSTRUMENT = new String();
+		AC$INSTRUMENT_TYPE = new String();
+		AC$MASS_SPECTROMETRY_MS_TYPE = new String();
+		AC$MASS_SPECTROMETRY_ION_MODE = new String();
+		AC$MASS_SPECTROMETRY = new ArrayList<Pair<String, String>>(); // optional
+		AC$CHROMATOGRAPHY = new ArrayList<Pair<String, String>>(); // optional
+		MS$FOCUSED_ION = new ArrayList<Pair<String, String>>(); // optional
+		MS$DATA_PROCESSING = new ArrayList<Pair<String, String>>(); // optional
+		PK$SPLASH = new String();
+		PK$ANNOTATION_HEADER = new ArrayList<String>(); // optional
+		PK$ANNOTATION = new ArrayList<Pair<BigDecimal, List<String>>>(); // optional
+		PK$PEAK = new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
 	}
 	
 	public String CONTRIBUTOR() {
@@ -328,11 +343,12 @@ public class Record {
 		SP$LINEAGE=value;
 	}
  
-	public List<Pair<String, String>> SP_LINK() {
+
+	public LinkedHashMap<String, String> SP_LINK() {
 		return SP$LINK;
 	}
-	public void SP_LINK(List<Pair<String, String>>  value) {
-		SP$LINK=new ArrayList<Pair<String, String>>(value);
+	public void SP_LINK(LinkedHashMap<String, String> value) {
+		SP$LINK=value;
 	}
 
 	public List<String> SP_SAMPLE() {
@@ -454,11 +470,11 @@ public class Record {
 		sb.append("DATE: " + DATE() + "\n");
 		sb.append("AUTHORS: " + AUTHORS() + "\n");
 		sb.append("LICENSE: " + LICENSE() + "\n");
-		if (COPYRIGHT() != null)
+		if (!"".equals(COPYRIGHT()))
 			sb.append("COPYRIGHT: " + COPYRIGHT() + "\n");
-		if (PUBLICATION() != null)
+		if (!"".equals(PUBLICATION()))
 			sb.append("PUBLICATION: " + PUBLICATION() + "\n");
-		if (PROJECT() != null)
+		if (!"".equals(PROJECT()))
 			sb.append("PROJECT: " + PROJECT() + "\n");
 		for (String comment : COMMENT())
 			sb.append("COMMENT: " + comment + "\n");
@@ -474,12 +490,13 @@ public class Record {
 			sb.append("CH$LINK: " + key + " " + value + "\n");		    
 		});
 		
-		if (SP_SCIENTIFIC_NAME() != null)
+		if (!"".equals(SP_SCIENTIFIC_NAME()))
 			sb.append("SP$SCIENTIFIC_NAME: " + SP_SCIENTIFIC_NAME() + "\n");
-		if (SP_LINEAGE() != null)
+		if (!"".equals(SP_LINEAGE()))
 			sb.append("SP$LINEAGE: " + SP_LINEAGE() + "\n");
-		for (Pair<String,String> link : SP_LINK())
-			sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "\n");
+		SP_LINK().forEach((key,value) -> {
+			sb.append("SP$LINK: " + key + " " + value + "\n");		    
+		});
 		for (String sample : SP_SAMPLE())
 			sb.append("SP$SAMPLE: " + sample + "\n");
 		
@@ -528,9 +545,9 @@ public class Record {
 		sb.append("<b>DATE:</b> " + DATE() + "<br>\n");
 		sb.append("<b>AUTHORS:</b> " + AUTHORS() + "<br>\n");
 		sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + LICENSE() + "</a><br>\n");
-		if (COPYRIGHT() != null) 
+		if (!"".equals(COPYRIGHT()))
 			sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
-		if (PUBLICATION() != null) {
+		if (!"".equals(PUBLICATION())) {
 			String pub=PUBLICATION();
 			String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
 			String regex_pmid = "PMID:[ ]?\\d{8,8}";
@@ -549,7 +566,7 @@ public class Record {
 			}
 			sb.append("<b>PUBLICATION:</b> " + pub + "<br>\n");
 		}
-		if (PROJECT() != null)
+		if (!"".equals(PROJECT()))
 			sb.append("<b>PROJECT:</b> " + PROJECT() + "<br>\n");
 		for (String comment : COMMENT())
 			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
@@ -615,12 +632,13 @@ public class Record {
 			}
 		});
 		
-		if (SP_SCIENTIFIC_NAME() != null)
+		if (!"".equals(SP_SCIENTIFIC_NAME()))
 			sb.append("<b>SP$SCIENTIFIC_NAME:</b> " + SP_SCIENTIFIC_NAME() + "<br>\n");
-		if (SP_LINEAGE() != null)
+		if (!"".equals(SP_LINEAGE()))
 			sb.append("<b>SP$LINEAGE:</b> " + SP_LINEAGE() + "<br>\n");
-		for (Pair<String,String> link : SP_LINK())
-			sb.append("<b>SP$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+		SP_LINK().forEach((key,value) -> {
+			sb.append("<b>SP$LINK:</b> " + key + " " + value + "<br>\n");
+		});
 		for (String sample : SP_SAMPLE())
 				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>\n");
 		sb.append("<hr>\n");

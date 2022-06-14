@@ -130,8 +130,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(ref("authors"))
 					.seq(ref("license"))
 					.seq(ref("copyright").optional())
-					.seq(ref("project").optional())
 					.seq(ref("publication").optional())
+					.seq(ref("project").optional())
 					.seq(ref("comment").optional())
 					.seq(ref("ch_name"))
 					.seq(ref("ch_compound_class"))
@@ -1021,8 +1021,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()
 			.map((List<Pair<String,String>> value) -> {
-				//System.out.println(value);
-				callback.SP_LINK(value);
+				LinkedHashMap<String, String> sp_link = new LinkedHashMap<String, String>();
+				for(Pair<String, String> pair : value){
+					sp_link.put(pair.getKey(), pair.getValue());
+				}								
+				callback.SP_LINK(sp_link);
 				return value;
 			})
 		);
@@ -1784,7 +1787,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				if (!weak) {
 					//compare InChIKey
 					if (InChiKeyFromCH_LINK.equals("")) {
-						return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
+						logger.warn("CH$IUPAC is defined, but CH$LINK: INCHIKEY is missing.");
 					}
 				}
 			}
