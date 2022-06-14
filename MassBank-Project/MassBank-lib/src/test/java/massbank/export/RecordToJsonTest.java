@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -17,7 +19,6 @@ public class RecordToJsonTest {
 
 	@Test
 	public void testToJson() throws IOException, URISyntaxException {
-
 		String minimalRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.txt").toURI()));
 		String minimalJson = Files
@@ -25,7 +26,7 @@ public class RecordToJsonTest {
 		Record minimalRecord = Validator.validate(minimalRecordString, new HashSet<String>());
 		String minimalRecordJson =  RecordToJson.convert(minimalRecord);
 		assertEquals(minimalJson, minimalRecordJson);
-		
+	
 		String maximalRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.txt").toURI()));
 		String maximalJson = Files
@@ -33,6 +34,21 @@ public class RecordToJsonTest {
 		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
 		String maximalRecordJson =  RecordToJson.convert(maximalRecord);
 		assertEquals(maximalJson, maximalRecordJson);
+	
+		String deprecatedRecordString = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.txt").toURI()));
+		String deprecatedJson = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.json").toURI()));
+		Record deprecatedRecord = Validator.validate(deprecatedRecordString, new HashSet<String>());
+		String deprecatedRecordJson =  RecordToJson.convert(deprecatedRecord);
+		assertEquals(deprecatedJson, deprecatedRecordJson);
+		
+		String combinedJson = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("combined_record.json").toURI()));
+		List<Record> records = new ArrayList<Record>();
+		records.add(minimalRecord); records.add(maximalRecord); records.add(deprecatedRecord);
+		String combinedRecordJson =  RecordToJson.convert(records);
+		assertEquals(combinedJson, combinedRecordJson);
 		
 	}
 
