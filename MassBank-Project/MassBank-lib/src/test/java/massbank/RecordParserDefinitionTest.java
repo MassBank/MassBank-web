@@ -1,10 +1,9 @@
 package massbank;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
@@ -16,14 +15,14 @@ public class RecordParserDefinitionTest {
 	private Result assertValid(String source, String production) {
 		Parser parser = recordParser.build(production).end();
 		Result result = parser.parse(source);
-		assertTrue(result.isSuccess());
+		Assertions.assertTrue(result.isSuccess());
 		return result;
 	}
 	
 	private Result assertInvalid(String source, String production) {
 		Parser parser = recordParser.build(production).end();
 		Result result = parser.parse(source);
-		assertTrue(result.isFailure());
+		Assertions.assertTrue(result.isFailure());
 		return result;
 	}
 

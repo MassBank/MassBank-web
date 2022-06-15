@@ -1,7 +1,5 @@
 package massbank.export;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -10,7 +8,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import massbank.Record;
 import massbank.cli.Validator;
@@ -25,7 +24,7 @@ public class RecordToJsonTest {
 				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.json").toURI()));
 		Record minimalRecord = Validator.validate(minimalRecordString, new HashSet<String>());
 		String minimalRecordJson =  RecordToJson.convert(minimalRecord);
-		assertEquals(minimalJson, minimalRecordJson);
+		Assertions.assertEquals(minimalJson, minimalRecordJson);
 	
 		String maximalRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.txt").toURI()));
@@ -33,7 +32,7 @@ public class RecordToJsonTest {
 				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.json").toURI()));
 		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
 		String maximalRecordJson =  RecordToJson.convert(maximalRecord);
-		assertEquals(maximalJson, maximalRecordJson);
+		Assertions.assertEquals(maximalJson, maximalRecordJson);
 	
 		String deprecatedRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.txt").toURI()));
@@ -41,14 +40,14 @@ public class RecordToJsonTest {
 				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.json").toURI()));
 		Record deprecatedRecord = Validator.validate(deprecatedRecordString, new HashSet<String>());
 		String deprecatedRecordJson =  RecordToJson.convert(deprecatedRecord);
-		assertEquals(deprecatedJson, deprecatedRecordJson);
+		Assertions.assertEquals(deprecatedJson, deprecatedRecordJson);
 		
 		String combinedJson = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("combined_record.json").toURI()));
 		List<Record> records = new ArrayList<Record>();
 		records.add(minimalRecord); records.add(maximalRecord); records.add(deprecatedRecord);
 		String combinedRecordJson =  RecordToJson.convert(records);
-		assertEquals(combinedJson, combinedRecordJson);
+		Assertions.assertEquals(combinedJson, combinedRecordJson);
 		
 	}
 

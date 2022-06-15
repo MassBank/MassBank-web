@@ -85,6 +85,11 @@
 			<groupId>io.github.dan2097</groupId>
 			<artifactId>jna-inchi-all</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 
