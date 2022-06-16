@@ -210,7 +210,7 @@ public class RecordDisplay extends HttpServlet {
 				return;
 			}
 			
-			// old ACCESSION resolved to new ACCESSION 
+			// old ACCESSION resolved to new ACCESSION
 			String resolvedAccession=OldAccessionResolver.get().resolve(accession);
 			if (!accession.equals(resolvedAccession)) {
 				response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
