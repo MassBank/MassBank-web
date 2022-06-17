@@ -40,22 +40,21 @@
 	<script>svg4everybody();</script>
 	
 	<!-- SpeckTackle CSS containing chart stylings -->
-    <link rel="stylesheet" type="text/css" href="css/st.css">
-    <!-- SpeckTackle dependencies-->
-    <script src="js/d3.v3.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/st.css">
+	<!-- SpeckTackle dependencies-->
+	<script src="js/d3.v3.min.js"></script>
 	<!-- SpeckTackle library -->
-    <script src="js/st.js"></script>
-    <!-- SpeckTackle MassBank loading script-->
+	<script src="js/st.js"></script>
+	<!-- SpeckTackle MassBank loading script-->
 	<script src="js/massbank_specktackle.js"></script>
     
 ${structureddata}
 </head>
 
-<script type="text/javascript">
-	var data=${peaklist};
-</script>
-
 <body class="w3-theme-gradient">
+	<script>
+		var data=${peaklist};
+	</script>
 
 	<noscript>
 		<div class="w3-panel w3-yellow">
@@ -94,7 +93,7 @@ ${structureddata}
 				<div class="w3-twothird w3-text-grey w3-small">
 					<a
 						href="https://metabolomics-usi.ucsd.edu/spectrum/?usi=mzspec:MASSBANK::accession:${accession}"
-						target=”_blank”>metabolomics-usi visualisation</a>
+						target="_blank">metabolomics-usi visualisation</a>
 				</div>
 			</div>
 		</c:if>

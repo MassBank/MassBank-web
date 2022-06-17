@@ -666,13 +666,13 @@ public class Record {
 				sb.append(" " + annotation_header_item);
 			sb.append("<br>\n");
 			for (Pair<BigDecimal, List<String>> annotation_line :  PK$ANNOTATION) {
-				sb.append("&nbsp&nbsp" + annotation_line.getLeft() + "&nbsp" + String.join("&nbsp", annotation_line.getRight()) + "<br>\n");
-			}
+				sb.append("&nbsp;&nbsp;" + annotation_line.getLeft() + "&nbsp;" + String.join("&nbsp;", annotation_line.getRight()) + "<br>\n");
+  		}
 		}
 		sb.append("<b>PK$NUM_PEAK:</b> " + PK_NUM_PEAK() + "<br>\n");
 		sb.append("<b>PK$PEAK:</b> m/z int. rel.int.<br>\n");
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
-			sb.append("&nbsp&nbsp" + peak.getLeft() + "&nbsp" + peak.getMiddle() + "&nbsp" + peak.getRight() + "<br>\n");
+			sb.append("&nbsp;&nbsp;" + peak.getLeft() + "&nbsp;" + peak.getMiddle() + "&nbsp;" + peak.getRight() + "<br>\n");
 		}
 		
 		sb.append("//");
