@@ -567,12 +567,15 @@ public class DatabaseManager {
 					statementInsertSP_SAMPLE.executeBatch();
 				}
 				//System.out.println(System.nanoTime());
-				for (Pair<String, String> el : acc.SP_LINK()) {
+				
+				itr = acc.SP_LINK().entrySet().iterator();
+				while (itr.hasNext()) { 
+					Entry<String,String> entry = itr.next();
 					statementInsertSP_LINK.setString(1, acc.ACCESSION());
-					statementInsertSP_LINK.setString(2, el.getLeft() + " " + el.getRight());
+					statementInsertSP_LINK.setString(2, entry.getKey() + " " + entry.getValue());
 		//			statementInsertSP_LINK.executeUpdate();Select
 					statementInsertSP_LINK.addBatch();
-				}
+				}				
 				if (!bulk) {
 					statementInsertSP_LINK.executeBatch();
 				}
@@ -745,10 +748,7 @@ public class DatabaseManager {
 	 * @return Record
 	 */
 	public Record getAccessionData(String accessionId) {
-		Record.Contributor Contributor=getContributorFromAccession(accessionId);
-		if (Contributor==null) return null;
-		String contributor=Contributor.SHORT_NAME;
-		Record acc = new Record(contributor);
+		Record acc = new Record();
 		try {
 			this.statementSelectRECORD.setString(1, accessionId);
 			ResultSet set = this.statementSelectRECORD.executeQuery();
@@ -909,11 +909,13 @@ public class DatabaseManager {
 			
 			this.statementSelectSP_LINK.setString(1,acc.ACCESSION());
 			set = this.statementSelectSP_LINK.executeQuery();
-			List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
+			
+			
+			LinkedHashMap<String, String> tmpList = new LinkedHashMap<String, String>();
 			while (set.next()) {
 				String spLink	= set.getString("SP_LINK");
 				String[] tokens	= spLink.split(" ");
-				tmpList.add(Pair.of(tokens[0], tokens[1]));
+				tmpList.put(tokens[0], String.join(" ", Arrays.asList(tokens).subList(1, tokens.length)));
 			}
 			acc.SP_LINK(tmpList);
 				

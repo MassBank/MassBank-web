@@ -104,7 +104,7 @@ public class RefreshDatabase {
 					String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 					Set<String> config = new HashSet<String>();
 					config.add("legacy");
-					record = Validator.validate(recordAsString, contributor, config);
+					record = Validator.validate(recordAsString, config);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
