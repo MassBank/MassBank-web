@@ -52,7 +52,8 @@ import edu.ucdavis.fiehnlab.spectra.hash.core.SplashFactory;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.Ion;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
-import net.sf.jniinchi.INCHI_RET;
+import io.github.dan2097.jnainchi.InchiStatus;
+import io.github.dan2097.jnainchi.JnaInchi;
 
 
 public class RecordParserDefinition extends GrammarDefinition {
@@ -129,8 +130,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(ref("authors"))
 					.seq(ref("license"))
 					.seq(ref("copyright").optional())
-					.seq(ref("project").optional())
 					.seq(ref("publication").optional())
+					.seq(ref("project").optional())
 					.seq(ref("comment").optional())
 					.seq(ref("ch_name"))
 					.seq(ref("ch_compound_class"))
@@ -201,23 +202,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.1.1 ACCESSION
 		// Identifier of the MassBank Record. Mandatory
 		// Example
-		// ACCESSION: ZMS00006
-		// 8-character fix-length string.
-		// Prefix two or three alphabetical capital characters.
+		// ACCESSION: MSBNK-AAFC-AC000101
+		// Format is ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}
+		// Where ID is a database identifier, the first field([A-Z0–9_]{1,32}) is a contributor id and 
+		// the second field([A-Z0–9_]{1,64}) is a record id.
 		def("accession", 
 			StringParser.of("ACCESSION")
 			.seq(ref("tagsep"))
-			.seq(
-				letter().times(2)
-				.seq(
-					digit().times(6)
-				)
-				.or(
-					letter().times(3)
-					.seq(
-						digit().times(5)
-					)
-				)
+			.seq(letter().or(digit()).repeat(1,10)
+				.seq(CharacterParser.of('-'))
+				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,32))
+				.seq(CharacterParser.of('-'))
+				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,64))
 				.flatten()
 				.map((String value) -> {
 					callback.ACCESSION(value);
@@ -808,12 +804,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 							if (!smilesHasWildcards) {							
 								try {
 									InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_SMILES);
-									INCHI_RET ret = inchiGen.getReturnStatus();
-									if (ret == INCHI_RET.WARNING) {
+									InchiStatus ret = inchiGen.getStatus();
+									if (ret == InchiStatus.WARNING) {
 										// Structure generated, but with warning message
 										logger.warn("InChI warning: " + inchiGen.getMessage());
 									} 
-									else if (ret != INCHI_RET.OKAY) {
+									else if (ret == InchiStatus.ERROR) {
 										// InChI generation failed
 										return context.failure("Can not create InChIKey from SMILES string in \"CH$SMILES\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
 									}
@@ -859,44 +855,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 							// validate InChI
 							try {
 								InChIToStructure intoStruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), SilentChemObjectBuilder.getInstance());
-								INCHI_RET ret = intoStruct.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
+								InchiStatus ret = intoStruct.getStatus();
+								if (ret == InchiStatus.WARNING) {
 									// Structure generated, but with warning message
 									logger.warn("InChI warning: " + intoStruct.getMessage());
 									logger.warn(callback.ACCESSION());
 								} 
-								else if (ret != INCHI_RET.OKAY) {
+								else if (ret == InchiStatus.ERROR) {
 									// Structure generation failed
-									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + ret.toString() + " [" + intoStruct.getMessage() + "] for " + r.get() + ".");
+									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + intoStruct.getMessage() + " for " + r.get() + ".");
 								}
 								fromCH_IUPAC = intoStruct.getAtomContainer();
 							} catch (CDKException e) {
 								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());		 				
 							}
 							// create an InChiKey
-							try {
-								InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_IUPAC);
-								INCHI_RET ret = inchiGen.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
-									// Structure generated, but with warning message
-									logger.warn("InChI warning: " + inchiGen.getMessage());
-								} 
-								else if (ret != INCHI_RET.OKAY) {
-									// Structure generation failed
-									return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
-								}
-								
-								// compare the temporary InChI from generator with the original InChI, should be the same, otherwise could be a problem
-								String tmpInChI = inchiGen.getInchi(); 
-								if (!tmpInChI.equals(r.get())) {
-									return context.failure("Temporary InChI for InChIKey generation differs from InChI string in \"CH$IUPAC\" field.\n" 
-											+ "InChI from CH$IUPAC: " + r.get() + "\n"
-											+ "Temporary InChI:     " + tmpInChI);
-								}
-								InChiKeyFromCH_IUPAC = inchiGen.getInchiKey();
-							} catch (CDKException e) {
-								return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());
-							}
+							InChiKeyFromCH_IUPAC = JnaInchi.inchiToInchiKey(r.get()).getInchiKey();
 						}
 					}
 					return r;
@@ -1047,8 +1021,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()
 			.map((List<Pair<String,String>> value) -> {
-				//System.out.println(value);
-				callback.SP_LINK(value);
+				LinkedHashMap<String, String> sp_link = new LinkedHashMap<String, String>();
+				for(Pair<String, String> pair : value){
+					sp_link.put(pair.getKey(), pair.getValue());
+				}								
+				callback.SP_LINK(sp_link);
 				return value;
 			})
 		);
@@ -1810,7 +1787,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				if (!weak) {
 					//compare InChIKey
 					if (InChiKeyFromCH_LINK.equals("")) {
-						return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
+						logger.warn("CH$IUPAC is defined, but CH$LINK: INCHIKEY is missing.");
 					}
 				}
 			}

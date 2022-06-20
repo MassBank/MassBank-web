@@ -48,6 +48,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
 import massbank.db.DatabaseManager;
+import massbank.export.OldAccessionResolver;
 
 @WebServlet("/RecordDisplay")
 public class RecordDisplay extends HttpServlet {
@@ -208,6 +209,15 @@ public class RecordDisplay extends HttpServlet {
 				response.sendRedirect(request.getContextPath()+redirectUrl);
 				return;
 			}
+			
+			// old ACCESSION resolved to new ACCESSION
+			String resolvedAccession=OldAccessionResolver.get().resolve(accession);
+			if (!accession.equals(resolvedAccession)) {
+				response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+				response.setHeader("Location", request.getRequestURL().append("?id=").append(resolvedAccession).toString());
+				return;
+			}
+			
 
 			// load record for display
 			DatabaseManager dbMan	= new DatabaseManager("MassBank");

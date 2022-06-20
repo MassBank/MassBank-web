@@ -44,13 +44,7 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
-import org.petitparser.parser.primitive.StringParser;
-
-import com.google.gson.FieldNamingStrategy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import net.sf.jniinchi.INCHI_RET;
+import io.github.dan2097.jnainchi.InchiStatus;
 
 /**
  * This class keeps all data of a record.
@@ -60,60 +54,78 @@ import net.sf.jniinchi.INCHI_RET;
 public class Record {
 	private static final Logger logger = LogManager.getLogger(Record.class);
 
-	private final String contributor;
-	
-	private String accession;
+	private String contributor;
+	private String ACCESSION;
 	private boolean deprecated;
 	private String deprecated_content;
-	private List<String> record_title;
-	private String date;
-	private String authors;
-	private String license;	
-	private String copyright; // optional
-	private String publication; // optional
-	private String project; // optional
-	private List<String> comment; // optional
-	private List<String> ch_name;
-	private List<String> ch_compound_class;
-	private String ch_formula;
-	private BigDecimal ch_exact_mass;
-	private String ch_smiles;
-	private String ch_iupac;
-	private LinkedHashMap<String, String> ch_link; // optional
-	private String sp_scientific_name; // optional
-	private String sp_lineage; // optional
-	private List<Pair<String, String>> sp_link; // optional
-	private List<String> sp_sample; // optional
-	private String ac_instrument;
-	private String ac_instrument_type;
-	private String ac_mass_spectrometry_ms_type;
-	private String ac_mass_spectrometry_ion_mode;
-	private List<Pair<String, String>> ac_mass_spectrometry; // optional
-	private List<Pair<String, String>> ac_chromatography; // optional
-	private List<Pair<String, String>> ms_focused_ion; // optional
-	private List<Pair<String, String>> ms_data_processing; // optional
-	private String pk_splash;
-	private List<String> pk_annotation_header; // optional
-	private final List<Pair<BigDecimal, List<String>>> pk_annotation; // optional
-	private final List<Triple<BigDecimal,BigDecimal,Integer>> pk_peak;
+	private List<String> RECORD_TITLE;
+	private String DATE;
+	private String AUTHORS;
+	private String LICENSE;	
+	private String COPYRIGHT; // optional
+	private String PUBLICATION; // optional
+	private String PROJECT; // optional
+	private List<String> COMMENT = new ArrayList<String>();; // optional
+	private List<String> CH$NAME;
+	private List<String> CH$COMPOUND_CLASS;
+	private String CH$FORMULA;
+	private BigDecimal CH$EXACT_MASS;
+	private String CH$SMILES;
+	private String CH$IUPAC;
+	private LinkedHashMap<String, String> CH$LINK; // optional
+	private String SP$SCIENTIFIC_NAME; // optional
+	private String SP$LINEAGE; // optional
+	private LinkedHashMap<String, String> SP$LINK; // optional
+	private List<String> SP$SAMPLE; // optional
+	private String AC$INSTRUMENT;
+	private String AC$INSTRUMENT_TYPE;
+	private String AC$MASS_SPECTROMETRY_MS_TYPE;
+	private String AC$MASS_SPECTROMETRY_ION_MODE;
+	private List<Pair<String, String>> AC$MASS_SPECTROMETRY; // optional
+	private List<Pair<String, String>> AC$CHROMATOGRAPHY; // optional
+	private List<Pair<String, String>> MS$FOCUSED_ION; // optional
+	private List<Pair<String, String>> MS$DATA_PROCESSING; // optional
+	private String PK$SPLASH;
+	private List<String> PK$ANNOTATION_HEADER; // optional
+	private List<Pair<BigDecimal, List<String>>> PK$ANNOTATION; // optional
+	private List<Triple<BigDecimal,BigDecimal,Integer>> PK$PEAK;
 	
-	public Record(String contributor) {
-		this.contributor	= contributor;
-		
-		// set default values for optional fields
-		comment					= new ArrayList<String>();
-		ch_link					= new LinkedHashMap<String, String>();
-		sp_link					= new ArrayList<Pair<String, String>>();
-		sp_sample				= new ArrayList<String>();
-		ac_mass_spectrometry	= new ArrayList<Pair<String, String>>();
-		ac_chromatography		= new ArrayList<Pair<String, String>>();
-		ms_focused_ion			= new ArrayList<Pair<String, String>>();
-		ms_data_processing		= new ArrayList<Pair<String, String>>();
-		pk_annotation_header	= new ArrayList<String>();
-		pk_annotation			= new ArrayList<Pair<BigDecimal, List<String>>>();
-		
-		// set default values for mandatory fields
-		pk_peak					= new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
+	public Record() {
+		contributor = new String();
+		ACCESSION = new String();
+		deprecated = false;
+		deprecated_content = new String();
+		RECORD_TITLE = new ArrayList<String>();
+		DATE = new String();
+		AUTHORS = new String();
+		LICENSE = new String();
+		COPYRIGHT = new String(); // optional
+		PUBLICATION = new String(); // optional
+		PROJECT = new String(); // optional
+		COMMENT = new ArrayList<String>(); // optional
+		CH$NAME = new ArrayList<String>();
+		CH$COMPOUND_CLASS = new ArrayList<String>();
+		CH$FORMULA = new String();
+		CH$EXACT_MASS = new BigDecimal(0);
+		CH$SMILES = new String();
+		CH$IUPAC = new String();
+		CH$LINK = new LinkedHashMap<String, String>(); // optional
+		SP$SCIENTIFIC_NAME = new String(); // optional
+		SP$LINEAGE = new String(); // optional
+		SP$LINK = new LinkedHashMap<String, String>(); // optional
+		SP$SAMPLE = new ArrayList<String>(); // optional
+		AC$INSTRUMENT = new String();
+		AC$INSTRUMENT_TYPE = new String();
+		AC$MASS_SPECTROMETRY_MS_TYPE = new String();
+		AC$MASS_SPECTROMETRY_ION_MODE = new String();
+		AC$MASS_SPECTROMETRY = new ArrayList<Pair<String, String>>(); // optional
+		AC$CHROMATOGRAPHY = new ArrayList<Pair<String, String>>(); // optional
+		MS$FOCUSED_ION = new ArrayList<Pair<String, String>>(); // optional
+		MS$DATA_PROCESSING = new ArrayList<Pair<String, String>>(); // optional
+		PK$SPLASH = new String();
+		PK$ANNOTATION_HEADER = new ArrayList<String>(); // optional
+		PK$ANNOTATION = new ArrayList<Pair<BigDecimal, List<String>>>(); // optional
+		PK$PEAK = new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
 	}
 	
 	public String CONTRIBUTOR() {
@@ -122,10 +134,12 @@ public class Record {
 
 	
 	public String ACCESSION() {
-		return accession;
+		return ACCESSION;
 	}
 	public void ACCESSION(String value) {
-		accession = value;
+		String[] splitedAccession = value.split("-");
+		contributor=splitedAccession[1];
+		ACCESSION = value;
 	}
 	
 	
@@ -147,299 +161,300 @@ public class Record {
 	}
 	
 	public List<String> RECORD_TITLE() {
-		return record_title;
+		return RECORD_TITLE;
 	}
 	public String RECORD_TITLE1() {
-		return String.join("; ", record_title);
+		return String.join("; ", RECORD_TITLE);
 	}
 	public void RECORD_TITLE(List<String> value) {
-		record_title = value;
+		RECORD_TITLE = value;
 	}
 	public void RECORD_TITLE1(String value) {
-		record_title = new ArrayList<String>(Arrays.asList(value.split("; ")));
+		RECORD_TITLE = new ArrayList<String>(Arrays.asList(value.split("; ")));
 	}
 	
 	
 	public String DATE() {
-		return date;
+		return DATE;
 	}
 	public String[] DATE1() {
 		// DATE: 2016.01.15
 		// DATE: 2011.02.21 (Created 2007.07.07)
 		// DATE: 2016.01.19 (Created 2006.12.21, modified 2011.05.06)
-		return date.replace("(Created ", "").replace(", modified", "").replace(")", "").split(" ");
+		return DATE.replace("(Created ", "").replace(", modified", "").replace(")", "").split(" ");
 	}
 	public void DATE(String value) {
-		date=value;
+		DATE=value;
 	}
 	
 	
 	public String AUTHORS() {
-		return authors;
+		return AUTHORS;
 	}
 	public void AUTHORS(String value) {
-		authors=value;
+		AUTHORS=value;
 	}
 	
 	
 	public String LICENSE() {
-		return license;
+		return LICENSE;
 	}
 	public void LICENSE(String value) {
-		license=value;
+		LICENSE=value;
 	}
 	
 	
 	public String COPYRIGHT() {
-		return copyright;
+		return COPYRIGHT;
 	}
 	public void COPYRIGHT(String value) {
-		copyright= value;
+		COPYRIGHT= value;
 	}
 	
 	
 	public String PUBLICATION() {
-		return publication;
+		return PUBLICATION;
 	}
 	public void PUBLICATION(String value) {
-		publication=value;
+		PUBLICATION=value;
 	}
 	
 	
 	public String PROJECT() {
-		return project;
+		return PROJECT;
 	}
 	public void PROJECT(String value) {
-		project=value;
+		PROJECT=value;
 	}
 
 
 	public List<String> COMMENT() {
-		return comment;
+		return COMMENT;
 	}
 	public void COMMENT(List<String> value) {
-		comment=new ArrayList<String>(value);
+		COMMENT=new ArrayList<String>(value);
 	}
 	
 	
 	public List<String> CH_NAME() {
-		return ch_name;
+		return CH$NAME;
 	}
 	public void CH_NAME(List<String> value) {
-		ch_name=new ArrayList<String>(value);
+		CH$NAME=new ArrayList<String>(value);
 	}
 	
 	
 	public List<String> CH_COMPOUND_CLASS() {
-		return ch_compound_class;
+		return CH$COMPOUND_CLASS;
 	}
 	public void CH_COMPOUND_CLASS(List<String> value) {
-		ch_compound_class=new ArrayList<String>(value);
+		CH$COMPOUND_CLASS=new ArrayList<String>(value);
 	}
 	
 	/**
 	* Returns the molecular formula as an String.
 	*/
 	public String CH_FORMULA() {
-		return ch_formula;
+		return CH$FORMULA;
 	}
 	/**
 	* Returns the molecular formula as an String with HTML sup tags.
 	*/
 	public String CH_FORMULA1() {
-		IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(ch_formula, SilentChemObjectBuilder.getInstance());
+		IMolecularFormula m = MolecularFormulaManipulator.getMolecularFormula(CH$FORMULA, SilentChemObjectBuilder.getInstance());
 		return MolecularFormulaManipulator.getHTML(m);
 	}
 	public void CH_FORMULA(String value) {
-		ch_formula=value;
+		CH$FORMULA=value;
 	}
 	
 	
 	public BigDecimal CH_EXACT_MASS() {
-		return ch_exact_mass;
+		return CH$EXACT_MASS;
 	}
 	public void CH_EXACT_MASS(BigDecimal value) {
-		ch_exact_mass=value;
+		CH$EXACT_MASS=value;
 	}
 	
 	
 	public String CH_SMILES() {
-		return ch_smiles;
+		return CH$SMILES;
 	}
 	public IAtomContainer CH_SMILES_obj() {
-		if ("N/A".equals(ch_smiles)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
+		if ("N/A".equals(CH$SMILES)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		try {
-			return new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(ch_smiles);
+			return new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(CH$SMILES);
 		} catch (InvalidSmilesException e) {
-			logger.error("Structure generation from SMILES failed. Error: \""+ e.getMessage() + "\" for \"" + ch_smiles + "\".");
+			logger.error("Structure generation from SMILES failed. Error: \""+ e.getMessage() + "\" for \"" + CH$SMILES + "\".");
 			return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}
 	}
 	public void CH_SMILES(String value) {
-		ch_smiles=value;
+		CH$SMILES=value;
 	}
 	
 	
 	public String CH_IUPAC() {
-		return ch_iupac;
+		return CH$IUPAC;
 	}
 	public IAtomContainer CH_IUPAC_obj() {
-		if ("N/A".equals(ch_iupac)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
+		if ("N/A".equals(CH$IUPAC)) return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		try {
 			// Get InChIToStructure
-			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
-			INCHI_RET ret = intostruct.getReturnStatus();
-			if (ret == INCHI_RET.WARNING) {
+			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(CH$IUPAC, SilentChemObjectBuilder.getInstance());
+			InchiStatus ret = intostruct.getStatus();
+			if (ret == InchiStatus.WARNING) {
 				// Structure generated, but with warning message
-				logger.warn("InChI warning: \"" + intostruct.getMessage() + "\" converting \"" + ch_iupac + "\".");
+				logger.warn("InChI warning: \"" + intostruct.getMessage() + "\" converting \"" + CH$IUPAC + "\".");
 			} 
-			else if (ret != INCHI_RET.OKAY) {
+			else if (ret == InchiStatus.ERROR) {
 				// Structure generation failed
-				logger.error("Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for \"" + ch_iupac + "\".");
+				logger.error("Structure generation failed: " + intostruct.getMessage() + " converting \"" + CH$IUPAC + "\".");
 				return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 			}
 			return intostruct.getAtomContainer();
 		} catch (CDKException e) {
-			logger.error("Structure generation from InChI failed. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
+			logger.error("Structure generation from InChI failed. Error: \""+ e.getMessage() + "\" for \"" + CH$IUPAC + "\".");
 			return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}		 			
 	}
 	public void CH_IUPAC(String value) {
-		ch_iupac=value;
+		CH$IUPAC=value;
 	}
 		
 	public LinkedHashMap<String, String> CH_LINK() {
-		return ch_link;
+		return CH$LINK;
 	}
 	public void CH_LINK(LinkedHashMap<String, String> value) {
-		ch_link=value;
+		CH$LINK=value;
 	}
 
 	public String SP_SCIENTIFIC_NAME() {
-		return sp_scientific_name;
+		return SP$SCIENTIFIC_NAME;
 	}
 	public void SP_SCIENTIFIC_NAME(String value) {
-		sp_scientific_name=value;
+		SP$SCIENTIFIC_NAME=value;
 	}
 	
 	public String SP_LINEAGE() {
-		return sp_lineage;
+		return SP$LINEAGE;
 	}
 	public void SP_LINEAGE(String value) {
-		sp_lineage=value;
+		SP$LINEAGE=value;
 	}
  
-	public List<Pair<String, String>> SP_LINK() {
-		return sp_link;
+
+	public LinkedHashMap<String, String> SP_LINK() {
+		return SP$LINK;
 	}
-	public void SP_LINK(List<Pair<String, String>>  value) {
-		sp_link=new ArrayList<Pair<String, String>>(value);
+	public void SP_LINK(LinkedHashMap<String, String> value) {
+		SP$LINK=value;
 	}
 
 	public List<String> SP_SAMPLE() {
-		return sp_sample;
+		return SP$SAMPLE;
 	}
 	public void SP_SAMPLE(List<String> value) {
-		sp_sample=new ArrayList<String>(value);
+		SP$SAMPLE=new ArrayList<String>(value);
 	}
 	
 	public String AC_INSTRUMENT() {
-		return ac_instrument;
+		return AC$INSTRUMENT;
 	}
 	public void AC_INSTRUMENT(String value) {
-		ac_instrument=value;
+		AC$INSTRUMENT=value;
 	}
 
 	public String AC_INSTRUMENT_TYPE() {
-		return ac_instrument_type;
+		return AC$INSTRUMENT_TYPE;
 	}
 	public void AC_INSTRUMENT_TYPE(String value) {
-		this.ac_instrument_type	= value;
+		this.AC$INSTRUMENT_TYPE	= value;
 	}
 	
 	public String AC_MASS_SPECTROMETRY_MS_TYPE() {
-		return ac_mass_spectrometry_ms_type;
+		return AC$MASS_SPECTROMETRY_MS_TYPE;
 	}
 	public void AC_MASS_SPECTROMETRY_MS_TYPE(String value) {
-		ac_mass_spectrometry_ms_type=value;
+		AC$MASS_SPECTROMETRY_MS_TYPE=value;
 	}
 	
 	public String AC_MASS_SPECTROMETRY_ION_MODE() {
-		return ac_mass_spectrometry_ion_mode;
+		return AC$MASS_SPECTROMETRY_ION_MODE;
 	}
 	public void AC_MASS_SPECTROMETRY_ION_MODE(String value) {
-		ac_mass_spectrometry_ion_mode=value;
+		AC$MASS_SPECTROMETRY_ION_MODE=value;
 	}
 	
 	public List<Pair<String, String>> AC_MASS_SPECTROMETRY() {
-		return ac_mass_spectrometry;
+		return AC$MASS_SPECTROMETRY;
 	}
 	public Map<String, String> AC_MASS_SPECTROMETRY_asMap() {
-		return listToMap(ac_mass_spectrometry);
+		return listToMap(AC$MASS_SPECTROMETRY);
 	}
 	public void AC_MASS_SPECTROMETRY(List<Pair<String, String>> value) {
-		ac_mass_spectrometry=new ArrayList<Pair<String, String>>(value);
+		AC$MASS_SPECTROMETRY=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public List<Pair<String, String>> AC_CHROMATOGRAPHY() {
-		return ac_chromatography;
+		return AC$CHROMATOGRAPHY;
 	}
 	public Map<String, String> AC_CHROMATOGRAPHY_asMap() {
-		return listToMap(ac_chromatography);
+		return listToMap(AC$CHROMATOGRAPHY);
 	}
 	public void AC_CHROMATOGRAPHY(List<Pair<String, String>> value) {
-		ac_chromatography=new ArrayList<Pair<String, String>>(value);
+		AC$CHROMATOGRAPHY=new ArrayList<Pair<String, String>>(value);
 	}
 	
 	public List<Pair<String, String>> MS_FOCUSED_ION() {
-		return ms_focused_ion;
+		return MS$FOCUSED_ION;
 	}
 	public Map<String, String> MS_FOCUSED_ION_asMap() {
-		return listToMap(ms_focused_ion);
+		return listToMap(MS$FOCUSED_ION);
 	}
 	public void MS_FOCUSED_ION(List<Pair<String, String>> value) {
-		ms_focused_ion=new ArrayList<Pair<String, String>>(value);
+		MS$FOCUSED_ION=new ArrayList<Pair<String, String>>(value);
 	}
 	
 	public List<Pair<String, String>> MS_DATA_PROCESSING() {
-		return ms_data_processing;
+		return MS$DATA_PROCESSING;
 	}
 	public void MS_DATA_PROCESSING(List<Pair<String, String>> value) {
-		ms_data_processing=new ArrayList<Pair<String, String>>(value);
+		MS$DATA_PROCESSING=new ArrayList<Pair<String, String>>(value);
 	}
 
 	public String PK_SPLASH() {
-		return pk_splash;
+		return PK$SPLASH;
 	}
 	public void PK_SPLASH(String value) {
-		pk_splash=value;
+		PK$SPLASH=value;
 	}
 
 	public List<String> PK_ANNOTATION_HEADER() {
-		return pk_annotation_header;
+		return PK$ANNOTATION_HEADER;
 	}
 	public void PK_ANNOTATION_HEADER(List<String> value) {
-		pk_annotation_header=new ArrayList<String>(value);
+		PK$ANNOTATION_HEADER=new ArrayList<String>(value);
 	}
 
 	// PK_ANNOTATION is a two-dimensional List
 	public List<Pair<BigDecimal, List<String>>> PK_ANNOTATION() {
-		return pk_annotation;
+		return PK$ANNOTATION;
 	}
 	public void PK_ANNOTATION_ADD_LINE(Pair<BigDecimal, List<String>> annotation) {
-		pk_annotation.add(annotation);
+		PK$ANNOTATION.add(annotation);
 	}
 
 	public int PK_NUM_PEAK() {
-		return pk_peak.size();
+		return PK$PEAK.size();
 	}
 
 	// PK_PEAK is a List with Triple values M/Z, intensity, rel. intensity
 	public List<Triple<BigDecimal,BigDecimal,Integer>> PK_PEAK() {
-		return pk_peak;
+		return PK$PEAK;
 	}
 	public void PK_PEAK_ADD_LINE(Triple<BigDecimal,BigDecimal,Integer> peak) {
-		pk_peak.add(peak);
+		PK$PEAK.add(peak);
 	}
 
 	public String toString() {
@@ -455,11 +470,11 @@ public class Record {
 		sb.append("DATE: " + DATE() + "\n");
 		sb.append("AUTHORS: " + AUTHORS() + "\n");
 		sb.append("LICENSE: " + LICENSE() + "\n");
-		if (COPYRIGHT() != null)
+		if (!"".equals(COPYRIGHT()))
 			sb.append("COPYRIGHT: " + COPYRIGHT() + "\n");
-		if (PUBLICATION() != null)
+		if (!"".equals(PUBLICATION()))
 			sb.append("PUBLICATION: " + PUBLICATION() + "\n");
-		if (PROJECT() != null)
+		if (!"".equals(PROJECT()))
 			sb.append("PROJECT: " + PROJECT() + "\n");
 		for (String comment : COMMENT())
 			sb.append("COMMENT: " + comment + "\n");
@@ -475,12 +490,13 @@ public class Record {
 			sb.append("CH$LINK: " + key + " " + value + "\n");		    
 		});
 		
-		if (SP_SCIENTIFIC_NAME() != null)
+		if (!"".equals(SP_SCIENTIFIC_NAME()))
 			sb.append("SP$SCIENTIFIC_NAME: " + SP_SCIENTIFIC_NAME() + "\n");
-		if (SP_LINEAGE() != null)
+		if (!"".equals(SP_LINEAGE()))
 			sb.append("SP$LINEAGE: " + SP_LINEAGE() + "\n");
-		for (Pair<String,String> link : SP_LINK())
-			sb.append("SP$LINK: " + link.getKey() + " " + link.getValue() + "\n");
+		SP_LINK().forEach((key,value) -> {
+			sb.append("SP$LINK: " + key + " " + value + "\n");		    
+		});
 		for (String sample : SP_SAMPLE())
 			sb.append("SP$SAMPLE: " + sample + "\n");
 		
@@ -529,9 +545,9 @@ public class Record {
 		sb.append("<b>DATE:</b> " + DATE() + "<br>\n");
 		sb.append("<b>AUTHORS:</b> " + AUTHORS() + "<br>\n");
 		sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + LICENSE() + "</a><br>\n");
-		if (COPYRIGHT() != null) 
+		if (!"".equals(COPYRIGHT()))
 			sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
-		if (PUBLICATION() != null) {
+		if (!"".equals(PUBLICATION())) {
 			String pub=PUBLICATION();
 			String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
 			String regex_pmid = "PMID:[ ]?\\d{8,8}";
@@ -550,7 +566,7 @@ public class Record {
 			}
 			sb.append("<b>PUBLICATION:</b> " + pub + "<br>\n");
 		}
-		if (PROJECT() != null)
+		if (!"".equals(PROJECT()))
 			sb.append("<b>PROJECT:</b> " + PROJECT() + "<br>\n");
 		for (String comment : COMMENT())
 			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
@@ -616,12 +632,13 @@ public class Record {
 			}
 		});
 		
-		if (SP_SCIENTIFIC_NAME() != null)
+		if (!"".equals(SP_SCIENTIFIC_NAME()))
 			sb.append("<b>SP$SCIENTIFIC_NAME:</b> " + SP_SCIENTIFIC_NAME() + "<br>\n");
-		if (SP_LINEAGE() != null)
+		if (!"".equals(SP_LINEAGE()))
 			sb.append("<b>SP$LINEAGE:</b> " + SP_LINEAGE() + "<br>\n");
-		for (Pair<String,String> link : SP_LINK())
-			sb.append("<b>SP$LINK:</b> " + link.getKey() + " " + link.getValue() + "<br>\n");
+		SP_LINK().forEach((key,value) -> {
+			sb.append("<b>SP$LINK:</b> " + key + " " + value + "<br>\n");
+		});
 		for (String sample : SP_SAMPLE())
 				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>\n");
 		sb.append("<hr>\n");
@@ -648,14 +665,14 @@ public class Record {
 			for (String annotation_header_item : PK_ANNOTATION_HEADER())
 				sb.append(" " + annotation_header_item);
 			sb.append("<br>\n");
-			for (Pair<BigDecimal, List<String>> annotation_line :  pk_annotation) {
-				sb.append("&nbsp&nbsp" + annotation_line.getLeft() + "&nbsp" + String.join("&nbsp", annotation_line.getRight()) + "<br>\n");
-			}
+			for (Pair<BigDecimal, List<String>> annotation_line :  PK$ANNOTATION) {
+				sb.append("&nbsp;&nbsp;" + annotation_line.getLeft() + "&nbsp;" + String.join("&nbsp;", annotation_line.getRight()) + "<br>\n");
+  		}
 		}
 		sb.append("<b>PK$NUM_PEAK:</b> " + PK_NUM_PEAK() + "<br>\n");
 		sb.append("<b>PK$PEAK:</b> m/z int. rel.int.<br>\n");
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
-			sb.append("&nbsp&nbsp" + peak.getLeft() + "&nbsp" + peak.getMiddle() + "&nbsp" + peak.getRight() + "<br>\n");
+			sb.append("&nbsp;&nbsp;" + peak.getLeft() + "&nbsp;" + peak.getMiddle() + "&nbsp;" + peak.getRight() + "<br>\n");
 		}
 		
 		sb.append("//");
