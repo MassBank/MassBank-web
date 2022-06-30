@@ -1,48 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>MassBank-Project</artifactId>
 		<groupId>de.ipb-halle.msbi</groupId>
-		<version>2.1.11-SNAPSHOT</version>
+		<version>2.2</version>
 	</parent>
-	
+
 	<artifactId>MassBank-web</artifactId>
 	<packaging>war</packaging>
-	
+
 	<name>MassBank servlet</name>
 	<dependencies>
 		<dependency>
 			<groupId>de.ipb-halle.msbi</groupId>
 			<artifactId>MassBank-lib</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet-api-version}</version>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreesvg</artifactId>
-			<version>3.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.dfabulich</groupId>
 			<artifactId>sitemapgen4j</artifactId>
-			<version>1.1.2</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -27,7 +27,7 @@ case $1 in
 		docker-compose -f compose/full-service.yml -p $TAG up -d mariadb
 		docker-compose -f compose/full-service.yml -p $TAG exec mariadb /root/waitforSQL.sh
 		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
-		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
+		docker-compose -f compose/full-service.yml -p $TAG up -d tomee
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
 			/project/MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RefreshDatabase
@@ -43,8 +43,8 @@ case $1 in
 	deploy)
 		docker-compose -f compose/full-service.yml -p $TAG pull
 		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
-		docker-compose -f compose/full-service.yml -p $TAG rm -s tomcat
-		docker-compose -f compose/full-service.yml -p $TAG up -d tomcat
+		docker-compose -f compose/full-service.yml -p $TAG rm -s tomee
+		docker-compose -f compose/full-service.yml -p $TAG up -d tomee
 	;;
 	*)
 		usage
