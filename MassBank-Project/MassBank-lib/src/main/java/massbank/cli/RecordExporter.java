@@ -22,6 +22,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import massbank.Record;
+import massbank.export.RecordToJson;
 import massbank.export.RecordToNIST_MSP;
 import massbank.export.RecordToRIKEN_MSP;
 
@@ -83,105 +84,101 @@ Num peaks: 124
 */
 
 
-	public static void main(String[] arguments) {
-		// load version and print
-		final Properties properties = new Properties();
-		try {
-			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		System.out.println("Exporter version: " + properties.getProperty("version"));
+public static void main(String[] arguments) {
+	// load version and print
+	final Properties properties = new Properties();
+	try {
+		properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
+	} catch (IOException e) {
+		e.printStackTrace();
+		System.exit(1);
+	}
+	System.out.println("Exporter version: " + properties.getProperty("version"));
 
-		// parse command line
-		Options options = new Options();
-		options.addRequiredOption("o", "outfile", true, "name of output file");
-		options.addOption("f", "format", true, "output format; possible values: RIKEN_MSP, NIST_MSP; default is RIKEN_MSP");
-		CommandLine cmd = null;
-		try {
-			cmd = new DefaultParser().parse( options, arguments);
-		}
-		catch(ParseException e) {
-	        // oops, something went wrong
-	        System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
-	        HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
-	        System.exit(1);
-	    }
-		if (cmd.getArgList().size() == 0) {
+	// parse command line
+	Options options = new Options();
+	options.addRequiredOption("o", "outfile", true, "name of output file");
+	options.addRequiredOption("f", "format", true, "output format; possible values: RIKEN_MSP, NIST_MSP; json");
+	CommandLine cmd = null;
+	try {
+		cmd = new DefaultParser().parse(options, arguments);
+	} catch (ParseException e) {
+		// oops, something went wrong
+		System.err.println("Parsing command line failed. Reason: " + e.getMessage());
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+		System.exit(1);
+	}
+	if (cmd.getArgList().size() == 0) {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+		System.exit(1);
+	}
+	String format = cmd.getOptionValue("f");
+	if (format != null) {
+		if (!Arrays.asList("RIKEN_MSP", "NIST_MSP", "json").contains(format)) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
-	        System.exit(1);
+			System.exit(1);
 		}
-		String format = cmd.getOptionValue("f");
-		if (format != null) {
-			if (!Arrays.asList("RIKEN_MSP", "NIST_MSP").contains(format)) {
-				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
-		        System.exit(1);
-			}
-		}
-		
-		// loop over all arguments
-		// find all files in arguments and all *.txt files in directories and subdirectories
-		// specified in arguments 
-		List<Record> records = cmd.getArgList().parallelStream().map(argument -> {
-			// find all files in arguments and all *.txt files in directories and subdirectories
-			// specified in arguments 
-			File argumentFile = new File(argument);
-			List<File> filesToProcess = new ArrayList<File>();			 
-			if (argumentFile.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
-				filesToProcess.add(argumentFile);
-			}
-			else if (argumentFile.isDirectory()) {
-				if (!argumentFile.getName().startsWith(".")) filesToProcess.addAll(FileUtils.listFiles(argumentFile, new String[] {"txt"}, true));
-			}
-			else {
-				logger.warn("Argument " + argument + " could not be processed.");
-			}
-			
-			// read all files and process to Record
-			List<Record> argumentRecords = filesToProcess.parallelStream().map(filename -> {
-				Record record=null;
-				try {
-					String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					Set<String> config = new HashSet<String>();
-					config.add("legacy");
-					record = Validator.validate(recordString, "", config);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return record;
-			}).collect(Collectors.toList());
-			return argumentRecords;
-		})
-		// concat all results
-		.flatMap(Collection::stream)
-		.filter(Objects::nonNull)
-		// output as List
-		.collect(Collectors.toList());		
-		//System.out.println(recordfiles.toString());		
-		
-		File outfile	= new File(cmd.getOptionValue("o"));
-		
-		// default output format is RIREN_MSP
-		if (format == null) {
-			format="RIKEN_MSP";
-		}
-		switch(format){            
-        case "RIKEN_MSP":
-        	RecordToRIKEN_MSP.recordsToRIKEN_MSP(outfile, records);
-            break;
-        case "NIST_MSP":
-        	RecordToNIST_MSP.recordsToNIST_MSP(outfile, records);
-            break;
-        default:
-        	logger.error("This code should not run.");
-            System.exit(1);
-        } 
-		
-		
-		
 	}
+
+	// loop over all arguments
+	// find all files in arguments and all *.txt files in directories and
+	// subdirectories
+	// specified in arguments
+	List<Record> records = cmd.getArgList().parallelStream().map(argument -> {
+		// find all files in arguments and all *.txt files in directories and
+		// subdirectories
+		// specified in arguments
+		File argumentFile = new File(argument);
+		List<File> filesToProcess = new ArrayList<File>();
+		if (argumentFile.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
+			filesToProcess.add(argumentFile);
+		} else if (argumentFile.isDirectory()) {
+			if (!argumentFile.getName().startsWith("."))
+				filesToProcess.addAll(FileUtils.listFiles(argumentFile, new String[] { "txt" }, true));
+		} else {
+			logger.warn("Argument " + argument + " could not be processed.");
+		}
+
+		// read all files and process to Record
+		List<Record> argumentRecords = filesToProcess.parallelStream().map(filename -> {
+			Record record = null;
+			try {
+				String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				Set<String> config = new HashSet<String>();
+				config.add("legacy");
+				record = Validator.validate(recordString, config);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return record;
+		}).collect(Collectors.toList());
+		return argumentRecords;
+	})
+	// concat all results
+	.flatMap(Collection::stream).filter(Objects::nonNull)
+	// output as List
+	.collect(Collectors.toList());
+	// System.out.println(recordfiles.toString());
+
+	File outfile = new File(cmd.getOptionValue("o"));
+
+	switch (format) {
+	case "RIKEN_MSP":
+		RecordToRIKEN_MSP.recordsToRIKEN_MSP(outfile, records);
+		break;
+	case "NIST_MSP":
+		RecordToNIST_MSP.recordsToNIST_MSP(outfile, records);
+		break;
+	case "json":
+		RecordToJson.recordsToJson(outfile, records);
+		break;
+	default:
+		logger.error("This code should not run.");
+		System.exit(1);
+	}
+
+}
 }

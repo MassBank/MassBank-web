@@ -48,11 +48,11 @@
 	
 	<noscript>
 		<div class="w3-panel w3-yellow">
-  		<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
- 		</div>
-  </noscript>
-  	
- 	<div>
+			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+		</div>
+	</noscript>
+	
+		<div>
 		<jsp:include page="menu.html"/>
 	</div>
 	
@@ -65,11 +65,11 @@
 			</div>
 		</div>	
 	</header>
-  	
+	
 	<div class="w3-container w3-margin-top w3-section">
 		<div class="w3-cell-row w3-section">
 			<div class="w3-cell w3-mobile w3-cell-middle" style="width:40%">
-				<img src="img/logo.svg"  style="width:100%">
+				<img src="img/logo.svg" alt="MassBank logo" style="width:100%">
 			</div>
 			<div class="w3-cell w3-mobile" style="width:10%"></div>
 			
@@ -94,7 +94,7 @@
 			and get in touch via <a href="https://github.com/MassBank/MassBank-data" target="_blank">github</a> or <a href="mailto:massbank@massbank.eu">email</a>. 
 		</div>
 	</div>
-		
+	
 	<div>
 		<iframe src="https://massbank.github.io/MassBank-documentation/news.html" 
 			id="news" style="min-width: 100%;border:none;"></iframe>
