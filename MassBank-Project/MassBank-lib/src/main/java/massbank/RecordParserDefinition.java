@@ -1423,10 +1423,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("adduct_token", 
 				CharacterParser.anyOf("+-")
 				.seq(ref("uint_primitive").optional())
-				.seq(
-					ref("molecular_formula")
-					.or(StringParser.of("ACN"))
+				.seq(					
+					StringParser.of("ACN")
 					.or(StringParser.of("FA"))
+					.or(ref("molecular_formula"))
 				)
 //				.map((List<?> value) -> {
 //					System.out.println(value);
