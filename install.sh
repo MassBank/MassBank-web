@@ -26,7 +26,7 @@ case $1 in
 		docker-compose -f compose/full-service.yml -p $TAG build
 		docker-compose -f compose/full-service.yml -p $TAG up -d mariadb
 		docker-compose -f compose/full-service.yml -p $TAG exec mariadb /root/waitforSQL.sh
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
+		CURRENT_UID=$(id -u):$(id -g) docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomee
 		docker-compose -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
@@ -42,7 +42,7 @@ case $1 in
 	;;
 	deploy)
 		docker-compose -f compose/full-service.yml -p $TAG pull
-		docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
+		CURRENT_UID=$(id -u):$(id -g) docker-compose -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
 		docker-compose -f compose/full-service.yml -p $TAG rm -s tomee
 		docker-compose -f compose/full-service.yml -p $TAG up -d tomee
 	;;
