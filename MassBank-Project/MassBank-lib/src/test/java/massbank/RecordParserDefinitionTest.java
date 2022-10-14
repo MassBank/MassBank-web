@@ -31,5 +31,16 @@ public class RecordParserDefinitionTest {
 		assertValid("ACCESSION: MSBNK-Aa10_zZ-Aa10_zZ\n", "accession");
 		assertInvalid("ACCESSION: MSBNK-Aa:10_zZ-Aa10_zZ\n", "accession");
 	}
+	
+	@Test
+	public void testCVterm() {
+		assertValid("[MS,,,]", "cvterm");
+		assertValid("[MS ,,,]", "cvterm");
+		assertValid("[ MS ,,,]", "cvterm");
+		assertValid("[,,,]", "cvterm");
+		assertValid("[ ,,,]", "cvterm");
+		assertValid("[MS, MS:1001477, SpectraST,]", "cvterm");
+		assertValid("[MOD, MOD:00648, \"N,O-diacetylated L-serine\",]", "cvterm");
+	}
 
 }

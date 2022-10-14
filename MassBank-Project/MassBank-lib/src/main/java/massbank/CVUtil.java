@@ -26,7 +26,7 @@ public final class CVUtil {
 	Ontology ontology;
 
 	private CVUtil() {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("psi-ms.obo")))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.obo")))) {
 			OboParser parser = new OboParser();
 			try {
 				ontology = parser.parseOBO(reader, "Mass spectrometry ontology", "A structured controlled vocabulary for the annotation of experiments concerned with proteomics mass spectrometry.");

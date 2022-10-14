@@ -2,6 +2,7 @@ package massbank;
 
 import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
+import static org.petitparser.parser.primitive.CharacterParser.word;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,7 +64,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private final boolean legacy;
 	// weak validation mode to let validation pass for AddMetaData
 	private final boolean weak;
-	// torn on additional validation steps, which require online checks
+	// turn on additional validation steps, which require online checks; slow!
 	private final boolean online;
 	
 	private IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
@@ -75,6 +76,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
 	
+	// load a list of strings from .config or resource folder
 	private static List<String> getResourceFileAsList(String fileName)  {
 		// Try to load from user DataRootPath
 		File resourceFileFromDataRootPath = null;
@@ -183,6 +185,28 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("valuesep", StringParser.of("; "));
 		def("endtag", StringParser.of("//").seq(Token.NEWLINE_PARSER));
 		def("multiline_start", StringParser.of("  "));
+		
+		// CV terms
+		// General format is [CV label, accession, name, value].
+		// Any field that is not available MUST be left empty.
+		// [MS, MS:1001477, SpectraST,]
+		// Should the name of the param contain commas, quotes MUST be added to avoid problems with the parsing: 
+		// [label, accession, “first part of the param name, second part of the name”, value].
+		// [MOD, MOD:00648, "N,O-diacetylated L-serine",]
+		def("cvterm",
+			CharacterParser.of('[')
+			.seq(word().star().trim())  // label
+			.seq(CharacterParser.of(','))
+			.seq(word().or(CharacterParser.of(':')).star().trim())  // accession 
+			.seq(CharacterParser.of(',')) 
+			.seq(
+				CharacterParser.of('"').seq(CharacterParser.any().plusLazy(CharacterParser.of('"'))).seq(CharacterParser.of('"')).trim()
+				.or(CharacterParser.any().starLazy(CharacterParser.of(',')).trim())
+			)  // name
+			.seq(CharacterParser.of(','))
+			.seq(word().star().trim())  // value
+			.seq(CharacterParser.of(']'))
+		);
 		
 		def("uint_primitive", digit().plus().flatten());
 		def("number_primitive",
