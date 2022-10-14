@@ -1273,7 +1273,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("DESOLVATION_TEMPERATURE "))
 			.or(StringParser.of("DRY_GAS_FLOW "))
 			.or(StringParser.of("DRY_GAS_TEMP "))
-			.or(StringParser.of("FRAGMENTATION_METHOD "))
 			.or(StringParser.of("FRAGMENTATION_MODE "))
 			.or(StringParser.of("FRAGMENT_VOLTAGE "))
 			.or(StringParser.of("GAS_PRESSURE "))
