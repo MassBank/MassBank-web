@@ -1193,8 +1193,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.4.4 AC$MASS_SPECTROMETRY: ION_MODE
 		// Polarity of Ion Detection. Mandatory
 		// Example: AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
-		// Either of POSITIVE or NEGATIVE is allowed. Cross-reference to mzOntology: POSITIVE [MS:1000030] 
-		// or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+		// Either of POSITIVE or NEGATIVE is allowed. 
+		// Cross-reference to HUPO-PSI: POSITIVE [MS, MS:1000130, positive scan,] or NEGATIVE [MS:1000129, negative scan,]; ION_MODE [MS, MS:1000465, scan polarity,]
 		def("ac_mass_spectrometry_ion_mode_value",
 			StringParser.of("POSITIVE")
 			.or(StringParser.of("NEGATIVE"))
@@ -1332,8 +1332,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					})
 					.seq(CharacterParser.whitespace()).flatten()
 				)
-			)
-			.seq(Token.NEWLINE_PARSER.not()).pick(2)
+			).pick(2)
 			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 			.map((List<String> value) -> {
 				return Pair.of(value.get(0).trim(), value.get(1));
@@ -1341,7 +1340,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()		
 			.map((List<Pair<String,String>> value) -> {
-				//System.out.println(value);
+				System.out.println(value);
 				callback.AC_MASS_SPECTROMETRY(value);
 				return value;
 			})
