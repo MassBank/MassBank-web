@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.biojava.nbio.ontology.Term;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -76,7 +77,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
 	// controled vocabulary handler
-	CVUtil cvUtil = CVUtil.get();
+	CVUtil cvutil = CVUtil.get();
 	
 	// load a list of strings from .config or resource folder
 	private static List<String> getResourceFileAsList(String fileName)  {
@@ -196,10 +197,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// [label, accession, “first part of the param name, second part of the name”, value].
 		// [MOD, MOD:00648, "N,O-diacetylated L-serine",]
 		def("cvterm",
-			CharacterParser.of('[')
+			CharacterParser.of('[').trim()
 			// label
-			.seq(word().star().flatten().trim())
-			.seq(CharacterParser.of(','))
+			.seq(word().star().flatten())
+			.seq(CharacterParser.of(',').trim())
 			// accession 
 			.seq(word().or(CharacterParser.of(':')).star().flatten().trim())
 			.seq(CharacterParser.of(',')) 
@@ -215,6 +216,27 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.or(CharacterParser.any().starLazy(CharacterParser.of(']'))).flatten().trim()
 			)
 			.seq(CharacterParser.of(']')).permute(1,3,5,7)
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
+		def("cvterm_validated",
+			ref("cvterm")
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				Result r = continuation.apply(context);
+				if (r.isSuccess()) {
+					List<String> value = r.get();
+					if (!cvutil.containsTerm(value.get(1))) {
+						return context.failure(value.get(1)+ "is no valid Id in ontology.");
+					}
+					Term term=cvutil.getTerm(value.get(1));
+					if (!term.getDescription().equals(value.get(2))) {
+						return context.failure("Name missmatch for id "+ value.get(1)+ ".");
+					}
+				}
+				return r; 
+			})
 		);
 		
 		def("uint_primitive", digit().plus().flatten());
@@ -1340,9 +1362,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 					StringParser.of("FRAGMENTATION_MODE ")
 					// value
 					.seq(
-						ref("cvterm")
-						.flatten()
-						.or(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+						ref("cvterm_validated")
+						.map((List<String> value) -> {
+							Term term=cvutil.getTerm(value.get(1));
+							return '['+String.join(", ", value)+']';
+						})
+						.or(
+							StringParser.of("CID")
+							.or(StringParser.of("HAD"))
+							.or(StringParser.of("HCD"))
+							.or(StringParser.of("LOW-ENERGY CID"))
+							.or(StringParser.of("RID"))
+						)
 					)
 				)
 				.or(
@@ -1369,8 +1400,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 			})
 			.plus()
 			.map((List<Pair<String,String>> value) -> {
-				System.out.println();
-				System.out.println(value);
+				//System.out.println();
+				//System.out.println(value);
 				callback.AC_MASS_SPECTROMETRY(value);
 				return value;
 			})

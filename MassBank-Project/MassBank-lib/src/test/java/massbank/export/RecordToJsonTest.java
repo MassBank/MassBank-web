@@ -27,7 +27,7 @@ public class RecordToJsonTest {
 		Assertions.assertEquals(minimalJson, minimalRecordJson);
 	
 		String maximalRecordString = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.txt").toURI()));
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-tst00002.txt").toURI()));
 		String maximalJson = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.json").toURI()));
 		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
