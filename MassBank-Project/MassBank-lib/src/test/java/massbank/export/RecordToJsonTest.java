@@ -17,7 +17,7 @@ import massbank.cli.Validator;
 public class RecordToJsonTest {
 
 	@Test
-	public void testToJson() throws IOException, URISyntaxException {
+	public void testToJsonMinimalRecord() throws IOException, URISyntaxException {
 		String minimalRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.txt").toURI()));
 		String minimalJson = Files
@@ -25,7 +25,10 @@ public class RecordToJsonTest {
 		Record minimalRecord = Validator.validate(minimalRecordString, new HashSet<String>());
 		String minimalRecordJson =  RecordToJson.convert(minimalRecord);
 		Assertions.assertEquals(minimalJson, minimalRecordJson);
-	
+	}
+		
+	@Test
+	public void testToJsonMaximalRecord() throws IOException, URISyntaxException {
 		String maximalRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-tst00002.txt").toURI()));
 		String maximalJson = Files
@@ -33,7 +36,10 @@ public class RecordToJsonTest {
 		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
 		String maximalRecordJson =  RecordToJson.convert(maximalRecord);
 		Assertions.assertEquals(maximalJson, maximalRecordJson);
+	}
 	
+	@Test
+	public void testToJsonDeprecatedRecord() throws IOException, URISyntaxException {
 		String deprecatedRecordString = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.txt").toURI()));
 		String deprecatedJson = Files
@@ -41,7 +47,21 @@ public class RecordToJsonTest {
 		Record deprecatedRecord = Validator.validate(deprecatedRecordString, new HashSet<String>());
 		String deprecatedRecordJson =  RecordToJson.convert(deprecatedRecord);
 		Assertions.assertEquals(deprecatedJson, deprecatedRecordJson);
+	}
+	
+	@Test
+	public void testToJsonCombinedRecord() throws IOException, URISyntaxException {
+		String minimalRecordString = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.txt").toURI()));
+		Record minimalRecord = Validator.validate(minimalRecordString, new HashSet<String>());
+		String maximalRecordString = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-tst00002.txt").toURI()));
+		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
+		String deprecatedRecordString = Files
+				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.txt").toURI()));
+		Record deprecatedRecord = Validator.validate(deprecatedRecordString, new HashSet<String>());
 		
+				
 		String combinedJson = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("combined_record.json").toURI()));
 		List<Record> records = new ArrayList<Record>();
