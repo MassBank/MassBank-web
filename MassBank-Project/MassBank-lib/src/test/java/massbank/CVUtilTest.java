@@ -15,6 +15,9 @@ import org.biojava.nbio.ontology.io.OboParser;
 import org.biojava.nbio.ontology.utils.Annotation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.obolibrary.robot.IOHelper;
+import org.semanticweb.owlapi.model.OWLOntology;
+
 import static org.biojava.nbio.ontology.obo.OboFileHandler.NAMESPACE;
 import static org.biojava.nbio.ontology.obo.OboFileHandler.ALT_ID;
 import static org.biojava.nbio.ontology.obo.OboFileHandler.IS_A;
@@ -38,9 +41,11 @@ public class CVUtilTest {
 	}
 	
 	@Test
-	public void testTermIsA() {
+	public void testTermIsA() throws IOException {
 		CVUtil cvUtil = CVUtil.get();
 		Assertions.assertTrue(cvUtil.termIsA("MS:1003294","MS:1000250"));
+		IOHelper ioHelper = new IOHelper();
+		OWLOntology full = ioHelper.loadOntology("/home/rene/GIT/MassBank-web/MassBank-Project/MassBank-lib/src/main/resources/cv/psi-ms.owl");
 		
 	}
 	
