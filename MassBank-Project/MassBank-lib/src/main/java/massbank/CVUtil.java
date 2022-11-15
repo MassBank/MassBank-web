@@ -12,7 +12,6 @@ import java.util.Set;
 import org.biojava.nbio.ontology.Ontology;
 import org.biojava.nbio.ontology.Term;
 import org.biojava.nbio.ontology.io.OboParser;
-import org.obolibrary.robot.IOHelper;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import static org.biojava.nbio.ontology.obo.OboFileHandler.IS_A;

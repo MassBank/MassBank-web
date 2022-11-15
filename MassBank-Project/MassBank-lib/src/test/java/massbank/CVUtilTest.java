@@ -15,8 +15,13 @@ import org.biojava.nbio.ontology.io.OboParser;
 import org.biojava.nbio.ontology.utils.Annotation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.obolibrary.robot.IOHelper;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.FunctionalSyntaxDocumentFormat;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import static org.biojava.nbio.ontology.obo.OboFileHandler.NAMESPACE;
 import static org.biojava.nbio.ontology.obo.OboFileHandler.ALT_ID;
@@ -41,11 +46,19 @@ public class CVUtilTest {
 	}
 	
 	@Test
-	public void testTermIsA() throws IOException {
+	public void testTermIsA() throws IOException, OWLOntologyStorageException, OWLOntologyCreationException {
 		CVUtil cvUtil = CVUtil.get();
 		Assertions.assertTrue(cvUtil.termIsA("MS:1003294","MS:1000250"));
-		IOHelper ioHelper = new IOHelper();
-		OWLOntology full = ioHelper.loadOntology("/home/rene/GIT/MassBank-web/MassBank-Project/MassBank-lib/src/main/resources/cv/psi-ms.owl");
+//		IOHelper ioHelper = new IOHelper();
+//		OWLOntology full = ioHelper.loadOntology("/home/rene/GIT/MassBank-web/MassBank-Project/MassBank-lib/src/main/resources/cv/psi-ms.owl");
+//		
+//		
+//		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+//		OWLOntology ontology = manager.loadOntology(IRI.create("https://protege.stanford.edu/ontologies/pizza/pizza.owl"));
+//		ontology.saveOntology(new FunctionalSyntaxDocumentFormat(), System.out);
+//
+//		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+//		System.out.println(man.getOntologies().size());
 		
 	}
 	
