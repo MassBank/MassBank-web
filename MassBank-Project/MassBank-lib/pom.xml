@@ -87,19 +87,23 @@
 			<groupId>io.github.dan2097</groupId>
 			<artifactId>jna-inchi-all</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.biojava</groupId>
-			<artifactId>biojava-core</artifactId>
-		</dependency>
+			<dependency>
+                       <groupId>org.biojava</groupId>
+                       <artifactId>biojava-core</artifactId>
+               </dependency>
 		<dependency>
 			<groupId>org.biojava</groupId>
 			<artifactId>biojava-ontology</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
 			<version>5.1.20</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>org.semanticweb.hermit</artifactId>
+			<version>1.3.8.500</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

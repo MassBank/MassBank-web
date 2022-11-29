@@ -7,12 +7,28 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.biojava.nbio.ontology.Ontology;
 import org.biojava.nbio.ontology.Term;
 import org.biojava.nbio.ontology.io.OboParser;
+import org.semanticweb.HermiT.ReasonerFactory;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.BufferingMode;
+import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasoner;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.model.OWLClass;
 
 import static org.biojava.nbio.ontology.obo.OboFileHandler.IS_A;
 
@@ -26,7 +42,7 @@ public final class CVUtil {
 	private static CVUtil instance;
 	Ontology ontology;
 
-	private CVUtil() {
+	private CVUtil(){
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.obo")))) {
 			OboParser parser = new OboParser();
 			try {
@@ -37,9 +53,42 @@ public final class CVUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLOntology o=null;
+		try {
+			o = man.loadOntologyFromOntologyDocument(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.owl"));
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		for(OWLAxiom ax:o.getLogicalAxioms()) {
+//			System.out.println(ax);
+//		}
+		System.out.println("Axioms: "+o.getAxiomCount()+", Format:"+man.getOntologyFormat(o));
+		ArrayList t = new ArrayList<OWLAxiom>();
+		for(OWLClass ax:o.getClassesInSignature()) {
+			t.add(ax);
+			System.out.println(ax.getIRI());
+		}
+		
+		
+		o.signature().filter((e->(!e.isBuiltIn()&&e.getIRI().getFragment().startsWith("M"))));
+		//o.signature().filter((e->(!e.isBuiltIn()&&e.getIRI().getFragment().startsWith("M")))).forEach(System.out::println);
+//		System.out.println(o);
+		//OWLReasonerFactory rf = new ReasonerFactory();
+		//OWLReasoner r = rf.createReasoner(o);
+		
+		OWLDataFactory df = man.getOWLDataFactory();
+		OWLReasoner r = new StructuralReasoner(o, new SimpleConfiguration(),BufferingMode.BUFFERING);
+		System.out.println(df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/MS_1000044")));
+		NodeSet<OWLClass> result = 	r.getSuperClasses(df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/MS_1000044")), true);
+		System.out.println(result);
+		((StructuralReasoner) r).dumpClassHierarchy(false);
+//		r.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+//		r.getSubClasses(df.getOWLClass("http://purl.obolibrary.org/obo/MS:1000044"), false).forEach(System.out::println);
 	}
 
-	public static synchronized CVUtil get() {
+	public static synchronized CVUtil get(){
 		if (CVUtil.instance == null) {
 			CVUtil.instance = new CVUtil();
 		}

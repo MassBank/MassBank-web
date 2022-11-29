@@ -1394,10 +1394,10 @@ public class RecordParserDefinition extends GrammarDefinition {
 				return Pair.of(value.get(0).trim(), value.get(1));
 			})
 			
-			.map((Pair<String,String> value) -> {
-				System.out.println(value);
-				return value;
-			})
+//			.map((Pair<String,String> value) -> {
+//				System.out.println(value);
+//				return value;
+//			})
 			.plus()
 			.map((List<Pair<String,String>> value) -> {
 				//System.out.println();
