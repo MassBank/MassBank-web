@@ -44,12 +44,18 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import io.github.dan2097.jnainchi.InchiStatus;
 
 /**
  * This class keeps all data of a record.
  * @author rmeier
- * @version 05-05-2020
+ * @version 01-12-2022
  */
 public class Record {
 	private static final Logger logger = LogManager.getLogger(Record.class);
@@ -680,44 +686,6 @@ public class Record {
 		return sb.toString();
 	}
 	
-	public class MolecularEntity {  
-	    String identifier;
-	    String url;
-	    String name;
-	    List<String> alternateName;
-	    String inchikey;
-	    String description;
-	    String molecularFormula;
-	    
-	  
-	    MolecularEntity(
-	    	String identifier,
-	    	String url,
-	    	String name,
-	    	List<String> alternateName,
-	    	String inchikey,
-	    	String description,
-	    	String molecularFormula
-	    )
-	    {
-	    	this.identifier=identifier;
-	    	this.url=url;
-	    	this.name=name;
-	    	this.alternateName=alternateName;
-	    	this.inchikey=inchikey;
-	    	this.description=description;
-	    	this.molecularFormula=molecularFormula;
-	    }
-	}
-	
-//	sb.append("\"molecularFormula\": \""+CH_FORMULA()+"\",\n");
-//	sb.append("\"monoisotopicMolecularWeight\": \""+CH_EXACT_MASS()+"\",\n");
-//	sb.append("\"inChI\": \""+CH_IUPAC()+"\",\n");
-//	sb.append("\"smiles\": \""+CH_SMILES()+"\",\n");
-//	sb.append("\"@context\": \"http://schema.org\",\n");
-//	sb.append("\"@type\": \"MolecularEntity\"\n");
-//	sb.append("},\n");
-
 //	[
 //	{
 //	"identifier": "LQB00001",
@@ -772,69 +740,61 @@ public class Record {
 		String description = "This MassBank record with Accession " + ACCESSION() 
 			+ " contains the " + AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum of " + RECORD_TITLE().get(0)
 			+ ((InChiKey!=null) ? "." : " with the InChIkey " + InChiKey + ".");
+	
 		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
-//		MolecularEntity molecularEntity = new MolecularEntity(
-//				ACCESSION(),
-//				"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION(),
-//				RECORD_TITLE().get(0),
-//				CH_NAME(),
-//				CH_LINK().get("INCHIKEY"),
-//				description,
-//				CH_FORMULA()
-//				);
-//		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//		String molecularEntityJson = gson.toJson(molecularEntity);  
-//		System.out.println(molecularEntityJson);
+		JsonObject molecularEntity = new JsonObject();
+		molecularEntity.addProperty("@type", "MolecularEntity");
+		molecularEntity.addProperty("@context", "http://schema.org");
+		molecularEntity.addProperty("identifier", ACCESSION());
+		molecularEntity.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
+		molecularEntity.addProperty("name", RECORD_TITLE().get(0));
+		molecularEntity.addProperty("inChI", CH_IUPAC());
+		molecularEntity.addProperty("smiles", CH_SMILES());
+		molecularEntity.addProperty("molecularFormula", CH_FORMULA());
+		molecularEntity.addProperty("description", description);
+		molecularEntity.addProperty("monoisotopicMolecularWeight", CH_EXACT_MASS());
+		if (InChiKey!=null) molecularEntity.addProperty("inchikey", InChiKey);
+		if (CH_NAME().size() == 1)  molecularEntity.addProperty("alternateName", CH_NAME().get(0));
+		else if (CH_NAME().size() >= 1) molecularEntity.add("alternateName", gson.toJsonTree(CH_NAME()));
+		
+		JsonObject dataset = new JsonObject();
+		dataset.addProperty("@type", "Dataset");
+		dataset.addProperty("@context", "http://schema.org");
+		dataset.addProperty("identifier", ACCESSION());
+		dataset.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
+		dataset.addProperty("headline", RECORD_TITLE1());
+		dataset.addProperty("name", RECORD_TITLE().get(0));		
+		dataset.addProperty("description", description);
+		dataset.addProperty("measurementTechnique", "mass spectrometry");
+		String[] tokens	= DATE1();
+		dataset.addProperty("datePublished", tokens[0].replace(".","-"));
+		if (LICENSE().equals("CC0")) {
+			dataset.addProperty("license", "https://creativecommons.org/share-your-work/public-domain/cc0");
+		} else if (LICENSE().equals("CC BY-SA")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by-sa/4.0");
+		} else if (LICENSE().equals("CC BY")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by/4.0");
+		} else if (LICENSE().equals("CC BY-NC")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc/4.0");
+		} else if (LICENSE().equals("CC BY-NC-SA")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc-sa/4.0");
+		}
+		dataset.addProperty("citation", PUBLICATION());
+		if (COMMENT().size() == 1)  dataset.addProperty("comment", COMMENT().get(0));
+		else if (COMMENT().size() >= 1) dataset.add("comment", gson.toJsonTree(COMMENT()));
+		if (CH_NAME().size() == 1)  dataset.addProperty("alternateName", CH_NAME().get(0));
+		else if (CH_NAME().size() >= 1) dataset.add("alternateName", gson.toJsonTree(CH_NAME()));
+		
+		// put MolecularEntity and Dataset together
+		JsonArray structuredData = new JsonArray();
+		structuredData.add(molecularEntity);
+		structuredData.add(dataset);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script type=\"application/ld+json\">\n");
-		sb.append("[\n");
-		sb.append("{\n");
-		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
-		sb.append("\"url\": \"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"\",\n");
-		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
-		if (CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ CH_NAME().get(0) +"\",\n");
-		else if (CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", CH_NAME()) +"\"],\n");
-		if (InChiKey!=null) sb.append("\"inchikey\": \"" + InChiKey + "\",\n");
-		sb.append("\"description\": \"" + description + "\",\n");
-		sb.append("\"molecularFormula\": \""+CH_FORMULA()+"\",\n");
-		sb.append("\"monoisotopicMolecularWeight\": \""+CH_EXACT_MASS()+"\",\n");
-		sb.append("\"inChI\": \""+CH_IUPAC()+"\",\n");
-		sb.append("\"smiles\": \""+CH_SMILES()+"\",\n");
-		sb.append("\"@context\": \"http://schema.org\",\n");
-		sb.append("\"@type\": \"MolecularEntity\"\n");
-		sb.append("},\n");
-
-		sb.append("{\n");
-		sb.append("\"identifier\": \""+ACCESSION()+"\",\n");
-		sb.append("\"url\": \"https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"\",\n");
-		sb.append("\"headline\": \""+RECORD_TITLE1()+"\",\n");
-		sb.append("\"name\": \""+RECORD_TITLE().get(0)+"\",\n");
-		sb.append("\"description\": \"" + description + "\",\n");
-		sb.append("\"measurementTechnique\": \"mass spectrometry\",\n");
-		String[] tokens	= DATE1();
-		sb.append("\"datePublished\": \""+tokens[0].replace(".","-")+"\",\n");
-		if(tokens.length >= 2) { sb.append("\"dateCreated\": \""+tokens[1].replace(".","-")+"\",\n"); }
-		if(tokens.length == 3) { sb.append("\"dateModified\": \""+tokens[2].replace(".","-")+"\",\n"); }
-		// Convert licenses to URLs
-		if (LICENSE().equals("CC0")) { sb.append("\"license\": \"https://creativecommons.org/share-your-work/public-domain/cc0\",\n");
-		} else if (LICENSE().equals("CC BY-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-sa/4.0\",\n");
-		} else if (LICENSE().equals("CC BY")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by/4.0\",\n");
-		} else if (LICENSE().equals("CC BY-NC")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc/4.0\",\n");
-		} else if (LICENSE().equals("CC BY-NC-SA")) { sb.append("\"license\": \"https://creativecommons.org/licenses/by-nc-sa/4.0\",\n");
-		} else sb.append("\"license\": \"null\",\n");
-
-		sb.append("\"citation\": \""+PUBLICATION()+"\",\n");
-		if (COMMENT().size() == 1)  sb.append("\"comment\": \""+ COMMENT().get(0) +"\",\n");
-		else if (COMMENT().size() >= 1) sb.append("\"comment\": [\""+ String.join("\", \"", COMMENT()) +"\"],\n");
-		if (CH_NAME().size() == 1)  sb.append("\"alternateName\": \""+ CH_NAME().get(0) +"\",\n");
-		else if (CH_NAME().size() >= 1) sb.append("\"alternateName\": [\""+ String.join("\", \"", CH_NAME()) +"\"],\n");
-		
-		sb.append("\"@context\": \"http://schema.org\",\n");
-		sb.append("\"@type\": \"Dataset\"\n");
-		sb.append("}\n");
-		sb.append("]\n");
+		sb.append(gson.toJson(structuredData));
 		sb.append("</script>");
 		return sb.toString();
 	}
