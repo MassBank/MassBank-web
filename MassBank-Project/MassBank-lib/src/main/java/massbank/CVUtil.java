@@ -13,7 +13,6 @@ import java.util.Set;
 import org.biojava.nbio.ontology.Ontology;
 import org.biojava.nbio.ontology.Term;
 import org.biojava.nbio.ontology.io.OboParser;
-import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -56,6 +55,7 @@ public final class CVUtil {
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLOntology o=null;
 		try {
+//			o = man.loadOntology(IRI.create("https://protege.stanford.edu/ontologies/pizza/pizza.owl"));
 			o = man.loadOntologyFromOntologyDocument(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.owl"));
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
@@ -64,26 +64,28 @@ public final class CVUtil {
 //		for(OWLAxiom ax:o.getLogicalAxioms()) {
 //			System.out.println(ax);
 //		}
-		System.out.println("Axioms: "+o.getAxiomCount()+", Format:"+man.getOntologyFormat(o));
-		ArrayList t = new ArrayList<OWLAxiom>();
-		for(OWLClass ax:o.getClassesInSignature()) {
-			t.add(ax);
-			System.out.println(ax.getIRI());
-		}
+//		System.out.println("Axioms: "+o.getAxiomCount()+", Format:"+man.getOntologyFormat(o));
+//		ArrayList t = new ArrayList<OWLAxiom>();
+//		for(OWLClass ax:o.getClassesInSignature()) {
+//			t.add(ax);
+//			System.out.println(ax.getIRI());
+//		}
 		
 		
-		o.signature().filter((e->(!e.isBuiltIn()&&e.getIRI().getFragment().startsWith("M"))));
+//		o.signature().filter((e->(!e.isBuiltIn()&&e.getIRI().getFragment().startsWith("M"))));
 		//o.signature().filter((e->(!e.isBuiltIn()&&e.getIRI().getFragment().startsWith("M")))).forEach(System.out::println);
 //		System.out.println(o);
 		//OWLReasonerFactory rf = new ReasonerFactory();
 		//OWLReasoner r = rf.createReasoner(o);
-		
-		OWLDataFactory df = man.getOWLDataFactory();
-		OWLReasoner r = new StructuralReasoner(o, new SimpleConfiguration(),BufferingMode.BUFFERING);
-		System.out.println(df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/MS_1000044")));
-		NodeSet<OWLClass> result = 	r.getSuperClasses(df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/MS_1000044")), true);
-		System.out.println(result);
-		((StructuralReasoner) r).dumpClassHierarchy(false);
+//		
+//		OWLDataFactory df = man.getOWLDataFactory();
+//		OWLReasoner r = new StructuralReasoner(o, new SimpleConfiguration(),BufferingMode.BUFFERING);
+//		System.out.println(df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/MS_1000044")).getEntityType());
+//		System.out.println(df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/MS_1000044")).getIRI());
+//		//NodeSet<OWLClass> result = 	r.getSuperClasses(df.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/pizza/pizza.owl#Hot")), false);
+//		NodeSet<OWLClass> result = 	r.getSuperClasses(df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/MS_1000044")), true);
+//		System.out.println(result);
+//		((StructuralReasoner) r).dumpClassHierarchy(false);
 //		r.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 //		r.getSubClasses(df.getOWLClass("http://purl.obolibrary.org/obo/MS:1000044"), false).forEach(System.out::println);
 	}

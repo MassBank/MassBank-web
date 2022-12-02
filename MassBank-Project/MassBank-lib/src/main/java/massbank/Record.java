@@ -793,9 +793,7 @@ public class Record {
 		structuredData.add(dataset);
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("<script type=\"application/ld+json\">\n");
 		sb.append(gson.toJson(structuredData));
-		sb.append("</script>");
 		return sb.toString();
 	}
 	
