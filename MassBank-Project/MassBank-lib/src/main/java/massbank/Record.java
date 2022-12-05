@@ -736,6 +736,9 @@ public class Record {
 	//https://github.com/BioSchemas/specifications/issues/198
 	
 	public JsonArray createStructuredDataJsonArray() {
+		if (DEPRECATED()) {
+			return new JsonArray();
+		}
 		String InChiKey = CH_LINK().get("INCHIKEY");
 		String description = "This MassBank record with Accession " + ACCESSION() 
 			+ " contains the " + AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum of " + RECORD_TITLE().get(0)
@@ -796,6 +799,7 @@ public class Record {
 	
 	public String createStructuredData() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		System.out.println(createStructuredDataJsonArray());
 		return gson.toJson(createStructuredDataJsonArray());
 	}
 	
