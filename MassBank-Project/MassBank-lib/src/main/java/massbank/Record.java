@@ -735,12 +735,11 @@ public class Record {
 
 	//https://github.com/BioSchemas/specifications/issues/198
 	
-	public String createStructuredData() {		
+	public JsonArray createStructuredDataJsonArray() {
 		String InChiKey = CH_LINK().get("INCHIKEY");
 		String description = "This MassBank record with Accession " + ACCESSION() 
 			+ " contains the " + AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum of " + RECORD_TITLE().get(0)
 			+ ((InChiKey!=null) ? "." : " with the InChIkey " + InChiKey + ".");
-	
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
@@ -791,12 +790,16 @@ public class Record {
 		JsonArray structuredData = new JsonArray();
 		structuredData.add(molecularEntity);
 		structuredData.add(dataset);
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(gson.toJson(structuredData));
-		return sb.toString();
+		return structuredData;
+
 	}
 	
+	public String createStructuredData() {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJson(createStructuredDataJsonArray());
+	}
+	
+
 	public String createPeakListForSpectrumViewer() {
         // convert a list of lists [[mz, int, rel.int], [...], ...]
         // to String "mz,rel.int@mz,rel.int@..."

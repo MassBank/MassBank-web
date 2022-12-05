@@ -39,6 +39,7 @@ import static org.biojava.nbio.ontology.obo.OboFileHandler.IS_A;
  */
 public final class CVUtil {
 	private static CVUtil instance;
+	private static Object mutex = new Object();
 	Ontology ontology;
 
 	private CVUtil(){
@@ -90,13 +91,18 @@ public final class CVUtil {
 //		r.getSubClasses(df.getOWLClass("http://purl.obolibrary.org/obo/MS:1000044"), false).forEach(System.out::println);
 	}
 
-	public static synchronized CVUtil get(){
-		if (CVUtil.instance == null) {
-			CVUtil.instance = new CVUtil();
+	public static CVUtil get(){
+		CVUtil result = instance;
+		if (result == null) {
+			synchronized (mutex) {
+				result = instance;
+				if (result == null)
+					instance = result = new CVUtil();
+			}
 		}
-		return CVUtil.instance;
+		return result;
 	}
-	
+		
 	public boolean containsTerm(String name) {
 		return ontology.containsTerm(name);
 	}
