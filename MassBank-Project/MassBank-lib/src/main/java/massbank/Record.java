@@ -746,9 +746,53 @@ public class Record {
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
+		JsonObject dataset = new JsonObject();
+		dataset.addProperty("@context", "http://schema.org");
+		dataset.addProperty("@type", "Dataset");
+		dataset.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
+		dataset.add("http://purl.org/dc/terms/conformsTo",
+			gson.fromJson("{ \"@type\": \"CreativeWork\", \"@id\": \"https://bioschemas.org/profiles/Dataset/1.0-RELEASE\" }", JsonObject.class));
+		dataset.addProperty("description", description);
+		dataset.addProperty("identifier", ACCESSION());
+		JsonArray keywords = new JsonArray();
+		keywords.add(gson.fromJson("{ \"@type\": \"DefinedTerm\", \"@id\": \"http://edamontology.org/data_2536\", \"name\": \"Mass spectrometry data\" }", JsonObject.class));
+		dataset.add("keywords", keywords);
+		if (LICENSE().equals("CC0")) {
+			dataset.addProperty("license", "https://creativecommons.org/share-your-work/public-domain/cc0");
+		} else if (LICENSE().equals("CC BY-SA")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by-sa/4.0");
+		} else if (LICENSE().equals("CC BY")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by/4.0");
+		} else if (LICENSE().equals("CC BY-NC")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc/4.0");
+		} else if (LICENSE().equals("CC BY-NC-SA")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc-sa/4.0");
+		}
+		dataset.addProperty("name", RECORD_TITLE1());
+		dataset.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
+		
+		dataset.addProperty("datePublished", DATE1()[0].replace(".","-"));
+		
+
+		dataset.addProperty("headline", RECORD_TITLE1());
+		dataset.addProperty("name", RECORD_TITLE().get(0));		
+		dataset.addProperty("measurementTechnique", "mass spectrometry");
+		dataset.addProperty("citation", PUBLICATION());
+		if (COMMENT().size() == 1)  dataset.addProperty("comment", COMMENT().get(0));
+		else if (COMMENT().size() >= 1) dataset.add("comment", gson.toJsonTree(COMMENT()));
+		if (CH_NAME().size() == 1)  dataset.addProperty("alternateName", CH_NAME().get(0));
+		else if (CH_NAME().size() >= 1) dataset.add("alternateName", gson.toJsonTree(CH_NAME()));
+		
+		
 		JsonObject molecularEntity = new JsonObject();
-		molecularEntity.addProperty("@type", "MolecularEntity");
 		molecularEntity.addProperty("@context", "http://schema.org");
+		molecularEntity.addProperty("@type", "MolecularEntity");
+		molecularEntity.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="
+			+ ACCESSION()
+			+ "#" + (InChiKey!=null ? InChiKey : ""));
+		molecularEntity.add("http://purl.org/dc/terms/conformsTo",
+			gson.fromJson("{ \"@type\": \"CreativeWork\", \"@id\": \"https://bioschemas.org/profiles/MolecularEntity/0.5-RELEASE\" }", JsonObject.class));
+	
 		molecularEntity.addProperty("identifier", ACCESSION());
 		molecularEntity.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		molecularEntity.addProperty("name", RECORD_TITLE().get(0));
@@ -761,45 +805,18 @@ public class Record {
 		if (CH_NAME().size() == 1)  molecularEntity.addProperty("alternateName", CH_NAME().get(0));
 		else if (CH_NAME().size() >= 1) molecularEntity.add("alternateName", gson.toJsonTree(CH_NAME()));
 		
-		JsonObject dataset = new JsonObject();
-		dataset.addProperty("@type", "Dataset");
-		dataset.addProperty("@context", "http://schema.org");
-		dataset.addProperty("identifier", ACCESSION());
-		dataset.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
-		dataset.addProperty("headline", RECORD_TITLE1());
-		dataset.addProperty("name", RECORD_TITLE().get(0));		
-		dataset.addProperty("description", description);
-		dataset.addProperty("measurementTechnique", "mass spectrometry");
-		String[] tokens	= DATE1();
-		dataset.addProperty("datePublished", tokens[0].replace(".","-"));
-		if (LICENSE().equals("CC0")) {
-			dataset.addProperty("license", "https://creativecommons.org/share-your-work/public-domain/cc0");
-		} else if (LICENSE().equals("CC BY-SA")) {
-			dataset.addProperty("license", "https://creativecommons.org/licenses/by-sa/4.0");
-		} else if (LICENSE().equals("CC BY")) {
-			dataset.addProperty("license", "https://creativecommons.org/licenses/by/4.0");
-		} else if (LICENSE().equals("CC BY-NC")) {
-			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc/4.0");
-		} else if (LICENSE().equals("CC BY-NC-SA")) {
-			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc-sa/4.0");
-		}
-		dataset.addProperty("citation", PUBLICATION());
-		if (COMMENT().size() == 1)  dataset.addProperty("comment", COMMENT().get(0));
-		else if (COMMENT().size() >= 1) dataset.add("comment", gson.toJsonTree(COMMENT()));
-		if (CH_NAME().size() == 1)  dataset.addProperty("alternateName", CH_NAME().get(0));
-		else if (CH_NAME().size() >= 1) dataset.add("alternateName", gson.toJsonTree(CH_NAME()));
+		
 		
 		// put MolecularEntity and Dataset together
 		JsonArray structuredData = new JsonArray();
-		structuredData.add(molecularEntity);
 		structuredData.add(dataset);
+		structuredData.add(molecularEntity);
 		return structuredData;
 
 	}
 	
 	public String createStructuredData() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		System.out.println(createStructuredDataJsonArray());
 		return gson.toJson(createStructuredDataJsonArray());
 	}
 	
