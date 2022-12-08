@@ -268,7 +268,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(CharacterParser.of('-'))
 				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,32))
 				.seq(CharacterParser.of('-'))
-				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,64))
+				.seq(CharacterParser.upperCase().or(digit()).or(CharacterParser.of('_')).repeat(1,64))
 				.flatten()
 				.map((String value) -> {
 					callback.ACCESSION(value);

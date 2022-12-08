@@ -28,8 +28,8 @@ public class RecordParserDefinitionTest {
 
 	@Test
 	public void testACCESSION() {
-		assertValid("ACCESSION: MSBNK-Aa10_zZ-Aa10_zZ\n", "accession");
-		assertInvalid("ACCESSION: MSBNK-Aa:10_zZ-Aa10_zZ\n", "accession");
+		assertValid("ACCESSION: MSBNK-Aa10_zZ-A10_Z\n", "accession");
+		assertInvalid("ACCESSION: MSBNK-Aa:10_zZ-A10_Z\n", "accession");
 	}
 	
 	@Test

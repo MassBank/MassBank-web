@@ -19,7 +19,7 @@ public class RecordToJsonTest {
 	@Test
 	public void testToJsonMinimalRecord() throws IOException, URISyntaxException {
 		String minimalRecordString = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.txt").toURI()));
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-TST00001.txt").toURI()));
 		String minimalJson = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.json").toURI()));
 		Record minimalRecord = Validator.validate(minimalRecordString, new HashSet<String>());
@@ -30,7 +30,7 @@ public class RecordToJsonTest {
 	@Test
 	public void testToJsonMaximalRecord() throws IOException, URISyntaxException {
 		String maximalRecordString = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-tst00002.txt").toURI()));
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-TST00002.txt").toURI()));
 		String maximalJson = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("maximal_record.json").toURI()));
 		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
@@ -41,7 +41,7 @@ public class RecordToJsonTest {
 	@Test
 	public void testToJsonDeprecatedRecord() throws IOException, URISyntaxException {
 		String deprecatedRecordString = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.txt").toURI()));
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-TST00003.txt").toURI()));
 		String deprecatedJson = Files
 				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.json").toURI()));
 		Record deprecatedRecord = Validator.validate(deprecatedRecordString, new HashSet<String>());
@@ -52,13 +52,13 @@ public class RecordToJsonTest {
 	@Test
 	public void testToJsonCombinedRecord() throws IOException, URISyntaxException {
 		String minimalRecordString = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("minimal_record.txt").toURI()));
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-TST00001.txt").toURI()));
 		Record minimalRecord = Validator.validate(minimalRecordString, new HashSet<String>());
 		String maximalRecordString = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-tst00002.txt").toURI()));
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-TST00002.txt").toURI()));
 		Record maximalRecord = Validator.validate(maximalRecordString, new HashSet<String>());
 		String deprecatedRecordString = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("deprecated_record.txt").toURI()));
+				.readString(Paths.get(getClass().getClassLoader().getResource("MSBNK-test-TST00003.txt").toURI()));
 		Record deprecatedRecord = Validator.validate(deprecatedRecordString, new HashSet<String>());
 		
 				
