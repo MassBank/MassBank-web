@@ -747,7 +747,7 @@ public class Record {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
 		JsonObject dataset = new JsonObject();
-		dataset.addProperty("@context", "http://schema.org");
+		dataset.addProperty("@context", "https://schema.org");
 		dataset.addProperty("@type", "Dataset");
 		dataset.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		dataset.add("http://purl.org/dc/terms/conformsTo",
@@ -785,7 +785,7 @@ public class Record {
 		
 		
 		JsonObject molecularEntity = new JsonObject();
-		molecularEntity.addProperty("@context", "http://schema.org");
+		molecularEntity.addProperty("@context", "https://schema.org");
 		molecularEntity.addProperty("@type", "MolecularEntity");
 		molecularEntity.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="
 			+ ACCESSION()
