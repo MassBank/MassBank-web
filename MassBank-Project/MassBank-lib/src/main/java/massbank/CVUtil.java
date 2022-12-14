@@ -49,15 +49,15 @@ public final class CVUtil {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology o=null;
-		try {
+//		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+//		OWLOntology o=null;
+//		try {
 //			o = man.loadOntology(IRI.create("https://protege.stanford.edu/ontologies/pizza/pizza.owl"));
-			o = man.loadOntologyFromOntologyDocument(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.owl"));
-		} catch (OWLOntologyCreationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//			o = man.loadOntologyFromOntologyDocument(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.owl"));
+//		} catch (OWLOntologyCreationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		for(OWLAxiom ax:o.getLogicalAxioms()) {
 //			System.out.println(ax);
 //		}
