@@ -801,7 +801,7 @@ public class Record {
 		molecularEntity.addProperty("molecularFormula", CH_FORMULA());
 		molecularEntity.addProperty("description", description);
 		molecularEntity.addProperty("monoisotopicMolecularWeight", CH_EXACT_MASS());
-		if (InChiKey!=null) molecularEntity.addProperty("inchikey", InChiKey);
+		if (InChiKey!=null) molecularEntity.addProperty("inChIKey", InChiKey);
 		if (CH_NAME().size() == 1)  molecularEntity.addProperty("alternateName", CH_NAME().get(0));
 		else if (CH_NAME().size() >= 1) molecularEntity.add("alternateName", gson.toJsonTree(CH_NAME()));
 		
