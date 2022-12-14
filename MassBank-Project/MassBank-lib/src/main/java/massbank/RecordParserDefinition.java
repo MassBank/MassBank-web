@@ -28,7 +28,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.biojava.nbio.ontology.Term;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -227,13 +226,13 @@ public class RecordParserDefinition extends GrammarDefinition {
 				Result r = continuation.apply(context);
 				if (r.isSuccess()) {
 					List<String> value = r.get();
-					if (!cvutil.containsTerm(value.get(1))) {
-						return context.failure(value.get(1)+ "is no valid Id in ontology.");
-					}
-					Term term=cvutil.getTerm(value.get(1));
-					if (!term.getDescription().equals(value.get(2))) {
-						return context.failure("Name missmatch for id "+ value.get(1)+ ".");
-					}
+//					if (!cvutil.containsTerm(value.get(1))) {
+//						return context.failure(value.get(1)+ "is no valid Id in ontology.");
+//					}
+//					Term term=cvutil.getTerm(value.get(1));
+//					if (!term.getDescription().equals(value.get(2))) {
+//						return context.failure("Name missmatch for id "+ value.get(1)+ ".");
+//					}
 				}
 				return r; 
 			})
@@ -1364,7 +1363,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(
 						ref("cvterm_validated")
 						.map((List<String> value) -> {
-							Term term=cvutil.getTerm(value.get(1));
+//							Term term=cvutil.getTerm(value.get(1));
 							return '['+String.join(", ", value)+']';
 						})
 						.or(

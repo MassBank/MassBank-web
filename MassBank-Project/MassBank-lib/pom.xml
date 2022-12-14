@@ -87,14 +87,6 @@
 			<groupId>io.github.dan2097</groupId>
 			<artifactId>jna-inchi-all</artifactId>
 		</dependency>
-			<dependency>
-                       <groupId>org.biojava</groupId>
-                       <artifactId>biojava-core</artifactId>
-               </dependency>
-		<dependency>
-			<groupId>org.biojava</groupId>
-			<artifactId>biojava-ontology</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>

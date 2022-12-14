@@ -42,8 +42,8 @@ public class RecordParserDefinitionTest {
 		assertValid("[MS, MS:1001477, SpectraST,]", "cvterm");
 		assertValid("[MOD, MOD:00648, \"N,O-diacetylated L-serine\",]", "cvterm");
 		assertValid("[MS, MS:1003294, electron activated dissociation,]", "cvterm_validated");
-		assertInvalid("[MS, MMMS:1003294, electron activated dissociation,]", "cvterm_validated");
-		assertInvalid("[MS, MS:1003294, collision-induced dissociation,]", "cvterm_validated");
+//		assertInvalid("[MS, MMMS:1003294, electron activated dissociation,]", "cvterm_validated");
+//		assertInvalid("[MS, MS:1003294, collision-induced dissociation,]", "cvterm_validated");
 	}
 
 }

@@ -9,10 +9,6 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
-import org.biojava.nbio.ontology.Ontology;
-import org.biojava.nbio.ontology.Term;
-import org.biojava.nbio.ontology.io.OboParser;
-import org.biojava.nbio.ontology.utils.Annotation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -23,10 +19,6 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
-import static org.biojava.nbio.ontology.obo.OboFileHandler.NAMESPACE;
-import static org.biojava.nbio.ontology.obo.OboFileHandler.ALT_ID;
-import static org.biojava.nbio.ontology.obo.OboFileHandler.IS_A;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -141,21 +133,21 @@ import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
 public class CVUtilTest {
 
-	private OboParser parser;
+//private OboParser parser;
 
 	//@Test
-	public void testCVUtilGetFirst() {
-		CVUtil cvUtil = CVUtil.get();
-		Assertions.assertTrue(cvUtil.ontology.containsTerm("MS:0000000"));
-		Assertions.assertFalse(cvUtil.ontology.containsTerm("MS:2000000"));
-	}
-
-	//@Test
-	public void testCVUtilGetSecond() {
-		CVUtil cvUtil = CVUtil.get();
-		Assertions.assertTrue(cvUtil.ontology.containsTerm("MS:0000000"));
-		Assertions.assertFalse(cvUtil.ontology.containsTerm("MS:2000000"));
-	}
+//	public void testCVUtilGetFirst() {
+//		CVUtil cvUtil = CVUtil.get();
+//		Assertions.assertTrue(cvUtil.ontology.containsTerm("MS:0000000"));
+//		Assertions.assertFalse(cvUtil.ontology.containsTerm("MS:2000000"));
+//	}
+//
+//	//@Test
+//	public void testCVUtilGetSecond() {
+//		CVUtil cvUtil = CVUtil.get();
+//		Assertions.assertTrue(cvUtil.ontology.containsTerm("MS:0000000"));
+//		Assertions.assertFalse(cvUtil.ontology.containsTerm("MS:2000000"));
+//	}
 
 	@Test
 	public void testTermIsA() throws IOException, OWLOntologyStorageException, OWLOntologyCreationException {

@@ -10,9 +10,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.biojava.nbio.ontology.Ontology;
-import org.biojava.nbio.ontology.Term;
-import org.biojava.nbio.ontology.io.OboParser;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -29,7 +26,6 @@ import org.semanticweb.owlapi.reasoner.structural.StructuralReasoner;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.model.OWLClass;
 
-import static org.biojava.nbio.ontology.obo.OboFileHandler.IS_A;
 
 /**
  * Controled vocabulary handler.
@@ -40,19 +36,19 @@ import static org.biojava.nbio.ontology.obo.OboFileHandler.IS_A;
 public final class CVUtil {
 	private static CVUtil instance;
 	private static Object mutex = new Object();
-	Ontology ontology;
+	//Ontology ontology;
 
 	private CVUtil(){
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.obo")))) {
-			OboParser parser = new OboParser();
-			try {
-				ontology = parser.parseOBO(reader, "Mass spectrometry ontology", "A structured controlled vocabulary for the annotation of experiments concerned with proteomics mass spectrometry.");
-			} catch (ParseException ex) {
-				System.err.println("Parsing exception: " + ex.getLocalizedMessage());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("cv/psi-ms.obo")))) {
+//			OboParser parser = new OboParser();
+//			try {
+//				ontology = parser.parseOBO(reader, "Mass spectrometry ontology", "A structured controlled vocabulary for the annotation of experiments concerned with proteomics mass spectrometry.");
+//			} catch (ParseException ex) {
+//				System.err.println("Parsing exception: " + ex.getLocalizedMessage());
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLOntology o=null;
 		try {
@@ -103,14 +99,14 @@ public final class CVUtil {
 		return result;
 	}
 		
-	public boolean containsTerm(String name) {
-		return ontology.containsTerm(name);
-	}
-	
-	public Term getTerm(String name) {
-		Term term = ontology.getTerm(name);
-		return term;
-	}
+//	public boolean containsTerm(String name) {
+//		return ontology.containsTerm(name);
+//	}
+//	
+//	public Term getTerm(String name) {
+//		Term term = ontology.getTerm(name);
+//		return term;
+//	}
 	
 	public boolean termIsA(String name, String isA) {
 //		Term term = ontology.getTerm(name);
