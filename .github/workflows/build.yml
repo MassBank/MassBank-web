@@ -19,5 +19,7 @@ jobs:
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.6.3
+      - name: Extract Maven project version
+        run: echo $(mvn -version)
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots -f MassBank-Project/pom.xml package
