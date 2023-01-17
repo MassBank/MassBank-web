@@ -23,6 +23,7 @@ package massbank;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,6 +63,7 @@ public class Record {
 
 	private String contributor;
 	private String ACCESSION;
+	private Date timestamp;
 	private boolean deprecated;
 	private String deprecated_content;
 	private List<String> RECORD_TITLE;
@@ -146,6 +148,14 @@ public class Record {
 		String[] splitedAccession = value.split("-");
 		contributor=splitedAccession[1];
 		ACCESSION = value;
+	}
+	
+	
+	public Date getTimestamp() {
+		return timestamp;
+	}
+	public void setTimestamp(Date value) {
+		timestamp = value;
 	}
 	
 	
