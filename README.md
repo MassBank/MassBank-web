@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/MassBank/MassBank-web.svg?branch=main)](https://travis-ci.com/MassBank/MassBank-web)
+* main branch [![Build Status](https://github.com/MassBank/MassBank-web/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/MassBank/MassBank-web/actions/workflows/build.yml?query=branch%3Amain)
+* dev branch [![Build Status](https://github.com/MassBank/MassBank-web/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/MassBank/MassBank-web/actions/workflows/build.yml?query=branch%3Adev)
 
 This repo contains the MassBank software.
 
