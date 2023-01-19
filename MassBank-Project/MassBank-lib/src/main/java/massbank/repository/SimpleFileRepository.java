@@ -20,9 +20,39 @@
  ******************************************************************************/
 package massbank.repository;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import massbank.Config;
 import massbank.Record;
+import massbank.cli.RefreshDatabase;
+import massbank.cli.Validator;
+import massbank.db.DatabaseManager;
 
 /**
  * This class implements a classical MassBank repository with record files 
@@ -33,12 +63,62 @@ import massbank.Record;
  * @version 13-01-2023
  */
 public class SimpleFileRepository implements RepositoryInterface {
+	private static final Logger logger = LogManager.getLogger(SimpleFileRepository.class);
 	private String version;
+	private Instant timestamp;
+	Stream<Record> records;
 	
 	/**
 	 * 
 	 */
-	public SimpleFileRepository() {
+	public SimpleFileRepository() throws ConfigurationException {
+		logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
+		File dataRootPath = new File(Config.get().DataRootPath());
+		// get version and timestamp
+		Configurations configs = new Configurations();
+		Configuration versionconfig = configs.properties(new File(dataRootPath, "VERSION"));
+		
+		version = versionconfig.getString("version");
+		logger.info("Repo version: " + version);
+		
+		timestamp = ZonedDateTime.parse(versionconfig.getString("timestamp"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
+		logger.info("Repo timestamp: " + timestamp);
+		
+		List<File> recordfiles = new ArrayList<>();
+		for (String file : dataRootPath.list(DirectoryFileFilter.INSTANCE)) {
+			if (file.startsWith(".")) continue;
+			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, false));
+		}
+		logger.info("Found " + recordfiles.size() + " records in repo.");
+		
+		records = recordfiles.parallelStream().map(filename -> {
+				Record record = null;
+				logger.trace("Working on \'" + filename + "\'.");
+				try {
+					String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+					record = Validator.validate(recordString, Set.of("legacy"));
+					if (record == null) {
+						logger.error("Error in \'" + filename + "\'.");
+					}
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return record;
+				
+			})
+			.filter(Objects::nonNull);
+		logger.info("Read  " + records.count() + " records in repo.");
+				
+	
+		
+
+//			.forEachOrdered((r) -> {
+//				db.persistAccessionFile(r);
+//				System.out.print("Processed: "+processed.getAndIncrement()+"/"+numRecordFiles+"\r");
+//			});
+//		});
 		
 	}
 	/**
@@ -53,5 +133,14 @@ public class SimpleFileRepository implements RepositoryInterface {
 	 */
 	public String getRepoVersion() {
 		return new String();
+	}
+	
+	public static void main(String[] args) {
+		try {
+			RepositoryInterface repo = new SimpleFileRepository();
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
