@@ -20,6 +20,7 @@
  ******************************************************************************/
 package massbank.repository;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import massbank.Record;
@@ -34,7 +35,7 @@ public interface RepositoryInterface {
 	/**
 	 * Return all Records of that repo in a stream.
 	 */
-	public Stream<Record> getRecords();
+	public List<Record> getRecords();
 	/**
 	 * Return a version String for the repo.
 	 */

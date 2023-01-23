@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -65,12 +66,8 @@ import massbank.db.DatabaseManager;
 public class SimpleFileRepository implements RepositoryInterface {
 	private static final Logger logger = LogManager.getLogger(SimpleFileRepository.class);
 	private String version;
-	private Instant timestamp;
-	Stream<Record> records;
+	List<Record> records;
 	
-	/**
-	 * 
-	 */
 	public SimpleFileRepository() throws ConfigurationException {
 		logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
 		File dataRootPath = new File(Config.get().DataRootPath());
@@ -81,7 +78,7 @@ public class SimpleFileRepository implements RepositoryInterface {
 		version = versionconfig.getString("version");
 		logger.info("Repo version: " + version);
 		
-		timestamp = ZonedDateTime.parse(versionconfig.getString("timestamp"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
+		Instant timestamp = ZonedDateTime.parse(versionconfig.getString("timestamp"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
 		logger.info("Repo timestamp: " + timestamp);
 		
 		List<File> recordfiles = new ArrayList<>();
@@ -91,56 +88,56 @@ public class SimpleFileRepository implements RepositoryInterface {
 		}
 		logger.info("Found " + recordfiles.size() + " records in repo.");
 		
-		records = recordfiles.parallelStream().map(filename -> {
-				Record record = null;
-				logger.trace("Working on \'" + filename + "\'.");
-				try {
-					String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					record = Validator.validate(recordString, Set.of("legacy"));
-					if (record == null) {
-						logger.error("Error in \'" + filename + "\'.");
-					}
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		AtomicInteger currentIndex = new AtomicInteger(1);
+		System.out.print(recordfiles.size() + " records to process. " + 100*0/recordfiles.size() + "% Done.");
+		
+		records = recordfiles.stream().map(filename -> {
+			Record record = null;
+			logger.trace("Working on \'" + filename + "\'.");
+			try {
+				String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
+				record = Validator.validate(recordString, Set.of("legacy"));
+				if (record == null) {
+					logger.error("Error in \'" + filename + "\'.");
 				}
-				return record;
-				
-			})
-			.filter(Objects::nonNull);
-		logger.info("Read  " + records.count() + " records in repo.");
-				
+				else {
+					record.setTimestamp(timestamp);
+				}
+			} catch (IOException e) {
+				logger.error("Error reading record \"" + filename.toString() + "\". Will be ignored.\n" + e.getMessage(), e);
+			}
+			int index=currentIndex.getAndIncrement();
+			if (index%500 == 0) {
+				System.out.print("\r" + recordfiles.size() + " records to process. " + 100*index/recordfiles.size() + "% Done.");
+			}
+			return record;
+		})
+		.filter(Objects::nonNull)
+		.collect(Collectors.toList());
+		System.out.println("\r" + recordfiles.size() + " records to process. " + 100* currentIndex.get()/recordfiles.size() + "% Done.");
+		
+		
+		
+//		logger.info("Successfully read  " + records.count() + " records in repo.");
+	}
 	
-		
-
-//			.forEachOrdered((r) -> {
-//				db.persistAccessionFile(r);
-//				System.out.print("Processed: "+processed.getAndIncrement()+"/"+numRecordFiles+"\r");
-//			});
-//		});
-		
+	public List<Record> getRecords() {
+		return records;
 	}
-	/**
-	 * Return all Records of that repo in a stream.
-	 */
-	public Stream<Record> getRecords() {
-		Stream<Record> value = Stream.empty();
-		return value;
-	}
-	/**
-	 * Return a version String for the repo.
-	 */
+	 
 	public String getRepoVersion() {
-		return new String();
+		return version;
 	}
-	
+		
 	public static void main(String[] args) {
+		Instant start = Instant.now();
 		try {
 			RepositoryInterface repo = new SimpleFileRepository();
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Instant end = Instant.now();
+		System.out.println(Duration.between(start, end));
 	}
 }

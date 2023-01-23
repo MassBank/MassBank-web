@@ -21,9 +21,9 @@
 package massbank;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,7 +63,7 @@ public class Record {
 
 	private String contributor;
 	private String ACCESSION;
-	private Date timestamp;
+	private Instant timestamp;
 	private boolean deprecated;
 	private String deprecated_content;
 	private List<String> RECORD_TITLE;
@@ -151,10 +151,10 @@ public class Record {
 	}
 	
 	
-	public Date getTimestamp() {
+	public Instant getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Date value) {
+	public void setTimestamp(Instant value) {
 		timestamp = value;
 	}
 	
