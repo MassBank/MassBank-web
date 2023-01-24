@@ -46,6 +46,8 @@ import org.apache.logging.log4j.Logger;
 import massbank.Config;
 import massbank.Record;
 import massbank.db.DatabaseManager;
+import massbank.repository.RepositoryInterface;
+import massbank.repository.SimpleFileRepository;
 
 /**
  * This class is called from command line to create a new temporary
@@ -53,7 +55,7 @@ import massbank.db.DatabaseManager;
  * and move the new database to <i>dbName</i>.
  *
  * @author rmeier
- * @version 10-06-2020
+ * @version 24-01-2023
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
@@ -69,61 +71,31 @@ public class RefreshDatabase {
 		}
 		System.out.println("RefreshDatabase version: " + properties.getProperty("version"));
 		
-		logger.trace("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
+		logger.info("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
 		DatabaseManager.init_db(Config.get().tmpdbName());
 		
 		logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
 		final DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
 		
-		logger.trace("Get version of data source.");
-		String version	= FileUtils.readFileToString(new File(Config.get().DataRootPath()+"/VERSION"), StandardCharsets.UTF_8);
+		RepositoryInterface repo = new SimpleFileRepository();
+		List<Record> records = repo.getRecords();
 		
-		logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
-		File dataRootPath = new File(Config.get().DataRootPath());
-		List<File> recordfiles = new ArrayList<>();
-		for (String file : dataRootPath.list(DirectoryFileFilter.INSTANCE)) {
-			if (file.equals(".scripts")) continue;
-			if (file.equals(".figure")) continue;
-			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, true));
-		}
-		
-		AtomicInteger index = new AtomicInteger(0);
-		int chunkSize = 5000;
-		Stream<List<File>> chunkedRecordfiles = recordfiles.stream().collect(Collectors.groupingBy(x -> index.getAndIncrement() / chunkSize))
-		.entrySet().stream()
-		.map(Map.Entry::getValue);
-		
-		AtomicInteger processed = new AtomicInteger(1);
-		int numRecordFiles = recordfiles.size();
-		chunkedRecordfiles.forEach(chunk -> {
-			chunk.parallelStream().map(filename -> {
-				Record record=null;
-				logger.info("Validating \"" + filename + "\".");
-				String contributor = filename.getParentFile().getName();
-				try {
-					String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					Set<String> config = new HashSet<String>();
-					config.add("legacy");
-					record = Validator.validate(recordAsString, config);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (record == null) {
-					logger.error("Error reading/validating record \"" + filename.toString() + "\".");
-				}
-				return record;
-			})
-			.filter(Objects::nonNull)
-			.forEachOrdered((r) -> {
-				db.persistAccessionFile(r);
-				System.out.print("Processed: "+processed.getAndIncrement()+"/"+numRecordFiles+"\r");
-			});
+		logger.info(records.size() + " records ready to be send to database.");
+		AtomicInteger currentIndex = new AtomicInteger(1);
+		int numRecordsOnePercent = records.size()/100+1;
+		System.out.print(records.size() + " records to send to database. 0% Done.");
+		records.stream().forEach((r) -> {
+			db.persistAccessionFile(r);
+			int index=currentIndex.getAndIncrement();
+			if (index%numRecordsOnePercent == 0) {
+				System.out.print("\r" + records.size() + " records to send to database. " + 100*index/records.size() + "% Done.");
+			}
 		});
+		System.out.println("\r" + records.size() + " records to send to database. 100% Done");
 		
-		logger.trace("Setting Timestamp in database");
-		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
-		stmnt.setString(1, version);
+		logger.info("Setting version of database to: " + repo.getRepoVersion() + ".");
+		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (LAST_UPDATE,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
+		stmnt.setString(1, repo.getRepoVersion());
 		stmnt.executeUpdate();
 		db.getConnection().commit();
 		db.closeConnection();
