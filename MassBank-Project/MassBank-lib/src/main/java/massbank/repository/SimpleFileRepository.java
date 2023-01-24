@@ -23,37 +23,27 @@ package massbank.repository;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import massbank.Config;
 import massbank.Record;
-import massbank.cli.RefreshDatabase;
 import massbank.cli.Validator;
-import massbank.db.DatabaseManager;
 
 /**
  * This class implements a classical MassBank repository with record files 
@@ -89,9 +79,10 @@ public class SimpleFileRepository implements RepositoryInterface {
 		logger.info("Found " + recordfiles.size() + " records in repo.");
 		
 		AtomicInteger currentIndex = new AtomicInteger(1);
-		System.out.print(recordfiles.size() + " records to process. " + 100*0/recordfiles.size() + "% Done.");
+		int numRecordFilesOnePercent = recordfiles.size()/100+1;
+		System.out.print(recordfiles.size() + " records to read. 0% Done.");
 		
-		records = recordfiles.stream().map(filename -> {
+		records = recordfiles.parallelStream().map(filename -> {
 			Record record = null;
 			logger.trace("Working on \'" + filename + "\'.");
 			try {
@@ -107,18 +98,15 @@ public class SimpleFileRepository implements RepositoryInterface {
 				logger.error("Error reading record \"" + filename.toString() + "\". Will be ignored.\n" + e.getMessage(), e);
 			}
 			int index=currentIndex.getAndIncrement();
-			if (index%500 == 0) {
-				System.out.print("\r" + recordfiles.size() + " records to process. " + 100*index/recordfiles.size() + "% Done.");
+			if (index%numRecordFilesOnePercent == 0) {
+				System.out.print("\r" + recordfiles.size() + " records to read. " + 100*index/recordfiles.size() + "% Done.");
 			}
 			return record;
 		})
 		.filter(Objects::nonNull)
 		.collect(Collectors.toList());
-		System.out.println("\r" + recordfiles.size() + " records to process. " + 100* currentIndex.get()/recordfiles.size() + "% Done.");
-		
-		
-		
-//		logger.info("Successfully read  " + records.count() + " records in repo.");
+		System.out.println("\r" + recordfiles.size() + " records to read. 100% Done.");
+		logger.info("Successfully read  " + records.size() + " records in repo.");
 	}
 	
 	public List<Record> getRecords() {
