@@ -1361,7 +1361,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					StringParser.of("FRAGMENTATION_MODE ")
 					// value
 					.seq(
-						ref("cvterm_validated")
+						ref("cvterm")
 						.map((List<String> value) -> {
 //							Term term=cvutil.getTerm(value.get(1));
 							return '['+String.join(", ", value)+']';

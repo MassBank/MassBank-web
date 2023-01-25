@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * DatabaseTimestamp checks COLUMN 'TIME' in TABLE 'LAST_UPDATE' in database 
+ * DatabaseTimestamp checks COLUMN 'LAST_UPDATE' in TABLE 'LAST_UPDATE' in database 
  * 'MassBank' for the latest update time. DatabaseTimestamp is constructed with the
  * current timestamp in the database and can be used to label external resources
  * with a timestamp. {@code isOutdated()} is used to compare this timestamp to the 
@@ -50,27 +50,24 @@ public class DatabaseTimestamp {
 		// get timestamp of last db change from database
 		DatabaseManager databaseManager;
 		databaseManager = new DatabaseManager("MassBank");
-		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE;");			
+		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(LAST_UPDATE),VERSION FROM LAST_UPDATE;");			
 		ResultSet res = stmnt.executeQuery();
 		res.next();
 		Date db_timestamp = res.getTimestamp(1);
+		String db_version = res.getString(2);
 		if ( db_timestamp == null) {
 			logger.error("Timestamp from database is 'null'; using defaults.");
 		}
 		else {
 			timestamp = db_timestamp;
 		}
-		stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(VERSION) FROM LAST_UPDATE;");			
-		res = stmnt.executeQuery();
-		res.next();
-		String db_version = res.getString(1);
 		if ( db_version == null) {
 			logger.error("Version from database is 'null'; using defaults.");
 		}
 		else {
 			version = db_version;
 		}
-		
+				
 		databaseManager.closeConnection();
 		logger.trace("Create DatabaseTimestamp with: " + timestamp);
 	}
@@ -85,7 +82,7 @@ public class DatabaseTimestamp {
 		// check if this.timestamp is older than timestamp from database
 		DatabaseManager databaseManager;
 		databaseManager = new DatabaseManager("MassBank");
-		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(TIME) FROM LAST_UPDATE");			
+		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(LAST_UPDATE) FROM LAST_UPDATE");			
 		ResultSet res = stmnt.executeQuery();
 		res.next();
 		Date db_timestamp = res.getTimestamp(1);
