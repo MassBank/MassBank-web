@@ -73,9 +73,9 @@ public class Record {
 	private String COPYRIGHT; // optional
 	private String PUBLICATION; // optional
 	private String PROJECT; // optional
-	private List<String> COMMENT = new ArrayList<String>();; // optional
+	private List<String> COMMENT = new ArrayList<String>(); // optional
 	private List<String> CH$NAME;
-	private List<String> CH$COMPOUND_CLASS;
+	private List<String> CH$COMPOUND_CLASS; // optional
 	private String CH$FORMULA;
 	private BigDecimal CH$EXACT_MASS;
 	private String CH$SMILES;
@@ -497,7 +497,9 @@ public class Record {
 		
 		for (String ch_name : CH_NAME())
 			sb.append("CH$NAME: " + ch_name + "\n");
-		sb.append("CH$COMPOUND_CLASS: " + String.join("; ", CH_COMPOUND_CLASS()) + "\n");
+		if (!CH_COMPOUND_CLASS().isEmpty()) {
+			sb.append("CH$COMPOUND_CLASS: " + String.join("; ", CH_COMPOUND_CLASS()) + "\n");
+		}
 		sb.append("CH$FORMULA: " + CH_FORMULA() + "\n");
 		sb.append("CH$EXACT_MASS: " + CH_EXACT_MASS() + "\n");
 		sb.append("CH$SMILES: " + CH_SMILES() + "\n");

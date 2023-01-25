@@ -138,7 +138,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(ref("project").optional())
 					.seq(ref("comment").optional())
 					.seq(ref("ch_name"))
-					.seq(ref("ch_compound_class"))
+					.seq(ref("ch_compound_class").optional())
 					.seq(ref("ch_formula"))
 					.seq(ref("ch_exact_mass"))
 					.seq(ref("ch_smiles"))
