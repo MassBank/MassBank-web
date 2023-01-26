@@ -41,6 +41,7 @@
 		<junit-version>5.9.2</junit-version>
 		<spring-boot.version>2.7.7</spring-boot.version>
 		<biojava-version>6.1.0</biojava-version>
+		<timestamp>2023-01-26T13:52:09+01:00</timestamp>
 	</properties>
 
 	<dependencyManagement>
