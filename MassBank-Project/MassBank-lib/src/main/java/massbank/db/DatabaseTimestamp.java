@@ -23,82 +23,92 @@ package massbank.db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
-
+import java.time.Instant;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * DatabaseTimestamp checks COLUMN 'LAST_UPDATE' in TABLE 'LAST_UPDATE' in database 
- * 'MassBank' for the latest update time. DatabaseTimestamp is constructed with the
- * current timestamp in the database and can be used to label external resources
- * with a timestamp. {@code isOutdated()} is used to compare this timestamp to the 
- * current on in the database.
+ * DatabaseTimestamp retrieves COLUMN 'LAST_UPDATE' in TABLE 'LAST_UPDATE' from
+ * database 'MassBank' for the latest update time of the database.
+ * {@code isOutdated()} is used to compare this.timestamp with the latest state
+ * in the database.
  * 
  * @author rmeier
- * @version 23-08-2019
+ * @version 01-02-2023
  *
  */
 public class DatabaseTimestamp {
 	private static final Logger logger = LogManager.getLogger(DatabaseTimestamp.class);
-	private Date timestamp = new Date();
+	private Instant timestamp = Instant.ofEpochSecond(0);
 	private String version = "unknown";
-	
-	public DatabaseTimestamp() throws SQLException, ConfigurationException {
+
+	public DatabaseTimestamp() {
 		// get timestamp of last db change from database
-		DatabaseManager databaseManager;
-		databaseManager = new DatabaseManager("MassBank");
-		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(LAST_UPDATE),VERSION FROM LAST_UPDATE;");			
-		ResultSet res = stmnt.executeQuery();
-		res.next();
-		Date db_timestamp = res.getTimestamp(1);
-		String db_version = res.getString(2);
-		if ( db_timestamp == null) {
-			logger.error("Timestamp from database is 'null'; using defaults.");
+		try {
+			DatabaseManager databaseManager = new DatabaseManager("MassBank");
+			PreparedStatement stmnt = databaseManager.getConnection()
+					.prepareStatement("SELECT MAX(LAST_UPDATE),VERSION FROM LAST_UPDATE;");
+			ResultSet res = stmnt.executeQuery();
+			res.next();
+			Instant db_timestamp = res.getTimestamp(1).toInstant();
+			String db_version = res.getString(2);
+			if (db_timestamp == null) {
+				logger.error("Timestamp from database is \"null\". Using defaults.");
+			} else {
+				timestamp = db_timestamp;
+			}
+			if (db_version == null) {
+				logger.error("Version from database is \"null\".");
+			} else {
+				version = db_version;
+			}
+			databaseManager.closeConnection();
+			logger.trace("Construct DatabaseTimestamp with timestamp \"" + timestamp + "\" and version \"" + db_version
+					+ "\"");
+		} catch (SQLException | ConfigurationException e) {
+			logger.error("Error constructing DatabaseTimestamp from database value.", e);// TODO Auto-generated catch
+																							// block
 		}
-		else {
-			timestamp = db_timestamp;
-		}
-		if ( db_version == null) {
-			logger.error("Version from database is 'null'; using defaults.");
-		}
-		else {
-			version = db_version;
-		}
-				
-		databaseManager.closeConnection();
-		logger.trace("Create DatabaseTimestamp with: " + timestamp);
+
 	}
-	
+
 	/**
-	 * Check if this timestamp is outdated.
+	 * Check if this.timestamp is outdated.
 	 * 
-	 * @return Return true if the current database timestamp is more recent than this one.
+	 * @return Return true if the current database timestamp is more recent than
+	 *         this.timestamp.
 	 *
 	 */
-	public boolean isOutdated() throws SQLException, ConfigurationException {
+	public boolean isOutdated() {
 		// check if this.timestamp is older than timestamp from database
-		DatabaseManager databaseManager;
-		databaseManager = new DatabaseManager("MassBank");
-		PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT MAX(LAST_UPDATE) FROM LAST_UPDATE");			
-		ResultSet res = stmnt.executeQuery();
-		res.next();
-		Date db_timestamp = res.getTimestamp(1);
-		if ( db_timestamp== null) {
-			db_timestamp = new Date();
-			logger.error("Timestamp from database is 'null'; using defaults.");
+		try {
+			DatabaseManager databaseManager;
+			databaseManager = new DatabaseManager("MassBank");
+			PreparedStatement stmnt = databaseManager.getConnection()
+					.prepareStatement("SELECT MAX(LAST_UPDATE) FROM LAST_UPDATE");
+			ResultSet res = stmnt.executeQuery();
+			res.next();
+			Instant db_timestamp = res.getTimestamp(1).toInstant();
+			if (db_timestamp == null) {
+				logger.error("Timestamp from database is \"null\". Return \"false\".");
+				return false;
+			}
+			databaseManager.closeConnection();
+			logger.trace("Found DatabaseTimestamp: " + db_timestamp);
+			logger.trace("Own Timestamp: " + timestamp);
+			logger.trace("isOutdated(): " + timestamp.isBefore(db_timestamp));
+			return timestamp.isBefore(db_timestamp);
+		} catch (SQLException | ConfigurationException e) {
+			logger.error("Error retrieving timestamp from database. Return \"false\"", e);
+			return false;
 		}
-		databaseManager.closeConnection();
-		logger.trace("Found DatabaseTimestamp: " + db_timestamp);
-		logger.trace("Own Timestamp: " + timestamp);
-		logger.trace("isOutdated(): " + timestamp.before(db_timestamp));
-		return timestamp.before(db_timestamp);
 	}
-	
+
 	/**
-	 * Return the String of the 'VERSION' file from the data repo at the time of database creation.
+	 * Return the String of the 'VERSION' file from the data repo at the time of
+	 * database creation.
 	 * 
 	 * @return Return the version.
 	 *
