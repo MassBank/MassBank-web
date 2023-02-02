@@ -190,11 +190,8 @@ public class Contents extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Preprocess request: load list of mass spectrometry information in JSP.
-		try {
-			if (timestamp.isOutdated()) init();
-		} catch (SQLException | ConfigurationException e) {
-			logger.error(e.getMessage());
-		}
+		
+		if (timestamp.isOutdated()) init();
 		
 		try {	        
 			request.setAttribute("sites", result.mapSiteToRecordCount);

@@ -1,5 +1,5 @@
 {
-  "ACCESSION": "MSBNK-test-tst00002",
+  "ACCESSION": "MSBNK-test-TST00002",
   "RECORD_TITLE": [
     "Disialoganglioside GD1a",
     "MALDI-TOF",
@@ -49,7 +49,11 @@
   "AC$MASS_SPECTROMETRY": {
     "LASER": "UV 337 nm nitrogen lazer, 20 Hz, 10 nsec",
     "MATRIX": "DHB",
-    "SAMPLE_DRIPPING": "500 pmol"
+    "SAMPLE_DRIPPING": "500 pmol",
+    "FRAGMENTATION_MODE": "[MS, MS:1003294, electron activated dissociation, ]",
+    "KINETIC_ENERGY": "15 eV",
+    "ELECTRON_CURRENT": "6500 nA",
+    "REACTION_TIME": "65 ms"
   },
   "AC$CHROMATOGRAPHY": {
     "COLUMN_NAME": "Acclaim RSLC C18 2.2um, 2.1x100mm, Thermo",
