@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.ipb-halle.msbi</groupId>
 		<artifactId>MassBank-Project</artifactId>
-		<version>2.2.2</version>
+		<version>2.2.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>MassBank-OpenAPI</artifactId>
