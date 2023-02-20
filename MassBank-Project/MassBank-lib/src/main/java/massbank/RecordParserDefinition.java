@@ -1962,6 +1962,26 @@ public class RecordParserDefinition extends GrammarDefinition {
 				}
 			}
 			
+			// check for duplicate entries in AC$MASS_SPECTROMETRY
+			List<String> subtags = callback.AC_MASS_SPECTROMETRY().stream().map(p -> p.getKey()).collect(Collectors.toList());
+			Set<String> duplicates1 = new LinkedHashSet<String>();
+			Set<String> uniques1 = new HashSet<String>();
+			for(String c : subtags) {
+				if(!uniques1.add(c)) {
+					duplicates1.add(c);
+				}
+			}
+			if (duplicates1.size()>0) {
+				//if (!weak) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
+				return context.failure(sb.toString());
+				//} else {
+				//	logger.warn("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
+				//}
+			}
+			
+			
 			// check things online
 			if (online) {
 				if (callback.CH_LINK().containsKey("INCHIKEY")) {
