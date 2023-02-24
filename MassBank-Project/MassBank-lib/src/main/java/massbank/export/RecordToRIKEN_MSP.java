@@ -61,7 +61,7 @@ Num Peaks: 17
 /**
  * This class creates RIKEN PRIME msp from the given Record.
  * @author rmeier, htreutle
- * @version 01-12-2020
+ * @version 24-02-2023
  */
 public class RecordToRIKEN_MSP {
 	private static final Logger logger = LogManager.getLogger(RecordToRIKEN_MSP.class);
@@ -88,7 +88,7 @@ public class RecordToRIKEN_MSP {
 		sb.append("INCHIKEY: ").append(record.CH_LINK().containsKey("INCHIKEY") ? record.CH_LINK().get("INCHIKEY") : "N/A").append(System.getProperty("line.separator"));
 		sb.append("INCHI: ").append(record.CH_IUPAC()).append(System.getProperty("line.separator"));
 		sb.append("FORMULA: ").append(record.CH_FORMULA()).append(System.getProperty("line.separator"));
-		sb.append("RETENTIONTIME: ").append(record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "0").append(System.getProperty("line.separator"));
+		sb.append("RETENTIONTIME: ").append(record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.AC_CHROMATOGRAPHY_asMap().get("RETENTION_TIME") : "0").append(System.getProperty("line.separator"));
 		sb.append("IONMODE: ").append(record.AC_MASS_SPECTROMETRY_ION_MODE()).append(System.getProperty("line.separator"));
 		
 		List<String> links	= new ArrayList<String>();
