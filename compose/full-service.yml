@@ -17,6 +17,7 @@ services:
       - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomee/webapps/MassBank.war
       - $PWD/conf/full-service.conf:/etc/massbank.conf
       - $PWD/../MassBank-data:/MassBank-data  
+      - $PWD/compose/ServerInfo.properties:/usr/local/tomee/lib/org/apache/catalina/util/ServerInfo.properties
     ports:
       - "808${TAG}:8080"
     restart: always

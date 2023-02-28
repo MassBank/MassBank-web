@@ -1,0 +1,9 @@
+#!/bin/bash
+
+JAVA_EXECUTABLE="`which java`"
+
+DIST_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
+LIB_DIR="$DIST_DIR/lib"
+
+$JAVA_EXECUTABLE -cp "$LIB_DIR/*" \
+massbank.cli.Msbnk2JSONLD "$@"
