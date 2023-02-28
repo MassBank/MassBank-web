@@ -22,12 +22,19 @@ package massbank;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -42,9 +49,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.redfin.sitemapgenerator.SitemapIndexGenerator;
 import com.redfin.sitemapgenerator.WebSitemapGenerator;
+import com.redfin.sitemapgenerator.WebSitemapUrl;
 
 import massbank.db.DatabaseManager;
 import massbank.db.DatabaseTimestamp;
+import massbank.repository.RepositoryInterface;
 
 /**
  * 
@@ -72,6 +81,25 @@ public class SiteMapServlet extends HttpServlet {
 				file.delete();
 			}
 		}
+				
+		Properties properties = new Properties();
+		try {
+			InputStream inStream = RepositoryInterface.class.getResourceAsStream("/project.properties");
+			if (inStream == null) {
+				logger.error("Error finding project.properties. File will be ignored.");
+				properties.setProperty("version", "N/A");
+				properties.setProperty("timestamp", Instant.now().truncatedTo(ChronoUnit.SECONDS).toString());
+			} else {
+				properties.load(inStream);
+			}
+		} catch (IOException e) {
+			logger.error("Error reading project.properties. File will be ignored.\n", e);
+			properties.setProperty("version", "N/A");
+			properties.setProperty("timestamp", Instant.now().truncatedTo(ChronoUnit.SECONDS).toString());
+		}
+		
+		Instant softwareTimestamp = ZonedDateTime.parse(properties.getProperty("timestamp"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
+		timestamp = new DatabaseTimestamp();
 		
 		try {
 			// create sitemap generator
@@ -80,17 +108,19 @@ public class SiteMapServlet extends HttpServlet {
 			WebSitemapGenerator wsg = new WebSitemapGenerator(sitemapbaseurl, tmpdir);
 
 			// add static content
-			wsg.addUrl(sitemapbaseurl);
-			wsg.addUrl(sitemapbaseurl + "Index");
-			wsg.addUrl(sitemapbaseurl + "Search");
-			wsg.addUrl(sitemapbaseurl + "RecordIndex");
+			wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "Index").lastMod(Date.from(softwareTimestamp)).build());
+			wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "Search").lastMod(Date.from(softwareTimestamp)).build());
+			wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordIndex").lastMod(Date.from(softwareTimestamp)).build());
 
 			// add dynamic content
 			DatabaseManager databaseManager= new DatabaseManager("MassBank");
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT ACCESSION FROM RECORD");
+			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT ACCESSION,RECORD_TIMESTAMP FROM RECORD");
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
-				wsg.addUrl(sitemapbaseurl + "RecordDisplay?id=" + res.getString(1));
+				String accession = res.getString(1);
+				Date recordTimestamp = res.getTimestamp(2);
+				recordTimestamp = recordTimestamp.before(Date.from(softwareTimestamp)) ? Date.from(softwareTimestamp) : recordTimestamp;
+				wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordDisplay?id=" + accession).lastMod(recordTimestamp).build());
 			}
 			databaseManager.closeConnection();
 			
@@ -104,9 +134,6 @@ public class SiteMapServlet extends HttpServlet {
 				sig.addUrl(sitemapbaseurl + "sitemap/" + sitemap.getName());
 			}
 			sig.write();
-			
-			// get the current database timestamp			
-			timestamp=new DatabaseTimestamp();		
 		} catch (ConfigurationException | MalformedURLException | SQLException e) {
 			logger.error(e.getMessage());
 		}
@@ -117,12 +144,8 @@ public class SiteMapServlet extends HttpServlet {
 		logger.trace("getServletPath: " + request.getServletPath());
 		logger.trace("getRequestURI: " + request.getRequestURI() );
 		
-		try {
-			if (timestamp.isOutdated()) init();
-		} catch (SQLException | ConfigurationException e) {
-			logger.error(e.getMessage());
-		}
-		
+		if (timestamp.isOutdated()) init();
+				
 		File sitemap; 
 		if ((request.getPathInfo() == null) && "/sitemapindex.xml".equals(request.getServletPath())) {
 			sitemap=new File((File)getServletContext().getAttribute(ServletContext.TEMPDIR), request.getServletPath());
