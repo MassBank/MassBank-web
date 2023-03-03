@@ -51,22 +51,21 @@
 	<script src="js/massbank_specktackle.js"></script>
 	
 	<script type="application/ld+json">
-	${structureddata}
+${structureddata}
 	</script>
 </head>
-	
-<script>
-	var data=${peaklist};
-</script>
-	
+
 <body class="w3-theme-gradient">
 	<jsp:include page="matomo_body.html"/>
+	<script>
+		var data=${peaklist};
+	</script>
 
 	<noscript>
 		<div class="w3-panel w3-yellow">
-  		<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
-  	</div>
- 	</noscript>
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
   	
 	<div>
 		<jsp:include page="menu.html"/>

@@ -49,11 +49,11 @@
 
 	<noscript>
 		<div class="w3-panel w3-yellow">
-  		<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
-  	</div>
- 	</noscript>
+  			<p>Your JavaScript is disabled. To properly show MassBank please enable JavaScript and reload.</p>
+  		</div>
+  	</noscript>
   	
-  <div>
+  	<div>
 		<jsp:include page="menu.html"/>
 	</div>
 	
@@ -599,6 +599,6 @@
 
 	<br>
 	<jsp:include page="copyrightline.html"/>
-
+	
 </body>
 </html>
