@@ -1739,7 +1739,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(ref("number_primitive").trim())
 				.pick(1)
 				.seq(
-					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
+					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>=#"))
 					.plus()
 					.flatten()
 					.trim(CharacterParser.of(' '))
