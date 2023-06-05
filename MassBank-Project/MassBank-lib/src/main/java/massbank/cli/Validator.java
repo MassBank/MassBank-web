@@ -202,6 +202,7 @@ public class Validator {
 					
 					// validate correct serialization: String <-> (String -> Record class -> String)
 					String recordStringFromRecord = record.toString();
+					recordString = recordString.replaceAll("\\r\\n?", "\n");
 					int position = StringUtils.indexOfDifference(new String [] {recordString, recordStringFromRecord});
 					if (position != -1) {
 						logger.error("Error in \'" + filename + "\'.");
