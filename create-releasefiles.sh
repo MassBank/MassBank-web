@@ -10,3 +10,4 @@ echo Create sql dump...
 mysqldump -u root -h 127.0.0.1 -p --databases MassBank > MassBank.sql
 ./MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RecordExporter -f RIKEN_MSP -o MassBank_RIKEN.msp ../../MassBank-data/*
 ./MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RecordExporter -f NIST_MSP -o MassBank_NIST.msp ../../MassBank-data/*
+./MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RecordExporter -f jsonld -o MassBank.json ../../MassBank-data/*
