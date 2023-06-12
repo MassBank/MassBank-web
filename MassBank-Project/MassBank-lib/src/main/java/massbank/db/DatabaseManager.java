@@ -113,9 +113,9 @@ public class DatabaseManager {
 	private final static String selectINSTRUMENT = "SELECT * FROM INSTRUMENT WHERE ID = ?";
 	private final PreparedStatement statementSelectINSTRUMENT;
 	// TABLE RECORD
-	private final static String insertRECORD = "INSERT INTO RECORD(ACCESSION, RECORD_TIMESTAMP, RECORD_TITLE, DATE, AUTHORS, LICENSE, COPYRIGHT, PUBLICATION," + 
+	private final static String insertRECORD = "INSERT INTO RECORD(ACCESSION, RECORD_TIMESTAMP, RECORD_TITLE, DATE, AUTHORS, LICENSE, COPYRIGHT, PUBLICATION, PROJECT," + 
 			"CH, SP, AC_INSTRUMENT, AC_MASS_SPECTROMETRY_MS_TYPE, AC_MASS_SPECTROMETRY_ION_MODE, PK_SPLASH, CONTRIBUTOR)" +
-			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private final PreparedStatement statementInsertRECORD;
 	private final static String selectRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
 	private final PreparedStatement statementSelectRECORD;
@@ -241,7 +241,7 @@ public class DatabaseManager {
 
 		statementInsertDEPRECATED_RECORD = this.con.prepareStatement(insertDEPRECATED_RECORD);
 		statementSelectDEPRECATED_RECORD = this.con.prepareStatement(selectDEPRECATED_RECORD);
-
+		
 		statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
 		statementSelectCOMMENT = this.con.prepareStatement(selectCOMMENT);
 		
@@ -540,17 +540,23 @@ public class DatabaseManager {
 				} else {
 					statementInsertRECORD.setNull(8, java.sql.Types.VARCHAR);
 				}
-				statementInsertRECORD.setInt(9, compoundId);
-				if (sampleId > 0) {
-					statementInsertRECORD.setInt(10, sampleId);
+				if (acc.PROJECT() != null) {
+					statementInsertRECORD.setString(9, acc.PROJECT());			
 				} else {
-					statementInsertRECORD.setNull(10, java.sql.Types.INTEGER);
+					statementInsertRECORD.setNull(9, java.sql.Types.VARCHAR);
 				}
-				statementInsertRECORD.setInt(11, instrumentId);
-				statementInsertRECORD.setString(12, acc.AC_MASS_SPECTROMETRY_MS_TYPE());
-				statementInsertRECORD.setString(13, acc.AC_MASS_SPECTROMETRY_ION_MODE());
-				statementInsertRECORD.setString(14, acc.PK_SPLASH());
-				statementInsertRECORD.setInt(15, contributorId);
+				
+				statementInsertRECORD.setInt(10, compoundId);
+				if (sampleId > 0) {
+					statementInsertRECORD.setInt(11, sampleId);
+				} else {
+					statementInsertRECORD.setNull(11, java.sql.Types.INTEGER);
+				}
+				statementInsertRECORD.setInt(12, instrumentId);
+				statementInsertRECORD.setString(13, acc.AC_MASS_SPECTROMETRY_MS_TYPE());
+				statementInsertRECORD.setString(14, acc.AC_MASS_SPECTROMETRY_ION_MODE());
+				statementInsertRECORD.setString(15, acc.PK_SPLASH());
+				statementInsertRECORD.setInt(16, contributorId);
 				statementInsertRECORD.executeUpdate();
 				
 				//System.out.println(System.nanoTime());
@@ -761,6 +767,7 @@ public class DatabaseManager {
 				acc.LICENSE(set.getString("LICENSE"));
 				acc.COPYRIGHT(set.getString("COPYRIGHT"));
 				acc.PUBLICATION(set.getString("PUBLICATION"));
+				acc.PROJECT(set.getString("PROJECT"));
 				compoundID = set.getInt("CH");
 				sampleID = set.getInt("SP");
 				instrumentID = set.getInt("AC_INSTRUMENT");

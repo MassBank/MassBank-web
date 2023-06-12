@@ -101,6 +101,7 @@ CREATE TABLE RECORD (
 	LICENSE											VARCHAR(600)	NOT NULL,
 	COPYRIGHT										VARCHAR(600),
 	PUBLICATION										VARCHAR(600),
+	PROJECT				                                                        VARCHAR(600),
 	CH												INT	UNSIGNED	NOT NULL,
 	SP												INT UNSIGNED,
 	AC_INSTRUMENT 									INT UNSIGNED	NOT NULL,
