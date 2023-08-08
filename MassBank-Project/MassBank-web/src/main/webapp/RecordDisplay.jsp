@@ -47,8 +47,10 @@
 	<script src="js/st.js"></script>
 	<!-- SpeckTackle MassBank loading script-->
 	<script src="js/massbank_specktackle.js"></script>
-    
+	
+	<script type="application/ld+json">
 ${structureddata}
+	</script>
 </head>
 
 <body class="w3-theme-gradient">

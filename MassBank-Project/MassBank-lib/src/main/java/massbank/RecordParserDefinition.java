@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -75,6 +76,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private String InChiKeyFromCH_IUPAC = "";
 	private String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
+	// controled vocabulary handler
+	CVUtil cvutil = CVUtil.get();
 	
 	// load a list of strings from .config or resource folder
 	private static List<String> getResourceFileAsList(String fileName)  {
@@ -136,7 +139,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(ref("project").optional())
 					.seq(ref("comment").optional())
 					.seq(ref("ch_name"))
-					.seq(ref("ch_compound_class"))
+					.seq(ref("ch_compound_class").optional())
 					.seq(ref("ch_formula"))
 					.seq(ref("ch_exact_mass"))
 					.seq(ref("ch_smiles"))
@@ -194,18 +197,46 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// [label, accession, “first part of the param name, second part of the name”, value].
 		// [MOD, MOD:00648, "N,O-diacetylated L-serine",]
 		def("cvterm",
-			CharacterParser.of('[')
-			.seq(word().star().trim())  // label
-			.seq(CharacterParser.of(','))
-			.seq(word().or(CharacterParser.of(':')).star().trim())  // accession 
+			CharacterParser.of('[').trim()
+			// label
+			.seq(word().star().flatten())
+			.seq(CharacterParser.of(',').trim())
+			// accession 
+			.seq(word().or(CharacterParser.of(':')).star().flatten().trim())
 			.seq(CharacterParser.of(',')) 
+			// name
 			.seq(
-				CharacterParser.of('"').seq(CharacterParser.any().plusLazy(CharacterParser.of('"'))).seq(CharacterParser.of('"')).trim()
-				.or(CharacterParser.any().starLazy(CharacterParser.of(',')).trim())
-			)  // name
+				CharacterParser.of('"').seq(CharacterParser.any().plusLazy(CharacterParser.of('"'))).seq(CharacterParser.of('"'))
+				.or(CharacterParser.any().starLazy(CharacterParser.of(','))).flatten().trim()
+			)
 			.seq(CharacterParser.of(','))
-			.seq(word().star().trim())  // value
-			.seq(CharacterParser.of(']'))
+			// value
+			.seq(
+				CharacterParser.of('"').seq(CharacterParser.any().plusLazy(CharacterParser.of('"'))).seq(CharacterParser.of('"'))
+				.or(CharacterParser.any().starLazy(CharacterParser.of(']'))).flatten().trim()
+			)
+			.seq(CharacterParser.of(']')).permute(1,3,5,7)
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
+		def("cvterm_validated",
+			ref("cvterm")
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				Result r = continuation.apply(context);
+				if (r.isSuccess()) {
+					List<String> value = r.get();
+//					if (!cvutil.containsTerm(value.get(1))) {
+//						return context.failure(value.get(1)+ "is no valid Id in ontology.");
+//					}
+//					Term term=cvutil.getTerm(value.get(1));
+//					if (!term.getDescription().equals(value.get(2))) {
+//						return context.failure("Name missmatch for id "+ value.get(1)+ ".");
+//					}
+				}
+				return r; 
+			})
 		);
 		
 		def("uint_primitive", digit().plus().flatten());
@@ -237,7 +268,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(CharacterParser.of('-'))
 				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,32))
 				.seq(CharacterParser.of('-'))
-				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,64))
+				.seq(CharacterParser.upperCase().or(digit()).or(CharacterParser.of('_')).repeat(1,64))
 				.flatten()
 				.map((String value) -> {
 					callback.ACCESSION(value);
@@ -327,7 +358,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				Result r = continuation.apply(context);
 				if (r.isSuccess()) {
 					try {
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu.MM.dd").withResolverStyle(ResolverStyle.STRICT);
 						LocalDate.parse(r.get(), formatter);
 					} catch (Exception e) { 
 						return context.failure("Can not parse date:\n" + e.getMessage());		 				
@@ -1193,8 +1224,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.4.4 AC$MASS_SPECTROMETRY: ION_MODE
 		// Polarity of Ion Detection. Mandatory
 		// Example: AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
-		// Either of POSITIVE or NEGATIVE is allowed. Cross-reference to mzOntology: POSITIVE [MS:1000030] 
-		// or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+		// Either of POSITIVE or NEGATIVE is allowed. 
+		// Cross-reference to HUPO-PSI: POSITIVE [MS, MS:1000130, positive scan,] or NEGATIVE [MS:1000129, negative scan,]; ION_MODE [MS, MS:1000465, scan polarity,]
 		def("ac_mass_spectrometry_ion_mode_value",
 			StringParser.of("POSITIVE")
 			.or(StringParser.of("NEGATIVE"))
@@ -1273,7 +1304,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("DESOLVATION_TEMPERATURE "))
 			.or(StringParser.of("DRY_GAS_FLOW "))
 			.or(StringParser.of("DRY_GAS_TEMP "))
-			.or(StringParser.of("FRAGMENTATION_MODE "))
 			.or(StringParser.of("FRAGMENT_VOLTAGE "))
 			.or(StringParser.of("GAS_PRESSURE "))
 			.or(StringParser.of("HELIUM_FLOW "))
@@ -1322,8 +1352,32 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("AC$MASS_SPECTROMETRY")
 			.seq(ref("tagsep"))
 			.seq(
+				// tag
 				ref("ac_mass_spectrometry_subtag")
+				// value
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				
 				.or(
+					// FRAGMENTATION_MODE [MS, MS:1000044, dissociation method,]
+					StringParser.of("FRAGMENTATION_MODE ")
+					// value
+					.seq(
+						ref("cvterm")
+						.map((List<String> value) -> {
+//							Term term=cvutil.getTerm(value.get(1));
+							return '['+String.join(", ", value)+']';
+						})
+						.or(
+							StringParser.of("CID")
+							.or(StringParser.of("HAD"))
+							.or(StringParser.of("HCD"))
+							.or(StringParser.of("LOW-ENERGY CID"))
+							.or(StringParser.of("RID"))
+						)
+					)
+				)
+				.or(
+					// free tag
 					CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_')).or(CharacterParser.of('/'))
 					.plus().flatten()
 					.map((String value) -> {
@@ -1331,16 +1385,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 						return value;
 					})
 					.seq(CharacterParser.whitespace()).flatten()
+					// value
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				)
 			)
-			.seq(Token.NEWLINE_PARSER.not()).pick(2)
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER).pick(2)
 			.map((List<String> value) -> {
 				return Pair.of(value.get(0).trim(), value.get(1));
 			})
-			.seq(Token.NEWLINE_PARSER).pick(0)
-			.plus()		
+			
+//			.map((Pair<String,String> value) -> {
+//				System.out.println(value);
+//				return value;
+//			})
+			.plus()
 			.map((List<Pair<String,String>> value) -> {
+				//System.out.println();
 				//System.out.println(value);
 				callback.AC_MASS_SPECTROMETRY(value);
 				return value;
@@ -1447,7 +1507,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 				CharacterParser.anyOf("+-")
 				.seq(ref("uint_primitive").optional())
 				.seq(
-					
 					StringParser.of("ACN")
 					.or(StringParser.of("FA"))
 					.or(ref("molecular_formula"))
@@ -1681,7 +1740,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(ref("number_primitive").trim())
 				.pick(1)
 				.seq(
-					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
+					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>=#"))
 					.plus()
 					.flatten()
 					.trim(CharacterParser.of(' '))
@@ -1903,6 +1962,26 @@ public class RecordParserDefinition extends GrammarDefinition {
 					logger.warn("There are duplicate entries in \"CH$NAME\" field.");
 				}
 			}
+			
+			// check for duplicate entries in AC$MASS_SPECTROMETRY
+			List<String> subtags = callback.AC_MASS_SPECTROMETRY().stream().map(p -> p.getKey()).collect(Collectors.toList());
+			Set<String> duplicates1 = new LinkedHashSet<String>();
+			Set<String> uniques1 = new HashSet<String>();
+			for(String c : subtags) {
+				if(!uniques1.add(c)) {
+					duplicates1.add(c);
+				}
+			}
+			if (duplicates1.size()>0) {
+				//if (!weak) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
+				return context.failure(sb.toString());
+				//} else {
+				//	logger.warn("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
+				//}
+			}
+			
 			
 			// check things online
 			if (online) {

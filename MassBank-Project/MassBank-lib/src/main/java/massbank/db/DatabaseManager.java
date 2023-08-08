@@ -32,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -112,9 +113,9 @@ public class DatabaseManager {
 	private final static String selectINSTRUMENT = "SELECT * FROM INSTRUMENT WHERE ID = ?";
 	private final PreparedStatement statementSelectINSTRUMENT;
 	// TABLE RECORD
-	private final static String insertRECORD = "INSERT INTO RECORD(ACCESSION, RECORD_TITLE, DATE, AUTHORS, LICENSE, COPYRIGHT, PUBLICATION," + 
+	private final static String insertRECORD = "INSERT INTO RECORD(ACCESSION, RECORD_TIMESTAMP, RECORD_TITLE, DATE, AUTHORS, LICENSE, COPYRIGHT, PUBLICATION, PROJECT," + 
 			"CH, SP, AC_INSTRUMENT, AC_MASS_SPECTROMETRY_MS_TYPE, AC_MASS_SPECTROMETRY_ION_MODE, PK_SPLASH, CONTRIBUTOR)" +
-			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private final PreparedStatement statementInsertRECORD;
 	private final static String selectRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
 	private final PreparedStatement statementSelectRECORD;
@@ -240,7 +241,7 @@ public class DatabaseManager {
 
 		statementInsertDEPRECATED_RECORD = this.con.prepareStatement(insertDEPRECATED_RECORD);
 		statementSelectDEPRECATED_RECORD = this.con.prepareStatement(selectDEPRECATED_RECORD);
-
+		
 		statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
 		statementSelectCOMMENT = this.con.prepareStatement(selectCOMMENT);
 		
@@ -523,37 +524,39 @@ public class DatabaseManager {
 				set.next();
 				int instrumentId = set.getInt("ID");
 				
-				//System.out.println(System.nanoTime());
 				statementInsertRECORD.setString(1, acc.ACCESSION());
-				statementInsertRECORD.setString(2, acc.RECORD_TITLE1());
-				statementInsertRECORD.setString(3, acc.DATE());
-				statementInsertRECORD.setString(4, acc.AUTHORS());
-		//		if (acc.get("LICENSE").size() != 0) {
-					statementInsertRECORD.setString(5, acc.LICENSE());			
-		//		} else {
-		//			statementInsertRECORD.setNull(5, java.sql.Types.VARCHAR);
-		//		}
+				statementInsertRECORD.setTimestamp(2, Timestamp.from(acc.getTimestamp()));
+				statementInsertRECORD.setString(3, acc.RECORD_TITLE1());
+				statementInsertRECORD.setString(4, acc.DATE());
+				statementInsertRECORD.setString(5, acc.AUTHORS());
+				statementInsertRECORD.setString(6, acc.LICENSE());			
 				if (acc.COPYRIGHT() != null) {
-					statementInsertRECORD.setString(6, acc.COPYRIGHT());			
-				} else {
-					statementInsertRECORD.setNull(6, java.sql.Types.VARCHAR);
-				}
-				if (acc.PUBLICATION() != null) {
-					statementInsertRECORD.setString(7, acc.PUBLICATION());			
+					statementInsertRECORD.setString(7, acc.COPYRIGHT());			
 				} else {
 					statementInsertRECORD.setNull(7, java.sql.Types.VARCHAR);
 				}
-				statementInsertRECORD.setInt(8, compoundId);
-				if (sampleId > 0) {
-					statementInsertRECORD.setInt(9, sampleId);
+				if (acc.PUBLICATION() != null) {
+					statementInsertRECORD.setString(8, acc.PUBLICATION());			
 				} else {
-					statementInsertRECORD.setNull(9, java.sql.Types.INTEGER);
+					statementInsertRECORD.setNull(8, java.sql.Types.VARCHAR);
 				}
-				statementInsertRECORD.setInt(10, instrumentId);
-				statementInsertRECORD.setString(11, acc.AC_MASS_SPECTROMETRY_MS_TYPE());
-				statementInsertRECORD.setString(12, acc.AC_MASS_SPECTROMETRY_ION_MODE());
-				statementInsertRECORD.setString(13, acc.PK_SPLASH());
-				statementInsertRECORD.setInt(14, contributorId);
+				if (acc.PROJECT() != null) {
+					statementInsertRECORD.setString(9, acc.PROJECT());			
+				} else {
+					statementInsertRECORD.setNull(9, java.sql.Types.VARCHAR);
+				}
+				
+				statementInsertRECORD.setInt(10, compoundId);
+				if (sampleId > 0) {
+					statementInsertRECORD.setInt(11, sampleId);
+				} else {
+					statementInsertRECORD.setNull(11, java.sql.Types.INTEGER);
+				}
+				statementInsertRECORD.setInt(12, instrumentId);
+				statementInsertRECORD.setString(13, acc.AC_MASS_SPECTROMETRY_MS_TYPE());
+				statementInsertRECORD.setString(14, acc.AC_MASS_SPECTROMETRY_ION_MODE());
+				statementInsertRECORD.setString(15, acc.PK_SPLASH());
+				statementInsertRECORD.setInt(16, contributorId);
 				statementInsertRECORD.executeUpdate();
 				
 				//System.out.println(System.nanoTime());
@@ -757,12 +760,14 @@ public class DatabaseManager {
 			int instrumentID = -1;
 			if (set.next()) {
 				acc.ACCESSION(set.getString("ACCESSION"));
+				acc.setTimestamp(set.getTimestamp("RECORD_TIMESTAMP").toInstant());
 				acc.RECORD_TITLE1(set.getString("RECORD_TITLE"));
 				acc.DATE(set.getString("DATE"));
 				acc.AUTHORS(set.getString("AUTHORS"));
 				acc.LICENSE(set.getString("LICENSE"));
 				acc.COPYRIGHT(set.getString("COPYRIGHT"));
 				acc.PUBLICATION(set.getString("PUBLICATION"));
+				acc.PROJECT(set.getString("PROJECT"));
 				compoundID = set.getInt("CH");
 				sampleID = set.getInt("SP");
 				instrumentID = set.getInt("AC_INSTRUMENT");

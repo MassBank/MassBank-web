@@ -26,12 +26,18 @@ Multiple line information:
 
 Last line of a MassBank Record is `//`.
 
+#### Controled Vocabulary terms
+General format is `[CV label, accession, name, value]`. Any field that is not available MUST be left empty. Should the name contain commas, quotes MUST be added to avoid problems with parsing.
+Example:
+```
+[CV label, accession, name, value]
+[MS, MS:1000443, Mass Analyzer Type, Orbitrap]
+[MS, MS:1001477, SpectraST,]
+[label, accession, “first part of the param name, second part of the name”, value]
+```
+
 ### 1.2 Order of Information
 MassBank Record Information in a MassBank Record is arranged in a fixed order (see Section 2).
-
-### 1.3 Others
-`[MS : space value ]` is the HUPO-PSI ID in [OLS](https://www.ebi.ac.uk/ols/index).
-
 
 ## Table 1.  MassBank Record Format (Summary)
 <table>
@@ -359,7 +365,7 @@ Example:
 ```
 ACCESSION: MSBNK-AAFC-AC000101
 ```
-The MassBank accession consists of three fields separated by `-` signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. It can be up to 32 characters long and is comprised of letters, digits and the `_` sign. The third field is the ID assigned by the contributor and an be up to 64 characters long and is also comprised of letters, digits and the `_` sign. 
+The MassBank accession consists of three fields separated by `-` signs and follows the format ID-[A-Za-z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. It can be up to 32 characters long and is comprised of letters, digits and the `_` sign. The third field is the ID assigned by the contributor and an be up to 64 characters long and is comprised of capital letters, digits and the `_` sign. 
 
 The list of List of contributors and projects is maintained at https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md.
 
@@ -758,8 +764,7 @@ Example:
 ```
 AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
 ```
-
-Either of POSITIVE or NEGATIVE is allowed. Cross-reference to HUPO-PSI: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+Either of POSITIVE or NEGATIVE is allowed. Cross-reference to HUPO-PSI: POSITIVE [MS, MS:1000130, positive scan,] or NEGATIVE [MS:1000129, negative scan,]; ION_MODE [MS, MS:1000465, scan polarity,]
 
 #### <a name="2.4.5"></a>2.4.5 AC$MASS\_SPECTROMETRY: subtag Description
 Other Optional Experimental Methods and Conditions of Mass Spectrometry.
@@ -1372,13 +1377,13 @@ Types currently used in MassBank are:
 [2M-H-C6H10O5]-
 ```
 
-##### 2.5.1 Subtag: PRECURSOR\_INT
+##### 2.5.1 Subtag: PRECURSOR\_INTENSITY
 Intensity of Focused Ion.
 
 Example: 
 
 ```
-MS$FOCUSED_ION: PRECURSOR_INT 10000
+MS$FOCUSED_ION: PRECURSOR_INTENSITY 10000
 ```
 
 ##### 2.5.1 Subtag: PRECURSOR\_M/Z

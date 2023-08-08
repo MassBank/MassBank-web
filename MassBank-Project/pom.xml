@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
-	<version>2.2.1-SNAPSHOT</version>
+	<version>2.2.4-SNAPSHOT</version>
 	<name>MassBank-Project</name>
 	<url>https://github.com/MassBank/MassBank-web</url>
 	<packaging>pom</packaging>
@@ -31,16 +31,17 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<versionName>${project.version}</versionName>
 		<cdk.version>2.8</cdk.version>
-		<jdbc.version>2.7.6</jdbc.version>
+		<jdbc.version>2.7.7</jdbc.version>
 		<petitparser-version>2.3.1</petitparser-version>
 		<jersey2-version>2.35</jersey2-version>
 		<jackson-version>2.13.2</jackson-version>
 		<jetty-version>9.4.24.v20191120</jetty-version>
 		<logback-version>1.2.8</logback-version>
 		<slf4j-version>1.7.36</slf4j-version>
-		<junit-version>5.9.1</junit-version>
-		<spring-boot.version>2.7.3</spring-boot.version>
-		<biojava-version>6.0.5</biojava-version>
+		<junit-version>5.9.2</junit-version>
+		<spring-boot.version>2.7.7</spring-boot.version>
+		<biojava-version>6.1.0</biojava-version>
+		<timestamp>2023-06-05T14:05:46+02:00</timestamp>
 	</properties>
 
 	<dependencyManagement>
@@ -54,7 +55,7 @@
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
-				<version>2.19.0</version>
+				<version>2.20.0</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.platform</groupId>
@@ -69,7 +70,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -125,22 +126,22 @@
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20220320</version>
+				<version>20230227</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
-				<version>2.9.1</version>
+				<version>2.10.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.5.13</version>
+				<version>4.5.14</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.dan2097</groupId>
 				<artifactId>jna-inchi-all</artifactId>
-				<version>1.1</version>
+				<version>1.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
@@ -152,7 +153,7 @@
 			<dependency>
 				<groupId>org.jfree</groupId>
 				<artifactId>jfreechart</artifactId>
-				<version>1.5.3</version>
+				<version>1.5.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jfree</groupId>
@@ -168,16 +169,6 @@
 				<groupId>com.github.dfabulich</groupId>
 				<artifactId>sitemapgen4j</artifactId>
 				<version>1.1.2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.biojava</groupId>
-				<artifactId>biojava-core</artifactId>
-				<version>${biojava-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.biojava</groupId>
-				<artifactId>biojava-ontology</artifactId>
-				<version>${biojava-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
