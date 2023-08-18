@@ -838,7 +838,7 @@ public class Record {
         // to String "mz,rel.int@mz,rel.int@..."
 		List<String> peaks = new ArrayList<>();
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
-			peaks.add(peak.getRight()+","+peak.getLeft());
+			peaks.add(peak.getLeft()+","+peak.getRight());
 		}
 		return String.join("@", peaks);
 	}
