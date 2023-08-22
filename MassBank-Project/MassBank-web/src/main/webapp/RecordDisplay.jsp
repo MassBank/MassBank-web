@@ -94,7 +94,7 @@ ${structureddata}
 			<div class="w3-row">
 				<div class="w3-twothird w3-text-grey w3-small">
 					<a
-						href="https://metabolomics-usi.gnps2.org/spectrum/?usi=mzspec:MASSBANK::accession:MSBNK-AAFC-AC000372/spectrum/?usi=mzspec:MASSBANK::accession:${accession}"
+						href="https://metabolomics-usi.gnps2.org/spectrum/?usi=mzspec:MASSBANK::accession:${accession}"
 						target="_blank">metabolomics-usi visualisation</a>
 				</div>
 			</div>
