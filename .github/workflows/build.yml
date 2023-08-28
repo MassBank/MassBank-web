@@ -15,10 +15,10 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: maven
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
-        with:
-          maven-version: 3.6.3
+#      - name: Set up Maven
+#        uses: stCarolas/setup-maven@v4.5
+#        with:
+#          maven-version: 3.6.3
       - name: Extract Maven project version
         run: echo $(mvn -version)
       - name: Build with Maven
