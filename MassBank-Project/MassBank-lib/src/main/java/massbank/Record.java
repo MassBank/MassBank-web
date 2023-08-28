@@ -758,17 +758,30 @@ public class Record {
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
+		// dataset
 		JsonObject dataset = new JsonObject();
 		dataset.addProperty("@context", "https://schema.org");
 		dataset.addProperty("@type", "Dataset");
-		dataset.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		dataset.add("http://purl.org/dc/terms/conformsTo",
-			gson.fromJson("{ \"@type\": \"CreativeWork\", \"@id\": \"https://bioschemas.org/profiles/Dataset/1.0-RELEASE\" }", JsonObject.class));
+				gson.fromJson("{ \"@type\": \"CreativeWork\", \"@id\": \"https://bioschemas.org/profiles/Dataset/1.0-RELEASE\" }", JsonObject.class));
+		dataset.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"#Dataset");
 		dataset.addProperty("description", description);
 		dataset.addProperty("identifier", ACCESSION());
+		dataset.addProperty("name", RECORD_TITLE1());
+		
 		JsonArray keywords = new JsonArray();
-		keywords.add(gson.fromJson("{ \"@type\": \"DefinedTerm\", \"@id\": \"http://edamontology.org/data_2536\", \"name\": \"Mass spectrometry data\" }", JsonObject.class));
+		keywords.add(gson.fromJson(
+				"{ \"@type\": \"DefinedTerm\","
+				+ "\"name\": \"Mass spectrometry data\","
+				+ "\"url\": \"http://edamontology.org/data_2536\","
+				+ "\"termCode\": \"data_2536\","
+				+ "\"inDefinedTermSet\": {"
+				+ "\"@type\": \"DefinedTermSet\",\n"
+				+ "\"name\": \"Bioinformatics operations, data types, formats, identifiers and topics\",\n"
+				+ "\"url\": \" http://edamontology.org\"\n"
+				+ "} }", JsonObject.class));
 		dataset.add("keywords", keywords);
+		
 		if (LICENSE().equals("CC0")) {
 			dataset.addProperty("license", "https://creativecommons.org/share-your-work/public-domain/cc0");
 		} else if (LICENSE().equals("CC BY-SA")) {
@@ -780,49 +793,68 @@ public class Record {
 		} else if (LICENSE().equals("CC BY-NC-SA")) {
 			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc-sa/4.0");
 		}
-		dataset.addProperty("name", RECORD_TITLE1());
 		dataset.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
-		
 		dataset.addProperty("datePublished", DATE1()[0].replace(".","-"));
-		
-
-		dataset.addProperty("headline", RECORD_TITLE1());
-		dataset.addProperty("name", RECORD_TITLE().get(0));		
-		dataset.addProperty("measurementTechnique", "mass spectrometry");
 		dataset.addProperty("citation", PUBLICATION());
-		if (COMMENT().size() == 1)  dataset.addProperty("comment", COMMENT().get(0));
-		else if (COMMENT().size() >= 1) dataset.add("comment", gson.toJsonTree(COMMENT()));
-		if (CH_NAME().size() == 1)  dataset.addProperty("alternateName", CH_NAME().get(0));
-		else if (CH_NAME().size() >= 1) dataset.add("alternateName", gson.toJsonTree(CH_NAME()));
 		
+		JsonArray measurementTechnique = new JsonArray();
+		measurementTechnique.add(gson.fromJson(
+				"{\"@type\": \"DefinedTerm\","
+				+ "\"name\": \"liquid chromatography-mass spectrometry\","
+				+ "\"url\": \"http://purl.obolibrary.org/obo/CHMO_0000524\","
+				+ "\"termCode\": \"CHMO_0000524\","
+				+ "\"inDefinedTermSet\": {"
+				+ "\"@type\": \"DefinedTermSet\","
+				+ "\"name\": \"Chemical Methods Ontology\","
+				+ "\"url\": \"http://purl.obolibrary.org/obo/chmo.owl\""
+				+ "} }", JsonObject.class));
+		dataset.add("measurementTechnique", measurementTechnique);
 		
+		dataset.add("includedinDataCatalog", gson.fromJson(
+				"{\"@type\": \"DataCatalog\","
+				+ "\"name\": \"MassBank\","
+				+ "\"url\": \"https://massbank.eu\""
+				+ "}", JsonObject.class));
+		
+		JsonObject chemicalSubstance = new JsonObject();
+		chemicalSubstance.addProperty("@context", "https://schema.org");
+		chemicalSubstance.addProperty("@type", "ChemicalSubstance");
+		chemicalSubstance.add("http://purl.org/dc/terms/conformsTo",
+				gson.fromJson("{ \"@type\": \"CreativeWork\", \"@id\": \"https://bioschemas.org/profiles/ChemicalSubstance/0.4-RELEASE\" }", JsonObject.class));
+		chemicalSubstance.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"#ChemicalSubstance");
+		chemicalSubstance.addProperty("identifier", ACCESSION());
+		chemicalSubstance.addProperty("name", RECORD_TITLE().get(0));
+		chemicalSubstance.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
+		chemicalSubstance.addProperty("chemicalComposition", CH_FORMULA());
+		if (CH_NAME().size() == 1)  chemicalSubstance.addProperty("alternateName", CH_NAME().get(0));
+		else if (CH_NAME().size() >= 1) chemicalSubstance.add("alternateName", gson.toJsonTree(CH_NAME()));
+		
+		JsonArray molecularEntitys = new JsonArray();
+		
+		// create a loop in case of multiple MolecularEntity
 		JsonObject molecularEntity = new JsonObject();
 		molecularEntity.addProperty("@context", "https://schema.org");
 		molecularEntity.addProperty("@type", "MolecularEntity");
-		molecularEntity.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="
-			+ ACCESSION()
-			+ "#" + (InChiKey!=null ? InChiKey : ""));
 		molecularEntity.add("http://purl.org/dc/terms/conformsTo",
-			gson.fromJson("{ \"@type\": \"CreativeWork\", \"@id\": \"https://bioschemas.org/profiles/MolecularEntity/0.5-RELEASE\" }", JsonObject.class));
-	
+				gson.fromJson("{ \"@type\": \"CreativeWork\", \"@id\": \"https://bioschemas.org/profiles/MolecularEntity/0.5-RELEASE\" }", JsonObject.class));
+		molecularEntity.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id=" + ACCESSION()
+				+ "#" + (InChiKey!=null ? InChiKey : "MolecularEntity"));
 		molecularEntity.addProperty("identifier", ACCESSION());
-		molecularEntity.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		molecularEntity.addProperty("name", RECORD_TITLE().get(0));
+		molecularEntity.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		molecularEntity.addProperty("inChI", CH_IUPAC());
 		molecularEntity.addProperty("smiles", CH_SMILES());
 		molecularEntity.addProperty("molecularFormula", CH_FORMULA());
-		molecularEntity.addProperty("description", description);
 		molecularEntity.addProperty("monoisotopicMolecularWeight", CH_EXACT_MASS());
 		if (InChiKey!=null) molecularEntity.addProperty("inChIKey", InChiKey);
-		if (CH_NAME().size() == 1)  molecularEntity.addProperty("alternateName", CH_NAME().get(0));
-		else if (CH_NAME().size() >= 1) molecularEntity.add("alternateName", gson.toJsonTree(CH_NAME()));
 		
-		
+		molecularEntitys.add(molecularEntity);
+		chemicalSubstance.add("hasBioChemEntityPart", molecularEntitys);
 		
 		// put MolecularEntity and Dataset together
 		JsonArray structuredData = new JsonArray();
 		structuredData.add(dataset);
-		structuredData.add(molecularEntity);
+		structuredData.add(chemicalSubstance);
 		return structuredData;
 
 	}
