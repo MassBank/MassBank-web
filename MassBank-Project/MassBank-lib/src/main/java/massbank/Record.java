@@ -754,8 +754,7 @@ public class Record {
 		String InChiKey = CH_LINK().get("INCHIKEY");
 		String description = "This MassBank record with Accession " + ACCESSION() 
 			+ " contains the " + AC_MASS_SPECTROMETRY_MS_TYPE() + " mass spectrum of " + RECORD_TITLE().get(0)
-			+ ((InChiKey!=null) ? "." : " with the InChIkey " + InChiKey + ".");
-		
+			+ ((InChiKey==null) ? "." : " with the InChIkey " + InChiKey + ".");
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
 		// dataset
@@ -842,8 +841,8 @@ public class Record {
 		molecularEntity.addProperty("identifier", ACCESSION());
 		molecularEntity.addProperty("name", RECORD_TITLE().get(0));
 		molecularEntity.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
-		molecularEntity.addProperty("inChI", CH_IUPAC());
-		molecularEntity.addProperty("smiles", CH_SMILES());
+		if (!CH_IUPAC().equals("N/A")) molecularEntity.addProperty("inChI", CH_IUPAC());
+		if (!CH_SMILES().equals("N/A")) molecularEntity.addProperty("smiles", CH_SMILES());
 		molecularEntity.addProperty("molecularFormula", CH_FORMULA());
 		molecularEntity.addProperty("monoisotopicMolecularWeight", CH_EXACT_MASS());
 		if (InChiKey!=null) molecularEntity.addProperty("inChIKey", InChiKey);
