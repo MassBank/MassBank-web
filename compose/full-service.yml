@@ -29,16 +29,17 @@ services:
       - "mariadb:massbank_mariadb"
 
   maven:
-    image: maven:3.6-jdk-11
+    image: maven:3.8-eclipse-temurin
     volumes:
       - $HOME/.m2:/var/maven/.m2
       - $PWD/MassBank-Project:/project
+    working_dir: /project
     environment:
       MAVEN_CONFIG: /var/maven/.m2
     user: ${CURRENT_UID}
 
   dbupdate:
-    image: maven:3.6-jdk-11
+    image: maven:3.8-eclipse-temurin
     volumes:
       - $PWD/MassBank-Project:/project
       - $PWD/conf/full-service.conf:/etc/massbank.conf
