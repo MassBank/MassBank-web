@@ -3,13 +3,13 @@ OUT=$(docker compose version --short  2> /dev/null)
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "Docker Compose V2 not found. Trying 'docker-compose'."
-	OUT2=$(docker-compose version --short  2> /dev/null)
+	OUT=$(docker-compose version --short  2> /dev/null)
 	RET2=$?
 	if [ $RET2 -ne 0 ]; then
 		echo "'docker-compose' not found."
 		echo "Expecting docker compose V2 or docker-compose"
 	else
-		if [[ $OUT2 = 1* ]]
+		if [[ $OUT = 1* ]]
 		then
 			echo "'docker-compose' version "$OUT" found. Using command 'docker-compose'." 
 			COMPOSE_COMMAND="docker-compose"
