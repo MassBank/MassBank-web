@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
-	<version>2.2.4-SNAPSHOT</version>
+	<version>2.2.4</version>
 	<name>MassBank-Project</name>
 	<url>https://github.com/MassBank/MassBank-web</url>
 	<packaging>pom</packaging>
@@ -41,7 +41,7 @@
 		<junit-version>5.9.2</junit-version>
 		<spring-boot.version>2.7.7</spring-boot.version>
 		<biojava-version>6.1.0</biojava-version>
-		<timestamp>2023-06-05T14:05:46+02:00</timestamp>
+		<timestamp>2023-08-31T09:59:58+02:00</timestamp>
 	</properties>
 
 	<dependencyManagement>
