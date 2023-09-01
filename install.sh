@@ -2,29 +2,29 @@
 OUT=$(docker compose version --short  2> /dev/null)
 RET=$?
 if [ $RET -ne 0 ]; then
-        echo "Docker Compose V2 not found. Trying 'docker-compose'."
+        echo "Docker Compose plugin for docker not found. Trying 'docker-compose'."
 	OUT=$(docker-compose version --short  2> /dev/null)
 	RET2=$?
 	if [ $RET2 -ne 0 ]; then
 		echo "'docker-compose' not found."
-		echo "Expecting docker compose V2 or docker-compose"
+		echo "Expecting Docker Compose plugin for docker or docker-compose"
 	else
-		if [[ $OUT = 1* ]]
+		if [[ $OUT = 1* ]] || [[ $OUT = 2* ]]
 		then
 			echo "'docker-compose' version "$OUT" found. Using command 'docker-compose'." 
 			COMPOSE_COMMAND="docker-compose"
 		else
-			echo "'docker-compose' version "$OUT" found. Version 1.X expected."
+			echo "'docker-compose' version "$OUT" found. Version 1.X or 2.X expected."
 			exit
 		fi
 	fi
 else
 	if [[ $OUT = 2* ]]
 	then
-		echo "Docker Compose V2 version "$OUT" found. Using command 'docker compose'." 
+		echo "Docker Compose plugin for docker version "$OUT" found. Using command 'docker compose'." 
 		COMPOSE_COMMAND="docker compose"
 	else
-		echo "Docker Compose V2 version "$OUT" found. Version 2.X expected."
+		echo "Docker Compose plugin for docker version "$OUT" found. Version 2.X expected."
 		exit
 	fi
 fi
