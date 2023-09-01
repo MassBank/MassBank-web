@@ -3,13 +3,13 @@ OUT=$(docker compose version --short  2> /dev/null)
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "Docker Compose V2 not found. Trying 'docker-compose'."
-	OUT2=$(docker-compose version --short  2> /dev/null)
+	OUT=$(docker-compose version --short  2> /dev/null)
 	RET2=$?
 	if [ $RET2 -ne 0 ]; then
 		echo "'docker-compose' not found."
 		echo "Expecting docker compose V2 or docker-compose"
 	else
-		if [[ $OUT2 = 1* ]]
+		if [[ $OUT = 1* ]]
 		then
 			echo "'docker-compose' version "$OUT" found. Using command 'docker-compose'." 
 			COMPOSE_COMMAND="docker-compose"
@@ -56,7 +56,7 @@ case $1 in
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG build
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG up -d mariadb
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG exec mariadb /root/waitforSQL.sh
-		CURRENT_UID=$(id -u):$(id -g) $COMPOSE_COMMAND -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
+		CURRENT_UID=$(id -u):$(id -g) $COMPOSE_COMMAND -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven clean package
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG up -d tomee
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG \
 			run --rm dbupdate \
@@ -72,7 +72,7 @@ case $1 in
 	;;
 	deploy)
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG pull
-		CURRENT_UID=$(id -u):$(id -g) $COMPOSE_COMMAND -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven -f /project clean package
+		CURRENT_UID=$(id -u):$(id -g) $COMPOSE_COMMAND -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven clean package
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG rm -s tomee
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG up -d tomee
 	;;

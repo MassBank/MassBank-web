@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import massbank.Record;
 import massbank.export.RecordToJson;
+import massbank.export.RecordToJsonLD;
 import massbank.export.RecordToNIST_MSP;
 import massbank.export.RecordToRIKEN_MSP;
 
@@ -98,7 +99,7 @@ public static void main(String[] arguments) {
 	// parse command line
 	Options options = new Options();
 	options.addRequiredOption("o", "outfile", true, "name of output file");
-	options.addRequiredOption("f", "format", true, "output format; possible values: RIKEN_MSP, NIST_MSP; json");
+	options.addRequiredOption("f", "format", true, "output format; possible values: RIKEN_MSP, NIST_MSP; json; jsonld");
 	CommandLine cmd = null;
 	try {
 		cmd = new DefaultParser().parse(options, arguments);
@@ -116,7 +117,7 @@ public static void main(String[] arguments) {
 	}
 	String format = cmd.getOptionValue("f");
 	if (format != null) {
-		if (!Arrays.asList("RIKEN_MSP", "NIST_MSP", "json").contains(format)) {
+		if (!Arrays.asList("RIKEN_MSP", "NIST_MSP", "json", "jsonld").contains(format)) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("RecordExporter [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 			System.exit(1);
@@ -174,6 +175,9 @@ public static void main(String[] arguments) {
 		break;
 	case "json":
 		RecordToJson.recordsToJson(outfile, records);
+		break;
+	case "jsonld":
+		RecordToJsonLD.recordsToJson(outfile, records);
 		break;
 	default:
 		logger.error("This code should not run.");

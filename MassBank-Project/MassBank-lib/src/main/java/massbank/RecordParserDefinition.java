@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -357,7 +358,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				Result r = continuation.apply(context);
 				if (r.isSuccess()) {
 					try {
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu.MM.dd").withResolverStyle(ResolverStyle.STRICT);
 						LocalDate.parse(r.get(), formatter);
 					} catch (Exception e) { 
 						return context.failure("Can not parse date:\n" + e.getMessage());		 				
