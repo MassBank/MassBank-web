@@ -846,7 +846,7 @@ public class DatabaseManager {
 					acc.DEPRECATED(true);
 					acc.DEPRECATED_CONTENT(set.getString("CONTENT"));
 					return acc;
-				} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+				} else return null;
 			}
 			set.close();
 			
