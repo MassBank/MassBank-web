@@ -31,7 +31,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<versionName>${project.version}</versionName>
 		<cdk.version>2.9</cdk.version>
-		<jdbc.version>2.7.10</jdbc.version>
+		<jdbc.version>3.2.0</jdbc.version>
 		<petitparser-version>2.3.1</petitparser-version>
 		<jersey2-version>2.35</jersey2-version>
 		<jackson-version>2.13.2</jackson-version>

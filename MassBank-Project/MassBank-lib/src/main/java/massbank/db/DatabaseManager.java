@@ -401,7 +401,7 @@ public class DatabaseManager {
 					statementInsertCONTRIBUTOR.executeUpdate();
 					try (ResultSet set2 = statementInsertCONTRIBUTOR.getGeneratedKeys()) {
 						set2.next();
-						contributorId = set2.getInt("ID");
+						contributorId = set2.getInt(1);
 					}
 				}
 			}
@@ -437,7 +437,7 @@ public class DatabaseManager {
 			int compoundId = -1;
 			try (ResultSet set = statementInsertCOMPOUND.getGeneratedKeys()) {
 				set.next();
-				compoundId = set.getInt("ID");
+				compoundId = set.getInt(1);
 			}
 				
 			int compoundClassId;
@@ -448,7 +448,7 @@ public class DatabaseManager {
 				statementInsertCOMPOUND_CLASS.executeUpdate();
 				try (ResultSet set = statementInsertCOMPOUND_CLASS.getGeneratedKeys()) {
 					set.next();
-					compoundClassId = set.getInt("ID");
+					compoundClassId = set.getInt(1);
 				}
 				statementInsertCOMPOUND_COMPOUND_CLASS.setInt(1, compoundId);
 				statementInsertCOMPOUND_COMPOUND_CLASS.setInt(2, compoundClassId);
@@ -464,7 +464,7 @@ public class DatabaseManager {
 				statementInsertNAME.executeUpdate();
 					ResultSet set = statementInsertNAME.getGeneratedKeys();
 					set.next();
-					nameId = set.getInt("ID");
+					nameId = set.getInt(1);
 	
 	//				String insertCompoundName = "INSERT INTO COMPOUND_NAME VALUES(?,?)";
 	//				stmnt = con.prepareStatement(insertCompoundName);
@@ -513,7 +513,7 @@ public class DatabaseManager {
 					statementInsertSAMPLE.executeUpdate();
 					ResultSet set = statementInsertSAMPLE.getGeneratedKeys();
 					set.next();
-					sampleId = set.getInt("ID");
+					sampleId = set.getInt(1);
 				}
 				
 				//System.out.println(System.nanoTime());
@@ -522,7 +522,7 @@ public class DatabaseManager {
 				statementInsertINSTRUMENT.executeUpdate();
 				ResultSet set = statementInsertINSTRUMENT.getGeneratedKeys();
 				set.next();
-				int instrumentId = set.getInt("ID");
+				int instrumentId = set.getInt(1);
 				
 				statementInsertRECORD.setString(1, acc.ACCESSION());
 				statementInsertRECORD.setTimestamp(2, Timestamp.from(acc.getTimestamp()));
