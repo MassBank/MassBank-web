@@ -34,8 +34,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -874,13 +872,16 @@ public class Record {
 		return String.join("@", peaks);
 	}
 	
-	public JSONObject createPeakListData() {
-		JSONObject result = new JSONObject();
-		JSONArray peaklist = new JSONArray();
+	public JsonObject createPeakListData() {
+		JsonObject result = new JsonObject();
+		JsonArray peaklist = new JsonArray();
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
-			peaklist.put(new JSONObject().put("intensity", peak.getRight()).put("mz", peak.getLeft()));
+			JsonObject jsonPeak = new JsonObject();
+			jsonPeak.addProperty("intensity",peak.getRight());
+			jsonPeak.addProperty("mz", peak.getLeft());
+			peaklist.add(jsonPeak);
 		}
-		result.put("peaks", peaklist);
+		result.add("peaks", peaklist);
 		return result;
 	}
 	

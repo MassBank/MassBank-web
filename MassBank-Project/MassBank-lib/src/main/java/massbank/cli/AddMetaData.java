@@ -35,14 +35,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
@@ -69,15 +72,17 @@ public class AddMetaData {
 	/**
 	 * Try to fetch the COMPTOX id for a given InChI-key.
 	 */
-	public static String getComptoxID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
-		return new JSONObject(IOUtils.toString(new URL("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY),
-				Charset.forName("UTF-8"))).getJSONObject("DataRow").getString("dtxsid");
+	public static String getComptoxID(String INCHIKEY) throws JsonSyntaxException, MalformedURLException, IOException {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.fromJson(IOUtils.toString(new URL("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY),
+				Charset.forName("UTF-8")), JsonObject.class).getAsJsonObject("DataRow").getAsJsonPrimitive("dtxsid").getAsString();
 	}
 	
 	/**
 	 * Try to fetch the CHEMSPIDER id for a given InChI-key.
 	 */
-	public static String getChemspiderID(String INCHIKEY) throws MalformedURLException, IOException, JSONException {
+	public static String getChemspiderID(String INCHIKEY) throws JsonSyntaxException, MalformedURLException, IOException {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		HttpURLConnection connection = (HttpURLConnection) new URL("https://api.rsc.org/compounds/v1/filter/inchikey").openConnection();
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
@@ -87,12 +92,11 @@ public class AddMetaData {
 		OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
 		writer.write("{\"inchikey\": \"" + INCHIKEY + "\" }");
 		writer.close();
-		String queryID = new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getString("queryId");
-		connection = (HttpURLConnection) new URL("https://api.rsc.org/compounds/v1/filter/" + queryID + "/results").openConnection();
+		String queryID = gson.fromJson(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8")), JsonObject.class).getAsJsonPrimitive("queryId").getAsString();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("Content-Type", "");
 		connection.setRequestProperty("apikey", CHEMSPIDER_API_KEY);
-		return Integer.toString(new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getJSONArray("results").getInt(0));
+		return gson.fromJson(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8")), JsonObject.class).getAsJsonArray("results").get(0).getAsString();
 	}
 	
 	
@@ -245,7 +249,7 @@ public class AddMetaData {
 					LinkedHashMap<String, String> ch_link = record.CH_LINK();
 					ch_link.put("COMPTOX", COMPTOXID);
 					record.CH_LINK(ch_link);
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch COMPTOX id.");
 					logger.trace(e.getMessage());
 				}
@@ -256,7 +260,7 @@ public class AddMetaData {
 					if (!COMPTOXID.equals(record.CH_LINK().get("COMPTOX"))) {
 						logger.error("Wrong COMPTOX database identifier in record file.");
 					}
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch COMPTOX id for comparision.");
 					logger.trace(e.getMessage());
 				}
@@ -269,7 +273,7 @@ public class AddMetaData {
 					LinkedHashMap<String, String> ch_link = record.CH_LINK();
 					ch_link.put("CHEMSPIDER", CHEMSPIDERID);
 					record.CH_LINK(ch_link);
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch CHEMSPIDER id.");
 					logger.trace(e.getMessage());
 				}
@@ -280,7 +284,7 @@ public class AddMetaData {
 					if (!CHEMSPIDERID.equals(record.CH_LINK().get("CHEMSPIDER"))) {
 						logger.error("Wrong CHEMSPIDER database identifier in record file.");
 					}
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch CHEMSPIDER id for comparision.");
 					logger.trace(e.getMessage());
 				}

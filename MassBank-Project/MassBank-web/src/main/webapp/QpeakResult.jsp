@@ -48,8 +48,8 @@
 <%@ page import="massbank.web.SearchExecution" %>
 <%@ page import="massbank.web.quicksearch.Search" %>
 <%@ page import="massbank.web.quicksearch.Search.SearchResult" %>
-<%@ page import="org.json.JSONArray" %>
-<%@ page import="org.json.JSONObject" %>
+<%@ page import="com.google.gson.JsonArray" %>
+<%@ page import="com.google.gson.JsonObject" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -185,10 +185,10 @@
 	boolean isError = false;
 	String errMsg = "";
 	Double maxInte = 0.0;
+
+	JsonObject SpecktacklePeaklist = new JsonObject();
+	JsonArray peaklist = new JsonArray();
 	
-	JSONObject SpecktacklePeaklist = new JSONObject();
-	JSONArray peaklist = new JSONArray();
-		
 	if ( peakList.size() == 0 ) {
 		isError = true;
 		errMsg = "No input data.";
@@ -207,7 +207,12 @@
 					isError = true;
 					break;
 				}
-				peaklist.put(new JSONObject().put("intensity", Double.parseDouble(inte)).put("mz", Double.parseDouble(peak)));
+				
+				JsonObject jsonPeak = new JsonObject();
+				jsonPeak.addProperty("intensity", Double.parseDouble(inte));
+				jsonPeak.addProperty("mz", Double.parseDouble(peak));
+				peaklist.add(jsonPeak);
+				
 				// CGI,Appletのパラメータをセット
 				// 強度MAX値
 				if ( Double.parseDouble(inte) > maxInte ) {
@@ -224,8 +229,7 @@
 		  && paramMz.charAt( paramMz.length()-1 ) == ',' ) {
 			paramMz.deleteCharAt( paramMz.length()-1 );
 		}
-		SpecktacklePeaklist.put("peaks", peaklist);
-		
+		SpecktacklePeaklist.add("peaks", peaklist);
 	}
 	
 	// Cutoff Threshold の値が数値以外の場合はエラー
