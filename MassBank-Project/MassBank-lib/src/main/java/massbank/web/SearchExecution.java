@@ -2,7 +2,7 @@ package massbank.web;
 
 import java.sql.SQLException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
