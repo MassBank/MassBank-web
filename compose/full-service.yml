@@ -12,7 +12,7 @@ services:
     restart: always
 
   tomee:
-    image: tomee:8
+    image: tomee:9
     volumes:
       - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomee/webapps/MassBank.war
       - $PWD/conf/full-service.conf:/etc/massbank.conf
