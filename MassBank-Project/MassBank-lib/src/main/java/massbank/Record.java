@@ -560,7 +560,21 @@ public class Record {
 		sb.append("<b>RECORD_TITLE:</b> " + RECORD_TITLE1() + "<br>\n");
 		sb.append("<b>DATE:</b> " + DATE() + "<br>\n");
 		sb.append("<b>AUTHORS:</b> " + AUTHORS() + "<br>\n");
-		sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + LICENSE() + "</a><br>\n");
+		if (LICENSE().equals("CC0")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/publicdomain/zero/1.0/\" target=\"_blank\">CC0</a><br>\n");
+		} else if (LICENSE().equals("CC BY")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\">CC BY</a><br>\n");
+		} else if (LICENSE().equals("CC BY-SA")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-sa/4.0/\" target=\"_blank\">CC BY-SA</a><br>\n");
+		} else if (LICENSE().equals("CC BY-NC")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">CC BY-NC</a><br>\n");
+		} else if (LICENSE().equals("CC BY-NC-SA")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\" target=\"_blank\">CC BY-NC-SA</a><br>\n");
+		} else if (LICENSE().equals("dl-de/by-2-0")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://www.govdata.de/dl-de/by-2-0\" target=\"_blank\">dl-de/by-2-0</a><br>\n");
+		} else {
+			sb.append("<b>LICENSE:</b> "+ LICENSE() + "<br>\n");
+		}
 		if (!"".equals(COPYRIGHT()))
 			sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
 		if (!"".equals(PUBLICATION())) {
@@ -780,16 +794,19 @@ public class Record {
 		dataset.add("keywords", keywords);
 		
 		if (LICENSE().equals("CC0")) {
-			dataset.addProperty("license", "https://creativecommons.org/share-your-work/public-domain/cc0");
+			dataset.addProperty("license", "ttps://creativecommons.org/publicdomain/zero/1.0/");
+		} else if (LICENSE().equals("CC BY")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by/4.0/");
 		} else if (LICENSE().equals("CC BY-SA")) {
 			dataset.addProperty("license", "https://creativecommons.org/licenses/by-sa/4.0");
-		} else if (LICENSE().equals("CC BY")) {
-			dataset.addProperty("license", "https://creativecommons.org/licenses/by/4.0");
-		} else if (LICENSE().equals("CC BY-NC")) {
+		}  else if (LICENSE().equals("CC BY-NC")) {
 			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc/4.0");
 		} else if (LICENSE().equals("CC BY-NC-SA")) {
 			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc-sa/4.0");
+		} else if (LICENSE().equals("dl-de/by-2-0")) {
+			dataset.addProperty("license", "https://www.govdata.de/dl-de/by-2-0");
 		}
+		
 		dataset.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		dataset.addProperty("datePublished", DATE1()[0].replace(".","-"));
 		dataset.addProperty("citation", PUBLICATION());
