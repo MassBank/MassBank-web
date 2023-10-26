@@ -66,6 +66,7 @@ public class DatabaseManager {
 	private static HikariDataSource ds;
 	
 	static {
+		config.setDriverClassName("org.mariadb.jdbc.Driver");
 		config.setJdbcUrl("jdbc:mariadb://" + Config.get().dbHostName() + ":3306/" + Config.get().dbName());
 		config.setUsername("root");
 		config.setPassword(Config.get().dbPassword());
