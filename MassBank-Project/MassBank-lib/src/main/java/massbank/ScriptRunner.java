@@ -54,7 +54,6 @@ public class ScriptRunner {
     private final Connection connection;
 
     private final boolean stopOnError;
-    private final boolean autoCommit;
 
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter = false;
@@ -62,10 +61,8 @@ public class ScriptRunner {
     /**
      * Default constructor
      */
-    public ScriptRunner(Connection connection, boolean autoCommit,
-                        boolean stopOnError) {
+    public ScriptRunner(Connection connection, boolean stopOnError) {
         this.connection = connection;
-        this.autoCommit = autoCommit;
         this.stopOnError = stopOnError;
     }
 
@@ -80,21 +77,7 @@ public class ScriptRunner {
      * @param reader - the source of the script
      */
     public void runScript(Reader reader) throws IOException, SQLException {
-        try {
-            boolean originalAutoCommit = connection.getAutoCommit();
-            try {
-                if (originalAutoCommit != this.autoCommit) {
-                    connection.setAutoCommit(this.autoCommit);
-                }
-                runScript(connection, reader);
-            } finally {
-                connection.setAutoCommit(originalAutoCommit);
-            }
-        } catch (IOException | SQLException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Error running script.  Cause: " + e, e);
-        }
+        runScript(connection, reader);
     }
 
     /**
@@ -106,8 +89,7 @@ public class ScriptRunner {
      * @throws SQLException if any SQL errors occur
      * @throws IOException if there is an error reading from the Reader
      */
-    private void runScript(Connection conn, Reader reader) throws IOException,
-            SQLException {
+    private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
         StringBuffer command = null;
         try {
             LineNumberReader lineReader = new LineNumberReader(reader);
@@ -145,14 +127,9 @@ public class ScriptRunner {
             if (command != null) {
                 this.execCommand(conn, command, lineReader);
             }
-            if (!autoCommit) {
-                conn.commit();
-            }
         }
         catch (IOException e) {
             throw new IOException(String.format("Error executing '%s': %s", command, e.getMessage()), e);
-        } finally {
-            conn.rollback();
         }
     }
 
@@ -174,10 +151,6 @@ public class ScriptRunner {
             }
         }
 
-        if (autoCommit && !conn.getAutoCommit()) {
-            conn.commit();
-        }
-
         ResultSet rs = statement.getResultSet();
         if (hasResults && rs != null) {
             ResultSetMetaData md = rs.getMetaData();
@@ -194,11 +167,7 @@ public class ScriptRunner {
             }
         }
 
-        try {
-            statement.close();
-        } catch (Exception e) {
-            // Ignore to workaround a bug in Jakarta DBCP
-        }
+        statement.close();
     }
 
     private String getDelimiter() {

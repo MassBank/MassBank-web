@@ -22,7 +22,6 @@ package massbank.cli;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -31,7 +30,6 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import massbank.Config;
 import massbank.Record;
 import massbank.db.DatabaseManager;
 import massbank.repository.RepositoryInterface;
@@ -59,11 +57,8 @@ public class RefreshDatabase {
 		}
 		System.out.println("RefreshDatabase version: " + properties.getProperty("version"));
 		
-		logger.info("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
-		DatabaseManager.init_db(Config.get().tmpdbName());
-		
-		logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
-		final DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
+		logger.trace("Remove all entries from database.");
+		DatabaseManager.emptyTables();
 		
 		RepositoryInterface repo = new SimpleFileRepository();
 		List<Record> records = repo.getRecords();
@@ -72,8 +67,13 @@ public class RefreshDatabase {
 		AtomicInteger currentIndex = new AtomicInteger(1);
 		int numRecordsOnePercent = records.size()/100+1;
 		System.out.print(records.size() + " records to send to database. 0% Done.");
-		records.stream().forEach((r) -> {
-			db.persistAccessionFile(r);
+		records.parallelStream().forEach((r) -> {
+			try {
+				DatabaseManager.persistAccessionFile(r);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 			int index=currentIndex.getAndIncrement();
 			if (index%numRecordsOnePercent == 0) {
 				System.out.print("\r" + records.size() + " records to send to database. " + 100*index/records.size() + "% Done.");
@@ -82,14 +82,8 @@ public class RefreshDatabase {
 		System.out.println("\r" + records.size() + " records to send to database. 100% Done");
 		
 		logger.info("Setting version of database to: " + repo.getRepoVersion() + ".");
-		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (LAST_UPDATE,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
-		stmnt.setString(1, repo.getRepoVersion());
-		stmnt.executeUpdate();
-		db.getConnection().commit();
-		db.closeConnection();
+		DatabaseManager.setRepoVersion(repo.getRepoVersion());
 					
-		logger.trace("Moving new database to MassBank database.");
-		DatabaseManager.move_temp_db_to_main_massbank();
-		
+		DatabaseManager.close();
 	}
 }

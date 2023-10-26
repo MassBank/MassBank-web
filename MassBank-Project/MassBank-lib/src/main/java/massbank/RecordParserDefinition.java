@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
@@ -83,13 +82,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private static List<String> getResourceFileAsList(String fileName)  {
 		// Try to load from user DataRootPath
 		File resourceFileFromDataRootPath = null;
-		try {
-			File configRootPath = new File(Config.get().DataRootPath(), ".config");
-			resourceFileFromDataRootPath = new File(configRootPath, fileName);
-		} catch (ConfigurationException e) {
-			logger.trace("Can not get DataRootPath: " + e.getMessage());
-			// resourceFileFromDataRootPath stays null
-		}
+		File configRootPath = new File(Config.get().DataRootPath(), ".config");
+		resourceFileFromDataRootPath = new File(configRootPath, fileName);
 		if ((resourceFileFromDataRootPath != null) && resourceFileFromDataRootPath.exists()) {
 			logger.trace("Loading resource from DataRootPath at: " + resourceFileFromDataRootPath.getAbsolutePath());
 			try (FileReader fr = new FileReader(resourceFileFromDataRootPath); BufferedReader reader = new BufferedReader(fr)) {
@@ -99,24 +93,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 			}
 		}
 		// If not found: try to load fallback from internal resources
-		else {
-			logger.trace("Loading internal resource: " + fileName);
-			try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)) {
-				if (is == null)
-				{
-					logger.error("Can not find internal resource file: " + fileName);
-					// no way to recover from this error
-					System.exit(1);
-				}
-				try (InputStreamReader isr = new InputStreamReader(is);
-						BufferedReader reader = new BufferedReader(isr)) {
-					return reader.lines().collect(Collectors.toList());
-				}
-			} catch (IOException e) {
-				logger.error("Can not read internal resource file: " + e.getMessage());
+		logger.trace("Loading internal resource: " + fileName);
+		try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)) {
+			if (is == null)
+			{
+				logger.error("Can not find internal resource file: " + fileName);
 				// no way to recover from this error
 				System.exit(1);
 			}
+			try (InputStreamReader isr = new InputStreamReader(is);
+					BufferedReader reader = new BufferedReader(isr)) {
+				return reader.lines().collect(Collectors.toList());
+			}
+		} catch (IOException e) {
+			logger.error("Can not read internal resource file: " + e.getMessage());
+			// no way to recover from this error
+			System.exit(1);
 		}
 		return null;
 	}
@@ -941,11 +933,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 //				return value;						
 //			})
 		);
-	
-		// TODO no record implements CH$CDK_DEPICT
-		// 2.2.7 CH$CDK_DEPICT
 		
-		// 2.2.8 CH$LINK: subtag  identifier
+		// 2.2.7 CH$LINK: subtag  identifier
 		// Identifier and Link of Chemical Compound to External Databases.
 		// Optional and Iterative
 		// Example
