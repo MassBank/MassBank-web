@@ -29,7 +29,7 @@ public class QuickSearchByInChIKey implements SearchFunction<ResultRecord[]> {
 		this.ion		= request.getParameter("ion");
 	}
 	
-	public ResultRecord[] search(DatabaseManager databaseManager) {
+	public ResultRecord[] search() {
 		// ###########################################################################################
 		// fetch matching records
 		String sql = 
@@ -67,7 +67,7 @@ public class QuickSearchByInChIKey implements SearchFunction<ResultRecord[]> {
 		// execute and fetch results
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
+			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			String inchiKeyAsSubstring	= "%" + this.inChIKey + "%";
 			stmnt.setString(idx, inchiKeyAsSubstring);

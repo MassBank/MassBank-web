@@ -18,7 +18,7 @@ public class InstrumentSearch implements SearchFunction<InstrumentSearchResult> 
 		
 	}
 
-	public InstrumentSearchResult search(DatabaseManager databaseManager) {
+	public InstrumentSearchResult search() {
 
 		String sqlInst = 
 				"SELECT AC_INSTRUMENT, AC_INSTRUMENT_TYPE FROM INSTRUMENT " + 
@@ -31,7 +31,7 @@ public class InstrumentSearch implements SearchFunction<InstrumentSearchResult> 
 		List<String> msType		= new ArrayList<String>();
 		
 		try {
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sqlInst);
+			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sqlInst);
 			ResultSet res = stmnt.executeQuery();
 			int instNoCounter = 1;
 			while (res.next()) {
@@ -43,7 +43,7 @@ public class InstrumentSearch implements SearchFunction<InstrumentSearchResult> 
 			e.printStackTrace();
 		}
 		try {
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sqlMs);
+			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sqlMs);
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
 				msType.add(res.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));

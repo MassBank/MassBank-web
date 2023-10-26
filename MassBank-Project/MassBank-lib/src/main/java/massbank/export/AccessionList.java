@@ -26,7 +26,7 @@ public class AccessionList implements SearchFunction<Record[]> {
 		this.ion		= request.getParameter("ion");
 	}
 	
-	public Record[] search(DatabaseManager databaseManager) {
+	public Record[] search() {
 		// ###########################################################################################
 		// fetch all accessions and corresponding contributors
 		String sql	= 
@@ -62,7 +62,7 @@ public class AccessionList implements SearchFunction<Record[]> {
 		List<String> resList_accession	= new ArrayList<String>();
 		List<String> resList_contribut	= new ArrayList<String>();
 		try {
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
+			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			if (this.inst != null && this.ms != null && this.ion != null) {
 				for (int i = 0; i < inst.length; i++) {
@@ -93,7 +93,7 @@ public class AccessionList implements SearchFunction<Record[]> {
 		// fetch these records
 		List<Record> resList_record		= new ArrayList<Record>();
 		for(int recordIdx = 0; recordIdx < resList_accession.size(); recordIdx++) {
-			resList_record.add(databaseManager.getAccessionData(resList_accession.get(recordIdx)));
+			resList_record.add(DatabaseManager.getAccessionData(resList_accession.get(recordIdx)));
 		}
 		return resList_record.toArray(new Record[resList_record.size()]);
 	}

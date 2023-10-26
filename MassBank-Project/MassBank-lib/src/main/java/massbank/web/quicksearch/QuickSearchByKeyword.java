@@ -41,7 +41,7 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 		this.ion		= request.getParameter("ion");
 	}
 
-	public ResultRecord[] search(DatabaseManager databaseManager) {
+	public ResultRecord[] search() {
 		// check input
 		// return empty Result array if no ms is selected
 		if (ms == null) return ArrayUtils.toArray();
@@ -94,7 +94,7 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 		Set<String> names	= new HashSet<String>();
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
+			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			String compoundAsSubstring	= "%" + compound + "%";
 			//stmnt.setString(idx, compound);

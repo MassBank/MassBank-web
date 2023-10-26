@@ -19,7 +19,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 	public void getParameters(HttpServletRequest request) {
 	}
 
-	public RecordIndexCountResult search(DatabaseManager databaseManager) {
+	public RecordIndexCountResult search() {
 		Map<String, Integer> mapSiteToRecordCount		= new TreeMap<String, Integer>();
 		Map<String, Integer> mapInstrumentToRecordCount	= new TreeMap<String, Integer>();
 		Map<String, Integer> mapMsTypeToRecordCount		= new TreeMap<String, Integer>();
@@ -41,7 +41,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		String sql = "SELECT SHORT_NAME AS CONTRIBUTOR, COUNT FROM (SELECT CONTRIBUTOR, COUNT(*) AS COUNT "
 				+ "FROM RECORD GROUP BY CONTRIBUTOR) AS C, CONTRIBUTOR WHERE CONTRIBUTOR = ID";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				mapSiteToRecordCount.put(res.getString("CONTRIBUTOR"), res.getInt("COUNT"));
@@ -53,7 +53,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		
 		sql = "SELECT AC_INSTRUMENT_TYPE AS INSTRUMENT, COUNT(*) AS COUNT FROM INSTRUMENT GROUP BY AC_INSTRUMENT_TYPE";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				mapInstrumentToRecordCount.put(res.getString("INSTRUMENT"), res.getInt("COUNT"));
@@ -64,7 +64,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 
 		sql = "SELECT AC_MASS_SPECTROMETRY_MS_TYPE AS TYPE, COUNT(*) AS COUNT FROM RECORD GROUP BY AC_MASS_SPECTROMETRY_MS_TYPE";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				mapMsTypeToRecordCount.put(res.getString("TYPE"), res.getInt("COUNT"));
@@ -75,7 +75,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 
 		sql = "SELECT AC_MASS_SPECTROMETRY_ION_MODE AS MODE, COUNT(*) AS COUNT FROM RECORD GROUP BY AC_MASS_SPECTROMETRY_ION_MODE";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				mapIonModeToRecordCount.put(res.getString("MODE"), res.getInt("COUNT"));
@@ -86,7 +86,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 
 		sql = "SELECT FIRST AS COMPOUND, COUNT(*) AS COUNT FROM (SELECT SUBSTRING(UPPER(RECORD_TITLE),1,1) AS FIRST FROM RECORD) AS T GROUP BY FIRST";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			Integer numCnt = 0;
 			Integer othCnt = 0;
@@ -108,7 +108,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		
 		sql = "SELECT COUNT(ACCESSION) AS SPECTRA FROM RECORD";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				spectraCount = res.getInt(1);
@@ -120,7 +120,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		
 		sql = "SELECT COUNT(DISTINCT SUBSTRING(DATABASE_ID,1,14)) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				compoundCount = res.getInt(1);
@@ -132,7 +132,7 @@ public class RecordIndexCount implements SearchFunction<RecordIndexCountResult> 
 		
 		sql = "SELECT COUNT(DISTINCT DATABASE_ID) FROM CH_LINK WHERE DATABASE_NAME=\"INCHIKEY\"";
 		try {
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			res = stmnt.executeQuery();
 			while (res.next()) {
 				isomerCount = res.getInt(1);

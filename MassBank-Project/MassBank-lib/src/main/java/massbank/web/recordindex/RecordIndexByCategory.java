@@ -22,7 +22,7 @@ public class RecordIndexByCategory implements SearchFunction<ResultRecord[]> {
 		this.srchkey	= request.getParameter("srchkey");
 	}
 
-	public ResultRecord[] search(DatabaseManager databaseManager) {
+	public ResultRecord[] search() {
 		// ###########################################################################################
 		// fetch matching records
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
@@ -76,7 +76,7 @@ public class RecordIndexByCategory implements SearchFunction<ResultRecord[]> {
 						+ "WHERE REC.CH = COMPOUND.ID";
 			}
 
-			stmnt = databaseManager.getConnection().prepareStatement(sql);
+			stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 			if (idxtype.compareTo("merged") != 0) {
 				if (idxtype.compareTo("ion") != 0 && idxtype.compareTo("cmpd") != 0) {
 					stmnt.setString(1, srchkey);

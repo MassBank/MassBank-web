@@ -115,8 +115,6 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 	private boolean isQuick = false;
 //	private boolean isInteg = false;
 	private boolean isAPI = false;
-	private Connection con;
-	
 	
 	public void getParameters(HttpServletRequest request) {
 		String strKey;
@@ -148,8 +146,7 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 		} 
 	}
 
-	public SearchResult[] search(DatabaseManager databaseManager) {
-		con = databaseManager.getConnection();
+	public SearchResult[] search() {
 		execute();
 		return result.toArray(new SearchResult[result.size()]);
 	}
@@ -233,7 +230,7 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 					sql = "SELECT RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD WHERE ACCESSION ='"
 							+ resScore.id + "'";
 				}
-				stmnt = con.prepareStatement(sql);
+				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 				resMySql = stmnt.executeQuery();
 				while (resMySql.next()) {
 //					String strName = resMySql.getString(1);
@@ -314,7 +311,7 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 //					stmnt = con.prepareStatement(sql);
 //				} else {
 					sql = "SELECT PK_PEAK_MZ, PK_PEAK_RELATIVE FROM PEAK WHERE RECORD = ? AND PK_PEAK_RELATIVE >= ?";
-					stmnt = con.prepareStatement(sql);
+					stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 					stmnt.setString(1, strId);
 					stmnt.setInt(2, queryParam.cutoff);
 //				}
@@ -423,7 +420,7 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 			// MS_TYPE
 			sql = "SHOW COLUMNS FROM RECORD LIKE 'AC_MASS_SPECTROMETRY_MS_TYPE'";
 			try {
-				stmnt = con.prepareStatement(sql);
+				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 				resMySql = stmnt.executeQuery();
 				while (resMySql.next()) {
 					isMsType = true;
@@ -486,7 +483,7 @@ FROM
 WHERE T.ION = ? ORDER BY ID
 					 */
 					int paramIdx = 1;
-					stmnt = con.prepareStatement(sql);
+					stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 					if (queryParam.ion.equals("-1")) {
 						stmnt.setString(paramIdx, "NEGATIVE");
 						paramIdx++;
@@ -546,7 +543,7 @@ WHERE T.ION = ? ORDER BY ID
 			sql += ")";
 			ArrayList<String> instNo = new ArrayList<String>();
 			try {
-				stmnt = con.prepareStatement(sql);
+				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 				int paramIdx = 1;
 				for (String s : vecInstType) {
 					stmnt.setString(paramIdx, s);
@@ -606,7 +603,7 @@ WHERE T.ION = ? ORDER BY ID
 			sql += " ORDER BY ID";
 			
 			try {
-				stmnt = con.prepareStatement(sql);
+				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 				int paramIdx = 1;
 				if (queryParam.ion.equals("0")) {
 					for (String s : instNo) {
@@ -701,7 +698,7 @@ WHERE T.ION = ? ORDER BY ID
 //			}
 			sql += sqlw;
 			try {
-				stmnt = con.prepareStatement(sql);
+				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 				resMySql = stmnt.executeQuery();
 
 				int prevAryNum = 0;

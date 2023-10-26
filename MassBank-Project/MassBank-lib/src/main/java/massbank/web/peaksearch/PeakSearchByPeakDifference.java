@@ -54,7 +54,7 @@ public class PeakSearchByPeakDifference implements SearchFunction<ResultRecord[]
 		this.mode	= request.getParameter("mode");
 	}
 
-	public ResultRecord[] search(DatabaseManager databaseManager) {
+	public ResultRecord[] search() {
 		// ###########################################################################################
 		// fetch matching peaks for each record
 		HashMap<String, boolean[]> hits = new HashMap<String, boolean[]>();
@@ -66,7 +66,7 @@ public class PeakSearchByPeakDifference implements SearchFunction<ResultRecord[]
 						"(SELECT * FROM PEAK WHERE PK_PEAK_RELATIVE > ?) AS T2 ON T1.RECORD = T2.RECORD " +
 					"WHERE (T1.PK_PEAK_MZ BETWEEN T2.PK_PEAK_MZ + ? AND T2.PK_PEAK_MZ + ?)";
 			try {
-				PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sql);
+				PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sql);
 				stmnt.setInt(1, Integer.parseInt(intens));
 				stmnt.setInt(2, Integer.parseInt(intens));
 				stmnt.setDouble(3, Double.parseDouble(mz[i]) - Double.parseDouble(tol));
@@ -143,7 +143,7 @@ public class PeakSearchByPeakDifference implements SearchFunction<ResultRecord[]
 		
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
 		try {
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
+			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sb.toString());
 			int idx = 1;
 			for (int i = 0; i < inst.length; i++) {
 				stmnt.setString(idx, inst[i]);
