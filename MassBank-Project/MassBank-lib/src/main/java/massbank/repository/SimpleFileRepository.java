@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -50,12 +50,14 @@ import massbank.cli.Validator;
  * file named 'VERSION' with a version String for the whole repo and a
  * timestamp, which is applied to all Records.
  * @author rmeier
- * @version 13-01-2023
+ * @version 26-10-2023
  */
 public class SimpleFileRepository implements RepositoryInterface {
 	private static final Logger logger = LogManager.getLogger(SimpleFileRepository.class);
 	private String version;
-	List<Record> records;
+	Instant timestamp;
+	List<File> recordfiles = new ArrayList<>();
+	
 	
 	public SimpleFileRepository() throws ConfigurationException {
 		logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
@@ -67,21 +69,18 @@ public class SimpleFileRepository implements RepositoryInterface {
 		version = versionconfig.getString("version");
 		logger.info("Repo version: " + version);
 		
-		Instant timestamp = ZonedDateTime.parse(versionconfig.getString("timestamp"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
+		timestamp = ZonedDateTime.parse(versionconfig.getString("timestamp"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
 		logger.info("Repo timestamp: " + timestamp);
 		
-		List<File> recordfiles = new ArrayList<>();
 		for (String file : dataRootPath.list(DirectoryFileFilter.INSTANCE)) {
 			if (file.startsWith(".")) continue;
 			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, false));
 		}
-		logger.info("Found " + recordfiles.size() + " records in repo.");
-		
-		AtomicInteger currentIndex = new AtomicInteger(1);
-		int numRecordFilesOnePercent = recordfiles.size()/100+1;
-		System.out.print(recordfiles.size() + " records to read. 0% Done.");
-		
-		records = recordfiles.parallelStream().map(filename -> {
+		logger.info("Found " + recordfiles.size() + " records in repo.");	
+	}
+	
+	public Stream<Record> getRecords() {
+		return recordfiles.parallelStream().map(filename -> {
 			Record record = null;
 			logger.trace("Working on \'" + filename + "\'.");
 			try {
@@ -96,23 +95,17 @@ public class SimpleFileRepository implements RepositoryInterface {
 			} catch (IOException e) {
 				logger.error("Error reading record \"" + filename.toString() + "\". File will be ignored.\n", e);
 			}
-			int index=currentIndex.getAndIncrement();
-			if (index%numRecordFilesOnePercent == 0) {
-				System.out.print("\r" + recordfiles.size() + " records to read. " + 100*index/recordfiles.size() + "% Done.");
-			}
 			return record;
 		})
-		.filter(Objects::nonNull)
-		.collect(Collectors.toList());
-		System.out.println("\r" + recordfiles.size() + " records to read. 100% Done.");
-		logger.info("Successfully read  " + records.size() + " records in repo.");
-	}
-	
-	public List<Record> getRecords() {
-		return records;
+		.filter(Objects::nonNull);
 	}
 	 
 	public String getRepoVersion() {
 		return version;
+	}
+	
+	public int getSize()
+	{
+		return recordfiles.size();
 	}
 }

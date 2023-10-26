@@ -23,25 +23,22 @@ package massbank.cli;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import massbank.Record;
 import massbank.db.DatabaseManager;
 import massbank.repository.RepositoryInterface;
 import massbank.repository.SimpleFileRepository;
 
 /**
- * This class is called from command line to create a new temporary
- * database <i>tmpdbName</i>, fill it with all records found in <i>DataRootPath</i>
- * and move the new database to <i>dbName</i>.
+ * This class is called from command line. It clears all tables and sends all 
+ * records from the repo to the database.
  *
  * @author rmeier
- * @version 24-01-2023
+ * @version 26-10-2023
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
@@ -61,13 +58,11 @@ public class RefreshDatabase {
 		DatabaseManager.emptyTables();
 		
 		RepositoryInterface repo = new SimpleFileRepository();
-		List<Record> records = repo.getRecords();
-		
-		logger.info(records.size() + " records ready to be send to database.");
 		AtomicInteger currentIndex = new AtomicInteger(1);
-		int numRecordsOnePercent = records.size()/100+1;
-		System.out.print(records.size() + " records to send to database. 0% Done.");
-		records.parallelStream().forEach((r) -> {
+		int repoOnePercent = (repo.getSize()/100)+1;
+		System.out.print(repo.getSize() + " records to read. 0% Done.");
+		
+		repo.getRecords().forEach((r) -> {
 			try {
 				DatabaseManager.persistAccessionFile(r);
 			} catch (SQLException e) {
@@ -75,11 +70,11 @@ public class RefreshDatabase {
 				System.exit(1);
 			}
 			int index=currentIndex.getAndIncrement();
-			if (index%numRecordsOnePercent == 0) {
-				System.out.print("\r" + records.size() + " records to send to database. " + 100*index/records.size() + "% Done.");
+			if (index%repoOnePercent == 0) {
+				System.out.print("\r" + repo.getSize() + " records to send to database. " + 100*index/repo.getSize() + "% Done.");
 			}
 		});
-		System.out.println("\r" + records.size() + " records to send to database. 100% Done");
+		System.out.println("\r" + repo.getSize() + " records to send to database. 100% Done");
 		
 		logger.info("Setting version of database to: " + repo.getRepoVersion() + ".");
 		DatabaseManager.setRepoVersion(repo.getRepoVersion());
