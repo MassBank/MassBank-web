@@ -43,7 +43,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -113,8 +112,7 @@ public class SiteMapServlet extends HttpServlet {
 			wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordIndex").lastMod(Date.from(softwareTimestamp)).build());
 
 			// add dynamic content
-			DatabaseManager databaseManager= new DatabaseManager("MassBank");
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT ACCESSION,RECORD_TIMESTAMP FROM RECORD");
+			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement("SELECT ACCESSION,RECORD_TIMESTAMP FROM RECORD");
 			ResultSet res = stmnt.executeQuery();
 			while (res.next()) {
 				String accession = res.getString(1);
@@ -122,7 +120,6 @@ public class SiteMapServlet extends HttpServlet {
 				recordTimestamp = recordTimestamp.before(Date.from(softwareTimestamp)) ? Date.from(softwareTimestamp) : recordTimestamp;
 				wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordDisplay?id=" + accession).lastMod(recordTimestamp).build());
 			}
-			databaseManager.closeConnection();
 			
 			// write new sitemaps
 			List<File> sitemaps=wsg.write();
@@ -134,7 +131,7 @@ public class SiteMapServlet extends HttpServlet {
 				sig.addUrl(sitemapbaseurl + "sitemap/" + sitemap.getName());
 			}
 			sig.write();
-		} catch (ConfigurationException | MalformedURLException | SQLException e) {
+		} catch (MalformedURLException | SQLException e) {
 			logger.error(e.getMessage());
 		}
 	}

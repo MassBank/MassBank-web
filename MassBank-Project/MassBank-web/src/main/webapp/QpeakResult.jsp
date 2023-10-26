@@ -431,7 +431,6 @@
 			// 結果表示
 			//-------------------------------------
 			out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
-			DatabaseManager dbManager	= new DatabaseManager("MassBank");
 			for ( int i = 0; i < hitCnt; i++ ) {
 				// データ切り出し
 				//String rec = (String)result.get(i);
@@ -458,7 +457,7 @@
 				}
 				
 				// レコードページへのリンクURLをセット
-				String contributor	= dbManager.getContributorFromAccession(id).SHORT_NAME;
+				String contributor	= DatabaseManager.getContributorFromAccession(id).SHORT_NAME;
 				// typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 				// String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
 				// 				 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
@@ -500,7 +499,7 @@
 				String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 				String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 				
-				Record.Structure structure	= dbManager.getStructureOfAccession(accession);
+				Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
 						accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
 						80, 436
@@ -536,7 +535,6 @@
 				out.println( "  <td class=\"treeLayout2\" width=\"" + width[5] + "\">&nbsp;&nbsp;" + score + "&nbsp;</td>" );
 				out.println( " </tr>" );
 			}
-			dbManager.closeConnection();
 			out.println( "</table>" );
 			out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayoutEnd\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
 			out.println( " <tr>" );

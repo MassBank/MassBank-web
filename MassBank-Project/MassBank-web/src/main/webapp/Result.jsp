@@ -1094,7 +1094,6 @@
 
 			// 化学構造式表示情報を一括取得する
 			ResultRecord rec;
-			DatabaseManager dbManager	= new DatabaseManager(Config.get().dbName());
 			for (int i=startIndex; i<=endIndex; i++) {
 				rec = list.getRecord(i);
 				// ツリー表示用ID、およびイメージ名生成
@@ -1116,7 +1115,7 @@
 				// レコードページ表示用URL生成
 				String url = "";
 				// ◇ PeakSearch／PeakDifferenceSearchの場合
-				String contributor	= dbManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
+				String contributor	= DatabaseManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
 				
 				// if ( refPeak || refPeakDiff ) {
 				// 		if ( refPeak ) {
@@ -1200,7 +1199,7 @@
 					String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 					String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 					
-					Record.Structure structure	= dbManager.getStructureOfAccession(accession);
+					Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
 							accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
 							80, 436
@@ -1284,7 +1283,6 @@
 					out.println( "</table>" );
 				}
 			}
-			dbManager.closeConnection();
 			out.println( "<a name=\"resultsEnd\"></a>" );
 			
 			

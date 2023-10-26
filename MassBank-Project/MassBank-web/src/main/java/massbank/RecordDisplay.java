@@ -219,9 +219,7 @@ public class RecordDisplay extends HttpServlet {
 			
 
 			// load record for display
-			DatabaseManager dbMan	= new DatabaseManager("MassBank");
-			record	= dbMan.getAccessionData(accession);
-			dbMan.closeConnection();
+			record	= DatabaseManager.getAccessionData(accession);
 			if(record == null) {
 				String errormsg	= "retrieval of '" + accession + "' from database failed";
 				logger.error(errormsg);
