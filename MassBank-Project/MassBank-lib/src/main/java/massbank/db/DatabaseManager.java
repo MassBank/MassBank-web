@@ -287,6 +287,7 @@ public class DatabaseManager {
 		// get contributor ID or create
 		Integer contributorId = -1;
 		try (Connection con = ds.getConnection();) {
+			con.setAutoCommit(false);
 			// add contributor if not already there
 			try (PreparedStatement pst = con.prepareStatement(insertCONTRIBUTOR);) {
 				pst.setString(1, rec.CONTRIBUTOR());
@@ -560,7 +561,8 @@ public class DatabaseManager {
 					pst.executeBatch();
 				}
 			}
-
+			con.commit();
+			con.setAutoCommit(true);
 		}
 	}
 	
