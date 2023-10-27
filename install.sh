@@ -53,7 +53,6 @@ esac
 case $1 in
 	start)
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG pull 
-		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG build
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG up -d mariadb
 		CURRENT_UID=$(id -u):$(id -g) $COMPOSE_COMMAND -f compose/full-service.yml -p $TAG run --rm maven mvn -q -Duser.home=/var/maven clean package
 		$COMPOSE_COMMAND -f compose/full-service.yml -p $TAG up -d tomee
