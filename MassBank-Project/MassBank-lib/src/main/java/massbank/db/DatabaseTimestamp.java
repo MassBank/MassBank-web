@@ -48,16 +48,19 @@ public class DatabaseTimestamp {
 		try (Connection con = DatabaseManager.getConnection();) {
 			try (PreparedStatement stmnt = con.prepareStatement("SELECT MAX(LAST_UPDATE),VERSION FROM LAST_UPDATE;");) {
 				ResultSet res = stmnt.executeQuery();
-				res.next();
-				Instant db_timestamp = res.getTimestamp(1).toInstant();
-				String db_version = res.getString(2);
+				Instant db_timestamp = null;
+				String db_version = null;
+				if (res.next()) {
+					db_timestamp = res.getTimestamp(1) == null ? null : res.getTimestamp(1).toInstant();
+					db_version = res.getString(2);
+				}
 				if (db_timestamp == null) {
-					logger.error("Timestamp from database is \"null\". Using defaults.");
+					logger.error("Timestamp from database is \"null\". Using \"unix epoch time 0\".");
 				} else {
 					timestamp = db_timestamp;
 				}
 				if (db_version == null) {
-					logger.error("Version from database is \"null\".");
+					logger.error("Version from database is \"null\". Using \"unknown\".");
 				} else {
 					version = db_version;
 				}
@@ -82,8 +85,10 @@ public class DatabaseTimestamp {
 		try (Connection con = DatabaseManager.getConnection();) {
 			try (PreparedStatement stmnt = con.prepareStatement("SELECT MAX(LAST_UPDATE) FROM LAST_UPDATE");) {
 				ResultSet res = stmnt.executeQuery();
-				res.next();
-				Instant db_timestamp = res.getTimestamp(1).toInstant();
+				Instant db_timestamp = null;
+				if (res.next()) {
+					db_timestamp = res.getTimestamp(1) == null ? null : res.getTimestamp(1).toInstant();
+				}
 				if (db_timestamp == null) {
 					logger.error("Timestamp from database is \"null\". Return \"false\".");
 					return false;
