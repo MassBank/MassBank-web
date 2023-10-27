@@ -1,5 +1,6 @@
 package massbank.web.instrument;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,7 +16,6 @@ import massbank.web.instrument.InstrumentSearch.InstrumentSearchResult;
 public class InstrumentSearch implements SearchFunction<InstrumentSearchResult> {
 
 	public void getParameters(HttpServletRequest request) {
-		
 	}
 
 	public InstrumentSearchResult search() {
@@ -30,25 +30,24 @@ public class InstrumentSearch implements SearchFunction<InstrumentSearchResult> 
 		List<String> instName	= new ArrayList<String>();
 		List<String> msType		= new ArrayList<String>();
 		
-		try {
-			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sqlInst);
-			ResultSet res = stmnt.executeQuery();
-			int instNoCounter = 1;
-			while (res.next()) {
-				instNo.add("" + instNoCounter++);
-				instType.add(res.getString("AC_INSTRUMENT_TYPE"));
-				instName.add(res.getString("AC_INSTRUMENT"));
+		try (Connection con = DatabaseManager.getConnection()) {
+			try (PreparedStatement stmnt = con.prepareStatement(sqlInst)) {
+				ResultSet res = stmnt.executeQuery();
+				int instNoCounter = 1;
+				while (res.next()) {
+					instNo.add("" + instNoCounter++);
+					instType.add(res.getString("AC_INSTRUMENT_TYPE"));
+					instName.add(res.getString("AC_INSTRUMENT"));
+				}
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+			try (PreparedStatement stmnt = con.prepareStatement(sqlMs)) {
+				ResultSet res = stmnt.executeQuery();
+				while (res.next()) {
+					msType.add(res.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
+				}
+			}
 		}
-		try {
-			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sqlMs);
-			ResultSet res = stmnt.executeQuery();
-			while (res.next()) {
-				msType.add(res.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
-			}
-		} catch (SQLException e) {
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
