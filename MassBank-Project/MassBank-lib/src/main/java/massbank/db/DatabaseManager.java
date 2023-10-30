@@ -85,75 +85,75 @@ public class DatabaseManager {
 	}
 	
 	public static void emptyTables() throws SQLException, IOException {
-		try (Connection con = DatabaseManager.getConnection();) {
+		try (Connection con = DatabaseManager.getConnection()) {
 			con.setAutoCommit(false);
-			try (PreparedStatement pst = con.prepareStatement("DROP VIEW msms_spectrum, msms_spectrum_peak, ms_compound, synonym");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP VIEW msms_spectrum, msms_spectrum_peak, ms_compound, synonym")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMMENT");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMMENT")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SP_SAMPLE");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SP_SAMPLE")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SP_LINK");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SP_LINK")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE AC_MASS_SPECTROMETRY");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE AC_MASS_SPECTROMETRY")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE AC_CHROMATOGRAPHY");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE AC_CHROMATOGRAPHY")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE MS_FOCUSED_ION");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE MS_FOCUSED_ION")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE MS_DATA_PROCESSING");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE MS_DATA_PROCESSING")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE ANNOTATION_HEADER");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE ANNOTATION_HEADER")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE ANNOTATION");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE ANNOTATION")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE PEAK");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE PEAK")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE RECORD");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE RECORD")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_COMPOUND_CLASS");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_COMPOUND_CLASS")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE CONTRIBUTOR");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE CONTRIBUTOR")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_NAME");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_NAME")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE CH_LINK");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE CH_LINK")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_CLASS");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_CLASS")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE NAME");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE NAME")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SAMPLE");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SAMPLE")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE INSTRUMENT");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE INSTRUMENT")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE DEPRECATED_RECORD");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE DEPRECATED_RECORD")) {
 				pst.executeUpdate();
 			}
-			try (PreparedStatement pst = con.prepareStatement("DROP TABLE LAST_UPDATE");) {
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE LAST_UPDATE")) {
 				pst.executeUpdate();
 			}
 			
@@ -249,34 +249,34 @@ public class DatabaseManager {
 			"SELECT ACCESSION " + 
 			"FROM RECORD;";
 	
-	/**
-	 * Create a database with the MassBank database scheme.
-	 * @param dbName the name of the new database
-	 */
-	public static void init_db(String dbName) throws SQLException, ConfigurationException, FileNotFoundException, IOException {
-		String link="jdbc:mariadb://" 
-				+ Config.get().dbHostName() + ":3306/" 
-				+ "?user=root" 
-				+ "&password=" + Config.get().dbPassword();
-		
-		logger.trace("Opening database connection with url\"" + link + "\".");
-		Connection connection = DriverManager.getConnection(link);
-		Statement stmt = connection.createStatement();
-		
-		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
-		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
-		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'utf8';");
-		stmt.executeUpdate("USE " + dbName + ";");
-				
-		logger.trace("Executing sql statements in file at: \"" + DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql") + "\".");
-		ScriptRunner runner = new ScriptRunner(connection, false);
-		runner.runScript(new InputStreamReader(DatabaseManager.class.getClassLoader().getResourceAsStream("create_massbank_scheme.sql")));
-		
-		stmt.close();
-		logger.trace("Closing connection with url\"" + link + "\".");
-		connection.commit();
-		connection.close();
-	}
+//	/**
+//	 * Create a database with the MassBank database scheme.
+//	 * @param dbName the name of the new database
+//	 */
+//	public static void init_db(String dbName) throws SQLException, ConfigurationException, FileNotFoundException, IOException {
+//		String link="jdbc:mariadb://" 
+//				+ Config.get().dbHostName() + ":3306/" 
+//				+ "?user=root" 
+//				+ "&password=" + Config.get().dbPassword();
+//		
+//		logger.trace("Opening database connection with url\"" + link + "\".");
+//		Connection connection = DriverManager.getConnection(link);
+//		Statement stmt = connection.createStatement();
+//		
+//		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
+//		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
+//		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'utf8';");
+//		stmt.executeUpdate("USE " + dbName + ";");
+//				
+//		logger.trace("Executing sql statements in file at: \"" + DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql") + "\".");
+//		ScriptRunner runner = new ScriptRunner(connection, false);
+//		runner.runScript(new InputStreamReader(DatabaseManager.class.getClassLoader().getResourceAsStream("create_massbank_scheme.sql")));
+//		
+//		stmt.close();
+//		logger.trace("Closing connection with url\"" + link + "\".");
+//		connection.commit();
+//		connection.close();
+//	}
 	
 	/**
 	 * Store the content of the given record in the database
@@ -286,19 +286,19 @@ public class DatabaseManager {
 	public static void persistAccessionFile(Record rec) throws SQLException {
 		// get contributor ID or create
 		Integer contributorId = -1;
-		try (Connection con = ds.getConnection();) {
+		try (Connection con = ds.getConnection()) {
 			con.setAutoCommit(false);
 			// add contributor if not already there
-			try (PreparedStatement pst = con.prepareStatement(insertCONTRIBUTOR);) {
+			try (PreparedStatement pst = con.prepareStatement(insertCONTRIBUTOR)) {
 				pst.setString(1, rec.CONTRIBUTOR());
 				pst.setString(2, rec.CONTRIBUTOR());
 				pst.setString(3, rec.CONTRIBUTOR());
 				pst.executeUpdate();
 			}
 			// get the ID
-			try (PreparedStatement pst = con.prepareStatement(selectCONTRIBUTORIdByACRONYM);) {
+			try (PreparedStatement pst = con.prepareStatement(selectCONTRIBUTORIdByACRONYM)) {
 				pst.setString(1, rec.CONTRIBUTOR());
-				try (ResultSet set = pst.executeQuery();) {
+				try (ResultSet set = pst.executeQuery()) {
 					set.next();
 					contributorId = set.getInt(1);
 				}
@@ -306,7 +306,7 @@ public class DatabaseManager {
 			
 			// deprecated record goes to separate table
 			if (rec.DEPRECATED()) {
-				try (PreparedStatement pst = con.prepareStatement(insertDEPRECATED_RECORD);) {
+				try (PreparedStatement pst = con.prepareStatement(insertDEPRECATED_RECORD)) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setInt(2, contributorId);
 					pst.setBlob(3, new ByteArrayInputStream(rec.DEPRECATED_CONTENT().getBytes()));
@@ -317,7 +317,7 @@ public class DatabaseManager {
 			
 			// add to COMPOUND table
 			Integer compoundId = -1;
-			try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND, Statement.RETURN_GENERATED_KEYS);) {
+			try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND, Statement.RETURN_GENERATED_KEYS)) {
 				pst.setString(1, rec.CH_FORMULA());
 				pst.setDouble(2, rec.CH_EXACT_MASS().doubleValue());
 				pst.setInt(3, rec.CH_EXACT_MASS().scale());
@@ -332,7 +332,7 @@ public class DatabaseManager {
 			// add to COMPOUND_CLASS and connect with compoundId
 			for (String compound : rec.CH_COMPOUND_CLASS()) {
 				Integer compoundClassId = -1;
-				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_CLASS, Statement.RETURN_GENERATED_KEYS);) {
+				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_CLASS, Statement.RETURN_GENERATED_KEYS)) {
 					pst.setString(1, null);
 					pst.setString(2, null);
 					pst.setString(3, compound);
@@ -342,7 +342,7 @@ public class DatabaseManager {
 						compoundClassId = set.getInt(1);
 					}
 				}
-				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_COMPOUND_CLASS);) {
+				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_COMPOUND_CLASS)) {
 					pst.setInt(1, compoundId);
 					pst.setInt(2, compoundClassId);
 					pst.executeUpdate();
@@ -352,7 +352,7 @@ public class DatabaseManager {
 			// add to NAME and connect with compoundId
 			for (String name : rec.CH_NAME()) {
 				Integer nameId;
-				try (PreparedStatement pst = con.prepareStatement(insertNAME, Statement.RETURN_GENERATED_KEYS);) {
+				try (PreparedStatement pst = con.prepareStatement(insertNAME, Statement.RETURN_GENERATED_KEYS)) {
 					pst.setString(1, name);
 					pst.executeUpdate();
 					try (ResultSet set = pst.getGeneratedKeys()) {
@@ -360,7 +360,7 @@ public class DatabaseManager {
 						nameId = set.getInt(1);
 					}			
 				}
-				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_NAME);) {
+				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_NAME)) {
 					pst.setInt(1, compoundId);
 					pst.setInt(2, nameId);
 					pst.executeUpdate();
@@ -368,7 +368,7 @@ public class DatabaseManager {
 			}
 			
 			// add to CH_LINK and connect with compoundId
-			try (PreparedStatement pst = con.prepareStatement(insertCH_LINK);) {
+			try (PreparedStatement pst = con.prepareStatement(insertCH_LINK)) {
 				Iterator<Entry<String, String>> itr = rec.CH_LINK().entrySet().iterator();
 				while (itr.hasNext()) {
 					Entry<String,String> entry = itr.next();
@@ -382,7 +382,7 @@ public class DatabaseManager {
 			
 			// add to SAMPLE
 			Integer sampleId = -1;
-			try (PreparedStatement pst = con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);) {
+			try (PreparedStatement pst = con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS)) {
 				if (rec.SP_SCIENTIFIC_NAME() != null) {
 					pst.setString(1, rec.SP_SCIENTIFIC_NAME());
 				} else {
@@ -404,7 +404,7 @@ public class DatabaseManager {
 			
 			// add to INSTRUMENT
 			Integer instrumentId = -1;
-			try (PreparedStatement pst = con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS);) {
+			try (PreparedStatement pst = con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS)) {
 				pst.setString(1, rec.AC_INSTRUMENT());
 				pst.setString(2, rec.AC_INSTRUMENT_TYPE());
 				pst.executeUpdate();
@@ -415,7 +415,7 @@ public class DatabaseManager {
 			}
 			
 			// add to RECORD
-			try (PreparedStatement pst = con.prepareStatement(insertRECORD);) {
+			try (PreparedStatement pst = con.prepareStatement(insertRECORD)) {
 				pst.setString(1, rec.ACCESSION());
 				pst.setTimestamp(2, Timestamp.from(rec.getTimestamp()));
 				pst.setString(3, rec.RECORD_TITLE1());
@@ -452,7 +452,7 @@ public class DatabaseManager {
 			}
 			
 			// add to SP_SAMPLE
-			try (PreparedStatement pst = con.prepareStatement(insertSP_SAMPLE, Statement.RETURN_GENERATED_KEYS);) {
+			try (PreparedStatement pst = con.prepareStatement(insertSP_SAMPLE, Statement.RETURN_GENERATED_KEYS)) {
 				for (String sample : rec.SP_SAMPLE()) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setString(2, sample);
@@ -462,7 +462,7 @@ public class DatabaseManager {
 			}
 				
 			// add to SP_LINK and connect with ACCESSION
-			try (PreparedStatement pst = con.prepareStatement(insertSP_LINK);) {
+			try (PreparedStatement pst = con.prepareStatement(insertSP_LINK)) {
 				Iterator<Entry<String, String>> itr = rec.SP_LINK().entrySet().iterator();
 				while (itr.hasNext()) {
 					Entry<String, String> entry = itr.next();
@@ -474,7 +474,7 @@ public class DatabaseManager {
 			}
 			
 			// add to COMMENT and connect with ACCESSION
-			try (PreparedStatement pst = con.prepareStatement(insertCOMMENT);) {
+			try (PreparedStatement pst = con.prepareStatement(insertCOMMENT)) {
 				for (String comment : rec.COMMENT()) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setString(2, comment);
@@ -484,7 +484,7 @@ public class DatabaseManager {
 			}
 	
 			// add to AC_MASS_SPECTROMETRY and connect with ACCESSION
-			try (PreparedStatement pst = con.prepareStatement(insertAC_MASS_SPECTROMETRY);) {
+			try (PreparedStatement pst = con.prepareStatement(insertAC_MASS_SPECTROMETRY)) {
 				for (Pair<String, String> massspectrometry : rec.AC_MASS_SPECTROMETRY()) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setString(2, massspectrometry.getLeft());
@@ -495,7 +495,7 @@ public class DatabaseManager {
 			}
 
 			// add to AC_CHROMATOGRAPHY and connect with ACCESSION
-			try (PreparedStatement pst = con.prepareStatement(insertAC_CHROMATOGRAPHY);) {
+			try (PreparedStatement pst = con.prepareStatement(insertAC_CHROMATOGRAPHY)) {
 				for (Pair<String, String> chromatography : rec.AC_CHROMATOGRAPHY()) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setString(2, chromatography.getLeft());
@@ -506,7 +506,7 @@ public class DatabaseManager {
 			}
 			
 			// add to AC_CHROMATOGRAPHY and connect with ACCESSION
-			try (PreparedStatement pst = con.prepareStatement(insertMS_FOCUSED_ION);) {
+			try (PreparedStatement pst = con.prepareStatement(insertMS_FOCUSED_ION)) {
 				for (Pair<String, String> focusedion : rec.MS_FOCUSED_ION()) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setString(2, focusedion.getLeft());
@@ -517,7 +517,7 @@ public class DatabaseManager {
 			}
 			
 			// add to MS_DATA_PROCESSING and connect with ACCESSION
-			try (PreparedStatement pst = con.prepareStatement(insertMS_DATA_PROCESSING);) {
+			try (PreparedStatement pst = con.prepareStatement(insertMS_DATA_PROCESSING)) {
 				for (Pair<String, String> dataprocessing : rec.MS_DATA_PROCESSING()) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setString(2, dataprocessing.getLeft());
@@ -528,7 +528,7 @@ public class DatabaseManager {
 			}
 
 			// add to PEAK and connect with ACCESSION
-			try (PreparedStatement pst = con.prepareStatement(insertPEAK);) {
+			try (PreparedStatement pst = con.prepareStatement(insertPEAK)) {
 				for (Triple<BigDecimal,BigDecimal,Integer> peak : rec.PK_PEAK()) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setDouble(2, peak.getLeft().doubleValue());
@@ -545,12 +545,12 @@ public class DatabaseManager {
 			
 			// add to ANNOTATION_HEADER and ANNOTATIOM and connect with ACCESSION
 			if (!rec.PK_ANNOTATION_HEADER().isEmpty()) {
-				try (PreparedStatement pst = con.prepareStatement(insertANNOTATION_HEADER);) {
+				try (PreparedStatement pst = con.prepareStatement(insertANNOTATION_HEADER)) {
 					pst.setString(1, rec.ACCESSION());
 					pst.setString(2, String.join(" ", rec.PK_ANNOTATION_HEADER()));
 					pst.executeUpdate();
 				}
-				try (PreparedStatement pst = con.prepareStatement(insertANNOTATION);) {
+				try (PreparedStatement pst = con.prepareStatement(insertANNOTATION)) {
 					for (Pair<BigDecimal, List<String>> annotation : rec.PK_ANNOTATION()) {
 						pst.setString(1, rec.ACCESSION());
 						pst.setDouble(2, annotation.getLeft().doubleValue());
@@ -567,7 +567,7 @@ public class DatabaseManager {
 	}
 	
 	public static void setRepoVersion(String version) throws SQLException {
-		try (Connection con = ds.getConnection();) {
+		try (Connection con = ds.getConnection()) {
 			PreparedStatement stmnt = con.prepareStatement("INSERT INTO LAST_UPDATE (LAST_UPDATE,VERSION) VALUES (CURRENT_TIMESTAMP,?)");
 			stmnt.setString(1, version);
 			stmnt.executeUpdate();
@@ -585,7 +585,7 @@ public class DatabaseManager {
 	 */
 	public static Record getAccessionData(String accessionId) {
 		Record acc = new Record();		
-		try (Connection con = ds.getConnection();) {
+		try (Connection con = ds.getConnection()) {
 			PreparedStatement statementSelectCOMPOUND = con.prepareStatement(selectCOMPOUND);
 			PreparedStatement statementSelectCOMPOUND_CLASS = con.prepareStatement(selectCOMPOUND_CLASS);
 			PreparedStatement statementSelectCOMPOUND_COMPOUND_CLASS = con.prepareStatement(selectCOMPOUND_COMPOUND_CLASS);
@@ -799,7 +799,7 @@ public class DatabaseManager {
 		String CH_SMILES	= null;
 		String CH_IUPAC		= null;
 		
-		try (Connection con = ds.getConnection();) {
+		try (Connection con = ds.getConnection()) {
 			PreparedStatement statementSelectRECORD = con.prepareStatement(selectRECORD);
 			PreparedStatement statementSelectCOMPOUND = con.prepareStatement(selectCOMPOUND);
 			
@@ -837,7 +837,7 @@ public class DatabaseManager {
 	public static Record.Contributor getContributorFromAccession(String accessionId) {
 //		String accessionId	= "OUF01001";
 		Record.Contributor contributor	= null;
-		try (Connection con = ds.getConnection();) {
+		try (Connection con = ds.getConnection()) {
 			PreparedStatement statementGetContributorFromAccession = con.prepareStatement(sqlGetContributorFromAccession);
 			statementGetContributorFromAccession.setString(1, accessionId);
 			
@@ -867,7 +867,7 @@ public class DatabaseManager {
 	 */
 	public String[] getAccessions() {
 		List<String> accessions	= new ArrayList<String>();
-		try (Connection con = ds.getConnection();) {
+		try (Connection con = ds.getConnection()) {
 			PreparedStatement statementGetAccessions = con.prepareStatement(sqlGetAccessions);
 			ResultSet tmp = statementGetAccessions.executeQuery();
 			while(tmp.next())

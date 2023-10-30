@@ -45,8 +45,8 @@ public class DatabaseTimestamp {
 
 	public DatabaseTimestamp() {
 		// get timestamp of last db change from database
-		try (Connection con = DatabaseManager.getConnection();) {
-			try (PreparedStatement stmnt = con.prepareStatement("SELECT MAX(LAST_UPDATE),VERSION FROM LAST_UPDATE;");) {
+		try (Connection con = DatabaseManager.getConnection()) {
+			try (PreparedStatement stmnt = con.prepareStatement("SELECT MAX(LAST_UPDATE),VERSION FROM LAST_UPDATE")) {
 				ResultSet res = stmnt.executeQuery();
 				Instant db_timestamp = null;
 				String db_version = null;
@@ -82,8 +82,8 @@ public class DatabaseTimestamp {
 	 */
 	public boolean isOutdated() {
 		// check if this.timestamp is older than timestamp from database
-		try (Connection con = DatabaseManager.getConnection();) {
-			try (PreparedStatement stmnt = con.prepareStatement("SELECT MAX(LAST_UPDATE) FROM LAST_UPDATE");) {
+		try (Connection con = DatabaseManager.getConnection()) {
+			try (PreparedStatement stmnt = con.prepareStatement("SELECT MAX(LAST_UPDATE) FROM LAST_UPDATE")) {
 				ResultSet res = stmnt.executeQuery();
 				Instant db_timestamp = null;
 				if (res.next()) {
