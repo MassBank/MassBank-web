@@ -214,9 +214,8 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 			}
 		});
 		
-		String sql = "";
-		PreparedStatement stmnt;
-		try {
+		try (Connection con = DatabaseManager.getConnection()) {
+			String sql = "";
 			for (int i = 0; i < resultObjects.length; i++) {
 				SearchResScore resScore = resultObjects[i];
 
@@ -230,44 +229,44 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 					sql = "SELECT RECORD_TITLE AS NAME, AC_MASS_SPECTROMETRY_ION_MODE AS ION FROM RECORD WHERE ACCESSION ='"
 							+ resScore.id + "'";
 				}
-				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
-				resMySql = stmnt.executeQuery();
-				while (resMySql.next()) {
-//					String strName = resMySql.getString(1);
-					String strName = resMySql.getString("RECORD_TITLE");
-//					String strIon = resMySql.getString(2);
-					String strIon = resMySql.getString("AC_MASS_SPECTROMETRY_ION_MODE");
-					String strId;
-//					if (isInteg) {
-////						strId = resMySql.getString(1);
-//						strId = resMySql.getString("NAME");
-//					} else {
-						strId = resScore.id;
-//					}
-					
-//					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
-//					sb.append(strId + "\t" + strName + "\t" + resScore.hitNumber + "\t" + resScore.hitScore + "\t" + strIon);
-					String formula	= null;
-					if (isQuick || isAPI) {
-//						String formula = resMySql.getString(3);
-						formula = resMySql.getString("CH_FORMULA");
-//						sb.append("\t" + formula);
+				try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+					try (ResultSet resMySql = stmnt.executeQuery()) {
+						while (resMySql.next()) {
+							String strName = resMySql.getString("RECORD_TITLE");
+							String strIon = resMySql.getString("AC_MASS_SPECTROMETRY_ION_MODE");
+							String strId;
+		//					if (isInteg) {
+		////						strId = resMySql.getString(1);
+		//						strId = resMySql.getString("NAME");
+		//					} else {
+								strId = resScore.id;
+		//					}
+							
+		//					sb.append(strId + "\t" + strName + "\t" + resScore.score + "\t" + strIon);
+		//					sb.append(strId + "\t" + strName + "\t" + resScore.hitNumber + "\t" + resScore.hitScore + "\t" + strIon);
+							String formula	= null;
+							if (isQuick || isAPI) {
+		//						String formula = resMySql.getString(3);
+								formula = resMySql.getString("CH_FORMULA");
+		//						sb.append("\t" + formula);
+							}
+							double exactMass	= Double.NaN;
+							if (isAPI) {
+		//						String emass = resMySql.getString(4);
+								String emass = resMySql.getString("CH_EXACT_MASS");
+								exactMass	= Double.parseDouble(emass);
+		//						sb.append("\t" + emass);
+							}
+							
+							SearchResult searchResult	= new SearchResult(strId, strName, resScore.hitNumber, resScore.hitScore, strIon, formula, exactMass);
+		//					result.add(sb.toString());
+							result.add(searchResult);
+						}
 					}
-					double exactMass	= Double.NaN;
-					if (isAPI) {
-//						String emass = resMySql.getString(4);
-						String emass = resMySql.getString("CH_EXACT_MASS");
-						exactMass	= Double.parseDouble(emass);
-//						sb.append("\t" + emass);
-					}
-					
-					SearchResult searchResult	= new SearchResult(strId, strName, resScore.hitNumber, resScore.hitScore, strIon, formula, exactMass);
-//					result.add(sb.toString());
-					result.add(searchResult);
 				}
-				resMySql.close();
 			}
-		} catch (SQLException e) {
+		}
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}

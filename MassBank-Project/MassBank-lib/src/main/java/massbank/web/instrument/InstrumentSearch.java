@@ -32,18 +32,20 @@ public class InstrumentSearch implements SearchFunction<InstrumentSearchResult> 
 		
 		try (Connection con = DatabaseManager.getConnection()) {
 			try (PreparedStatement stmnt = con.prepareStatement(sqlInst)) {
-				ResultSet res = stmnt.executeQuery();
-				int instNoCounter = 1;
-				while (res.next()) {
-					instNo.add("" + instNoCounter++);
-					instType.add(res.getString("AC_INSTRUMENT_TYPE"));
-					instName.add(res.getString("AC_INSTRUMENT"));
+				try (ResultSet res = stmnt.executeQuery()) {
+					int instNoCounter = 1;
+					while (res.next()) {
+						instNo.add("" + instNoCounter++);
+						instType.add(res.getString("AC_INSTRUMENT_TYPE"));
+						instName.add(res.getString("AC_INSTRUMENT"));
+					}
 				}
 			}
 			try (PreparedStatement stmnt = con.prepareStatement(sqlMs)) {
-				ResultSet res = stmnt.executeQuery();
-				while (res.next()) {
-					msType.add(res.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
+				try (ResultSet res = stmnt.executeQuery()) {
+					while (res.next()) {
+						msType.add(res.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
+					}
 				}
 			}
 		}

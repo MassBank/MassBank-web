@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -112,13 +113,17 @@ public class SiteMapServlet extends HttpServlet {
 			wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordIndex").lastMod(Date.from(softwareTimestamp)).build());
 
 			// add dynamic content
-			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement("SELECT ACCESSION,RECORD_TIMESTAMP FROM RECORD");
-			ResultSet res = stmnt.executeQuery();
-			while (res.next()) {
-				String accession = res.getString(1);
-				Date recordTimestamp = res.getTimestamp(2);
-				recordTimestamp = recordTimestamp.before(Date.from(softwareTimestamp)) ? Date.from(softwareTimestamp) : recordTimestamp;
-				wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordDisplay?id=" + accession).lastMod(recordTimestamp).build());
+			try (Connection con = DatabaseManager.getConnection()) {
+				try (PreparedStatement stmnt = con.prepareStatement("SELECT ACCESSION,RECORD_TIMESTAMP FROM RECORD")) {
+					try (ResultSet res = stmnt.executeQuery()) {
+						while (res.next()) {
+							String accession = res.getString(1);
+							Date recordTimestamp = res.getTimestamp(2);
+							recordTimestamp = recordTimestamp.before(Date.from(softwareTimestamp)) ? Date.from(softwareTimestamp) : recordTimestamp;
+							wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordDisplay?id=" + accession).lastMod(recordTimestamp).build());
+						}
+					}
+				}
 			}
 			
 			// write new sitemaps

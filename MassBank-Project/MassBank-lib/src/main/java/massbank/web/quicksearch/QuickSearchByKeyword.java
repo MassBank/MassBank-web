@@ -1,5 +1,6 @@
 package massbank.web.quicksearch;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -93,53 +94,56 @@ public class QuickSearchByKeyword implements SearchFunction<ResultRecord[]> {
 		// execute and fetch results
 		Set<String> names	= new HashSet<String>();
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
-		try {
-			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sb.toString());
-			int idx = 1;
-			String compoundAsSubstring	= "%" + compound + "%";
-			//stmnt.setString(idx, compound);
-			stmnt.setString(idx, compoundAsSubstring);
-			idx++;
-			if (mz.compareTo("") != 0 && tol.compareTo("") != 0) {
-				double lowerBound	= Double.parseDouble(mz) - Double.parseDouble(tol);
-				double upperBound	= Double.parseDouble(mz) + Double.parseDouble(tol);
-				stmnt.setDouble(idx, lowerBound);
+		try (Connection con = DatabaseManager.getConnection()) {
+			try (PreparedStatement stmnt = con.prepareStatement(sb.toString())) {
+				int idx = 1;
+				String compoundAsSubstring	= "%" + compound + "%";
+				//stmnt.setString(idx, compound);
+				stmnt.setString(idx, compoundAsSubstring);
 				idx++;
-				stmnt.setDouble(idx, upperBound);
-				idx++;
-			}
-			if (formula.compareTo("") != 0) {
-				stmnt.setString(idx, formula.replace('*','%'));
-				idx++;
-			}
-			for (int i = 0; i < inst.length; i++) {
-				stmnt.setString(idx, inst[i]);
-				idx++;
-			}
-			for (int i = 0; i < ms.length; i++) {
-				stmnt.setString(idx, ms[i]);
-				idx++;
-			}
-			if (Integer.parseInt(ion) == 1) {
-				stmnt.setString(idx, "POSITIVE");
-			}
-			if (Integer.parseInt(ion) == -1) {
-				stmnt.setString(idx, "NEGATIVE");
-			}
-			ResultSet res = stmnt.executeQuery();
-			while (res.next()) {
-				ResultRecord record = new ResultRecord();
-				record.setInfo(		res.getString("RECORD_TITLE"));
-				record.setId(		res.getString("ACCESSION"));
-				record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
-				record.setFormula(	res.getString("CH_FORMULA"));
-				record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
-				if(!names.contains(record.getId())) {
-					resList.add(record);
-					names.add(record.getId());
+				if (mz.compareTo("") != 0 && tol.compareTo("") != 0) {
+					double lowerBound	= Double.parseDouble(mz) - Double.parseDouble(tol);
+					double upperBound	= Double.parseDouble(mz) + Double.parseDouble(tol);
+					stmnt.setDouble(idx, lowerBound);
+					idx++;
+					stmnt.setDouble(idx, upperBound);
+					idx++;
+				}
+				if (formula.compareTo("") != 0) {
+					stmnt.setString(idx, formula.replace('*','%'));
+					idx++;
+				}
+				for (int i = 0; i < inst.length; i++) {
+					stmnt.setString(idx, inst[i]);
+					idx++;
+				}
+				for (int i = 0; i < ms.length; i++) {
+					stmnt.setString(idx, ms[i]);
+					idx++;
+				}
+				if (Integer.parseInt(ion) == 1) {
+					stmnt.setString(idx, "POSITIVE");
+				}
+				if (Integer.parseInt(ion) == -1) {
+					stmnt.setString(idx, "NEGATIVE");
+				}
+				try (ResultSet res = stmnt.executeQuery()) {
+					while (res.next()) {
+						ResultRecord record = new ResultRecord();
+						record.setInfo(		res.getString("RECORD_TITLE"));
+						record.setId(		res.getString("ACCESSION"));
+						record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+						record.setFormula(	res.getString("CH_FORMULA"));
+						record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
+						if(!names.contains(record.getId())) {
+							resList.add(record);
+							names.add(record.getId());
+						}
+					}
 				}
 			}
-		} catch (SQLException e) {
+		} 
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return resList.toArray(new ResultRecord[resList.size()]);

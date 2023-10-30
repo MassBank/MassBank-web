@@ -1,5 +1,6 @@
 package massbank.export;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,29 +62,31 @@ public class AccessionList implements SearchFunction<Record[]> {
 		
 		List<String> resList_accession	= new ArrayList<String>();
 		List<String> resList_contribut	= new ArrayList<String>();
-		try {
-			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sb.toString());
-			int idx = 1;
-			if (this.inst != null && this.ms != null && this.ion != null) {
-				for (int i = 0; i < inst.length; i++) {
-					stmnt.setString(idx, inst[i]);
-					idx++;
+		try (Connection con = DatabaseManager.getConnection()) {
+			try (PreparedStatement stmnt = con.prepareStatement(sb.toString())) {
+				int idx = 1;
+				if (this.inst != null && this.ms != null && this.ion != null) {
+					for (int i = 0; i < inst.length; i++) {
+						stmnt.setString(idx, inst[i]);
+						idx++;
+					}
+					for (int i = 0; i < ms.length; i++) {
+						stmnt.setString(idx, ms[i]);
+						idx++;
+					}
+					if (Integer.parseInt(ion) == 1) {
+						stmnt.setString(idx, "POSITIVE");
+					}
+					if (Integer.parseInt(ion) == -1) {
+						stmnt.setString(idx, "NEGATIVE");
+					}
 				}
-				for (int i = 0; i < ms.length; i++) {
-					stmnt.setString(idx, ms[i]);
-					idx++;
+				try (ResultSet res = stmnt.executeQuery()) {
+					while (res.next()) {
+						resList_accession.add(res.getString("RECORD.ACCESSION"));
+						resList_contribut.add(res.getString("CONTRIBUTOR.SHORT_NAME"));
+					}
 				}
-				if (Integer.parseInt(ion) == 1) {
-					stmnt.setString(idx, "POSITIVE");
-				}
-				if (Integer.parseInt(ion) == -1) {
-					stmnt.setString(idx, "NEGATIVE");
-				}
-			}
-			ResultSet res = stmnt.executeQuery();
-			while (res.next()) {
-				resList_accession.add(res.getString("RECORD.ACCESSION"));
-				resList_contribut.add(res.getString("CONTRIBUTOR.SHORT_NAME"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
