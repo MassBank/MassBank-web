@@ -789,7 +789,7 @@ public class Record {
 				+ "\"inDefinedTermSet\": {"
 				+ "\"@type\": \"DefinedTermSet\",\n"
 				+ "\"name\": \"Bioinformatics operations, data types, formats, identifiers and topics\",\n"
-				+ "\"url\": \" http://edamontology.org\"\n"
+				+ "\"url\": \"http://edamontology.org\"\n"
 				+ "} }", JsonObject.class));
 		dataset.add("keywords", keywords);
 		
