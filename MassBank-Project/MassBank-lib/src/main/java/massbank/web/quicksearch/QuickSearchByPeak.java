@@ -101,7 +101,6 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 	private static boolean PARAM_NORM_LOG = true;
 	private static boolean PARAM_NORM_SQRT = false;
 	
-	private ResultSet resMySql;
 	private HashMap<String, ArrayList<String>> mapReqParam = new HashMap<String, ArrayList<String>>();
 	private SearchQueryParam queryParam = new SearchQueryParam();
 	private ArrayList<String> queryMz = new ArrayList<String>();
@@ -275,7 +274,6 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 		if (!queryParam.colType.equals("COSINE")) throw new IllegalArgumentException("Unknown score function");
 		
 		String sql;
-		PreparedStatement stmnt;
 		ArrayList<SearchHitPeak> vecHitPeak = new ArrayList<SearchHitPeak>();
 
 		String tblName = "PEAK";
@@ -303,59 +301,54 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 			double fLen = 0;
 			int iCnt = 0;
 
-			try {
+			try (Connection con = DatabaseManager.getConnection()) {
+				sql = "SELECT PK_PEAK_MZ, PK_PEAK_RELATIVE FROM PEAK WHERE RECORD = ? AND PK_PEAK_RELATIVE >= ?";
 //				if (isInteg) {
-//					sql = "SELECT MZ, RELATIVE FROM PARENT_PEAK WHERE SPECTRUM_NO = " + strId + " AND RELATIVE >= "
-//							+ queryParam.cutoff;
-//					stmnt = con.prepareStatement(sql);
-//				} else {
-					sql = "SELECT PK_PEAK_MZ, PK_PEAK_RELATIVE FROM PEAK WHERE RECORD = ? AND PK_PEAK_RELATIVE >= ?";
-					stmnt = DatabaseManager.getConnection().prepareStatement(sql);
+//				sql = "SELECT MZ, RELATIVE FROM PARENT_PEAK WHERE SPECTRUM_NO = " + strId + " AND RELATIVE >= "
+//						+ queryParam.cutoff;
+//				stmnt = con.prepareStatement(sql);
+//			} else {
+				try (PreparedStatement stmnt = con.prepareStatement(sql)) {
 					stmnt.setString(1, strId);
 					stmnt.setInt(2, queryParam.cutoff);
-//				}
-			} catch (SQLException e) {
-				stmnt = null;
-				e.printStackTrace();
-			}
-
-			try {
-				resMySql = stmnt.executeQuery();
-				while (resMySql.next()) {
-					String strMz = resMySql.getString(1);
-					String strRelInt = resMySql.getString(2);
-					double fMz = Double.parseDouble(strMz);
-					double fVal = Double.parseDouble(strRelInt);
-					fVal = normalizePeakIntensity(fMz, fVal, false);
-					
-//					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
-//						fVal *= fMz / 10;
-//					} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
-//						fVal *= fMz * fMz / 100;
-//					}
-//					if (queryParam.norm == PARAM_NORM_LOG) {
-//						fVal = Math.log(fVal);
-//					} else if (queryParam.norm == PARAM_NORM_SQRT) {
-//						fVal = Math.sqrt(fVal);
-//					}
-
-					String key;
-					key = strId + " " + strMz;
-					// TODO cpp initializes key not present with 0 we need to emulate this, but
-					// isn't iMul always one after this what is this good for?
-					if (!mapMzCnt.containsKey(key)) {
-						mapMzCnt.put(key, 1);
+					try (ResultSet resMySql = stmnt.executeQuery()) {
+						while (resMySql.next()) {
+							String strMz = resMySql.getString(1);
+							String strRelInt = resMySql.getString(2);
+							double fMz = Double.parseDouble(strMz);
+							double fVal = Double.parseDouble(strRelInt);
+							fVal = normalizePeakIntensity(fMz, fVal, false);
+							
+		//					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
+		//						fVal *= fMz / 10;
+		//					} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
+		//						fVal *= fMz * fMz / 100;
+		//					}
+		//					if (queryParam.norm == PARAM_NORM_LOG) {
+		//						fVal = Math.log(fVal);
+		//					} else if (queryParam.norm == PARAM_NORM_SQRT) {
+		//						fVal = Math.sqrt(fVal);
+		//					}
+		
+							String key;
+							key = strId + " " + strMz;
+							// TODO cpp initializes key not present with 0 we need to emulate this, but
+							// isn't iMul always one after this what is this good for?
+							if (!mapMzCnt.containsKey(key)) {
+								mapMzCnt.put(key, 1);
+							}
+							int iMul = mapMzCnt.get(key);
+							if (iMul == 0) {
+								iMul = 1;
+							}
+							fLen += fVal * fVal * iMul;
+							fSum += fVal * iMul;
+							iCnt += iMul;
+						}
 					}
-					int iMul = mapMzCnt.get(key);
-					if (iMul == 0) {
-						iMul = 1;
-					}
-					fLen += fVal * fVal * iMul;
-					fSum += fVal * iMul;
-					iCnt += iMul;
 				}
-				resMySql.close();
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) {
 				e.printStackTrace();
 			}
 			
@@ -390,7 +383,6 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 
 	private boolean searchPeak() {
 		String sql = "";
-		PreparedStatement stmnt;
 
 		// ----------------------------------------------------------------
 		// precursor m/z
@@ -418,26 +410,29 @@ public class QuickSearchByPeak implements SearchFunction<SearchResult[]> {
 		if (!(queryParam.mstype == null) && !(queryParam.mstype.isEmpty()) && queryParam.mstype.toUpperCase().indexOf("ALL") == -1) {
 			// MS_TYPE
 			sql = "SHOW COLUMNS FROM RECORD LIKE 'AC_MASS_SPECTROMETRY_MS_TYPE'";
-			try {
-				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
-				resMySql = stmnt.executeQuery();
-				while (resMySql.next()) {
-					isMsType = true;
-					String ms = queryParam.mstype;
-					int idx;
-					sqlw2 = " AND T.MS_TYPE IN(";
-					for(String ms_token : ms.split(",")) {
-						sqlw2Params.add(ms_token);
-						sqlw2 += "?,";
+			try (Connection con = DatabaseManager.getConnection()) {
+				try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+					try (ResultSet resMySql = stmnt.executeQuery()) {
+						while (resMySql.next()) {
+							isMsType = true;
+							String ms = queryParam.mstype;
+							int idx;
+							sqlw2 = " AND T.MS_TYPE IN(";
+							for(String ms_token : ms.split(",")) {
+								sqlw2Params.add(ms_token);
+								sqlw2 += "?,";
+							}
+		//					while ((idx = ms.indexOf(",")) != -1) {
+		//						sqlw2Params.add(ms.substring(0, idx - 1));
+		//						ms = ms.substring(idx + 1);
+		//						sqlw2 += "?,";
+		//					}
+							sqlw2 = sqlw2.substring(0, sqlw2.length() - 1) + ")";
+						}
 					}
-//					while ((idx = ms.indexOf(",")) != -1) {
-//						sqlw2Params.add(ms.substring(0, idx - 1));
-//						ms = ms.substring(idx + 1);
-//						sqlw2 += "?,";
-//					}
-					sqlw2 = sqlw2.substring(0, sqlw2.length() - 1) + ")";
 				}
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -482,44 +477,46 @@ FROM
 WHERE T.ION = ? ORDER BY ID
 					 */
 					int paramIdx = 1;
-					stmnt = DatabaseManager.getConnection().prepareStatement(sql);
-					if (queryParam.ion.equals("-1")) {
-						stmnt.setString(paramIdx, "NEGATIVE");
-						paramIdx++;
-					}
-					if (queryParam.ion.equals("1")) {
-						stmnt.setString(paramIdx, "POSITIVE");
-						paramIdx++;
-					}
-					if (isPre) {
-						for (Integer i : sqlw1Params) {
-							stmnt.setInt(paramIdx, i);
-							paramIdx++;
+					try (Connection con = DatabaseManager.getConnection()) {
+						try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+							if (queryParam.ion.equals("-1")) {
+								stmnt.setString(paramIdx, "NEGATIVE");
+								paramIdx++;
+							}
+							if (queryParam.ion.equals("1")) {
+								stmnt.setString(paramIdx, "POSITIVE");
+								paramIdx++;
+							}
+							if (isPre) {
+								for (Integer i : sqlw1Params) {
+									stmnt.setInt(paramIdx, i);
+									paramIdx++;
+								}
+							}
+							if (isMsType) {
+								for (String s : sqlw2Params) {
+									stmnt.setString(paramIdx, s);
+									paramIdx++;
+								}
+							}
+		
+							try (ResultSet resMySql = stmnt.executeQuery()) {
+								boolean isEmpty = true;
+								isFilter = true;
+								while (resMySql.next()) {
+									vecTargetId.add(resMySql.getString(1));
+									isEmpty = false;
+								}
+							
+		
+								if (isEmpty) {
+									return false;
+								}
+							}
 						}
 					}
-					if (isMsType) {
-						for (String s : sqlw2Params) {
-							stmnt.setString(paramIdx, s);
-							paramIdx++;
-						}
-					}
-
-					// TODO does this have to be here
-					resMySql = stmnt.executeQuery();
-					boolean isEmpty = true;
-					isFilter = true;
-					while (resMySql.next()) {
-						vecTargetId.add(resMySql.getString(1));
-						isEmpty = false;
-					}
-
-					if (isEmpty) {
-						return false;
-					}
-
-					resMySql.close();
-
-				} catch (SQLException e) {
+				} 
+				catch (SQLException e) {
 					e.printStackTrace();
 					return false;
 				}
@@ -541,30 +538,32 @@ WHERE T.ION = ? ORDER BY ID
 			sql += strInstType;
 			sql += ")";
 			ArrayList<String> instNo = new ArrayList<String>();
-			try {
-				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
-				int paramIdx = 1;
-				for (String s : vecInstType) {
-					stmnt.setString(paramIdx, s);
-					paramIdx++;
+			try (Connection con = DatabaseManager.getConnection()) {
+				try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+					int paramIdx = 1;
+					for (String s : vecInstType) {
+						stmnt.setString(paramIdx, s);
+						paramIdx++;
+					}
+					
+					try (ResultSet resMySql = stmnt.executeQuery()) {
+						boolean isEmpty = true;
+						// ------------------------------------------------------------
+						// (2)
+						// ------------------------------------------------------------
+						while (resMySql.next()) {
+							isEmpty = false;
+							instNo.add(resMySql.getString(1));
+						}
+		//				for (String s : instNo) {
+	//				}
+						if (isEmpty) {
+							return false;
+						}
+					}
 				}
-				
-				resMySql = stmnt.executeQuery();
-				boolean isEmpty = true;
-				// ------------------------------------------------------------
-				// (2)
-				// ------------------------------------------------------------
-				while (resMySql.next()) {
-					isEmpty = false;
-					instNo.add(resMySql.getString(1));
-				}
-//				for (String s : instNo) {
-//				}
-				resMySql.close();
-				if (isEmpty) {
-					return false;
-				}
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -601,66 +600,68 @@ WHERE T.ION = ? ORDER BY ID
 
 			sql += " ORDER BY ID";
 			
-			try {
-				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
-				int paramIdx = 1;
-				if (queryParam.ion.equals("0")) {
-					for (String s : instNo) {
-						stmnt.setString(paramIdx, s);
-						paramIdx++;
-					}
-					if (isPre) {
-						for (Integer i : sqlw1Params) {
-							stmnt.setInt(paramIdx, i);
-							paramIdx++;
-						}
-					}
-					if (isMsType) {
-						for (String s : sqlw2Params) {
+			try (Connection con = DatabaseManager.getConnection()) {
+				try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+					int paramIdx = 1;
+					if (queryParam.ion.equals("0")) {
+						for (String s : instNo) {
 							stmnt.setString(paramIdx, s);
 							paramIdx++;
 						}
-					}
-				} else {
-					if (queryParam.ion.equals("-1")) {
-						stmnt.setString(paramIdx, "NEGATIVE");
-						paramIdx++;
-					}
-					if (queryParam.ion.equals("1")) {
-						stmnt.setString(paramIdx, "POSITIVE");
-						paramIdx++;
-					}
-					for (String s : instNo) {
-						stmnt.setString(paramIdx, s);
-						paramIdx++;
-					}
-					if (isPre) {
-						for (Integer i : sqlw1Params) {
-							stmnt.setInt(paramIdx, i);
+						if (isPre) {
+							for (Integer i : sqlw1Params) {
+								stmnt.setInt(paramIdx, i);
+								paramIdx++;
+							}
+						}
+						if (isMsType) {
+							for (String s : sqlw2Params) {
+								stmnt.setString(paramIdx, s);
+								paramIdx++;
+							}
+						}
+					} else {
+						if (queryParam.ion.equals("-1")) {
+							stmnt.setString(paramIdx, "NEGATIVE");
 							paramIdx++;
 						}
-					}
-					if (isMsType) {
-						for (String s : sqlw2Params) {
+						if (queryParam.ion.equals("1")) {
+							stmnt.setString(paramIdx, "POSITIVE");
+							paramIdx++;
+						}
+						for (String s : instNo) {
 							stmnt.setString(paramIdx, s);
 							paramIdx++;
 						}
+						if (isPre) {
+							for (Integer i : sqlw1Params) {
+								stmnt.setInt(paramIdx, i);
+								paramIdx++;
+							}
+						}
+						if (isMsType) {
+							for (String s : sqlw2Params) {
+								stmnt.setString(paramIdx, s);
+								paramIdx++;
+							}
+						}
+					}
+	
+					try (ResultSet resMySql = stmnt.executeQuery()) {
+						isFilter = true;
+						// ------------------------------------------------------------
+						// (3)
+						// ------------------------------------------------------------
+						while (resMySql.next()) {
+							vecTargetId.add(resMySql.getString(1));
+						}
+						if (vecTargetId.isEmpty()) {
+							return false;
+						}
 					}
 				}
-
-				resMySql = stmnt.executeQuery();
-				isFilter = true;
-				// ------------------------------------------------------------
-				// (3)
-				// ------------------------------------------------------------
-				while (resMySql.next()) {
-					vecTargetId.add(resMySql.getString(1));
-				}
-				resMySql.close();
-				if (vecTargetId.isEmpty()) {
-					return false;
-				}
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -696,64 +697,65 @@ WHERE T.ION = ? ORDER BY ID
 						+ ") GROUP BY RECORD";
 //			}
 			sql += sqlw;
-			try {
-				stmnt = DatabaseManager.getConnection().prepareStatement(sql);
-				resMySql = stmnt.executeQuery();
-
-				int prevAryNum = 0;
-				while (resMySql.next()) {
-					String[] vacVal = resMySql.getString(1).trim().split(" ");
-					String strId = vacVal[1];
-
-					if (isFilter) {
-						boolean isFound = false;
-						for (int j = prevAryNum; j < vecTargetId.size(); j++) {
-							if (strId.compareTo(vecTargetId.get(j)) == 0) {
-								isFound = true;
-								prevAryNum = j + 1;
-								break;
+			try (Connection con = DatabaseManager.getConnection()) {
+				try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+					try (ResultSet resMySql = stmnt.executeQuery()) {
+						int prevAryNum = 0;
+						while (resMySql.next()) {
+							String[] vacVal = resMySql.getString(1).trim().split(" ");
+							String strId = vacVal[1];
+		
+							if (isFilter) {
+								boolean isFound = false;
+								for (int j = prevAryNum; j < vecTargetId.size(); j++) {
+									if (strId.compareTo(vecTargetId.get(j)) == 0) {
+										isFound = true;
+										prevAryNum = j + 1;
+										break;
+									}
+								}
+								if (!isFound) {
+									continue;
+								}
+							}
+		
+							double fHitVal = Double.parseDouble(vacVal[0]);
+							String strHitMz = vacVal[2];
+							double fHitMz = Double.parseDouble(strHitMz);
+		
+							if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
+								fHitVal *= fHitVal / 10;
+							} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
+								fHitVal *= fHitMz * fHitMz / 100;
+							}
+							if (queryParam.norm == PARAM_NORM_LOG) {
+								fHitVal = Math.log(fHitVal);
+							} else if (queryParam.norm == PARAM_NORM_SQRT) {
+								fHitVal = Math.sqrt(fHitVal);
+							}
+		
+							// m/z, rel.int
+							SearchHitPeak pHitPeak = new SearchHitPeak();
+							pHitPeak.qMz = strMz;
+							pHitPeak.qVal = fVal;
+							pHitPeak.hitMz = strHitMz;
+							pHitPeak.hitVal = fHitVal;
+							if (!mapHitPeak.containsKey(strId))
+								mapHitPeak.put(strId, new ArrayList<SearchHitPeak>());
+							mapHitPeak.get(strId).add(pHitPeak);
+		
+							String key = strId + " " + strHitMz;
+							Integer value = mapMzCnt.get(key);
+							if (value == null) {
+								mapMzCnt.put(key, 1);
+							} else {
+								mapMzCnt.put(key, value + 1);
 							}
 						}
-						if (!isFound) {
-							continue;
-						}
-					}
-
-					double fHitVal = Double.parseDouble(vacVal[0]);
-					String strHitMz = vacVal[2];
-					double fHitMz = Double.parseDouble(strHitMz);
-
-					if (queryParam.weight == PARAM_WEIGHT_LINEAR) {
-						fHitVal *= fHitVal / 10;
-					} else if (queryParam.weight == PARAM_WEIGHT_SQUARE) {
-						fHitVal *= fHitMz * fHitMz / 100;
-					}
-					if (queryParam.norm == PARAM_NORM_LOG) {
-						fHitVal = Math.log(fHitVal);
-					} else if (queryParam.norm == PARAM_NORM_SQRT) {
-						fHitVal = Math.sqrt(fHitVal);
-					}
-
-					// m/z, rel.int
-					SearchHitPeak pHitPeak = new SearchHitPeak();
-					pHitPeak.qMz = strMz;
-					pHitPeak.qVal = fVal;
-					pHitPeak.hitMz = strHitMz;
-					pHitPeak.hitVal = fHitVal;
-					if (!mapHitPeak.containsKey(strId))
-						mapHitPeak.put(strId, new ArrayList<SearchHitPeak>());
-					mapHitPeak.get(strId).add(pHitPeak);
-
-					String key = strId + " " + strHitMz;
-					Integer value = mapMzCnt.get(key);
-					if (value == null) {
-						mapMzCnt.put(key, 1);
-					} else {
-						mapMzCnt.put(key, value + 1);
 					}
 				}
-				resMySql.close();
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) {
 				e.printStackTrace();
 				return false;
 			}

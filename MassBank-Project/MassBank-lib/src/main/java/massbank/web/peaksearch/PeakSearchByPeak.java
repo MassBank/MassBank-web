@@ -1,5 +1,6 @@
 package massbank.web.peaksearch;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,24 +70,27 @@ public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {
 					"SELECT RECORD " + 
 					"FROM PEAK " + 
 					"WHERE ? <= PK_PEAK_MZ AND PK_PEAK_MZ <= ? AND PK_PEAK_RELATIVE > ?";
-			try {
-				PreparedStatement stmnt	= DatabaseManager.getConnection().prepareStatement(sql);
-				stmnt.setDouble(1, Double.parseDouble(mz[peakIndex]) - Double.parseDouble(tol));
-				stmnt.setDouble(2, Double.parseDouble(mz[peakIndex]) + Double.parseDouble(tol));
-				stmnt.setInt(3, Integer.parseInt(intens));
-				
-				ResultSet res = stmnt.executeQuery();
-				while (res.next()) {
-					String id = res.getString("RECORD");
-					if (hits.containsKey(id)) {
-						hits.get(id)[peakIndex]	= true;
-					} else {
-						boolean[] newEl = new boolean[num];
-						newEl[peakIndex]	= true;
-						hits.put(id, newEl);
+			try (Connection con = DatabaseManager.getConnection()) {
+				try (PreparedStatement stmnt = con.prepareStatement(sql)) {
+					stmnt.setDouble(1, Double.parseDouble(mz[peakIndex]) - Double.parseDouble(tol));
+					stmnt.setDouble(2, Double.parseDouble(mz[peakIndex]) + Double.parseDouble(tol));
+					stmnt.setInt(3, Integer.parseInt(intens));
+					
+					try (ResultSet res = stmnt.executeQuery()) {
+						while (res.next()) {
+							String id = res.getString("RECORD");
+							if (hits.containsKey(id)) {
+								hits.get(id)[peakIndex]	= true;
+							} else {
+								boolean[] newEl = new boolean[num];
+								newEl[peakIndex]	= true;
+								hits.put(id, newEl);
+							}
+						}
 					}
 				}
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
@@ -145,34 +149,37 @@ public class PeakSearchByPeak implements SearchFunction<ResultRecord[]> {
 		}
 		
 		List<ResultRecord> resList = new ArrayList<ResultRecord>();
-		try {
-			PreparedStatement stmnt = DatabaseManager.getConnection().prepareStatement(sb.toString());
-			int idx = 1;
-			for (int i = 0; i < inst.length; i++) {
-				stmnt.setString(idx, inst[i]);
-				idx++;
+		try (Connection con = DatabaseManager.getConnection()) {
+			try (PreparedStatement stmnt = con.prepareStatement(sb.toString())) {
+				int idx = 1;
+				for (int i = 0; i < inst.length; i++) {
+					stmnt.setString(idx, inst[i]);
+					idx++;
+				}
+				for (int i = 0; i < ms.length; i++) {
+					stmnt.setString(idx, ms[i]);
+					idx++;
+				}
+				if (Integer.parseInt(ion) == 1) {
+					stmnt.setString(idx, "POSITIVE");
+				}
+				if (Integer.parseInt(ion) == -1) {
+					stmnt.setString(idx, "NEGATIVE");
+				}
+				try (ResultSet res = stmnt.executeQuery()) {
+					while (res.next()) {
+						ResultRecord record = new ResultRecord();
+						record.setInfo(		res.getString("RECORD_TITLE"));
+						record.setId(		res.getString("ACCESSION"));
+						record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
+						record.setFormula(	res.getString("CH_FORMULA"));
+						record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
+						resList.add(record);
+					}
+				}
 			}
-			for (int i = 0; i < ms.length; i++) {
-				stmnt.setString(idx, ms[i]);
-				idx++;
-			}
-			if (Integer.parseInt(ion) == 1) {
-				stmnt.setString(idx, "POSITIVE");
-			}
-			if (Integer.parseInt(ion) == -1) {
-				stmnt.setString(idx, "NEGATIVE");
-			}
-			ResultSet res = stmnt.executeQuery();
-			while (res.next()) {
-				ResultRecord record = new ResultRecord();
-				record.setInfo(		res.getString("RECORD_TITLE"));
-				record.setId(		res.getString("ACCESSION"));
-				record.setIon(		res.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
-				record.setFormula(	res.getString("CH_FORMULA"));
-				record.setEmass(	res.getDouble("CH_EXACT_MASS") + "");
-				resList.add(record);
-			}
-		} catch (SQLException e) {
+		}
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
 
