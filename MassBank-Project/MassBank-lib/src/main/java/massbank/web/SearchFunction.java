@@ -1,13 +1,11 @@
 package massbank.web;
 
-import javax.servlet.http.HttpServletRequest;
-
-import massbank.db.DatabaseManager;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface SearchFunction<E> {
 	
 	public void getParameters(HttpServletRequest request);
 	
-	public E search(DatabaseManager databaseManager);
+	public E search();
 
 }

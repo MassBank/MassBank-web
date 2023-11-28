@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,14 +37,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -113,16 +113,18 @@ public class SiteMapServlet extends HttpServlet {
 			wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordIndex").lastMod(Date.from(softwareTimestamp)).build());
 
 			// add dynamic content
-			DatabaseManager databaseManager= new DatabaseManager("MassBank");
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement("SELECT ACCESSION,RECORD_TIMESTAMP FROM RECORD");
-			ResultSet res = stmnt.executeQuery();
-			while (res.next()) {
-				String accession = res.getString(1);
-				Date recordTimestamp = res.getTimestamp(2);
-				recordTimestamp = recordTimestamp.before(Date.from(softwareTimestamp)) ? Date.from(softwareTimestamp) : recordTimestamp;
-				wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordDisplay?id=" + accession).lastMod(recordTimestamp).build());
+			try (Connection con = DatabaseManager.getConnection()) {
+				try (PreparedStatement stmnt = con.prepareStatement("SELECT ACCESSION,RECORD_TIMESTAMP FROM RECORD")) {
+					try (ResultSet res = stmnt.executeQuery()) {
+						while (res.next()) {
+							String accession = res.getString(1);
+							Date recordTimestamp = res.getTimestamp(2);
+							recordTimestamp = recordTimestamp.before(Date.from(softwareTimestamp)) ? Date.from(softwareTimestamp) : recordTimestamp;
+							wsg.addUrl(new WebSitemapUrl.Options(sitemapbaseurl + "RecordDisplay?id=" + accession).lastMod(recordTimestamp).build());
+						}
+					}
+				}
 			}
-			databaseManager.closeConnection();
 			
 			// write new sitemaps
 			List<File> sitemaps=wsg.write();
@@ -134,7 +136,7 @@ public class SiteMapServlet extends HttpServlet {
 				sig.addUrl(sitemapbaseurl + "sitemap/" + sitemap.getName());
 			}
 			sig.write();
-		} catch (ConfigurationException | MalformedURLException | SQLException e) {
+		} catch (MalformedURLException | SQLException e) {
 			logger.error(e.getMessage());
 		}
 	}

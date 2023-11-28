@@ -20,22 +20,27 @@
  ******************************************************************************/
 package massbank.repository;
 
-import java.util.List;
+import java.util.stream.Stream;
+
 import massbank.Record;
 
 /**
  * Interface for a repository with some kind of data.
  * @author rmeier
- * @version 13-01-2023
+ * @version 26-10-2023
  */
 public interface RepositoryInterface {
 	
 	/**
 	 * Return all Records of that repo in a stream.
 	 */
-	public List<Record> getRecords();
+	public Stream<Record> getRecords();
 	/**
 	 * Return a version String for the repo.
 	 */
 	public String getRepoVersion();
+	/**
+	 * Return the number of recordfiles in the repo.
+	 */
+	public int getSize();
 }

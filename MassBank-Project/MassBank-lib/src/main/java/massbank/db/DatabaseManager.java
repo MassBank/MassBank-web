@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -44,6 +43,8 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.Logger;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import massbank.Config;
 import massbank.Record;
@@ -55,129 +56,183 @@ import org.apache.logging.log4j.LogManager;
  * This class provides the code for storage and retrieval of records in SQL databases. 
  * 
  * @author rmeier
- * @version 09-06-2020
+ * @version 26-10-2023
  *
  */
 public class DatabaseManager {
 	private static final Logger logger = LogManager.getLogger(DatabaseManager.class);
 	
-	private String databaseName;
-	private final String connectUrl;
-	private Connection con;
+	private static HikariConfig config = new HikariConfig();
+	private static HikariDataSource ds;
+	
+	static {
+		config.setDriverClassName("org.mariadb.jdbc.Driver");
+		config.setJdbcUrl("jdbc:mariadb://" + Config.get().dbHostName() + ":3306/" + Config.get().dbName());
+		config.setUsername("root");
+		config.setPassword(Config.get().dbPassword());
+		ds = new HikariDataSource(config);
+	}
+
+	private DatabaseManager() {
+	}
+
+	public static Connection getConnection() throws SQLException {
+		return ds.getConnection();
+	}
+	
+	public static void close() {
+		ds.close();
+	}
+	
+	public static void emptyTables() throws SQLException, IOException {
+		try (Connection con = DatabaseManager.getConnection()) {
+			con.setAutoCommit(false);
+			try (PreparedStatement pst = con.prepareStatement("DROP VIEW msms_spectrum, msms_spectrum_peak, ms_compound, synonym")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMMENT")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SP_SAMPLE")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SP_LINK")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE AC_MASS_SPECTROMETRY")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE AC_CHROMATOGRAPHY")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE MS_FOCUSED_ION")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE MS_DATA_PROCESSING")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE ANNOTATION_HEADER")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE ANNOTATION")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE PEAK")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE RECORD")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_COMPOUND_CLASS")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE CONTRIBUTOR")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_NAME")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE CH_LINK")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE COMPOUND_CLASS")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE NAME")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE SAMPLE")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE INSTRUMENT")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE DEPRECATED_RECORD")) {
+				pst.executeUpdate();
+			}
+			try (PreparedStatement pst = con.prepareStatement("DROP TABLE LAST_UPDATE")) {
+				pst.executeUpdate();
+			}
+			
+			ScriptRunner runner = new ScriptRunner(con, false);
+			runner.runScript(new InputStreamReader(DatabaseManager.class.getClassLoader().getResourceAsStream("create_massbank_scheme.sql")));
+			
+			con.commit();
+			con.setAutoCommit(true);
+		}
+	}
 	
 	// TABLE CONTRIBUTOR
-	private final static String insertCONTRIBUTOR = "INSERT INTO CONTRIBUTOR(ACRONYM, SHORT_NAME, FULL_NAME) VALUES (?,?,?)";
-	private final PreparedStatement statementInsertCONTRIBUTOR;
+	private final static String insertCONTRIBUTOR = "INSERT INTO CONTRIBUTOR(ACRONYM, SHORT_NAME, FULL_NAME) VALUES (?,?,?) ON DUPLICATE KEY UPDATE ACRONYM=ACRONYM";
 	private final static String selectCONTRIBUTORIdByACRONYM = "SELECT * FROM CONTRIBUTOR WHERE ACRONYM = ?";
-	private final PreparedStatement statementSelectCONTRIBUTORIdByACRONYM;
 	// TABLE COMPOUND
 	private final static String insertCOMPOUND = "INSERT INTO COMPOUND(CH_FORMULA, CH_EXACT_MASS, CH_EXACT_MASS_SIGNIFICANT," +
-		"CH_SMILES, CH_IUPAC, CH_CDK_DEPICT_SMILES, CH_CDK_DEPICT_GENERIC_SMILES, CH_CDK_DEPICT_STRUCTURE_SMILES) " +
-		"VALUES(?,?,?,?,?,?,?,?)";
-	private final PreparedStatement statementInsertCOMPOUND;
+		"CH_SMILES, CH_IUPAC) " +
+		"VALUES(?,?,?,?,?)";
 	private final static String selectCOMPOUND = "SELECT * FROM COMPOUND WHERE ID = ?";
-	private final PreparedStatement statementSelectCOMPOUND;
 	// TABLE COMPOUND_CLASS
 	private final static String insertCOMPOUND_CLASS = "INSERT INTO COMPOUND_CLASS(DATABASE_NAME, DATABASE_ID, CH_COMPOUND_CLASS) VALUES(?,?,?)";
-	private final PreparedStatement statementInsertCOMPOUND_CLASS;
 	private final static String selectCOMPOUND_CLASS = "SELECT * FROM COMPOUND_CLASS WHERE ID = ?";
-	private final PreparedStatement statementSelectCOMPOUND_CLASS;
 	// TABLE COMPOUND_COMPOUND_CLASS
 	private final static String insertCOMPOUND_COMPOUND_CLASS = "INSERT INTO COMPOUND_COMPOUND_CLASS(COMPOUND, CLASS) VALUES(?,?)";
-	private final PreparedStatement statementInsertCOMPOUND_COMPOUND_CLASS;
 	private final static String selectCOMPOUND_COMPOUND_CLASS = "SELECT * FROM COMPOUND_COMPOUND_CLASS WHERE COMPOUND = ?";
-	private final PreparedStatement statementSelectCOMPOUND_COMPOUND_CLASS;
 	// TABLE NAME
 	private final static String insertNAME = "INSERT INTO NAME(CH_NAME) VALUES(?)";
-	private final PreparedStatement statementInsertNAME;
 	private final static String selectNAME = "SELECT * FROM NAME WHERE ID = ?";
-	private final PreparedStatement statementSelectNAME;
 	// TABLE COMPOUND_NAME
 	private final static String insertCOMPOUND_NAME = "INSERT IGNORE INTO COMPOUND_NAME VALUES(?,?)";
-	private final PreparedStatement statementInsertCOMPOUND_NAME;
 	private final static String selectCOMPOUND_NAME = "SELECT * FROM COMPOUND_NAME WHERE COMPOUND = ? ORDER BY NAME";
-	private final PreparedStatement statementSelectCOMPOUND_NAME;
 	// TABLE CH_LINK
 	private final static String insertCH_LINK = "INSERT INTO CH_LINK(COMPOUND, DATABASE_NAME, DATABASE_ID) VALUES(?,?,?)";
-	private final PreparedStatement statementInsertCH_LINK;
 	private final static String selectCH_LINK = "SELECT * FROM CH_LINK WHERE COMPOUND = ? ORDER BY ID";
-	private final PreparedStatement statementSelectCH_LINK;
 	// TABLE SAMPLE
 	private final static String insertSAMPLE = "INSERT INTO SAMPLE(SP_SCIENTIFIC_NAME, SP_LINEAGE) VALUES(?,?)";
-	private final PreparedStatement statementInsertSAMPLE;
 	private final static String selectSAMPLE = "SELECT * FROM SAMPLE WHERE ID = ?";
-	private final PreparedStatement statementSelectSAMPLE;
 	// TABLE INSTRUMENT
 	private final static String insertINSTRUMENT = "INSERT INTO INSTRUMENT(AC_INSTRUMENT, AC_INSTRUMENT_TYPE) VALUES(?,?)";
-	private final PreparedStatement statementInsertINSTRUMENT;
 	private final static String selectINSTRUMENT = "SELECT * FROM INSTRUMENT WHERE ID = ?";
-	private final PreparedStatement statementSelectINSTRUMENT;
 	// TABLE RECORD
 	private final static String insertRECORD = "INSERT INTO RECORD(ACCESSION, RECORD_TIMESTAMP, RECORD_TITLE, DATE, AUTHORS, LICENSE, COPYRIGHT, PUBLICATION, PROJECT," + 
 			"CH, SP, AC_INSTRUMENT, AC_MASS_SPECTROMETRY_MS_TYPE, AC_MASS_SPECTROMETRY_ION_MODE, PK_SPLASH, CONTRIBUTOR)" +
 			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private final PreparedStatement statementInsertRECORD;
 	private final static String selectRECORD = "SELECT * FROM RECORD WHERE ACCESSION = ?";
-	private final PreparedStatement statementSelectRECORD;
 	// TABLE RECORD
 	private final static String insertDEPRECATED_RECORD = "INSERT INTO DEPRECATED_RECORD(ACCESSION, CONTRIBUTOR, CONTENT) VALUES (?,?,?)"; 
-	private final PreparedStatement statementInsertDEPRECATED_RECORD;
 	private final static String selectDEPRECATED_RECORD = "SELECT * FROM DEPRECATED_RECORD WHERE ACCESSION = ?";
-	private final PreparedStatement statementSelectDEPRECATED_RECORD;
 	// TABLE COMMENT
 	private final static String insertCOMMENT = "INSERT INTO COMMENT(RECORD, COMMENT) VALUES(?,?)";
-	private final PreparedStatement statementInsertCOMMENT;
 	private final static String selectCOMMENT = "SELECT * FROM COMMENT WHERE RECORD = ? ORDER BY ID";
-	private final PreparedStatement statementSelectCOMMENT;
 	// TABLE SP_SAMPLE
 	private final static String insertSP_SAMPLE = "INSERT INTO SP_SAMPLE(RECORD, SP_SAMPLE) VALUES(?,?)";
-	private final PreparedStatement statementInsertSP_SAMPLE;
 	private final static String selectSP_SAMPLE = "SELECT * FROM SP_SAMPLE WHERE RECORD = ? ORDER BY ID";
-	private final PreparedStatement statementSelectSP_SAMPLE;
 	// TABLE SP_LINK
 	private final static String insertSP_LINK = "INSERT INTO SP_LINK(RECORD, SP_LINK) VALUES(?,?)";
-	private final PreparedStatement statementInsertSP_LINK;
 	private final static String selectSP_LINK = "SELECT * FROM SP_LINK WHERE RECORD = ? ORDER BY ID";
-	private final PreparedStatement statementSelectSP_LINK;
 	// TABLE AC_MASS_SPECTROMETRY
 	private final static String insertAC_MASS_SPECTROMETRY = "INSERT INTO AC_MASS_SPECTROMETRY(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
-	private final PreparedStatement statementInsertAC_MASS_SPECTROMETRY;
 	private final static String selectAC_MASS_SPECTROMETRY = "SELECT * FROM AC_MASS_SPECTROMETRY WHERE RECORD = ? ORDER BY ID";
-	private final PreparedStatement statementSelectAC_MASS_SPECTROMETRY;
 	// TABLE AC_CHROMATOGRAPHY
 	private final static String insertAC_CHROMATOGRAPHY = "INSERT INTO AC_CHROMATOGRAPHY(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
-	private final PreparedStatement statementInsertAC_CHROMATOGRAPHY;
 	private final static String selectAC_CHROMATOGRAPHY = "SELECT * FROM AC_CHROMATOGRAPHY WHERE RECORD = ? ORDER BY ID";
-	private final PreparedStatement statementSelectAC_CHROMATOGRAPHY;
 	// TABLE MS_FOCUSED_ION
 	private final static String insertMS_FOCUSED_ION = "INSERT INTO MS_FOCUSED_ION(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
-	private final PreparedStatement statementInsertMS_FOCUSED_ION;
 	private final static String selectMS_FOCUSED_ION = "SELECT * FROM MS_FOCUSED_ION WHERE RECORD = ? ORDER BY ID";
-	private final PreparedStatement statementSelectMS_FOCUSED_ION;
 	// TABLE MS_DATA_PROCESSING
 	private final static String insertMS_DATA_PROCESSING = "INSERT INTO MS_DATA_PROCESSING(RECORD, SUBTAG, VALUE) VALUES(?,?,?)";
-	private final PreparedStatement statementInsertMS_DATA_PROCESSING;
 	private final static String selectMS_DATA_PROCESSING = "SELECT * FROM MS_DATA_PROCESSING WHERE RECORD = ? ORDER BY ID";
-	private final PreparedStatement statementSelectMS_DATA_PROCESSING;
 	// TABLE PEAK
 	private final static String insertPEAK = "INSERT INTO PEAK(RECORD, PK_PEAK_MZ, PK_PEAK_MZ_SIGNIFICANT, PK_PEAK_INTENSITY, " +
 			"PK_PEAK_INTENSITY_SIGNIFICANT, PK_PEAK_RELATIVE) VALUES(?,?,?,?,?,?)";
-	private final PreparedStatement statementInsertPEAK;
 	private final static String selectPEAK = "SELECT * FROM PEAK WHERE RECORD = ? ORDER BY PK_PEAK_MZ";
-	private final PreparedStatement statementSelectPEAK;
 	// TABLE ANNOTATION_HEADER
 	private final static String insertANNOTATION_HEADER = "INSERT INTO ANNOTATION_HEADER(RECORD, HEADER) VALUES(?,?)";
-	private final PreparedStatement statementInsertANNOTATION_HEADER;
 	private final static String selectANNOTATION_HEADER = "SELECT * FROM ANNOTATION_HEADER WHERE RECORD = ?";
-	private final PreparedStatement statementSelectANNOTATION_HEADER;
 	// TABLE ANNOTATION
 	private final static String insertANNOTATION = "INSERT INTO ANNOTATION VALUES(?,?,?,?)";
-	private final PreparedStatement statementInsertANNOTATION;
 	private final static String selectANNOTATION = "SELECT * FROM ANNOTATION WHERE RECORD = ?";
-	private final PreparedStatement statementSelectANNOTATION;
-	
-
-	
 	
 	private final static String sqlGetContributorFromAccession = 
 			"SELECT ACRONYM, SHORT_NAME, FULL_NAME FROM CONTRIBUTOR WHERE ID =" +
@@ -194,553 +249,331 @@ public class DatabaseManager {
 			"SELECT ACCESSION " + 
 			"FROM RECORD;";
 	
-	private final PreparedStatement statementGetContributorFromAccession;
-	private final PreparedStatement statementGetAccessions;
-	
-	
-	
-
-	public DatabaseManager(String dbName) throws SQLException, ConfigurationException {
-		this.databaseName = dbName;
-		this.connectUrl = "jdbc:mariadb://" + Config.get().dbHostName() + ":3306/" 
-			+ databaseName + "?rewriteBatchedStatements=true"
-			+ "&user=root" 
-			+ "&password=" + Config.get().dbPassword();
-		this.openConnection();
-		
-		
-		statementInsertCONTRIBUTOR = this.con.prepareStatement(insertCONTRIBUTOR, Statement.RETURN_GENERATED_KEYS);
-		statementSelectCONTRIBUTORIdByACRONYM = this.con.prepareStatement(selectCONTRIBUTORIdByACRONYM);
-				
-		statementInsertCOMPOUND = this.con.prepareStatement(insertCOMPOUND, Statement.RETURN_GENERATED_KEYS);
-		statementSelectCOMPOUND = this.con.prepareStatement(selectCOMPOUND);
-		
-		statementInsertCOMPOUND_CLASS = this.con.prepareStatement(insertCOMPOUND_CLASS, Statement.RETURN_GENERATED_KEYS);
-		statementSelectCOMPOUND_CLASS = this.con.prepareStatement(selectCOMPOUND_CLASS);
-		
-		statementInsertCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(insertCOMPOUND_COMPOUND_CLASS);
-		statementSelectCOMPOUND_COMPOUND_CLASS = this.con.prepareStatement(selectCOMPOUND_COMPOUND_CLASS);
-		
-		statementInsertNAME = this.con.prepareStatement(insertNAME, Statement.RETURN_GENERATED_KEYS);
-		statementSelectNAME = this.con.prepareStatement(selectNAME);
-		
-		statementInsertCOMPOUND_NAME = this.con.prepareStatement(insertCOMPOUND_NAME);
-		statementSelectCOMPOUND_NAME = this.con.prepareStatement(selectCOMPOUND_NAME);
-		
-		statementInsertCH_LINK = this.con.prepareStatement(insertCH_LINK);
-		statementSelectCH_LINK = this.con.prepareStatement(selectCH_LINK);
-		
-		statementInsertSAMPLE = this.con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS);
-		statementSelectSAMPLE = this.con.prepareStatement(selectSAMPLE);
-		
-		statementInsertINSTRUMENT = this.con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS);
-		statementSelectINSTRUMENT = this.con.prepareStatement(selectINSTRUMENT);
-		
-		statementInsertRECORD = this.con.prepareStatement(insertRECORD);
-		statementSelectRECORD = this.con.prepareStatement(selectRECORD);
-
-		statementInsertDEPRECATED_RECORD = this.con.prepareStatement(insertDEPRECATED_RECORD);
-		statementSelectDEPRECATED_RECORD = this.con.prepareStatement(selectDEPRECATED_RECORD);
-		
-		statementInsertCOMMENT = this.con.prepareStatement(insertCOMMENT);
-		statementSelectCOMMENT = this.con.prepareStatement(selectCOMMENT);
-		
-		statementInsertSP_SAMPLE = this.con.prepareStatement(insertSP_SAMPLE);
-		statementSelectSP_SAMPLE = this.con.prepareStatement(selectSP_SAMPLE);
-
-		statementInsertSP_LINK = this.con.prepareStatement(insertSP_LINK);
-		statementSelectSP_LINK = this.con.prepareStatement(selectSP_LINK);
-
-		statementInsertAC_MASS_SPECTROMETRY = this.con.prepareStatement(insertAC_MASS_SPECTROMETRY);
-		statementSelectAC_MASS_SPECTROMETRY = this.con.prepareStatement(selectAC_MASS_SPECTROMETRY);
-		
-		statementInsertAC_CHROMATOGRAPHY = this.con.prepareStatement(insertAC_CHROMATOGRAPHY);
-		statementSelectAC_CHROMATOGRAPHY = this.con.prepareStatement(selectAC_CHROMATOGRAPHY);
-		
-		statementInsertMS_FOCUSED_ION = this.con.prepareStatement(insertMS_FOCUSED_ION);
-		statementSelectMS_FOCUSED_ION = this.con.prepareStatement(selectMS_FOCUSED_ION);
-
-		statementInsertMS_DATA_PROCESSING = this.con.prepareStatement(insertMS_DATA_PROCESSING);
-		statementSelectMS_DATA_PROCESSING = this.con.prepareStatement(selectMS_DATA_PROCESSING);
-
-		statementInsertPEAK = this.con.prepareStatement(insertPEAK);
-		statementSelectPEAK = this.con.prepareStatement(selectPEAK);
-		
-		statementInsertANNOTATION_HEADER = this.con.prepareStatement(insertANNOTATION_HEADER);
-		statementSelectANNOTATION_HEADER = this.con.prepareStatement(selectANNOTATION_HEADER);
-
-		statementInsertANNOTATION = this.con.prepareStatement(insertANNOTATION);
-		statementSelectANNOTATION = this.con.prepareStatement(selectANNOTATION);
-		
-		
-		
-		statementGetContributorFromAccession = this.con.prepareStatement(sqlGetContributorFromAccession);
-		statementGetAccessions = this.con.prepareStatement(sqlGetAccessions);
-	}
-	
-	
-	/**
-	 * Create a database with the MassBank database scheme.
-	 * @param dbName the name of the new database
-	 */
-	public static void init_db(String dbName) throws SQLException, ConfigurationException, FileNotFoundException, IOException {
-		String link="jdbc:mariadb://" 
-				+ Config.get().dbHostName() + ":3306/" 
-				+ "?user=root" 
-				+ "&password=" + Config.get().dbPassword();
-		logger.trace("Opening database connection with url\"" + link + "\".");
-		Connection connection = DriverManager.getConnection(link);
-		
-		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
-		Statement stmt = connection.createStatement();
-		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
-		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'utf8';");
-		stmt.executeUpdate("USE " + dbName + ";");
-		
-		logger.trace("Executing sql statements in file at: \"" + DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql") + "\".");
-		ScriptRunner runner = new ScriptRunner(connection, false, false);
-		runner.runScript(new InputStreamReader(DatabaseManager.class.getClassLoader().getResourceAsStream("create_massbank_scheme.sql")));
-		
-		stmt.close();
-		logger.trace("Closing connection with url\"" + link + "\".");
-		connection.commit();
-		connection.close();
-	}
-	
-	/**
-	 * Move all tables from MassBankNew to MassBank,
-	 */
-	public static void move_temp_db_to_main_massbank() throws ConfigurationException, SQLException, IOException {
-		String link="jdbc:mariadb://" 
-				+ Config.get().dbHostName() + ":3306/" 
-				+ "?user=root" 
-				+ "&password=" + Config.get().dbPassword();
-		logger.trace("Opening database connection with url\"" + link + "\".");
-		Connection connection = DriverManager.getConnection(link);
-		
-		StringBuilder sb = new StringBuilder();
-		
-		// get all tables
-		Statement stmt = connection.createStatement();
-		List<String> table_names = new ArrayList<String>();
-		ResultSet result = stmt.executeQuery("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA ='MassBankNew'");
-		while (result.next()) {
-			table_names.add(result.getString(1));
-        }
-		stmt.close();
-		
-		// create MassBankBackup database
-		sb.append("CREATE DATABASE MassBankBackup;\n");
-		
-		// move MassBankNew to MassBank and MassBank to MassBankBackup
-		sb.append("RENAME TABLE");
-		for(String table_name : table_names) {
-			sb.append(" MassBank."+table_name+" to MassBankBackup."+table_name+",");
-			sb.append(" MassBankNew."+table_name+" to MassBank."+table_name+",");
-		}
-		sb.setLength(sb.length() - 1);
-		sb.append(";\n");
-		
-		// drop MassBankNew and MassBankBackup 
-		sb.append("DROP DATABASE " + Config.get().tmpdbName() + ";\n");
-		sb.append("DROP DATABASE MassBankBackup;\n");
-		
-		logger.trace("Running sql commands:\n" + sb.toString());
-		ScriptRunner runner = new ScriptRunner(connection, false, false);
-		runner.runScript(new StringReader(sb.toString()));
-		connection.commit();
-		connection.close();
-	}
-	
-
-		
-	private void openConnection() {
-		Connection con	= null;
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-			con = DriverManager.getConnection(connectUrl);
-			con.setAutoCommit(false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		this.con = con;
-	}
-
-	public void closeConnection() {
-		try {
-			if ( this.con != null ) this.con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public Connection getConnection() {
-		return this.con;
-	}
+//	/**
+//	 * Create a database with the MassBank database scheme.
+//	 * @param dbName the name of the new database
+//	 */
+//	public static void init_db(String dbName) throws SQLException, ConfigurationException, FileNotFoundException, IOException {
+//		String link="jdbc:mariadb://" 
+//				+ Config.get().dbHostName() + ":3306/" 
+//				+ "?user=root" 
+//				+ "&password=" + Config.get().dbPassword();
+//		
+//		logger.trace("Opening database connection with url\"" + link + "\".");
+//		Connection connection = DriverManager.getConnection(link);
+//		Statement stmt = connection.createStatement();
+//		
+//		logger.trace("Executing sql statements to create empty database \"" + dbName + "\".");
+//		stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName + ";");
+//		stmt.executeUpdate("CREATE DATABASE " + dbName + " CHARACTER SET = 'utf8';");
+//		stmt.executeUpdate("USE " + dbName + ";");
+//				
+//		logger.trace("Executing sql statements in file at: \"" + DatabaseManager.class.getClassLoader().getResource("create_massbank_scheme.sql") + "\".");
+//		ScriptRunner runner = new ScriptRunner(connection, false);
+//		runner.runScript(new InputStreamReader(DatabaseManager.class.getClassLoader().getResourceAsStream("create_massbank_scheme.sql")));
+//		
+//		stmt.close();
+//		logger.trace("Closing connection with url\"" + link + "\".");
+//		connection.commit();
+//		connection.close();
+//	}
 	
 	/**
 	 * Store the content of the given record in the database
 	 * 
-	 * @param  acc the record to store
+	 * @param  rec the record to store
 	 */
-	public void persistAccessionFile(Record acc) {
-		boolean bulk=false;
-		
-		// get contributor ID
+	public static void persistAccessionFile(Record rec) throws SQLException {
+		// get contributor ID or create
 		Integer contributorId = -1;
-		try {
-			statementSelectCONTRIBUTORIdByACRONYM.setString(1, acc.CONTRIBUTOR());
-			try (ResultSet set = statementSelectCONTRIBUTORIdByACRONYM.executeQuery()) {
-				if (set.next()) {
+		try (Connection con = ds.getConnection()) {
+			con.setAutoCommit(false);
+			// add contributor if not already there
+			try (PreparedStatement pst = con.prepareStatement(insertCONTRIBUTOR)) {
+				pst.setString(1, rec.CONTRIBUTOR());
+				pst.setString(2, rec.CONTRIBUTOR());
+				pst.setString(3, rec.CONTRIBUTOR());
+				pst.executeUpdate();
+			}
+			// get the ID
+			try (PreparedStatement pst = con.prepareStatement(selectCONTRIBUTORIdByACRONYM)) {
+				pst.setString(1, rec.CONTRIBUTOR());
+				try (ResultSet set = pst.executeQuery()) {
+					set.next();
 					contributorId = set.getInt(1);
 				}
-				else {
-					statementInsertCONTRIBUTOR.setString(1, acc.CONTRIBUTOR());
-					statementInsertCONTRIBUTOR.setString(2, acc.CONTRIBUTOR());
-					statementInsertCONTRIBUTOR.setString(3, acc.CONTRIBUTOR());
-					statementInsertCONTRIBUTOR.executeUpdate();
-					try (ResultSet set2 = statementInsertCONTRIBUTOR.getGeneratedKeys()) {
-						set2.next();
-						contributorId = set2.getInt("ID");
+			}
+			
+			// deprecated record goes to separate table
+			if (rec.DEPRECATED()) {
+				try (PreparedStatement pst = con.prepareStatement(insertDEPRECATED_RECORD)) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setInt(2, contributorId);
+					pst.setBlob(3, new ByteArrayInputStream(rec.DEPRECATED_CONTENT().getBytes()));
+					pst.executeUpdate();
+					return;
+				}
+			}
+			
+			// add to COMPOUND table
+			Integer compoundId = -1;
+			try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND, Statement.RETURN_GENERATED_KEYS)) {
+				pst.setString(1, rec.CH_FORMULA());
+				pst.setDouble(2, rec.CH_EXACT_MASS().doubleValue());
+				pst.setInt(3, rec.CH_EXACT_MASS().scale());
+				pst.setString(4, rec.CH_SMILES());
+				pst.setString(5, rec.CH_IUPAC());
+				pst.executeUpdate();
+				try (ResultSet set = pst.getGeneratedKeys()) {
+					set.next();
+					compoundId = set.getInt(1);
+				}
+			}
+			// add to COMPOUND_CLASS and connect with compoundId
+			for (String compound : rec.CH_COMPOUND_CLASS()) {
+				Integer compoundClassId = -1;
+				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_CLASS, Statement.RETURN_GENERATED_KEYS)) {
+					pst.setString(1, null);
+					pst.setString(2, null);
+					pst.setString(3, compound);
+					pst.executeUpdate();
+					try (ResultSet set = pst.getGeneratedKeys()) {
+						set.next();
+						compoundClassId = set.getInt(1);
+					}
+				}
+				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_COMPOUND_CLASS)) {
+					pst.setInt(1, compoundId);
+					pst.setInt(2, compoundClassId);
+					pst.executeUpdate();
+				}
+			}
+			
+			// add to NAME and connect with compoundId
+			for (String name : rec.CH_NAME()) {
+				Integer nameId;
+				try (PreparedStatement pst = con.prepareStatement(insertNAME, Statement.RETURN_GENERATED_KEYS)) {
+					pst.setString(1, name);
+					pst.executeUpdate();
+					try (ResultSet set = pst.getGeneratedKeys()) {
+						set.next();
+						nameId = set.getInt(1);
+					}			
+				}
+				try (PreparedStatement pst = con.prepareStatement(insertCOMPOUND_NAME)) {
+					pst.setInt(1, compoundId);
+					pst.setInt(2, nameId);
+					pst.executeUpdate();
+				}
+			}
+			
+			// add to CH_LINK and connect with compoundId
+			try (PreparedStatement pst = con.prepareStatement(insertCH_LINK)) {
+				Iterator<Entry<String, String>> itr = rec.CH_LINK().entrySet().iterator();
+				while (itr.hasNext()) {
+					Entry<String,String> entry = itr.next();
+					pst.setInt(1,compoundId);
+					pst.setString(2, entry.getKey());
+					pst.setString(3, entry.getValue());
+					pst.addBatch();		
+				}
+				pst.executeBatch();
+			}
+			
+			// add to SAMPLE
+			Integer sampleId = -1;
+			try (PreparedStatement pst = con.prepareStatement(insertSAMPLE, Statement.RETURN_GENERATED_KEYS)) {
+				if (rec.SP_SCIENTIFIC_NAME() != null) {
+					pst.setString(1, rec.SP_SCIENTIFIC_NAME());
+				} else {
+					pst.setNull(1, java.sql.Types.VARCHAR);
+				}
+				if (rec.SP_LINEAGE() != null) {
+					pst.setString(2, rec.SP_LINEAGE());
+				} else {
+					pst.setNull(2, java.sql.Types.VARCHAR);
+				}
+				if (rec.SP_SCIENTIFIC_NAME() != null || rec.SP_LINEAGE() != null) {
+					pst.executeUpdate();
+					try (ResultSet set = pst.getGeneratedKeys()) {
+						set.next();
+						sampleId = set.getInt(1);
 					}
 				}
 			}
-			if (acc.DEPRECATED()) {
-				statementInsertDEPRECATED_RECORD.setString(1, acc.ACCESSION());
-				statementInsertDEPRECATED_RECORD.setInt(2, contributorId);
-				statementInsertDEPRECATED_RECORD.setBlob(3, new ByteArrayInputStream(acc.DEPRECATED_CONTENT().getBytes()));
-				statementInsertDEPRECATED_RECORD.executeUpdate();
-				return;
-			}
 			
-			
-			
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-				
-		try {
-			statementInsertCOMPOUND.setString(1, acc.CH_FORMULA());
-			statementInsertCOMPOUND.setDouble(2, acc.CH_EXACT_MASS().doubleValue());
-			statementInsertCOMPOUND.setInt(3, acc.CH_EXACT_MASS().scale());
-			statementInsertCOMPOUND.setString(4, acc.CH_SMILES());
-			statementInsertCOMPOUND.setString(5, acc.CH_IUPAC());
-			// TODO support CH$CDK_DEPICT_SMILES
-			// TODO support CH$CDK_DEPICT_GENERIC_SMILES
-			// TODO support CH$CDK_DEPICT_STRUCTURE_SMILES
-			statementInsertCOMPOUND.setNull(6, java.sql.Types.VARCHAR);
-			statementInsertCOMPOUND.setNull(7, java.sql.Types.VARCHAR);
-			statementInsertCOMPOUND.setNull(8, java.sql.Types.VARCHAR);
-			statementInsertCOMPOUND.executeUpdate();
-			int compoundId = -1;
-			try (ResultSet set = statementInsertCOMPOUND.getGeneratedKeys()) {
-				set.next();
-				compoundId = set.getInt("ID");
-			}
-				
-			int compoundClassId;
-			for (String el : acc.CH_COMPOUND_CLASS()) {
-				statementInsertCOMPOUND_CLASS.setString(1, null);
-				statementInsertCOMPOUND_CLASS.setString(2, null);
-				statementInsertCOMPOUND_CLASS.setString(3, el);
-				statementInsertCOMPOUND_CLASS.executeUpdate();
-				try (ResultSet set = statementInsertCOMPOUND_CLASS.getGeneratedKeys()) {
+			// add to INSTRUMENT
+			Integer instrumentId = -1;
+			try (PreparedStatement pst = con.prepareStatement(insertINSTRUMENT, Statement.RETURN_GENERATED_KEYS)) {
+				pst.setString(1, rec.AC_INSTRUMENT());
+				pst.setString(2, rec.AC_INSTRUMENT_TYPE());
+				pst.executeUpdate();
+				try (ResultSet set = pst.getGeneratedKeys()) {
 					set.next();
-					compoundClassId = set.getInt("ID");
+					instrumentId = set.getInt(1);
 				}
-				statementInsertCOMPOUND_COMPOUND_CLASS.setInt(1, compoundId);
-				statementInsertCOMPOUND_COMPOUND_CLASS.setInt(2, compoundClassId);
-				statementInsertCOMPOUND_COMPOUND_CLASS.executeUpdate();
 			}
-				
-			int nameId;
-	//		String insertName = "INSERT INTO NAME VALUES(?,?)";
-	//		stmnt = con.prepareStatement(insertName);
-			for (String el : acc.CH_NAME()) {
-				statementInsertNAME.setString(1, el);
-//				try {
-				statementInsertNAME.executeUpdate();
-					ResultSet set = statementInsertNAME.getGeneratedKeys();
-					set.next();
-					nameId = set.getInt("ID");
-	
-	//				String insertCompoundName = "INSERT INTO COMPOUND_NAME VALUES(?,?)";
-	//				stmnt = con.prepareStatement(insertCompoundName);
-					statementInsertCOMPOUND_NAME.setInt(1, compoundId);
-					statementInsertCOMPOUND_NAME.setInt(2, nameId);
-					statementInsertCOMPOUND_NAME.executeUpdate();
-			}
-				
-				//System.out.println(System.nanoTime());
-		//		String insertChLink = "INSERT INTO CH_LINK VALUES(?,?,?)";
-		//		stmnt = con.prepareStatement(insertChLink);
-				Iterator<Entry<String,String>> itr = acc.CH_LINK().entrySet().iterator();
-				while (itr.hasNext()) { 
-					Entry<String,String> entry = itr.next();
-					statementInsertCH_LINK.setInt(1,compoundId);
-					statementInsertCH_LINK.setString(2, entry.getKey());
-					statementInsertCH_LINK.setString(3, entry.getValue());
-	//				statementInsertCH_LINK.executeUpdate();
-					statementInsertCH_LINK.addBatch();		
-				}
 			
-//				for (Pair<String, String> el : acc.CH_LINK()) {
-//					statementInsertCH_LINK.setInt(1,compoundId);
-//					statementInsertCH_LINK.setString(2, el.getLeft());
-//					statementInsertCH_LINK.setString(3, el.getRight());
-//		//			statementInsertCH_LINK.executeUpdate();
-//					statementInsertCH_LINK.addBatch();
-//				}
-				if (!bulk) {
-					statementInsertCH_LINK.executeBatch();
-				}
-				
-				//System.out.println(System.nanoTime());
-				int sampleId = -1;
-				if (acc.SP_SCIENTIFIC_NAME() != null) {
-					statementInsertSAMPLE.setString(1, acc.SP_SCIENTIFIC_NAME());
+			// add to RECORD
+			try (PreparedStatement pst = con.prepareStatement(insertRECORD)) {
+				pst.setString(1, rec.ACCESSION());
+				pst.setTimestamp(2, Timestamp.from(rec.getTimestamp()));
+				pst.setString(3, rec.RECORD_TITLE1());
+				pst.setString(4, rec.DATE());
+				pst.setString(5, rec.AUTHORS());
+				pst.setString(6, rec.LICENSE());			
+				if (rec.COPYRIGHT() != null) {
+					pst.setString(7, rec.COPYRIGHT());			
 				} else {
-					statementInsertSAMPLE.setNull(1, java.sql.Types.VARCHAR);
+					pst.setNull(7, java.sql.Types.VARCHAR);
 				}
-				if (acc.SP_LINEAGE() != null) {
-					statementInsertSAMPLE.setString(2, acc.SP_LINEAGE());
+				if (rec.PUBLICATION() != null) {
+					pst.setString(8, rec.PUBLICATION());			
 				} else {
-					statementInsertSAMPLE.setNull(2, java.sql.Types.VARCHAR);
+					pst.setNull(8, java.sql.Types.VARCHAR);
 				}
-				if (acc.SP_SCIENTIFIC_NAME() != null || acc.SP_LINEAGE() != null) {
-					statementInsertSAMPLE.executeUpdate();
-					ResultSet set = statementInsertSAMPLE.getGeneratedKeys();
-					set.next();
-					sampleId = set.getInt("ID");
-				}
-				
-				//System.out.println(System.nanoTime());
-				statementInsertINSTRUMENT.setString(1, acc.AC_INSTRUMENT());
-				statementInsertINSTRUMENT.setString(2, acc.AC_INSTRUMENT_TYPE());
-				statementInsertINSTRUMENT.executeUpdate();
-				ResultSet set = statementInsertINSTRUMENT.getGeneratedKeys();
-				set.next();
-				int instrumentId = set.getInt("ID");
-				
-				statementInsertRECORD.setString(1, acc.ACCESSION());
-				statementInsertRECORD.setTimestamp(2, Timestamp.from(acc.getTimestamp()));
-				statementInsertRECORD.setString(3, acc.RECORD_TITLE1());
-				statementInsertRECORD.setString(4, acc.DATE());
-				statementInsertRECORD.setString(5, acc.AUTHORS());
-				statementInsertRECORD.setString(6, acc.LICENSE());			
-				if (acc.COPYRIGHT() != null) {
-					statementInsertRECORD.setString(7, acc.COPYRIGHT());			
+				if (rec.PROJECT() != null) {
+					pst.setString(9, rec.PROJECT());			
 				} else {
-					statementInsertRECORD.setNull(7, java.sql.Types.VARCHAR);
+					pst.setNull(9, java.sql.Types.VARCHAR);
 				}
-				if (acc.PUBLICATION() != null) {
-					statementInsertRECORD.setString(8, acc.PUBLICATION());			
-				} else {
-					statementInsertRECORD.setNull(8, java.sql.Types.VARCHAR);
-				}
-				if (acc.PROJECT() != null) {
-					statementInsertRECORD.setString(9, acc.PROJECT());			
-				} else {
-					statementInsertRECORD.setNull(9, java.sql.Types.VARCHAR);
-				}
-				
-				statementInsertRECORD.setInt(10, compoundId);
+				pst.setInt(10, compoundId);
 				if (sampleId > 0) {
-					statementInsertRECORD.setInt(11, sampleId);
+					pst.setInt(11, sampleId);
 				} else {
-					statementInsertRECORD.setNull(11, java.sql.Types.INTEGER);
+					pst.setNull(11, java.sql.Types.INTEGER);
 				}
-				statementInsertRECORD.setInt(12, instrumentId);
-				statementInsertRECORD.setString(13, acc.AC_MASS_SPECTROMETRY_MS_TYPE());
-				statementInsertRECORD.setString(14, acc.AC_MASS_SPECTROMETRY_ION_MODE());
-				statementInsertRECORD.setString(15, acc.PK_SPLASH());
-				statementInsertRECORD.setInt(16, contributorId);
-				statementInsertRECORD.executeUpdate();
-				
-				//System.out.println(System.nanoTime());
-				for (String el : acc.SP_SAMPLE()) {
-					statementInsertSP_SAMPLE.setString(1, acc.ACCESSION());
-					statementInsertSP_SAMPLE.setString(2, el);
-		//			statementInsertSP_SAMPLE.executeUpdate();
-					statementInsertSP_SAMPLE.addBatch();
-				}
-				if (!bulk) {
-					statementInsertSP_SAMPLE.executeBatch();
-				}
-				//System.out.println(System.nanoTime());
-				
-				itr = acc.SP_LINK().entrySet().iterator();
-				while (itr.hasNext()) { 
-					Entry<String,String> entry = itr.next();
-					statementInsertSP_LINK.setString(1, acc.ACCESSION());
-					statementInsertSP_LINK.setString(2, entry.getKey() + " " + entry.getValue());
-		//			statementInsertSP_LINK.executeUpdate();Select
-					statementInsertSP_LINK.addBatch();
-				}				
-				if (!bulk) {
-					statementInsertSP_LINK.executeBatch();
-				}
-				
-		//		set = statementInsertRECORD.getGeneratedKeys();
-		//		set.next();
-				String accession = acc.ACCESSION();
-				
-				//System.out.println(System.nanoTime());
-				for (String el : acc.COMMENT()) {
-					statementInsertCOMMENT.setString(1, accession);
-					statementInsertCOMMENT.setString(2, el);
-		//			statementInsertCOMMENT.executeUpdate();
-					statementInsertCOMMENT.addBatch();
-				}
-				if (!bulk) {
-					statementInsertCOMMENT.executeBatch();
-				}
-				
-				//System.out.println(System.nanoTime());
-				for (Pair<String, String> el : acc.AC_MASS_SPECTROMETRY()) {
-					statementInsertAC_MASS_SPECTROMETRY.setString(1, accession);
-					statementInsertAC_MASS_SPECTROMETRY.setString(2, el.getLeft());
-					statementInsertAC_MASS_SPECTROMETRY.setString(3, el.getRight());
-		//			statementInsertAC_MASS_SPECTROMETRY.executeUpdate();
-					statementInsertAC_MASS_SPECTROMETRY.addBatch();
-				}
-				if (!bulk) {
-					statementInsertAC_MASS_SPECTROMETRY.executeBatch();
-				}
-				
-				//System.out.println(System.nanoTime());
-				for (Pair<String, String> el : acc.AC_CHROMATOGRAPHY()) {
-					statementInsertAC_CHROMATOGRAPHY.setString(1, accession);
-					statementInsertAC_CHROMATOGRAPHY.setString(2, el.getLeft());
-					statementInsertAC_CHROMATOGRAPHY.setString(3, el.getRight());
-		//			statementInsertAC_CHROMATOGRAPHY.executeUpdate();
-					statementInsertAC_CHROMATOGRAPHY.addBatch();
-				}
-				if (!bulk) {
-					statementInsertAC_CHROMATOGRAPHY.executeBatch();
-				}
-				
-				//System.out.println(System.nanoTime());
-				for (Pair<String, String> el : acc.MS_FOCUSED_ION()) {
-					statementInsertMS_FOCUSED_ION.setString(1, accession);
-					statementInsertMS_FOCUSED_ION.setString(2, el.getLeft());
-					statementInsertMS_FOCUSED_ION.setString(3, el.getRight());
-		//			statementInsertMS_FOCUSED_ION.executeUpdate();
-					statementInsertMS_FOCUSED_ION.addBatch();
-				}
-				if (!bulk) {
-					statementInsertMS_FOCUSED_ION.executeBatch();
-				}
-				
-				//System.out.println(System.nanoTime());
-				for (Pair<String, String> el : acc.MS_DATA_PROCESSING()) {
-					statementInsertMS_DATA_PROCESSING.setString(1, accession);
-					statementInsertMS_DATA_PROCESSING.setString(2, el.getLeft());
-					statementInsertMS_DATA_PROCESSING.setString(3, el.getRight());
-		//			statementInsertMS_DATA_PROCESSING.executeUpdate();
-					statementInsertMS_DATA_PROCESSING.addBatch();
-				}
-				if (!bulk) {
-					statementInsertMS_DATA_PROCESSING.executeBatch();
-				}
-		
-				//System.out.println(System.nanoTime());
-				
-				for (Triple<BigDecimal,BigDecimal,Integer> peak : acc.PK_PEAK()) {
-					statementInsertPEAK.setString(1, accession);
-					statementInsertPEAK.setDouble(2, peak.getLeft().doubleValue());
-					statementInsertPEAK.setInt(3, peak.getLeft().scale());
-					
-					statementInsertPEAK.setDouble(4, peak.getMiddle().doubleValue());
-					statementInsertPEAK.setInt(5, peak.getMiddle().scale());
-					
-					statementInsertPEAK.setInt(6, peak.getRight().intValue());
-		//			statementInsertPEAK.executeUpdate();
-					statementInsertPEAK.addBatch();
-				}
-				if (!bulk) {
-					statementInsertPEAK.executeBatch();
-				}
-				
-				
-				
-				List<String> annotationHeader = acc.PK_ANNOTATION_HEADER();
-				if (!annotationHeader.isEmpty()) {
-					statementInsertANNOTATION_HEADER.setString(1, accession);
-					statementInsertANNOTATION_HEADER.setString(2, String.join(" ", annotationHeader));
-					statementInsertANNOTATION_HEADER.executeUpdate();
-				
-					for (Pair<BigDecimal, List<String>> annotation : acc.PK_ANNOTATION()) {
-						statementInsertANNOTATION.setString(1, accession);
-						statementInsertANNOTATION.setDouble(2, annotation.getLeft().doubleValue());
-						statementInsertANNOTATION.setInt(3, annotation.getLeft().scale());
-						statementInsertANNOTATION.setString(4, String.join(" ",annotation.getRight()));
-						statementInsertANNOTATION.addBatch();
-					}
-				}
-				
-				if (!bulk) {
-					statementInsertANNOTATION.executeBatch();
-				}
+				pst.setInt(12, instrumentId);
+				pst.setString(13, rec.AC_MASS_SPECTROMETRY_MS_TYPE());
+				pst.setString(14, rec.AC_MASS_SPECTROMETRY_ION_MODE());
+				pst.setString(15, rec.PK_SPLASH());
+				pst.setInt(16, contributorId);
+				pst.executeUpdate();
+			}
 			
-		
-		
-		
-		con.commit();
-		
-		} catch (SQLException e) {
-			StringBuilder tmp = new StringBuilder();
-			tmp.append(e.getMessage());
-			tmp.append("\n");
-			for (StackTraceElement el : e.getStackTrace()) {
-				tmp.append(el.toString());
-				tmp.append("\n");
+			// add to SP_SAMPLE
+			try (PreparedStatement pst = con.prepareStatement(insertSP_SAMPLE, Statement.RETURN_GENERATED_KEYS)) {
+				for (String sample : rec.SP_SAMPLE()) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, sample);
+					pst.addBatch();
+				}
+				pst.executeBatch();
 			}
-			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
-//			try {
-//				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.ACCESSION() + ".txt")));
-//			} catch (FileNotFoundException e1) {
-//				//e1.printStackTrace();
-//			}
-			this.closeConnection();
-		} catch (IndexOutOfBoundsException e) {
-			StringBuilder tmp = new StringBuilder();
-			tmp.append(e.getMessage());
-			tmp.append("\n");
-			for (StackTraceElement el : e.getStackTrace()) {
-				tmp.append(el.toString());
-				tmp.append("\n");
+				
+			// add to SP_LINK and connect with ACCESSION
+			try (PreparedStatement pst = con.prepareStatement(insertSP_LINK)) {
+				Iterator<Entry<String, String>> itr = rec.SP_LINK().entrySet().iterator();
+				while (itr.hasNext()) {
+					Entry<String, String> entry = itr.next();
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, entry.getKey() + " " + entry.getValue());
+					pst.addBatch();
+				}
+				pst.executeBatch();
 			}
-			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
-//			System.out.println(acc.ACCESSION());
-//			System.out.println(acc.get("PK$PEAK").size());
-//			System.out.println(acc.get("PK$ANNOTATION").size());
-//			try {
-//				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.ACCESSION() + ".txt")));
-//			} catch (FileNotFoundException e1) {
-//				//e1.printStackTrace();
-//			}
-		} catch (Exception e) {
-			StringBuilder tmp = new StringBuilder();
-			tmp.append(e.getMessage());
-			tmp.append("\n");
-			for (StackTraceElement el : e.getStackTrace()) {
-				tmp.append(el.toString());
-				tmp.append("\n");
+			
+			// add to COMMENT and connect with ACCESSION
+			try (PreparedStatement pst = con.prepareStatement(insertCOMMENT)) {
+				for (String comment : rec.COMMENT()) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, comment);
+					pst.addBatch();
+				}
+				pst.executeBatch();
 			}
-			System.out.println("DB ERROR " + tmp + " for accession: " + acc.ACCESSION());
-//			try {
-//				e.printStackTrace(new PrintStream(new FileOutputStream("/Users/laptop/Desktop/errors/" + acc.ACCESSION() + ".txt")));
-//			} catch (FileNotFoundException e1) {
-//				//e1.printStackTrace();
-//			}
-			this.closeConnection();
+	
+			// add to AC_MASS_SPECTROMETRY and connect with ACCESSION
+			try (PreparedStatement pst = con.prepareStatement(insertAC_MASS_SPECTROMETRY)) {
+				for (Pair<String, String> massspectrometry : rec.AC_MASS_SPECTROMETRY()) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, massspectrometry.getLeft());
+					pst.setString(3, massspectrometry.getRight());
+					pst.addBatch();
+				}
+				pst.executeBatch();
+			}
+
+			// add to AC_CHROMATOGRAPHY and connect with ACCESSION
+			try (PreparedStatement pst = con.prepareStatement(insertAC_CHROMATOGRAPHY)) {
+				for (Pair<String, String> chromatography : rec.AC_CHROMATOGRAPHY()) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, chromatography.getLeft());
+					pst.setString(3, chromatography.getRight());
+					pst.addBatch();
+				}
+				pst.executeBatch();
+			}
+			
+			// add to AC_CHROMATOGRAPHY and connect with ACCESSION
+			try (PreparedStatement pst = con.prepareStatement(insertMS_FOCUSED_ION)) {
+				for (Pair<String, String> focusedion : rec.MS_FOCUSED_ION()) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, focusedion.getLeft());
+					pst.setString(3, focusedion.getRight());
+					pst.addBatch();
+				}
+				pst.executeBatch();
+			}
+			
+			// add to MS_DATA_PROCESSING and connect with ACCESSION
+			try (PreparedStatement pst = con.prepareStatement(insertMS_DATA_PROCESSING)) {
+				for (Pair<String, String> dataprocessing : rec.MS_DATA_PROCESSING()) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, dataprocessing.getLeft());
+					pst.setString(3, dataprocessing.getRight());
+					pst.addBatch();
+				}
+				pst.executeBatch();
+			}
+
+			// add to PEAK and connect with ACCESSION
+			try (PreparedStatement pst = con.prepareStatement(insertPEAK)) {
+				for (Triple<BigDecimal,BigDecimal,Integer> peak : rec.PK_PEAK()) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setDouble(2, peak.getLeft().doubleValue());
+					pst.setInt(3, peak.getLeft().scale());
+					
+					pst.setDouble(4, peak.getMiddle().doubleValue());
+					pst.setInt(5, peak.getMiddle().scale());
+					
+					pst.setInt(6, peak.getRight().intValue());
+					pst.addBatch();
+				}
+				pst.executeBatch();
+			}
+			
+			// add to ANNOTATION_HEADER and ANNOTATIOM and connect with ACCESSION
+			if (!rec.PK_ANNOTATION_HEADER().isEmpty()) {
+				try (PreparedStatement pst = con.prepareStatement(insertANNOTATION_HEADER)) {
+					pst.setString(1, rec.ACCESSION());
+					pst.setString(2, String.join(" ", rec.PK_ANNOTATION_HEADER()));
+					pst.executeUpdate();
+				}
+				try (PreparedStatement pst = con.prepareStatement(insertANNOTATION)) {
+					for (Pair<BigDecimal, List<String>> annotation : rec.PK_ANNOTATION()) {
+						pst.setString(1, rec.ACCESSION());
+						pst.setDouble(2, annotation.getLeft().doubleValue());
+						pst.setInt(3, annotation.getLeft().scale());
+						pst.setString(4, String.join(" ",annotation.getRight()));
+						pst.addBatch();
+					}
+					pst.executeBatch();
+				}
+			}
+			con.commit();
+			con.setAutoCommit(true);
 		}
-//		this.closeConnection();
 	}
 	
+	public static void setRepoVersion(String version) throws SQLException {
+		try (Connection con = ds.getConnection()) {
+			PreparedStatement stmnt = con.prepareStatement("INSERT INTO LAST_UPDATE (LAST_UPDATE,VERSION) VALUES (CURRENT_TIMESTAMP,?)");
+			stmnt.setString(1, version);
+			stmnt.executeUpdate();
+		}
+		
+	}
 	
 	/**
 	 * Returns the complete record TODO solve 1:1 relations by a single sql
@@ -750,11 +583,32 @@ public class DatabaseManager {
 	 * @param accessionId
 	 * @return Record
 	 */
-	public Record getAccessionData(String accessionId) {
-		Record acc = new Record();
-		try {
-			this.statementSelectRECORD.setString(1, accessionId);
-			ResultSet set = this.statementSelectRECORD.executeQuery();
+	public static Record getAccessionData(String accessionId) {
+		Record acc = new Record();		
+		try (Connection con = ds.getConnection()) {
+			PreparedStatement statementSelectCOMPOUND = con.prepareStatement(selectCOMPOUND);
+			PreparedStatement statementSelectCOMPOUND_CLASS = con.prepareStatement(selectCOMPOUND_CLASS);
+			PreparedStatement statementSelectCOMPOUND_COMPOUND_CLASS = con.prepareStatement(selectCOMPOUND_COMPOUND_CLASS);
+			PreparedStatement statementSelectNAME = con.prepareStatement(selectNAME);
+			PreparedStatement statementSelectCOMPOUND_NAME = con.prepareStatement(selectCOMPOUND_NAME);
+			PreparedStatement statementSelectCH_LINK = con.prepareStatement(selectCH_LINK);
+			PreparedStatement statementSelectSAMPLE = con.prepareStatement(selectSAMPLE);
+			PreparedStatement statementSelectINSTRUMENT = con.prepareStatement(selectINSTRUMENT);
+			PreparedStatement statementSelectRECORD = con.prepareStatement(selectRECORD);
+			PreparedStatement statementSelectDEPRECATED_RECORD = con.prepareStatement(selectDEPRECATED_RECORD);
+			PreparedStatement statementSelectCOMMENT = con.prepareStatement(selectCOMMENT);
+			PreparedStatement statementSelectSP_SAMPLE = con.prepareStatement(selectSP_SAMPLE);
+			PreparedStatement statementSelectSP_LINK = con.prepareStatement(selectSP_LINK);
+			PreparedStatement statementSelectAC_MASS_SPECTROMETRY = con.prepareStatement(selectAC_MASS_SPECTROMETRY);
+			PreparedStatement statementSelectAC_CHROMATOGRAPHY = con.prepareStatement(selectAC_CHROMATOGRAPHY);
+			PreparedStatement statementSelectMS_FOCUSED_ION = con.prepareStatement(selectMS_FOCUSED_ION);
+			PreparedStatement statementSelectMS_DATA_PROCESSING = con.prepareStatement(selectMS_DATA_PROCESSING);
+			PreparedStatement statementSelectPEAK = con.prepareStatement(selectPEAK);
+			PreparedStatement statementSelectANNOTATION_HEADER = con.prepareStatement(selectANNOTATION_HEADER);
+			PreparedStatement statementSelectANNOTATION = con.prepareStatement(selectANNOTATION);
+			
+			statementSelectRECORD.setString(1, accessionId);
+			ResultSet set = statementSelectRECORD.executeQuery();
 			int compoundID = -1;
 			int sampleID = -1;
 			int instrumentID = -1;
@@ -774,46 +628,46 @@ public class DatabaseManager {
 				acc.AC_MASS_SPECTROMETRY_MS_TYPE(set.getString("AC_MASS_SPECTROMETRY_MS_TYPE"));
 				acc.AC_MASS_SPECTROMETRY_ION_MODE(set.getString("AC_MASS_SPECTROMETRY_ION_MODE"));
 				acc.PK_SPLASH(set.getString("PK_SPLASH"));
-				this.statementSelectAC_CHROMATOGRAPHY.setString(1, set.getString("ACCESSION"));
-				this.statementSelectAC_MASS_SPECTROMETRY.setString(1, set.getString("ACCESSION"));
-				this.statementSelectMS_DATA_PROCESSING.setString(1, set.getString("ACCESSION"));
-				this.statementSelectMS_FOCUSED_ION.setString(1, set.getString("ACCESSION"));
-				this.statementSelectCOMMENT.setString(1, set.getString("ACCESSION"));
-				this.statementSelectPEAK.setString(1, set.getString("ACCESSION"));
-				// this.statementPK_NUM_PEAK.setString(1, set.getString("ACCESSION"));
-				this.statementSelectANNOTATION_HEADER.setString(1, accessionId);
+				statementSelectAC_CHROMATOGRAPHY.setString(1, set.getString("ACCESSION"));
+				statementSelectAC_MASS_SPECTROMETRY.setString(1, set.getString("ACCESSION"));
+				statementSelectMS_DATA_PROCESSING.setString(1, set.getString("ACCESSION"));
+				statementSelectMS_FOCUSED_ION.setString(1, set.getString("ACCESSION"));
+				statementSelectCOMMENT.setString(1, set.getString("ACCESSION"));
+				statementSelectPEAK.setString(1, set.getString("ACCESSION"));
+				// statementPK_NUM_PEAK.setString(1, set.getString("ACCESSION"));
+				statementSelectANNOTATION_HEADER.setString(1, accessionId);
 				
-				ResultSet tmp = this.statementSelectAC_CHROMATOGRAPHY.executeQuery();
+				ResultSet tmp = statementSelectAC_CHROMATOGRAPHY.executeQuery();
 				List<Pair<String, String>> tmpList	= new ArrayList<Pair<String, String>>();
 				while (tmp.next())
 					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
 				acc.AC_CHROMATOGRAPHY(tmpList);
 				
-				tmp = this.statementSelectAC_MASS_SPECTROMETRY.executeQuery();
+				tmp = statementSelectAC_MASS_SPECTROMETRY.executeQuery();
 				tmpList.clear();
 				while (tmp.next())
 					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
 				acc.AC_MASS_SPECTROMETRY(tmpList);
 				
-				tmp = this.statementSelectMS_DATA_PROCESSING.executeQuery();
+				tmp = statementSelectMS_DATA_PROCESSING.executeQuery();
 				tmpList.clear();
 				while (tmp.next())
 					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
 				acc.MS_DATA_PROCESSING(tmpList);
 				
-				tmp = this.statementSelectMS_FOCUSED_ION.executeQuery();
+				tmp = statementSelectMS_FOCUSED_ION.executeQuery();
 				tmpList.clear();
 				while (tmp.next())
 					tmpList.add(Pair.of(tmp.getString("SUBTAG"), tmp.getString("VALUE")));
 				acc.MS_FOCUSED_ION(tmpList);
 				
-				tmp = this.statementSelectCOMMENT.executeQuery();
+				tmp = statementSelectCOMMENT.executeQuery();
 				List<String> tmpList2	= new ArrayList<String>();
 				while (tmp.next())
 					tmpList2.add(tmp.getString("COMMENT"));
 				acc.COMMENT(tmpList2);
 				
-				tmp = this.statementSelectANNOTATION_HEADER.executeQuery();
+				tmp = statementSelectANNOTATION_HEADER.executeQuery();
 //				int PK_ANNOTATION_HEADER_numberOfTokens	= -1;
 				if (tmp.next()) {
 					String PK_ANNOTATION_HEADER	= tmp.getString("HEADER");
@@ -821,8 +675,8 @@ public class DatabaseManager {
 					acc.PK_ANNOTATION_HEADER(Arrays.asList(PK_ANNOTATION_HEADER_tokens));
 //					PK_ANNOTATION_HEADER_numberOfTokens	= PK_ANNOTATION_HEADER_tokens.length;
 					
-					this.statementSelectANNOTATION.setString(1, set.getString("ACCESSION"));
-					tmp = this.statementSelectANNOTATION.executeQuery();
+					statementSelectANNOTATION.setString(1, set.getString("ACCESSION"));
+					tmp = statementSelectANNOTATION.executeQuery();
 					while (tmp.next()) {
 						BigDecimal mz = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_MZ")))).setScale(tmp.getInt("PK_PEAK_MZ_SIGNIFICANT"));
 						List<String> annotation = Arrays.asList(tmp.getString("PK_ANNOTATION").split(" "));
@@ -831,7 +685,7 @@ public class DatabaseManager {
 					
 				}
 				
-				tmp = this.statementSelectPEAK.executeQuery();
+				tmp = statementSelectPEAK.executeQuery();
 				while (tmp.next()) {
 					BigDecimal mz = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_MZ")))).setScale(tmp.getInt("PK_PEAK_MZ_SIGNIFICANT"));
 					BigDecimal intensity = (new BigDecimal(String.valueOf(tmp.getDouble("PK_PEAK_INTENSITY")))).setScale(tmp.getInt("PK_PEAK_INTENSITY_SIGNIFICANT"));
@@ -839,81 +693,74 @@ public class DatabaseManager {
 				}
 			} else {
 				// try to find the ACCESSION in DEPRECATED_RECORD
-				this.statementSelectDEPRECATED_RECORD.setString(1, accessionId);
-				set = this.statementSelectDEPRECATED_RECORD.executeQuery();
+				statementSelectDEPRECATED_RECORD.setString(1, accessionId);
+				set = statementSelectDEPRECATED_RECORD.executeQuery();
 				if (set.next()) {
 					acc.ACCESSION(set.getString("ACCESSION"));
 					acc.DEPRECATED(true);
 					acc.DEPRECATED_CONTENT(set.getString("CONTENT"));
 					return acc;
-				} else throw new IllegalStateException("accessionId '" + accessionId + "' is not in database");
+				} else return null;
 			}
 			set.close();
 			
 			
 			if (compoundID == -1)
 				throw new IllegalStateException("compoundID is not set");
-			this.statementSelectCOMPOUND.setInt(1, compoundID);
-			set = this.statementSelectCOMPOUND.executeQuery();
+			statementSelectCOMPOUND.setInt(1, compoundID);
+			set = statementSelectCOMPOUND.executeQuery();
 			while (set.next()) {
 				acc.CH_FORMULA(set.getString("CH_FORMULA"));
 				BigDecimal exactMass = (new BigDecimal(String.valueOf(set.getDouble("CH_EXACT_MASS")))).setScale(set.getInt("CH_EXACT_MASS_SIGNIFICANT"));
 				acc.CH_EXACT_MASS(exactMass);
 				acc.CH_SMILES(set.getString("CH_SMILES"));
 				acc.CH_IUPAC(set.getString("CH_IUPAC"));
-								
-				// TODO CH$CDK_DEPICT_SMILES
-				// TODO CH$CDK_DEPICT_GENERIC_SMILES
-				// TODO CH$CDK_DEPICT_STRUCTURE_SMILES
-//				acc.add("CH$CDK_DEPICT_SMILES", null, set.getString("CH_CDK_DEPICT_SMILES"));
-//				acc.add("CH$CDK_DEPICT_GENERIC_SMILES", null, set.getString("CH_CDK_DEPICT_GENERIC_SMILES"));
-//				acc.add("CH$CDK_DEPICT_STRUCTURE_SMILES", null, set.getString("CH_CDK_DEPICT_STRUCTURE_SMILES"));
 			}
 			set.close();
 			
-			this.statementSelectCH_LINK.setInt(1, compoundID);
-			set = this.statementSelectCH_LINK.executeQuery();
+			statementSelectCH_LINK.setInt(1, compoundID);
+			set = statementSelectCH_LINK.executeQuery();
 			LinkedHashMap<String, String> tmpMap = new LinkedHashMap<String, String>();
 			while (set.next()) {
 				tmpMap.put(set.getString("DATABASE_NAME"), set.getString("DATABASE_ID"));
 			}
 			acc.CH_LINK(tmpMap);
 			
-			this.statementSelectCOMPOUND_COMPOUND_CLASS.setInt(1, compoundID);
-			set = this.statementSelectCOMPOUND_COMPOUND_CLASS.executeQuery();
+			statementSelectCOMPOUND_COMPOUND_CLASS.setInt(1, compoundID);
+			set = statementSelectCOMPOUND_COMPOUND_CLASS.executeQuery();
 			List<String> tmpList2	= new ArrayList<String>();
 			while (set.next()) {
-				this.statementSelectCOMPOUND_CLASS.setInt(1, set.getInt("CLASS"));
-				ResultSet tmp = this.statementSelectCOMPOUND_CLASS.executeQuery();
+				statementSelectCOMPOUND_CLASS.setInt(1, set.getInt("CLASS"));
+				ResultSet tmp = statementSelectCOMPOUND_CLASS.executeQuery();
 				while (tmp.next()) {
 					tmpList2.add(tmp.getString("CH_COMPOUND_CLASS"));
 				}
 			}
 			acc.CH_COMPOUND_CLASS(tmpList2);
 			
-			this.statementSelectCOMPOUND_NAME.setInt(1, compoundID);
-			set = this.statementSelectCOMPOUND_NAME.executeQuery();
+			statementSelectCOMPOUND_NAME.setInt(1, compoundID);
+			set = statementSelectCOMPOUND_NAME.executeQuery();
 			tmpList2.clear();
 			while (set.next()) {
 				int name = set.getInt("NAME") ;
-				this.statementSelectNAME.setInt(1, name);	
-				//this.statementSelectNAME.setInt(1, set.getInt("NAME"));
-				ResultSet tmp = this.statementSelectNAME.executeQuery();
+				statementSelectNAME.setInt(1, name);	
+				//statementSelectNAME.setInt(1, set.getInt("NAME"));
+				ResultSet tmp = statementSelectNAME.executeQuery();
 				while (tmp.next()) {
 					tmpList2.add(tmp.getString("CH_NAME"));
 				}
 			}
 			acc.CH_NAME(tmpList2);
 			
-			this.statementSelectSAMPLE.setInt(1,sampleID);
-			set = this.statementSelectSAMPLE.executeQuery();
+			statementSelectSAMPLE.setInt(1,sampleID);
+			set = statementSelectSAMPLE.executeQuery();
 			if (set.next()) {
 				acc.SP_SCIENTIFIC_NAME(set.getString("SP_SCIENTIFIC_NAME"));
 				acc.SP_LINEAGE(set.getString("SP_LINEAGE"));
 			}
 			
-			this.statementSelectSP_LINK.setString(1,acc.ACCESSION());
-			set = this.statementSelectSP_LINK.executeQuery();
+			statementSelectSP_LINK.setString(1,acc.ACCESSION());
+			set = statementSelectSP_LINK.executeQuery();
 			
 			
 			LinkedHashMap<String, String> tmpList = new LinkedHashMap<String, String>();
@@ -924,8 +771,8 @@ public class DatabaseManager {
 			}
 			acc.SP_LINK(tmpList);
 				
-			this.statementSelectSP_SAMPLE.setString(1,acc.ACCESSION());
-			set = this.statementSelectSP_SAMPLE.executeQuery();
+			statementSelectSP_SAMPLE.setString(1,acc.ACCESSION());
+			set = statementSelectSP_SAMPLE.executeQuery();
 			tmpList2.clear();
 			while (set.next()) {
 				tmpList2.add(set.getString("SP_SAMPLE"));
@@ -933,8 +780,8 @@ public class DatabaseManager {
 			acc.SP_SAMPLE(tmpList2);
 			
 			if (instrumentID == -1)	throw new IllegalStateException("instrumentID is not set");
-			this.statementSelectINSTRUMENT.setInt(1, instrumentID);
-			set = this.statementSelectINSTRUMENT.executeQuery();
+			statementSelectINSTRUMENT.setInt(1, instrumentID);
+			set = statementSelectINSTRUMENT.executeQuery();
 			if (set.next()) {
 				acc.AC_INSTRUMENT(set.getString("AC_INSTRUMENT"));
 				acc.AC_INSTRUMENT_TYPE(set.getString("AC_INSTRUMENT_TYPE"));
@@ -948,13 +795,16 @@ public class DatabaseManager {
 	}
 	
 	
-	public Record.Structure getStructureOfAccession(String accessionId) {
+	public static Record.Structure getStructureOfAccession(String accessionId) {
 		String CH_SMILES	= null;
 		String CH_IUPAC		= null;
 		
-		try {
-			this.statementSelectRECORD.setString(1, accessionId);
-			ResultSet set = this.statementSelectRECORD.executeQuery();
+		try (Connection con = ds.getConnection()) {
+			PreparedStatement statementSelectRECORD = con.prepareStatement(selectRECORD);
+			PreparedStatement statementSelectCOMPOUND = con.prepareStatement(selectCOMPOUND);
+			
+			statementSelectRECORD.setString(1, accessionId);
+			ResultSet set = statementSelectRECORD.executeQuery();
 			int compoundID = -1;
 			if (set.next()) {
 				compoundID = set.getInt("CH");
@@ -962,8 +812,8 @@ public class DatabaseManager {
 			
 			if (compoundID == -1)
 				throw new IllegalStateException("compoundID is not set");
-			this.statementSelectCOMPOUND.setInt(1, compoundID);
-			set = this.statementSelectCOMPOUND.executeQuery();
+			statementSelectCOMPOUND.setInt(1, compoundID);
+			set = statementSelectCOMPOUND.executeQuery();
 			while (set.next()) {
 				String smilesString	= set.getString("CH_SMILES");
 				if (!smilesString.equals("N/A")) CH_SMILES	= smilesString;
@@ -984,13 +834,14 @@ public class DatabaseManager {
 
 
 	
-	public Record.Contributor getContributorFromAccession(String accessionId) {
+	public static Record.Contributor getContributorFromAccession(String accessionId) {
 //		String accessionId	= "OUF01001";
 		Record.Contributor contributor	= null;
-		try {
-			this.statementGetContributorFromAccession.setString(1, accessionId);
+		try (Connection con = ds.getConnection()) {
+			PreparedStatement statementGetContributorFromAccession = con.prepareStatement(sqlGetContributorFromAccession);
+			statementGetContributorFromAccession.setString(1, accessionId);
 			
-			ResultSet tmp = this.statementGetContributorFromAccession.executeQuery();
+			ResultSet tmp = statementGetContributorFromAccession.executeQuery();
 			
 			//if (!tmp.next()) throw new IllegalStateException("Accession '" + accessionId + "' is not in database");
 			if (!tmp.next()) return null;
@@ -1016,8 +867,9 @@ public class DatabaseManager {
 	 */
 	public String[] getAccessions() {
 		List<String> accessions	= new ArrayList<String>();
-		try {
-			ResultSet tmp = this.statementGetAccessions.executeQuery();
+		try (Connection con = ds.getConnection()) {
+			PreparedStatement statementGetAccessions = con.prepareStatement(sqlGetAccessions);
+			ResultSet tmp = statementGetAccessions.executeQuery();
 			while(tmp.next())
 				accessions.add(tmp.getString("ACCESSION"));
 		} catch (SQLException e) {

@@ -34,8 +34,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -562,7 +560,21 @@ public class Record {
 		sb.append("<b>RECORD_TITLE:</b> " + RECORD_TITLE1() + "<br>\n");
 		sb.append("<b>DATE:</b> " + DATE() + "<br>\n");
 		sb.append("<b>AUTHORS:</b> " + AUTHORS() + "<br>\n");
-		sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/\" target=\"_blank\">" + LICENSE() + "</a><br>\n");
+		if (LICENSE().equals("CC0")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/publicdomain/zero/1.0/\" target=\"_blank\">CC0</a><br>\n");
+		} else if (LICENSE().equals("CC BY")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\">CC BY</a><br>\n");
+		} else if (LICENSE().equals("CC BY-SA")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-sa/4.0/\" target=\"_blank\">CC BY-SA</a><br>\n");
+		} else if (LICENSE().equals("CC BY-NC")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">CC BY-NC</a><br>\n");
+		} else if (LICENSE().equals("CC BY-NC-SA")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\" target=\"_blank\">CC BY-NC-SA</a><br>\n");
+		} else if (LICENSE().equals("dl-de/by-2-0")) {
+			sb.append("<b>LICENSE:</b> <a href=\"https://www.govdata.de/dl-de/by-2-0\" target=\"_blank\">dl-de/by-2-0</a><br>\n");
+		} else {
+			sb.append("<b>LICENSE:</b> "+ LICENSE() + "<br>\n");
+		}
 		if (!"".equals(COPYRIGHT()))
 			sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
 		if (!"".equals(PUBLICATION())) {
@@ -777,21 +789,24 @@ public class Record {
 				+ "\"inDefinedTermSet\": {"
 				+ "\"@type\": \"DefinedTermSet\",\n"
 				+ "\"name\": \"Bioinformatics operations, data types, formats, identifiers and topics\",\n"
-				+ "\"url\": \" http://edamontology.org\"\n"
+				+ "\"url\": \"http://edamontology.org\"\n"
 				+ "} }", JsonObject.class));
 		dataset.add("keywords", keywords);
 		
 		if (LICENSE().equals("CC0")) {
-			dataset.addProperty("license", "https://creativecommons.org/share-your-work/public-domain/cc0");
+			dataset.addProperty("license", "ttps://creativecommons.org/publicdomain/zero/1.0/");
+		} else if (LICENSE().equals("CC BY")) {
+			dataset.addProperty("license", "https://creativecommons.org/licenses/by/4.0/");
 		} else if (LICENSE().equals("CC BY-SA")) {
 			dataset.addProperty("license", "https://creativecommons.org/licenses/by-sa/4.0");
-		} else if (LICENSE().equals("CC BY")) {
-			dataset.addProperty("license", "https://creativecommons.org/licenses/by/4.0");
-		} else if (LICENSE().equals("CC BY-NC")) {
+		}  else if (LICENSE().equals("CC BY-NC")) {
 			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc/4.0");
 		} else if (LICENSE().equals("CC BY-NC-SA")) {
 			dataset.addProperty("license", "https://creativecommons.org/licenses/by-nc-sa/4.0");
+		} else if (LICENSE().equals("dl-de/by-2-0")) {
+			dataset.addProperty("license", "https://www.govdata.de/dl-de/by-2-0");
 		}
+		
 		dataset.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		dataset.addProperty("datePublished", DATE1()[0].replace(".","-"));
 		dataset.addProperty("citation", PUBLICATION());
@@ -874,13 +889,16 @@ public class Record {
 		return String.join("@", peaks);
 	}
 	
-	public JSONObject createPeakListData() {
-		JSONObject result = new JSONObject();
-		JSONArray peaklist = new JSONArray();
+	public JsonObject createPeakListData() {
+		JsonObject result = new JsonObject();
+		JsonArray peaklist = new JsonArray();
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
-			peaklist.put(new JSONObject().put("intensity", peak.getRight()).put("mz", peak.getLeft()));
+			JsonObject jsonPeak = new JsonObject();
+			jsonPeak.addProperty("intensity",peak.getRight());
+			jsonPeak.addProperty("mz", peak.getLeft());
+			peaklist.add(jsonPeak);
 		}
-		result.put("peaks", peaklist);
+		result.add("peaks", peaklist);
 		return result;
 	}
 	

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -28,8 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
-import org.petitparser.parser.Parser;
-
 import massbank.Record;
 import massbank.RecordParser;
 import massbank.RecordParserDefinition;
@@ -106,7 +103,7 @@ public class Validator {
 		return record;
 	}
 
-	public static void main(String[] arguments) {
+	public static void main(String[] arguments) throws SQLException, ConfigurationException {
 		// load version and print
 		final Properties properties = new Properties();
 		try {
@@ -118,21 +115,21 @@ public class Validator {
 		System.out.println("Validator version: " + properties.getProperty("version"));
 
 		// parse command line
-		Options options = new Options();
+		final Options options = new Options();
 		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
 		options.addOption(null, "legacy", false, "less strict mode for legacy records with minor problems.");
 		options.addOption(null, "online", false, "also do online checks, like PubChem CID check.");
-		CommandLine cmd = null;
+		CommandLine cmd=null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
 		}
 		catch(ParseException e) {
-	        // oops, something went wrong
 	        System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
 	        HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
 	        System.exit(1);
 	    }
+		
 		if (cmd.getArgList().size() == 0) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
@@ -160,6 +157,9 @@ public class Validator {
 			logger.error("No files found for validation.");
 			System.exit(1);
 		}
+		
+		
+				
 			
 
 		// validate all files
@@ -228,14 +228,7 @@ public class Validator {
 					// validate correct serialization with db: String <-> (db -> Record class -> String)
 					if (doDatbase.get()) {
 						Record recordDatabase = null;
-						try {
-							DatabaseManager dbMan = new DatabaseManager("MassBank");
-							recordDatabase = dbMan.getAccessionData(record.ACCESSION());
-							dbMan.closeConnection();
-						} catch (SQLException | ConfigurationException e) {
-							e.printStackTrace();
-							System.exit(1);
-						}
+						recordDatabase = DatabaseManager.getAccessionData(record.ACCESSION());
 						if(recordDatabase == null) {
 							String errormsg	= "retrieval of '" + record.ACCESSION() + "' from database failed";
 							logger.error(errormsg);

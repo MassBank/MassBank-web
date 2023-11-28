@@ -2,22 +2,38 @@ package massbank;
 
 import java.io.File;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
+import org.apache.commons.configuration2.BaseConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 // implement a singleton config class
 public class Config {
+	private static final Logger logger = LogManager.getLogger(Config.class);
 	private static Config instance;
 	private Configuration config;
-	private Config () throws ConfigurationException {
+	private Config () {
 		Configurations configs = new Configurations();
-		config = configs.properties(new File("/etc/massbank.conf"));
+		try {
+			config = configs.properties(new File("/etc/massbank.conf"));
+		} catch (ConfigurationException e) {
+			logger.error("Can not read config file. Using defaults.");
+			config = new BaseConfiguration();
+			config.addProperty("Name", "Personal MassBank");
+			config.addProperty("LongName", "Personal MassBank");
+			config.addProperty("dbName", "MassBank");
+			config.addProperty("dbPassword", "123blah321");
+			config.addProperty("dbHostName", "127.0.0.1");
+			config.addProperty("DataRootPath", "/GIT/MassBank-data");
+			config.addProperty("SitemapBaseURL", "https://msbi.ipb-halle.de/MassBank/");
+		}
 	}
 	
-	public static synchronized Config get() throws ConfigurationException {
+	public static synchronized Config get() {
 		if (Config.instance == null) {
 			Config.instance = new Config();
 		}
@@ -36,12 +52,6 @@ public class Config {
 	public String dbName() {
 		return config.getString("dbName");
 	}
-	
-	// the name of the temporary database for import of a new MassBank database
-	public String tmpdbName() {
-			return config.getString("tmpdbName");
-		}
-	
 	
 	// the password of the database user
 	public String dbPassword() {
@@ -71,9 +81,8 @@ public class Config {
 		return "/MassBank/temp/";
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		System.out.println(Config.get().dbName());
-		System.out.println(Config.get().tmpdbName());
 		System.out.println(Config.get().dbPassword());
 		System.out.println(Config.get().dbHostName());
 		System.out.println(Config.get().DataRootPath());
