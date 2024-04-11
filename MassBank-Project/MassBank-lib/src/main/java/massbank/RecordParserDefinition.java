@@ -1187,7 +1187,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// MS2  is the precursor ion spectrum of MS3
 		// IUPAC Recommendations 2006 (http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
 		def("ac_mass_spectrometry_ms_type_value",
-			StringParser.of("MS4")
+			StringParser.of("MSn")
+			.or(StringParser.of("MS5"))
+			.or(StringParser.of("MS4"))
 			.or(StringParser.of("MS3"))
 			.or(StringParser.of("MS2"))
 			.or(StringParser.of("MS"))
