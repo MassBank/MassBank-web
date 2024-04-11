@@ -748,14 +748,15 @@ MS
 MS2
 MS3
 MS4
+MS5
+MSn
 ```
 
 Brief definition of terms used in `MS_TYPE`:
-* `MS2` is 1st generation product ion spectrum(of `MS`)
-* `MS3` is 2nd generation product ion spectrum(of `MS`)
-* `MS2` is the precursor ion spectrum of `MS3`*
-
-Reference: [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
+* `MS` - [MS1 spectrum(MS:1000579)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000579)
+* `MS2` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580)
+* `MS3` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) with [ms level(MS:1000511)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) = 3
+* `MSn` - use for any other multi stage acquisition method, which does not fit in the above scheme, like merged MS spectra from different stages
 
 #### <a name="2.4.4"></a>2.4.4 AC$MASS\_SPECTROMETRY: ION\_MODE
 Polarity of Ion Detection. Mandatory
