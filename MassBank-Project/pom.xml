@@ -318,8 +318,9 @@
 	<repositories>
 		<repository>
 			<id>releases</id>
-			<name>Fiehnlab Public Maven Repository</name>
-			<url>http://gose.fiehnlab.ucdavis.edu:55000/content/groups/public</url>
+			<name>Jena Bio Repository libs-release-oss</name>
+			<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss</url>
 		</repository>
 	</repositories>
+
 </project>
