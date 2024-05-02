@@ -20,40 +20,25 @@
  ******************************************************************************/
 package massbank.cli;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import massbank.Config;
-import massbank.Record;
 import massbank.db.DatabaseManager;
+import massbank.repository.RepositoryInterface;
+import massbank.repository.SimpleFileRepository;
 
 /**
- * This class is called from command line to create a new temporary
- * database <i>tmpdbName</i>, fill it with all records found in <i>DataRootPath</i>
- * and move the new database to <i>dbName</i>.
+ * This class is called from command line. It clears all tables and sends all 
+ * records from the repo to the database.
  *
  * @author rmeier
- * @version 10-06-2020
+ * @version 26-10-2023
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
@@ -69,67 +54,31 @@ public class RefreshDatabase {
 		}
 		System.out.println("RefreshDatabase version: " + properties.getProperty("version"));
 		
-		logger.trace("Creating a new database \""+ Config.get().tmpdbName() +"\" and initialize a MassBank database scheme.");
-		DatabaseManager.init_db(Config.get().tmpdbName());
+		logger.trace("Remove all entries from database.");
+		DatabaseManager.emptyTables();
 		
-		logger.trace("Creating a DatabaseManager for \"" + Config.get().tmpdbName() + "\".");
-		final DatabaseManager db = new DatabaseManager(Config.get().tmpdbName());
+		RepositoryInterface repo = new SimpleFileRepository();
+		AtomicInteger currentIndex = new AtomicInteger(1);
+		int repoOnePercent = (repo.getSize()/100)+1;
+		System.out.print(repo.getSize() + " records to read. 0% Done.");
 		
-		logger.trace("Get version of data source.");
-		String version	= FileUtils.readFileToString(new File(Config.get().DataRootPath()+"/VERSION"), StandardCharsets.UTF_8);
-		
-		logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
-		File dataRootPath = new File(Config.get().DataRootPath());
-		List<File> recordfiles = new ArrayList<>();
-		for (String file : dataRootPath.list(DirectoryFileFilter.INSTANCE)) {
-			if (file.equals(".scripts")) continue;
-			if (file.equals(".figure")) continue;
-			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, true));
-		}
-		
-		AtomicInteger index = new AtomicInteger(0);
-		int chunkSize = 5000;
-		Stream<List<File>> chunkedRecordfiles = recordfiles.stream().collect(Collectors.groupingBy(x -> index.getAndIncrement() / chunkSize))
-		.entrySet().stream()
-		.map(Map.Entry::getValue);
-		
-		AtomicInteger processed = new AtomicInteger(1);
-		int numRecordFiles = recordfiles.size();
-		chunkedRecordfiles.forEach(chunk -> {
-			chunk.parallelStream().map(filename -> {
-				Record record=null;
-				logger.info("Validating \"" + filename + "\".");
-				String contributor = filename.getParentFile().getName();
-				try {
-					String recordAsString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-					Set<String> config = new HashSet<String>();
-					config.add("legacy");
-					record = Validator.validate(recordAsString, contributor, config);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (record == null) {
-					logger.error("Error reading/validating record \"" + filename.toString() + "\".");
-				}
-				return record;
-			})
-			.filter(Objects::nonNull)
-			.forEachOrdered((r) -> {
-				db.persistAccessionFile(r);
-				System.out.print("Processed: "+processed.getAndIncrement()+"/"+numRecordFiles+"\r");
-			});
+		repo.getRecords().forEach((r) -> {
+			try {
+				DatabaseManager.persistAccessionFile(r);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			int index=currentIndex.getAndIncrement();
+			if (index%repoOnePercent == 0) {
+				System.out.print("\r" + repo.getSize() + " records to send to database. " + 100*index/repo.getSize() + "% Done.");
+			}
 		});
+		System.out.println("\r" + repo.getSize() + " records to send to database. 100% Done");
 		
-		logger.trace("Setting Timestamp in database");
-		PreparedStatement stmnt = db.getConnection().prepareStatement("INSERT INTO LAST_UPDATE (TIME,VERSION) VALUES (CURRENT_TIMESTAMP,?);");
-		stmnt.setString(1, version);
-		stmnt.executeUpdate();
-		db.getConnection().commit();
-		db.closeConnection();
+		logger.info("Setting version of database to: " + repo.getRepoVersion() + ".");
+		DatabaseManager.setRepoVersion(repo.getRepoVersion());
 					
-		logger.trace("Moving new database to MassBank database.");
-		DatabaseManager.move_temp_db_to_main_massbank();
-		
+		DatabaseManager.close();
 	}
 }

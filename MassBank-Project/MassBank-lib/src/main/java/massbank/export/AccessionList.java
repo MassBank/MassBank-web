@@ -1,12 +1,13 @@
 package massbank.export;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import massbank.Record;
 import massbank.db.DatabaseManager;
@@ -26,7 +27,7 @@ public class AccessionList implements SearchFunction<Record[]> {
 		this.ion		= request.getParameter("ion");
 	}
 	
-	public Record[] search(DatabaseManager databaseManager) {
+	public Record[] search() {
 		// ###########################################################################################
 		// fetch all accessions and corresponding contributors
 		String sql	= 
@@ -61,29 +62,31 @@ public class AccessionList implements SearchFunction<Record[]> {
 		
 		List<String> resList_accession	= new ArrayList<String>();
 		List<String> resList_contribut	= new ArrayList<String>();
-		try {
-			PreparedStatement stmnt = databaseManager.getConnection().prepareStatement(sb.toString());
-			int idx = 1;
-			if (this.inst != null && this.ms != null && this.ion != null) {
-				for (int i = 0; i < inst.length; i++) {
-					stmnt.setString(idx, inst[i]);
-					idx++;
+		try (Connection con = DatabaseManager.getConnection()) {
+			try (PreparedStatement stmnt = con.prepareStatement(sb.toString())) {
+				int idx = 1;
+				if (this.inst != null && this.ms != null && this.ion != null) {
+					for (int i = 0; i < inst.length; i++) {
+						stmnt.setString(idx, inst[i]);
+						idx++;
+					}
+					for (int i = 0; i < ms.length; i++) {
+						stmnt.setString(idx, ms[i]);
+						idx++;
+					}
+					if (Integer.parseInt(ion) == 1) {
+						stmnt.setString(idx, "POSITIVE");
+					}
+					if (Integer.parseInt(ion) == -1) {
+						stmnt.setString(idx, "NEGATIVE");
+					}
 				}
-				for (int i = 0; i < ms.length; i++) {
-					stmnt.setString(idx, ms[i]);
-					idx++;
+				try (ResultSet res = stmnt.executeQuery()) {
+					while (res.next()) {
+						resList_accession.add(res.getString("RECORD.ACCESSION"));
+						resList_contribut.add(res.getString("CONTRIBUTOR.SHORT_NAME"));
+					}
 				}
-				if (Integer.parseInt(ion) == 1) {
-					stmnt.setString(idx, "POSITIVE");
-				}
-				if (Integer.parseInt(ion) == -1) {
-					stmnt.setString(idx, "NEGATIVE");
-				}
-			}
-			ResultSet res = stmnt.executeQuery();
-			while (res.next()) {
-				resList_accession.add(res.getString("RECORD.ACCESSION"));
-				resList_contribut.add(res.getString("CONTRIBUTOR.SHORT_NAME"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -93,7 +96,7 @@ public class AccessionList implements SearchFunction<Record[]> {
 		// fetch these records
 		List<Record> resList_record		= new ArrayList<Record>();
 		for(int recordIdx = 0; recordIdx < resList_accession.size(); recordIdx++) {
-			resList_record.add(databaseManager.getAccessionData(resList_accession.get(recordIdx)));
+			resList_record.add(DatabaseManager.getAccessionData(resList_accession.get(recordIdx)));
 		}
 		return resList_record.toArray(new Record[resList_record.size()]);
 	}

@@ -26,17 +26,16 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Enumeration;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.depict.Depiction;
@@ -48,6 +47,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
 import massbank.db.DatabaseManager;
+import massbank.export.OldAccessionResolver;
 
 @WebServlet("/RecordDisplay")
 public class RecordDisplay extends HttpServlet {
@@ -208,11 +208,18 @@ public class RecordDisplay extends HttpServlet {
 				response.sendRedirect(request.getContextPath()+redirectUrl);
 				return;
 			}
+			
+			// old ACCESSION resolved to new ACCESSION
+			String resolvedAccession=OldAccessionResolver.get().resolve(accession);
+			if (!accession.equals(resolvedAccession)) {
+				response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+				response.setHeader("Location", request.getRequestURL().append("?id=").append(resolvedAccession).toString());
+				return;
+			}
+			
 
 			// load record for display
-			DatabaseManager dbMan	= new DatabaseManager("MassBank");
-			record	= dbMan.getAccessionData(accession);
-			dbMan.closeConnection();
+			record	= DatabaseManager.getAccessionData(accession);
 			if(record == null) {
 				String errormsg	= "retrieval of '" + accession + "' from database failed";
 				logger.error(errormsg);

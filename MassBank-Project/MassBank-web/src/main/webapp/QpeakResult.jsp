@@ -48,8 +48,8 @@
 <%@ page import="massbank.web.SearchExecution" %>
 <%@ page import="massbank.web.quicksearch.Search" %>
 <%@ page import="massbank.web.quicksearch.Search.SearchResult" %>
-<%@ page import="org.json.JSONArray" %>
-<%@ page import="org.json.JSONObject" %>
+<%@ page import="com.google.gson.JsonArray" %>
+<%@ page import="com.google.gson.JsonObject" %>
 <%@ include file="./Common.jsp"%>
 <%!
 	// 画面内テーブルタグ幅
@@ -185,10 +185,10 @@
 	boolean isError = false;
 	String errMsg = "";
 	Double maxInte = 0.0;
+
+	JsonObject SpecktacklePeaklist = new JsonObject();
+	JsonArray peaklist = new JsonArray();
 	
-	JSONObject SpecktacklePeaklist = new JSONObject();
-	JSONArray peaklist = new JSONArray();
-		
 	if ( peakList.size() == 0 ) {
 		isError = true;
 		errMsg = "No input data.";
@@ -207,7 +207,12 @@
 					isError = true;
 					break;
 				}
-				peaklist.put(new JSONObject().put("intensity", Double.parseDouble(inte)).put("mz", Double.parseDouble(peak)));
+				
+				JsonObject jsonPeak = new JsonObject();
+				jsonPeak.addProperty("intensity", Double.parseDouble(inte));
+				jsonPeak.addProperty("mz", Double.parseDouble(peak));
+				peaklist.add(jsonPeak);
+				
 				// CGI,Appletのパラメータをセット
 				// 強度MAX値
 				if ( Double.parseDouble(inte) > maxInte ) {
@@ -224,8 +229,7 @@
 		  && paramMz.charAt( paramMz.length()-1 ) == ',' ) {
 			paramMz.deleteCharAt( paramMz.length()-1 );
 		}
-		SpecktacklePeaklist.put("peaks", peaklist);
-		
+		SpecktacklePeaklist.add("peaks", peaklist);
 	}
 	
 	// Cutoff Threshold の値が数値以外の場合はエラー
@@ -427,7 +431,6 @@
 			// 結果表示
 			//-------------------------------------
 			out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayout\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
-			DatabaseManager dbManager	= new DatabaseManager("MassBank");
 			for ( int i = 0; i < hitCnt; i++ ) {
 				// データ切り出し
 				//String rec = (String)result.get(i);
@@ -454,7 +457,7 @@
 				}
 				
 				// レコードページへのリンクURLをセット
-				String contributor	= dbManager.getContributorFromAccession(id).SHORT_NAME;
+				String contributor	= DatabaseManager.getContributorFromAccession(id).SHORT_NAME;
 				// typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 				// String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
 				// 				 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
@@ -496,7 +499,7 @@
 				String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
 				String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
 				
-				Record.Structure structure	= dbManager.getStructureOfAccession(accession);
+				Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
 						accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
 						80, 436
@@ -532,7 +535,6 @@
 				out.println( "  <td class=\"treeLayout2\" width=\"" + width[5] + "\">&nbsp;&nbsp;" + score + "&nbsp;</td>" );
 				out.println( " </tr>" );
 			}
-			dbManager.closeConnection();
 			out.println( "</table>" );
 			out.println( "<table width=\"" + tableWidth + "\" class=\"treeLayoutEnd\" cellpadding=\"0\" cellspacing=\"0\" onContextMenu=\"return dispRightMenu(event, true)\">" );
 			out.println( " <tr>" );

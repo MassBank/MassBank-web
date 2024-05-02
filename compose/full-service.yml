@@ -2,43 +2,50 @@ version: '3'
 
 services:
   mariadb:
-    build:
-      context: .
-      dockerfile: Dockerfile-mariadb
+    image: mariadb:11
     volumes:
       - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     environment:
-      MYSQL_ROOT_PASSWORD: 123blah321
+      MARIADB_ROOT_PASSWORD: 123blah321
     restart: always
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      #start_interval: 10s
+      interval: 1m
+      timeout: 5s
+      retries: 3
 
-  tomcat:
-    image: tomcat:9-jdk11
+  tomee:
+    image: tomee:9-jre17-webprofile
     volumes:
-      - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomcat/webapps/MassBank.war
-      - $PWD/MassBank-Project/MassBank-OpenAPI/target/MassBank-OpenAPI.war:/usr/local/tomcat/webapps/MassBank-OpenAPI.war  
+      - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomee/webapps/MassBank.war
       - $PWD/conf/full-service.conf:/etc/massbank.conf
       - $PWD/../MassBank-data:/MassBank-data  
+      - $PWD/compose/ServerInfo.properties:/usr/local/tomee/lib/org/apache/catalina/util/ServerInfo.properties
     ports:
       - "808${TAG}:8080"
     restart: always
     depends_on:
-      - mariadb
-    environment:
-      JAVA_OPTS: -Xmx4g -Xms1g
+      mariadb:
+        condition: service_healthy
+    #environment:
+      #JAVA_OPTS: -Xmx4g -Xms1g
     links:
       - "mariadb:massbank_mariadb"
 
   maven:
-    image: maven:3.6-jdk-11
+    image: maven:3.8-eclipse-temurin-17
     volumes:
-            #      - $HOME/.m2:/var/maven/.m2
+      - $HOME/.m2:/var/maven/.m2
       - $PWD/MassBank-Project:/project
-        #environment:
-        # MAVEN_CONFIG: /var/maven/.m2
-        #user: ${CURRENT_UID}
+    working_dir: /project
+    environment:
+      MAVEN_CONFIG: /var/maven/.m2
+    user: ${CURRENT_UID}
 
   dbupdate:
-    image: maven:3.6-jdk-11
+    image: maven:3.8-eclipse-temurin
     volumes:
       - $PWD/MassBank-Project:/project
       - $PWD/conf/full-service.conf:/etc/massbank.conf

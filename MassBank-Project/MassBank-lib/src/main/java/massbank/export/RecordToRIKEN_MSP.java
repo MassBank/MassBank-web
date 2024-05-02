@@ -61,7 +61,7 @@ Num Peaks: 17
 /**
  * This class creates RIKEN PRIME msp from the given Record.
  * @author rmeier, htreutle
- * @version 01-12-2020
+ * @version 24-02-2023
  */
 public class RecordToRIKEN_MSP {
 	private static final Logger logger = LogManager.getLogger(RecordToRIKEN_MSP.class);
@@ -81,20 +81,27 @@ public class RecordToRIKEN_MSP {
 		sb.append("NAME : ").append(record.CH_NAME().get(0)).append(System.getProperty("line.separator"));
 		Map<String, String> MS_FOCUSED_ION = record.MS_FOCUSED_ION_asMap();
 		sb.append("PRECURSORMZ: ").append((MS_FOCUSED_ION.containsKey("PRECURSOR_M/Z") ? MS_FOCUSED_ION.get("PRECURSOR_M/Z") : "")).append(System.getProperty("line.separator"));
-		sb.append("ADDUCTIONNAME: ").append((MS_FOCUSED_ION.containsKey("PRECURSOR_TYPE") ? MS_FOCUSED_ION.get("PRECURSOR_TYPE") : "NA")).append(System.getProperty("line.separator"));
-		sb.append("INSTRUMENTTYPE: ").append(record.AC_INSTRUMENT_TYPE()).append(System.getProperty("line.separator"));
-		sb.append("INSTRUMENT: ").append(record.AC_INSTRUMENT()).append(System.getProperty("line.separator"));
-		sb.append("SMILES: ").append(record.CH_SMILES()).append(System.getProperty("line.separator"));
+		sb.append("PRECURSORTYPE: ").append((MS_FOCUSED_ION.containsKey("PRECURSOR_TYPE") ? MS_FOCUSED_ION.get("PRECURSOR_TYPE") : "NA")).append(System.getProperty("line.separator"));
+		sb.append("FORMULA: ").append(record.CH_FORMULA()).append(System.getProperty("line.separator"));
+		if (record.CH_LINK().containsKey("ChemOnt")) {
+			sb.append("Ontology: ").append(record.CH_LINK().get("ChemOnt")).append(System.getProperty("line.separator"));
+		}
 		sb.append("INCHIKEY: ").append(record.CH_LINK().containsKey("INCHIKEY") ? record.CH_LINK().get("INCHIKEY") : "N/A").append(System.getProperty("line.separator"));
 		sb.append("INCHI: ").append(record.CH_IUPAC()).append(System.getProperty("line.separator"));
-		sb.append("FORMULA: ").append(record.CH_FORMULA()).append(System.getProperty("line.separator"));
-		sb.append("RETENTIONTIME: ").append(record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.MS_FOCUSED_ION_asMap().get("RETENTION_TIME") : "0").append(System.getProperty("line.separator"));
-		sb.append("IONMODE: ").append(record.AC_MASS_SPECTROMETRY_ION_MODE()).append(System.getProperty("line.separator"));
-		
+		sb.append("SMILES: ").append(record.CH_SMILES()).append(System.getProperty("line.separator"));
+		sb.append("RETENTIONTIME: ").append(record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.AC_CHROMATOGRAPHY_asMap().get("RETENTION_TIME") : "0").append(System.getProperty("line.separator"));
+		sb.append("INSTRUMENTTYPE: ").append(record.AC_INSTRUMENT_TYPE()).append(System.getProperty("line.separator"));
+		sb.append("INSTRUMENT: ").append(record.AC_INSTRUMENT()).append(System.getProperty("line.separator"));
+		if (record.AC_MASS_SPECTROMETRY_ION_MODE().equals("NEGATIVE")) {
+			sb.append("IONMODE: Negative").append(System.getProperty("line.separator"));
+		} else if (record.AC_MASS_SPECTROMETRY_ION_MODE().equals("POSITIVE")) {
+			sb.append("IONMODE: Positive").append(System.getProperty("line.separator"));
+		}
+				
 		List<String> links	= new ArrayList<String>();
 		
 		record.CH_LINK().forEach((key,value) -> {
-			links.add(key + ":" + value);	    
+			if (!key.equals("ChemOnt")) links.add(key + ":" + value);	    
 		});
 		sb.append("LINKS: ").append(String.join("; ", links)).append(System.getProperty("line.separator"));
 		
@@ -105,6 +112,8 @@ public class RecordToRIKEN_MSP {
 		recordComment.add(0, "DB#="+record.ACCESSION()+"; origin=MassBank");
 				
 		sb.append("Comment: ").append(String.join("; ", recordComment)).append(System.getProperty("line.separator"));
+		sb.append("Splash: ").append(record.PK_SPLASH()).append(System.getProperty("line.separator"));
+		
 		sb.append("Num Peaks"		+ ": " + record.PK_NUM_PEAK()).append(System.getProperty("line.separator"));
 		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK())
 			sb.append(peak.getLeft().toPlainString() + "\t" + peak.getMiddle().toPlainString()).append(System.getProperty("line.separator"));

@@ -2,6 +2,7 @@ package massbank;
 
 import static org.petitparser.parser.primitive.CharacterParser.digit;
 import static org.petitparser.parser.primitive.CharacterParser.letter;
+import static org.petitparser.parser.primitive.CharacterParser.word;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,7 +24,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +53,8 @@ import edu.ucdavis.fiehnlab.spectra.hash.core.SplashFactory;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.Ion;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectraType;
 import edu.ucdavis.fiehnlab.spectra.hash.core.types.SpectrumImpl;
-import net.sf.jniinchi.INCHI_RET;
+import io.github.dan2097.jnainchi.InchiStatus;
+import io.github.dan2097.jnainchi.JnaInchi;
 
 
 public class RecordParserDefinition extends GrammarDefinition {
@@ -62,7 +64,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private final boolean legacy;
 	// weak validation mode to let validation pass for AddMetaData
 	private final boolean weak;
-	// torn on additional validation steps, which require online checks
+	// turn on additional validation steps, which require online checks; slow!
 	private final boolean online;
 	
 	private IMolecularFormula fromCH_FORMULA = SilentChemObjectBuilder.getInstance().newInstance(IMolecularFormula.class);
@@ -73,17 +75,15 @@ public class RecordParserDefinition extends GrammarDefinition {
 	private String InChiKeyFromCH_IUPAC = "";
 	private String InChiKeyFromCH_LINK = "";
 	private int pk_num_peak = -1;
+	// controled vocabulary handler
+	CVUtil cvutil = CVUtil.get();
 	
+	// load a list of strings from .config or resource folder
 	private static List<String> getResourceFileAsList(String fileName)  {
 		// Try to load from user DataRootPath
 		File resourceFileFromDataRootPath = null;
-		try {
-			File configRootPath = new File(Config.get().DataRootPath(), ".config");
-			resourceFileFromDataRootPath = new File(configRootPath, fileName);
-		} catch (ConfigurationException e) {
-			logger.trace("Can not get DataRootPath: " + e.getMessage());
-			// resourceFileFromDataRootPath stays null
-		}
+		File configRootPath = new File(Config.get().DataRootPath(), ".config");
+		resourceFileFromDataRootPath = new File(configRootPath, fileName);
 		if ((resourceFileFromDataRootPath != null) && resourceFileFromDataRootPath.exists()) {
 			logger.trace("Loading resource from DataRootPath at: " + resourceFileFromDataRootPath.getAbsolutePath());
 			try (FileReader fr = new FileReader(resourceFileFromDataRootPath); BufferedReader reader = new BufferedReader(fr)) {
@@ -93,24 +93,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 			}
 		}
 		// If not found: try to load fallback from internal resources
-		else {
-			logger.trace("Loading internal resource: " + fileName);
-			try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)) {
-				if (is == null)
-				{
-					logger.error("Can not find internal resource file: " + fileName);
-					// no way to recover from this error
-					System.exit(1);
-				}
-				try (InputStreamReader isr = new InputStreamReader(is);
-						BufferedReader reader = new BufferedReader(isr)) {
-					return reader.lines().collect(Collectors.toList());
-				}
-			} catch (IOException e) {
-				logger.error("Can not read internal resource file: " + e.getMessage());
+		logger.trace("Loading internal resource: " + fileName);
+		try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)) {
+			if (is == null)
+			{
+				logger.error("Can not find internal resource file: " + fileName);
 				// no way to recover from this error
 				System.exit(1);
 			}
+			try (InputStreamReader isr = new InputStreamReader(is);
+					BufferedReader reader = new BufferedReader(isr)) {
+				return reader.lines().collect(Collectors.toList());
+			}
+		} catch (IOException e) {
+			logger.error("Can not read internal resource file: " + e.getMessage());
+			// no way to recover from this error
+			System.exit(1);
 		}
 		return null;
 	}
@@ -129,11 +127,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 					.seq(ref("authors"))
 					.seq(ref("license"))
 					.seq(ref("copyright").optional())
-					.seq(ref("project").optional())
 					.seq(ref("publication").optional())
+					.seq(ref("project").optional())
 					.seq(ref("comment").optional())
 					.seq(ref("ch_name"))
-					.seq(ref("ch_compound_class"))
+					.seq(ref("ch_compound_class").optional())
 					.seq(ref("ch_formula"))
 					.seq(ref("ch_exact_mass"))
 					.seq(ref("ch_smiles"))
@@ -183,6 +181,56 @@ public class RecordParserDefinition extends GrammarDefinition {
 		def("endtag", StringParser.of("//").seq(Token.NEWLINE_PARSER));
 		def("multiline_start", StringParser.of("  "));
 		
+		// CV terms
+		// General format is [CV label, accession, name, value].
+		// Any field that is not available MUST be left empty.
+		// [MS, MS:1001477, SpectraST,]
+		// Should the name of the param contain commas, quotes MUST be added to avoid problems with the parsing: 
+		// [label, accession, “first part of the param name, second part of the name”, value].
+		// [MOD, MOD:00648, "N,O-diacetylated L-serine",]
+		def("cvterm",
+			CharacterParser.of('[').trim()
+			// label
+			.seq(word().star().flatten())
+			.seq(CharacterParser.of(',').trim())
+			// accession 
+			.seq(word().or(CharacterParser.of(':')).star().flatten().trim())
+			.seq(CharacterParser.of(',')) 
+			// name
+			.seq(
+				CharacterParser.of('"').seq(CharacterParser.any().plusLazy(CharacterParser.of('"'))).seq(CharacterParser.of('"'))
+				.or(CharacterParser.any().starLazy(CharacterParser.of(','))).flatten().trim()
+			)
+			.seq(CharacterParser.of(','))
+			// value
+			.seq(
+				CharacterParser.of('"').seq(CharacterParser.any().plusLazy(CharacterParser.of('"'))).seq(CharacterParser.of('"'))
+				.or(CharacterParser.any().starLazy(CharacterParser.of(']'))).flatten().trim()
+			)
+			.seq(CharacterParser.of(']')).permute(1,3,5,7)
+//			.map((List<?> value) -> {
+//				System.out.println(value);
+//				return value;						
+//			})
+		);
+		def("cvterm_validated",
+			ref("cvterm")
+			.callCC((Function<Context, Result> continuation, Context context) -> {
+				Result r = continuation.apply(context);
+				if (r.isSuccess()) {
+					List<String> value = r.get();
+//					if (!cvutil.containsTerm(value.get(1))) {
+//						return context.failure(value.get(1)+ "is no valid Id in ontology.");
+//					}
+//					Term term=cvutil.getTerm(value.get(1));
+//					if (!term.getDescription().equals(value.get(2))) {
+//						return context.failure("Name missmatch for id "+ value.get(1)+ ".");
+//					}
+				}
+				return r; 
+			})
+		);
+		
 		def("uint_primitive", digit().plus().flatten());
 		def("number_primitive",
 			digit().plus()
@@ -201,23 +249,18 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.1.1 ACCESSION
 		// Identifier of the MassBank Record. Mandatory
 		// Example
-		// ACCESSION: ZMS00006
-		// 8-character fix-length string.
-		// Prefix two or three alphabetical capital characters.
+		// ACCESSION: MSBNK-AAFC-AC000101
+		// Format is ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}
+		// Where ID is a database identifier, the first field([A-Z0–9_]{1,32}) is a contributor id and 
+		// the second field([A-Z0–9_]{1,64}) is a record id.
 		def("accession", 
 			StringParser.of("ACCESSION")
 			.seq(ref("tagsep"))
-			.seq(
-				letter().times(2)
-				.seq(
-					digit().times(6)
-				)
-				.or(
-					letter().times(3)
-					.seq(
-						digit().times(5)
-					)
-				)
+			.seq(letter().or(digit()).repeat(1,10)
+				.seq(CharacterParser.of('-'))
+				.seq(letter().or(digit()).or(CharacterParser.of('_')).repeat(1,32))
+				.seq(CharacterParser.of('-'))
+				.seq(CharacterParser.upperCase().or(digit()).or(CharacterParser.of('_')).repeat(1,64))
 				.flatten()
 				.map((String value) -> {
 					callback.ACCESSION(value);
@@ -307,7 +350,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				Result r = continuation.apply(context);
 				if (r.isSuccess()) {
 					try {
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu.MM.dd").withResolverStyle(ResolverStyle.STRICT);
 						LocalDate.parse(r.get(), formatter);
 					} catch (Exception e) { 
 						return context.failure("Can not parse date:\n" + e.getMessage());		 				
@@ -808,12 +851,12 @@ public class RecordParserDefinition extends GrammarDefinition {
 							if (!smilesHasWildcards) {							
 								try {
 									InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_SMILES);
-									INCHI_RET ret = inchiGen.getReturnStatus();
-									if (ret == INCHI_RET.WARNING) {
+									InchiStatus ret = inchiGen.getStatus();
+									if (ret == InchiStatus.WARNING) {
 										// Structure generated, but with warning message
 										logger.warn("InChI warning: " + inchiGen.getMessage());
 									} 
-									else if (ret != INCHI_RET.OKAY) {
+									else if (ret == InchiStatus.ERROR) {
 										// InChI generation failed
 										return context.failure("Can not create InChIKey from SMILES string in \"CH$SMILES\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
 									}
@@ -859,44 +902,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 							// validate InChI
 							try {
 								InChIToStructure intoStruct = InChIGeneratorFactory.getInstance().getInChIToStructure(r.get(), SilentChemObjectBuilder.getInstance());
-								INCHI_RET ret = intoStruct.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
+								InchiStatus ret = intoStruct.getStatus();
+								if (ret == InchiStatus.WARNING) {
 									// Structure generated, but with warning message
 									logger.warn("InChI warning: " + intoStruct.getMessage());
 									logger.warn(callback.ACCESSION());
 								} 
-								else if (ret != INCHI_RET.OKAY) {
+								else if (ret == InchiStatus.ERROR) {
 									// Structure generation failed
-									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + ret.toString() + " [" + intoStruct.getMessage() + "] for " + r.get() + ".");
+									return context.failure("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + intoStruct.getMessage() + " for " + r.get() + ".");
 								}
 								fromCH_IUPAC = intoStruct.getAtomContainer();
 							} catch (CDKException e) {
 								return context.failure("Can not parse InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());		 				
 							}
 							// create an InChiKey
-							try {
-								InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_IUPAC);
-								INCHI_RET ret = inchiGen.getReturnStatus();
-								if (ret == INCHI_RET.WARNING) {
-									// Structure generated, but with warning message
-									logger.warn("InChI warning: " + inchiGen.getMessage());
-								} 
-								else if (ret != INCHI_RET.OKAY) {
-									// Structure generation failed
-									return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + r.get() + ".");
-								}
-								
-								// compare the temporary InChI from generator with the original InChI, should be the same, otherwise could be a problem
-								String tmpInChI = inchiGen.getInchi(); 
-								if (!tmpInChI.equals(r.get())) {
-									return context.failure("Temporary InChI for InChIKey generation differs from InChI string in \"CH$IUPAC\" field.\n" 
-											+ "InChI from CH$IUPAC: " + r.get() + "\n"
-											+ "Temporary InChI:     " + tmpInChI);
-								}
-								InChiKeyFromCH_IUPAC = inchiGen.getInchiKey();
-							} catch (CDKException e) {
-								return context.failure("Can not create InChIKey from InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());
-							}
+							InChiKeyFromCH_IUPAC = JnaInchi.inchiToInchiKey(r.get()).getInchiKey();
 						}
 					}
 					return r;
@@ -912,11 +933,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 //				return value;						
 //			})
 		);
-	
-		// TODO no record implements CH$CDK_DEPICT
-		// 2.2.7 CH$CDK_DEPICT
 		
-		// 2.2.8 CH$LINK: subtag  identifier
+		// 2.2.7 CH$LINK: subtag  identifier
 		// Identifier and Link of Chemical Compound to External Databases.
 		// Optional and Iterative
 		// Example
@@ -1047,8 +1065,11 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.seq(Token.NEWLINE_PARSER).pick(0)
 			.plus()
 			.map((List<Pair<String,String>> value) -> {
-				//System.out.println(value);
-				callback.SP_LINK(value);
+				LinkedHashMap<String, String> sp_link = new LinkedHashMap<String, String>();
+				for(Pair<String, String> pair : value){
+					sp_link.put(pair.getKey(), pair.getValue());
+				}								
+				callback.SP_LINK(sp_link);
 				return value;
 			})
 		);
@@ -1166,7 +1187,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// MS2  is the precursor ion spectrum of MS3
 		// IUPAC Recommendations 2006 (http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
 		def("ac_mass_spectrometry_ms_type_value",
-			StringParser.of("MS4")
+			StringParser.of("MSn")
+			.or(StringParser.of("MS5"))
+			.or(StringParser.of("MS4"))
 			.or(StringParser.of("MS3"))
 			.or(StringParser.of("MS2"))
 			.or(StringParser.of("MS"))
@@ -1192,8 +1215,8 @@ public class RecordParserDefinition extends GrammarDefinition {
 		// 2.4.4 AC$MASS_SPECTROMETRY: ION_MODE
 		// Polarity of Ion Detection. Mandatory
 		// Example: AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
-		// Either of POSITIVE or NEGATIVE is allowed. Cross-reference to mzOntology: POSITIVE [MS:1000030] 
-		// or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+		// Either of POSITIVE or NEGATIVE is allowed. 
+		// Cross-reference to HUPO-PSI: POSITIVE [MS, MS:1000130, positive scan,] or NEGATIVE [MS:1000129, negative scan,]; ION_MODE [MS, MS:1000465, scan polarity,]
 		def("ac_mass_spectrometry_ion_mode_value",
 			StringParser.of("POSITIVE")
 			.or(StringParser.of("NEGATIVE"))
@@ -1272,8 +1295,6 @@ public class RecordParserDefinition extends GrammarDefinition {
 			.or(StringParser.of("DESOLVATION_TEMPERATURE "))
 			.or(StringParser.of("DRY_GAS_FLOW "))
 			.or(StringParser.of("DRY_GAS_TEMP "))
-			.or(StringParser.of("FRAGMENTATION_METHOD "))
-			.or(StringParser.of("FRAGMENTATION_MODE "))
 			.or(StringParser.of("FRAGMENT_VOLTAGE "))
 			.or(StringParser.of("GAS_PRESSURE "))
 			.or(StringParser.of("HELIUM_FLOW "))
@@ -1322,8 +1343,32 @@ public class RecordParserDefinition extends GrammarDefinition {
 			StringParser.of("AC$MASS_SPECTROMETRY")
 			.seq(ref("tagsep"))
 			.seq(
+				// tag
 				ref("ac_mass_spectrometry_subtag")
+				// value
+				.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+				
 				.or(
+					// FRAGMENTATION_MODE [MS, MS:1000044, dissociation method,]
+					StringParser.of("FRAGMENTATION_MODE ")
+					// value
+					.seq(
+						ref("cvterm")
+						.map((List<String> value) -> {
+//							Term term=cvutil.getTerm(value.get(1));
+							return '['+String.join(", ", value)+']';
+						})
+						.or(
+							StringParser.of("CID")
+							.or(StringParser.of("HAD"))
+							.or(StringParser.of("HCD"))
+							.or(StringParser.of("LOW-ENERGY CID"))
+							.or(StringParser.of("RID"))
+						)
+					)
+				)
+				.or(
+					// free tag
 					CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_')).or(CharacterParser.of('/'))
 					.plus().flatten()
 					.map((String value) -> {
@@ -1331,16 +1376,22 @@ public class RecordParserDefinition extends GrammarDefinition {
 						return value;
 					})
 					.seq(CharacterParser.whitespace()).flatten()
+					// value
+					.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
 				)
 			)
-			.seq(Token.NEWLINE_PARSER.not()).pick(2)
-			.seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
+			.seq(Token.NEWLINE_PARSER).pick(2)
 			.map((List<String> value) -> {
 				return Pair.of(value.get(0).trim(), value.get(1));
 			})
-			.seq(Token.NEWLINE_PARSER).pick(0)
-			.plus()		
+			
+//			.map((Pair<String,String> value) -> {
+//				System.out.println(value);
+//				return value;
+//			})
+			.plus()
 			.map((List<Pair<String,String>> value) -> {
+				//System.out.println();
 				//System.out.println(value);
 				callback.AC_MASS_SPECTROMETRY(value);
 				return value;
@@ -1447,9 +1498,9 @@ public class RecordParserDefinition extends GrammarDefinition {
 				CharacterParser.anyOf("+-")
 				.seq(ref("uint_primitive").optional())
 				.seq(
-					ref("molecular_formula")
-					.or(StringParser.of("ACN"))
+					StringParser.of("ACN")
 					.or(StringParser.of("FA"))
+					.or(ref("molecular_formula"))
 				)
 //				.map((List<?> value) -> {
 //					System.out.println(value);
@@ -1680,7 +1731,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				.seq(ref("number_primitive").trim())
 				.pick(1)
 				.seq(
-					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
+					CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>=#"))
 					.plus()
 					.flatten()
 					.trim(CharacterParser.of(' '))
@@ -1810,7 +1861,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 				if (!weak) {
 					//compare InChIKey
 					if (InChiKeyFromCH_LINK.equals("")) {
-						return context.failure("If CH$IUPAC is defined, CH$LINK: INCHIKEY must be defined.");
+						logger.warn("CH$IUPAC is defined, but CH$LINK: INCHIKEY is missing.");
 					}
 				}
 			}
@@ -1902,6 +1953,26 @@ public class RecordParserDefinition extends GrammarDefinition {
 					logger.warn("There are duplicate entries in \"CH$NAME\" field.");
 				}
 			}
+			
+			// check for duplicate entries in AC$MASS_SPECTROMETRY
+			List<String> subtags = callback.AC_MASS_SPECTROMETRY().stream().map(p -> p.getKey()).collect(Collectors.toList());
+			Set<String> duplicates1 = new LinkedHashSet<String>();
+			Set<String> uniques1 = new HashSet<String>();
+			for(String c : subtags) {
+				if(!uniques1.add(c)) {
+					duplicates1.add(c);
+				}
+			}
+			if (duplicates1.size()>0) {
+				//if (!weak) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
+				return context.failure(sb.toString());
+				//} else {
+				//	logger.warn("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
+				//}
+			}
+			
 			
 			// check things online
 			if (online) {

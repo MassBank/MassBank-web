@@ -35,8 +35,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -44,12 +42,17 @@ import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import io.github.dan2097.jnainchi.InchiStatus;
 import massbank.PubchemResolver;
 import massbank.Record;
-import net.sf.jniinchi.INCHI_RET;
 import java.util.stream.Collectors;
 
 /**
@@ -69,15 +72,17 @@ public class AddMetaData {
 	/**
 	 * Try to fetch the COMPTOX id for a given InChI-key.
 	 */
-	public static String getComptoxID(String INCHIKEY) throws JSONException, MalformedURLException, IOException {
-		return new JSONObject(IOUtils.toString(new URL("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY),
-				Charset.forName("UTF-8"))).getJSONObject("DataRow").getString("dtxsid");
+	public static String getComptoxID(String INCHIKEY) throws JsonSyntaxException, MalformedURLException, IOException {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.fromJson(IOUtils.toString(new URL("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY),
+				Charset.forName("UTF-8")), JsonObject.class).getAsJsonObject("DataRow").getAsJsonPrimitive("dtxsid").getAsString();
 	}
 	
 	/**
 	 * Try to fetch the CHEMSPIDER id for a given InChI-key.
 	 */
-	public static String getChemspiderID(String INCHIKEY) throws MalformedURLException, IOException, JSONException {
+	public static String getChemspiderID(String INCHIKEY) throws JsonSyntaxException, MalformedURLException, IOException {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		HttpURLConnection connection = (HttpURLConnection) new URL("https://api.rsc.org/compounds/v1/filter/inchikey").openConnection();
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
@@ -87,12 +92,11 @@ public class AddMetaData {
 		OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
 		writer.write("{\"inchikey\": \"" + INCHIKEY + "\" }");
 		writer.close();
-		String queryID = new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getString("queryId");
-		connection = (HttpURLConnection) new URL("https://api.rsc.org/compounds/v1/filter/" + queryID + "/results").openConnection();
+		String queryID = gson.fromJson(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8")), JsonObject.class).getAsJsonPrimitive("queryId").getAsString();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("Content-Type", "");
 		connection.setRequestProperty("apikey", CHEMSPIDER_API_KEY);
-		return Integer.toString(new JSONObject(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8"))).getJSONArray("results").getInt(0));
+		return gson.fromJson(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8")), JsonObject.class).getAsJsonArray("results").get(0).getAsString();
 	}
 	
 	
@@ -199,28 +203,28 @@ public class AddMetaData {
 				try {
 					// Get InChIToStructure
 					InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
-					INCHI_RET ret = intostruct.getReturnStatus();
-					if (ret == INCHI_RET.WARNING) {
+					InchiStatus ret = intostruct.getStatus();
+					if (ret == InchiStatus.WARNING) {
 						// Structure generated, but with warning message
 						logger.warn("InChI warning: " + intostruct.getMessage());
 						logger.warn(record.ACCESSION());
 					} 
-					else if (ret != INCHI_RET.OKAY) {
+					else if (ret == InchiStatus.ERROR) {
 						// Structure generation failed
-						logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + ch_iupac + ".");
+						logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + intostruct.getMessage() + " for " + ch_iupac + ".");
 					}
 					// Structure generation succeeded
 					IAtomContainer m = intostruct.getAtomContainer();
 					// prepare an InChIGenerator
 					InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
-					ret = inchiGen.getReturnStatus();
-					if (ret == INCHI_RET.WARNING) {
+					ret = inchiGen.getStatus();
+					if (ret == InchiStatus.WARNING) {
 						// InChI generated, but with warning message
 						logger.warn("InChI warning: " + inchiGen.getMessage());
 						logger.warn(record.ACCESSION());
-					} else if (ret != INCHI_RET.OKAY) {
+					} else if (ret == InchiStatus.ERROR) {
 						// InChI generation failed
-						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+						logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + inchiGen.getMessage() + " for " + ch_iupac + ".");
 					}
 					else {
 						LinkedHashMap<String, String> ch_link = record.CH_LINK();
@@ -245,7 +249,7 @@ public class AddMetaData {
 					LinkedHashMap<String, String> ch_link = record.CH_LINK();
 					ch_link.put("COMPTOX", COMPTOXID);
 					record.CH_LINK(ch_link);
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch COMPTOX id.");
 					logger.trace(e.getMessage());
 				}
@@ -256,7 +260,7 @@ public class AddMetaData {
 					if (!COMPTOXID.equals(record.CH_LINK().get("COMPTOX"))) {
 						logger.error("Wrong COMPTOX database identifier in record file.");
 					}
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch COMPTOX id for comparision.");
 					logger.trace(e.getMessage());
 				}
@@ -269,7 +273,7 @@ public class AddMetaData {
 					LinkedHashMap<String, String> ch_link = record.CH_LINK();
 					ch_link.put("CHEMSPIDER", CHEMSPIDERID);
 					record.CH_LINK(ch_link);
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch CHEMSPIDER id.");
 					logger.trace(e.getMessage());
 				}
@@ -280,7 +284,7 @@ public class AddMetaData {
 					if (!CHEMSPIDERID.equals(record.CH_LINK().get("CHEMSPIDER"))) {
 						logger.error("Wrong CHEMSPIDER database identifier in record file.");
 					}
-				} catch (JSONException | IOException e) {
+				} catch (JsonSyntaxException | IOException e) {
 					logger.warn("Could not fetch CHEMSPIDER id for comparision.");
 					logger.trace(e.getMessage());
 				}
@@ -325,29 +329,29 @@ public class AddMetaData {
 		try {
 			// Get InChIToStructure
 			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
-			INCHI_RET ret = intostruct.getReturnStatus();
-			if (ret == INCHI_RET.WARNING) {
+			InchiStatus ret = intostruct.getStatus();
+			if (ret == InchiStatus.WARNING) {
 				// Structure generated, but with warning message
 				logger.warn("InChI warning: " + intostruct.getMessage());
 				logger.warn(record.ACCESSION());
 			} 
-			else if (ret != INCHI_RET.OKAY) {
+			else if (ret == InchiStatus.ERROR) {
 				// Structure generation failed
-				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + ret.toString() + " [" + intostruct.getMessage() + "] for " + ch_iupac + ".");
+				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + intostruct.getMessage() + " for " + ch_iupac + ".");
 				return record.toString();
 			}
 			// Structure generation succeeded
 			IAtomContainer m = intostruct.getAtomContainer();
 			// prepare an InChIGenerator
 			InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
-			ret = inchiGen.getReturnStatus();
-			if (ret == INCHI_RET.WARNING) {
+			ret = inchiGen.getStatus();
+			if (ret == InchiStatus.WARNING) {
 				// InChI generated, but with warning message
 				logger.warn("InChI warning: " + inchiGen.getMessage());
 				logger.warn(record.ACCESSION());
-			} else if (ret != INCHI_RET.OKAY) {
+			} else if (ret == InchiStatus.ERROR) {
 				// InChI generation failed
-				logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + ret.toString() + " [" + inchiGen.getMessage() + "] for " + ch_iupac + ".");
+				logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + inchiGen.getMessage() + " for " + ch_iupac + ".");
 				return record.toString();
 			}
 			
@@ -517,7 +521,7 @@ public class AddMetaData {
 				Set<String> config = new HashSet<String>();
 				config.add("legacy");
 				config.add("weak");
-				Record record = Validator.validate(recordString, "", config);
+				Record record = Validator.validate(recordString, config);
 				if (record == null) {
 					System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
 					System.exit(1);
@@ -541,7 +545,7 @@ public class AddMetaData {
 				
 				config = new HashSet<String>();
 				if (!recordString.equals(recordstring2)) {
-					Record record2 = Validator.validate(recordString, "", config);
+					Record record2 = Validator.validate(recordString, config);
 					if (record2 == null) {
 						System.err.println( "Validation of new created record file failed. Do not write.");
 					} else {

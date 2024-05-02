@@ -1,7 +1,8 @@
-# MassBank Record Format 2.5.2
-MassBank Consortium (September 22, 2021)
+# MassBank Record Format 2.6.0
+MassBank Consortium (May 13, 2022)
 
 #### Updated
+- **May 2022**: With version 2.6.0 MassBank introduces a new ACCESSION scheme. It offers more freedom for contributors in the naming of their records. The new scheme consists of three fields separated by 'minus' signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. Now it can be up to 32 characters long and is comprised of letters, digits and the '_' sign. The third field is the ID assigned by the contributor and can be up to 64 characters long and is also comprised of letters, digits and the '_' sign. 
 - **April 2022**: Added EAD (Electron Activated Dissocation) as allowed fragmentation mode.
 - **July 2021**: Move to a semantic versioning scheme X.Y.Z with Z increases for changes in the description or fixing of typos, Y increases for changes that also change the Validator software and X increases with changes that break compatibility with older versions of the software.
 - **March 2020**: Add new tag for the inlet type.
@@ -26,12 +27,18 @@ Multiple line information:
 
 Last line of a MassBank Record is `//`.
 
+#### Controled Vocabulary terms
+General format is `[CV label, accession, name, value]`. Any field that is not available MUST be left empty. Should the name contain commas, quotes MUST be added to avoid problems with parsing.
+Example:
+```
+[CV label, accession, name, value]
+[MS, MS:1000443, Mass Analyzer Type, Orbitrap]
+[MS, MS:1001477, SpectraST,]
+[label, accession, “first part of the param name, second part of the name”, value]
+```
+
 ### 1.2 Order of Information
 MassBank Record Information in a MassBank Record is arranged in a fixed order (see Section 2).
-
-### 1.3 Others
-`[MS : space value ]` is the HUPO-PSI ID in [OLS](https://www.ebi.ac.uk/ols/index).
-
 
 ## Table 1.  MassBank Record Format (Summary)
 <table>
@@ -357,17 +364,18 @@ Identifier of the MassBank Record. Mandatory
 
 Example:
 ```
-ACCESSION: ZMS00006
+ACCESSION: MSBNK-AAFC-AC000101
 ```
+The MassBank accession consists of three fields separated by `-` signs and follows the format ID-[A-Za-z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. It can be up to 32 characters long and is comprised of letters, digits and the `_` sign. The third field is the ID assigned by the contributor and an be up to 64 characters long and is comprised of capital letters, digits and the `_` sign. 
 
-8-character fix-length string. Prefix two or three alphabetical capital characters specify the site, database or contributor, where the record was submitted or who has contributed. Prefixes currently used are listed in the “Prefix of ID” column of the MassBank "List of contributors, prefixes and projects" (https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md). Rest of the field are decimal letters which are the identifier of the record at each site.
+The list of List of contributors and projects is maintained at https://github.com/MassBank/MassBank-data/blob/master/List_of_Contributors_Prefixes_and_Projects.md.
 
 A deprecated record is marked with the tag `DEPRECATED: ` followed by date and reason on the second line. The content of a deprecated record may not be valid.
 
 Example:
 ```
-ACCESSION: XY000010
-DEPRECATED: 2019-05-03 considered noisy
+ACCESSION: MSBNK-ISAS_Dortmund-IA000311
+DEPRECATED: 2019-11-25 Wrong MS measurement assigned
 ```
 
 
@@ -741,14 +749,15 @@ MS
 MS2
 MS3
 MS4
+MS5
+MSn
 ```
 
 Brief definition of terms used in `MS_TYPE`:
-* `MS2` is 1st generation product ion spectrum(of `MS`)
-* `MS3` is 2nd generation product ion spectrum(of `MS`)
-* `MS2` is the precursor ion spectrum of `MS3`*
-
-Reference: [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
+* `MS` - [MS1 spectrum(MS:1000579)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000579)
+* `MS2` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580)
+* `MS3` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) with [ms level(MS:1000511)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) = 3
+* `MSn` - use for any other multi stage acquisition method, which does not fit in the above scheme, like merged MS spectra from different stages
 
 #### <a name="2.4.4"></a>2.4.4 AC$MASS\_SPECTROMETRY: ION\_MODE
 Polarity of Ion Detection. Mandatory
@@ -757,8 +766,7 @@ Example:
 ```
 AC$MASS_SPECTROMETRY: ION_MODE POSITIVE
 ```
-
-Either of POSITIVE or NEGATIVE is allowed. Cross-reference to HUPO-PSI: POSITIVE [MS:1000030] or NEGATIVE [MS:1000129]; Ion mode [MS:1000465]
+Either of POSITIVE or NEGATIVE is allowed. Cross-reference to HUPO-PSI: POSITIVE [MS, MS:1000130, positive scan,] or NEGATIVE [MS:1000129, negative scan,]; ION_MODE [MS, MS:1000465, scan polarity,]
 
 #### <a name="2.4.5"></a>2.4.5 AC$MASS\_SPECTROMETRY: subtag Description
 Other Optional Experimental Methods and Conditions of Mass Spectrometry.
@@ -1372,13 +1380,13 @@ Types currently used in MassBank are:
 [2M-H-C6H10O5]-
 ```
 
-##### 2.5.1 Subtag: PRECURSOR\_INT
+##### 2.5.1 Subtag: PRECURSOR\_INTENSITY
 Intensity of Focused Ion.
 
 Example: 
 
 ```
-MS$FOCUSED_ION: PRECURSOR_INT 10000
+MS$FOCUSED_ION: PRECURSOR_INTENSITY 10000
 ```
 
 ##### 2.5.1 Subtag: PRECURSOR\_M/Z
