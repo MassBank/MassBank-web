@@ -1364,6 +1364,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 							.or(StringParser.of("HCD"))
 							.or(StringParser.of("LOW-ENERGY CID"))
 							.or(StringParser.of("RID"))
+							.or(StringParser.of("EAD"))
 						)
 					)
 				)
