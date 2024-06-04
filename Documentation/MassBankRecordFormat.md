@@ -3,6 +3,7 @@ MassBank Consortium (May 13, 2022)
 
 #### Updated
 - **May 2022**: With version 2.6.0 MassBank introduces a new ACCESSION scheme. It offers more freedom for contributors in the naming of their records. The new scheme consists of three fields separated by 'minus' signs and follows the format ID-[A-Z0–9_]{1,32}-[A-Z0–9_]{1,64}. The field ID will always be MSBNK for official MassBank releases. The second field is the contributor ID and is usually assigned by MassBank staff. Now it can be up to 32 characters long and is comprised of letters, digits and the '_' sign. The third field is the ID assigned by the contributor and can be up to 64 characters long and is also comprised of letters, digits and the '_' sign. 
+- **April 2022**: Added EAD (Electron Activated Dissocation) as allowed fragmentation mode.
 - **July 2021**: Move to a semantic versioning scheme X.Y.Z with Z increases for changes in the description or fixing of typos, Y increases for changes that also change the Validator software and X increases with changes that break compatibility with older versions of the software.
 - **March 2020**: Add new tag for the inlet type.
 - **October 2019**: Add UVPD dissociation method and some undocumented or new tags.
@@ -748,14 +749,15 @@ MS
 MS2
 MS3
 MS4
+MS5
+MSn
 ```
 
 Brief definition of terms used in `MS_TYPE`:
-* `MS2` is 1st generation product ion spectrum(of `MS`)
-* `MS3` is 2nd generation product ion spectrum(of `MS`)
-* `MS2` is the precursor ion spectrum of `MS3`*
-
-Reference: [IUPAC Recommendations 2006](http://old.iupac.org/reports/provisional/abstract06/murray_prs.pdf)
+* `MS` - [MS1 spectrum(MS:1000579)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000579)
+* `MS2` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580)
+* `MS3` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) with [ms level(MS:1000511)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) = 3
+* `MSn` - use for any other multi stage acquisition method, which does not fit in the above scheme, like merged MS spectra from different stages
 
 #### <a name="2.4.4"></a>2.4.4 AC$MASS\_SPECTROMETRY: ION\_MODE
 Polarity of Ion Detection. Mandatory
@@ -850,6 +852,7 @@ MPD
 NETD
 SID
 UVPD
+EAD
 ```
 
 Cross-reference to HUPO-PSI: dissociation method [MS:1000044]

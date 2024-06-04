@@ -127,12 +127,19 @@ There is one mandatory field, namely Parent=<m/z>, which is the precursor ion m/
 		//Comments: "accession=ET010001" "author=R. Gulde, E. Schymanski, K. Fenner, Department of Environmental Chemistry, Eawag" "license=CC BY" "copyright=Copyright (C) 2016 Eawag, Duebendorf, Switzerland" "publication=Gulde, Meier, Schymanski, Kohler, Helbling, Derrer, Rentsch & Fenner; ES&T 2016 50(6):2908-2920. DOI: 10.1021/acs.est.5b05186. Systematic Exploration of Biotransformation Reactions of Amine-containing Micropollutants in Activated Sludge" "comment=CONFIDENCE Parent Substance with Reference Standard (Level 1)" "comment=INTERNAL_ID 100" "exact mass=300.1393" "instrument=Q Exactive Orbitrap Thermo Scientific" "instrument type=LC-ESI-QFT" "ms level=MS2" "ionization=ESI" "fragmentation mode=HCD" "collision energy=15, 30, 45, 60, 70 or 90 (nominal)" "resolution=17500" "column=Atlantis T3 3um, 3x150mm, Waters with guard column" "flow gradient=95/5 at 0 min, 5/95 at 15 min, 5/95 at 20 min, 95/5 at 20.1 min, 95/5 at 25 min" "flow rate=300 uL/min" "retention time=14.6 min" "solvent a=water with 0.1% formic acid" "solvent b=methanol with 0.1% formic acid" "precursor m/z=301.1466" "precursor type=[M+H]+" "ionization mode=positive" "mass accuracy=0.007810149499385606" "mass error=-2.351999967231677E-6" "SMILES=CN1CCN(CC1)C(C1=CC=CC=C1)C1=CC=C(Cl)C=C1" "cas=82-93-9" "pubchem cid=2710" "chemspider=2609" "InChI=InChI=1S/C18H21ClN2/c1-20-11-13-21(14-12-20)18(15-5-3-2-4-6-15)16-7-9-17(19)10-8-16/h2-10,18H,11-14H2,1H3" "InChIKey=WFNAKBGANONZEQ-UHFFFAOYSA-N" "molecular formula=C18H21ClN2" "total exact mass=300.13932635199996" "SMILES=CN1CCN(CC1)C(C2=CC=CC=C2)C3=CC=C(C=C3)Cl"
 		
 		sb.append("Splash: ").append(record.PK_SPLASH()).append(System.getProperty("line.separator"));
-		sb.append("Num Peaks: ").append(record.PK_NUM_PEAK()).append(System.getProperty("line.separator"));
 		
-		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK()){
-			sb.append(peak.getLeft() + " " + peak.getRight()).append(System.getProperty("line.separator"));
+		// mz<1 needs to be prevented, check #157
+		StringBuilder peaklist = new StringBuilder();
+		int numPeaks = 0;
+		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK()) {
+			if (peak.getLeft().compareTo(new BigDecimal(1)) >= 0) {
+				numPeaks++;
+				peaklist.append(peak.getLeft() + " " + peak.getRight()).append(System.getProperty("line.separator"));
+			}
 		}
-		
+		sb.append("Num Peaks: ").append(numPeaks).append(System.getProperty("line.separator"));
+		sb.append(peaklist);
+				
 		sb.append(System.getProperty("line.separator"));
 		return sb.toString();
 	}
