@@ -312,7 +312,7 @@ public class ResultList {
 			// ソート処理
 			switch (sortKey) {
 				case SORT_KEY_NAME: {				// Nameソート
-					if (!e1.getSortName().equals(e2.getSortName())) {
+					if (!e1.getSortName().equalsIgnoreCase(e2.getSortName())) {
 						switch (sortAction) {
 							case SORT_ACTION_ASC:
 								ret = (e1.getSortName()).compareToIgnoreCase(e2.getSortName());
