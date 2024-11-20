@@ -48,7 +48,7 @@ public class Msbnk2JSONLD {
 	 */
 	public static Record validate(String recordString, Set<String> config) {
 		Record record = new Record();
-		RecordParser recordparser = new RecordParser(record, config);
+		RecordParser recordparser = new RecordParser(config);
 		Result res =  recordparser.parse(recordString);
 		if (res.isFailure()) {
 			logger.error(res.getMessage());
@@ -69,6 +69,8 @@ public class Msbnk2JSONLD {
 				line++;
 			}
 			return null;
+		} else {
+			record=res.get();
 		}
 		return record;
 	}

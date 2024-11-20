@@ -77,8 +77,7 @@ public class Validator {
 	 * <code>config</code>.
 	 */
 	public static Record validate(String recordString, Set<String> config) {
-		Record record = new Record();
-		RecordParser recordparser = new RecordParser(record, config);
+		RecordParser recordparser = new RecordParser(config);
 		Result res =  recordparser.parse(recordString);
 		if (res.isFailure()) {
 			logger.error(res.getMessage());
@@ -99,8 +98,9 @@ public class Validator {
 				line++;
 			}
 			return null;
+		} else {
+			return res.get();
 		}
-		return record;
 	}
 
 	public static void main(String[] arguments) throws SQLException, ConfigurationException {
