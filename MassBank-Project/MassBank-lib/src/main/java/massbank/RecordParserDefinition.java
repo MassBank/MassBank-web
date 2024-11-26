@@ -117,7 +117,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 //                })
                 .end()
             // check semantic here
-                .callCC(this::checkSemantic)
+                .callCC(config.contains("validate") ? this::checkSemantic : this::doNothing)
         );
 
 
@@ -538,14 +538,16 @@ public class RecordParserDefinition extends GrammarDefinition {
                             }
                             return result;
                         })
+
                 )
                 .seq(Token.NEWLINE_PARSER)
                 .pick(2)
-//                .map((Object value) -> {
-//                    System.out.println(value);
-//                    return value;
-//                })
-        );
+////                .map((Object value) -> {
+////                    System.out.println(value);
+////                    return value;
+////                })
+
+            );
 
 
         // 2.2.3 CH$FORMULA
@@ -1801,6 +1803,9 @@ public class RecordParserDefinition extends GrammarDefinition {
         return record;
     }
 
+    private Result doNothing(Function<Context, Result> continuation, Context context) {
+        return continuation.apply(context);
+    }
 
     private Result checkSemantic(Function<Context, Result> continuation, Context context) {
         Result r = continuation.apply(context);

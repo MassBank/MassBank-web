@@ -181,6 +181,7 @@ public class Validator {
 				
 				// basic validation
 				Set<String> config = new HashSet<String>();
+				config.add("validate");
 				if (legacyMode.get()) config.add("legacy");
 				if (onlineMode.get()) config.add("online");
 				Record record = validate(recordString, config);
