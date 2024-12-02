@@ -524,7 +524,10 @@ public class RecordParserDefinition extends GrammarDefinition {
                                 result.add((String) value.getFirst());
                             }
                             if (value.get(1) != null) {
-                                result.addAll((List<String>) value.get(1));
+                                List<?> sublist = (List<?>) value.get(1);
+                                for (Object item : sublist) {
+                                    result.add((String) item);
+                                }
                             }
                             return result;
                         })
@@ -1500,29 +1503,13 @@ public class RecordParserDefinition extends GrammarDefinition {
                                 .trim(CharacterParser.of(' '))
                                 .plus()
                         )
-                        .map((List<?> value) -> Pair.of(new BigDecimal((String) value.getFirst()), (List<String>) value.get(1)))
-                        //TODO
-                        // call a Continuation Parser to validate the count of PK$ANNOTATION items per line
-//                        .callCC((Function<Context, Result> continuation, Context context) -> {
-//                            Result r = continuation.apply(context);
-//                            if (r.isSuccess()) {
-//                                List<String> pk_annotation_header = callback.PK_ANNOTATION_HEADER();
-//                                List<Pair<BigDecimal, List<String>>> pk_annotation = callback.PK_ANNOTATION();
-//                                Pair<BigDecimal, List<String>> pk_annotationItem = pk_annotation.get(pk_annotation.size() - 1);
-//                                if (pk_annotation_header.size() != pk_annotationItem.getRight().size() + 1) {
-//                                    StringBuilder sb = new StringBuilder();
-//                                    sb.append("Incorrect number of fields per PK$ANNOTATION line. ");
-//                                    sb.append(pk_annotation_header.size() + " fields expected, but " + (pk_annotationItem.getRight().size() + 1) + " fields found.\n");
-//                                    sb.append("Defined by:\n");
-//                                    sb.append("PK$ANNOTATION:");
-//                                    for (String pk_annotation_headerItem : callback.PK_ANNOTATION_HEADER())
-//                                        sb.append(" " + pk_annotation_headerItem);
-//                                    sb.append("  " + pk_annotationItem.getLeft() + " " + String.join(" ", pk_annotationItem.getRight()));
-//                                    return context.failure(sb.toString());
-//                                }
-//                            }
-//                            return r;
-//                        })
+                        .map((List<?> value) -> {
+                            BigDecimal mz = new BigDecimal((String) value.getFirst());
+                            List<String> annotations = ((List<?>) value.get(1)).stream()
+                                .map(Object::toString)
+                                .collect(Collectors.toList());
+                            return Pair.of(mz, annotations);
+                        })
                         .seq(Token.NEWLINE_PARSER)
                         .pick(0)
                         .plus()
@@ -1978,15 +1965,6 @@ public class RecordParserDefinition extends GrammarDefinition {
                 }
             }
 
-            // check annotation sorting
-            List<Pair<BigDecimal, List<String>>> pk_annotation = record.PK_ANNOTATION();
-            for (int i = 0; i < pk_annotation.size() - 1; i++) {
-                if ((pk_annotation.get(i).getLeft().compareTo(pk_annotation.get(i + 1).getLeft())) > 0) {
-                    return context.failure("The peaks in the annotation list are not sorted.\n"
-                        + "Error in line " + pk_annotation.get(i).toString() + ".");
-                }
-            }
-
             // max 600 characters are supported in database for PUBLICATION
             if (record.PUBLICATION() != null) {
                 if (record.PUBLICATION().length() > 600) {
@@ -1999,52 +1977,55 @@ public class RecordParserDefinition extends GrammarDefinition {
                 return context.failure("RECORD_TITLE length exceeds database limit of 600 characters.");
             }
 
+            // check for duplicate entries in CH$NAME
+            List<String> ch_name = record.CH_NAME();
+            Set<String> uniques = new HashSet<>();
+            for (String c : ch_name) {
+                if (!uniques.add(c)) {
+                    return context.failure("There are duplicate entries in \"CH$NAME\" field.");
+                }
+            }
+
+            // check for duplicate entries in AC$MASS_SPECTROMETRY
+            List<String> subtags = record.AC_MASS_SPECTROMETRY().stream().map(Pair::getKey).toList();
+            uniques = new HashSet<>();
+            for (String c : subtags) {
+                if (!uniques.add(c)) {
+                    return context.failure("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
+                }
+            }
+
+            // check annotation sorting
+            List<Pair<BigDecimal, List<String>>> pk_annotation = record.PK_ANNOTATION();
+            for (int i = 0; i < pk_annotation.size() - 1; i++) {
+                if ((pk_annotation.get(i).getLeft().compareTo(pk_annotation.get(i + 1).getLeft())) > 0) {
+                    return context.failure("The peaks in the annotation list are not sorted.\n"
+                        + "Error in line " + pk_annotation.get(i).toString() + ".");
+                }
+            }
+
+            // validate the count of PK$ANNOTATION items per line
+            List<String> pk_annotation_header = record.PK_ANNOTATION_HEADER();
+            for (Pair<BigDecimal, List<String>> pkAnnotationLine : pk_annotation) {
+                if (pk_annotation_header.size() != pkAnnotationLine.getRight().size() + 1) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Incorrect number of fields per PK$ANNOTATION line. ")
+                        .append(pk_annotation_header.size())
+                        .append(" fields expected, but ")
+                        .append(pkAnnotationLine.getRight().size() + 1)
+                        .append(" fields found.\n")
+                        .append("Defined by:\n")
+                        .append("PK$ANNOTATION:");
+                    for (String pk_annotation_headerItem : record.PK_ANNOTATION_HEADER())
+                        sb.append(" ").append(pk_annotation_headerItem);
+                    sb.append("  ").append(pkAnnotationLine.getLeft()).append(" ").append(String.join(" ", pkAnnotationLine.getRight()));
+                    return context.failure(sb.toString());
+                }
+            }
+
 
         }
 
-
-
-//
-//
-//            // check for duplicate entries in CH$NAME
-//            List<String> ch_name = callback.CH_NAME();
-//            Set<String> duplicates = new LinkedHashSet<String>();
-//            Set<String> uniques = new HashSet<String>();
-//            for (String c : ch_name) {
-//                if (!uniques.add(c)) {
-//                    duplicates.add(c);
-//                }
-//            }
-//            if (duplicates.size() > 0) {
-//                if (!weak) {
-//                    StringBuilder sb = new StringBuilder();
-//                    sb.append("There are duplicate entries in \"CH$NAME\" field.");
-//                    return context.failure(sb.toString());
-//                } else {
-//                    logger.warn("There are duplicate entries in \"CH$NAME\" field.");
-//                }
-//            }
-//
-//            // check for duplicate entries in AC$MASS_SPECTROMETRY
-//            List<String> subtags = callback.AC_MASS_SPECTROMETRY().stream().map(p -> p.getKey()).collect(Collectors.toList());
-//            Set<String> duplicates1 = new LinkedHashSet<String>();
-//            Set<String> uniques1 = new HashSet<String>();
-//            for (String c : subtags) {
-//                if (!uniques1.add(c)) {
-//                    duplicates1.add(c);
-//                }
-//            }
-//            if (duplicates1.size() > 0) {
-//                //if (!weak) {
-//                StringBuilder sb = new StringBuilder();
-//                sb.append("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
-//                return context.failure(sb.toString());
-//                //} else {
-//                //	logger.warn("There are duplicate subtags in \"AC$MASS_SPECTROMETRY\" field.");
-//                //}
-//            }
-//
-//
 //            // check things online
 //            if (online) {
 //                if (callback.CH_LINK().containsKey("INCHIKEY")) {
