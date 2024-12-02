@@ -3,18 +3,15 @@ package massbank.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -39,136 +36,61 @@ import massbank.db.DatabaseManager;
  */
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
-	private static Pattern nonStandardCharsPattern = Pattern.compile("[\\d\\w\\n\\-\\[\\]\\.\"\\\\ ;:–=+,|(){}/$%@'!?#`^*&<>µáćÉéóäöü©]+");
-	/**
-	 * Returns <code>true</code> if there is any suspicious character in <code>recordString</code>.
-	 */
-	public static boolean hasNonStandardChars(String recordString) {
-		Matcher m = nonStandardCharsPattern.matcher(recordString);
-		if (m.find()) {
-			int position = m.end();
-			String[] tokens = recordString.split("\\n");
-			if (position<recordString.length()) {
-				logger.warn("Non standard ASCII character found. This might be an error. Please check carefully.");
-				int line = 0, col = 0, offset = 0;
-				for (String token : tokens) {
-					offset = offset + token.length() + 1;
-					if (position < offset) {
-						col = position - (offset - (token.length() + 1));
-						logger.warn(tokens[line]);
-						StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
-						error_at.append('^');
-						logger.warn(error_at);
-						return true;
-					}
-					line++;
-				}
-			}
-		} else {
-			logger.warn("Standard character pattern does not work. Please check.");
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Validate a <code>recordString</code> and return the parsed information in a {@link Record} 
-	 * or <code>null</code> if the validation was not successful. Options are given in 
-	 * <code>config</code>.
-	 */
-	public static Record validate(String recordString, Set<String> config) {
-		RecordParser recordparser = new RecordParser(config);
-		Result res =  recordparser.parse(recordString);
-		if (res.isFailure()) {
-			logger.error(res.getMessage());
-			int position = res.getPosition();
-			String[] tokens = recordString.split("\\n");
-
-			int line = 0, col = 0, offset = 0;
-			for (String token : tokens) {
-				offset = offset + token.length() + 1;
-				if (position < offset) {
-					col = position - (offset - (token.length() + 1));
-					logger.error(tokens[line]);
-					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
-					error_at.append('^');
-					logger.error(error_at);
-					break;
-				}
-				line++;
-			}
-			return null;
-		} else {
-			return res.get();
-		}
-	}
+	private static final Pattern nonStandardCharsPattern = Pattern.compile("[\\d\\w\\n\\-\\[\\]\\.\"\\\\ ;:–=+,|(){}/$%@'!?#`^*&<>µáćÉéóäöü©]+");
 
 	public static void main(String[] arguments) throws SQLException, ConfigurationException {
 		// load version and print
-		final Properties properties = new Properties();
-		try {
-			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Properties properties = loadProperties();
 		System.out.println("Validator version: " + properties.getProperty("version"));
 
 		// parse command line
-		final Options options = new Options();
-		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
-		options.addOption(null, "legacy", false, "less strict mode for legacy records with minor problems.");
-		options.addOption(null, "online", false, "also do online checks, like PubChem CID check.");
-		CommandLine cmd=null;
-		try {
-			cmd = new DefaultParser().parse( options, arguments);
-		}
-		catch(ParseException e) {
-	        System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
-	        HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
-	        System.exit(1);
-	    }
-		
-		if (cmd.getArgList().size() == 0) {
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
-	        System.exit(1);
-		}
-		
-		if (cmd.hasOption("legacy")) System.out.println("Validation mode: legacy");
-		
-		// find all files in arguments and all *.txt files in directories and subdirectories
-		// specified in arguments 
-		List<File> recordfiles = new ArrayList<>();
-		for (String argument : cmd.getArgList()) {
-			File argumentf = new File(argument);
-			if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
-				recordfiles.add(argumentf);
-			}
-			else if (argumentf.isDirectory()) {
-				recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
-			}
-			else {
-				logger.warn("Argument " + argument + " could not be processed.");
-			}
-		}
-		if (recordfiles.size() == 0 ) {
+		CommandLine cmd = parseCommandLine(arguments);
+
+		// find all *.txt files in arguments
+		// and if argument is a directory find all *.txt files in directories
+		// and subdirectories of the argument
+		List<Path> recordFiles = findRecordFiles(cmd.getArgList());
+		if (recordFiles.isEmpty()) {
 			logger.error("No files found for validation.");
 			System.exit(1);
 		}
-		
-		
-				
-			
 
-		// validate all files
-		logger.trace("Validating " + recordfiles.size() + " files");
-		AtomicBoolean haserror = new AtomicBoolean(false);
+		AtomicBoolean hasError = new AtomicBoolean(false);
 		AtomicBoolean doDatbase = new AtomicBoolean(cmd.hasOption("db"));
-		AtomicBoolean legacyMode = new AtomicBoolean(cmd.hasOption("legacy"));
-		AtomicBoolean onlineMode = new AtomicBoolean(cmd.hasOption("online"));
-		List<String> accessions = recordfiles.parallelStream().map(filename -> {
+
+		logger.trace("Found {} files for processing", recordFiles.size());
+
+		// create parser from command line options
+		Set<String> config = new HashSet<>();
+		config.add("validate");
+		if (cmd.hasOption("legacy")) config.add("legacy");
+		if (cmd.hasOption("online")) config.add("online");
+		RecordParser recordparser = new RecordParser(config);
+
+		// read files
+		recordFiles.parallelStream()
+			.map(filename -> {
+				try {
+					return new AbstractMap.SimpleEntry<>(filename, Files.readString(filename, StandardCharsets.UTF_8));
+				} catch (IOException e) {
+					logger.error("Error reading file: {}", filename, e);
+					hasError.set(true);
+					return null;
+				}
+			})
+			.filter(Objects::nonNull)
+			.peek(entry -> {
+				if (hasNonStandardChars(entry.getValue())) {
+					logger.warn("Check {}.", entry.getKey());
+				}
+			})
+			.forEach(System.out::println);
+
+
+
+		List<String> accessions = recordFiles.parallelStream()
+			.map(Path::toFile)
+			.map(filename -> {
 			String recordString;
 			String accession=null;
 			logger.info("Working on " + filename + ".");
@@ -180,14 +102,11 @@ public class Validator {
 				};
 				
 				// basic validation
-				Set<String> config = new HashSet<String>();
-				config.add("validate");
-				if (legacyMode.get()) config.add("legacy");
-				if (onlineMode.get()) config.add("online");
+
 				Record record = validate(recordString, config);
 				if (record == null) {
 					logger.error("Error in \'" + filename + "\'.");
-					haserror.set(true);
+					hasError.set(true);
 				}
 				
 				// additional tests
@@ -198,7 +117,7 @@ public class Validator {
 					if (!accession.equals(FilenameUtils.getBaseName(filename.toString()))) {
 						logger.error("Error in \'" + filename.getName().toString() + "\'.");
 						logger.error("ACCESSION \'" + record.ACCESSION() + "\' does not match filename \'" + filename.getName().toString() + "\'");
-						haserror.set(true);
+						hasError.set(true);
 					}
 					
 					// validate correct serialization: String <-> (String -> Record class -> String)
@@ -219,7 +138,7 @@ public class Validator {
 								StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 								error_at.append('^');
 								logger.error(error_at);
-								haserror.set(true);
+								hasError.set(true);
 								break;
 							}
 							line++;
@@ -251,7 +170,7 @@ public class Validator {
 									StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
 									error_at.append('^');
 									logger.error(error_at);
-									haserror.set(true);
+									hasError.set(true);
 									break;
 								}
 								line++;
@@ -280,11 +199,126 @@ public class Validator {
 		if (duplicates.size()>0) {
 			logger.error("There are duplicates in all accessions:");
 			logger.error(duplicates.toString());
-			haserror.set(true);
+			hasError.set(true);
 		}
 		
 		// return 1 if there were errors
-		if (haserror.get()) System.exit(1);
+		if (hasError.get()) System.exit(1);
 		else System.exit(0);
+	}
+
+	private static Properties loadProperties() {
+		Properties properties = new Properties();
+		try {
+			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return properties;
+	}
+
+	private static CommandLine parseCommandLine(String[] arguments) {
+		Options options = new Options();
+		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
+		options.addOption(null, "legacy", false, "less strict mode for legacy records with minor problems.");
+		options.addOption(null, "online", false, "also do online checks, like PubChem CID check.");
+
+		CommandLine cmd = null;
+		try {
+			cmd = new DefaultParser().parse(options, arguments);
+		} catch (ParseException e) {
+			System.err.println("Parsing command line failed. Reason: " + e.getMessage());
+			new HelpFormatter().printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+			System.exit(1);
+		}
+		if (cmd.getArgList().isEmpty()) {
+			new HelpFormatter().printHelp("Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+			System.exit(1);
+		}
+
+		if (cmd.hasOption("legacy")) System.out.println("Validation mode: legacy");
+		return cmd;
+	}
+
+	private static List<Path> findRecordFiles(List<String> arguments) {
+		List<Path> recordFiles = new ArrayList<>();
+		for (String argument : arguments) {
+			Path argumentPath = new File(argument).toPath();
+			if (Files.isRegularFile(argumentPath) && FilenameUtils.getExtension(argument).equals("txt")) {
+				recordFiles.add(argumentPath);
+			} else if (Files.isDirectory(argumentPath)) {
+				try {
+					Files.walk(argumentPath)
+						.filter(path -> Files.isRegularFile(path) && FilenameUtils.getExtension(path.toString()).equals("txt"))
+						.forEach(recordFiles::add);
+				} catch (IOException e) {
+                    logger.warn("Error processing directory {}", argument, e);
+				}
+			} else {
+                logger.warn("Argument {} could not be processed.", argument);
+			}
+		}
+		return recordFiles;
+	}
+
+	/**
+	 * Returns <code>true</code> if there is any suspicious character in <code>recordString</code>.
+	 */
+	public static boolean hasNonStandardChars(String recordString) {
+		Matcher m = nonStandardCharsPattern.matcher(recordString);
+		if (m.find()) {
+			int position = m.end();
+			if (position<recordString.length()) {
+				logger.warn("Non standard ASCII character found. This might be an error. Please check carefully.");
+				String[] tokens = recordString.split("\\n");
+				int offset = 0;
+                for (String token : tokens) {
+                    offset += token.length() + 1;
+                    if (position < offset) {
+                        int col = position - (offset - (token.length() + 1));
+                        logger.warn(token);
+                        logger.warn("{}^", StringUtils.repeat(" ", col));
+                        return true;
+                    }
+                }
+			}
+		} else {
+			logger.warn("Standard character pattern does not work. Please check.");
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Validate a <code>recordString</code> and return the parsed information in a {@link Record}
+	 * or <code>null</code> if the validation was not successful. Options are given in
+	 * <code>config</code>.
+	 */
+	public static Record validate(String recordString, Set<String> config) {
+		RecordParser recordparser = new RecordParser(config);
+		Result res =  recordparser.parse(recordString);
+		if (res.isFailure()) {
+			logger.error(res.getMessage());
+			int position = res.getPosition();
+			String[] tokens = recordString.split("\\n");
+
+			int line = 0, col = 0, offset = 0;
+			for (String token : tokens) {
+				offset = offset + token.length() + 1;
+				if (position < offset) {
+					col = position - (offset - (token.length() + 1));
+					logger.error(tokens[line]);
+					StringBuilder error_at = new StringBuilder(StringUtils.repeat(" ", col));
+					error_at.append('^');
+					logger.error(error_at);
+					break;
+				}
+				line++;
+			}
+			return null;
+		} else {
+			return res.get();
+		}
 	}
 }
