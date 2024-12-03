@@ -520,8 +520,8 @@ public class RecordParserDefinition extends GrammarDefinition {
                         )
                         .map((List<?> value) -> {
                             List<String> result = new ArrayList<>();
-                            if (value.getFirst() != null) {
-                                result.add((String) value.getFirst());
+                            if (value.get(0) != null) {
+                                result.add((String) value.get(0));
                             }
                             if (value.get(1) != null) {
                                 List<?> sublist = (List<?>) value.get(1);
@@ -787,7 +787,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                 .seq(ch_link_subtag)
                 .seq(Token.NEWLINE_PARSER.not()).pick(2)
                 .seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-                .map((List<String> value) -> Pair.of(value.getFirst().trim(), value.get(1)))
+                .map((List<String> value) -> Pair.of(value.get(0).trim(), value.get(1)))
                 .seq(Token.NEWLINE_PARSER)
                 .pick(0)
                 .plus()
@@ -864,7 +864,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                 .seq(CharacterParser.any().plusLazy(CharacterParser.whitespace()).flatten())
                 .seq(CharacterParser.whitespace()).pick(3)
                 .seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-                .map((List<String> value) -> Pair.of(value.getFirst().trim(), value.get(1)))
+                .map((List<String> value) -> Pair.of(value.get(0).trim(), value.get(1)))
                 .seq(Token.NEWLINE_PARSER)
                 .pick(0)
                 .plus()
@@ -953,7 +953,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                 .seq(ref("ac_instrument_type_ionisation"))
                 .seq(ref("ac_instrument_type_analyzer"))
                 .map((List<String> value) -> {
-                    if (value.getFirst() == null) value.removeFirst();
+                    if (value.get(0) == null) value.remove(0);
                     return String.join("-", value);
                 })
         );
@@ -1168,7 +1168,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                         )
                 )
                 .seq(Token.NEWLINE_PARSER).pick(2)
-                .map((List<String> value) -> Pair.of(value.getFirst().trim(), value.get(1)))
+                .map((List<String> value) -> Pair.of(value.get(0).trim(), value.get(1)))
                 .plus()
 //                .map((Object value) -> {
 //                    System.out.println(value);
@@ -1251,7 +1251,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                 )
                 .seq(Token.NEWLINE_PARSER.not()).pick(2)
                 .seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-                .map((List<String> value) -> Pair.of(value.getFirst().trim(), value.get(1)))
+                .map((List<String> value) -> Pair.of(value.get(0).trim(), value.get(1)))
                 .seq(Token.NEWLINE_PARSER).pick(0)
                 .plus()
 //                .map((Object value) -> {
@@ -1403,7 +1403,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                         )
                 )
                 .seq(Token.NEWLINE_PARSER).pick(2)
-                .map((List<String> value) -> Pair.of(value.getFirst().trim(), value.get(1)))
+                .map((List<String> value) -> Pair.of(value.get(0).trim(), value.get(1)))
                 .plus()
 //                .map((Object value) -> {
 //                    System.out.println(value);
@@ -1441,7 +1441,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                 .seq(ref("ms_data_processing_subtag"))
                 .seq(Token.NEWLINE_PARSER.not()).pick(2)
                 .seq(CharacterParser.any().plusLazy(Token.NEWLINE_PARSER).flatten())
-                .map((List<String> value) -> Pair.of(value.getFirst().trim(), value.get(1)))
+                .map((List<String> value) -> Pair.of(value.get(0).trim(), value.get(1)))
                 .seq(Token.NEWLINE_PARSER).pick(0)
                 .plus()
 //                .map((Object value) -> {
@@ -1486,7 +1486,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                         .trim(CharacterParser.of(' '))
                         .plus()
                         .map((List<String> value) -> {
-                            value.addFirst("m/z");
+                            value.add(0,"m/z");
                             return value;
                         })
                 )
@@ -1504,7 +1504,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                                 .plus()
                         )
                         .map((List<?> value) -> {
-                            BigDecimal mz = new BigDecimal((String) value.getFirst());
+                            BigDecimal mz = new BigDecimal((String) value.get(0));
                             List<String> annotations = ((List<?>) value.get(1)).stream()
                                 .map(Object::toString)
                                 .collect(Collectors.toList());
@@ -1551,7 +1551,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                         .seq(
                             ref("uint_primitive")
                         )
-                        .map((List<String> value) -> Triple.of(new BigDecimal(value.getFirst()),
+                        .map((List<String> value) -> Triple.of(new BigDecimal(value.get(0)),
                             new BigDecimal(value.get(1)),
                             Integer.parseInt(value.get(2))))
                         .seq(Token.NEWLINE_PARSER)
@@ -1573,98 +1573,98 @@ public class RecordParserDefinition extends GrammarDefinition {
     }
 
     private Record setRECORD_TITLE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.RECORD_TITLE1((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.RECORD_TITLE1((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setDATE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.DATE((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.DATE((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setAUTHORS(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.AUTHORS((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.AUTHORS((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setLICENSE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.LICENSE((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.LICENSE((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setCOPYRIGHT(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.COPYRIGHT((String) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.COPYRIGHT((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setPUBLICATION(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.PUBLICATION((String) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.PUBLICATION((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setPROJECT(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.PROJECT((String) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.PROJECT((String) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setCOMMENT(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.COMMENT((List<String>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.COMMENT((List<String>) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setCH_NAME(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.CH_NAME((List<String>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.CH_NAME((List<String>) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setCH_COMPOUND_CLASS(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.CH_COMPOUND_CLASS((List<String>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.CH_COMPOUND_CLASS((List<String>) value.get(value.size()-1));
         return record;
     }
 
     private Record setCH_FORMULA(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.CH_FORMULA((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.CH_FORMULA((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setCH_EXACT_MASS(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.CH_EXACT_MASS((BigDecimal) value.getLast());
+        Record record = (Record) value.get(0);
+        record.CH_EXACT_MASS((BigDecimal) value.get(value.size()-1));
         return record;
     }
 
     private Record setCH_SMILES(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.CH_SMILES((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.CH_SMILES((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setCH_IUPAC(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.CH_IUPAC((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.CH_IUPAC((String) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setCH_LINK(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) {
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) {
             LinkedHashMap<String, String> map = new LinkedHashMap<>();
-            for (Pair<String, String> pair : (List<Pair<String, String>>) value.getLast()) {
+            for (Pair<String, String> pair : (List<Pair<String, String>>) value.get(value.size()-1)) {
                 map.put(pair.getKey(), pair.getValue());
             }
             record.CH_LINK(map);
@@ -1673,23 +1673,23 @@ public class RecordParserDefinition extends GrammarDefinition {
     }
 
     private Record setSP_SCIENTIFIC_NAME(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.SP_SCIENTIFIC_NAME((String) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.SP_SCIENTIFIC_NAME((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setSP_LINEAGE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.SP_LINEAGE((String) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.SP_LINEAGE((String) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setSP_LINK(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) {
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) {
             LinkedHashMap<String, String> map = new LinkedHashMap<>();
-            for (Pair<String, String> pair : (List<Pair<String, String>>) value.getLast()) {
+            for (Pair<String, String> pair : (List<Pair<String, String>>) value.get(value.size()-1)) {
                 map.put(pair.getKey(), pair.getValue());
             }
             record.SP_LINK(map);
@@ -1699,78 +1699,78 @@ public class RecordParserDefinition extends GrammarDefinition {
 
     @SuppressWarnings("unchecked")
     private Record setSP_SAMPLE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null) record.SP_SAMPLE((List<String>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null) record.SP_SAMPLE((List<String>) value.get(value.size()-1));
         return record;
     }
 
     private Record setAC_INSTRUMENT(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.AC_INSTRUMENT((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.AC_INSTRUMENT((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setAC_INSTRUMENT_TYPE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.AC_INSTRUMENT_TYPE((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.AC_INSTRUMENT_TYPE((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setAC_MASS_SPECTROMETRY_MS_TYPE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.AC_MASS_SPECTROMETRY_MS_TYPE((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.AC_MASS_SPECTROMETRY_MS_TYPE((String) value.get(value.size()-1));
         return record;
     }
 
     private Record setAC_MASS_SPECTROMETRY_ION_MODE(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.AC_MASS_SPECTROMETRY_ION_MODE((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.AC_MASS_SPECTROMETRY_ION_MODE((String) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setAC_MASS_SPECTROMETRY(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null)
-            record.AC_MASS_SPECTROMETRY((List<Pair<String, String>>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null)
+            record.AC_MASS_SPECTROMETRY((List<Pair<String, String>>) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setAC_CHROMATOGRAPHY(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null)
-            record.AC_CHROMATOGRAPHY((List<Pair<String, String>>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null)
+            record.AC_CHROMATOGRAPHY((List<Pair<String, String>>) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setMS_FOCUSED_ION(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null)
-            record.MS_FOCUSED_ION((List<Pair<String, String>>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null)
+            record.MS_FOCUSED_ION((List<Pair<String, String>>) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setMS_DATA_PROCESSING(List<?> value) {
-        Record record = (Record) value.getFirst();
-        if (value.getLast() != null)
-            record.MS_DATA_PROCESSING((List<Pair<String, String>>) value.getLast());
+        Record record = (Record) value.get(0);
+        if (value.get(value.size()-1) != null)
+            record.MS_DATA_PROCESSING((List<Pair<String, String>>) value.get(value.size()-1));
         return record;
     }
 
     private Record setPK_SPLASH(List<?> value) {
-        Record record = (Record) value.getFirst();
-        record.PK_SPLASH((String) value.getLast());
+        Record record = (Record) value.get(0);
+        record.PK_SPLASH((String) value.get(value.size()-1));
         return record;
     }
 
     @SuppressWarnings("unchecked")
     private Record setPK_ANNOTATION(List<?> value) {
-        Record record = (Record) value.getFirst();
+        Record record = (Record) value.get(0);
         if (value.get(1) != null) {
-            record.PK_ANNOTATION_HEADER((List<String>) ((List<?>) value.get(1)).getFirst());
+            record.PK_ANNOTATION_HEADER((List<String>) ((List<?>) value.get(1)).get(0));
             for (Pair<BigDecimal, List<String>> annotationLine : (List<Pair<BigDecimal, List<String>>>) ((List<?>) value.get(1)).get(1)) {
                 record.PK_ANNOTATION_ADD_LINE(annotationLine);
             }
@@ -1780,7 +1780,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 
     @SuppressWarnings("unchecked")
     private Record setPK_PEAK(List<?> value) {
-        Record record = (Record) value.getFirst();
+        Record record = (Record) value.get(0);
         for (Triple<BigDecimal, BigDecimal, Integer> peak : (List<Triple<BigDecimal, BigDecimal, Integer>>) value.get(2)) {
             record.PK_PEAK_ADD_LINE(peak);
         }
@@ -1788,7 +1788,7 @@ public class RecordParserDefinition extends GrammarDefinition {
     }
 
     private Record setDEPRECATED(List<?> value) {
-        Record record = (Record) value.getFirst();
+        Record record = (Record) value.get(0);
         record.DEPRECATED(true);
         record.DEPRECATED_CONTENT((String) value.get(1));
         return record;
