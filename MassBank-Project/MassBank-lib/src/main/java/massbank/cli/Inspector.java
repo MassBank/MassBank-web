@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import massbank.RecordParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -26,6 +27,7 @@ import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import massbank.Record;
+import org.petitparser.context.Result;
 
 /**
  * This class converts a record file to a html file for inspection.
@@ -79,14 +81,15 @@ public class Inspector {
 
 		String input = FileUtils.readFileToString(new File(cmd.getArgList().get(0)), StandardCharsets.UTF_8);
 		Validator.hasNonStandardChars(input);
-		Set<String> config = new HashSet<String>();
-		config.add("legacy");
-		Record record = Validator.validate(input, config);
-		if (record == null) {
+		RecordParser recordparser = new RecordParser(new HashSet<>());
+		Result res = recordparser.parse(input);
+		Record record = null;
+		if (res.isFailure()) {
 			logger.error("Error in " + arguments[0] + ". Exiting...");
 			System.exit(1);
 		} else {
 			logger.trace("Validation passed for " + arguments[0] + ".");
+			record = res.get();
 		}
 
 		StringBuilder sb = new StringBuilder();

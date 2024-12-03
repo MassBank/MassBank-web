@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import massbank.RecordParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -26,6 +28,7 @@ import massbank.export.RecordToJson;
 import massbank.export.RecordToJsonLD;
 import massbank.export.RecordToNIST_MSP;
 import massbank.export.RecordToRIKEN_MSP;
+import org.petitparser.context.Result;
 
 public class RecordExporter {
 	private static final Logger logger = LogManager.getLogger(RecordExporter.class);
@@ -150,7 +153,9 @@ public static void main(String[] arguments) {
 				String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 				Set<String> config = new HashSet<String>();
 				config.add("legacy");
-				record = Validator.validate(recordString, config);
+				RecordParser recordparser = new RecordParser(new HashSet<>());
+				Result res = recordparser.parse(recordString);
+				record = res.get();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

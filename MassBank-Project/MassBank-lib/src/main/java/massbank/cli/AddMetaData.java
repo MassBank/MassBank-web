@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import massbank.RecordParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -57,6 +58,8 @@ import io.github.dan2097.jnainchi.InchiStatus;
 import io.github.dan2097.jnainchi.JnaInchi;
 import massbank.PubchemResolver;
 import massbank.Record;
+import org.petitparser.context.Result;
+
 import java.util.stream.Collectors;
 
 /**
@@ -552,14 +555,16 @@ public class AddMetaData {
 			try {
 				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 				// read record in less strict mode
-				Set<String> config = new HashSet<String>();
-				config.add("legacy");
-				config.add("weak");
-				Record record = Validator.validate(recordString, config);
-				if (record == null) {
-					System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
+				RecordParser recordparser = new RecordParser(new HashSet<>());
+				Result res = recordparser.parse(recordString);
+				Record record = null;
+				if (res.isFailure()) {
+					System.err.println( "Parsing of \""+ filename + "\" failed. Exiting.");
 					System.exit(1);
-				} else if (record.DEPRECATED()) {
+				} else {
+					record = res.get();
+				}
+				if (record.DEPRECATED()) {
 					System.exit(0);
 				}
 
@@ -580,10 +585,10 @@ public class AddMetaData {
 					recordstring2=doSetSMILESfromInChi(record);
 				}
 				
-				config = new HashSet<String>();
 				if (!recordString.equals(recordstring2)) {
-					Record record2 = Validator.validate(recordString, config);
-					if (record2 == null) {
+					res = recordparser.parse(recordstring2);
+					Record record2 =null;
+					if (res.isFailure()) {
 						System.err.println( "Validation of new created record file failed. Do not write.");
 					} else {
 						try {
