@@ -18,7 +18,7 @@
 		</dependency>
 		<dependency>
 			<groupId>jakarta.platform</groupId>
-			<artifactId>jakarta.jakartaee-api</artifactId>
+			<artifactId>jakarta.jakartaee-web-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -89,11 +89,11 @@
 			<groupId>io.github.dan2097</groupId>
 			<artifactId>jna-inchi-all</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-distribution</artifactId>
-			<version>5.5.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>net.sourceforge.owlapi</groupId>-->
+<!--			<artifactId>owlapi-distribution</artifactId>-->
+<!--			<version>5.5.0</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>

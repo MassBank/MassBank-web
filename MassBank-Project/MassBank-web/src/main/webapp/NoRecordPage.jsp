@@ -25,7 +25,7 @@
 	<title>No Mass Spectrum</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<meta name="description" content="MassBank Record of ${accession} not found">
+	<meta name="description" content="MassBank Record of <c:out value="${accession}"/> not found">
 	<meta name="keywords" content="No MassBank record">
 	<meta name="author" content="MassBank">
 	<meta name="copyright" content="MassBank Consortium"/>
@@ -35,7 +35,7 @@
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
-	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/jquery-3.7.1.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script>svg4everybody();</script>
 </head>
@@ -66,7 +66,7 @@
 	<div class="w3-container">
   	<c:if test="${not empty accession}">
 		<p>
-			No MassBank record exists for accession '${accession}'.
+			No MassBank record exists for accession '<c:out value="${accession}"/>'.
 		</p>
 		<p>
 			If you want to make a 'Keyword' search please visit our
@@ -74,7 +74,7 @@
 		</p>
 		</c:if>
 		<c:if test="${not empty error}">
-			<b>Error message: ${error}</b>
+			<b>Error message: <c:out value="${error}"/></b>
 		</c:if>	
 	</div>	
 	

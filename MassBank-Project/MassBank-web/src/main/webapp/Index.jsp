@@ -35,7 +35,7 @@
 	<link rel="stylesheet" type="text/css" href="css/massbank.css">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;1,400;1,600">
-	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/jquery-3.7.1.min.js"></script>
 	<script src="js/svg4everybody-2.1.9.min.js"></script>
 	<script src="js/iframeResizer.min.js"></script>
 	<script>svg4everybody();</script>

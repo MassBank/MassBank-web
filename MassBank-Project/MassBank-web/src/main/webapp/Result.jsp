@@ -368,7 +368,7 @@
 	<script type="text/javascript" src="script/Common.js"></script>
 	<script type="text/javascript" src="script/Result.js"></script>
 	<script type="text/javascript" src="script/ResultMenu.js"></script>
-	<script type="text/javascript" src="js/jquery-3.5.1.min.js" ></script>
+	<script type="text/javascript" src="js/jquery-3.7.1.min.js" ></script>
 	<!-- SpeckTackle dependencies-->
 	<script type="text/javascript" src="js/d3.v3.min.js"></script>
 	<!-- SpeckTackle library-->
