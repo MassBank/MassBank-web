@@ -1,33 +1,41 @@
+/*******************************************************************************
+ * Copyright (C) 2017 MassBank consortium
+ *
+ * This file is part of MassBank.
+ *
+ * MassBank is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ ******************************************************************************/
 package massbank.cli;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import massbank.Record;
 import massbank.RecordParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.interfaces.IAtomContainer;
-
-import massbank.Record;
 import org.petitparser.context.Result;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * This class converts a record file to a html file for inspection.
@@ -80,7 +88,6 @@ public class Inspector {
 		}
 
 		String input = FileUtils.readFileToString(new File(cmd.getArgList().get(0)), StandardCharsets.UTF_8);
-		Validator.hasNonStandardChars(input);
 		RecordParser recordparser = new RecordParser(new HashSet<>());
 		Result res = recordparser.parse(input);
 		Record record = null;

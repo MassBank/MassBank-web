@@ -20,9 +20,9 @@
  ******************************************************************************/
 package massbank.repository;
 
-import java.util.stream.Stream;
-
 import massbank.Record;
+
+import java.util.stream.Stream;
 
 /**
  * Interface for a repository with some kind of data.

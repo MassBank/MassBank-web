@@ -20,44 +20,52 @@
  ******************************************************************************/
 package massbank.cli;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import massbank.Record;
+import massbank.RecordParser;
+import massbank.RecordParserDefinition;
+import massbank.db.DatabaseManager;
+import org.apache.commons.cli.*;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.petitparser.context.Result;
-import massbank.Record;
-import massbank.RecordParser;
-import massbank.RecordParserDefinition;
-import massbank.db.DatabaseManager;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * This class validates a record file or String by using the syntax of {@link RecordParserDefinition}.
+ * This class validates one or several record file/s by using the syntax of {@link RecordParserDefinition}.
+ *
+ * Command line usage:
+ * Validator [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]
+ *
+ * Options:
+ * --legacy   : less strict mode for legacy records with minor problems.
+ * --db       : also read record from database and compare with original Record; Developer Feature!
+ * --online   : also do online checks, like PubChem CID check.
+ *
+ * Example:
+ * Validator --db records/
+ *
  * @author rmeier
- * @version 03-06-2020
+ * @version 04-12-2024
  */
 public class Validator {
 	private static final Logger logger = LogManager.getLogger(Validator.class);
 	private static final Pattern nonStandardCharsPattern = Pattern.compile("[\\w\\n\\-\\[\\].\"\\\\ ;:–=+,|(){}/$%@'°!?#`^*&<>µáćÉéóäöü©]+");
-	private static AtomicBoolean doDatabase;
+	private static Boolean doDatabase;
 	private static RecordParser recordparser;
 
 
@@ -78,7 +86,7 @@ public class Validator {
 			System.exit(1);
 		}
 
-		doDatabase = new AtomicBoolean(cmd.hasOption("db"));
+		doDatabase = cmd.hasOption("db");
 
 		logger.trace("Found {} files for processing", recordFiles.size());
 
@@ -92,9 +100,9 @@ public class Validator {
 		List<String> accessions = recordFiles.parallelStream()
 			.map(Validator::readFile)
 			.filter(Objects::nonNull)
-			.peek(Validator::checkNonStandardChars)
 			.map(Validator::parseRecord)
 			.filter(Objects::nonNull)
+			.peek(Validator::checkNonStandardChars)
 			.map(Validator::validateSerialization)
 			.filter(Objects::nonNull)
 			.toList();
@@ -106,7 +114,12 @@ public class Validator {
 		else System.exit(0);
 	}
 
-	private static Properties loadProperties() {
+	/**
+	 * Reads the properties file and loads the properties.
+	 *
+	 * @return the loaded properties
+	 */
+	public static Properties loadProperties() {
 		Properties properties = new Properties();
 		try {
 			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
@@ -117,6 +130,12 @@ public class Validator {
 		return properties;
 	}
 
+	/**
+	 * Parses the command line arguments.
+	 *
+	 * @param arguments the command line arguments
+	 * @return the parsed command line
+	 */
 	private static CommandLine parseCommandLine(String[] arguments) {
 		Options options = new Options();
 		options.addOption(null, "db", false, "also read record from database and compare with original Record; Developer Feature!");
@@ -140,49 +159,95 @@ public class Validator {
 		return cmd;
 	}
 
-	private static List<Path> findRecordFiles(List<String> arguments) {
+	/**
+	 * Finds all record files in the given arguments.
+	 *
+	 * @param arguments the list of file or directory paths
+	 * @return the list of record file paths
+	 */
+	public static List<Path> findRecordFiles(List<String> arguments) {
 		return arguments.stream()
-			.map(File::new)
-			.flatMap(file -> {
-				if (file.isFile() && FilenameUtils.getExtension(file.getName()).equals("txt")) {
-					return Stream.of(file.toPath());
-				} else if (file.isDirectory()) {
-					try (Stream<Path> paths = Files.walk(file.toPath())) {
-						return paths.filter(path -> Files.isRegularFile(path) && FilenameUtils.getExtension(path.toString()).equals("txt"));
-					}
-					catch (IOException e) {
-						logger.warn("Error processing directory {}", file, e);
+			.map(Paths::get)
+			.flatMap(path -> {
+				if (Files.isRegularFile(path) && path.toString().endsWith("txt")) {
+					return Stream.of(path);
+				}
+				else if (Files.isDirectory(path)) {
+					try (Stream<Path> paths = Files.walk(path)) {
+						return paths
+							.filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".txt"))
+							.toList()
+							.stream();
+					} catch (IOException e) {
+						logger.warn("Error processing directory {}", path, e);
 						return Stream.empty();
 					}
-				} else {
-					logger.warn("Argument {} could not be processed.", file);
+				}
+				else {
+					logger.warn("Argument {} could not be processed.", path);
 					return Stream.empty();
 				}
 			})
 			.collect(Collectors.toList());
 	}
 
-	public static AbstractMap.SimpleEntry<Path, String> readFile(Path filename) {
+	/**
+	 * Reads the content of a file.
+	 *
+	 * @param filename the path of the file
+	 * @return a SimpleEntry containing the file path and its content, or null if an error occurs
+	 */
+	public static SimpleEntry<Path, String> readFile(Path filename) {
 		try {
-			return new AbstractMap.SimpleEntry<>(filename, Files.readString(filename, StandardCharsets.UTF_8));
+			return new SimpleEntry<>(filename, Files.readString(filename, StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			logger.error("Error reading file: {}", filename, e);
 			return null;
 		}
 	}
 
-	private static void checkNonStandardChars(AbstractMap.SimpleEntry<Path, String> recordString) {
-        if (hasNonStandardChars(recordString.getValue())) {
-            logger.warn("Check {}.", recordString.getKey());
-        }
-    }
+	/**
+	 * Checks for non-standard characters in the record string and logs a warning if found.
+	 *
+	 * @param result class containing the file path and the record file content
+	 */
+	private static void checkNonStandardChars(ParseResult result) {
+		if (result.record.DEPRECATED()) return;
+		Matcher m = nonStandardCharsPattern.matcher(result.content);
+		if (m.find()) {
+			int position = m.end();
+			if (position < result.content.length()) {
+				logger.warn("Non standard ASCII character found. This might be an error. Please check carefully.");
+				String[] tokens = result.content.split("\\n");
+				int offset = 0;
+				for (String token : tokens) {
+					offset += token.length() + 1;
+					if (position < offset) {
+						int col = position - (offset - (token.length() + 1));
+						logger.warn(token);
+						logger.warn("{}^", StringUtils.repeat(" ", col));
+						logger.warn("Check file {}.", result.filename);
+						break;
+					}
+				}
+			}
+		} else {
+			logger.warn("Standard character pattern does not work. Please check.");
+		}
+	}
 
-	public static AbstractMap.SimpleEntry<AbstractMap.SimpleEntry<Path, String>, Record> parseRecord(AbstractMap.SimpleEntry<Path, String> recordString) {
-        Result res = recordparser.parse(recordString.getValue());
-        if (res.isFailure()) {
-            logParseError(recordString, res);
-            return null;
-        } else {
+	/**
+	 * Parses the record string using the record parser.
+	 *
+	 * @param recordString the entry containing the file path and its content
+	 * @return a SimpleEntry containing the original entry and the parsed record, or null if parsing fails
+	 */
+	public static ParseResult parseRecord(SimpleEntry<Path, String> recordString) {
+		Result res = recordparser.parse(recordString.getValue());
+		if (res.isFailure()) {
+			logParseError(recordString, res);
+			return null;
+		} else {
 			Record record = res.get();
 			String accession = record.ACCESSION();
 			if (!accession.equals(FilenameUtils.getBaseName(recordString.getKey().toString()))) {
@@ -190,11 +255,11 @@ public class Validator {
 				logger.error("ACCESSION {} does not match filename '{}'", record.ACCESSION(), recordString.getKey().toString());
 				return null;
 			}
-			return new AbstractMap.SimpleEntry<>(recordString, record);
-        }
-    }
+			return new ParseResult(recordString.getKey(), recordString.getValue(), record);
+		}
+	}
 
-	public static Record parseRecord(AbstractMap.SimpleEntry<Path, String> recordString, RecordParser recordparser) {
+	public static Record parseRecord(SimpleEntry<Path, String> recordString, RecordParser recordparser) {
 		Result res = recordparser.parse(recordString.getValue());
 		if (res.isFailure()) {
 			logParseError(recordString, res);
@@ -211,7 +276,13 @@ public class Validator {
 		}
 	}
 
-	private static void logParseError(AbstractMap.SimpleEntry<Path, String> recordString, Result res) {
+	/**
+	 * Logs the parse error details.
+	 *
+	 * @param recordString the entry containing the file path and its content
+	 * @param res          the result of the parsing
+	 */
+	private static void logParseError(SimpleEntry<Path, String> recordString, Result res) {
 		logger.error(res.getMessage());
 		int position = res.getPosition();
 		String[] tokens = recordString.getValue().split("\\n");
@@ -230,34 +301,46 @@ public class Validator {
 		}
 	}
 
-	private static String validateSerialization(AbstractMap.SimpleEntry<AbstractMap.SimpleEntry<Path, String>, Record> record) {
-		String recordStringFromRecord = record.getValue().toString();
-		String originalRecordString = record.getKey().getValue().replaceAll("\\r\\n?", "\n");
+	/**
+	 * Tests the serialization of the record from text to internal data structure and back to text.
+	 *
+	 * @param result the ParseResult containing the the filename, the file content and the record object
+	 * @return the accession of the record if validation is successful, or null if validation fails
+	 */
+	private static String validateSerialization(ParseResult result) {
+		String recordStringFromRecord = result.record().toString();
+		String originalRecordString = result.content().replaceAll("\\r\\n?", "\n");
 		int position = StringUtils.indexOfDifference(new String[]{originalRecordString, recordStringFromRecord});
 		if (position != -1) {
-			logger.error("Error in file {}.", record.getKey().getKey());
+			logger.error("Error in file {}.", result.filename());
 			logger.error("File content differs from generated record string.\nThis might be a code problem. Please Report!");
 			logSerializationError(originalRecordString, position);
 			return null;
 		}
-		if (doDatabase.get()) {
-			Record recordFromDatabase = DatabaseManager.getAccessionData(record.getValue().ACCESSION());
+		if (doDatabase) {
+			Record recordFromDatabase = DatabaseManager.getAccessionData(result.record().ACCESSION());
 			if (recordFromDatabase == null) {
-				logger.error("Retrieval of '{}' from database failed", record.getValue().ACCESSION());
+				logger.error("Retrieval of '{}' from database failed", result.record().ACCESSION());
 				System.exit(1);
 			}
-            String recordStringFromDB = recordFromDatabase.toString();
+			String recordStringFromDB = recordFromDatabase.toString();
 			position = StringUtils.indexOfDifference(new String[]{originalRecordString, recordStringFromDB});
 			if (position != -1) {
-				logger.error("Error in file {}.", record.getKey().getKey());
+				logger.error("Error in file {}.", result.filename());
 				logger.error("File content differs from generated record string from record retrieved from database.\nThis might be a code problem. Please Report!");
 				logSerializationError(originalRecordString, position);
 				return null;
 			}
 		}
-		return record.getValue().ACCESSION();
+		return result.record().ACCESSION();
 	}
 
+	/**
+	 * Logs the serialization error details.
+	 *
+	 * @param originalRecordString the original record string
+	 * @param position             the position of the difference
+	 */
 	private static void logSerializationError(String originalRecordString, int position) {
 		String[] tokens = originalRecordString.split("\\n");
 		int offset = 0;
@@ -275,11 +358,17 @@ public class Validator {
 		}
 	}
 
+	/**
+	 * Checks for duplicate accessions in the list.
+	 *
+	 * @param accessions the list of accessions
+	 * @return the list of unique accessions
+	 */
 	private static List<String> checkDuplicates(List<String> accessions) {
 		Set<String> uniqueAccessions = new HashSet<>();
 		Set<String> duplicates = accessions.stream()
-        	.filter(accession -> !uniqueAccessions.add(accession))
-        	.collect(Collectors.toSet());
+			.filter(accession -> !uniqueAccessions.add(accession))
+			.collect(Collectors.toSet());
 		if (!duplicates.isEmpty()) {
 			logger.error("There are duplicates in all accessions:");
 			logger.error(duplicates.toString());
@@ -287,31 +376,9 @@ public class Validator {
 		return new ArrayList<>(uniqueAccessions);
 	}
 
-	/**
-	 * Returns <code>true</code> if there is any suspicious character in <code>recordString</code>.
-	 */
-	public static boolean hasNonStandardChars(String recordString) {
-		Matcher m = nonStandardCharsPattern.matcher(recordString);
-		if (m.find()) {
-			int position = m.end();
-			if (position<recordString.length()) {
-				logger.warn("Non standard ASCII character found. This might be an error. Please check carefully.");
-				String[] tokens = recordString.split("\\n");
-				int offset = 0;
-                for (String token : tokens) {
-                    offset += token.length() + 1;
-                    if (position < offset) {
-                        int col = position - (offset - (token.length() + 1));
-                        logger.warn(token);
-                        logger.warn("{}^", StringUtils.repeat(" ", col));
-                        return true;
-                    }
-                }
-			}
-		} else {
-			logger.warn("Standard character pattern does not work. Please check.");
-			return true;
-		}
-		return false;
+	public record ParseResult(Path filename, String content, Record record) {
+
 	}
+
+
 }
