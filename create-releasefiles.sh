@@ -1,8 +1,8 @@
 #!/bin/bash
-docker-compose -f compose/mariadb-docker-compose.yml stop
-docker-compose -f compose/mariadb-docker-compose.yml rm
-docker-compose -f compose/mariadb-docker-compose.yml pull
-docker-compose -f compose/mariadb-docker-compose.yml up -d
+docker compose -f compose/mariadb-docker-compose.yml stop
+docker compose -f compose/mariadb-docker-compose.yml rm
+docker compose -f compose/mariadb-docker-compose.yml pull
+docker compose -f compose/mariadb-docker-compose.yml up -d
 cd MassBank-Project
 mvn package
 ./MassBank-lib/target/MassBank-lib/MassBank-lib/bin/RefreshDatabase
