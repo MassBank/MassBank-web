@@ -1115,7 +1115,7 @@
 				// レコードページ表示用URL生成
 				String url = "";
 				// ◇ PeakSearch／PeakDifferenceSearchの場合
-				String contributor	= DatabaseManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
+				String contributor	= DatabaseManager.getContributorFromAccession(rec.getId()).SHORT_NAME();
 				
 				// if ( refPeak || refPeakDiff ) {
 				// 		if ( refPeak ) {
@@ -1201,7 +1201,7 @@
 					
 					Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
-							accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
+							accession, structure.CH_IUPAC(), structure.CH_SMILES(), tmpFileFolder, tmpUrlFolder,
 							80, 436
 					);
 					
