@@ -20,48 +20,45 @@
  ******************************************************************************/
 package massbank.cli;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
+import massbank.db.DatabaseManager;
+import massbank.repository.RepositoryInterface;
+import massbank.repository.SimpleFileRepository;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import massbank.db.DatabaseManager;
-import massbank.repository.RepositoryInterface;
-import massbank.repository.SimpleFileRepository;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * This class is called from command line. It clears all tables and sends all 
- * records from the repo to the database.
+ * This class is called from command line. It clears all tables in the database, reads all records
+ * and sends them to the database. Configuration is taken from class Config.
+ *
+ * Command line usage (no options):
+ * RefreshDatabase
  *
  * @author rmeier
- * @version 26-10-2023
+ * @version 04-12-2024
  */
 public class RefreshDatabase {
 	private static final Logger logger = LogManager.getLogger(RefreshDatabase.class);
 
-	public static void main(String[] args) throws FileNotFoundException, SQLException, ConfigurationException, IOException {
+
+	public static void main(String[] args) throws SQLException, IOException, ConfigurationException {
 		// load version and print
-		final Properties properties = new Properties();
-		try {
-			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Properties properties = Validator.loadProperties();
 		System.out.println("RefreshDatabase version: " + properties.getProperty("version"));
 		
 		logger.trace("Remove all entries from database.");
 		DatabaseManager.emptyTables();
-		
+
 		RepositoryInterface repo = new SimpleFileRepository();
-		AtomicInteger currentIndex = new AtomicInteger(1);
-		int repoOnePercent = (repo.getSize()/100)+1;
-		System.out.print(repo.getSize() + " records to read. 0% Done.");
-		
+		AtomicInteger progressCounter = new AtomicInteger(0);
+		int totalRecords = repo.getSize();
+		System.out.printf("%d records to process.%n", totalRecords);
+
 		repo.getRecords().forEach((r) -> {
 			try {
 				DatabaseManager.persistAccessionFile(r);
@@ -69,14 +66,13 @@ public class RefreshDatabase {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			int index=currentIndex.getAndIncrement();
-			if (index%repoOnePercent == 0) {
-				System.out.print("\r" + repo.getSize() + " records to send to database. " + 100*index/repo.getSize() + "% Done.");
+			int progress = progressCounter.incrementAndGet();
+			if (progress % (totalRecords / 100) == 0) {
+				System.out.printf("\rProgress: %d/%d %.0f%%", progress, totalRecords, (progress * 100.0 / totalRecords));
 			}
 		});
-		System.out.println("\r" + repo.getSize() + " records to send to database. 100% Done");
-		
-		logger.info("Setting version of database to: " + repo.getRepoVersion() + ".");
+
+        logger.info("Setting version of database to: {}.", repo.getRepoVersion());
 		DatabaseManager.setRepoVersion(repo.getRepoVersion());
 					
 		DatabaseManager.close();

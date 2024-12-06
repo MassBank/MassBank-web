@@ -284,7 +284,7 @@
 <script type="text/javascript" src="script/Common.js"></script>
 <script type="text/javascript" src="script/QpeakResult.js"></script>
 <script type="text/javascript" src="script/QpeakResultMenu.js"></script>
-<script type="text/javascript" src="js/jquery-3.5.1.min.js" ></script>
+<script type="text/javascript" src="js/jquery-3.7.1.min.js" ></script>
 
 <!-- SpeckTackle dependencies-->
 <script type="text/javascript" src="js/d3.v3.min.js"></script>
@@ -458,7 +458,7 @@
 				}
 				
 				// レコードページへのリンクURLをセット
-				String contributor	= DatabaseManager.getContributorFromAccession(id).SHORT_NAME;
+				String contributor	= DatabaseManager.getContributorFromAccession(id).SHORT_NAME();
 				// typeName = MassBankCommon.CGI_TBL[MassBankCommon.CGI_TBL_NUM_TYPE][MassBankCommon.CGI_TBL_TYPE_DISP];
 				// String linkUrl = MassBankCommon.DISPATCHER_NAME + "?type=" + typeName
 				// 				 + "&id=" + id + "&site=" + site + "&qmz=" + paramMz.toString() + "&CUTOFF=" + pCutoff + "&dsn=" + contributor;
@@ -502,7 +502,7 @@
 				
 				Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
-						accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
+						accession, structure.CH_IUPAC(), structure.CH_SMILES(), tmpFileFolder, tmpUrlFolder,
 						80, 436
 				);
 				

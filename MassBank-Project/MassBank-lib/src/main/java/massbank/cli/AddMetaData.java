@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import massbank.RecordParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -35,12 +36,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
+import org.openscience.cdk.smiles.SmiFlavor;
+import org.openscience.cdk.smiles.SmilesGenerator;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,8 +55,11 @@ import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import io.github.dan2097.jnainchi.InchiStatus;
+import io.github.dan2097.jnainchi.JnaInchi;
 import massbank.PubchemResolver;
 import massbank.Record;
+import org.petitparser.context.Result;
+
 import java.util.stream.Collectors;
 
 /**
@@ -133,7 +140,7 @@ public class AddMetaData {
 			citeproc.setOutputFormat("text");
 			citeproc.registerCitationItems(p.getIds());
 			formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
-			citeproc.close();
+			//citeproc.close();
 			// call twice because of bug https://github.com/michel-kraemer/citeproc-java/issues/53
 			// formated_citation=citeproc.makeBibliography().makeString().replace("\n", "");
 			// remove some formating characters
@@ -376,77 +383,105 @@ public class AddMetaData {
 		return record.toString();
 	}
 	
-	
-	/**
-	 * Automatically fix CH$LINK: PUBCHEM if possible
-	 * 	if no CH$LINK: INCHIKEY is available - do nothing
-	 *  if CH$LINK: INCHIKEY is available and no CH$LINK: PUBCHEM - get and add PubChem CID
-	 */
 	public static String doAddPubchemCID(Record record) {
-		// get InChIKey first
-		if (!record.CH_LINK().containsKey("INCHIKEY")) {
-			// no InChIKey -> return
-			return record.toString();
-		}
-		String inchiKey = record.CH_LINK().get("INCHIKEY");
+		String ch_iupac = record.CH_IUPAC();
 		
-		// fetch PubChem CIDs
-		PubchemResolver pr = new PubchemResolver(inchiKey);
-		Integer preferedCid = pr.getPreferred();
-		if (preferedCid == null) {
-			// no prefered CID -> return 
-			logger.error("Could not fetch PubChem CID for " + inchiKey + ".");
-			return record.toString();
-		}
+		if ("N/A".equals(ch_iupac)) return record.toString();
 		
-		//if PUBCHEM is undefined -> add
-		if (!record.CH_LINK().containsKey("PUBCHEM")) {
-			System.out.println("Add PubChem CID "+ preferedCid + ".");
-			LinkedHashMap<String, String> ch_link = record.CH_LINK();
-			ch_link.put("PUBCHEM", "CID:"+preferedCid);
-			//sort
-			ch_link = ch_link.entrySet().stream()
-				.sorted(Map.Entry.comparingByKey())
-				.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
-			record.CH_LINK(ch_link);
-			return record.toString();
-		}
-		//else PUBCHEM is defined
-		else {
-			// parse existing CID
-			Integer cidFromCH_LINK = null;
-			String[] cidFromCH_LINKToken = record.CH_LINK().get("PUBCHEM").split(":");
-			if (cidFromCH_LINKToken.length == 2 || cidFromCH_LINKToken[0].equals("CID"))  {
-				cidFromCH_LINK  =Integer.parseInt(cidFromCH_LINKToken[1]);
+		try {
+			// Get InChIToStructure
+			InChIToStructure intostruct = InChIGeneratorFactory.getInstance().getInChIToStructure(ch_iupac, SilentChemObjectBuilder.getInstance());
+			InchiStatus ret = intostruct.getStatus();
+			if (ret == InchiStatus.WARNING) {
+				// Structure generated, but with warning message
+				logger.warn("InChI warning: " + intostruct.getMessage());
+				logger.warn(record.ACCESSION());
+			} 
+			else if (ret == InchiStatus.ERROR) {
+				// Structure generation failed
+				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed: " + intostruct.getMessage() + " for " + ch_iupac + ".");
+				return record.toString();
 			}
-			
-			if (cidFromCH_LINK == null) {
-				// no well defined CID -> return
-				System.out.println("PubChem CID is not correct formated: " + record.CH_LINK().get("PUBCHEM"));
+			// Structure generation succeeded
+			IAtomContainer m = intostruct.getAtomContainer();
+			// prepare an InChIGenerator
+			InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(m);
+			ret = inchiGen.getStatus();
+			if (ret == InchiStatus.WARNING) {
+				// InChI generated, but with warning message
+				logger.warn("InChI warning: " + inchiGen.getMessage());
+				logger.warn(record.ACCESSION());
+			} else if (ret == InchiStatus.ERROR) {
+				// InChI generation failed
+				logger.error("Can not create InChiKey from InChI string in \"CH$IUPAC\" field. Error: " + inchiGen.getMessage() + " for " + ch_iupac + ".");
 				return record.toString();
 			}
 			
-			if (cidFromCH_LINK.equals(preferedCid)) {
-				// all good -> return
-				System.out.println("PubChem CID is correct.");
-				return record.toString();
-			}
-			else {
-				if  (pr.isCid(cidFromCH_LINK)) {
-					System.out.println("PubChem CID is correct but not preferred. Replacing...");
-					LinkedHashMap<String, String> ch_link = record.CH_LINK();
-					ch_link.put("PUBCHEM", "CID:"+preferedCid);
-					//sort
-					ch_link = ch_link.entrySet().stream()
+			String INCHIKEY = inchiGen.getInchiKey();
+			if (!record.CH_LINK().containsKey("INCHIKEY")) {
+				LinkedHashMap<String, String> ch_link = record.CH_LINK();
+				ch_link.put("INCHIKEY", INCHIKEY);
+				//sort
+				ch_link=ch_link.entrySet().stream()
 						.sorted(Map.Entry.comparingByKey())
 						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
-					record.CH_LINK(ch_link);
-					return record.toString();					
-				}
-				else {
-					System.out.println("PubChem CID is not correct.");
+				record.CH_LINK(ch_link);
+			}
+			else {
+				if (!INCHIKEY.equals(record.CH_LINK().get("INCHIKEY"))) {
+					logger.error("Wrong INCHIKEY identifier in record file.");
 				}
 			}
+		} catch (CDKException e) {
+			logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Error: \""+ e.getMessage() + "\" for \"" + ch_iupac + "\".");
+		}		 			
+		return record.toString();
+	}
+	
+	public static String doSetSMILESfromInChi(Record record) {
+		IAtomContainer fromCH_IUPAC = new AtomContainer();
+		try {
+			InChIToStructure intoStruct = InChIGeneratorFactory.getInstance().getInChIToStructure(record.CH_IUPAC(), SilentChemObjectBuilder.getInstance());
+			InchiStatus ret = intoStruct.getStatus();
+			if (ret == InchiStatus.WARNING) {
+				// Structure generated, but with warning message
+				logger.warn("InChI warning: " + intoStruct.getMessage());
+			} 
+			else if (ret == InchiStatus.ERROR) {
+				logger.error("Can not parse InChI string in \"CH$IUPAC\" field. Structure generation failed.\nError:\n" + intoStruct.getMessage() + ".");
+			}
+			fromCH_IUPAC = intoStruct.getAtomContainer();
+		} catch (CDKException e) {
+			logger.error("Can not parse InChI string in \"CH$IUPAC\" field.\nError from CDK:\n"+ e.getMessage());
+		}
+		
+		try {
+			InChIGenerator inchiGen = InChIGeneratorFactory.getInstance().getInChIGenerator(fromCH_IUPAC);
+			InchiStatus ret = inchiGen.getStatus();
+			if (ret == InchiStatus.WARNING) {
+				// Structure generated, but with warning message
+				logger.warn("InChI warning: " + inchiGen.getMessage());
+			} 
+			else if (ret == InchiStatus.ERROR) {
+				// InChI generation failed
+				logger.error("Can not create InChIKey from SMILES string in \"CH$SMILES\" field. InChI generation failed: " + ret.toString() + " [" + inchiGen.getMessage() + "].");
+			}
+			String InChiKeyFromCH_SMILES = inchiGen.getInchiKey();
+			System.out.println(InChiKeyFromCH_SMILES);
+		} catch (CDKException e) {
+			logger.error("Can not create InChIKey from SMILES string in \"CH$SMILES\" field.\nError from CDK:\n"+ e.getMessage());
+		}
+
+		IAtomContainer inchi = record.CH_IUPAC_obj();
+		SmilesGenerator smigen = new SmilesGenerator(SmiFlavor.Absolute);
+		String smi;
+		try {
+			smi = smigen.create(inchi);
+			System.out.println(smi);
+			record.CH_SMILES(smi);
+		} catch (CDKException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return record.toString();
 	}
@@ -473,6 +508,7 @@ public class AddMetaData {
 		options.addOption("ms_focused_ion", false, "Inspect MS$FOCUSED_ION");
 		options.addOption(null, "add-inchikey", false, "Add or fix InChIKey from the value in CH$IUPAC");
 		options.addOption(null, "add-pubchemcid", false, "Add or fix PubChem CID from InChIKey and flag Problems.");
+		options.addOption(null, "smiles-from-inchi", false, "Set SMILES from existing InChi.");
 		CommandLine cmd = null;
 		try {
 			cmd = new DefaultParser().parse( options, arguments);
@@ -512,23 +548,26 @@ public class AddMetaData {
 		// validate all files
 		logger.trace("Validating " + recordfiles.size() + " files");
 		AtomicBoolean doAddPubchemCid = new AtomicBoolean(cmd.hasOption("add-pubchemcid"));
+		AtomicBoolean doSetSMILESfromInChi = new AtomicBoolean(cmd.hasOption("smiles-from-inchi"));
 		recordfiles.parallelStream().forEach(filename -> {
 			String recordString;
 			logger.info("Working on " + filename + ".");
 			try {
 				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
 				// read record in less strict mode
-				Set<String> config = new HashSet<String>();
-				config.add("legacy");
-				config.add("weak");
-				Record record = Validator.validate(recordString, config);
-				if (record == null) {
-					System.err.println( "Validation of  \""+ filename + "\" failed. Exiting.");
+				RecordParser recordparser = new RecordParser(new HashSet<>());
+				Result res = recordparser.parse(recordString);
+				Record record = null;
+				if (res.isFailure()) {
+					System.err.println( "Parsing of \""+ filename + "\" failed. Exiting.");
 					System.exit(1);
-				} else if (record.DEPRECATED()) {
+				} else {
+					record = res.get();
+				}
+				if (record.DEPRECATED()) {
 					System.exit(0);
 				}
-				
+
 				String recordstring2 = recordString;
 				//if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
 				//if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
@@ -542,11 +581,14 @@ public class AddMetaData {
 				if (doAddPubchemCid.get()) {
 					recordstring2=doAddPubchemCID(record);
 				}
+				if (doSetSMILESfromInChi.get()) {
+					recordstring2=doSetSMILESfromInChi(record);
+				}
 				
-				config = new HashSet<String>();
 				if (!recordString.equals(recordstring2)) {
-					Record record2 = Validator.validate(recordString, config);
-					if (record2 == null) {
+					res = recordparser.parse(recordstring2);
+					Record record2 =null;
+					if (res.isFailure()) {
 						System.err.println( "Validation of new created record file failed. Do not write.");
 					} else {
 						try {

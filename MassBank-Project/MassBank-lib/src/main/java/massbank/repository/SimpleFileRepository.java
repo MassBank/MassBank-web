@@ -20,92 +20,97 @@
  ******************************************************************************/
 package massbank.repository;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Stream;
-
+import massbank.Config;
+import massbank.Record;
+import massbank.RecordParser;
+import massbank.cli.Validator;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import massbank.Config;
-import massbank.Record;
-import massbank.cli.Validator;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * This class implements a classical MassBank repository with record files 
- * in directories, but no subdirectories as in MassBank-data. It reads a
- * file named 'VERSION' with a version String for the whole repo and a
- * timestamp, which is applied to all Records.
+ * in directories as in MassBank-data. It reads a file named 'VERSION'
+ * with a version String for the whole repo and a timestamp, which is
+ * applied to all Records.
+ *
+ *
  * @author rmeier
- * @version 26-10-2023
+ * @version 04-12-2024
  */
 public class SimpleFileRepository implements RepositoryInterface {
 	private static final Logger logger = LogManager.getLogger(SimpleFileRepository.class);
-	private String version;
-	Instant timestamp;
-	List<File> recordfiles = new ArrayList<>();
-	
+	private final String version;
+	private final Instant timestamp;
+	private final List<Path> recordfiles;
+
 	
 	public SimpleFileRepository() throws ConfigurationException {
-		logger.info("Opening DataRootPath \"" + Config.get().DataRootPath() + "\" and iterate over content.");
-		File dataRootPath = new File(Config.get().DataRootPath());
+        logger.info("Opening DataRootPath {} and iterate over content.", Config.get().DataRootPath());
+		Path dataRootPath = Path.of(Config.get().DataRootPath());
 		// get version and timestamp
 		Configurations configs = new Configurations();
-		Configuration versionconfig = configs.properties(new File(dataRootPath, "VERSION"));
+		Configuration versionconfig = configs.properties(new File(dataRootPath.toFile(), "VERSION"));
 		
 		version = versionconfig.getString("version");
-		logger.info("Repo version: " + version);
+        logger.info("Repo version: {}", version);
 		
 		timestamp = ZonedDateTime.parse(versionconfig.getString("timestamp"), DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
-		logger.info("Repo timestamp: " + timestamp);
-		
-		for (String file : dataRootPath.list(DirectoryFileFilter.INSTANCE)) {
-			if (file.startsWith(".")) continue;
-			recordfiles.addAll(FileUtils.listFiles(new File(dataRootPath, file), new String[] {"txt"}, false));
+        logger.info("Repo timestamp: {}", timestamp);
+
+		try (Stream<Path> paths = Files.walk(dataRootPath)) {
+			recordfiles = paths
+				.filter(Files::isDirectory)
+				.flatMap(dir -> {
+					try {
+						return Files.list(dir);
+					} catch (IOException e) {
+						logger.error("Error while listing files in directory {}", dir, e);
+						return Stream.empty();
+					}
+				})
+				.filter(Files::isRegularFile)
+				.filter(path -> path.getFileName().toString().startsWith("MSBNK"))
+				.filter(path -> path.toString().endsWith(".txt"))
+				.toList();
+		} catch (IOException e) {
+			logger.error("Error while listing files", e);
+			throw new RuntimeException(e);
 		}
-		logger.info("Found " + recordfiles.size() + " records in repo.");	
+
+        logger.info("Found {} records in repo.", recordfiles.size());
+
 	}
-	
+
 	public Stream<Record> getRecords() {
-		return recordfiles.parallelStream().map(filename -> {
-			Record record = null;
-			logger.trace("Working on \'" + filename + "\'.");
-			try {
-				String recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-				record = Validator.validate(recordString, Set.of("legacy"));
-				if (record == null) {
-					logger.error("Error in \'" + filename + "\'.");
-				}
-				else {
-					record.setTimestamp(timestamp);
-				}
-			} catch (IOException e) {
-				logger.error("Error reading record \"" + filename.toString() + "\". File will be ignored.\n", e);
-			}
-			return record;
-		})
-		.filter(Objects::nonNull);
+		RecordParser recordparser = new RecordParser(new HashSet<>());
+		return recordfiles.parallelStream()
+            .map(Validator::readFile)
+            .filter(Objects::nonNull)
+            .map(recordString -> Validator.parseRecord(recordString, recordparser))
+			.filter(Objects::nonNull)
+			.peek(record -> {record.setTimestamp(timestamp);});
 	}
-	 
+
 	public String getRepoVersion() {
 		return version;
 	}
-	
-	public int getSize()
-	{
+
+	public int getSize() {
 		return recordfiles.size();
 	}
 }

@@ -368,7 +368,7 @@
 	<script type="text/javascript" src="script/Common.js"></script>
 	<script type="text/javascript" src="script/Result.js"></script>
 	<script type="text/javascript" src="script/ResultMenu.js"></script>
-	<script type="text/javascript" src="js/jquery-3.5.1.min.js" ></script>
+	<script type="text/javascript" src="js/jquery-3.7.1.min.js" ></script>
 	<!-- SpeckTackle dependencies-->
 	<script type="text/javascript" src="js/d3.v3.min.js"></script>
 	<!-- SpeckTackle library-->
@@ -1116,7 +1116,7 @@
 				// レコードページ表示用URL生成
 				String url = "";
 				// ◇ PeakSearch／PeakDifferenceSearchの場合
-				String contributor	= DatabaseManager.getContributorFromAccession(rec.getId()).SHORT_NAME;
+				String contributor	= DatabaseManager.getContributorFromAccession(rec.getId()).SHORT_NAME();
 				
 				// if ( refPeak || refPeakDiff ) {
 				// 		if ( refPeak ) {
@@ -1202,7 +1202,7 @@
 					
 					Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
-							accession, structure.CH_IUPAC, structure.CH_SMILES, tmpFileFolder, tmpUrlFolder,
+							accession, structure.CH_IUPAC(), structure.CH_SMILES(), tmpFileFolder, tmpUrlFolder,
 							80, 436
 					);
 					
