@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   mariadb:
     image: mariadb:11
@@ -45,7 +43,7 @@ services:
     user: ${CURRENT_UID}
 
   dbupdate:
-    image: maven:3.8-eclipse-temurin
+    image: maven:3.8-eclipse-temurin-17
     volumes:
       - $PWD/MassBank-Project:/project
       - $PWD/conf/full-service.conf:/etc/massbank.conf

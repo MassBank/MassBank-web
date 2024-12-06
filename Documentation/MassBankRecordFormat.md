@@ -755,7 +755,7 @@ MSn
 
 Brief definition of terms used in `MS_TYPE`:
 * `MS` - [MS1 spectrum(MS:1000579)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000579)
-* `MS2` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580)
+* `MS2` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) with [ms level(MS:1000511)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) = 2
 * `MS3` - [MSn spectrum(MS:1000580)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) with [ms level(MS:1000511)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000580) = 3
 * `MSn` - use for any other multi stage acquisition method, which does not fit in the above scheme, like merged MS spectra from different stages
 

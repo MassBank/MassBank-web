@@ -20,36 +20,23 @@
  ******************************************************************************/
 package massbank.db;
 
-import java.io.InputStreamReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.apache.logging.log4j.Logger;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
 import massbank.Config;
 import massbank.Record;
 import massbank.ScriptRunner;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * 
@@ -62,8 +49,8 @@ import org.apache.logging.log4j.LogManager;
 public class DatabaseManager {
 	private static final Logger logger = LogManager.getLogger(DatabaseManager.class);
 	
-	private static HikariConfig config = new HikariConfig();
-	private static HikariDataSource ds;
+	private static final HikariConfig config = new HikariConfig();
+	private static final HikariDataSource ds;
 	
 	static {
 		config.setDriverClassName("org.mariadb.jdbc.Driver");
@@ -565,16 +552,16 @@ public class DatabaseManager {
 			con.setAutoCommit(true);
 		}
 	}
-	
+
 	public static void setRepoVersion(String version) throws SQLException {
 		try (Connection con = ds.getConnection()) {
 			PreparedStatement stmnt = con.prepareStatement("INSERT INTO LAST_UPDATE (LAST_UPDATE,VERSION) VALUES (CURRENT_TIMESTAMP,?)");
 			stmnt.setString(1, version);
 			stmnt.executeUpdate();
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns the complete record TODO solve 1:1 relations by a single sql
 	 * statement with joins (PK_ANNOTATION_HEADER, acc.PK_NUM_PEAK, Compound stuff,

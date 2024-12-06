@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>MassBank-Project</artifactId>
 		<groupId>de.ipb-halle.msbi</groupId>
-		<version>2.2.7-hotfix1</version>
+		<version>2.2.8</version>
 	</parent>
 
 	<artifactId>MassBank-lib</artifactId>
@@ -18,7 +18,7 @@
 		</dependency>
 		<dependency>
 			<groupId>jakarta.platform</groupId>
-			<artifactId>jakarta.jakartaee-api</artifactId>
+			<artifactId>jakarta.jakartaee-web-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -47,13 +47,19 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
-			<artifactId>cdk-bundle</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>cdk-data</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-depict</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-inchi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-formula</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
@@ -83,11 +89,11 @@
 			<groupId>io.github.dan2097</groupId>
 			<artifactId>jna-inchi-all</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-distribution</artifactId>
-			<version>5.5.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>net.sourceforge.owlapi</groupId>-->
+<!--			<artifactId>owlapi-distribution</artifactId>-->
+<!--			<version>5.5.0</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
