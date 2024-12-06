@@ -65,7 +65,7 @@ public class Record {
 	private String COPYRIGHT; // optional
 	private String PUBLICATION; // optional
 	private String PROJECT; // optional
-	private List<String> COMMENT = new ArrayList<String>(); // optional
+	private List<String> COMMENT; // optional
 	private List<String> CH$NAME;
 	private List<String> CH$COMPOUND_CLASS; // optional
 	private String CH$FORMULA;
@@ -95,37 +95,37 @@ public class Record {
 		ACCESSION = "";
 		deprecated = false;
 		deprecated_content = "";
-		RECORD_TITLE = new ArrayList<String>();
+		RECORD_TITLE = new ArrayList<>();
 		DATE = "";
 		AUTHORS = "";
 		LICENSE = "";
 		COPYRIGHT = ""; // optional
 		PUBLICATION = ""; // optional
 		PROJECT = ""; // optional
-		COMMENT = new ArrayList<String>(); // optional
-		CH$NAME = new ArrayList<String>();
-		CH$COMPOUND_CLASS = new ArrayList<String>();
+		COMMENT = new ArrayList<>(); // optional
+		CH$NAME = new ArrayList<>();
+		CH$COMPOUND_CLASS = new ArrayList<>();
 		CH$FORMULA = "";
 		CH$EXACT_MASS = new BigDecimal(0);
 		CH$SMILES = "";
 		CH$IUPAC = "";
-		CH$LINK = new LinkedHashMap<String, String>(); // optional
+		CH$LINK = new LinkedHashMap<>(); // optional
 		SP$SCIENTIFIC_NAME = ""; // optional
 		SP$LINEAGE = ""; // optional
-		SP$LINK = new LinkedHashMap<String, String>(); // optional
-		SP$SAMPLE = new ArrayList<String>(); // optional
+		SP$LINK = new LinkedHashMap<>(); // optional
+		SP$SAMPLE = new ArrayList<>(); // optional
 		AC$INSTRUMENT = "";
 		AC$INSTRUMENT_TYPE = "";
 		AC$MASS_SPECTROMETRY_MS_TYPE = "";
 		AC$MASS_SPECTROMETRY_ION_MODE = "";
-		AC$MASS_SPECTROMETRY = new ArrayList<Pair<String, String>>(); // optional
-		AC$CHROMATOGRAPHY = new ArrayList<Pair<String, String>>(); // optional
-		MS$FOCUSED_ION = new ArrayList<Pair<String, String>>(); // optional
-		MS$DATA_PROCESSING = new ArrayList<Pair<String, String>>(); // optional
+		AC$MASS_SPECTROMETRY = new ArrayList<>(); // optional
+		AC$CHROMATOGRAPHY = new ArrayList<>(); // optional
+		MS$FOCUSED_ION = new ArrayList<>(); // optional
+		MS$DATA_PROCESSING = new ArrayList<>(); // optional
 		PK$SPLASH = "";
-		PK$ANNOTATION_HEADER = new ArrayList<String>(); // optional
-		PK$ANNOTATION = new ArrayList<Pair<BigDecimal, List<String>>>(); // optional
-		PK$PEAK = new ArrayList<Triple<BigDecimal,BigDecimal,Integer>>();
+		PK$ANNOTATION_HEADER = new ArrayList<>(); // optional
+		PK$ANNOTATION = new ArrayList<>(); // optional
+		PK$PEAK = new ArrayList<>();
 	}
 	
 	public String CONTRIBUTOR() {
@@ -178,7 +178,7 @@ public class Record {
 		RECORD_TITLE = value;
 	}
 	public void RECORD_TITLE1(String value) {
-		RECORD_TITLE = new ArrayList<String>(Arrays.asList(value.split("; ")));
+		RECORD_TITLE = new ArrayList<>(Arrays.asList(value.split("; ")));
 	}
 	
 	
@@ -240,7 +240,7 @@ public class Record {
 		return COMMENT;
 	}
 	public void COMMENT(List<String> value) {
-		COMMENT=new ArrayList<String>(value);
+		COMMENT= new ArrayList<>(value);
 	}
 	
 	
@@ -248,7 +248,7 @@ public class Record {
 		return CH$NAME;
 	}
 	public void CH_NAME(List<String> value) {
-		CH$NAME=new ArrayList<String>(value);
+		CH$NAME= new ArrayList<>(value);
 	}
 	
 	
@@ -256,7 +256,7 @@ public class Record {
 		return CH$COMPOUND_CLASS;
 	}
 	public void CH_COMPOUND_CLASS(List<String> value) {
-		CH$COMPOUND_CLASS=new ArrayList<String>(value);
+		CH$COMPOUND_CLASS= new ArrayList<>(value);
 	}
 	
 	/**
@@ -293,7 +293,7 @@ public class Record {
 		try {
 			return new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(CH$SMILES);
 		} catch (InvalidSmilesException e) {
-			logger.error("Structure generation from SMILES failed. Error: \""+ e.getMessage() + "\" for \"" + CH$SMILES + "\".");
+            logger.error("Structure generation from SMILES failed. Error: {} for {}.", e.getMessage(), CH$SMILES);
 			return SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}
 	}
@@ -313,16 +313,16 @@ public class Record {
 			InchiStatus ret = intostruct.getStatus();
 			if (ret == InchiStatus.WARNING) {
 				// Structure generated, but with warning message
-				logger.warn("InChI warning: \"" + intostruct.getMessage() + "\" converting \"" + CH$IUPAC + "\".");
+                logger.warn("InChI warning: {} converting {}.", intostruct.getMessage(), CH$IUPAC);
 			} 
 			else if (ret == InchiStatus.ERROR) {
 				// Structure generation failed
-				logger.error("Structure generation failed: " + intostruct.getMessage() + " converting \"" + CH$IUPAC + "\".");
+                logger.error("Structure generation failed: {} converting {}.", intostruct.getMessage(), CH$IUPAC);
 				return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 			}
 			return intostruct.getAtomContainer();
 		} catch (CDKException e) {
-			logger.error("Structure generation from InChI failed. Error: \""+ e.getMessage() + "\" for \"" + CH$IUPAC + "\".");
+            logger.error("Structure generation from InChI failed. Error: {} for {}.", e.getMessage(), CH$IUPAC);
 			return  SilentChemObjectBuilder.getInstance().newAtomContainer();
 		}		 			
 	}
@@ -363,7 +363,7 @@ public class Record {
 		return SP$SAMPLE;
 	}
 	public void SP_SAMPLE(List<String> value) {
-		SP$SAMPLE=new ArrayList<String>(value);
+		SP$SAMPLE= new ArrayList<>(value);
 	}
 	
 	public String AC_INSTRUMENT() {
@@ -401,7 +401,7 @@ public class Record {
 		return listToMap(AC$MASS_SPECTROMETRY);
 	}
 	public void AC_MASS_SPECTROMETRY(List<Pair<String, String>> value) {
-		AC$MASS_SPECTROMETRY=new ArrayList<Pair<String, String>>(value);
+		AC$MASS_SPECTROMETRY= new ArrayList<>(value);
 	}
 
 	public List<Pair<String, String>> AC_CHROMATOGRAPHY() {
@@ -411,7 +411,7 @@ public class Record {
 		return listToMap(AC$CHROMATOGRAPHY);
 	}
 	public void AC_CHROMATOGRAPHY(List<Pair<String, String>> value) {
-		AC$CHROMATOGRAPHY=new ArrayList<Pair<String, String>>(value);
+		AC$CHROMATOGRAPHY= new ArrayList<>(value);
 	}
 	
 	public List<Pair<String, String>> MS_FOCUSED_ION() {
@@ -421,14 +421,14 @@ public class Record {
 		return listToMap(MS$FOCUSED_ION);
 	}
 	public void MS_FOCUSED_ION(List<Pair<String, String>> value) {
-		MS$FOCUSED_ION=new ArrayList<Pair<String, String>>(value);
+		MS$FOCUSED_ION= new ArrayList<>(value);
 	}
 	
 	public List<Pair<String, String>> MS_DATA_PROCESSING() {
 		return MS$DATA_PROCESSING;
 	}
 	public void MS_DATA_PROCESSING(List<Pair<String, String>> value) {
-		MS$DATA_PROCESSING=new ArrayList<Pair<String, String>>(value);
+		MS$DATA_PROCESSING= new ArrayList<>(value);
 	}
 
 	public String PK_SPLASH() {
@@ -442,7 +442,7 @@ public class Record {
 		return PK$ANNOTATION_HEADER;
 	}
 	public void PK_ANNOTATION_HEADER(List<String> value) {
-		PK$ANNOTATION_HEADER=new ArrayList<String>(value);
+		PK$ANNOTATION_HEADER= new ArrayList<>(value);
 	}
 
 	// PK_ANNOTATION is a two-dimensional List
@@ -495,17 +495,13 @@ public class Record {
 		sb.append("CH$EXACT_MASS: ").append(CH_EXACT_MASS()).append("\n");
 		sb.append("CH$SMILES: ").append(CH_SMILES()).append("\n");
 		sb.append("CH$IUPAC: ").append(CH_IUPAC()).append("\n");
-		CH_LINK().forEach((key,value) -> {
-			sb.append("CH$LINK: ").append(key).append(" ").append(value).append("\n");
-		});
+		CH_LINK().forEach((key,value) -> sb.append("CH$LINK: ").append(key).append(" ").append(value).append("\n"));
 		
 		if (!"".equals(SP_SCIENTIFIC_NAME()))
 			sb.append("SP$SCIENTIFIC_NAME: ").append(SP_SCIENTIFIC_NAME()).append("\n");
 		if (!"".equals(SP_LINEAGE()))
 			sb.append("SP$LINEAGE: ").append(SP_LINEAGE()).append("\n");
-		SP_LINK().forEach((key,value) -> {
-			sb.append("SP$LINK: ").append(key).append(" ").append(value).append("\n");
-		});
+		SP_LINK().forEach((key,value) -> sb.append("SP$LINK: ").append(key).append(" ").append(value).append("\n"));
 		for (String sample : SP_SAMPLE())
 			sb.append("SP$SAMPLE: ").append(sample).append("\n");
 		
@@ -516,30 +512,30 @@ public class Record {
 		for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
 			sb.append("AC$MASS_SPECTROMETRY: ").append(ac_mass_spectrometry.getKey()).append(" ").append(ac_mass_spectrometry.getValue()).append("\n");
 		for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
-			sb.append("AC$CHROMATOGRAPHY: " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "\n");
+			sb.append("AC$CHROMATOGRAPHY: ").append(ac_chromatography.getKey()).append(" ").append(ac_chromatography.getValue()).append("\n");
 		for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
-			sb.append("MS$FOCUSED_ION: " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "\n");
+			sb.append("MS$FOCUSED_ION: ").append(ms_focued_ion.getKey()).append(" ").append(ms_focued_ion.getValue()).append("\n");
 		for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
-			sb.append("MS$DATA_PROCESSING: " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "\n");
+			sb.append("MS$DATA_PROCESSING: ").append(ms_data_processing.getKey()).append(" ").append(ms_data_processing.getValue()).append("\n");
 
-		sb.append("PK$SPLASH: " + PK_SPLASH() + "\n");
+		sb.append("PK$SPLASH: ").append(PK_SPLASH()).append("\n");
 		if (!PK_ANNOTATION_HEADER().isEmpty()) {
 			sb.append("PK$ANNOTATION:");
 			for (String annotation_header_item : PK_ANNOTATION_HEADER())
-				sb.append(" " + annotation_header_item);
+				sb.append(" ").append(annotation_header_item);
 			sb.append("\n");
 			for (Pair<BigDecimal, List<String>> annotation_line :  PK_ANNOTATION()) {
-				sb.append("  " + annotation_line.getLeft() + " " + String.join(" ", annotation_line.getRight()) + "\n");
+				sb.append("  ").append(annotation_line.getLeft()).append(" ").append(String.join(" ", annotation_line.getRight())).append("\n");
 			}
 		}
 
-		sb.append("PK$NUM_PEAK: " + PK_NUM_PEAK() + "\n");
+		sb.append("PK$NUM_PEAK: ").append(PK_NUM_PEAK()).append("\n");
 		sb.append("PK$PEAK: m/z int. rel.int.\n");
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
 			String intensity1 = peak.getMiddle().toPlainString();
 			String intensity2 = peak.getMiddle().toString();
 			String intensity = (intensity1.length() <  intensity2.length() ) ? intensity1 : intensity2;
-			sb.append("  " + peak.getLeft() + " " + intensity + " " + peak.getRight() + "\n");
+			sb.append("  ").append(peak.getLeft()).append(" ").append(intensity).append(" ").append(peak.getRight()).append("\n");
 		}
 		sb.append("//\n");
 
@@ -548,161 +544,162 @@ public class Record {
 	
 	public String createRecordString() {
 		StringBuilder sb = new StringBuilder();
-		
-		sb.append("<b>ACCESSION:</b> " + ACCESSION() + "<br>\n");
-		sb.append("<b>RECORD_TITLE:</b> " + RECORD_TITLE1() + "<br>\n");
-		sb.append("<b>DATE:</b> " + DATE() + "<br>\n");
-		sb.append("<b>AUTHORS:</b> " + AUTHORS() + "<br>\n");
-		if (LICENSE().equals("CC0")) {
-			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/publicdomain/zero/1.0/\" target=\"_blank\">CC0</a><br>\n");
-		} else if (LICENSE().equals("CC BY")) {
-			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\">CC BY</a><br>\n");
-		} else if (LICENSE().equals("CC BY-SA")) {
-			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-sa/4.0/\" target=\"_blank\">CC BY-SA</a><br>\n");
-		} else if (LICENSE().equals("CC BY-NC")) {
-			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">CC BY-NC</a><br>\n");
-		} else if (LICENSE().equals("CC BY-NC-SA")) {
-			sb.append("<b>LICENSE:</b> <a href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\" target=\"_blank\">CC BY-NC-SA</a><br>\n");
-		} else if (LICENSE().equals("dl-de/by-2-0")) {
-			sb.append("<b>LICENSE:</b> <a href=\"https://www.govdata.de/dl-de/by-2-0\" target=\"_blank\">dl-de/by-2-0</a><br>\n");
-		} else {
-			sb.append("<b>LICENSE:</b> "+ LICENSE() + "<br>\n");
-		}
-		if (!"".equals(COPYRIGHT()))
-			sb.append("<b>COPYRIGHT:</b> " + COPYRIGHT() + "<br>\n");
-		if (!"".equals(PUBLICATION())) {
-			String pub=PUBLICATION();
-			String regex_doi = "10\\.\\d{3,9}\\/[\\-\\._;\\(\\)\\/:a-zA-Z0-9]+[a-zA-Z0-9]";
-			String regex_pmid = "PMID:[ ]?\\d{8}";
-			Pattern pattern_doi = Pattern.compile(".*" + "(" + regex_doi+ ")" + ".*");
-			Pattern pattern_pmid = Pattern.compile(".*" + "(" + regex_pmid	+ ")" + ".*");
-			Matcher matcher_doi = pattern_doi.matcher(pub);
-		    Matcher matcher_pmid = pattern_pmid.matcher(pub);
-		    if(matcher_doi.matches()){
-				//link doi
-				String doi=pub.substring(matcher_doi.start(1), matcher_doi.end(1));
-				pub.replaceAll(doi, "<a href=\"https:\\/\\/doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
-			} else if (matcher_pmid.matches()) {
-				String PMID = pub.substring(matcher_pmid.start(1), matcher_pmid.end(1));
-		    	String id = PMID.substring("PMID:".length()).trim();
-		    	pub = pub.replaceAll(PMID, "<a href=\"http:\\/\\/www.ncbi.nlm.nih.gov/pubmed/" + id + "?dopt=Citation\" target=\"_blank\">" + PMID + "</a>");
-			}
-			sb.append("<b>PUBLICATION:</b> " + pub + "<br>\n");
-		}
-		if (!"".equals(PROJECT()))
-			sb.append("<b>PROJECT:</b> " + PROJECT() + "<br>\n");
+
+		sb.append("<b>ACCESSION:</b> ").append(ACCESSION()).append("<br>\n")
+            .append("<b>RECORD_TITLE:</b> ").append(RECORD_TITLE1()).append("<br>\n")
+            .append("<b>DATE:</b> ").append(DATE()).append("<br>\n")
+			.append("<b>AUTHORS:</b> ").append(AUTHORS()).append("<br>\n")
+			.append("<b>LICENSE:</b> ").append(getLicenseLink()).append("<br>\n");
+		if (!COPYRIGHT().isEmpty())
+			sb.append("<b>COPYRIGHT:</b> ").append(COPYRIGHT()).append("<br>\n");
+		if (!PUBLICATION().isEmpty())
+        	sb.append("<b>PUBLICATION:</b> ").append(getPublicationLink()).append("<br>\n");
+		if (!PROJECT().isEmpty())
+			sb.append("<b>PROJECT:</b> ").append(PROJECT()).append("<br>\n");
 		for (String comment : COMMENT())
-			sb.append("<b>COMMENT:</b> " + comment + "<br>\n");
+			sb.append("<b>COMMENT:</b> ").append(comment).append("<br>\n");
 		sb.append("<hr>\n");
 		
 		for (String ch_name : CH_NAME())
-			sb.append("<b>CH$NAME:</b> " + ch_name + "<br>\n");
-		sb.append("<b>CH$COMPOUND_CLASS:</b> " + String.join("; ", CH_COMPOUND_CLASS()) + "<br>\n");
-		sb.append("<b>CH$FORMULA:</b> <a href=\"http://www.chemspider.com/Search.aspx?q=" + CH_FORMULA() + "\" target=\"_blank\">" + CH_FORMULA1() + "</a><br>\n");
-		sb.append("<b>CH$EXACT_MASS:</b> " + CH_EXACT_MASS() + "<br>\n");
-		sb.append("<b>CH$SMILES:</b> " + CH_SMILES() + "<br>\n");
-		sb.append("<b>CH$IUPAC:</b> " + CH_IUPAC() + "<br>\n");
+			sb.append("<b>CH$NAME:</b> ").append(ch_name).append("<br>\n");
+		sb.append("<b>CH$COMPOUND_CLASS:</b> ").append(String.join("; ", CH_COMPOUND_CLASS())).append("<br>\n");
+		sb.append("<b>CH$FORMULA:</b> <a href=\"http://www.chemspider.com/Search.aspx?q=").append(CH_FORMULA()).append("\" target=\"_blank\">").append(CH_FORMULA1()).append("</a><br>\n");
+		sb.append("<b>CH$EXACT_MASS:</b> ").append(CH_EXACT_MASS()).append("<br>\n");
+		sb.append("<b>CH$SMILES:</b> ").append(CH_SMILES()).append("<br>\n");
+		sb.append("<b>CH$IUPAC:</b> ").append(CH_IUPAC()).append("<br>\n");
 		CH_LINK().forEach((key,value) -> {
 			switch(key){
 				case "CAS":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.google.com/search?q=&quot;" + value + "&quot;\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.google.com/search?q=&quot;").append(value).append("&quot;\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "CAYMAN":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.caymanchem.com/product/" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.caymanchem.com/product/").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "CHEBI":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "CHEMSPIDER":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.chemspider.com/" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.chemspider.com/").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "COMPTOX":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://comptox.epa.gov/dashboard/dsstoxdb/results?search=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "HMDB":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://www.hmdb.ca/metabolites/" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://www.hmdb.ca/metabolites/").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "INCHIKEY":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.google.com/search?q=&quot;" + value + "&quot;\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.google.com/search?q=&quot;").append(value).append("&quot;\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "KAPPAVIEW":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "KEGG":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.genome.jp/dbget-bin/www_bget?cpd:" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.genome.jp/dbget-bin/www_bget?cpd:").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "KNAPSACK":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://www.knapsackfamily.com/knapsack_jsp/information.jsp?sname=C_ID&word=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://www.knapsackfamily.com/knapsack_jsp/information.jsp?sname=C_ID&word=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 
 				case "LIPIDBANK":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "LIPIDMAPS":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "NIKKAJI":
-					sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://jglobal.jst.go.jp/en/redirect?Nikkaji_No=" + value + "\" target=\"_blank\">" + value + "</a><br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://jglobal.jst.go.jp/en/redirect?Nikkaji_No=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "PUBCHEM":{
-					if(value.startsWith("CID:")) sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/compound/" + value.substring("CID:".length()) + "\" target=\"_blank\">" + value + "</a><br>\n");
-					else if(value.startsWith("SID:")) sb.append("<b>CH$LINK:</b> " + key + " <a href=\"https://pubchem.ncbi.nlm.nih.gov/substance/" + value.substring("SID:".length()) + "\" target=\"_blank\">" + value + "</a><br>\n");
-					else sb.append("<b>CH$LINK:</b> " + key + " " + value + "<br>\n");
+					if(value.startsWith("CID:")) sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://pubchem.ncbi.nlm.nih.gov/compound/").append(value.substring("CID:".length())).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
+					else if(value.startsWith("SID:")) sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://pubchem.ncbi.nlm.nih.gov/substance/").append(value.substring("SID:".length())).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
+					else sb.append("<b>CH$LINK:</b> ").append(key).append(" ").append(value).append("<br>\n");
 					break;
 				}
 				default:
-					sb.append("<b>CH$LINK:</b> " + key + " " + value + "<br>\n");
+					sb.append("<b>CH$LINK:</b> ").append(key).append(" ").append(value).append("<br>\n");
 			}
 		});
 		
 		if (!"".equals(SP_SCIENTIFIC_NAME()))
-			sb.append("<b>SP$SCIENTIFIC_NAME:</b> " + SP_SCIENTIFIC_NAME() + "<br>\n");
+			sb.append("<b>SP$SCIENTIFIC_NAME:</b> ").append(SP_SCIENTIFIC_NAME()).append("<br>\n");
 		if (!"".equals(SP_LINEAGE()))
-			sb.append("<b>SP$LINEAGE:</b> " + SP_LINEAGE() + "<br>\n");
-		SP_LINK().forEach((key,value) -> {
-			sb.append("<b>SP$LINK:</b> " + key + " " + value + "<br>\n");
-		});
+			sb.append("<b>SP$LINEAGE:</b> ").append(SP_LINEAGE()).append("<br>\n");
+		SP_LINK().forEach((key,value) -> sb.append("<b>SP$LINK:</b> ").append(key).append(" ").append(value).append("<br>\n"));
 		for (String sample : SP_SAMPLE())
-				sb.append("<b>SP$SAMPLE:</b> " + sample + "<br>\n");
+				sb.append("<b>SP$SAMPLE:</b> ").append(sample).append("<br>\n");
 		sb.append("<hr>\n");
 		
-		sb.append("<b>AC$INSTRUMENT:</b> " + AC_INSTRUMENT() + "<br>\n");
-		sb.append("<b>AC$INSTRUMENT_TYPE:</b> " + AC_INSTRUMENT_TYPE() + "<br>\n");
-		sb.append("<b>AC$MASS_SPECTROMETRY:</b> MS_TYPE " + AC_MASS_SPECTROMETRY_MS_TYPE() + "<br>\n");
-		sb.append("<b>AC$MASS_SPECTROMETRY:</b> ION_MODE " + AC_MASS_SPECTROMETRY_ION_MODE() + "<br>\n");
+		sb.append("<b>AC$INSTRUMENT:</b> ").append(AC_INSTRUMENT()).append("<br>\n");
+		sb.append("<b>AC$INSTRUMENT_TYPE:</b> ").append(AC_INSTRUMENT_TYPE()).append("<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> MS_TYPE ").append(AC_MASS_SPECTROMETRY_MS_TYPE()).append("<br>\n");
+		sb.append("<b>AC$MASS_SPECTROMETRY:</b> ION_MODE ").append(AC_MASS_SPECTROMETRY_ION_MODE()).append("<br>\n");
 		for (Pair<String,String> ac_mass_spectrometry : AC_MASS_SPECTROMETRY())
-			sb.append("<b>AC$MASS_SPECTROMETRY:</b> " + ac_mass_spectrometry.getKey() + " " + ac_mass_spectrometry.getValue() + "<br>\n");
+			sb.append("<b>AC$MASS_SPECTROMETRY:</b> ").append(ac_mass_spectrometry.getKey()).append(" ").append(ac_mass_spectrometry.getValue()).append("<br>\n");
 		for (Pair<String,String> ac_chromatography : AC_CHROMATOGRAPHY())
-			sb.append("<b>AC$CHROMATOGRAPHY:</b> " + ac_chromatography.getKey() + " " + ac_chromatography.getValue() + "<br>\n");
+			sb.append("<b>AC$CHROMATOGRAPHY:</b> ").append(ac_chromatography.getKey()).append(" ").append(ac_chromatography.getValue()).append("<br>\n");
 		sb.append("<hr>\n");
 		
 		for (Pair<String,String> ms_focued_ion : MS_FOCUSED_ION())
-			sb.append("<b>MS$FOCUSED_ION:</b> " + ms_focued_ion.getKey() + " " + ms_focued_ion.getValue() + "<br>\n");
+			sb.append("<b>MS$FOCUSED_ION:</b> ").append(ms_focued_ion.getKey()).append(" ").append(ms_focued_ion.getValue()).append("<br>\n");
 		for (Pair<String,String> ms_data_processing : MS_DATA_PROCESSING())
-				sb.append("<b>MS$DATA_PROCESSING:</b> " + ms_data_processing.getKey() + " " + ms_data_processing.getValue() + "<br>\n");
+				sb.append("<b>MS$DATA_PROCESSING:</b> ").append(ms_data_processing.getKey()).append(" ").append(ms_data_processing.getValue()).append("<br>\n");
 		if (!MS_FOCUSED_ION().isEmpty() || !MS_DATA_PROCESSING().isEmpty()) sb.append("<hr>\n");
 		
-		sb.append("<b>PK$SPLASH:</b> <a href=\"http://www.google.com/search?q=" + PK_SPLASH() + "\" target=\"_blank\">" + PK_SPLASH() + "</a><br>\n");
+		sb.append("<b>PK$SPLASH:</b> <a href=\"http://www.google.com/search?q=").append(PK_SPLASH()).append("\" target=\"_blank\">").append(PK_SPLASH()).append("</a><br>\n");
 		if (!PK_ANNOTATION_HEADER().isEmpty()) {
 			sb.append("<b>PK$ANNOTATION:</b>");
 			for (String annotation_header_item : PK_ANNOTATION_HEADER())
-				sb.append(" " + annotation_header_item);
+				sb.append(" ").append(annotation_header_item);
 			sb.append("<br>\n");
 			for (Pair<BigDecimal, List<String>> annotation_line :  PK$ANNOTATION) {
-				sb.append("&nbsp;&nbsp;" + annotation_line.getLeft() + "&nbsp;" + String.join("&nbsp;", annotation_line.getRight()) + "<br>\n");
+				sb.append("&nbsp;&nbsp;").append(annotation_line.getLeft()).append("&nbsp;").append(String.join("&nbsp;", annotation_line.getRight())).append("<br>\n");
   		}
 		}
-		sb.append("<b>PK$NUM_PEAK:</b> " + PK_NUM_PEAK() + "<br>\n");
+		sb.append("<b>PK$NUM_PEAK:</b> ").append(PK_NUM_PEAK()).append("<br>\n");
 		sb.append("<b>PK$PEAK:</b> m/z int. rel.int.<br>\n");
 		for (Triple<BigDecimal,BigDecimal,Integer> peak : PK_PEAK()) {
-			sb.append("&nbsp;&nbsp;" + peak.getLeft() + "&nbsp;" + peak.getMiddle() + "&nbsp;" + peak.getRight() + "<br>\n");
+			sb.append("&nbsp;&nbsp;").append(peak.getLeft()).append("&nbsp;").append(peak.getMiddle()).append("&nbsp;").append(peak.getRight()).append("<br>\n");
 		}
 		
 		sb.append("//");
 
 		return sb.toString();
 	}
-	
+
+	private String getLicenseLink() {
+        return switch (LICENSE()) {
+            case "CC0" -> "<a href=\"https://creativecommons.org/publicdomain/zero/1.0/\" target=\"_blank\">CC0</a>";
+            case "CC BY" -> "<a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\">CC BY</a>";
+            case "CC BY-SA" ->
+                "<a href=\"https://creativecommons.org/licenses/by-sa/4.0/\" target=\"_blank\">CC BY-SA</a>";
+            case "CC BY-NC" ->
+                "<a href=\"https://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">CC BY-NC</a>";
+            case "CC BY-NC-SA" ->
+                "<a href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\" target=\"_blank\">CC BY-NC-SA</a>";
+            case "dl-de/by-2-0" -> "<a href=\"https://www.govdata.de/dl-de/by-2-0\" target=\"_blank\">dl-de/by-2-0</a>";
+            default -> LICENSE();
+        };
+	}
+
+	private String getPublicationLink() {
+		String pub = PUBLICATION();
+		String regex_doi = "10\\.\\d{3,9}/[\\-._;()/:a-zA-Z0-9]+[a-zA-Z0-9]";
+		String regex_pmid = "PMID: ?\\d{8}";
+		Pattern pattern_doi = Pattern.compile(".*(" + regex_doi + ").*");
+		Pattern pattern_pmid = Pattern.compile(".*(" + regex_pmid + ").*");
+		Matcher matcher_doi = pattern_doi.matcher(pub);
+		Matcher matcher_pmid = pattern_pmid.matcher(pub);
+		if (matcher_doi.matches()) {
+			String doi = pub.substring(matcher_doi.start(1), matcher_doi.end(1));
+			pub = pub.replace(doi, "<a href=\"https://doi.org/" + doi + "\" target=\"_blank\">" + doi + "</a>");
+		} else if (matcher_pmid.matches()) {
+			String PMID = pub.substring(matcher_pmid.start(1), matcher_pmid.end(1));
+			String id = PMID.substring("PMID:".length()).trim();
+			pub = pub.replace(PMID, "<a href=\"https://pubmed.ncbi.nlm.nih.gov/" + id +"\" target=\"_blank\">" + PMID + "</a>");
+		}
+		return pub;
+	}
+
 //	[
 //	{
 //	"identifier": "LQB00001",
@@ -775,15 +772,16 @@ public class Record {
 		
 		JsonArray keywords = new JsonArray();
 		keywords.add(gson.fromJson(
-				"{ \"@type\": \"DefinedTerm\","
-				+ "\"name\": \"Mass spectrometry data\","
-				+ "\"url\": \"http://edamontology.org/data_2536\","
-				+ "\"termCode\": \"data_2536\","
-				+ "\"inDefinedTermSet\": {"
-				+ "\"@type\": \"DefinedTermSet\",\n"
-				+ "\"name\": \"Bioinformatics operations, data types, formats, identifiers and topics\",\n"
-				+ "\"url\": \"http://edamontology.org\"\n"
-				+ "} }", JsonObject.class));
+			"""
+				{ "@type": "DefinedTerm",\
+				"name": "Mass spectrometry data",\
+				"url": "http://edamontology.org/data_2536",\
+				"termCode": "data_2536",\
+				"inDefinedTermSet": {\
+				"@type": "DefinedTermSet",
+				"name": "Bioinformatics operations, data types, formats, identifiers and topics",
+				"url": "http://edamontology.org"
+				} }""", JsonObject.class));
 		dataset.add("keywords", keywords);
 		
 		if (LICENSE().equals("CC0")) {
@@ -799,7 +797,12 @@ public class Record {
 		} else if (LICENSE().equals("dl-de/by-2-0")) {
 			dataset.addProperty("license", "https://www.govdata.de/dl-de/by-2-0");
 		}
-		
+
+		JsonObject about = new JsonObject();
+		about.addProperty("@type", "ChemicalSubstance");
+		about.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id=" + ACCESSION() + "#ChemicalSubstance");
+		dataset.add("about", about);
+
 		dataset.addProperty("url", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION());
 		dataset.addProperty("datePublished", DATE1()[0].replace(".","-"));
 		dataset.addProperty("citation", PUBLICATION());
@@ -857,7 +860,12 @@ public class Record {
 		
 		molecularEntitys.add(molecularEntity);
 		chemicalSubstance.add("hasBioChemEntityPart", molecularEntitys);
-		
+
+		JsonObject subjectOf = new JsonObject();
+		subjectOf.addProperty("@type", "Dataset");
+		subjectOf.addProperty("@id", "https://massbank.eu/MassBank/RecordDisplay?id="+ACCESSION()+"#Dataset");
+		chemicalSubstance.add("subjectOf", subjectOf);
+
 		// put MolecularEntity and Dataset together
 		JsonArray structuredData = new JsonArray();
 		structuredData.add(dataset);
@@ -902,7 +910,7 @@ public class Record {
 	}
 	
 	private static Map<String, String> listToMap(List<Pair<String, String>> list) {
-		Map<String, String> map	= new HashMap<String, String>();
+		Map<String, String> map	= new HashMap<>();
 		for (Pair<String, String> pair : list) map.put(pair.getKey(), pair.getValue());
 		return map;		
 	}
