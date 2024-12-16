@@ -820,7 +820,7 @@ public class Record {
 				+ "} }", JsonObject.class));
 		dataset.add("measurementTechnique", measurementTechnique);
 		
-		dataset.add("includedinDataCatalog", gson.fromJson(
+		dataset.add("includedInDataCatalog", gson.fromJson(
 				"{\"@type\": \"DataCatalog\","
 				+ "\"name\": \"MassBank\","
 				+ "\"url\": \"https://massbank.eu\""
