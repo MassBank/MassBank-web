@@ -56,7 +56,7 @@ public class RecordParserDefinition extends GrammarDefinition {
     // load a list of strings from .config or resource folder
     private static List<String> getResourceFileAsList(String fileName) {
         logger.trace("Loading internal resource: {}", fileName);
-        try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream is = RecordParserDefinition.class.getClassLoader().getResourceAsStream(fileName)) {
             if (is != null) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
                     return reader.lines().collect(Collectors.toList());
@@ -258,11 +258,11 @@ public class RecordParserDefinition extends GrammarDefinition {
         // DATE: 2011.02.21 (Created 2007.07.07)
         // DATE: 2016.01.19 (Created 2006.12.21, modified 2011.05.06)
         def("date_value",
-            CharacterParser.digit().times(4)
+            digit().times(4)
                 .seq(CharacterParser.of('.'))
-                .seq(CharacterParser.digit().times(2))
+                .seq(digit().times(2))
                 .seq(CharacterParser.of('.'))
-                .seq(CharacterParser.digit().times(2))
+                .seq(digit().times(2))
                 .flatten()
                 .callCC((Function<Context, Result> continuation, Context context) -> {
                     Result r = continuation.apply(context);
@@ -483,7 +483,7 @@ public class RecordParserDefinition extends GrammarDefinition {
         // If chemical compound is a stereoisomer, stereochemistry should be indicated.
         // '; ' is not allowed in chemical names; '; ' is reserved as the delimiter of the title
         def("ch_name_value",
-            CharacterParser.word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>#|;"))
+            word().or(CharacterParser.anyOf("-+, ()[]{}/.:$^'`_*?<>#|;"))
                 .plusLazy(ref("valuesep").or(Token.NEWLINE_PARSER))
                 .flatten()
         );
@@ -512,9 +512,9 @@ public class RecordParserDefinition extends GrammarDefinition {
             StringParser.of("CH$COMPOUND_CLASS")
                 .seq(ref("tagsep"))
                 .seq(
-                    CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten()
+                    word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten()
                         .seq(ref("valuesep")
-                            .seq(CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten())
+                            .seq(word().or(CharacterParser.anyOf("-+,()[]{}/.:$^'`_*?<> ")).plus().flatten())
                             .pick(1)
                             .star()
                         )
@@ -1156,7 +1156,7 @@ public class RecordParserDefinition extends GrammarDefinition {
 //                        )
                         .or(
                             // free tag
-                            CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_')).or(CharacterParser.of('/'))
+                            CharacterParser.letter().or(digit()).or(CharacterParser.of('_')).or(CharacterParser.of('/'))
                                 .plus().flatten()
                                 .map((String value) -> {
                                     logger.warn("Usage of free subtag \"{}\" in AC$MASS_SPECTROMETRY is not recomended.", value);
@@ -1240,7 +1240,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                 .seq(ref("tagsep"))
                 .seq(ref("ac_chromatography_subtag")
                     .or(
-                        CharacterParser.letter().or(CharacterParser.digit()).or(CharacterParser.of('_'))
+                        CharacterParser.letter().or(digit()).or(CharacterParser.of('_'))
                             .plus().flatten()
                             .map((String value) -> {
                                 logger.warn("Usage of free subtag \"{}\" in AC$CHROMATOGRAPHY is not recomended.", value);
@@ -1480,7 +1480,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                     .trim(CharacterParser.of(' '))
                 )
                 .seq(
-                    CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
+                    word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>="))
                         .plus()
                         .flatten()
                         .trim(CharacterParser.of(' '))
@@ -1497,7 +1497,7 @@ public class RecordParserDefinition extends GrammarDefinition {
                         .seq(ref("number_primitive").trim())
                         .pick(1)
                         .seq(
-                            CharacterParser.word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>=#"))
+                            word().or(CharacterParser.anyOf("-+,()[]{}\\/.:$^'`_*?<>=#"))
                                 .plus()
                                 .flatten()
                                 .trim(CharacterParser.of(' '))
