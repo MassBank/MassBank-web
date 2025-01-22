@@ -569,7 +569,7 @@ public class Record {
 		sb.append("<b>CH$IUPAC:</b> ").append(CH_IUPAC()).append("<br>\n");
 		CH_LINK().forEach((key,value) -> {
 			switch(key){
-				case "CAS":
+				case "CAS", "INCHIKEY":
 					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.google.com/search?q=&quot;").append(value).append("&quot;\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
 				case "CAYMAN":
@@ -587,9 +587,6 @@ public class Record {
 				case "HMDB":
 					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://www.hmdb.ca/metabolites/").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
-				case "INCHIKEY":
-					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"https://www.google.com/search?q=&quot;").append(value).append("&quot;\" target=\"_blank\">").append(value).append("</a><br>\n");
-					break;
 				case "KAPPAVIEW":
 					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://kpv.kazusa.or.jp/kpv4/compoundInformation/view.action?id=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
@@ -599,7 +596,6 @@ public class Record {
 				case "KNAPSACK":
 					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://www.knapsackfamily.com/knapsack_jsp/information.jsp?sname=C_ID&word=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;
-
 				case "LIPIDBANK":
 					sb.append("<b>CH$LINK:</b> ").append(key).append(" <a href=\"http://lipidbank.jp/cgi-bin/detail.cgi?id=").append(value).append("\" target=\"_blank\">").append(value).append("</a><br>\n");
 					break;

@@ -1,5 +1,10 @@
 package massbank.export;
 
+import massbank.Record;
+import org.apache.commons.lang3.tuple.Triple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,12 +13,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.openscience.cdk.exception.CDKException;
-import massbank.Record;
 
 /*
 RIKEN PRIME *.msp format II:
@@ -70,40 +69,40 @@ public class RecordToRIKEN_MSP {
 	 * A plain converter Record to String with RIKEN PRIME msp.
 	 * @param record to convert
 	 */
-	public static String convert(Record record) {
+	public static String convert(massbank.Record record) {
 		StringBuilder sb = new StringBuilder();
 		
 		if (record.DEPRECATED()) {
-			logger.warn(record.ACCESSION() + " is deprecated. No export possible.");
+            logger.warn("{} is deprecated. No export possible.", record.ACCESSION());
 			return sb.toString();
 		}
 		
-		sb.append("NAME : ").append(record.CH_NAME().get(0)).append(System.getProperty("line.separator"));
+		sb.append("NAME: ").append(record.CH_NAME().get(0)).append(System.lineSeparator());
 		Map<String, String> MS_FOCUSED_ION = record.MS_FOCUSED_ION_asMap();
-		sb.append("PRECURSORMZ: ").append((MS_FOCUSED_ION.containsKey("PRECURSOR_M/Z") ? MS_FOCUSED_ION.get("PRECURSOR_M/Z") : "")).append(System.getProperty("line.separator"));
-		sb.append("PRECURSORTYPE: ").append((MS_FOCUSED_ION.containsKey("PRECURSOR_TYPE") ? MS_FOCUSED_ION.get("PRECURSOR_TYPE") : "NA")).append(System.getProperty("line.separator"));
-		sb.append("FORMULA: ").append(record.CH_FORMULA()).append(System.getProperty("line.separator"));
+		sb.append("PRECURSORMZ: ").append((MS_FOCUSED_ION.getOrDefault("PRECURSOR_M/Z", ""))).append(System.lineSeparator());
+		sb.append("PRECURSORTYPE: ").append((MS_FOCUSED_ION.getOrDefault("PRECURSOR_TYPE", "NA"))).append(System.lineSeparator());
+		sb.append("FORMULA: ").append(record.CH_FORMULA()).append(System.lineSeparator());
 		if (record.CH_LINK().containsKey("ChemOnt")) {
-			sb.append("Ontology: ").append(record.CH_LINK().get("ChemOnt")).append(System.getProperty("line.separator"));
+			sb.append("Ontology: ").append(record.CH_LINK().get("ChemOnt")).append(System.lineSeparator());
 		}
-		sb.append("INCHIKEY: ").append(record.CH_LINK().containsKey("INCHIKEY") ? record.CH_LINK().get("INCHIKEY") : "N/A").append(System.getProperty("line.separator"));
-		sb.append("INCHI: ").append(record.CH_IUPAC()).append(System.getProperty("line.separator"));
-		sb.append("SMILES: ").append(record.CH_SMILES()).append(System.getProperty("line.separator"));
-		sb.append("RETENTIONTIME: ").append(record.AC_CHROMATOGRAPHY_asMap().containsKey("RETENTION_TIME") ? record.AC_CHROMATOGRAPHY_asMap().get("RETENTION_TIME") : "0").append(System.getProperty("line.separator"));
-		sb.append("INSTRUMENTTYPE: ").append(record.AC_INSTRUMENT_TYPE()).append(System.getProperty("line.separator"));
-		sb.append("INSTRUMENT: ").append(record.AC_INSTRUMENT()).append(System.getProperty("line.separator"));
+		sb.append("INCHIKEY: ").append(record.CH_LINK().getOrDefault("INCHIKEY", "N/A")).append(System.lineSeparator());
+		sb.append("INCHI: ").append(record.CH_IUPAC()).append(System.lineSeparator());
+		sb.append("SMILES: ").append(record.CH_SMILES()).append(System.lineSeparator());
+		sb.append("RETENTIONTIME: ").append(record.AC_CHROMATOGRAPHY_asMap().getOrDefault("RETENTION_TIME", "0")).append(System.lineSeparator());
+		sb.append("INSTRUMENTTYPE: ").append(record.AC_INSTRUMENT_TYPE()).append(System.lineSeparator());
+		sb.append("INSTRUMENT: ").append(record.AC_INSTRUMENT()).append(System.lineSeparator());
 		if (record.AC_MASS_SPECTROMETRY_ION_MODE().equals("NEGATIVE")) {
-			sb.append("IONMODE: Negative").append(System.getProperty("line.separator"));
+			sb.append("IONMODE: Negative").append(System.lineSeparator());
 		} else if (record.AC_MASS_SPECTROMETRY_ION_MODE().equals("POSITIVE")) {
-			sb.append("IONMODE: Positive").append(System.getProperty("line.separator"));
+			sb.append("IONMODE: Positive").append(System.lineSeparator());
 		}
 				
-		List<String> links	= new ArrayList<String>();
+		List<String> links	= new ArrayList<>();
 		
 		record.CH_LINK().forEach((key,value) -> {
 			if (!key.equals("ChemOnt")) links.add(key + ":" + value);	    
 		});
-		sb.append("LINKS: ").append(String.join("; ", links)).append(System.getProperty("line.separator"));
+		sb.append("LINKS: ").append(String.join("; ", links)).append(System.lineSeparator());
 		
 		List<String> recordComment = record.COMMENT();
 		for (int i = 0; i < recordComment.size(); i++) {
@@ -111,14 +110,14 @@ public class RecordToRIKEN_MSP {
         }
 		recordComment.add(0, "DB#="+record.ACCESSION()+"; origin=MassBank");
 				
-		sb.append("Comment: ").append(String.join("; ", recordComment)).append(System.getProperty("line.separator"));
-		sb.append("Splash: ").append(record.PK_SPLASH()).append(System.getProperty("line.separator"));
+		sb.append("Comment: ").append(String.join("; ", recordComment)).append(System.lineSeparator());
+		sb.append("Splash: ").append(record.PK_SPLASH()).append(System.lineSeparator());
 		
-		sb.append("Num Peaks"		+ ": " + record.PK_NUM_PEAK()).append(System.getProperty("line.separator"));
+		sb.append("Num Peaks" + ": ").append(record.PK_NUM_PEAK()).append(System.lineSeparator());
 		for(Triple<BigDecimal,BigDecimal,Integer> peak : record.PK_PEAK())
-			sb.append(peak.getLeft().toPlainString() + "\t" + peak.getMiddle().toPlainString()).append(System.getProperty("line.separator"));
+			sb.append(peak.getLeft().toPlainString()).append("\t").append(peak.getMiddle().toPlainString()).append(System.lineSeparator());
 		
-		sb.append(System.getProperty("line.separator"));
+		sb.append(System.lineSeparator());
 		return sb.toString();
 	}
 	
@@ -126,11 +125,10 @@ public class RecordToRIKEN_MSP {
 	 * A wrapper to convert multiple Records and write to file.
 	 * @param file to write
 	 * @param records to convert
-	 * @throws CDKException
-	 */
-	public static void recordsToRIKEN_MSP(File file, List<Record> records) {
+     */
+	public static void recordsToRIKEN_MSP(File file, List<massbank.Record> records) {
 		// collect data
-		List<String> list	= new ArrayList<String>();
+		List<String> list	= new ArrayList<>();
 		for(Record record : records) {
 			list.add(convert(record));
 			list.add("");
