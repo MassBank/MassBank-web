@@ -103,7 +103,7 @@ public class SiteMapServlet extends HttpServlet {
 		
 		try {
 			// create sitemap generator
-			String sitemapbaseurl = Config.get().SitemapBaseURL();
+			String sitemapbaseurl = ConfigWeb.get().SitemapBaseURL();
 			if (!sitemapbaseurl.endsWith("/")) sitemapbaseurl = sitemapbaseurl + "/";
 			WebSitemapGenerator wsg = new WebSitemapGenerator(sitemapbaseurl, tmpdir);
 

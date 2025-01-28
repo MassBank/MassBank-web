@@ -40,7 +40,7 @@ public class Index extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Preprocess request: load sitename in JSP.
 		try {
-			String sitename = Config.get().LongName();
+			String sitename = ConfigWeb.get().LongName();
 	        request.setAttribute("sitename", sitename);
 	        request.getRequestDispatcher("/Index.jsp").forward(request, response);
 		} catch (Exception e) {

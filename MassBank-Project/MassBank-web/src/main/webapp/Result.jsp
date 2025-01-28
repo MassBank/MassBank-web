@@ -43,6 +43,7 @@
 <%@ page import="java.text.DecimalFormat" %>
 <%@ page import="massbank.MassBankCommon" %>
 <%@ page import="massbank.GetConfig" %>
+<%@ page import="massbank.ConfigWeb" %>
 <%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.ResultList" %>
 <%@ page import="massbank.ResultRecord" %>
@@ -1196,8 +1197,8 @@
 					String databaseName		= conf.getDbName()[Integer.parseInt(rec.getContributor())];
 					String accession		= rec.getId();
 					
-					String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
-					String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
+					String tmpUrlFolder		= ConfigWeb.get().TOMCAT_TEMP_URL();
+					String tmpFileFolder	= ConfigWeb.get().TOMCAT_TEMP_PATH(application);
 					
 					Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 					ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
