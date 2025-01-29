@@ -6,14 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
+
+import massbank.ProjectPropertiesLoader;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -77,13 +76,7 @@ public class Msbnk2JSONLD {
 
 	public static void main(String[] arguments) {
 		// load version and print
-		final Properties properties = new Properties();
-		try {
-			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Properties properties = ProjectPropertiesLoader.loadProperties();
 		System.out.println("Msbnk2JSONLD version: " + properties.getProperty("version"));
 
 		// parse command line

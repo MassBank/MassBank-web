@@ -20,6 +20,7 @@
  ******************************************************************************/
 package massbank.cli;
 
+import massbank.ProjectPropertiesLoader;
 import massbank.db.DatabaseManager;
 import massbank.repository.RepositoryInterface;
 import massbank.repository.SimpleFileRepository;
@@ -48,7 +49,7 @@ public class RefreshDatabase {
 
 	public static void main(String[] args) throws SQLException, IOException, ConfigurationException {
 		// load version and print
-		Properties properties = Validator.loadProperties();
+		Properties properties = ProjectPropertiesLoader.loadProperties();
 		System.out.println("RefreshDatabase version: " + properties.getProperty("version"));
 		
 		logger.trace("Remove all entries from database.");
@@ -71,6 +72,7 @@ public class RefreshDatabase {
 				System.out.printf("\rProgress: %d/%d %.0f%%", progress, totalRecords, (progress * 100.0 / totalRecords));
 			}
 		});
+		System.out.println();
 
         logger.info("Setting version of database to: {}.", repo.getRepoVersion());
 		DatabaseManager.setRepoVersion(repo.getRepoVersion());

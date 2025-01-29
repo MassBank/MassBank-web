@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: mariadb:11
+    image: mariadb:latest
     volumes:
       - $PWD/modules/sql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     environment:
@@ -18,9 +18,15 @@ services:
     image: tomee:9-jre17-webprofile
     volumes:
       - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomee/webapps/MassBank.war
-      - $PWD/conf/full-service.conf:/etc/massbank.conf
-      - $PWD/../MassBank-data:/MassBank-data  
+      - $PWD/../MassBank-data:/MassBank-data
       - $PWD/compose/ServerInfo.properties:/usr/local/tomee/lib/org/apache/catalina/util/ServerInfo.properties
+    environment:
+      MASSBANK_LONG_NAME: "Personal MassBank"
+      MASSBANK_SITEMAP_BASE_URL: "https://msbi.ipb-halle.de/MassBank/"
+      MASSBANK_DB_NAME: "MassBank"
+      MASSBANK_DB_PASSWORD: "123blah321"
+      MASSBANK_DB_HOSTNAME: "mariadb"
+      MASSBANK_DATA_ROOT_PATH: "/MassBank-data"
     ports:
       - "808${TAG}:8080"
     restart: always
@@ -29,8 +35,6 @@ services:
         condition: service_healthy
     #environment:
       #JAVA_OPTS: -Xmx4g -Xms1g
-    links:
-      - "mariadb:massbank_mariadb"
 
   maven:
     image: maven:3.8-eclipse-temurin-17
@@ -46,7 +50,11 @@ services:
     image: maven:3.8-eclipse-temurin-17
     volumes:
       - $PWD/MassBank-Project:/project
-      - $PWD/conf/full-service.conf:/etc/massbank.conf
       - $PWD/../MassBank-data:/MassBank-data
-    links:
-      - "mariadb:massbank_mariadb"
+    environment:
+      MASSBANK_LONG_NAME: "Personal MassBank"
+      MASSBANK_SITEMAP_BASE_URL: "https://msbi.ipb-halle.de/MassBank/"
+      MASSBANK_DB_NAME: "MassBank"
+      MASSBANK_DB_PASSWORD: "123blah321"
+      MASSBANK_DB_HOSTNAME: "mariadb"
+      MASSBANK_DATA_ROOT_PATH: "/MassBank-data"

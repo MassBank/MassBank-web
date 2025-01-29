@@ -20,6 +20,7 @@
  ******************************************************************************/
 package massbank.cli;
 
+import massbank.ProjectPropertiesLoader;
 import massbank.Record;
 import massbank.RecordParser;
 import massbank.RecordParserDefinition;
@@ -71,7 +72,7 @@ public class Validator {
 
 	public static void main(String[] arguments) throws SQLException, ConfigurationException {
 		// load version and print
-		Properties properties = loadProperties();
+		Properties properties = ProjectPropertiesLoader.loadProperties();
 		System.out.println("Validator version: " + properties.getProperty("version"));
 
 		// parse command line
@@ -112,22 +113,6 @@ public class Validator {
 		// return 1 if there were errors
 		if (recordFiles.size() != accessions.size()) System.exit(1);
 		else System.exit(0);
-	}
-
-	/**
-	 * Reads the properties file and loads the properties.
-	 *
-	 * @return the loaded properties
-	 */
-	public static Properties loadProperties() {
-		Properties properties = new Properties();
-		try {
-			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return properties;
 	}
 
 	/**

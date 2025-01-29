@@ -20,6 +20,7 @@
  ******************************************************************************/
 package massbank.cli;
 
+import massbank.ProjectPropertiesLoader;
 import massbank.Record;
 import massbank.RecordParser;
 import massbank.export.RecordToJson;
@@ -55,7 +56,7 @@ public class RecordExporter {
 	
     public static void main(String[] arguments) {
         // load version and print
-        Properties properties = Validator.loadProperties();
+        Properties properties = ProjectPropertiesLoader.loadProperties();
         System.out.println("Exporter version: " + properties.getProperty("version"));
 
         // parse command line
