@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
@@ -17,6 +16,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.Patch;
+import com.google.gson.*;
 import massbank.ProjectPropertiesLoader;
 import massbank.RecordParser;
 import org.apache.commons.cli.CommandLine;
@@ -38,11 +41,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
@@ -475,6 +473,56 @@ public class AddMetaData {
 		}
 		return record.toString();
 	}
+
+	public static String fetchCIDFromSID(String sid) {
+		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sid/" + sid + "/cids/JSON";
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+			connection.setRequestMethod("GET");
+
+			Scanner scanner = new Scanner(connection.getInputStream());
+			StringBuilder response = new StringBuilder();
+			while (scanner.hasNext()) {
+				response.append(scanner.nextLine());
+			}
+			scanner.close();
+
+			JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+			JsonArray cid = jsonResponse.getAsJsonObject("InformationList")
+				.getAsJsonArray("Information")
+				.get(0).getAsJsonObject()
+				.getAsJsonArray("CID");
+
+			if (cid.size() != 1) {
+            	System.out.println("Error: More than one CID found for SID " + sid);
+            	return null;
+        	}
+
+			return cid.get(0).getAsString();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error fetching CID");
+			return null;
+		}
+	}
+
+	public static String doNormalizeCompoundIdentifier(Record record) {
+		Map<String, String> inRecord = new HashMap<>();
+		inRecord.put("Inchi", record.CH_IUPAC());
+		inRecord.put("SMILES", record.CH_SMILES());
+		if (record.CH_LINK().get("PUBCHEM") != null) {
+    		inRecord.put("PUBCHEM", record.CH_LINK().get("PUBCHEM"));
+		}
+		if (record.CH_LINK().get("CAS") != null) {
+			inRecord.put("CAS", record.CH_LINK().get("CAS"));
+		}
+
+		System.out.println(inRecord);
+
+		System.out.println(fetchCIDFromSID("5689"));
+
+		return  record.toString();
+	}
 	
 
 	public static void main(String[] arguments) throws Exception {
@@ -512,12 +560,23 @@ public class AddMetaData {
 				//	recordstring2=doAddInchikey(record);
 				//}
 
+				recordStringAfterMod = doNormalizeCompoundIdentifier(record);
 
-				if (doAddPubchemCid.get()) {
-					recordStringAfterMod=doAddPubchemCID(record);
-				}
-				if (doSetSMILESfromInChi.get()) {
-					recordStringAfterMod=doSetSMILESfromInChi(record);
+
+//				if (doAddPubchemCid.get()) {
+//					recordStringAfterMod=doAddPubchemCID(record);
+//				}
+//				if (doSetSMILESfromInChi.get()) {
+//					recordStringAfterMod=doSetSMILESfromInChi(record);
+//				}
+
+				List<String> originalList = Arrays.asList(recordString.getValue().split("\\n"));
+				List<String> revisedList = Arrays.asList(recordStringAfterMod.split("\\n"));
+
+				Patch<String> patch = DiffUtils.diff(originalList, revisedList);
+
+				for (AbstractDelta<String> delta : patch.getDeltas()) {
+					System.out.println(delta);
 				}
 
 				if (!recordString.getValue().equals(recordStringAfterMod)) {
