@@ -475,7 +475,59 @@ public class AddMetaData {
 	}
 
 	public static String fetchCIDFromSID(String sid) {
-		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sid/" + sid + "/cids/JSON";
+		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sid/" + sid + "/JSON";
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+			connection.setRequestMethod("GET");
+
+			int responseCode = connection.getResponseCode();
+			if (responseCode != 200) {
+				System.out.println("Error fetching CID: Server returned HTTP response code " + responseCode);
+				return null;
+			}
+
+			Scanner scanner = new Scanner(connection.getInputStream());
+			StringBuilder response = new StringBuilder();
+			while (scanner.hasNext()) {
+				response.append(scanner.nextLine());
+			}
+			scanner.close();
+
+			JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+        	JsonObject information = jsonResponse.getAsJsonArray("PC_Substances")
+				.get(0).getAsJsonObject();
+
+			JsonArray compoundArray = information.getAsJsonArray("compound");
+			if (compoundArray.size() > 1) {
+				String cid = information.getAsJsonArray("compound")
+					.get(1).getAsJsonObject()
+					.getAsJsonObject("id")
+					.getAsJsonObject("id")
+					.getAsJsonPrimitive("cid").getAsString();
+
+				String sourceName = information.getAsJsonObject("source")
+					.getAsJsonObject("db")
+					.getAsJsonPrimitive("name").getAsString();
+
+				String sourceID = information.getAsJsonObject("source")
+					.getAsJsonObject("db")
+					.getAsJsonObject("source_id")
+					.getAsJsonPrimitive("str").getAsString();
+				return cid;
+			} else {
+				System.out.println("No valid CID found in the response.");
+        		return null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error fetching CID");
+			return null;
+		}
+	}
+
+	public static Map<String, String> fetchExternalDBIdFromPubchemCID(String cid) {
+		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/" + cid + "/JSON";
+		Map<String, String> externalDatabaseInfo = new HashMap<>();
 		try {
 			HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
 			connection.setRequestMethod("GET");
@@ -488,38 +540,164 @@ public class AddMetaData {
 			scanner.close();
 
 			JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-			JsonArray cid = jsonResponse.getAsJsonObject("InformationList")
-				.getAsJsonArray("Information")
-				.get(0).getAsJsonObject()
-				.getAsJsonArray("CID");
+			JsonArray sections = jsonResponse.getAsJsonObject("Record").getAsJsonArray("Section");
 
-			if (cid.size() != 1) {
-            	System.out.println("Error: More than one CID found for SID " + sid);
-            	return null;
-        	}
-
-			return cid.get(0).getAsString();
+			for (int i = 0; i < sections.size(); i++) {
+				JsonObject section = sections.get(i).getAsJsonObject();
+				if (section.get("TOCHeading").getAsString().equals("Names and Identifiers")) {
+					JsonArray subSections = section.getAsJsonArray("Section");
+					for (int j = 0; j < subSections.size(); j++) {
+						JsonObject subSection = subSections.get(j).getAsJsonObject();
+						if (subSection.get("TOCHeading").getAsString().equals("Other Identifiers")) {
+							JsonArray identifiers = subSection.getAsJsonArray("Section");
+							for (int k = 0; k < identifiers.size(); k++) {
+								JsonObject identifier = identifiers.get(k).getAsJsonObject();
+								String dbName = identifier.get("TOCHeading").getAsString();
+								JsonArray information = identifier.getAsJsonArray("Information");
+								for (int l = 0; l < information.size(); l++) {
+									JsonObject info = information.get(l).getAsJsonObject();
+									if (info.has("Value")) {
+										JsonArray value = info.getAsJsonObject("Value").getAsJsonArray("StringWithMarkup");
+										for (int m = 0; m < value.size(); m++) {
+											JsonObject dbInfo = value.get(m).getAsJsonObject();
+											String dbValue = dbInfo.get("String").getAsString();
+											externalDatabaseInfo.put(dbName, dbValue);
+										}
+									}
+								}
+							}
+						} else if (subSection.get("TOCHeading").getAsString().equals("Computed Descriptors")) {
+							JsonArray identifiers = subSection.getAsJsonArray("Section");
+							for (int k = 0; k < identifiers.size(); k++) {
+								JsonObject identifier = identifiers.get(k).getAsJsonObject();
+								String dbName = identifier.get("TOCHeading").getAsString();
+								if (dbName.equals("InChI")) {
+									JsonArray information = identifier.getAsJsonArray("Information");
+									for (int l = 0; l < information.size(); l++) {
+										JsonObject info = information.get(l).getAsJsonObject();
+										if (info.has("Value")) {
+											String inchi = info.getAsJsonObject("Value").getAsJsonArray("StringWithMarkup")
+												.get(0).getAsJsonObject().get("String").getAsString();
+											externalDatabaseInfo.put("InChI", inchi);
+										}
+									}
+								}
+								if (dbName.equals("InChIKey")) {
+									JsonArray information = identifier.getAsJsonArray("Information");
+									for (int l = 0; l < information.size(); l++) {
+										JsonObject info = information.get(l).getAsJsonObject();
+										if (info.has("Value")) {
+											String inchi = info.getAsJsonObject("Value").getAsJsonArray("StringWithMarkup")
+												.get(0).getAsJsonObject().get("String").getAsString();
+											externalDatabaseInfo.put("INCHIKEY", inchi);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error fetching CID");
-			return null;
+			System.out.println("Error fetching info for CID");
+			return new HashMap<>();
 		}
+		return externalDatabaseInfo;
 	}
+
 
 	public static String doNormalizeCompoundIdentifier(Record record) {
 		Map<String, String> inRecord = new HashMap<>();
-		inRecord.put("Inchi", record.CH_IUPAC());
+		inRecord.put("InChI", record.CH_IUPAC());
 		inRecord.put("SMILES", record.CH_SMILES());
-		if (record.CH_LINK().get("PUBCHEM") != null) {
-    		inRecord.put("PUBCHEM", record.CH_LINK().get("PUBCHEM"));
-		}
-		if (record.CH_LINK().get("CAS") != null) {
-			inRecord.put("CAS", record.CH_LINK().get("CAS"));
+		if (record.CH_LINK() != null) {
+			inRecord.putAll(record.CH_LINK());
 		}
 
-		System.out.println(inRecord);
+		Map<String, String> externalDBInfo = new HashMap<>();
+		String cid = "";
+		if (inRecord.containsKey("PUBCHEM")) {
+			String pubchem = inRecord.get("PUBCHEM");
+			if (pubchem.startsWith("SID:")) {
+				String sid = pubchem.substring(4); // Extract the identifier after "SID:"
+				cid = fetchCIDFromSID(sid);
+				if (cid != null) {
+					externalDBInfo = fetchExternalDBIdFromPubchemCID(cid);
+				} else {
+					return record.toString();
+				}
+			}
+		}
 
-		System.out.println(fetchCIDFromSID("5689"));
+		// Rename keys
+		Map<String, String> renamedExternalDBInfo = new HashMap<>();
+		for (Entry<String, String> entry : externalDBInfo.entrySet()) {
+			String key = entry.getKey();
+			if (key.equals("ChEBI ID")) {
+				key = "CHEBI";
+			}
+			if (key.equals("HMDB ID")) {
+				key = "HMDB";
+			}
+			if (key.equals("KEGG ID")) {
+				key = "KEGG";
+			}
+			if (key.equals("Lipid Maps ID (LM_ID)")) {
+				key = "LIPIDMAPS";
+			}
+			if (key.equals("ChEMBL ID")) {
+				key = "CHEMBL";
+			}
+			renamedExternalDBInfo.put(key, entry.getValue());
+		}
+		externalDBInfo = renamedExternalDBInfo;
+
+		if (inRecord.get("InChI") != null) {
+			for (Entry<String, String> entry : inRecord.entrySet()) {
+				String key = entry.getKey();
+				if (externalDBInfo.containsKey(key)) {
+					String inRecordValue = entry.getValue();
+					String externalDBInfoValue = externalDBInfo.get(key);
+					if (!inRecordValue.equals(externalDBInfoValue)) {
+						System.out.println("Mismatch found for key: " + key);
+						System.out.println("inRecord value:         " + inRecordValue);
+						System.out.println("externalDBInfo value:   " + externalDBInfoValue);
+					}
+				}
+			}
+		}
+		if (inRecord.get("InChI") != null && externalDBInfo.get("InChI") != null &&
+			inRecord.get("InChI").substring(0, 14).equals(externalDBInfo.get("InChI").substring(0, 14))) {
+			Map<String, String> chlink = record.CH_LINK();
+			chlink.put("PUBCHEM", "CID:" + cid);
+		} else {
+			System.out.println("InChI does not match.");
+			System.out.println("InChIKey in Record:           " + inRecord.get("INCHIKEY"));
+			System.out.println("InChIKey for compound in CID: " + externalDBInfo.get("INCHIKEY"));
+			System.out.println("Rewrite SID to CID? (y/n/s): ");
+			Scanner scanner = new Scanner(System.in);
+			String response = scanner.nextLine();
+			Map<String, String> chlink = record.CH_LINK();
+			if (response.equalsIgnoreCase("y")) {
+				chlink.put("PUBCHEM", "CID:" + cid);
+			}
+//					for (Entry<String, String> entry : chlink.entrySet()) {
+//						String key = entry.getKey();
+//						if (externalDBInfo.containsKey(key)) {
+//							chlink.put(key, externalDBInfo.get(key));
+//						}
+//					}
+//					record.CH_LINK(chlink);
+//				} else if (response.equalsIgnoreCase("n")) {
+//					chlink.put("PUBCHEM", "CID:" + cid);
+//				} else {
+//					return  record.toString();
+//				}
+//			}
+		}
+
+
 
 		return  record.toString();
 	}
@@ -542,11 +720,12 @@ public class AddMetaData {
 		}
 
 		RecordParser recordparser = new RecordParser(new HashSet<>());
-		recordFiles.parallelStream()
+		recordFiles.stream()
 			.map(Validator::readFile)
 			.filter(Objects::nonNull)
 			.forEach(recordString -> {
                 logger.info("Working on {}.", recordString.getKey());
+				System.out.println("Working on " + recordString.getKey());
 				Record record = parseRecord(recordString, recordparser);
                 if (record == null || record.DEPRECATED()) return;
 
@@ -561,6 +740,11 @@ public class AddMetaData {
 				//}
 
 				recordStringAfterMod = doNormalizeCompoundIdentifier(record);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
 
 //				if (doAddPubchemCid.get()) {
@@ -595,6 +779,7 @@ public class AddMetaData {
 					}
 				}
 			});
+		System.out.println();
 	}
 
 	private static CommandLine parseCommandLine(String[] arguments) {
