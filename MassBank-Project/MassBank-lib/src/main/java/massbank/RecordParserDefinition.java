@@ -1936,6 +1936,15 @@ public class RecordParserDefinition extends GrammarDefinition {
                 }
             }
 
+            // validate the format of CH$LINK ChemOnt
+            if (record.CH_LINK().containsKey("ChemOnt")) {
+                String ChemOnt = record.CH_LINK().get("ChemOnt");
+                String regex = "^CHEMONTID:\\d+; (.+; )*.+$";
+                if (!ChemOnt.matches(regex)) {
+                    return context.failure("Invalid format for CH$LINK ChemOnt: " + ChemOnt);
+                }
+            }
+
             // validate the number of peaks in the peaklist
             List<Triple<BigDecimal, BigDecimal, Integer>> pk_peak = record.PK_PEAK();
             if (pk_peak.size() != record.PK_NUM_PEAK()) {
