@@ -1,6 +1,5 @@
 package massbank.cli;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -8,22 +7,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.Patch;
+import com.google.gson.*;
+import massbank.ProjectPropertiesLoader;
 import massbank.RecordParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -31,7 +28,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -46,30 +42,22 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import io.github.dan2097.jnainchi.InchiStatus;
-import io.github.dan2097.jnainchi.JnaInchi;
-import massbank.PubchemResolver;
 import massbank.Record;
-import org.petitparser.context.Result;
 
 import java.util.stream.Collectors;
 
+import static massbank.cli.Validator.parseRecord;
+
 /**
  * This class adds meta information automatically where feasible and makes some automatic fixes. Supported functions are:<p>
- * {@link doPub}<p>
- * {@link doName}<p>
- * {@link doLink}
- * 
+ *
  * @author rmeier
- * @version 27-06-2019
+ * @version 29-01-2025
+ * @version 29-01-2025
  */
 public class AddMetaData {
 	private static final Logger logger = LogManager.getLogger(AddMetaData.class);
@@ -82,7 +70,7 @@ public class AddMetaData {
 	public static String getComptoxID(String INCHIKEY) throws JsonSyntaxException, MalformedURLException, IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.fromJson(IOUtils.toString(new URL("https://actorws.epa.gov/actorws/chemIdentifier/v01/resolve.json?identifier=" + INCHIKEY),
-				Charset.forName("UTF-8")), JsonObject.class).getAsJsonObject("DataRow").getAsJsonPrimitive("dtxsid").getAsString();
+            StandardCharsets.UTF_8), JsonObject.class).getAsJsonObject("DataRow").getAsJsonPrimitive("dtxsid").getAsString();
 	}
 	
 	/**
@@ -96,14 +84,14 @@ public class AddMetaData {
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "");
 		connection.setRequestProperty("apikey", CHEMSPIDER_API_KEY);
-		OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
+		OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
 		writer.write("{\"inchikey\": \"" + INCHIKEY + "\" }");
 		writer.close();
-		String queryID = gson.fromJson(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8")), JsonObject.class).getAsJsonPrimitive("queryId").getAsString();
+		String queryID = gson.fromJson(IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8), JsonObject.class).getAsJsonPrimitive("queryId").getAsString();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("Content-Type", "");
 		connection.setRequestProperty("apikey", CHEMSPIDER_API_KEY);
-		return gson.fromJson(IOUtils.toString(connection.getInputStream(), Charset.forName("UTF-8")), JsonObject.class).getAsJsonArray("results").get(0).getAsString();
+		return gson.fromJson(IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8), JsonObject.class).getAsJsonArray("results").get(0).getAsString();
 	}
 	
 	
@@ -130,7 +118,7 @@ public class AddMetaData {
 		String formated_citation=null;
 		try {
 			// URL encode the doi
-			String EncDoi=URLEncoder.encode(doi, StandardCharsets.UTF_8.toString());
+			String EncDoi=URLEncoder.encode(doi, StandardCharsets.UTF_8);
 			URLConnection conn = new URL("https://www.doi.org/"+EncDoi).openConnection();
 			conn.setRequestProperty("Accept", "application/x-bibtex");
 			BibTeXItemDataProvider p = new BibTeXItemDataProvider();
@@ -180,13 +168,13 @@ public class AddMetaData {
 				duplicates.add(c);
 			}
 		}
-		if (duplicates.size()>0) {
+		if (!duplicates.isEmpty()) {
 			for (String d : duplicates) {
 				// find first occurrence 
 				String fullDup = "CH$NAME: " + d + "\n";
 				int index = recordstring.indexOf(fullDup)+fullDup.length();
 				String begining = recordstring.substring(0, index);
-				String end = recordstring.substring(index, recordstring.length()).replace(fullDup, "");
+				String end = recordstring.substring(index).replace(fullDup, "");
 				recordstring = begining + end;
 			}
 		}
@@ -368,7 +356,7 @@ public class AddMetaData {
 				ch_link.put("INCHIKEY", INCHIKEY);
 				//sort
 				ch_link=ch_link.entrySet().stream()
-						.sorted(Map.Entry.comparingByKey())
+						.sorted(Entry.comparingByKey())
 						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
 				record.CH_LINK(ch_link);
 			}
@@ -423,7 +411,7 @@ public class AddMetaData {
 				ch_link.put("INCHIKEY", INCHIKEY);
 				//sort
 				ch_link=ch_link.entrySet().stream()
-						.sorted(Map.Entry.comparingByKey())
+						.sorted(Entry.comparingByKey())
 						.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u, LinkedHashMap::new));
 				record.CH_LINK(ch_link);
 			}
@@ -485,19 +473,316 @@ public class AddMetaData {
 		}
 		return record.toString();
 	}
+
+	public static String fetchCIDFromSID(String sid) {
+		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sid/" + sid + "/JSON";
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+			connection.setRequestMethod("GET");
+
+			int responseCode = connection.getResponseCode();
+			if (responseCode != 200) {
+				System.out.println("Error fetching CID: Server returned HTTP response code " + responseCode);
+				return null;
+			}
+
+			Scanner scanner = new Scanner(connection.getInputStream());
+			StringBuilder response = new StringBuilder();
+			while (scanner.hasNext()) {
+				response.append(scanner.nextLine());
+			}
+			scanner.close();
+
+			JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+        	JsonObject information = jsonResponse.getAsJsonArray("PC_Substances")
+				.get(0).getAsJsonObject();
+
+			JsonArray compoundArray = information.getAsJsonArray("compound");
+			if (compoundArray.size() > 1) {
+				String cid = information.getAsJsonArray("compound")
+					.get(1).getAsJsonObject()
+					.getAsJsonObject("id")
+					.getAsJsonObject("id")
+					.getAsJsonPrimitive("cid").getAsString();
+
+				String sourceName = information.getAsJsonObject("source")
+					.getAsJsonObject("db")
+					.getAsJsonPrimitive("name").getAsString();
+
+				String sourceID = information.getAsJsonObject("source")
+					.getAsJsonObject("db")
+					.getAsJsonObject("source_id")
+					.getAsJsonPrimitive("str").getAsString();
+				return cid;
+			} else {
+				System.out.println("No valid CID found in the response.");
+        		return null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error fetching CID");
+			return null;
+		}
+	}
+
+	public static Map<String, String> fetchExternalDBIdFromPubchemCID(String cid) {
+		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/" + cid + "/JSON";
+		Map<String, String> externalDatabaseInfo = new HashMap<>();
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+			connection.setRequestMethod("GET");
+
+			Scanner scanner = new Scanner(connection.getInputStream());
+			StringBuilder response = new StringBuilder();
+			while (scanner.hasNext()) {
+				response.append(scanner.nextLine());
+			}
+			scanner.close();
+
+			JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+			JsonArray sections = jsonResponse.getAsJsonObject("Record").getAsJsonArray("Section");
+
+			for (int i = 0; i < sections.size(); i++) {
+				JsonObject section = sections.get(i).getAsJsonObject();
+				if (section.get("TOCHeading").getAsString().equals("Names and Identifiers")) {
+					JsonArray subSections = section.getAsJsonArray("Section");
+					for (int j = 0; j < subSections.size(); j++) {
+						JsonObject subSection = subSections.get(j).getAsJsonObject();
+						if (subSection.get("TOCHeading").getAsString().equals("Other Identifiers")) {
+							JsonArray identifiers = subSection.getAsJsonArray("Section");
+							for (int k = 0; k < identifiers.size(); k++) {
+								JsonObject identifier = identifiers.get(k).getAsJsonObject();
+								String dbName = identifier.get("TOCHeading").getAsString();
+								JsonArray information = identifier.getAsJsonArray("Information");
+								for (int l = 0; l < information.size(); l++) {
+									JsonObject info = information.get(l).getAsJsonObject();
+									if (info.has("Value")) {
+										JsonArray value = info.getAsJsonObject("Value").getAsJsonArray("StringWithMarkup");
+										for (int m = 0; m < value.size(); m++) {
+											JsonObject dbInfo = value.get(m).getAsJsonObject();
+											String dbValue = dbInfo.get("String").getAsString();
+											externalDatabaseInfo.put(dbName, dbValue);
+										}
+									}
+								}
+							}
+						} else if (subSection.get("TOCHeading").getAsString().equals("Computed Descriptors")) {
+							JsonArray identifiers = subSection.getAsJsonArray("Section");
+							for (int k = 0; k < identifiers.size(); k++) {
+								JsonObject identifier = identifiers.get(k).getAsJsonObject();
+								String dbName = identifier.get("TOCHeading").getAsString();
+								if (dbName.equals("InChI")) {
+									JsonArray information = identifier.getAsJsonArray("Information");
+									for (int l = 0; l < information.size(); l++) {
+										JsonObject info = information.get(l).getAsJsonObject();
+										if (info.has("Value")) {
+											String inchi = info.getAsJsonObject("Value").getAsJsonArray("StringWithMarkup")
+												.get(0).getAsJsonObject().get("String").getAsString();
+											externalDatabaseInfo.put("InChI", inchi);
+										}
+									}
+								}
+								if (dbName.equals("InChIKey")) {
+									JsonArray information = identifier.getAsJsonArray("Information");
+									for (int l = 0; l < information.size(); l++) {
+										JsonObject info = information.get(l).getAsJsonObject();
+										if (info.has("Value")) {
+											String inchi = info.getAsJsonObject("Value").getAsJsonArray("StringWithMarkup")
+												.get(0).getAsJsonObject().get("String").getAsString();
+											externalDatabaseInfo.put("INCHIKEY", inchi);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error fetching info for CID");
+			return new HashMap<>();
+		}
+		return externalDatabaseInfo;
+	}
+
+
+	public static String doNormalizeCompoundIdentifier(Record record) {
+		Map<String, String> inRecord = new HashMap<>();
+		inRecord.put("InChI", record.CH_IUPAC());
+		inRecord.put("SMILES", record.CH_SMILES());
+		if (record.CH_LINK() != null) {
+			inRecord.putAll(record.CH_LINK());
+		}
+
+		Map<String, String> externalDBInfo = new HashMap<>();
+		String cid = "";
+		if (inRecord.containsKey("PUBCHEM")) {
+			String pubchem = inRecord.get("PUBCHEM");
+			if (pubchem.startsWith("SID:")) {
+				String sid = pubchem.substring(4); // Extract the identifier after "SID:"
+				cid = fetchCIDFromSID(sid);
+				if (cid != null) {
+					externalDBInfo = fetchExternalDBIdFromPubchemCID(cid);
+				} else {
+					return record.toString();
+				}
+			}
+		}
+
+		// Rename keys
+		Map<String, String> renamedExternalDBInfo = new HashMap<>();
+		for (Entry<String, String> entry : externalDBInfo.entrySet()) {
+			String key = entry.getKey();
+			if (key.equals("ChEBI ID")) {
+				key = "CHEBI";
+			}
+			if (key.equals("HMDB ID")) {
+				key = "HMDB";
+			}
+			if (key.equals("KEGG ID")) {
+				key = "KEGG";
+			}
+			if (key.equals("Lipid Maps ID (LM_ID)")) {
+				key = "LIPIDMAPS";
+			}
+			if (key.equals("ChEMBL ID")) {
+				key = "CHEMBL";
+			}
+			renamedExternalDBInfo.put(key, entry.getValue());
+		}
+		externalDBInfo = renamedExternalDBInfo;
+
+		if (inRecord.get("InChI") != null) {
+			for (Entry<String, String> entry : inRecord.entrySet()) {
+				String key = entry.getKey();
+				if (externalDBInfo.containsKey(key)) {
+					String inRecordValue = entry.getValue();
+					String externalDBInfoValue = externalDBInfo.get(key);
+					if (!inRecordValue.equals(externalDBInfoValue)) {
+						System.out.println("Mismatch found for key: " + key);
+						System.out.println("inRecord value:         " + inRecordValue);
+						System.out.println("externalDBInfo value:   " + externalDBInfoValue);
+					}
+				}
+			}
+		}
+		if (inRecord.get("InChI") != null && externalDBInfo.get("InChI") != null &&
+			inRecord.get("InChI").substring(0, 14).equals(externalDBInfo.get("InChI").substring(0, 14))) {
+			Map<String, String> chlink = record.CH_LINK();
+			chlink.put("PUBCHEM", "CID:" + cid);
+		} else {
+			System.out.println("InChI does not match.");
+			System.out.println("InChIKey in Record:           " + inRecord.get("INCHIKEY"));
+			System.out.println("InChIKey for compound in CID: " + externalDBInfo.get("INCHIKEY"));
+			System.out.println("Rewrite SID to CID? (y/n/s): ");
+			Scanner scanner = new Scanner(System.in);
+			String response = scanner.nextLine();
+			Map<String, String> chlink = record.CH_LINK();
+			if (response.equalsIgnoreCase("y")) {
+				chlink.put("PUBCHEM", "CID:" + cid);
+			}
+//					for (Entry<String, String> entry : chlink.entrySet()) {
+//						String key = entry.getKey();
+//						if (externalDBInfo.containsKey(key)) {
+//							chlink.put(key, externalDBInfo.get(key));
+//						}
+//					}
+//					record.CH_LINK(chlink);
+//				} else if (response.equalsIgnoreCase("n")) {
+//					chlink.put("PUBCHEM", "CID:" + cid);
+//				} else {
+//					return  record.toString();
+//				}
+//			}
+		}
+
+
+
+		return  record.toString();
+	}
 	
 
 	public static void main(String[] arguments) throws Exception {
 		// load version and print
-		final Properties properties = new Properties();
-		try {
-			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Properties properties = ProjectPropertiesLoader.loadProperties();
 		System.out.println("AddMetaData version: " + properties.getProperty("version"));
 
+		// parse command line
+		CommandLine cmd = parseCommandLine(arguments);
+		AtomicBoolean doAddPubchemCid = new AtomicBoolean(cmd.hasOption("add-pubchemcid"));
+		AtomicBoolean doSetSMILESfromInChi = new AtomicBoolean(cmd.hasOption("smiles-from-inchi"));
+
+		List<Path> recordFiles = Validator.findRecordFiles(cmd.getArgList());
+		if (recordFiles.isEmpty()) {
+			logger.error("No files found for validation.");
+			System.exit(1);
+		}
+
+		RecordParser recordparser = new RecordParser(new HashSet<>());
+		recordFiles.stream()
+			.map(Validator::readFile)
+			.filter(Objects::nonNull)
+			.forEach(recordString -> {
+                logger.info("Working on {}.", recordString.getKey());
+				System.out.println("Working on " + recordString.getKey());
+				Record record = parseRecord(recordString, recordparser);
+                if (record == null || record.DEPRECATED()) return;
+
+				String recordStringAfterMod = recordString.getValue();
+				//if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
+				//if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
+				//if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record);
+				//if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
+
+				//if (cmd.hasOption("add-inchikey")) {
+				//	recordstring2=doAddInchikey(record);
+				//}
+
+				recordStringAfterMod = doNormalizeCompoundIdentifier(record);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+//				if (doAddPubchemCid.get()) {
+//					recordStringAfterMod=doAddPubchemCID(record);
+//				}
+//				if (doSetSMILESfromInChi.get()) {
+//					recordStringAfterMod=doSetSMILESfromInChi(record);
+//				}
+
+				List<String> originalList = Arrays.asList(recordString.getValue().split("\\n"));
+				List<String> revisedList = Arrays.asList(recordStringAfterMod.split("\\n"));
+
+				Patch<String> patch = DiffUtils.diff(originalList, revisedList);
+
+				for (AbstractDelta<String> delta : patch.getDeltas()) {
+					System.out.println(delta);
+				}
+
+				if (!recordString.getValue().equals(recordStringAfterMod)) {
+					Record recordAfterMod = parseRecord(new SimpleEntry<>(recordString.getKey(), recordStringAfterMod), recordparser);
+
+					if (recordAfterMod == null) {
+						System.err.println( "Validation of new created record file failed. Do not write.");
+					} else {
+						try {
+							FileUtils.write(recordString.getKey().toFile(), recordStringAfterMod, StandardCharsets.UTF_8);
+						}
+						catch(IOException exp) {
+							System.err.println( "Writing file \""+ recordString.getKey() + "\" failed. Reason: " + exp.getMessage() );
+							System.exit(1);
+						}
+					}
+				}
+			});
+		System.out.println();
+	}
+
+	private static CommandLine parseCommandLine(String[] arguments) {
 		// parse command line
 		Options options = new Options();
 		options.addOption("a", "all", false, "execute all operations");
@@ -514,96 +799,19 @@ public class AddMetaData {
 			cmd = new DefaultParser().parse( options, arguments);
 		}
 		catch(ParseException e) {
-	        // oops, something went wrong
-	        System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
-	        HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("AddMetaData [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
-	        System.exit(1);
-	    }
-		if (cmd.getArgList().size() == 0) {
+			// oops, something went wrong
+			System.err.println( "Parsing command line failed. Reason: " + e.getMessage() );
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("AddMetaData [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
-	        System.exit(1);
-		}
-		
-		// find all files in arguments and all *.txt files in directories and subdirectories
-		// specified in arguments 
-		List<File> recordfiles = new ArrayList<>();
-		for (String argument : cmd.getArgList()) {
-			File argumentf = new File(argument);
-			if (argumentf.isFile() && FilenameUtils.getExtension(argument).equals("txt")) {
-				recordfiles.add(argumentf);
-			} else if (argumentf.isDirectory()) {
-				recordfiles.addAll(FileUtils.listFiles(argumentf, new String[] {"txt"}, true));
-			} else {
-				logger.warn("Argument " + argument + " could not be processed.");
-			}
-		}
-		
-		if (recordfiles.size() == 0 ) {
-			logger.error("No files found.");
 			System.exit(1);
 		}
-		
-		// validate all files
-		logger.trace("Validating " + recordfiles.size() + " files");
-		AtomicBoolean doAddPubchemCid = new AtomicBoolean(cmd.hasOption("add-pubchemcid"));
-		AtomicBoolean doSetSMILESfromInChi = new AtomicBoolean(cmd.hasOption("smiles-from-inchi"));
-		recordfiles.parallelStream().forEach(filename -> {
-			String recordString;
-			logger.info("Working on " + filename + ".");
-			try {
-				recordString = FileUtils.readFileToString(filename, StandardCharsets.UTF_8);
-				// read record in less strict mode
-				RecordParser recordparser = new RecordParser(new HashSet<>());
-				Result res = recordparser.parse(recordString);
-				Record record = null;
-				if (res.isFailure()) {
-					System.err.println( "Parsing of \""+ filename + "\" failed. Exiting.");
-					System.exit(1);
-				} else {
-					record = res.get();
-				}
-				if (record.DEPRECATED()) {
-					System.exit(0);
-				}
+		if (cmd.getArgList().isEmpty()) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("AddMetaData [OPTIONS] <FILE|DIR> [<FILE|DIR> ...]", options);
+			System.exit(1);
+		}
 
-				String recordstring2 = recordString;
-				//if (cmd.hasOption("p") || cmd.hasOption("a")) recordstring2=doPub(record, recordstring2);
-				//if (cmd.hasOption("n") || cmd.hasOption("a")) recordstring2=doName(record, recordstring2);
-				//if (cmd.hasOption("l") || cmd.hasOption("a")) recordstring2=doLink(record);
-				//if (cmd.hasOption("ms_focused_ion") || cmd.hasOption("a")) recordstring2=doFocusedIon(record, recordstring2);
-				
-				//if (cmd.hasOption("add-inchikey")) {
-				//	recordstring2=doAddInchikey(record);
-				//}
-				
-				if (doAddPubchemCid.get()) {
-					recordstring2=doAddPubchemCID(record);
-				}
-				if (doSetSMILESfromInChi.get()) {
-					recordstring2=doSetSMILESfromInChi(record);
-				}
-				
-				if (!recordString.equals(recordstring2)) {
-					res = recordparser.parse(recordstring2);
-					Record record2 =null;
-					if (res.isFailure()) {
-						System.err.println( "Validation of new created record file failed. Do not write.");
-					} else {
-						try {
-							FileUtils.write(filename, recordstring2, StandardCharsets.UTF_8);
-						}
-						catch(IOException exp) {
-							System.err.println( "Writing file \""+ filename + "\" failed. Reason: " + exp.getMessage() );
-							System.exit(1);
-						}
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}	
-		});
+
+		return cmd;
 	}
 }

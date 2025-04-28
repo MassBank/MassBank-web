@@ -608,11 +608,13 @@ CH$LINK: COMPTOX DTXSID50274017
 CH$LINK: INCHIKEY UFFBMTHBGFGIHF-UHFFFAOYSA-N
 CH$LINK: KEGG C00037
 CH$LINK: PUBCHEM SID: 11916 CID:182232
+CH$LINK: ChemOnt CHEMONTID:0004209; Organic compounds; Benzenoids; Benzene and substituted derivatives; Xylenes; m-Xylenes
 ```
 Currently MassBank records have links to the following external databases:
 ```
 CAS
 CAYMAN
+ChemOnt
 CHEBI
 CHEMBL
 CHEMPDB
@@ -629,8 +631,7 @@ NIKKAJI
 PUBCHEM
 ZINC
 ```
-
-CH$LINK fields should be arranged by the alphabetical order of database names.
+For ChemOnt compound classes all parent classes should be given. CH$LINK fields should be arranged by the alphabetical order of database names.
 
 ### 2.3 Information of Biological Sample
 #### <a name="2.3.1"></a>2.3.1 SP$SCIENTIFIC\_NAME

@@ -20,6 +20,7 @@
  ******************************************************************************/
 package massbank.cli;
 
+import massbank.ProjectPropertiesLoader;
 import massbank.Record;
 import massbank.RecordParser;
 import org.apache.commons.cli.*;
@@ -59,13 +60,7 @@ public class Inspector {
 
 	public static void main(String[] arguments) throws Exception {
 		// load version and print
-		final Properties properties = new Properties();
-		try {
-			properties.load(ClassLoader.getSystemClassLoader().getResourceAsStream("project.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Properties properties = ProjectPropertiesLoader.loadProperties();
 		System.out.println("Inspector version: " + properties.getProperty("version"));
 
 		// parse command line

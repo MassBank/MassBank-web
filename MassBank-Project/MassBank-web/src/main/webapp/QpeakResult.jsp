@@ -43,7 +43,7 @@
 <%@ page import="massbank.FileUtil" %>
 <%@ page import="massbank.db.DatabaseManager" %>
 <%@ page import="massbank.Record" %>
-<%@ page import="massbank.Config" %>
+<%@ page import="massbank.ConfigWeb" %>
 <%@ page import="massbank.web.quicksearch.QuickSearchByPeak" %>
 <%@ page import="massbank.web.SearchExecution" %>
 <%@ page import="massbank.web.quicksearch.Search" %>
@@ -497,8 +497,8 @@
 				String databaseName		= conf.getDbName()[Integer.parseInt(site)];
 				String accession		= id;
 				
-				String tmpUrlFolder		= Config.get().TOMCAT_TEMP_URL();
-				String tmpFileFolder	= Config.get().TOMCAT_TEMP_PATH(getServletContext());
+				String tmpUrlFolder		= ConfigWeb.get().TOMCAT_TEMP_URL();
+				String tmpFileFolder	= ConfigWeb.get().TOMCAT_TEMP_PATH(application);
 				
 				Record.Structure structure	= DatabaseManager.getStructureOfAccession(accession);
 				ClickablePreviewImageData clickablePreviewImageData	= StructureToSvgStringGenerator.createClickablePreviewImage(
