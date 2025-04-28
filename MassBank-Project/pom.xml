@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipb-halle.msbi </groupId>
 	<artifactId>MassBank-Project</artifactId>
-	<version>2.2.9-SNAPSHOT</version>
+	<version>2.2.9</version>
 	<name>MassBank-Project</name>
 	<url>https://github.com/MassBank/MassBank-web</url>
 	<packaging>pom</packaging>
@@ -29,7 +29,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<versionName>${project.version}</versionName>
-		<timestamp>2024-12-06T10:16:09+01:00</timestamp>
+		<timestamp>2025-04-28T10:42:30+02:00</timestamp>
 		<cdk-version>2.9</cdk-version>
 	</properties>
 
