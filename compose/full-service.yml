@@ -15,7 +15,7 @@ services:
       retries: 3
 
   tomee:
-    image: tomee:9-jre17-webprofile
+    image: tomee:10-jre17-Temurin
     volumes:
       - $PWD/MassBank-Project/MassBank-web/target/MassBank.war:/usr/local/tomee/webapps/MassBank.war
       - $PWD/../MassBank-data:/MassBank-data
@@ -37,7 +37,7 @@ services:
       #JAVA_OPTS: -Xmx4g -Xms1g
 
   maven:
-    image: maven:3.8-eclipse-temurin-17
+    image: maven:3-eclipse-temurin-17
     volumes:
       - $HOME/.m2:/var/maven/.m2
       - $PWD/MassBank-Project:/project
@@ -47,7 +47,7 @@ services:
     user: ${CURRENT_UID}
 
   dbupdate:
-    image: maven:3.8-eclipse-temurin-17
+    image: maven:3-eclipse-temurin-17
     volumes:
       - $PWD/MassBank-Project:/project
       - $PWD/../MassBank-data:/MassBank-data
