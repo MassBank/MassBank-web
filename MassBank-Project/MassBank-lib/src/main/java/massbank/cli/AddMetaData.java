@@ -474,57 +474,6 @@ public class AddMetaData {
 		return record.toString();
 	}
 
-	public static String fetchCIDFromSID(String sid) {
-		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sid/" + sid + "/JSON";
-		try {
-			HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
-			connection.setRequestMethod("GET");
-
-			int responseCode = connection.getResponseCode();
-			if (responseCode != 200) {
-				System.out.println("Error fetching CID: Server returned HTTP response code " + responseCode);
-				return null;
-			}
-
-			Scanner scanner = new Scanner(connection.getInputStream());
-			StringBuilder response = new StringBuilder();
-			while (scanner.hasNext()) {
-				response.append(scanner.nextLine());
-			}
-			scanner.close();
-
-			JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-        	JsonObject information = jsonResponse.getAsJsonArray("PC_Substances")
-				.get(0).getAsJsonObject();
-
-			JsonArray compoundArray = information.getAsJsonArray("compound");
-			if (compoundArray.size() > 1) {
-				String cid = information.getAsJsonArray("compound")
-					.get(1).getAsJsonObject()
-					.getAsJsonObject("id")
-					.getAsJsonObject("id")
-					.getAsJsonPrimitive("cid").getAsString();
-
-				String sourceName = information.getAsJsonObject("source")
-					.getAsJsonObject("db")
-					.getAsJsonPrimitive("name").getAsString();
-
-				String sourceID = information.getAsJsonObject("source")
-					.getAsJsonObject("db")
-					.getAsJsonObject("source_id")
-					.getAsJsonPrimitive("str").getAsString();
-				return cid;
-			} else {
-				System.out.println("No valid CID found in the response.");
-        		return null;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Error fetching CID");
-			return null;
-		}
-	}
-
 	public static Map<String, String> fetchExternalDBIdFromPubchemCID(String cid) {
 		String apiUrl = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/" + cid + "/JSON";
 		Map<String, String> externalDatabaseInfo = new HashMap<>();
@@ -619,14 +568,9 @@ public class AddMetaData {
 		String cid = "";
 		if (inRecord.containsKey("PUBCHEM")) {
 			String pubchem = inRecord.get("PUBCHEM");
-			if (pubchem.startsWith("SID:")) {
-				String sid = pubchem.substring(4); // Extract the identifier after "SID:"
-				cid = fetchCIDFromSID(sid);
-				if (cid != null) {
-					externalDBInfo = fetchExternalDBIdFromPubchemCID(cid);
-				} else {
-					return record.toString();
-				}
+			if (pubchem.startsWith("CID:")) {
+				cid = pubchem.substring(4); // Extract the identifier after "SID:"
+				externalDBInfo = fetchExternalDBIdFromPubchemCID(cid);
 			}
 		}
 
