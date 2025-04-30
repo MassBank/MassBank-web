@@ -34,16 +34,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultServiceUnavailableRetryStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -148,53 +146,46 @@ public class PubchemResolver {
 	}
 
 	public String getJSONFromUrl(String url) {
-		// Making HTTP request
-		CloseableHttpClient httpclient = HttpClients.custom()
-				.setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD)
-						.setConnectTimeout(5 * 1000).setSocketTimeout(60 * 1000).build())
-				.setServiceUnavailableRetryStrategy(new DefaultServiceUnavailableRetryStrategy(5, 5000)).build();
-		try {
-			HttpGet httpget = new HttpGet(url);
-			// Create a custom response handler
-
-			// a response handler that throws an exception if status is not 200
-			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-				@Override
-				public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-					int status = response.getStatusLine().getStatusCode();
-
-					if (status == 404) {
-						logger.warn("PUGREST.NotFound");
+		try (CloseableHttpClient httpClient = HttpClients.custom()
+			.setDefaultRequestConfig(RequestConfig.custom()
+				.setConnectTimeout(Timeout.ofSeconds(5))
+				.setResponseTimeout(Timeout.ofSeconds(60))
+				.setCookieSpec(StandardCookieSpec.STRICT)
+				.build())
+			.build()) {
+			HttpGet httpGet = new HttpGet(url);
+			try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+				int status = response.getCode();
+				if (status == 404) {
+					logger.warn("PUGREST.NotFound");
+					try {
 						return EntityUtils.toString(response.getEntity());
+					} catch (org.apache.hc.core5.http.ParseException e) {
+						logger.error("Error parsing HTTP response entity", e);
+						return "";
 					}
-
-					if (status != 200) {
-						logger.error("HTTP respomse:" + status);
-						logger.error(EntityUtils.toString(response.getEntity()));
-						throw new ClientProtocolException("Pubchem no success.");
-					}
-					return EntityUtils.toString(response.getEntity());
 				}
-
-			};
-
-			String responseBody = httpclient.execute(httpget, responseHandler);
-			return responseBody;
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				httpclient.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				if (status != 200) {
+					logger.error("HTTP response: " + status);
+					try {
+						logger.error(EntityUtils.toString(response.getEntity()));
+					} catch (org.apache.hc.core5.http.ParseException e) {
+						logger.error("Error parsing HTTP response entity", e);
+						return "";
+					}
+					throw new IOException("Pubchem no success.");
+				}
+				try {
+					return EntityUtils.toString(response.getEntity());
+				} catch (org.apache.hc.core5.http.ParseException e) {
+					logger.error("Error parsing HTTP response entity", e);
+					return "";
+				}
 			}
+		} catch (IOException e) {
+			logger.error("Error fetching JSON from URL: " + url, e);
+			return "";
 		}
-		return "";
 	}
 
 	// Respons classes for json structure
