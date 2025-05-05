@@ -88,6 +88,11 @@
 				<version>1.9.0</version>
 			</dependency>
 			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>1.18.0</version>
+			</dependency>
+			<dependency>
 				<groupId>org.openscience.cdk</groupId>
 				<artifactId>cdk-data</artifactId>
 				<version>${cdk-version}</version>
