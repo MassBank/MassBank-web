@@ -83,7 +83,9 @@ public class RecordToRIKEN_MSP {
 		sb.append("PRECURSORTYPE: ").append((MS_FOCUSED_ION.getOrDefault("PRECURSOR_TYPE", "NA"))).append(System.lineSeparator());
 		sb.append("FORMULA: ").append(record.CH_FORMULA()).append(System.lineSeparator());
 		if (record.CH_LINK().containsKey("ChemOnt")) {
-			sb.append("Ontology: ").append(record.CH_LINK().get("ChemOnt")).append(System.lineSeparator());
+			String chemOntValue = record.CH_LINK().get("ChemOnt");
+			String lastTerm = chemOntValue.substring(chemOntValue.lastIndexOf(";") + 1).trim();
+			sb.append("Ontology: ").append(lastTerm).append(System.lineSeparator());
 		}
 		sb.append("INCHIKEY: ").append(record.CH_LINK().getOrDefault("INCHIKEY", "N/A")).append(System.lineSeparator());
 		sb.append("INCHI: ").append(record.CH_IUPAC()).append(System.lineSeparator());
