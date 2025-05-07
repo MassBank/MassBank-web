@@ -134,7 +134,6 @@
 		</dependency>
 	</dependencies>
 
-
 	<build>
 		<resources>
 			<resource>
@@ -150,18 +149,100 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<appendAssemblyId>false</appendAssemblyId>
-					<finalName>MassBank-lib</finalName>
-					<descriptors>
-						<descriptor>src/main/assembly/assembly.xml</descriptor>
-					</descriptors>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id>
+						<id>AddMetaData-assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>massbank.cli.AddMetaData</mainClass>
+								</manifest>
+							</archive>
+							<finalName>AddMetaData</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Inspector-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>massbank.cli.Inspector</mainClass>
+								</manifest>
+							</archive>
+							<finalName>Inspector</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Msbnk2JSONLD-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>massbank.cli.Msbnk2JSONLD</mainClass>
+								</manifest>
+							</archive>
+							<finalName>Msbnk2JSONLD</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>RecordExporter-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>massbank.cli.RecordExporter</mainClass>
+								</manifest>
+							</archive>
+							<finalName>RecordExporter</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>RefreshDatabase-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>massbank.cli.RefreshDatabase</mainClass>
+								</manifest>
+							</archive>
+							<finalName>RefreshDatabase</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Validator-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>massbank.cli.Validator</mainClass>
+								</manifest>
+							</archive>
+							<finalName>Validator</finalName>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

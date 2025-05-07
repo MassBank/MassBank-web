@@ -1,0 +1,7 @@
+#!/bin/bash
+
+SCRIPT_NAME=$(basename "$0")
+JAR_NAME="${SCRIPT_NAME%.*}.jar"
+JAR_FILE="$(dirname "$0")/../target/$JAR_NAME"
+
+java -jar "$JAR_FILE" "$@"
