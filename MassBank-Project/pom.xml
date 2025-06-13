@@ -2,7 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.ipb-halle.msbi </groupId>
+	<groupId>de.ipb-halle.msbi</groupId>
 	<artifactId>MassBank-Project</artifactId>
 	<version>2.2.10-SNAPSHOT</version>
 	<name>MassBank-Project</name>
@@ -133,9 +133,9 @@
 				<version>2.4.0</version>
 			</dependency>
 			<dependency>
-				<groupId>edu.ucdavis.fiehnlab.splash</groupId>
+				<groupId>com.github.meier-rene.spectra-hash</groupId>
 				<artifactId>core</artifactId>
-				<version>1.8</version>
+				<version>51f5a0ae23</version>
 			</dependency>
 			<dependency>
 				<groupId>de.undercouch</groupId>
@@ -338,17 +338,10 @@
 		</pluginManagement>
 	</build>
 
-
 	<repositories>
-		<repository>
-			<id>Jena-Bio</id>
-			<name>Jena Bio Repository libs-release-oss</name>
-			<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss</url>
-		</repository>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
-
 </project>

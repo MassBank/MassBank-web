@@ -88,7 +88,7 @@
 			<artifactId>petitparser-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>edu.ucdavis.fiehnlab.splash</groupId>
+			<groupId>com.github.meier-rene.spectra-hash</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
 		<dependency>
