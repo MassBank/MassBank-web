@@ -1348,6 +1348,7 @@ MS$FOCUSED_ION: DERIVATIVE_TYPE 4 TMS
 
 ##### 2.5.1 Subtag: ION\_TYPE
 Type of Focused Ion.
+This tag is deprecated. Please use PRECURSOR\_TYPE instead.
 
 Example: 
 
@@ -1402,6 +1403,7 @@ Calculated exact mass is preferred to the measured accurate mass of the precurso
 
 ##### 2.5.1 Subtag: PRECURSOR\_TYPE
 Type of Precursor Ion in MSn spectrum.
+Cross-reference to HUPO-PSI: [adduct ion (MS:1000353)](https://terminology.tib.eu/ts/ontologies/ms/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMS_1000353&lang=en)
 
 Example for MS2:
 ```
